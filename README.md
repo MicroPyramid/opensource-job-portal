@@ -1,7 +1,5 @@
 Peel Jobs
 ===========
-[![build status](https://git.micropyramid.com/mp/peel_jobs/badges/master/build.svg)](https://git.micropyramid.com/mp/peel_jobs/commits/master)
-[![coverage report](https://git.micropyramid.com/mp/peel_jobs/badges/master/coverage.svg)](https://git.micropyramid.com/mp/peel_jobs/commits/master)
 
 Job Portal with Unlimited free job posting, Social Api's authentication.
 
