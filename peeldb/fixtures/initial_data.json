@@ -1,0 +1,179 @@
+[
+    {
+        "fields": {
+            "profile_pic": "",
+            "last_name": "",
+            "twitter": null,
+            "user_type": "",
+            "linkedin": null,
+            "is_staff": true,
+            "google": null,
+            "user_permissions": [],
+            "date_joined": "2015-06-19T07:12:25.954Z",
+            "city": null,
+            "first_name": "",
+            "is_superuser": true,
+            "last_login": "2015-06-20T04:54:06.920Z",
+            "email": "nikhila@micropyramid.com",
+            "username": "nikhila",
+            "company": null,
+            "signature": "",
+            "is_active": true,
+            "pincode": 0,
+            "facebook": null,
+            "groups": [],
+            "address": "",
+            "password": "pbkdf2_sha256$20000$DpyauKHTM4Qb$YfiufoxvVFHPm/OrjmH1BCQWs3wyVk3rK85UnJy1tsA=",
+            "mobile": 0,
+            "email_verified": false,
+            "last_password_reset_on": "2015-06-19T07:12:26.047Z",
+            "gender": ""
+        },
+        "model": "peeldb.user",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "code": "jobs1",
+            "max_month": 5,
+            "fresher": false,
+            "visa_country": 1,
+            "created_on": "2015-06-19T11:14:45.283Z",
+            "keywords": "[\"hello\", \" bye\"]",
+            "min_salary": 122,
+            "title": "java developer",
+            "visa_type": "cdfv",
+            "location": [
+                1,
+                2
+            ],
+            "max_year": 5,
+            "status": "",
+            "max_salary": 133,
+            "description": "dsbdf",
+            "job_role": "developer",
+            "min_month": 5,
+            "user": 1,
+            "posted_on": "2015-06-19T11:14:45.283Z",
+            "visa_required": true,
+            "skills": [
+                1
+            ],
+            "country": 1,
+            "industry": 3,
+            "min_year": 3,
+            "last_date": "2015-06-24",
+            "vacancies": 4
+        },
+        "model": "peeldb.jobpost",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "code": "jobs12",
+            "max_month": 4,
+            "fresher": false,
+            "visa_country": 1,
+            "created_on": "2015-06-19T12:55:47.237Z",
+            "keywords": "[\"[u'hello'\", \" u' bye']\"]",
+            "min_salary": 122,
+            "title": "java developer1",
+            "visa_type": "cdfv",
+            "location": [
+                1,
+                2
+            ],
+            "max_year": 3,
+            "status": "",
+            "max_salary": 133,
+            "description": "dsbdfssdg",
+            "job_role": "developer",
+            "min_month": 4,
+            "user": 1,
+            "posted_on": "2015-06-19T12:55:47.237Z",
+            "visa_required": true,
+            "skills": [
+                1
+            ],
+            "country": 1,
+            "industry": 3,
+            "min_year": 3,
+            "last_date": "2015-06-25",
+            "vacancies": 4
+        },
+        "model": "peeldb.jobpost",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "code": "jobs1234",
+            "max_month": 4,
+            "fresher": false,
+            "visa_country": 1,
+            "created_on": "2015-06-20T05:31:43.385Z",
+            "keywords": "[\"[u\\\"[u'hello'\\\"\", \" u\\\" u' bye']\\\"]\"]",
+            "min_salary": 122,
+            "title": "java developer1",
+            "visa_type": "cdfv",
+            "location": [
+                1,
+                2
+            ],
+            "max_year": 10,
+            "status": "",
+            "max_salary": 133,
+            "description": "dsbdfssdg",
+            "job_role": "developer",
+            "min_month": 11,
+            "user": 1,
+            "posted_on": "2015-06-20T05:31:43.385Z",
+            "visa_required": true,
+            "skills": [
+                1
+            ],
+            "country": 1,
+            "industry": 3,
+            "min_year": 6,
+            "last_date": "2015-06-25",
+            "vacancies": 4
+        },
+        "model": "peeldb.jobpost",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "code": "jobs12345678",
+            "max_month": 6,
+            "fresher": false,
+            "visa_country": 1,
+            "created_on": "2015-06-20T05:41:42.842Z",
+            "keywords": "[\"hello  \", \"   nikhi    \"]",
+            "min_salary": 122,
+            "title": "java developer1",
+            "visa_type": "cdfv",
+            "location": [
+                1,
+                2
+            ],
+            "max_year": 6,
+            "status": "",
+            "max_salary": 133,
+            "description": "dsbdfssdg",
+            "job_role": "developer",
+            "min_month": 6,
+            "user": 1,
+            "posted_on": "2015-06-20T06:49:00.928Z",
+            "visa_required": true,
+            "skills": [
+                1
+            ],
+            "country": 1,
+            "industry": 3,
+            "min_year": 2,
+            "last_date": "2015-06-25",
+            "vacancies": 4
+        },
+        "model": "peeldb.jobpost",
+        "pk": 5
+    }
+]

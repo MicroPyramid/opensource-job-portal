@@ -1,0 +1,293 @@
+{% extends 'dashboard/base.html' %}
+{% load thumbnail %}
+{% load page_tags %}
+{% block stage %}
+<style type="text/css">
+  .add_techskill{
+    display: none;
+  }
+</style>
+<section id='tech_skills'>
+  <div class="title" style="padding-bottom: 3px;">
+      <h3>Technical Skills
+        <span>
+          <a class={% if status == 'active' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=active">Active</a> /
+          <a class={% if status == 'inactive' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=inactive">Inactive</a> /
+          <a class={% if status == 'it' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=it">IT</a> /
+          <a class={% if status == 'non-it' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=non-it">Non-IT</a> /
+          <a class={% if status == 'other' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=other">Other</a>
+        </span>
+      </h3>
+    </div>
+    <div class="title" style="border-bottom:none; padding-bottom: 41px;">
+    <div class="add_div" style="width:66%;">
+      <form id="addform" method="post" enctype="multipart/form-data">
+      <div class="col-md-4"  style="padding:0 6px;">
+        <input type="text" class="form-control" id="name" name="name" style="width:100%;">
+      </div>
+       <div  class="col-md-3" style="padding:0 6px;">
+        <select class="form-control" name="skill_type" style="width:100%;">
+          <option value="">Skill Type</option>
+          {% for type in skill_types %}
+          <option value="{{ type.0 }}">{{ type.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div  class="col-md-3" style="padding:0 6px;">
+        <input type="file" class="form-control" id="icon" name="icon" style="width:100%;">
+        <input type="hidden" name="mode" value="add_skill">
+      </div>
+      <div class="col-md-2"  style="padding:0 6px;text-align:right;">
+        <button class="add_new_btn" style="margin-top:5px;padding:7px 15px;"><i class="fa fa-plus"></i>Add Skill</button>
+        </div>
+      </form>
+      </div>
+      <div class="add_div" style="width:34%;">
+      <form id="search_form" name="adv-search-form" class="search-form" method="GET">
+            <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.search }}"  />
+            <input type="hidden" name="status" id="status" value="{% if request.GET.status%}{{request.GET.status}}{% endif %}" >
+            <input type="hidden" name="page" id="page" value="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" >
+            <button type="submit" class="add_new_btn submit">Submit</button>
+      </form>
+      </div>
+    </div>
+
+    <div class="list_row">
+      <ul>
+      {% for skill in skills %}
+        <li>
+          <div class="description">
+            <div class="content">
+            {{skill.name}}( {{ skill.get_no_of_jobposts|length }} )
+            </div>
+            <div class="content">
+                <img src="{{ skill.icon }}">
+            </div>
+            <div class="icon_div">
+            <span>No.Of Applicants ({{skill.get_no_of_applicants|length }})</span>
+                <span>  No.Of Resume Applicants ({{skill.get_no_of_resume_applicants|length }})</span>
+              {% ifequal skill.status 'Active' %}
+                <a href="/{{skill.slug}}-jobs/" target="_blank" title="View Skill Jobs"><i class="fa fa-eye edit"></i></a>
+              {% endifequal %}
+              <a><i class="fa fa-pencil-square-o edit"></i></a>
+              {% ifequal skill.status 'InActive' %}<a href="#" id="{{ skill.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="enable-skill"><i class="fa fa-check edit" title="Activate Skill"></i></a>{% else %}<a href="#" id="{{ skill.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}"  class="deactivate-skill"><i class="fa fa-times delete" title="Deactivate Skill"></i></a>{% endifequal %}
+              <a data-href="{% url "dashboard:delete_skill" skill_id=skill.id %}" class="delete_skill"><i class="fa fa-trash-o delete"></i></a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="edit_panel">
+            <form class="editform" id ="{{ skill.id }}" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="id" value="{{skill.id}}">
+              <input type="hidden" name="mode" value="edit_skill">
+              <textarea class="form-control" name="name">{{skill.name}}</textarea>
+              <textarea class="form-control" name="slug" >{{skill.slug}}</textarea>
+              <select class="form-control" name="skill_type" >
+                <option value="">Select Skill Type</option>
+              {% for type in skill_types %}
+                <option value="{{ type.0 }}" {% if skill.skill_type == type.0 %}selected{% endif %}>{{ type.1 }}</option>
+              {% endfor %}
+              </select>
+              <textarea class="form-control" name='meta' id='meta' placeholder='Meta Data in Json Format'>{{ skill.get_meta_data }}</textarea>
+              <textarea class="form-control ckeditor_page_content" name='ckeditor_page_content_{{ skill.id }}' id='ckeditor_page_content_{{skill.id}}' placeholder='Page Content'>{{ skill.page_content }}</textarea>
+              <input type="hidden" class="form-control" name="page_content" id="page_content_{{ skill.id }}">
+              <input type="hidden" class="form-control" name="page" value="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}">
+              <input type="file" class="form-control" id="icon" name="icon">
+              <button id="{{skill.id}}" class="update_btn" type="submit"><i class="fa fa-check"></i>Update</button>
+            </form>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </li>
+       {% empty %}
+        <h3 class='text-center'> No Skills Found</h3>
+       {% endfor %}
+      </ul>
+    </div>
+</section>
+{% if skills %}
+  <div class="pagination_wrap">
+    {% get_page current_page last_page as pages %}
+    <nav>
+        <ul class="pagination">
+            {% if current_page != 1 %}
+              <li class="prev"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+              <li class="prev"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+              <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page=1">first</a></li>
+              {% endif %}
+              {% for s in pages %}
+              <li {% ifequal s current_page %} class="active" {% endifequal %}><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{s}}">{{s}}</a></li>
+              {% endfor %}
+              {% if current_page != last_page %}
+              <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{last_page}}">last</a></li>
+              <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+              <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+              {% endif %}
+        </ul>
+    </nav>
+  </div>
+{% endif %}
+{% endblock stage %}
+
+
+{% block script %}
+<script type="text/javascript">
+  $(document).ready(function (event) {
+      $('#tech_skills .edit').click(function (e) {
+          $(this).parent().parent().next().next('div.edit_panel').toggle('slow');
+          ckeditor_name = $(this).parent().parent().next().next('div.edit_panel').find('form .ckeditor_page_content').attr('name')
+          CKEDITOR.config.allowedContent = true;
+          var editor = CKEDITOR.replace(ckeditor_name);
+      });
+  });
+
+$('form#addform').ajaxForm({
+    type: 'POST',
+    dataType: 'json',
+    url: "{% url 'dashboard:tech_skills' %}",
+    data: $("#addform").serialize(),
+    success: function (data) {
+        if (data.error == false) {
+          open_dialog_with_url(data.message, 'Success!!!', "{{request.get_full_path}}")
+        } else {
+          for (var key in data.message) {
+            open_dialog(data.message[key], 'Success!!')
+        }
+        }
+    }
+});
+
+$('form.editform').ajaxForm({
+    beforeSerialize: function ($form, options) {
+        ckeditor_name = 'ckeditor_page_content_' + $form.attr('id')
+        var get_data = CKEDITOR.instances[ckeditor_name].getData()
+        $('#page_content_' + $form.attr('id')).val(get_data);
+    },
+    type: 'POST',
+    dataType: 'json',
+    url: "{% url 'dashboard:tech_skills' %}",
+    success: function (data) {
+        if (data.error == false) {
+           open_dialog_with_url(data.message, 'Success!!!', "{{request.get_full_path}}")
+        }
+        else if (data.message){
+           open_dialog_with_url(data.message, 'Success!!!', "{{request.get_full_path}}")
+        }
+        else {
+         for (var key in data.response) {
+            open_dialog(key+': '+data.response[key], 'Success!!')
+        }
+        }
+    }
+});
+
+$('.deactivate-skill').click(function (e) {
+    e.preventDefault();
+    href = $(this).attr('id') + '/'
+    page = $(this).attr('rel')
+    $('#block_question').text('Do you want to deactivate Skill?')
+    $('#block_question').dialog({
+        modal: true,
+        dialogClass: "no-close",
+        draggable: false,
+        title: "Info!!",
+        buttons: [
+            {
+                text: "Yes",
+                click: function () {
+                    $(this).dialog("close");
+                    $.post('/dashboard/skill/status/' + href, {"page": page}, function (data) {
+                        if (data.error) {
+                          open_dialog(data.response, 'Error!!')
+                        } else {
+                          open_dialog_with_url('Skill Disabled Successfully', 'Success!!!', "{{request.get_full_path}}")
+                        }
+                    }, 'json');
+                }
+            },
+            {
+                text: "No",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+        ]
+    });
+});
+
+$('.enable-skill').click(function (e) {
+    e.preventDefault();
+    href = $(this).attr('id') + '/'
+    page = $(this).attr('rel')
+    $('#block_question').text('Do you want to activate skill?')
+    $('#block_question').dialog({
+      modal: true,
+      dialogClass: "no-close",
+      draggable: false,
+      title: "Info!!",
+      buttons: [
+        {
+          text: "Yes",
+          click: function () {
+            $(this).dialog("close");
+            $.post('/dashboard/skill/status/' + href, {"page": page}, function (data) {
+              if (data.error) {
+                open_dialog(data.response, 'Error!!')
+              } else {
+                open_dialog_with_url('Skill Activated Successfully', 'Success!!!', "{{request.get_full_path}}")
+              }
+            }, 'json');
+          }
+        },
+        {
+          text: "No",
+          click: function () {
+            $(this).dialog("close");
+          }
+          }
+        ]
+    });
+});
+$(".delete_skill").click(function(e){
+  e.preventDefault();
+    href = $(this).attr('data-href')
+    page = $(this).attr('rel')
+    $('#block_question').text('Do you want to permanently rermove this skill?')
+    $('#block_question').dialog({
+        modal: true,
+        dialogClass: "no-close",
+        draggable: false,
+        title: "Info!!",
+        buttons: [
+            {
+                text: "Yes",
+                click: function () {
+                    $(this).dialog("close");
+                    $.post(href, {}, function (data) {
+                        if (data.error) {
+                          open_dialog(data.message, 'Error!!')
+                        } else {
+                          open_dialog_with_url(data.message, 'Success!!!', "{{request.get_pull_path}}")
+                        }
+                    }, 'json');
+                }
+            },
+            {
+                text: "No",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+        ]
+    });
+})
+$('.add').click(function (e) {
+    if ($('.add-skill').hasClass('add_techskill')) {
+        $('.add-skill').removeClass('add_techskill');
+        $(this).text('Remove');
+    }
+    else {
+        $('.add-skill').addClass('add_techskill');
+        $(this).text('Add');
+    }
+});
+</script>
+{% endblock script %}

@@ -1,0 +1,215 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% block 'stage' %}
+
+      <!-- content -->
+      <div class="content_wrap">
+        <div class="marl row dashboard_panel">
+          <div class="col-md-3">
+            <div class="panel panel-default active_jobs">
+              <div class="panel-body">
+                Active Jobs <span class="pull-right">{{ no_of_jobs }}</span>
+              </div>
+            </div>
+             <div class="panel panel-default candidates">
+                <div class="panel-body">
+                  Total Candidates <span class="pull-right">{{ agency_resumes|length }}</span>
+                </div>
+            </div>
+          </div>
+          {% if job_posts %}
+          <div class="col-md-9">
+            <div class="job_list">
+            <!-- table -->
+            <div class="table_wraper">
+            <div class="heading">My Jobs</div>
+            <table class='job_list_table jobs_table'>
+              <thead>
+                <tr>
+                  <th ></th>
+                  <th >Title</th>
+                  <th >Location</th>
+                  <th >Recruiters</th>
+                  <th >Client</th>
+                  <th >Job Type</th>
+                  <th >Deadline</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for post in job_posts %}
+                <tr>
+                  <td class="expand_col"><a class="open_table" href="#"><i class="fa fa-plus-circle"></a></td>
+                  <td><span>{{post.title}}</span></td>
+                  <td><span>{%for location in post.location.all %}{{ location.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}</span></td>
+                  <td><span>{%for recruiter in post.agency_recruiters.all %}{{ recruiter.email }} {% if forloop.last %}{% else %}<br>{% endif%}{% endfor %}</span></td>
+                  <td><span>{{ post.agency_client.name }}</span></td>
+                  <td><span>{{ post.job_type|get_string }}</span></td>
+                  <td><span>{{ post.last_date }}</span></td>
+                </tr>
+
+                <tr class="content_block">
+                <td colspan="8">
+                   <div class="row mar_lr">
+                      <div class="content_left col-md-6">
+                        <ul>
+                          <li><strong>Skills : </strong> {% for skill in post.get_skills %}{{ skill.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</li>
+                          <li><strong>Functional Area : </strong> {%for location in post.functional_area.all %}{{ location.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</li>
+                          <li><strong>Salary : </strong> {% if post.min_salary == 0 and post.max_salary == 0 %}Not Specified{% else %}<i class="fa fa-inr" aria-hidden="true"></i> {{ post.get_job_salary.0 }} - {{ post.get_job_salary.1 }}  {% endif %} </li>
+                          <li><strong>Job Role : </strong> {{ post.job_role }} </li>
+                        </ul>
+                      </div>
+
+                      <div class="content_right col-md-6">
+                        <ul>
+                          <li><strong>Industry : </strong> {%for industry in post.industry.all %}{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %} </li>
+                          <li><strong>Educational Qualifications : </strong> {%for qualification in post.edu_qualification.all %}{{ qualification.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %} </li>
+                          <li><strong>Experience : </strong> {{ post.min_year }} Year(s) {{ post.min_month }} Month(s) - {{ post.max_year }} Year(s) {{ post.max_month }} Month(s) </li>
+                        </ul>
+                      </div>
+                   </div>
+                </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <!-- table -->
+            </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="col-md-9">
+          <div class="alert alert-danger alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+            <h4>
+              You do not have any active jobs. Post your requirement now!
+              <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:new' 'full-time' %}{% else %}{% url 'recruiter:new' 'full-time' %}{% endif %}">
+                <button type="button" class="btn btn-default"><strong>Create</strong></button>
+              </a>
+            </h4>
+            </p>
+          </div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="marl row dashboard_panel">
+          <div class="col-md-12">
+            <div class="job_list">
+            <!-- table -->
+            <div class="table_wraper">
+            <div class="heading">Recruiters</div>
+            <table class='job_list_table jobs_table'>
+              <thead>
+                <tr>
+                  <th >Email</th>
+                  <th >No Of Jobs Allocated</th>
+                  <th >No of resumes uploaded</th>
+                  <th >No of candidates selected</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for recruiter in user.get_similar_recruiters %}
+                <tr>
+                  <td><span>{{recruiter.email}}</span></td>
+                  <td class="open_jobs" id="{{recruiter.id}}"><span style="color:#1b7fdc">{{ recruiter.get_assigned_jobs_list|length }}</span></td>
+                  <td><span>{{ recruiter.get_resumes_uploaded|length }}</span></td>
+                  <td><span>{{ recruiter.get_selected_applicants|length }}</span></td>
+                </tr>
+                <tr>
+                <td colspan="8">
+                <table class="job_list_table jobs_table content_block_jobs" id="content_block{{recruiter.id}}">
+                  <thead>
+                   <tr>
+                    <th style="width:25%;">Title</th>
+                    <th >Location</th>
+                    <th style="width:10%;">Job Type</th>
+                    <th >Deadline</th>
+                  </tr>
+                  </thead>
+                  {% for job in recruiter.get_assigned_jobs_list %}
+                  <tr>
+                    <td><span>{{job.title}}</span></td>
+                    <td><span>{%for location in job.location.all %}{{ location.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}</span></td>
+                    <td><span>{{ job.job_type|get_string }}</span></td>
+                    <td><span>{{ job.last_date }}</span></td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="8" style="color:black; text-align:center">
+                      <h5>No jobs Assigned</h5>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  </table>
+                  {% endfor %}
+                </tbody>
+            </table>
+            </td>
+            </tr>
+            <!-- table -->
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/ content -->
+{% endblock %}
+    <!--/ container -->
+{% block 'extra_js' %}
+
+    <!-- GLOBAL SCRIPTS -->
+    <script type="text/javascript">
+      $(".js-example-placeholder-single").select2({
+        placeholder: "Skill",
+        allowClear: true
+      });
+      $(".js-example-placeholder-single1").select2({
+        placeholder: "Experiencee",
+        allowClear: true
+      });
+      $(".js-example-placeholder-single2").select2({
+        placeholder: "Role",
+        allowClear: true
+      });
+      $(".js-example-placeholder-single3").select2({
+        placeholder: "Uploaded By",
+        allowClear: true
+      });
+      $(".js-example-placeholder-single4").select2({
+        placeholder: "Rating",
+        allowClear: true
+      });    </script>
+
+       <script type="text/javascript">
+          $(document).ready(function(){
+            $('.content_block').hide();
+            $('.open_table').click(function(e){
+              e.preventDefault();
+              var nxt_tr = $(this).parent().parent().next();
+              nxt_tr.toggle();
+              $('.content_block').not(nxt_tr).hide();
+              if($(this).children('i').hasClass('fa-plus-circle')){
+                $(this).children('i').removeClass('fa-plus-circle').addClass('fa-minus-circle');
+              }
+              else{
+                $(this).children('i').removeClass('fa-minus-circle').addClass('fa-plus-circle');
+              }
+            })
+            $('.content_block_jobs').hide();
+            $('.open_jobs').click(function(e){
+              e.preventDefault();
+              var id = $(this).attr("id")
+              console.log(id)
+              // console.log(nxt_tr)
+              $("#content_block"+id).toggle();
+              // $('.content_block_jobs').not(nxt_tr).hide();
+              // if($(this).children('i').hasClass('fa-plus-circle')){
+              //   $(this).children('i').removeClass('fa-plus-circle').addClass('fa-minus-circle');
+              // }
+              // else{
+              //   $(this).children('i').removeClass('fa-minus-circle').addClass('fa-plus-circle');
+              // }
+            })
+          });
+    </script>
+    <!--/ SCRIPTS FOR THE PAGE -->
+{% endblock %}

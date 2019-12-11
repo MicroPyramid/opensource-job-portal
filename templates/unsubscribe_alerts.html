@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block block_canonical %}
+{% endblock %}
+
+{% block block_title %}
+  <title>Unsubscribing Alerts - Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+  <meta name="description" content="Unsubscribing Alerts - PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs. Fill Your Profile to receive email notifications. "/>
+
+{% endblock %}
+{% block base %}
+
+  <!-- main_container starts here -->
+    <div class="row mar_lr_0 main_container">
+      <div class="container">
+        <div class="row mar_lr_0">
+          <div class="profile_container">
+            <!-- profile_left_container starts here -->
+          <div class="col-md-9 col-sm-9 detail_description_column" style="margin-left:12.7%;padding: 37px 54px;">
+          <div class="panel">
+            <div class="panel-heading text-center text-uppercase">Unsubscribe</div>
+            <div class="panel-body">
+            {% if unsubscribed %}
+              <div class="text-center register_col">
+                <a><strong>You are already Unsubscribed!</strong></a>
+                <p>Go to Home page</p>
+                <button class='cancelbutton'>Home</button>
+              </div>
+            {% else %}
+              <div class="text-center register_col">
+                <a><strong>Unsubscribe From PeelJobs Alerts</strong></a>
+                <p>Do you really wish to unsubscribe from peeljobs alerts?</p>
+                <p>by unsubscribing you will miss all the latest updates and career options from peeljobs. </p>
+                <button class='unsubscribe'>Unsubscribe</button>
+                <button type="button" class="cancelbutton">Cancel</button>
+              </div>
+              <form name="UnsubsribeForm" id="UnsubsribeForm" style='display:none' method="post">
+                <div class="text-center">
+                  <a><strong>Reason For Unsubscribing</strong></a>
+                  <p>This will help us improve our Services.</p>
+                </div>
+                <div class="form-group text-center">
+                  <textarea class="form-control" placeholder="Please enter your reason" name='reason' id='reason'></textarea>
+                  <button type="submit" class='submit'>Submit</button>
+                  <button type="button" class="cancelbutton">Cancel</button>
+                </div>
+              </form>
+            {% endif %}
+            </div>
+          </div>
+          </div>
+        </div>
+    </div>
+    </div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+  {% endblock %}
+
+  {% block 'extra_js' %}
+  <script type="text/javascript">
+ $('.unsubscribe').click(function(e){
+  $("#UnsubsribeForm").show()
+  $(this).parent().hide()
+ })
+ $('.cancelbutton').click(function(e){
+  window.location = '/'
+ })
+  $("form#UnsubsribeForm").submit(function(e) {
+      e.preventDefault();
+      $.post(".", $("form#UnsubsribeForm").serialize(), function(data) {
+        if (data.error == true) {
+          if (data.err_message){
+            open_dialog_with_url(data.err_message, 'Success!', '/')
+          }
+          else{
+            $('p.hint').remove();
+            $('#reason').after('<p class="hint">' + data.message + '</p>');
+          }
+        }
+        else {
+        open_dialog_with_url("Your have successfully unsubscribed from our Services", 'Success!', '/')
+        }
+      }, 'json');
+    });
+
+</script>
+
+  {% endblock %}

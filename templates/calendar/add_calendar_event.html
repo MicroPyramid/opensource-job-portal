@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block block_canonical %}
+    <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+    <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+    <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+    <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+{% endblock %}
+
+{% block base %}
+
+    <div class="content_div">
+        <section id='edit_job_post'>
+            <div class="container">
+                <div class="row mt">
+                    <div class="col-md-offset-2 col-md-8 col-sm-12 detail_description_column">
+                        <div class="top_flap">
+                            Add Event
+                        </div>
+                        <form name="jobalertform" id="jobalertform" method="post">
+                            <div class="tile_deafult">
+                                <div class="form_div">
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="control-label">Event Title</label>
+                                        <div class="input_wrap">
+                                            <input type="text" class="form-control" placeholder="Event Title" id="title"
+                                                   name="title">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="control-label">Event description</label>
+                                        <div class="input_wrap">
+                                            <input type="text" class="form-control" placeholder="Event description"
+                                                   name="description" id="description">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="control-label">Location</label>
+                                        <div class="input_wrap">
+                                            <input type="text" class="form-control" placeholder="Location"
+                                                   name="location" id="location">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="control-label">Start Date</label>
+                                        <div class="input_wrap">
+                                            <input type="text" class="form-control" placeholder="Start Date"
+                                                   name="start_date" id="start_date">
+                                            <input type="hidden" class="form-control" placeholder="Email"
+                                                   name="user_authenticated" id="user_authenticated"
+                                                   value="{% if not request.user.is_authenticated %}False{% else %}True{% endif %}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="control-label">To Date</label>
+                                        <div class="input_wrap">
+                                            <input type="text" class="form-control" placeholder="To Date" name="to_date"
+                                                   id="to_date">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="control-label"></label>
+                                        <div class="input_wrap">
+                                            <button type="submit" class='submit'>Save</button>
+                                            <button type="button" class="cancelbutton">Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+        </section>
+    </div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+
+{% block 'extra_js' %}
+    <script type="text/javascript">
+        $(".cancelbutton").click(function (e) {
+            window.location = '/calendar/{% now "Y" %}';
+        });
+
+        $(function () {
+            $("#to_date").datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+        });
+
+        $(function () {
+            $("#start_date").datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+        });
+
+
+        $("form#jobalertform").submit(function (e) {
+            e.preventDefault();
+            $.post(".", $(this).serialize(), function (data) {
+                if (data.error) {
+                    if (data.response_message) {
+                        open_dialog(data.response_message, 'Error!')
+                    }
+                    $('p.hint').remove();
+                    for (var key in data.message) {
+                        $('#' + key).after('<p class="hint">' + data.message[key] + '</p>');
+                    }
+                } else {
+                    window.location = '/calendar/{% now "Y" %}';
+                }
+            }, 'json');
+        });
+
+    </script>
+
+{% endblock %}

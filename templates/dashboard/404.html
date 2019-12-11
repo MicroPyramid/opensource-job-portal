@@ -1,0 +1,23 @@
+{% extends 'dashboard/base.html' %}
+{% block page_title %}
+     <title>{% if meta_title %}{{ meta_title|safe }}{% else %}404 - Page Not Found - PeelJobs{% endif %}</title>
+    <meta name="description" content="{% if meta_description %}{{ meta_description|safe }}{% else %}404 - Page Not Found - Peeljobs{% endif %}"/>
+{% endblock %}
+{% block stage %}
+<div class="row	 mt">
+<div class="col-md-12 stats">
+
+  <div class="statistics_graphs" style="margin-top:-15px;">
+
+
+	<div class="page-404">
+	    <h1>{% if message_type %}{{message_type}}{% else %}404{% endif %}<span> {% if message %}{{ message }}{% else %}Sorry, the page you requested can not be found{% endif %}</span></h1>
+	    <h4>{% if reason %}{{ reason }}{% else %}The URL may be misspelled or the page you're looking for is no longer available.{% endif %}</h4>
+	    <h4>Email: support@peeljobs.com</h4>
+	    <h4>Contact Number: 850 009 9499</h4>
+	    <a href="/dashboard/"><i class="fa fa-home"></i> Back to Home Page</a>
+	</div>
+</div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'mobile/base.html'%}
+{% load thumbnail %}
+{% load page_tags %}
+{% block stage %}
+<style type="text/css">
+/* Style the buttons that are used to open and close the accordion panel */
+.introjs-tooltiptext{
+  font-size: 9px;
+}
+.content-container{
+  padding: 6px;
+}
+</style>
+<!-- content of job_list -->
+<section id='profile_home'>
+   <div class="row mt">
+    <div class="col-md-9 col-sm-9 left_column" style="position: relative;">
+      <div class="company_profile_wrap">
+          <div class="content-container">
+          <h4 style="font-size:25px; color:#4CAF50;font-size: 20px;line-height: 24px;">Account Creation Confirmation!</h4>
+          <p style="color:#555; font-size:15px;">Welcome to Peeljobs! We've sent a confirmation mail to {{request.user.email}} </p>
+          <p style="color:#555; font-size:15px;"> Please activate your account by clicking on link provided in the email. Then only you
+              can able to Apply For Jobs.</p>
+         </div>
+         <!--alerts-->
+          <div class="user_options_row">
+          <div class="user_option" onclick="window.location.href='/profile/'">
+            <div class="well user_profile" id="user_profile">
+              <div class="controls" >
+                <h2>Update Your Profile</h2>
+                <p class="para">Complete your profile with all your Personal and professional info. So, you can catch the Recruiters attention.</p>
+                <a href="{% url 'my:profile' %}" class="continue">ViewPage</a>
+              </div>
+            </div>
+         </div>
+
+          <div class="user_option" onclick="window.location.href='/alert/list/'">
+            <div class="well user_alerts" id="user_alerts">
+            <div class="controls" >
+              <h2>Job Alerts</h2>
+              <p class="para">Get all relevant jobs to your inbox as per your requirement by creating alerts</p>
+                <a href="{% url 'my:alerts_list' %}" class="continue">ViewPage</a>
+            </div>
+          </div>
+         </div>
+
+          <div class="user_option" onclick="window.location.href='/calendar/2016/'">
+            <div class="well user_calendar" id="user_calendar">
+            <div class="controls" >
+              <h2>Calendar</h2>
+              <p class="para">Easy to track all your events or jobs on everyday</p>
+            </div>
+                <a  class="continue text-center">ViewPage</a>
+          </div>
+         </div>
+         </div>
+         <!--alerts ends-->
+      </div>
+    </div>
+    </div></section>
+    <!--/ content of job_list -->
+{% endblock %}
+{% block 'extra_js' %}
+  <script type="text/javascript">
+   $(function(){
+  introguide = introJs();
+  // var startbtn   = $('#startdemotour');
+introguide.setOptions({
+    steps: [
+        // {
+        //   element: '.filter_icon',
+        //   intro: 'Search for latest jobs by skill, location, experience',
+        //   position: 'bottom'
+        // },
+        {
+          element: '.user_profile',
+          intro: 'Complete your profile with all your Personal and professional info. So, you can catch the Recruiters attention.',
+          position: 'bottom'
+        },
+        {
+          element: '.user_alerts',
+          intro: 'Get all relevant jobs to your inbox as per your requirement by creating alerts',
+          position: 'bottom'
+        },
+        {
+          element: '#user_calendar',
+          intro: 'Easy to track all your events or jobs on everyday',
+          position: 'bottom'
+        }
+        ]
+      })
+      introguide.start();
+      introguide.oncomplete(function() {
+        window.location = "/profile/"
+      });
+    })
+   $(".introjs-skipbutton").click(function(){
+    window.location = '/'
+   })
+</script>
+{% endblock %}

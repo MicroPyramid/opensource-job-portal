@@ -1,0 +1,347 @@
+{% extends 'recruiter/index.html' %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load static %}
+{% block jobs %}
+  <li class="job active"><a class="post-new" href="#">Post A new job</a></li>
+  <li class="job"><a href="{% url 'recruiter:list' %}">jobs list</a></li>
+{% endblock %}
+
+{% block 'stage' %}
+
+<!-- content -->
+<div class="content_wrap">
+  <section id='view_profile'>
+     <h3>Company Profile</h3>
+     <!--<h6 class="sub_heading">Company Profile Information</h6>-->
+
+     <!-- content job post -->
+     <div class="content_job_post company_view_profile">
+        {% if request.user.is_admin %}
+        <div class="edit_button">
+          <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:edit_company' %}{% else %}{% url "recruiter:edit_company" %}{% endif %}"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Profile</a>
+        </div>
+        {% endif %}
+        <!-- category -->
+         <div class="col-md-3 col-sm-3  profile_logo_name_url">
+              <div class="logo_name_url">
+                 <div class="logo">
+                    <img src="{{ request.user.company.get_logo_url }}" />
+                    <!--<span class="new_logo file_upload"><a href="#"><i class="fa fa-camera" aria-hidden="true"></i></a></span>-->
+                    <form name="profilepicform" id="profilepicform">
+                      <input type="file" id='file_input' name="profile_pic" id="profile_pic" style="display: none;" accept="image/*" onchange="javascript: submitform()"><input type="submit" id='submit' name="submit" style="display: none;">
+                    </form>
+                    <div class="clearfix"></div>
+                 </div>
+                    <a class='file_upload' href="#">UPDATE LOGO</a>
+                 <div class="name">
+                  <strong>Company Name :</strong>
+                  <span>{% if company.name %}{{ company.name }}{% else %}Not Specified{% endif %}</span>
+                 </div>
+                 <div class="url">
+                  <strong>Company Website :</strong>
+                  <span>{% if company.website %}{{ company.website }}{% else %}Not Specified{% endif %}</span>
+                 </div>
+              </div>
+           </div>
+
+            <div class="col-md-3 col-sm-3  profile_type_level_address">
+              <div class="logo_name_url">
+                 <div class="name">
+                  <strong>Company Type :</strong>
+                  <span>{% if company.company_type %}{{ company.company_type }}{% else %}Not Specified{% endif %}</span>
+                 </div>
+                 <div class="url">
+                  <strong>Company Level :</strong>
+                  <span>{% if company.level %}Level {{ company.level }}{% else %}Not Specified{% endif %}</span>
+                 </div>
+                 <div class="name">
+                  <strong>Address :</strong>
+                  <span>{% if company.address %}{{ company.address|linebreaks }}{% else %}Not Specified{% endif %}</span>
+                 </div>
+              </div>
+           </div>
+
+            <div class="col-md-6 col-sm-6 profile_description">
+              <div class="logo_name_url">
+                 <div class="name">
+                  <strong>Company Description :</strong>
+                  <span>
+                  <p>{% if company.profile %}{{ company.profile|safe }}{% else %}Not Specified{% endif %}</p>
+                  </span>
+                 </div>
+              </div>
+           </div>
+
+        <!--/ category -->
+        <br clear="all">
+     </div>
+     <br>
+     <!--/ content job post -->
+     <h6 class="sub_heading">Menu Flow</h6>
+     <!-- content job post -->
+     <div class="content_job_post company_view_profile">
+        {% if request.user.is_agency_admin %}
+        <div class="edit_button">
+          <a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus" aria-hidden="true"></i> Add Menu</a>
+        </div>
+        {% endif %}
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            {% if request.user.is_agency_admin %}
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add Menu</h4>
+              </div>
+            {% endif %}
+              <form name="menuform" id="menuform" method="post">
+                <div class="modal-body">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Title</label>
+                        <input type="text" class="form-control" id="title" name="title"placeholder="Enter Menu Title Here">
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">URL</label>
+                        <input type="text" class="form-control" id="url" name="url" placeholder="Enter Menu Url Here">
+                      </div>
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" name="status" id="status" value="True"> Active
+                        </label>
+                      </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default cancel" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% for menu in company_menu %}
+        <div class="modal fade" id="myModal_{{ menu.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add Menu</h4>
+              </div>
+              <form name="menueditform" id="menueditform" class="menueditform" method="post" data-href="{% url "recruiter:edit_menu" menu.id%}">
+                <div class="modal-body">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Title</label>
+                        <input type="text" class="form-control menu_title" id="title" name="title"placeholder="Enter Menu Title Here" value='{{ menu.title }}'>
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">URL</label>
+                        <input type="text" class="form-control menu_url" id="url" name="url" placeholder="Enter Menu Url Here" value='{{ menu.url }}'>
+                      </div>
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" name="status" id="status" value="True" {% if menu.status %}checked{% endif %}> Active
+                        </label>
+                        <label>
+                          <input type="checkbox" name="status" id="status" value="True" {% if not menu.status %}checked{% endif %}> In Active
+                        </label>
+                      </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default cancel" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        <!-- category -->
+         <div class="profile_menu_table">
+          <div class="Table" id="sortable">
+          {% if company_menu %}
+              <div class="Heading">
+                  <div class="Cell">
+                      <p>Title</p>
+                  </div>
+                  <div class="Cell">
+                      <p>Url</p>
+                  </div>
+                  <div class="Cell">
+                      <p>Status</p>
+                  </div>
+                  <div class="Cell">
+                      <p>Updated On</p>
+                  </div>
+                  {% if request.user.is_agency_admin %}
+                  <div class="Cell">
+                      <p>Actions</p>
+                  </div>
+                  {% endif %}
+              </div>
+              {% for menu in company_menu %}
+              <div class="Row ui-state-default" id="{{ menu.id }}">
+                  <div class="Cell">
+                      <p>{{ menu.title }}</p>
+                  </div>
+                  <div class="Cell">
+                      <p><a href="{{ menu.url }}" target="_blank">{{ menu.url }}</a></p>
+                  </div>
+                  <div class="Cell">
+                      <p>{% if menu.status %}Active{% else %}In Active{% endif %}</p>
+                  </div>
+                   <div class="Cell">
+                      <p>{{ menu.updated }}</p>
+                  </div>
+                  {% if request.user.is_agency_admin %}
+                   <div class="Cell actions">
+                      <a href="#" data-toggle="modal" data-target="#myModal_{{ menu.id }}" class="edit"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit </a>
+                       <a href="#" class="delete" id="{{ menu.id }}"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
+                      <a href="{% url 'recruiter:menu_status' menu.id %}" class="status"><i class="fa fa-check" aria-hidden="true"></i>{% if menu.status %}In Active{% else %}Active{% endif %}</a>
+                  </div>
+                  {% endif %}
+              </div>
+              {% endfor %}
+          {% else %}
+           <div class="alert alert-danger alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+            <h4>Create & Manage your company menu in Peeljobs</h4>
+            </p>
+            </div>
+          {% endif %}
+          </div>
+         </div>
+        <!--/ category -->
+        <br clear="all">
+     </div>
+     <br>
+     <!--/ content job post -->
+  </section>
+</div>
+<!--/ content -->
+{% endblock %}
+{% block 'extra_js' %}
+    <script type="text/javascript">
+        $('.file_upload').click(function (e) {
+            $('#file_input').click();
+        });
+        function submitform() {
+            $('form#profilepicform').submit();
+        }
+
+        $('form#profilepicform').ajaxForm({
+            type: 'POST',
+            dataType: 'json',
+            url: "{% url 'recruiter:upload_profilepic' %}",
+            data: $('#profilepicform').serialize(),
+            success: function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url(data.data, 'Success!!', '.')
+                    } else {
+                     open_dialog(data.data, 'Info!!')
+                }
+            }
+        });
+
+        $('.delete').click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            url = $(this).attr('id') + '/'
+            $('#block_question').text('Do you want to delete Menu?')
+            $('#block_question').dialog({
+                modal: true,
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/recruiter/company/menu/delete/' + url, {}, function (data) {
+                                if (data.error) {
+                                } else {
+                                  open_dialog_with_url('Menu Deleted Successfully', 'Success!', "{% url 'recruiter:view_company' %}")
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $("form#menuform").submit(function (e) {
+            e.preventDefault();
+            $.post("{% url 'recruiter:add_menu' %}", $("form#menuform").serialize(), function (msg) {
+                if (msg.error) {
+                    $('.error').remove();
+                    for (var key in msg.response) {
+                        $('#' + key).after('<div class="error">' + msg.response[key] + '</div>');
+                        ;
+                    }
+                } else {
+                    window.location = "{% url 'recruiter:view_company' %}";
+                }
+            }, 'json');
+        });
+        $("form.menueditform").submit(function (e) {
+            e.preventDefault();
+            url = $(this).attr('data-href');
+            $.post(url, $(this).serialize(), function (msg) {
+                if (msg.error) {
+                    $('.error').remove();
+                    for (var key in msg.response) {
+                         open_dialog(key, 'Error!!')
+                        $('.menu_' + key).after('<div class="error">' + msg.response[key] + '</div>');
+                        ;
+                    }
+                } else {
+                    window.location = "{% url 'recruiter:view_company' %}";
+                }
+            }, 'json');
+        });
+        /* table sortables */
+        var fixHelperModified = function (e, tr) {
+
+                    var $originals = tr.children();
+                    var $helper = tr.clone();
+                    $helper.children().each(function (index) {
+                        $(this).width($originals.eq(index).width())
+                    });
+                    return $helper;
+                },
+                updateIndex = function (e, ui) {
+                    $('td.index', ui.item.parent()).each(function (i) {
+                        $(this).html(i + 1);
+                    });
+                    var prev = ui.item.startPos;
+                    var current = ui.item.index();
+                    if (prev != current) {
+                        $.get("{% url 'recruiter:menu_order' %}" + "?prev=" + prev + "&current=" + current + "&menu_id=" + ui.item.id, function (data) {
+                            if (data.error) {
+                                 open_dialog(data.data, 'Error!!')
+                            }
+                        });
+                    }
+                }
+
+        $("#sortable").sortable({
+            helper: fixHelperModified,
+            stop: updateIndex,
+            start: function (event, ui) {
+                ui.item.startPos = ui.item.index();
+                ui.item.id = ui.item.id;
+            },
+            update: function (event, ui) {
+                ui.item.id = ui.item.attr("id");
+            }
+        }).disableSelection();
+        /* end sotbales */
+
+    </script>
+{% endblock %}

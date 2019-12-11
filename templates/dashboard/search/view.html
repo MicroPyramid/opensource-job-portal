@@ -1,0 +1,102 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load tz %}
+{% block stage %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Search Log Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="tile_each">
+            <label>Key Skills</label>
+            <span class="description">
+            <span>{% for skill in search_log.skills.all %}{{ skill }}{% if forloop.last %}{% else %}, {% endif %}{% empty %}N/A{% endfor %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Location</label>
+            <span class="description">
+            <span>{% for loc in search_log.locations.all %}{{ loc }}{% if forloop.last %}{% else %}, {% endif %}{% empty %}N/A{% endfor %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+           <div class="tile_each">
+            <label>Other Skills</label>
+            <span class="description">
+            <span>{% if search_log.other_skill %}{{ search_log.other_skill }}{% else %}N/A{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+           <div class="tile_each">
+            <label>Other Locations</label>
+            <span class="description">
+            <span>{% if search_log.other_location %}{{ search_log.other_location }}{% else %}N/A{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Expierence</label>
+            <span class="description">
+            <span>{% if search_log.expierence %}{{ search_log.expierence }}{% else %}N/A{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Industry</label>
+            <span class="description">
+            <span>{% if search_log.industry %}{{ search_log.industry }}{% else %}N/A{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Functional Area</label>
+            <span class="description">
+            <span>{% if search_log.functional_area %}{{ search_log.functional_area }}{% else %}N/A{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Job Type</label>
+            <span class="description">
+            <span>{% if search_log.job_type %}{{ search_log.job_type }}{% else %}N/A{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Searched By</label>
+            <span class="description">
+            <span>{% if search_log.user %}{{ search_log.user.email }}{% else %}N/A{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Searched On</label>
+            <span class="description">
+            <span>{% if search_log.search_on %}{{ search_log.search_on|timezone:'Asia/Calcutta' }}{% else %}None{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+           <div class="tile_each">
+            <label>Ip Address</label>
+            <span class="description">
+            <span>{% if search_log.user %}{{ search_log.ip_address }}{% else %}N/A{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!--/ post details -->
+    </div>
+  </div>
+</section>
+{% endblock %}

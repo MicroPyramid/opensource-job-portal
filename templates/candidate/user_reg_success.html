@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load searchtags %}
+
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+<title>PeelJobs! Account Creation Confirmation</title>
+
+ {% endblock %}
+ {% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+
+{% block base %}
+<style type="text/css">
+  ..main_container .breadcrumb_section{
+    padding-left: 0px !important;
+  }
+</style>
+<div class="content_div">
+<!-- main_container starts here -->
+<div class="row mar_lr_0 main_container">
+  <div class="container">
+
+  <!-- breadcrumb_section starts here -->
+  <div class="breadcrumb_section row mar_lr_0">
+    <nav>
+      <ol class="cd-breadcrumb triangle">
+        <li>
+          <a href="/" class="name"><span class="name" >Home</span></a>
+        </li>
+        <li class="current">
+          <a href="/" class="name">
+            <span class="name active" >User Registration</span>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+  <!-- breadcrumb_section ends here -->
+  <div class="row mar_lr_0">
+    <div class="col-md-9 left_container">
+      <div class="row">
+         <div class="company_profile_wrap">
+          <div class="content-container">
+          <h4 style="font-size:25px; color:#4CAF50; border-bottom:2px solid #4CAF50 !important;">Account Creation Confirmation!</h4>
+          <p style="color:#555; font-size:15px;">Welcome to Peeljobs! We've sent a confirmation mail to {{request.user.email}} </p>
+          <p style="color:#555; font-size:15px;"> Please activate your account by clicking on link provided in the email. Then only you
+              can able to Apply For Jobs.</p>
+         </div>
+         <!--alerts-->
+          <div class="user_options_row">
+          <div class="user_option" onclick="window.location.href='/profile/'">
+            <div class="well user_profile" id="user_profile">
+              <div class="controls" >
+                <h2>Update Your Profile</h2>
+                <p class="para">Complete your profile with all your Personal and professional info. So, you can catch the Recruiters attention.</p>
+                <a href="{% url 'my:profile' %}" class="continue">ViewPage</a>
+              </div>
+            </div>
+         </div>
+
+          <div class="user_option" onclick="window.location.href='/alert/list/'">
+            <div class="well user_alerts" id="user_alerts">
+            <div class="controls" >
+              <h2>Job Alerts</h2>
+              <p class="para">Get all relevant jobs to your inbox as per your requirement by creating alerts</p>
+                <a href="{% url 'my:alerts_list' %}" class="continue">ViewPage</a>
+            </div>
+          </div>
+         </div>
+
+          <div class="user_option" onclick="window.location.href='/calendar/2016/'">
+            <div class="well user_calendar" id="user_calendar">
+            <div class="controls" >
+              <h2>Calendar</h2>
+              <p class="para">Easy to track all your events or jobs on everyday</p>
+            </div>
+                <a  class="continue text-center">ViewPage</a>
+          </div>
+         </div>
+         </div>
+         <!--alerts ends-->
+      </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+  {% if request.user.is_jobseeker and not request.user.resume %}
+  <div class="upload_btn_block" id="resume_upload_block">
+   <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+    <div class="upload_btn" id="resume_upload_but"><a href="/profile/"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+      <input type="file" name="resume" id="resume" style="display:none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text"></span>
+      <button type="submit" name="submit" class="submit" style="
+        display:none;"><span>Submit</span></button>
+      </form>
+  </div>
+  {% endif %} 
+  <!--subscribe_box form starts here -->
+  <div class="subscribe_box" id="subscribe_blockk">
+    <div class="login_box">
+      <p class="head text-capitalize">SUBSCRIBE WITH US, TO GET JOBS INTO YOUR INBOX</p>
+      <form id="Jobsubscribeform" name="Jobsubscribeform" class="Jobsubscribeform" method = "POST">
+        <div class="form-group">
+          <select class="form-control" id="job_skills" name="skill" multiple>
+          </select>
+          <span class="skill_err"></span>
+          <p id="job_response_message"></p>
+        </div>
+        <div class="form-group">
+          {% if request.user.email %}
+          <input type="hidden" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address" value="{{ request.user.email }}" />
+          {% else %}
+          <input type="text" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address"/>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-default">Subscribe Here</button>
+      </form>
+    </div>
+  </div>
+  <!--subscribe_box form ends here -->
+    </div>
+  </div>
+</div>
+</div>
+</div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script>
+$(document).ready(function(){
+ $(function(){
+  introguide = introJs();
+  // var startbtn   = $('#startdemotour');
+introguide.setOptions({
+    steps: [
+        {
+          element: '.search_div_form',
+          intro: 'Search for latest jobs by skill, location, experience',
+          position: 'bottom'
+        },
+        {
+          element: '.user_profile',
+          intro: 'Complete your profile with all your Personal and professional info. So, you can catch the Recruiters attention.',
+          position: 'bottom'
+        },
+        {
+          element: '.user_alerts',
+          intro: 'Get all relevant jobs to your inbox as per your requirement by creating alerts',
+          position: 'bottom'
+        },
+        {
+          element: '#user_calendar',
+          intro: 'Easy to track all your events or jobs on everyday',
+          position: 'bottom'
+        },
+        {% if not  request.user.resume %}
+         {
+          element: '#resume_upload_block',
+          intro: 'Upload your resume to get attention of Recruiters',
+          position: 'bottom'
+        },
+        {% endif %}
+        {
+          element: '#subscribe_blockk',
+          intro: 'Subscribe with your interested skills to get job notifications',
+          position: 'bottom'
+        },
+        ]
+      })
+      introguide.start();
+      introguide.oncomplete(function() {
+        window.location = "/profile/"
+      });
+    })
+   $("select#job_skills").select2( { placeholder: "Select here", maximumSelectionSize: 100 } );
+ $('#job_skills').empty()
+    $('#job_skills').append(new Option('Select a Skill', ''))
+    $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+      $.each(JSON.parse(data.response), function( key, field ) {
+        $('#job_skills').append(new Option(field.fields.name, field.pk))
+      })
+    });
+  })
+
+</script>
+{% endblock %}

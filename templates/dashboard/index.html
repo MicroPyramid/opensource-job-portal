@@ -1,0 +1,802 @@
+{% extends 'dashboard/base.html' %}
+{% load page_tags %}
+{% load static %}
+{% block stage %}
+<style type="text/css">
+  .js-plotly-plot .plotly svg {
+    overflow: visible !important;
+  }
+</style>
+
+
+<div class="col-md-12 stats">
+
+  <div class="statistics_graphs" style="margin-top:-15px;">
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Statistics</a></li>
+    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" id="graph_click">Graphs</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="home" >
+      <form id="search_form" name="adv-search-form" class="search-form" method="POST" action=".">
+        <div class="row">
+            <div class="col-md-offset-4 col-md-8 search_form">
+            <div class="row">
+            <div class="col-md-8">
+              <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
+              <input type="hidden" name="page" id="page" value="{{ page }}"/>
+              <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{request.POST.timestamp}}" placeholder="Select the date">
+            </div>
+            <div class="col-md-4">
+              <button type="submit" class="form-control submit">Submit</button>
+            </div>
+            </div> 
+          <div class="clearfix"></div>
+          </div>
+        </div>
+      </form>
+
+<label><span class="table-title">Job Posts</span>
+  <span class="pull-right">
+    <ul class="list-inline">
+      <!--<li class="draft"><i class="fa fa-circle"></i> Draft</li>-->
+      <li class="pending"><i class="fa fa-circle"></i> Pending</li>
+      <li class="published"><i class="fa fa-circle"></i> Published</li>
+      <li class="live"><i class="fa fa-circle"></i> Live</li>
+      <li class="deleted"><i class="fa fa-circle"></i> Deleted</li>
+    </ul>
+  </span>
+</label>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th width="20%"></th>
+          <th width="30%">Today Recruiter's JobPosts </th>
+          <th width="30%">Today Admin JobPosts </th>
+          <th width="30%">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Jobposts</th>
+          <td>
+            <span class="pending-bg">{{ today_pending_jobs }}</span>
+            <span class="published-bg">{{ today_published_jobs }}</span>
+            <span class="live-bg">{{ today_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{ today_admin_pending_jobs }}</span>
+            <span class="published-bg">{{ today_admin_published_jobs }}</span>
+            <span class="live-bg">{{ today_admin_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_admin_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{ total_pending_jobs }}</span>
+            <span class="published-bg">{{ total_published_jobs }}</span>
+            <span class="live-bg">{{ total_live_jobs }}</span>
+            <span class="deleted-bg">{{ total_disabled_jobs }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Full Time Jobs</th>
+
+          <td>
+            <span class="pending-bg">{{ today_fulltime_pending_jobs }}</span>
+            <span class="published-bg">{{ today_fulltime_published_jobs }}</span>
+            <span class="live-bg">{{ today_fulltime_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_fulltime_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{ today_admin_full_time_pending_jobs }}</span>
+            <span class="published-bg">{{ today_admin_full_time_published_jobs }}</span>
+            <span class="live-bg">{{ today_admin_full_time_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_admin_full_time_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{total_fulltime_pending_jobs}}</span>
+            <span class="published-bg">{{total_fulltime_published_jobs}}</span>
+            <span class="live-bg">{{total_fulltime_live_jobs}}</span>
+            <span class="deleted-bg">{{total_fulltime_disabled_jobs}}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Internship</th>
+          <td>
+            <span class="pending-bg">{{ today_internship_pending_jobs }}</span>
+            <span class="published-bg">{{ today_internship_published_jobs }}</span>
+            <span class="live-bg">{{ today_internship_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_internship_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{ today_admin_internship_pending_jobs }}</span>
+            <span class="published-bg">{{ today_admin_internship_published_jobs }}</span>
+            <span class="live-bg">{{ today_admin_internship_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_admin_internship_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{total_internship_pending_jobs}}</span>
+            <span class="published-bg">{{total_internship_published_jobs}}</span>
+            <span class="live-bg">{{total_internship_live_jobs}}</span>
+            <span class="deleted-bg">{{total_internship_disabled_jobs}}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Walkins</th>
+          <td>
+            <span class="pending-bg">{{ today_walkin_pending_jobs }}</span>
+            <span class="published-bg">{{ today_walkin_published_jobs }}</span>
+            <span class="live-bg">{{ today_walkin_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_walkin_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{ today_admin_walkin_pending_jobs }}</span>
+            <span class="published-bg">{{ today_admin_walkin_published_jobs }}</span>
+            <span class="live-bg">{{ today_admin_walkin_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_admin_walkin_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{ total_walkin_pending_jobs }}</span>
+            <span class="published-bg">{{ total_walkin_published_jobs }}</span>
+            <span class="live-bg">{{ total_walkin_live_jobs }}</span>
+            <span class="deleted-bg">{{ total_walkin_disabled_jobs }}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <th scope="row">Government</th>
+          <td>
+            <span class="pending-bg">{{ today_govt_pending_jobs }}</span>
+            <span class="published-bg">{{ today_govt_published_jobs }}</span>
+            <span class="live-bg">{{ today_govt_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_govt_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{ today_govt_pending_jobs }}</span>
+            <span class="published-bg">{{ today_govt_published_jobs }}</span>
+            <span class="live-bg">{{ today_govt_live_jobs }}</span>
+            <span class="deleted-bg">{{ today_govt_disabled_jobs }}</span>
+          </td>
+
+          <td>
+            <span class="pending-bg">{{ total_govt_pending_jobs }}</span>
+            <span class="published-bg">{{ total_govt_published_jobs }}</span>
+            <span class="live-bg">{{ total_govt_live_jobs }}</span>
+            <span class="deleted-bg">{{ total_govt_disabled_jobs }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="clearfix"></div>
+<div class=" stats users-stats">
+  <label><span class="table-title">Users</span>
+    <span class="pull-right">
+    <ul class="list-inline">
+    <li class="active-user" style="color: #f29000;display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;"><span style="display: inline-block;background: #f29000;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Total</li>
+      <li class="active-user"><i class="fa fa-circle"></i> Active / Open / Resume Uploaded</li>
+      <li class="in_active-user"><i class="fa fa-circle"></i> Inactive / Closed / Applied Jobs</li>
+      <li class="in_active-user" style="color: #49a54e;display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;"><span style="display: inline-block;background: #49a54e;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Mobile Verified / Profile Completed / Connected from Campaign</li>
+    <li class="in_active-user" style="color: #ea1c0d;display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;"><span style="display: inline-block;background: #ea1c0d;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Mobile Not Verified / Login Only Once</li>
+
+    </ul>
+  </span>
+  </label>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th width="40%"></th>
+          <th width="30%">Today</th>
+          <th width="30%">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Job Seekers Through Social Logins</th>
+          <td>
+            <span class="active-bg" style='background-color: #f29000;color: white;'>{{ today_social_applicants|length }}</span>
+            <span class="active-bg">{{ today_social_resume_applicants }}</span>
+            <span class="in-active-bg">{{ today_social_applied_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_social_profile_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_social_login_once_applicants }}</span>
+          </td>
+          <td>
+            <span class="active-bg" style='background-color: #f29000;color: white;'>{{ total_social_applicants|length }}</span>
+            <span class="active-bg">{{ social_resume_applicants}}</span>
+            <span class="in-active-bg">{{ social_applied_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ social_profile_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ social_login_once_applicants }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Job Seekers Through Normal Registrations</th>
+          <td>
+            <span class="active-bg" style='background-color: #f29000;color: white;'>{{ today_register_applicants|length }}</span>
+            <span class="active-bg">{{ today_register_resume_applicants }}</span>
+            <span class="in-active-bg">{{ today_register_applied_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_register_profile_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_register_login_once_applicants }}</span>
+          </td>
+          <td>
+            <span class="active-bg" style='background-color: #f29000;color: white;'>{{ total_register_applicants|length }}</span>
+            <span class="active-bg">{{ register_resume_applicants }}</span>
+            <span class="in-active-bg">{{ register_applied_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ register_profile_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ register_login_once_applicants }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Job Seekers Through Resumes</th>
+          <td>
+            <span class="active-bg" style='background-color: #f29000;color: white;'>{{ today_resume_applicants|length }}</span>
+            <span class="active-bg">{{ today_resume_applicants|length }}</span>
+            <span class="in-active-bg">{{ today_resume_applied_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_resume_profile_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_resume_login_once_applicants }}</span>
+          </td>
+          <td>
+            <span class="active-bg" style='background-color: #f29000;color: white;'>{{ resume_applicants|length }}</span>
+            <span class="active-bg">{{ resume_applicants|length }}</span>
+            <span class="in-active-bg">{{ resume_applied_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ resume_profile_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ resume_login_once_applicants }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Agencies</th>
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ today_agency_recruiters_count|length }}</span>
+            <span class="active-bg">{{ today_agency_recruiters_count|filter_users:True }}</span>
+            <span class="in-active-bg">{{ today_agency_recruiters_count|filter_users:False }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_agency_recruiters_count|filter_mobile_users:True }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_agency_recruiters_count|filter_mobile_users:False}}</span>
+          </td>
+
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ total_agency_recruiters|length }}</span>
+            <span class="active-bg">{{ total_agency_recruiters|filter_users:True }}</span>
+            <span class="in-active-bg">{{ total_agency_recruiters|filter_users:False }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ total_agency_recruiters|filter_mobile_users:True }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ total_agency_recruiters|filter_mobile_users:False }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Recruiters</th>
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ today_recruiters_count|length }}</span>
+            <span class="active-bg">{{ today_recruiters_count|filter_users:True }}</span>
+            <span class="in-active-bg">{{ today_recruiters_count|filter_users:False }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_recruiters_count|filter_mobile_users:True}}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_recruiters_count|filter_mobile_users:False }}</span>
+          </td>
+
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ total_recruiters|length }}</span>
+            <span class="active-bg">{{ total_recruiters|filter_users:True }}</span>
+            <span class="in-active-bg">{{ total_recruiters|filter_users:False }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ total_recruiters|filter_mobile_users:True }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ total_recruiters|filter_mobile_users:False }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Job Applications</th>
+          <td><span class="active-bg">{{ today_job_applications|length }}</span></td>
+          <td><span class="active-bg">{{ total_job_applications|length }}</span></td>
+        </tr>
+        <tr>
+          <th scope="row">Applicant Mails</th>
+          <td>
+            <span class="active-bg">{{ today_mail_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">0</span>
+          </td>
+          <td>
+            <span class="active-bg">{{ all_mail_applicants }}</span>
+            <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{total_users_connected_emails}}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Skills</th>
+          <td>
+            <span class="active-bg">{{ today_active_skills }}</span>
+            <span class="in-active-bg">{{ today_inactive_skills }}</span>
+          </td>
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ total_skills }}</span>
+            <span class="active-bg">{{ total_active_skills }}</span>
+            <span class="in-active-bg">{{ total_inactive_skills }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Locations</th>
+          <td>
+            <span class="active-bg">{{ today_active_locations }}</span>
+            <span class="in-active-bg">{{ today_inactive_locations }}</span>
+          </td>
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ total_locations }}</span>
+            <span class="active-bg">{{ total_active_locations }}</span>
+            <span class="in-active-bg">{{ total_inactive_locations }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">User Locations</th>
+          <td>
+            <span class="active-bg">{{ today_active_user_locations|length }}</span>
+            <span class="in-active-bg">{{ today_inactive_user_locations|length }}</span>
+          </td>
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ total_user_locations }}</span>
+            <span class="active-bg">{{ total_active_user_locations }}</span>
+            <span class="in-active-bg">{{ total_inactive_user_locations }}</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Companies</th>
+          <td>
+            <span class="active-bg">{{ today_companies|filter_users:True }}</span>
+            <span class="in-active-bg">{{ today_companies|filter_users:False }}</span>
+          </td>
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ total_companies|length }}</span>
+            <span class="active-bg">{{ total_companies|filter_users:True }}</span>
+            <span class="in-active-bg">{{ total_companies|filter_users:False }}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <th scope="row">Bounces</th>
+          <td><span class="active-bg">{{ today_bounces }}</span></td>
+          <td><span class="active-bg">{{ total_bounces }}</span></td>
+        </tr>
+        <tr>
+          <th scope="row">Tickets</th>
+          <td>
+            <span class="active-bg">{{ today_tickets|filter_jobposts:'Open' }}</span>
+            <span class="in-active-bg">{{ today_tickets|filter_jobposts:'Closed' }}</span>
+          </td>
+          <td>
+            <span class="active-bg">{{ open_tickets|filter_jobposts:'Open' }}</span>
+            <span class="in-active-bg">{{ open_tickets|filter_jobposts:'Closed' }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <br clear="all">
+</div>
+</div>
+    <div role="tabpanel" class="tab-pane" id="profile">
+        <form id="graph_search_form" name="graph_search_form" class="search-form" method="POST" action=".">
+          <div class="row">
+            <div class="col-md-offset-2 col-md-10 search_form">
+              <div class="col-md-4">
+                <select name="year" id="year" class="form-control">
+                  <option value="2017" selected>2017</option>
+                  <option value="2016" {% ifequal request.POST.year|slugify '2016' %}selected{% endifequal %}>2016</option>
+                  <option value="2015" {% ifequal request.POST.year|slugify '2015' %}selected{% endifequal %}>2015</option>
+                </select>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <select name="month" id="month" class="form-control">
+                    <option value="">Select A Month</option>
+                    {% for month in months %}
+                      <option value="{{ month.id }}" {% ifequal request.POST.month|slugify month.id|slugify %}selected{% endifequal %}>{{ month.Name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="form-control submit">Submit</button>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+        </form>
+      <div class="col-xs-2" style="width: 9%;padding: 0px;"> <!-- required for floating -->
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs tabs-left"><!-- 'tabs-right' for right tabs -->
+        <li class="active"><a href="#home1" data-toggle="tab">Recruiters</a></li>
+        <li><a href="#profile1" data-toggle="tab">Social Login Applicants</a></li>
+        <li><a href="#profile2" data-toggle="tab">Registered Applicants</a></li>
+        <li><a href="#all_applicants" data-toggle="tab">All Applicants</a></li>
+        <li><a href="#messages1" data-toggle="tab">Job Posts</a></li>
+        <li><a href="#emails" data-toggle="tab">Email Bounces</a></li>
+      </ul>
+    </div>
+    <div class="col-xs-10" style="width:90.33%">
+        <!-- Tab panes -->
+        <div class="tab-content" styel="margin-top: -12px;">
+          <div class="tab-pane active" id="home1">
+          <div style="width:500; height;500">
+            <div id="myChart" width="500" height="500">
+            </div>
+          </div>
+          </div>
+          <div class="tab-pane" id="profile1">
+            <div style="width:500; height;500">
+              <div id="social-applicant-chart"></div>
+            </div>
+          </div>
+          <div class="tab-pane" id="profile2">
+            <div style="width:500; height;500">
+              <div id="register-applicant-chart"></div>
+            </div>
+          </div>
+          <div class="tab-pane" id="all_applicants">
+            <div style="width:500; height;500">
+              <div id="all-applicant-chart"></div>
+            </div>
+          </div>
+          <div class="tab-pane" id="messages1">
+            <div style="width:500; height;500">
+              <div id="jobpostChart" width="500" height="500"></div>
+            </div>
+          </div>
+          <div class="tab-pane" id="emails">
+            <div style="width:500; height;500">
+              <div id="emailsChart" width="500" height="500"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+      <br clear="all">
+      <div class="clearfix"></div>
+      <div id="all_dates" style="display:none;">{{ all_dates|safe }}</div>
+
+      <div id="active_recruiters" style="display:none;">{{ all_active_recruiters|safe }}</div>
+      <div id="inactive_recruiters" style="display:none;">{{ all_inactive_recruiters|safe }}</div>
+
+<div id="agency_active_recruiters" style="display:none;">{{ all_agency_active_recruiters|safe }}</div>
+<div id="agency_inactive_recruiters" style="display:none;">{{ all_agency_inactive_recruiters|safe }}</div>
+
+<div id="all_active_applicants" style="display:none;">{{ all_active_applicants|safe }}</div>
+<div id="all_resume_uploaded_applicants" style="display:none;">{{ all_resume_upload_candidates|safe }}</div>
+<div id="all_profile_completed_applicants" style="display:none;">{{ all_profile_completed_candidates|safe }}</div>
+<div id="all_applied_jobs_applicants" style="display:none;">{{ all_appliedto_job_candidates|safe }}</div>
+<div id="all_login_once_applicants" style="display:none;">{{ all_login_once_candidates|safe }}</div>
+<div id="all_social_applicants" style="display:none;">{{ social_active_applicants|safe }}</div>
+<div id="all_register_applicants" style="display:none;">{{ all_register_active_applicants|safe }}</div>
+
+<div id="social_active_applicants" style="display:none;">{{ social_active_applicants|safe }}</div>
+<div id="social_resume_uploaded_applicants" style="display:none;">{{ social_resume_upload_candidates|safe }}</div>
+<div id="social_profile_completed_applicants" style="display:none;">{{ social_profile_completed_candidates|safe }}</div>
+<div id="social_applied_jobs_applicants" style="display:none;">{{ social_appliedto_job_candidates|safe }}</div>
+<div id="social_login_once_applicants" style="display:none;">{{ social_login_once_candidates|safe }}</div>
+
+<div id="active_register_applicants" style="display:none;">{{ all_register_active_applicants|safe }}</div>
+<div id="all_register_resume_uploaded_applicants" style="display:none;">{{ all_register_resume_upload_candidates|safe }}</div>
+<div id="all_register_profile_completed_applicants" style="display:none;">{{ all_register_profile_completed_candidates|safe }}</div>
+<div id="all_register_applied_jobs_applicants" style="display:none;">{{ all_register_appliedto_job_candidates|safe }}</div>
+<div id="all_register_login_once_applicants" style="display:none;">{{ all_register_login_once_candidates|safe }}</div>
+
+
+<div id="all_govt" style="display:none;">{{ all_govt|safe }}</div>
+<div id="all_full_time" style="display:none;">{{ all_full_time|safe }}</div>
+<div id="all_walkin" style="display:none;">{{ all_walkin|safe }}</div>
+
+<div id="all_internship" style="display:none;">{{ all_internship|safe }}</div>
+
+<div id="all_bounce" style="display:none;">{{ all_bounce|safe }}</div>
+
+<div style="width:500; height;500">
+  <div id="myChart" width="500" height="500">
+  </div>
+</div>
+<div style="width:500; height;500">
+  <div id="applicant-chart"></div>
+</div>
+<div style="width:500; height;500">
+  <div id="jobpostChart" width="500" height="500"></div>
+</div>
+<div style="width:500; height;500">
+  <div id="emailsChart" width="500" height="500"></div>
+</div>
+
+
+{% if comments %}
+<div class="row mt stats-comments">
+  <h3>Comments</h3>
+  {% for comment in comments %}
+    <div class="col-md-4">
+        <div class="comment-item">
+          <span class="posted-on">02/08/08</span>
+          <span class="title">{{comment.ticket.title}}</span>
+          <span class="posted-by">{{comment.commented_by.email}}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+    </div>
+  </div>
+</div>
+</div>
+{% endif %}
+{% endblock stage %}
+{% block script %}
+<script>
+{% if request.POST.month %}
+$('#graph_click').click()
+{% endif %}
+  var trace1 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#active_recruiters').html()),
+    mode: 'lines',
+    name: 'Active Recruiters'
+  };
+
+  var trace2 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#inactive_recruiters').html()),
+    mode: 'lines',
+    name: 'In Active Recruiters'
+  };
+
+  var trace3 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#agency_active_recruiters').html()),
+    mode: 'lines',
+    name: 'Agency Active Recruiters'
+  };
+
+  var trace4 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#agency_inactive_recruiters').html()),
+    mode: 'lines',
+    name: 'Agency In Active Recruiters'
+  };
+  var recruiter_data = [ trace1, trace2, trace3, trace4];
+
+  var applicants = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_active_applicants').html()),
+    mode: 'lines',
+    name: 'Total Applicants'
+  };
+
+  var applicants1 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_resume_uploaded_applicants').html()),
+    mode: 'lines',
+    name: 'Resume Uploaded Applicants'
+  };
+
+  var applicants2 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_applied_jobs_applicants').html()),
+    mode: 'lines',
+    name: 'Applied To Job Applicants'
+  };
+
+  var applicants3 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_login_once_applicants').html()),
+    mode: 'lines',
+    name: 'Login only once applicants'
+  };
+
+  var applicants4 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_profile_completed_applicants').html()),
+    mode: 'lines',
+    name: 'Profile Completed Applicants'
+  };
+  var applicants5 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_social_applicants').html()),
+    mode: 'lines',
+    name: 'Social Applicants'
+  };
+  var applicants6 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_register_applicants').html()),
+    mode: 'lines',
+    name: 'Registered Applicants'
+  };
+
+  var applicant_data = [ applicants, applicants1, applicants2, applicants3, applicants4, applicants5, applicants6];
+
+  var register_applicants = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#active_register_applicants').html()),
+    mode: 'lines',
+    name: 'Total Applicants'
+  };
+
+  var register_applicants1 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_register_resume_uploaded_applicants').html()),
+    mode: 'lines',
+    name: 'Resume Uploaded Applicants'
+  };
+
+  var register_applicants2 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_register_applied_jobs_applicants').html()),
+    mode: 'lines',
+    name: 'Applied To Job Applicants'
+  };
+
+  var register_applicants3 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_register_login_once_applicants').html()),
+    mode: 'lines',
+    name: 'Login only once applicants'
+  };
+
+  var register_applicants4 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_register_profile_completed_applicants').html()),
+    mode: 'lines',
+    name: 'Profile Completed Applicants'
+  };
+
+  var register_applicant_data = [ register_applicants, register_applicants1, register_applicants2, register_applicants3, register_applicants4];
+
+  var social_applicants = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#social_active_applicants').html()),
+    mode: 'lines',
+    name: 'Total Applicants'
+  };
+
+  var social_applicants1 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#social_resume_uploaded_applicants').html()),
+    mode: 'lines',
+    name: 'Resume Uploaded Applicants'
+  };
+
+  var social_applicants2 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#social_applied_jobs_applicants').html()),
+    mode: 'lines',
+    name: 'Applied To Job Applicants'
+  };
+
+  var social_applicants3 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#social_login_once_applicants').html()),
+    mode: 'lines',
+    name: 'Login only once applicants'
+  };
+
+  var social_applicants4 = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#social_profile_completed_applicants').html()),
+    mode: 'lines',
+    name: 'Profile Completed Applicants'
+  };
+
+  var social_applicant_data = [ social_applicants, social_applicants1, social_applicants2, social_applicants3, social_applicants4];
+
+
+  var full_time = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_full_time').html()),
+    mode: 'lines',
+    name: 'Full Time Jobposts'
+  };
+
+  var walk_in = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_walkin').html()),
+    mode: 'lines',
+    name: 'Walkin Jobposts'
+  };
+
+  var govt = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_govt').html()),
+    mode: 'lines',
+    name: 'Government Jobposts'
+  };
+
+  var internship = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_internship').html()),
+    mode: 'lines',
+    name: 'Internship Jobposts'
+  };
+
+  var jobposts_data = [ full_time, walk_in, govt, internship];
+
+  var bounces = {
+    x: JSON.parse($('#all_dates').html()),
+    y: JSON.parse($('#all_bounce').html()),
+    mode: 'lines',
+    name: 'No of Bounced Emails'
+  };
+
+  var emails_data = [ bounces];
+
+
+  var recruiter_layout = {
+    title:'Number of Recruiters',
+    height: 600,
+    width: 1000
+  };
+  var applicant_layout = {
+    title:'Number of Applicants Through All Registrations',
+    height: 600,
+    width: 1000
+  };
+  var register_applicant_layout = {
+    title:'Number of Applicants Through Registrations',
+    height: 600,
+    width: 1000
+  };
+  var social_applicant_layout = {
+    title:'Number of Applicants Through Social Logins',
+    height: 600,
+    width: 1000
+  };
+
+  var jobpost_layout = {
+    title:'Number of Job Posts',
+    height: 600,
+    width: 1000
+  };
+  var emails_layout = {
+    title:'Number of Emails',
+    height: 600,
+    width: 1000
+  };
+/*  var emails_layout = {
+    title:'Number of Emails',
+    height: 600,
+    width: 1000
+  };
+*/
+  Plotly.newPlot('myChart', recruiter_data, recruiter_layout, {
+        displaylogo:false,
+        displayModeBar: false,
+      });
+  Plotly.newPlot('jobpostChart', jobposts_data, jobpost_layout,{
+        displaylogo:false,
+        displayModeBar: false,
+      });
+  Plotly.newPlot('all-applicant-chart', applicant_data, applicant_layout,{
+        displaylogo:false,
+        displayModeBar: false,
+      });
+
+  Plotly.newPlot('register-applicant-chart', register_applicant_data, register_applicant_layout,{
+        displaylogo:false,
+        displayModeBar: false,
+      });
+    Plotly.newPlot('social-applicant-chart', social_applicant_data, social_applicant_layout,{
+        displaylogo:false,
+        displayModeBar: false,
+      });
+
+  Plotly.newPlot('emailsChart', emails_data, emails_layout,{
+        displaylogo:false,
+        displayModeBar: false,
+      });
+
+</script>
+{% endblock script %}

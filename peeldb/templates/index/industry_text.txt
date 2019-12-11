@@ -1,0 +1,1 @@
+{{ object.industry_name }}

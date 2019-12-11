@@ -1,0 +1,208 @@
+{% load compress %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-11720509-7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-11720509-7');
+</script>
+    <title>Free Job Posting - Peeljobs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="{{favicon}}" />
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    {% compress css %}
+    <link rel="stylesheet" type="text/less" href="{% static 'r1/css/login.less' %}">
+    <link rel="stylesheet" type="text/less" href="{% static 'r1/css/mobile.less' %}">
+    <link rel="stylesheet" type="text/less" href="{% static 'r1/css/responsive.less' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'css/introjs.css' %}">
+    {% endcompress %}
+    <!--Start of Zopim Live Chat Script-->
+      <script type="text/javascript">
+      window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
+      d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.
+      _.push(o)};z._=[];z.set._=[];$.async=!0;$.setAttribute("charset","utf-8");
+      $.src="//v2.zopim.com/?3EppjrRQPwb1qumTYNbhrurag1fTzCaV";z.t=+new Date;$.
+      type="text/javascript";e.parentNode.insertBefore($,e)})(document,"script");
+      </script>
+      
+<!-- Start of HubSpot Embed Code -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/3301052.js"></script>
+<!-- End of HubSpot Embed Code -->
+    <!--End of Zopim Live Chat Script-->
+  </head>
+  <body style="margin:0px;">
+    <section class='login_wrap thanks_wrap' style="background:#0060b9">
+      <div class="container" style="padding:21px; color:white;">
+        <!-- logo -->
+        <div class="logo_div_wrap thanks_logo_wrap">
+        <!--<div class="logo"><img src="{% static 'logo.png' %}"></div>-->
+          <div class="logo_title" style="font-weight:900; font-size:23px">PeelJobs
+           <span class="pull-right" style="font-weight:500; font-size:18px;">Unlimited Free Job Posting</span></div>
+        </div>
+        <!-- logo -->
+       </div>
+	</section>
+	<section class="content">
+	<div class="container">
+		  <!-- content comes here -->
+        	<div class="content-container">
+          <div class="thank_you_messsage">
+          	<div class="thank_you_messsage_content">
+              <h4>Thanks for registering with peeljobs</h4>
+            	<p>We have created your peeljobs account with us</p>
+            	<p> Please <strong>verify your email</strong> to post jobs.</p>
+            </div>
+          	<p> Click continue to go through our site.</p>
+          </div>
+        	<!--<a href="{% if request.user.is_company_recruiter %}{% url 'recruiter:verify_mobile' %}{% else %}{% url 'agency:verify_mobile' %}{% endif %}" class="continue">Continue...</a>-->
+          <a href="{% if request.user.is_company_recruiter %}{% url 'recruiter:index' %}{% else %}{% url 'agency:index' %}{% endif %}" class="continue">Continue...</a>
+        	</div>
+        <!-- content comes here -->
+        <div class="recruiter_options_row">
+          <div class="recruiter_option">
+            <div class="well manage" id="recruiter_profile">
+              <div class="controls" >
+                <h2>Update Your Profile</h2>
+                <p class="para">Complete your profile with all your company info. So, the job seeker will catch you easily.</p>
+                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:profile' %}{% else %}{% url 'recruiter:profile' %}{% endif %}" class="continue" target="_blank">ViewPage</a>
+              </div>
+            </div>
+         </div>
+
+          <div class="recruiter_option">
+            <div class="well company" id="recruiter_companies">
+            <div class="controls" >
+              <h2>Post A Job</h2>
+              <p class="para">Post your requirement now and get the best candidates. You can post unlimited free jobs.</p>
+                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:list' %}{% else %}{% url 'recruiter:list' %}{% endif %}" target="_blank" class="continue">ViewPage</a>
+            </div>
+          </div>
+         </div>
+
+          <div class="recruiter_option">
+            <div class="well dashboard" id="recruiter_dashboard">
+            <div class="controls" >
+              <h2>DashBoard</h2>
+              <p class="para">Manage and post your jobs here. Once your job is in live you will get right candidates</p>
+            </div>
+                <a href="{% if request.user.is_agency_recruiter %}{% url "agency:dashboard" %}{% else %}{% url "recruiter:dashboard" %}{% endif %}" target="_blank" class="continue">ViewPage</a>
+          </div>
+         </div>
+         <div class="recruiter_option">
+            <div class="well page" id="recruiter_page">
+            <div class="controls" >
+              <h2>Manage your Page</h2>
+              <p class="para">Create an awesome website from your end. Here you can add your website links by creating separate pages.</p>
+                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}" target="_blank" class="continue">ViewPage</a>
+            </div>
+          </div>
+         </div>
+
+        <div class="recruiter_option">
+          <div class="well applicants" id="recruiter_applicants">
+            <div class="controls" >
+              <h2>Manage Applicants</h2>
+              <p class="para">You can see and manage applicant profiles from your dashboard itself. Check with each job.</p>
+                <!--<a href="{% url 'recruiter:list' %}" target="_blank" class="continue">ViewPage</a>-->
+            </div>
+          </div>
+         </div>
+
+        <div class="recruiter_option">
+          <div class="well social_connections" id="recruiter_social">
+            <div class="controls" >
+              <h2>Social Connections</h2>
+              <p class="para">Connect with your social networking sites to reach and to hire more candidates</p>
+                <!--<a href="{% url 'recruiter:profile' %}" target="_blank" class="continue">ViewPage</a>-->
+            </div>
+          </div>
+         </div>
+        </div>
+	</div>
+	</section>
+<!-- Google Code for Recruiter Signup Conversion Page -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+{% compress js %}
+    <script type="text/javascript" src='{% static 'js/intro.js' %}'></script>
+{% endcompress %}
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 967397261;
+var google_conversion_language = "en";
+var google_conversion_format = "3";
+var google_conversion_color = "ffffff";
+var google_conversion_label = "QGwlCInZvWoQjZ-lzQM";
+var google_remarketing_only = false;
+/* ]]> */
+$(document).ready(function () {
+    $(function(){
+  introguide = introJs();
+  // var startbtn   = $('#startdemotour');
+introguide.setOptions({
+    steps: [
+        {
+          element: '.thank_you_messsage_content',
+          intro: 'Verify your email to post a new requirement',
+          position: 'bottom'
+        },
+        {
+          element: '#recruiter_profile',
+          intro: 'Complete your profile with all your company info. So, the job seeker will catch you easily.',
+          position: 'bottom'
+        },
+        {
+          element: '#recruiter_companies',
+          intro: 'Post your requirement now and get the best candidates. You can post unlimited free jobs.',
+          position: 'bottom'
+        },
+        {
+          element: '#recruiter_dashboard',
+          intro: 'Manage and post your jobs here. Once your job is in live you will get right candidates',
+          position: 'bottom'
+        },
+        {
+          element: '#recruiter_page',
+          intro: 'Create an awesome website from your end. Here you can add your website links by creating separate pages.',
+          position: 'top'
+        },
+        {
+          element: '#recruiter_applicants',
+          intro: 'You can see and manage applicant profiles from your dashboard itself. Check with each job.',
+          position: 'top'
+        },
+        {
+          element: '#recruiter_social',
+          intro: 'Connect with your social networking sites to reach and to hire more candidates',
+          position: 'top'
+        },
+        {
+          element: '.continue',
+          intro: 'Click On this button to continue to Manage all your Tasks',
+          position: 'bottom'
+        }
+        ]
+      })
+      introguide.start();
+      introguide.oncomplete(function() {
+        window.location = "/recruiter/profile"
+      });
+    })
+  })
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/967397261/?label=QGwlCInZvWoQjZ-lzQM&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript>
+</body>
+</html>

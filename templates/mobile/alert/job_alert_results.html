@@ -1,0 +1,105 @@
+{% extends 'mobile/base.html'%}
+{% load thumbnail %}
+{% load page_tags %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+  <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+  <meta name="Keywords" content="job, jobs, tech jobs, it jobs, job sites, job vacancies, find jobs, search jobs, resume tips, job search engines, careers, technology jobs, career search, job descriptions, employment, work, job listings, peeljobs.com" />
+  <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+{% endblock %}
+
+{% block stage %}
+    <!-- content of job_list -->
+    <section id='job_list'>
+    <!-- create new job alert -->
+    <div class="create_job_alert">
+      <a href="{% url 'my:job_alert' %}"><span class='button'><span class='pj-details i'></span>Create New Job alert</span></a>
+    </div>
+    <!--/ create new job alert -->
+
+    <!-- job alert success -->
+    <div class="job_alert_wrap">
+      <div class="job_alert">
+        <p>Your Job Alert <span class='heading'><a href="{% url 'my:job_alert_results' job_alert.id %}">{{ job_alert.name }}</a></span> has been updated. You will now receive job alerts to<span class='heading'>{{ job_alert.email }}</span> twice a week.</p>
+        <div class='job_detail'>
+          <span class='heading'>Skills</span>
+          <span>{%for skill in job_alert.skill.all %}{{ skill.name }}{% if forloop.last %}{% else %},&nbsp;{% endif%}{% endfor %}</span>
+        </div>
+        <div class='job_detail'>
+          <span class='heading'>Location</span>
+          <span>{%if job_alert.location.all %}{%for location in job_alert.location.all %}{{ location.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}{% else %}Not Specified{% endif %}</span>
+        </div>
+        <div class='job_detail'>
+          <span class='heading'>Salary</span>
+          <span>
+             {% if job_alert.min_salary and job_alert.max_salary %}<i class="fa fa-inr" aria-hidden="true"></i> {{ job_alert.min_salary|get_formatted_salary }} - {{ job_alert.max_salary|get_formatted_salary }}
+      {% elif job_alert.min_salary %}
+      <i class="fa fa-inr" aria-hidden="true"></i> {{ job_alert.min_salary|get_formatted_salary }} 
+       {% elif job_alert.max_salary %}
+      <i class="fa fa-inr" aria-hidden="true"></i> {{ job_alert.max_salary|get_formatted_salary }}
+      {% else %}
+      Not Specified
+     {% endif %}
+          </span>
+        </div>
+
+        <div class='job_detail'>
+          <span class='heading'>Experience(Years)</span>
+          <span>
+            {% if job_alert.min_year and job_alert.max_year %}
+              {{ job_alert.min_year }} - {{ job_alert.max_year }} Year(s)
+            {% elif job_alert.min_year %}
+              {{ job_alert.min_year }} Year(s)
+            {% elif job_alert.max_year %}
+              {{ job_alert.max_year }} Year(s)
+            {% else %}
+              Not Specified
+            {% endif %}
+          </span>
+        </div>
+        <div class='job_detail'>
+          <span class='heading'>Role</span>
+          <span>{% if not job_alert.job_role %}Not Specified{% else %}{{ job_alert.job_role }}{% endif %}</span>
+        </div>
+        <div class='job_detail'>
+          <span class='heading'>Industry</span>
+          <span>{%if job_alert.industry.all %}{%for industry in job_alert.industry.all %}{{ industry.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}{% else %}Not Specified{% endif %}</span>
+        </div>
+        <div class='job_detail'>
+          <span class='heading'>Email</span>
+          <span>{{ job_alert.email }}</span>
+        </div>
+      </div>
+    </div>
+        <section id='job_not_found'>
+    <!--/ job alert success -->
+   {% include 'mobile/job_list.html' with job_list=jobs_list %}
+    </section>
+    <div>
+          <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- PJ Right Nav -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-5756092160559539"
+                 data-ad-slot="3490610504"
+                 data-ad-format="auto"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    <!-- profile alert -->
+    {% if request.user.is_authenticated %}
+      {% if request.user.profile_completion_percentage < 50 %}
+      <a href="{% url 'my:profile' %}">
+        <div class="profile_complete">
+          Complete the profile to apply jobs.<span class='pj-menu close_icon'></span>
+          </div></a>
+      {% endif %}
+    {% endif %}
+    <!--/ profile alert -->
+    </section>
+{% endblock %}

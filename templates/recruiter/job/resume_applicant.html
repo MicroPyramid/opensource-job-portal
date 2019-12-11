@@ -1,0 +1,64 @@
+  {% load page_tags %}
+  <!-- content -->
+  <div class="content_wrap" style="margin-left:0px;margin-top:0px;">
+  <div class='applicant_title'>
+  <span class='name'>{{ user.email }}</span>
+  </div>
+    <!-- accordian panel -->
+    <div class="accordian_panel active">
+      <div class="title">Profile</div>
+      <div class="details_wrap">
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Name</span>
+          <span class='detail'>{{ user.candidate_name }} {{user.profile_completion_percentage}}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Phone Number</span>
+          <span class='detail'>{% if user.mobile %}{{ user.mobile }}{% else %}N/A{% endif %}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Email</span>
+          <span class='detail'>{{ user.email }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Experience</span>
+          <span class='detail'>{{ user.experience }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Skills</span>
+          <span class='detail'>{% for skill in user.skill.all %}{{skill}}{% endfor %}</span>
+        </div>
+        <!--/ detail -->
+         <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Status</span>
+          <span class='detail'>{{ user.status }}</span>
+        </div>
+        <!--/ detail -->
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    <!--/ accordian panel-->
+    {% if user.resume %}
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Resume</div>
+      <div class="details_wrap">
+        Resume.doc
+        <span class='button download' id="{{ user.resume|get_s3_url }}"><i class='fa fa-download'></i>{{ user.resume|get_resume_name }}</span>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    {% endif %}
+    <!--/ accordian panel-->
+      </div>
+<!--/ content -->

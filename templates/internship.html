@@ -1,0 +1,450 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load thumbnail %}
+{% load static %}
+{% load searchtags %}
+{% block block_title %}
+  <title>{{ meta_title|safe }}</title>
+  <meta name="description" content="{{ meta_description|safe }}"/>
+    <meta property="og:title"  content="{{ meta_title|safe }}" />
+  <meta property="og:description"  content="{{ meta_description|safe }}"/>
+  <meta property="og:image"  content="{{jobopenings}}"/>
+  <meta property="og:image:width" content="200" />
+  <meta property="og:image:height" content="200" />
+{% endblock %}
+{% block meta_tags %}
+<meta name="google-site-verification" content="YRAH49iQBxqqgGD-ogtwLY3t39VcM_7NrhX0hyzirPY" />
+{% endblock %}
+{% block search_block %}
+  {% show_adv_search_filter %}
+  <style type="text/css">
+      .latest_jobs_class:hover {
+     cursor: pointer;
+      }
+      .walkin_block:hover {
+     cursor: pointer;
+      }
+      .register_point:hover{
+        cursor:pointer;
+      }
+      </style>
+
+  <div class="row mar_lr_0 search_login_row">
+    <div class="container"> 
+      <div class="row mar_lr_0 search_login_blocks">
+        <div class="search_block col-md-8 col-sm-12">
+          <p class="message">One step to change your career<br> Better matching jobs for your bright career</p>
+          <div class="tabs_block">
+           <ul class="tabs">
+              <li><button class="job_type active_button" id="full-time">Full Time</button></li>
+              <li><button class='job_type' id="internship">Internship</button></li>
+              <li><button class='job_type' id="walk-in">Walkin</button></li>
+              <li><button class='job_type' id="Fresher">Fresher</button></li>
+            </ul>
+            <div class="search_location_other_block">
+              <div class="job-location_other">
+                <form class="form-inline autocomplete-me search-form" name="search-form" id="search-form" method="POST">
+                  <div class="form_input_groups">
+                    <div class="form-group location">
+                      <label class="sr-only"></label>
+                      <select class="js-example-basic-single form-control form-control_opt" placeholder="Job Location" name="location" id="job_location">
+                        <option value="">Location</option>
+                        {% for city in cities %}
+                        <option value="{{ city.name }}">{{ city.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="sr-only"></label>
+                      <input type="text" class="form-control form-control_opt content_wrap_list" id ="q-field" name="q" placeholder="Enter Any Skill">
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-default">Search Job</button>
+                </form>
+              </div>
+              <!--<span class="advanced_tag_div"><a href="#" class="adv_srch_link adv_search">Advanced Search</a></span>-->
+            </div>
+            <br clear="all">
+          </div>
+        </div>
+        {% if not request.user.is_authenticated %}
+        <div class="login_block col-md-4 col-sm-12">
+          <div class="login_box">
+            <p class="head text-capitalize login_text">Already a Member? Login</p>
+            <form id="ApplicantLoginForm" name="ApplicantLoginForm" class="ApplicantLoginForm" method="POST">
+              <div class="form-group">
+                <input type="email" class="form-control form-control_opt" id="user_login_email" placeholder="Enter Email ID" name="email">
+                <p id="user_response_message"></p>
+                <input type="hidden" name="register_type" id='register_type' value="login">
+                <input type="hidden" name="next" value="{{request.GET.next}}">
+              </div>
+              <div class="form-group">
+                <input type="password" class="form-control form-control_opt" id="user_login_password" placeholder="Enter Password" name="password">
+              </div>
+              <div class="forgot_right">
+                <button type="submit" class="btn btn-default login_form_button" >Sign In</button>
+                <a href="#" class="forgot_password pull-right">Forgot Password?</a>
+                <a href="#" class="new_user_login pull-right" style="display:none;">Already a Member? Login</a>
+              </div>
+              <div class="forgot_create-new">
+                 <a href="#" class="upload_btn_resume up_res">Upload Resume</a>
+                 <a href="#" class="new_account">Create New Account?</a>
+              </div>
+            </form>
+            <div class="social_links">
+              <ul>
+                <li class="text-capitalize">login with social networks</li>
+                <li ><a href="{% url 'social:facebook_login' %}" target="_blank"><i class='fa fa-facebook fb'></i></a></li>
+                <li ><a href="{% url 'social:linkedin_login' %}" target="_blank"><i class='fa fa-linkedin in'></i></a></li>
+                <li ><a href="{% url 'social:github_login' %}" target="_blank"><i class='fa fa-github git'></i></a></li>
+                <li ><a href="{% url 'social:google_login' %}" target="_blank"><i class='fa fa-google-plus gplus'></i></a></li>
+
+              </ul>
+            </div>
+
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block base %}
+<!-- main_container starts here -->
+  <div class="row mar_lr_0 main_container">
+    <div class="container">
+      <div class="row mar_lr_0">
+        <div class="col-md-9 left_container">
+          <!-- register_block starts here -->
+          <div class="row mar_lr_0 register_block">
+            <div class="col-md-4 col-sm-4 register_point border new_account">
+              <div class="text-center register_col">
+                <a class="new_account" ><strong>Sign Up For Today</strong></a>
+                <p>Get started with Peeljobs and find your dream job today!</p>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4 register_point border redirect_link" data-href="{% url 'my:alerts_list'%}">
+              <div class="text-center register_col">
+                <a href="{% url 'my:alerts_list'%}"><strong>Get Jobs Into your inbox</strong></a>
+                <p>Create Job Alert in your desired areas and get best-matched jobs into your inbox.</p>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4 register_point redirect_link" data-href="/blog/">
+              <div class="text-center register_col">
+                <a href="/blog/"><strong>Blog</strong></a>
+                <p>Want to place in a better position? Learn few tips from our blog..!</p>
+              </div>
+            </div>
+          </div>
+          <!-- register_block ends here -->
+          <!-- skills_companies starts here -->
+          <div class="row mar_lr_0 skills_locations">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+              <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Top Skills</a></li>
+              <li role="presentation"  ><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Top companies</a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+              <div role="tabpanel" class="tab-pane active" id="home">
+                <div class="row image_row">
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/java-jobs/" target="_blank">
+                  <img src="{% static 'static/skills/java.png' %}" alt="Java Jobs" />
+                  </a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/asp-dot-net-jobs/" target="_blank"><img src="{% static 'static/skills1/asp-dot-net.png' %}" alt="ASP.net Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/bootstrap-jobs/" target="_blank"><img src="{% static 'static/skills1/bootstrap.png' %}" alt="Bootstrap Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/css-jobs/" target="_blank"><img src="{% static 'static/skills/CSS.png' %}" alt="Css Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/adobe-photoshop-jobs/" target="_blank"><img src="{% static 'static/skills1/Adobe_Photoshop.png' %}" alt="Adobe Photoshop Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/javascript-jobs/" target="_blank"><img src="{% static 'static/skills/js.png' %}" alt="JavaScript Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/jquery-jobs/" target="_blank"><img src="{% static 'static/skills/jquery.png' %}" alt="JQuery Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/android-jobs/" target="_blank"><img src="{% static 'static/skills1/android1.jpg' %}" alt="Android Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/oracle-jobs/" target="_blank"><img src="{% static 'static/skills1/oracle.png' %}" alt="Oracle Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/c-plus-plus-jobs/" target="_blank"><img src="{% static 'static/skills/c-logo.png' %}" alt="C Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/mysql-jobs/" target="_blank"><img src="{% static 'static/skills1/MySQL.png' %}" alt="Mysql Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/spring-jobs/" target="_blank"><img src="{% static 'static/skills1/spring.png' %}" alt="Spring Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/angular-js-jobs/" target="_blank"><img src="{% static 'static/skills1/AngularJS_logo.png' %}" alt="Angular Js Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/j2ee-jobs/" target="_blank"><img src="{% static 'static/skills1/j2ee.png' %}" alt="J2ee Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/c-sharp-jobs/" target="_blank"><img src="{% static 'static/skills1/c-sharp.png' %}" alt="c-sharp Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/xml-jobs/" target="_blank"><img src="{% static 'static/skills1/xml-logo.png' %}" alt="Xml Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/hibernate-jobs/" target="_blank"><img src="{% static 'static/skills1/hibernate.png' %}" alt="Hibernate Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col"><a href="/bpo-jobs/" target="_blank"><img src="{% static 'static/skills1/bpo.png' %}" alt="BPO Jobs" /></a></div>
+                </div>
+                <a class="pull-right view-more" target="_blank" href="{% url "jobs_by_skill" %}">View More</a>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="profile">
+               <div class="row image_row">
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                      <a href="/ibm-india-pvt-limited-job-openings/" target="_blank" class='company_logo'>
+                      <img src="https://cdn.peeljobs.com/companies/ibm.png" alt="ibm-india-pvt-limited" /></a>
+                    </div>
+                     <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                      <a href="/infosys-multinational-private-limited-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/infosys.png" alt="infosys-multinational-private-limited"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                      <a href="/tcs-pvt-ltd-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/tcs.png" alt="tcs-pvt-ltd"/></a>
+                    </div> 
+                     <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/dell-private-limited-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/dell.png" alt="dell-private-limited"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                     <a href="/accenture-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/accenture.png" alt="accenture"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/tech-mahindra-private-limited-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/mahindra.png" alt="tech-mahindra-private-limited"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/cognizant-technology-solutions-india-ltd-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/cts.png" alt="cognizant-technology-solutions-india-ltd" /></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/ravsoft-solutions-india-pvt-ltd-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/rav.png" alt="RAVSoft Solutions India Pvt Ltd"/></a>
+                    </div>
+                    <!--<div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/zealous-services-chennai-job-openings/" target="_blank" class='company_logo'><img src="{{ STATIC_URL }}dummy.jpg" alt="Zealous Services,Chennai"/></a>
+                    </div>-->
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/3dplm-software-solutions-limited-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/3d.png" alt="3DPLM Software Solutions Limited"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/ace-group-private-limited-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/ace.png" alt="ACE Group Private Limited"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/readmind-info-services-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/rmis.png" alt="ReadMind Info Services"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/grape-services-pvt-ltd-job-openings/" target="_blank" class='company_logo'><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/5930cf748cb53e748decf649c5e59bbd/grape-services-pvt-ltd" alt="Grape Services Pvt. Ltd"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/haileo-technologies-pvt-ltd-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/haileo.png" alt="Haileo Technologies Pvt Ltd"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/nitor-infotech-pvt-ltd-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/nitor.png" alt="Nitor Infotech Pvt. Ltd"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                    <a href="/cms-computers-limited-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/cms.png" alt="CMS Computers Limited"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                      <a href="/primesoft-ip-solutions-pvt-ltd-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/prime.png" alt="PrimeSoft IP Solutions Pvt Ltd"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                     <a href="/prime-focus-technologies-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/prime-1.png" alt="Prime Focus Technologies"/></a>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-3 image_col">
+                      <a href="/peoplestrong-hr-services-pvt-ltd-job-openings/" target="_blank" class='company_logo'><img src="https://cdn.peeljobs.com/companies/people.png" alt="PeopleStrong HR Services Pvt. Ltd."/></a>
+                    </div>
+                </div>
+                <a class="pull-right view-more" target="_blank" href="/companies/">View More</a>
+              </div>
+            </div>
+          </div>
+          <!-- skills_companies ends here -->
+          <!-- top_locations starts here -->
+          <div class="row mar_lr_0 top_locations">
+            <div class="heading text-uppercase">Top Job Locations</div>
+            <div class="locations">
+            {%get_locations as total_locations%}
+              <ul class="location_ul">
+              {% for location in total_locations|slice:"35" %}
+                <li><a href="{{ location.get_job_url }}" target="_blank">{{ location.name }}</a></li>
+                {% if forloop.counter|divisibleby:7 %}
+                  </ul>
+                  <ul class="location_ul">
+                {% endif %}
+              {% endfor %}
+              </ul>
+              <a class="pull-right view-more" target="_blank" href="{% url "jobs_by_location" 'jobs' %}">View More</a>
+            </div>
+          </div>
+          <!-- top_locations edns here -->
+          <!-- latest_jobs starts here -->
+          <div class="latest_jobs row mar_lr_0">
+            <div class="heading text-uppercase">Latest Jobs<!--<a class="pull-right view-more" href="#">View More</a>--></div>
+            <div class="row jobs_columns">
+               {% for job in jobs_list %}
+                <div class="col-md-4 col-sm-6 job_outer_col">
+                  <div class="job_col latest_jobs_class" id="{{ job.slug }}">
+                  <strong class="title"><a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ job.slug }}" target="_blank" >{{ job.title }} [{% if job.min_year == 0 and job.max_year == 0 %}Fresher{% else %}{{ job.min_year }} - {{ job.max_year }} Years{% endif %}]</a></strong>
+                 {% if job.company.is_active and job.company.slug %}
+                    <p><a href="{% url 'company_jobs' job.company.slug %}">{{job.company.name|capfirst}}</a></p>
+                  {% elif job.company %}
+                    <p>{{job.company.name|capfirst}}</p>
+                  {% elif job.company_name %}
+                    <p>{{job.company_name|capfirst}}</p>
+                  {% endif %}
+                  <p>{% if job.min_salary == 0 %}{% else %}<i class="fa fa-inr" aria-hidden="true"></i> <span>{{ job.get_job_salary.0 }} P.A</span>{% endif %}</p>
+                  <p class="location"><i class="fa fa-map-marker"></i> {%for location in job.location.all %}
+                  {% if location.status == 'Enabled' %}
+                      <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+                      {% else %}
+                      <a style="cursor:default">{{ location.name }}</a>
+                      {% endif %}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</p>
+                  <!--<p><a href="https://peeljobs.com/{{job.get_job_type}}-jobs/" target="_blank" class="apply">{{ job.job_type|get_string }}</a></p>-->
+                    <p>
+                       {% if job.job_type == 'walk-in' %}
+                    {% elif job.user.is_superuser %}
+                      {% if job.company_emails %}
+                       <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
+                      {% endif %}
+                    {% else %}
+                    {% if request.user.is_authenticated %}
+                      {% if request.user.id|is_applied_for_job:job.pk %}
+                      <a href="{{ job_url }}" class="apply">Applied</a>
+                      {% else%}
+                        <a href="#" class="apply job_apply  applicant_apply" id="{{ job.pk }}" data-href="{{ job_url }}?job_apply=applied">Apply Now</a>
+                      {% endif %}
+                    {% else %}
+                      <a href="#" class='apply job_apply job_apply_login' id="{{ job.pk }}" data-href="{{ job_url }}?job_apply=applied">Apply Now</a>
+                    {% endif %}
+                  {% endif %}
+                    </p>
+                  </div>
+                </div>
+              {% endfor %}
+              <a class="pull-right view-more" href="/jobs/" target="_blank">View More</a>
+            </div>
+          </div>
+          <!-- latest_jobs ends here -->
+        </div>
+        <div class="col-md-3 right_container">
+        <div class="strip_box">
+            <div class="strip">Show Your CODING Skills at <span style="color: #202b2e;">Runcode.io</span> (Launching soon)
+            </div>
+        </div>
+          <!-- upload_btn_block starts here -->
+
+          <!-- <div class="upload_block text-center">
+            <p class="text-capitalize"><strong class="text-uppercase">Upload your resume</strong> to get hired into top companies</p>
+            <a href="#"><i class="fa fa-upload"></i> Upload Your Resume <i class="fa fa-file"></i></a>
+          </div> -->
+          {% if request.user.is_authenticated %}
+            {% if request.user.is_jobseeker and not request.user.resume %}
+  <div class="upload_btn_block">
+   <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+    <div class="upload_btn" id="resume_upload_but"><a href="/profile/"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+      <input type="file" name="resume" id="resume" style="display:none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt"></span>
+      <button type="submit" name="submit" class="submit" style="
+        display:none;"><span>Submit</span></button>
+      </form>
+  </div>
+  {% endif %} 
+          {% else %}
+              <div class="upload_btn_block">
+                <div class="upload_btn upload_btn_resume"><a href="#" data-toggle="modal" data-target="#login_register"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+              </div>
+          {% endif %}
+          <!-- upload_btn_block ends here -->
+          <!-- walkin_jobs starts here -->
+          {%get_latest_walkins as walkins%}
+          {% if walkins %}
+          <div class="walkin_jobs">
+            <div class="heading text-uppercase">Walk-in Jobs</div>
+            <ul class="walkin_blocks">
+            {% for walkin in walkins|slice:"7" %}
+              <li class="walkin_block" id="{{ walkin.slug }}">
+                <strong class="title"><a href="{{ walkin.slug }}" target="_blank">{{ walkin.title }}</a></strong>
+                {% if walkin.company %}<p>{{ walkin.company.name }}</p>{% endif %}
+                <p class="location"><i class="fa fa-map-marker"></i>{%for location in walkin.location.all %}
+                {% if location.status == 'Enabled' %}
+                      <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+                      {% else %}
+                      <a style="cursor:default">{{ location.name }}</a>
+                      {% endif %}{% if forloop.last %}{% else %}, {% endif %}{% endfor %} </p>
+              </li>
+            {% endfor %}
+            <a href="{% url 'walkin_jobs' %}" target="_blank"><span class="view_all">See More</span></a>
+            </ul>
+          </div>
+          {% endif %}
+          <!-- walkin_jobs ends here -->
+          <!-- top_recruiters starts here -->
+          {%get_latest_recruiters as latest_recruiters%}
+          {% if latest_recruiters %}
+          <div class="top_recruiters">
+            <div class="heading text-uppercase">Top Recruiters</div>
+            <ul class="recruiter_blocks">
+              {% for recruiter in latest_recruiters|slice:"6" %}
+              <li class="recruiter_block" id="{% url 'recruiter_profile' recruiter.username %}">
+                <div class="img_part">
+                  <img src="{% if recruiter.profile_pic %}{{recruiter.profile_pic.url}}{% else %}{% static 'static/img/dummy.jpg' %}{% endif %}" />
+                </div>
+                <div class="content">
+                  <strong class="title"><a href="{% url 'recruiter_profile' recruiter.username %}" target="_blank">{{ recruiter.get_full_name }}</a></strong>
+                  {% if recruiter.company %}<p>{{ recruiter.company.name }}</p>{% endif %}
+                  <p class="redirect"><a href="{% url 'recruiter_profile' recruiter.username %}" target="_blank">View {{ recruiter.num_posts }} Jobs</a></p>
+                </div>
+              </li>
+              {% endfor %}
+              <a href="{% url 'recruiters' %}" target="_blank"><span class="view_all">See More</span></a>
+            </ul>
+          </div>
+          {% endif %}
+          <!-- top_recruiters ends here -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- main_container ends here -->
+  <!-- help_options_row starts here -->
+  <div class="hint_options_row row mar_lr_0">
+    <!--<div class="container">
+      <div class="row mar_lr_0">
+        <div class="col-md-4 col-sm-12">
+          <div class="hint_module">
+            <div class="img_part">
+              <img src="{{ STATIC_URL }}img/hints_help.png" />
+            </div>
+            <div class="hint_content">
+              <strong>Help Module</strong>
+              As the Internet technology and network communication technology development, age I hope you like it ！
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+          <div class="hint_module">
+            <div class="img_part">
+              <img src="{{ STATIC_URL }}img/hints_assesment.png" />
+            </div>
+            <div class="hint_content">
+              <strong>Help Assesments</strong>
+              As the Internet technology and network communication technology development, age I hope you like it ！
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+          <div class="hint_module">
+            <div class="img_part">
+              <img src="{{ STATIC_URL }}img/hints_idea.png" />
+            </div>
+            <div class="hint_content">
+              <strong>Job Tips</strong>
+              As the Internet technology and network communication technology development, age I hope you like it ！
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>-->
+  </div>
+<!-- help_options_row ends here -->
+<div id="block_job_apply" style="display: none;"></div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock base %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+  $('span.user_search').click(function(e){
+        $(window).scrollTop($('#banner').offset().top-$('.page-top').height()-100);
+  });
+  $(document).ready(function() {
+    $('#myCarousel').carousel({
+      interval: 10000
+  })
+    $(".latest_jobs_class a").click(function(e){
+      e.stopPropagation();
+    })
+    $(".latest_jobs_class").click(function(){
+        window.open($(this).attr('id'), '_blank')
+      })
+});
+</script>
+{% endblock %}

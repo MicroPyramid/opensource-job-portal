@@ -1,0 +1,135 @@
+{% extends 'dashboard/base.html' %}
+{% block stage %}
+    <!-- CONTENT WRAPPER -->
+    <style type="text/css">
+        .max_experience {
+            display: none;
+        }
+    </style>
+    <div class="content_wrapper">
+        <div class="row mt">
+            <!-- CONTENT -->
+            <section id='mail_template'>
+                <h4>Mail Template</h4>
+                <form name="emailtemplateform" id="emailtemplateform" method="post">
+                    <div class="form-horizontal mail_form">
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Recruiters</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline">
+                                    <span id="active" name="recruiters" value="active" class="recruiters">active</span>
+                                </label>
+                                <label class="radio-inline">
+                                    <span id="inactive" value="inactive" name="recruiters"
+                                          class="recruiters">inactive</span>
+                                </label>
+                                <label class="radio-inline">
+                                    <span id="social-apis" value="social-apis" name="recruiters" class="recruiters">Social apis not connected</span>
+                                </label>
+                                <label class="radio-inline">
+                                    <span id="mobile" value="mobile" name="recruiters" class="recruiters">Mobile not Verified</span>
+                                </label>
+                                <select class="location" multiple="multiple" placeholder="Functional Area"
+                                        name="recruiters" id="recruiters">
+                                    {% for recruiter in recruiters %}
+                                        <option value="{{ recruiter.id }}"
+                                                class="{% if recruiter.is_recruiter_active %}active{% endif %}{% if recruiter.mobile_verified %}mobile {% endif %}{% if not recruiter.is_connect_social_networks %}social-apis {% endif %}{% if not recruiter.is_active %}inactive{% endif %}">{{ recruiter.email }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Title</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" placeholder='Title' name="title" id="title"
+                                       value="{{ mailtemplate.title }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Subject</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" placeholder='Subject' name='subject'
+                                       id='subject' value="{{ mailtemplate.subject }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Body</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" name='textareacontents' id='textareacontents'
+                                          placeholder='Message'>{{ mailtemplate.message }}</textarea>
+                                <input type="hidden" name="message" id="message"
+                                       value="{{ mailtemplate.message }}"/></textarea>
+                                <input type="hidden" name="email_template" id="email_template"
+                                       value="{{ mailtemplate.id }}"/>
+                                <input type="hidden" name="mode" id="mode" value="send_mail"/>
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">&nbsp;</label>
+                            <div class="col-sm-10">
+                                <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
+                                <button class="cancelbutton"><i class="fa fa-floppy-o"></i>Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <!--/ CONTENT -->
+        </div>
+    </div>
+    <!--/ CONTENT WRAPPER -->
+{% endblock stage %}
+{% block script %}
+    <script type="text/javascript">
+
+        $("select.location").select2({placeholder: "Select here"});
+        CKEDITOR.config.allowedContent = true;
+        var editor = CKEDITOR.replace('textareacontents', {});
+        $(".cancelbutton").click(function (e) {
+            e.preventDefault();
+            window.location = "{% url 'dashboard:emailtemplates' %}";
+        });
+        $('form#emailtemplateform').ajaxForm({
+            beforeSerialize: function () {
+                $("input[name='message']").val(CKEDITOR.instances.textareacontents.getData());
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.error) {
+                    $('p.hint').remove();
+                    $('p.help-block').remove();
+                    for (var key in data.response) {
+                        $('#' + key).after('<p class="hint">' + data.response[key] + '</p>');
+                    }
+                } else {
+                    open_dialog_with_url(data.response, 'Success!!!', "{% url 'dashboard:emailtemplates' %}")
+                }
+            }
+        });
+
+        $("select#recruiters").on('change', function (e) {
+            $('select#mode').val('recruiter_send_mail');
+        });
+
+        $(".recruiters").click(function (e) {
+            e.preventDefault();
+            console.log($(this).attr('value'))
+            value = $(this).attr('value')
+            $("#recruiters").select2("val", "");
+            $("#recruiters").select2("destroy");
+            $("#recruiters").select2();
+            $("select#recruiters option").each(function () {
+                if ($(this).hasClass(value)) {
+                    $(this).removeAttr('disabled')
+                    $(this).addClass('max_experience')
+                }
+                else {
+                    $(this).removeAttr('disabled')
+                    $(this).attr('disabled', true)
+                }
+            });
+        });
+
+    </script>
+{% endblock script %}

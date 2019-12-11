@@ -1,0 +1,86 @@
+//colors
+$large:1500px;
+$med_min:992px;
+$med_max:1199px;
+$tab_max:991px;
+$tab_min:768px;
+$smob_max:767px;
+$smob_min:480px;
+$mob_max:479px;
+$mob_min:240px;
+$body_bg:#dfe2ec;
+$bg:#f5f5f5;
+$dark_bg:#26262f;
+$text: #47484a;
+$green:#62bb46;
+$blue_theme:#005bbc;
+$white_bg_text:#9e96a1;
+$sky_color:#00aeef;
+$border:#ced5df;
+$grey:#45586d;
+$green_sky:#00aeef;
+$theme_blue:#0060b9;
+$blue:#5AA2CE;
+$purple:#6b5c9e;
+$orange:#ff6d4b;
+$fb:#3b5998;
+$in:#0077b5;
+$git:#999999;
+$gplus:#dd4b39;
+$stack:#fe7a15;
+$twit:#55acee;
+$violet:#5C4C8D;
+$git_yellow:#ff9933;
+$git_green:#6cc644;
+
+$orange:#eb4b0e;
+$red:#ea290e;
+$sea_blue:#469bfe;
+$l_green:#61d413;
+
+
+$sky_theme: #39c3dd;
+$dark_theme:#344563;
+
+$page_title: #323941;
+$submit-btn: #b2b2b2;
+$facebook:#215A98;
+$twitter:#00ABF0;
+$google-plus:#F44336;
+$youtube:#b31217;
+
+.no-padding{
+  padding-left: 0;
+  padding-right: 0;
+}
+.bold_upper{
+  font-weight:bold;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.marl {
+  margin-left: 0;
+  margin-right: 0;
+}
+.heading {
+  font-size: 17px;
+  font-weight: 700;
+  color: darken($text, 10%);
+  position: relative;
+}
+
+
+@mixin job_status($color){
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  background: $color;
+  font-size: 0.7em;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 800;
+  padding: 0px 6px;
+  padding-right: 5px;
+  z-index: 30;
+}
+

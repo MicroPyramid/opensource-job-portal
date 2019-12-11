@@ -1,0 +1,318 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load tz %}
+{% load page_tags %}
+{% block stage %}
+{% load static %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Ticket Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each col-md-6">
+              <label>Ticket Title</label>
+              <span class="description">
+              <span>{{ ticket.title }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Status</label>
+              <span class="description">
+              <span>{{ ticket.status }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Created By</label>
+              <span class="description">
+              <span>{{ ticket.user.email }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Ticket Type</label>
+              <span class="description">
+                <span>{{ ticket.ticket_type }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Priority</label>
+              <span class="description">
+                <span>{{ ticket.priority }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Created On</label>
+              <span class="description">
+              <span>{{ ticket.created_on }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="tile_each">
+            <label>Ticket Description</label>
+            <span class="description">
+            <span>{{ ticket.description }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select class="form-control" name="status" id="status">
+              <option value="">Select a ticket status</option>
+              {% for status in status %}
+              <option value="{{ status.0 }}" {% ifequal status.0|slugify ticket.status|slugify %}selected{% endifequal %}>{{ status.1 }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      {% if ticket.attachments.all %}
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Attachments</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+                <div class="img_wrap">
+                  {% for attachment in ticket.attachments.all %}
+                   <div class="img-item" >
+                    <a href="#" class="img-url" id="{{ attachment.attached_file }}"><img src="{% if attachment.attached_file %}{% thumbnail attachment.attached_file "100x100" upscale=True padding=True %}{% else %}{% static 'dummy.jpg' %}{% endif %}"></a>
+                    <span class='attachment-close close-item' id="{{ attachment.id }}"><i class="fa fa-close"></i></span>
+                    </div>
+                  {% endfor %}
+                  <br clear="all">
+                </div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      {% endif   %}
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>New Comment</h4>
+        </div>
+        <form id="ticketform" name="ticketform" method="post">
+          <label>Comment</label>
+          <div class="form-group">
+            <textarea class="form-control" name="comment" id="comment"></textarea>
+          </div>
+          <div class="form-group file_attachments">
+            <input type="file" class="form-control attachments" placeholder="Ticket Title" name="attachment_1" id="attachment_1">
+          </div>
+          <span class="other_attachment">another attachments</span>
+          <button><i class='fa fa-paper-plane-o'></i>Send</button>
+        </form>
+        {% for comment in ticket.get_ticket_comments %}
+          <div id="{{ comment.id }}"  class="editcomment edit">
+            <form id="ticketeditform" name="ticketeditform" method="post">
+            <label>Comment</label>
+            <div class="form-group">
+              <textarea class="form-control" name="comment" id="comment">{{ comment.comment }}</textarea>
+              <input type="hidden" name="comment_id" id="comment_id" value="{{ comment.id }}">
+            </div>
+            <div class="form-group file_attachments">
+              <input type="file" class="form-control attachments" placeholder="Ticket Title" name="attachment_1" id="attachment_1">
+            </div>
+            <span class="other_attachment">another attachments</span>
+            <button><i class='fa fa-paper-plane-o'></i>Send</button>
+            </form>
+          </div>
+        {% endfor %}
+        </div>
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Comments</h4>
+        </div>
+        {% if ticket.get_ticket_comments %}
+          <div class="comments_div">
+            {% for comment in ticket.get_ticket_comments %}
+              <div class="{% if ticket.user.is_staff %}ticket_admin{%else%}ticket_user{%endif%}" style="position:relative;">
+              <span class='comment-close' id="{{ comment.id }}"><i class="fa fa-close"></i></span>
+
+              <div class="user_details">
+                <span class="user"><i class="fa fa-user"></i>{{ comment.commented_by.email }}</span>
+                <span class="posted"><i class="fa fa-calendar"></i>{{ comment.created_on|timezone:"Asia/Calcutta" }}</span>
+                <span class="comment-edit" id="{{ comment.id }}"><i class="fa fa-pencil"></i></span>
+              </div>
+              <div class="comment">
+                {{ comment.comment }}
+              </div>
+              </div>
+            <div class="img_wrap">
+            {% for attachment in comment.get_comments_attatchments %}
+             <div class="img-item" >
+              <a href="#" class="img-url" id="{{ attachment.attached_file }}"><img src="{% if attachment.attached_file %}{% thumbnail attachment.attached_file "100x100" upscale=True padding=True %}{% else %}{% static 'dummy.jpg' %}{% endif %}"></a>
+              <span class='attachment-close close-item' id="{{ attachment.id }}"><i class="fa fa-close"></i></span>
+              </div>
+                {% endfor %}
+                <br clear="all">
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          No Comments Available
+        {% endif %}
+      </div>
+      <!--/ post details -->
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $('.other_attachment').click(function (e) {
+            attachments_count = $('.attachments').length + 1
+            $('.file_attachments').after('<div class="form-group"><input type="file" class="form-control attachments" placeholder="Ticket Title" name="attachment_' + attachments_count + '" id="attachment_' + attachments_count + '"></div>')
+        });
+
+$('.attachment-close').click(function (e) {
+    href = "/tickets/attachment/delete/" + $(this).attr('id') + '/'
+    console.log(href)
+    $('#block_question').text('Do you want to delete Attachment?')
+    $('#block_question').dialog({
+        modal: true,
+        dialogClass: "no-close",
+        draggable: false,
+        title: "Info!!",
+        buttons: [
+            {
+                text: "Yes",
+                click: function () {
+                    $(this).dialog("close");
+                    $.post(href, {}, function (data) {
+                        console.log(data.error), console.log(data.response)
+                        if (data.error == false) {
+                            open_dialog_with_url(data.response, 'Success!!!', ".")
+                        } else {
+                            open_dialog(data.response, 'Error!!')
+                        }
+                    }, 'json');
+                }
+            },
+            {
+                text: "No",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+        ]
+    });
+});
+
+    $("select#status").on('change', function (e) {
+        $.post('/tickets/status/' + {{ ticket.id }} +'/', {
+            'ticket_status': $(this).val(),
+            'mode': 'status'
+        }, function (data) {
+            if (data.error == false) {
+                open_dialog_with_url(data.response, 'Success!!!', ".")
+            } else {
+                open_dialog(data.response, 'Error!!')
+            }
+        }, 'json');
+    });
+
+    $('.comment-close').click(function (e) {
+        href = $(this).attr('id') + '/'
+        $('#block_question').text('Do you want to delete Comment?')
+        $('#block_question').dialog({
+            modal: true,
+            dialogClass: "no-close",
+            draggable: false,
+            title: "Info!!",
+            buttons: [
+                {
+                    text: "Yes",
+                    click: function () {
+                        $(this).dialog("close");
+                        $.post("/tickets/comment/delete/" + href, {}, function (data) {
+                            if (data.error == false) {
+                                open_dialog_with_url(data.response, 'Success!!!', ".")
+
+                            } else {
+                                open_dialog(data.response, 'Error!!')
+                            }
+
+                        }, 'json');
+                    }
+                },
+                {
+                    text: "No",
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            ]
+        });
+    });
+    $('.comment-edit').click(function (e) {
+        id = $(this).attr('id')
+        $('div.editcomment').addClass('edit')
+        $('div#' + id).removeClass('edit')
+        $('form#ticketform').addClass('edit')
+    });
+
+    $('form#ticketeditform').ajaxForm({
+        type: 'POST',
+        dataType: 'json',
+        data: $('#ticketeditform').serialize(),
+        url: '/tickets/comment/edit/',
+        success: function (data) {
+            if (data.error == false) {
+                open_dialog_with_url(data.response, 'Success!!!', ".")
+            } else {
+                $('div.error').remove();
+                if (data.response_message) {
+                    open_dialog(data.response_message, 'Info!!')
+                }
+                for (var key in data.response) {
+                    $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                }
+            }
+        }
+    });
+
+    $('form#ticketform').ajaxForm({
+        type: 'POST',
+        dataType: 'json',
+        data: $('#ticketform').serialize(),
+        url: '/tickets/comment/' + {{ ticket.id }}+'/',
+        success: function (data) {
+            if (data.error == false) {
+                open_dialog_with_url(data.response, 'Success!!!', ".")
+            } else {
+                $('div.error').remove();
+                for (var key in data.response) {
+                    $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                }
+            }
+        }
+    });
+
+        $('.img-url').click(function (e) {
+            e.preventDefault();
+            window.location = 'https://d2pt99vxm3n8bc.cloudfront.net/' + $(this).attr('id')
+        })
+
+    </script>
+{% endblock %}

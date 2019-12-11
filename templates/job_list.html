@@ -1,0 +1,116 @@
+{% load page_tags %}
+{% load thumbnail %}
+<!-- job_list_section starts here -->
+<div class="">
+  <div class="job_list_section">
+    <!-- job_item starts here -->
+    {% for each in job_list %}
+    {% with each.object as job %}
+      {% with job.get_absolute_url as job_url and job.get_job_minified_url as minified_url%}
+      <div class="job_item">
+      <div class="job">
+        <div class="logo_post_date">
+
+          {% if job.job_type == 'walk-in' %}
+          {% elif job.user.is_superuser %}
+            {% if job.company_emails %}
+             <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
+            {% endif %}
+          {% else %}
+          {% if request.user.is_authenticated %}
+            {% if request.user.id|is_applied_for_job:job.pk %}
+            <a href="{{ job_url }}" class="apply">Applied</a>
+            {% else%}
+              <a href="#" class="apply job_apply  applicant_apply" id="{{ job.pk }}" data-href="{{ job_url }}?job_apply=applied">Apply Now</a>
+            {% endif %}
+          {% else %}
+            <a href="#" class='apply job_apply job_apply_login' id="{{ job.pk }}" data-href="{{ job_url }}?job_apply=applied">Apply Now</a>
+          {% endif %}
+        {% endif %}
+
+          {% if job.company.profile_pic %}
+            {% thumbnail job.company.get_logo_url "80x80" as im %}
+              <img src="{{ im.url }}" alt="{{ job.company.name|capfirst}} Job Openings"/>
+            {% endthumbnail %}
+          {% endif %}
+        </div>
+        <strong class="title"><a href="{{ job_url }}" class="job_url" target="_blank">{{ job.title }} <span class="exp">[{% if job.min_year == 0 and job.max_year == 0 %}Fresher{% else %}{{ job.min_year }} - {{ job.max_year }} Yrs{% endif %}]</span></a>  </strong>
+        <span class="company sty">{% if job.company or job.company_name %}
+          {% if job.company.is_active and job.company.slug %}
+            <a href="{% url 'company_jobs' job.company.slug %}" target="_blank">{{job.company.name|capfirst}}</a>
+          {% elif job.company %}
+            {{job.company.name|capfirst}}
+          {% elif job.company_name %}
+            {{job.company_name|capfirst}}
+          {% endif %}
+        {% endif %}
+        <span class="pull-right"></span></span>
+        <div class="ind_type sty">
+          <i class="fa fa-briefcase"></i>
+          {%for industry in job.industry.all %}
+            <a href="{% url 'job_industries' industry.slug %}" target="_blank">{{ industry.name|get_industry_name }}{% if forloop.last %}{% else %}, {% endif%}</a>
+          {% endfor %}
+        </div>
+        <span class="sty">
+          <i class="fa fa-map-marker" style="font-size:16px;"></i> 
+          {%for location in job.location.all %}
+            {% if location.status == 'Enabled' %}
+              <a href="{{location.get_job_url}}" target="_blank">  {{ location.name }}</a>{% if forloop.last %}{% else %}, {% endif%}
+            {% else %}
+              <a style="cursor:default"> {{ location.name }}</a>{% if forloop.last %}{% else %}, {% endif%}
+            {% endif %}
+          {% endfor %}
+          </span>
+        {% if job.skills.all %}
+          <div class="description Keyskills col-md-12 pad_lr_0">
+            <div class="head col-md-2 pad_lr_0" >Keyskills :</div>
+            <div class="tags col-md-10 pad_lr_0">
+              {% for skill in  job.skills.all %}
+                {% if skill.status == 'Active' %}
+                  <a  href="{{skill.get_job_url}}" target="_blank">{{ skill }}</a>
+                {% else %}
+                  <a>{{ skill.name }}</a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        <div class="description clearfix">
+          <span class="head">Description :</span>
+          <div class="content">{{ job.description|safe|truncatewords_html:15 }}</div>
+        </div>
+        </div>
+        <div class="job_bottom">
+          {% if job.min_salary != 0 and job.max_salary != 0 %}
+            <span class="sal">
+              <i class="fa fa-inr"></i> {{ job.get_job_salary.0 }} - {{ job.get_job_salary.1 }} P.A
+            </span>
+          {% endif %}
+            <span class="pull-right sal">
+            <small>Posted on : {{ job.published_on|date:"M. d, Y" }}</small>
+            </span>
+        </div>
+      </div>
+      {% endwith %}
+      {% endwith %}
+    <!-- job_item ends here -->
+    {% if forloop.counter|divisibleby:6 %}
+      <div style="margin-top:10px;margin-bottom:10px;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- PJ Right Nav -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5756092160559539"
+           data-ad-slot="3490610504"
+           data-ad-format="auto"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+    {% endif %}
+
+    {% endfor %}
+  </div>
+</div>
+<!-- job_list_section ends here -->
+<div id="block_job_apply" style="display: none;"></div>

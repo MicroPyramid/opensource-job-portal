@@ -1,0 +1,39 @@
+{% load page_tags %}
+<!-- inner_search_section starts here -->
+<div class="inner_search_section" id='search_div'>
+  <div class="container">
+    <div class="row mar_lr_0">
+      <form autocomplete="off" name="job-search-form" class="autocomplete-me search-form" id="elastic-search" method="POST">
+        <div class="row mar_lr_0 search_div_form">
+          <div class="form_element">
+            <select class="form-control" name="job_type" id="job_type">{{ request.session.formdata }}
+            <option value="">Select A JobType</option>
+              {% for job_type in job_types %}
+                <option value="{{ job_type.0 }}" {% if searched_job_type == job_type.0 %} selected {% endif %}>{{ job_type.1 }}</option>
+              {% endfor %}
+            </select>
+          </div> 
+          <div class="form_element">
+            <input type="text" class="form-control" id="q" name="q" placeholder="Enter Any Skills, Qualifications" value="{% for text in searched_text %}{{ text }}, {% empty %}{% for skill in searched_skills %}{{ skill }}, {% endfor %}{% for edu in searched_edu %}{{ edu }}, {% endfor %}{% endfor %}">
+          </div>
+          <div class="form_element">
+            <input type="text" class="form-control" id="location" name="location" placeholder="Enter Any Locations, States" value="{% for loc in searched_locations %}{{ loc }}, {% endfor %}{% for state in searched_states %}{{ state }}, {% endfor %}">
+          </div>
+          <div class="form_element">
+            <select class="form-control" name="experience">
+              <option value="">Experience(Y)</option>
+              {% for i in "xxxxxxxxxxxxx" %}
+                <option value="{{ forloop.counter0 }}" {% ifequal forloop.counter0|add:"0" searched_experience|add:'0' %}selected{% endifequal %}>{{ forloop.counter0 }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="search_form_element">
+            <button type="submit">Search Here</button>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+  <!-- inner_search_section ends here -->

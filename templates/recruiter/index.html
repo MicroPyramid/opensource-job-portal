@@ -1,0 +1,465 @@
+{% load compress %}
+{% load page_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head prefix="og: https://ogp.me/ns# fb: https://ogp.me/ns/fb# peeljobs: https://ogp.me/ns/fb/peeljobs#">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-11720509-7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-11720509-7');
+</script>
+ <meta property="fb:app_id" content="469881999753251" />
+  <meta property="og:type"   content="peeljobs:job" />
+{% block block_title %}
+    <title>Free Job Posting - Peeljobs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+{% endblock %}
+    <!-- FAVICON -->
+    <link rel="icon" type="image/x-icon" href="{{favicon}}"/>
+    <!--/ FAVICON -->
+    <!-- GLOBAL STYLE SHEETS -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic'
+          rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
+
+    <!--/ GLOBAL STYLE SHEETS -->
+    <!-- STYLES FOR THE PAGE -->
+    {% block css %}
+    {% compress css %}
+      <link rel="stylesheet" type="text/css" href="{% static 'css/feedback.min.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'r1/css/jquery.tagsinput.css' %}">
+      <!-- date time picker -->
+      <link rel="stylesheet" type="text/css" href="{% static 'r1/css/bootstrap-datetimepicker.min.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'r1/css/timepicker.css' %}">
+
+      <link rel="stylesheet" type="text/x-scss" href="{% static 'r1/css/recruiter.scss' %}">
+      <link rel="stylesheet" type="text/less" href="{% static 'r1/css/my_style.less' %}">
+      <link rel="stylesheet" type="text/less" href="{% static 'r1/css/my_responsive.less' %}">
+      <link rel="stylesheet" type="text/less" href="{% static 'r1/css/dropzone.css' %}">
+    {% endcompress %}
+    {% endblock %}
+    <!--/ STYLES FOR THE PAGE -->
+    <!-- Start of Async Drift Code -->
+    <script>
+    !function() {
+      var t;
+      if (t = window.driftt = window.drift = window.driftt || [], !t.init) return t.invoked ? void (window.console && console.error && console.error("Drift snippet included twice.")) : (t.invoked = !0, 
+      t.methods = [ "identify", "config", "track", "reset", "debug", "show", "ping", "page", "hide", "off", "on" ], 
+      t.factory = function(e) {
+        return function() {
+          var n;
+          return n = Array.prototype.slice.call(arguments), n.unshift(e), t.push(n), t;
+        };
+      }, t.methods.forEach(function(e) {
+        t[e] = t.factory(e);
+      }), t.load = function(t) {
+        var e, n, o, i;
+        e = 3e5, i = Math.ceil(new Date() / e) * e, o = document.createElement("script"), 
+        o.type = "text/javascript", o.async = !0, o.crossorigin = "anonymous", o.src = "https://js.driftt.com/include/" + i + "/" + t + ".js", 
+        n = document.getElementsByTagName("script")[0], n.parentNode.insertBefore(o, n);
+      });
+    }();
+    drift.SNIPPET_VERSION = '0.3.1';
+    drift.load('btt4wcagxd7a');
+    </script>
+    
+    <!-- End of Async Drift Code -->
+</head>
+<body>
+<style type="text/css">
+    .vertical-right-aligned {
+        transform: rotate(-90deg);
+        transform-origin: 100% 100%;
+        position: fixed;
+        right: 0;
+        top: 42%;
+        z-index: 100;
+        background: #2795e9;
+        border-color: #2795e9;
+    }
+
+
+    .ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-front.no-close.ui-dialog-buttons.ui-resizable {
+        z-index: 2000;
+    }
+
+</style>
+<!-- container -->
+<div class="container">
+    <!-- base stuff -->
+    <div class="base_stuff">
+        <!-- header -->
+        <div id="header_top">
+          <div class="row">
+            <!-- logo -->
+            <div class="logo">
+              <!--<img src="{% static 'logo.png' %}">-->
+              <a href="{% if request.user.is_agency_recruiter %}{% url "agency:dashboard" %}{% else %}{% url "recruiter:dashboard" %}{% endif %}"><span>PeelJobs</span></a>
+            </div>
+            <!--/ logo -->
+            <!-- jobs count -->
+            <div class="jobs_count_wrap">
+              <ul>
+                 <li><a href="#" class="post-new"><i class='fa fa-comments'></i>Post A Job</a></li>
+                 <li><a href="{% url 'recruiter:list' %}">Jobs Posted
+                      <span class='count yellow'>{{ request.user.get_jobposts_count }}</span>
+                    </a>
+                 </li>
+                 <li>
+                  <a href="{% url 'recruiter:list' %}">Active Jobs <span class='count green'>{{ request.user.get_active_jobposts_count }}</span></a>
+                 </li>
+                 <li><a href="{% url 'recruiter:inactive_jobs' %}">Inactive Jobs<span class='count red'>{{ request.user.get_inactive_jobposts_count }}</span></a>
+                 </li>
+                 {% get_unread_messages request.user '' '' as unread_messages %}
+                  <li><a href="{% url 'recruiter:messages' %}"><i class='fa fa-comments'></i>Messages 
+                  <span class='count green'>{{ unread_messages }}</span></a></li>
+                 <li {% ifequal request.session.url_id 'recruiter_tickets' %}class="active"{% endifequal %}><a href="{% url 'tickets:index' %}"><i class='fa fa-comments'></i>Support</a></li>
+                 <li><a>{{ request.user.username }}
+                    <img src="{% if request.user.profile_pic %}{{ request.user.profile_pic.url }}{% else %}{% static 'dummy.jpg' %}{% endif %}" style="width:50px;height:50px;"></a>
+                    <ul class='sub_list'>
+                       <li><a href="{% if request.user.is_agency_recruiter %}{% url 'agency:change_password' %}{% else %}{% url 'recruiter:change_password' %}{% endif %}">Change Password</a></li>
+                       <li><a href="{% if request.user.is_agency_recruiter %}{% url 'agency:profile' %}{% else %}{% url 'recruiter:profile' %}{% endif %}">Profile</a></li>
+                       <li><a href="{% url 'recruiter:getout' %}">Logout</a></li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <!--/ jobs count -->
+            </div>
+        </div>
+        <!--/ header -->
+
+        <!-- social_icons starts here -->
+        <!--  <div class="social_fixed">
+           <div class="social_connections">
+             <div class="connect"><a href="#">Connect</a></div>
+             <ul>
+               <li><a href="#" class="facebook"><i class="fa fa-facebook"></i> Connect with facebook </a></li>
+               <li><a href="#" class="twitter"><i class="fa fa-twitter"></i> Connect with twitter </a></li>
+               <li><a href="#" class="google"><i class="fa fa-google-plus"></i> Connect with Google </a></li>
+               <li><a href="#" class="linkedin"><i class="fa fa-linkedin"></i> Connect with linkedin </a></li>
+             </ul>
+           </div>
+         </div> -->
+        <div id="block_question" style="display: none">
+        </div>
+        <!-- social_icons ends here -->
+        {% block social_links %}
+        <!-- social links starts here -->
+        <div class="social_links">
+            <ul>
+                <li class="facebook">{% if not request.user.is_fb_connected %}
+                    <a href="{% url 'recruiter:facebook_login' %}"><i class="fa fa-facebook"></i><span>Connect Now</span>
+                    </a>{% else %}<a href="{{ request.user.get_facebook_url }}" target="_blank"><i
+                            class="fa fa-facebook"></i><span>Connected</span> </a>{% endif %}</li>
+
+                <li class="twitter">{% if not request.user.is_tw_connected %}
+                    <a href="{% url 'recruiter:twitter_login' %}"><i class="fa fa-twitter"></i> <span>Connect Now </span>
+                    </a>{% else %}
+                    <a href="{{ request.user.get_twitter_url }}" target="_blank"><i class="fa fa-twitter"></i> <span>Connected</span>
+                    </a>{% endif %}</li>
+
+                <!--<li class="google">{% if not request.user.is_gp_connected %}<a href="
+                    {% url 'recruiter:google_login' %}
+                    "><i class="fa fa-google"></i> <span>Connect With Google</span> </a>{% else %}<a href="
+                    {{ request.user.get_google_object.google_url }}
+                    " target="_blank"><i class="fa fa-google"></i> <span>Connected</span> </a>{% endif %}</li>
+
+              <li class="linkedin">{% if not request.user.is_ln_connected %}<a href="
+                    "><i class="fa fa-linkedin"></i> <span>Connect With linkedin</span> </a>{% else %}<a href="
+                    {{ request.user.get_linkedin_object.linkedin_url }}
+                    " target="_blank"><i class="fa fa-linkedin"></i> <span>Connected</span> </a>{% endif %}</li>-->
+            </ul>
+        </div>
+        <!-- social links ends here -->
+        {% endblock social_links %}
+        <section id='menu'>
+            <ul class="parent-menu">
+                {% if request.user.is_agency_recruiter %}
+                <li class=""><a href="{% url "agency:dashboard" %}"  class="menu_item"><i class="fa fa-tachometer"></i><span>Dashboard</span></a></li>
+                {% endif %}
+                {% if request.user.is_agency_recruiter %}
+                 <li class=""><a href="{% url "agency:list" %}"  class="menu_item"><i class="fa fa-briefcase"></i><span>Jobs List</span></a></li>
+                 {% else %}
+                 <li class=""><a href="{% url "recruiter:list" %}"  class="menu_item"><i class="fa fa-briefcase"></i><span>Jobs List</span></a></li>
+                 {% endif %}
+                {% if request.user.is_agency_admin or request.user.is_company_recruiter or request.user|check_recruiter_perm:"jobposts_edit" %}
+                <li><a class="menu_item post-new" href="#"><i class='fa fa-briefcase'></i><span>Post A Job</span></a></li>
+                {% endif %}
+                <li>
+                    <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}" style="padding-bottom: 15px;"><i class="fa fa-user" aria-hidden="true"></i><span>Company Profile</span></a>
+                </li>
+                {% if request.user.is_agency_recruiter %}
+                    <li>
+                        <a><i class="fa fa-users" aria-hidden="true"></i><span>Recruiters</span></a>
+                        <ul class="sub_list">
+                            {% if request.user.is_agency_admin %}
+                                <li><a href="{% url "agency:company_recruiter_create" %}" class="menu_item"><i
+                                        class='fa fa-caret-right'></i>New Recruiter</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'agency:company_recruiter_list' %}" class="menu_item"><i
+                                    class='fa fa-caret-right'></i>Recruiter List</a></li>
+                        </ul>
+                    </li>
+                    {% if request.user.is_agency_admin %}
+                      <li>
+                          <a><i class="fa fa-user" aria-hidden="true"></i><span>Client</span></a>
+                          <ul class="sub_list">
+                                  <li><a href="{% url 'agency:add_client' %}" class="menu_item"><i
+                                          class='fa fa-caret-right'></i>New Client</a></li>
+                              <li><a href="{% url 'agency:client_list' %}" class="menu_item"><i
+                                      class='fa fa-caret-right'></i>Client List</a></li>
+                          </ul>
+                      </li>
+                    {% endif %}
+                    <li>
+                        <a><i class="fa fa-user" aria-hidden="true"></i><span>Resume Pool</span></a>
+                        <ul class="sub_list">
+                            <li><a href="{% url 'agency:resume_pool' %}" class="menu_item"><i
+                                    class='fa fa-caret-right'></i>Resume Pool</a></li>
+                            <li><a href="{% url 'agency:resume_upload' %}" class="menu_item"><i
+                                    class='fa fa-caret-right'></i>Resume Upload</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                <li>
+                    <a><i class="fa fa-user" aria-hidden="true"></i><span>Resume Pool</span></a>
+                    <ul class="sub_list">
+                        <li><a href="{% url 'recruiter:resume_pool' %}" class="menu_item"><i
+                                class='fa fa-caret-right'></i>Resume Pool</a></li>
+                        <li><a href="{% url 'recruiter:resume_upload' %}" class="menu_item"><i
+                                class='fa fa-caret-right'></i>Resume Upload</a></li>
+                    </ul>
+                    </li>
+                {% endif %}
+            </ul>
+        </section>
+        <div class="clearfix"></div>
+    </div>
+    <!--/ menu -->
+    <div class="clearfix"></div>
+</div>
+<!-- base stuff -->
+<!-- toggler -->
+<div class="tog_button_wrap">
+    <span class='button tog_button'><i class='fa fa-align-justify'></i></span>
+</div>
+<div class="overlay_div"></div>
+{% block mobile_menu %}
+    <div class="vertical_menu">
+        <ul>
+            <li {% ifequal request.session.url_id 'recruiter_jobposts' %}class="active"{% endifequal %}>
+                <a class="post-new" href="#">Post a job</a>
+            </li>
+            <li {% ifequal request.session.url_id 'recruiter_jobposts_list' %}class="active"{% endifequal %}>
+                <a href="{% url 'recruiter:list' %}">Job List</a>
+            </li>
+            <li {% ifequal request.session.url_id 'recruiter_tickets' %}class="active"{% endifequal %}>
+                <a href="{% url 'tickets:index' %}">Support</a>
+            </li>
+            <li {% ifequal request.session.url_id 'recruiter_profile' %}class="active"{% endifequal %}>
+                <a href="{% url 'recruiter:profile' %}">Profile</a>
+            </li>
+            <li {% ifequal request.session.url_id 'recruiter_change_password' %}class="active"{% endifequal %}>
+                <a href="{% url 'recruiter:change_password' %}">Change Password</a>
+                <input type="hidden" name="is_mobile_verifed" id="is_mobile_verifed"
+                       value="{{ request.user.mobile_verified }}">
+                <input type="hidden" name="is_active" id="is_active" value="{{ request.user.is_active }}">
+            </li>
+            <li>
+                <a href="{% url 'recruiter:getout' %}">Logout</a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+<!--/ toggler -->
+<!-- content -->
+<button type="button" id="feedback-btn" class="btn btn-info vertical-right-aligned">Feedback <span
+        class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span></button>
+
+{% block 'stage' %}
+{% endblock %}
+
+<!--/ content -->
+
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdn.ckeditor.com/4.5.4/basic/ckeditor.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.0.0/js/bootstrap-datetimepicker.min.js"
+        type="text/javascript"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&sensor=false" type="text/javascript"></script>
+    <script src="https://maps.googleapis.com/maps/api/assets/gmap3.js?body=1" type="text/javascript"></script>
+    <!-- select2 -->
+    <script type="text/javascript" src="{% static 'tellme_js/feedback.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+
+{% compress js %}
+    <!-- date time picker -->
+    <!-- tags -->
+    <script type="text/javascript" src='{% static 'r1/js/jquery.tagsinput.js' %}'></script>
+    <script type="text/javascript" src='{% static 'r1/js/main.js' %}'></script>
+    <script type="text/javascript" src='{% static 'r1/js/timepicker.js' %}'></script>
+    <script type="text/javascript" src="{% static 'r1/js/jquery.blockui.js' %}"></script>
+    <script type="text/javascript" src="{% static 'r1/js/dropzone.min.js' %}"></script>
+
+{% endcompress %}
+<script>
+    $('.post-new').click(function (e) {
+        e.preventDefault();
+        $('.job').removeClass('active_menu_item')
+        is_mobile_verifed = $('#is_mobile_verifed').val()
+        is_active = $('#is_active').val()
+        if (is_mobile_verifed == 'True' & is_active == 'True') {
+            {% if request.user.is_agency_recruiter %}
+                window.location = "{% url 'agency:new' 'full-time' %}"
+            {% else %}
+                window.location = "{% url 'recruiter:new' 'full-time' %}"
+              {% endif %}
+            }
+        else{
+          if(is_mobile_verifed == 'False'){
+            {% if request.user.is_agency_recruiter %}
+                var url = "{% url 'agency:verify_mobile' %}"
+            {% else %}
+                var url = "{% url 'recruiter:verify_mobile' %}"
+            {% endif %}
+            open_dialog_with_url('Please Verify Your Mobile number', 'Info!', url)
+              }
+              else if(is_active == 'False') {
+                // alert('Please Activate Your Account');
+                open_dialog('Please Activate Your Account', 'Info!!')
+              }
+            }
+    });
+    function SetCaretAtEnd(elem) {
+        var elemLen = elem.value.length;
+        // For IE Only
+        if (document.selection) {
+            // Set focus
+            elem.focus();
+            // Use IE Ranges
+            var oSel = document.selection.createRange();
+            // Reset position to 0 & then set at end
+            oSel.moveStart('character', -elemLen);
+            oSel.moveStart('character', elemLen);
+            oSel.moveEnd('character', 0);
+            oSel.select();
+        }
+        else if (elem.selectionStart || elem.selectionStart == '0') {
+            // Firefox/Chrome
+            elem.selectionStart = elemLen;
+            elem.selectionEnd = elemLen;
+            // alert()
+            elem.focus();
+        } // if
+    } // SetCaretAtEnd()
+
+</script>
+
+{% block 'extra_js' %}
+{% endblock %}
+
+<!-- accordian script -->
+<script type="text/javascript">
+
+    if ($(window).width() < 853) {
+        function active_drop() {
+            $('.accordian_panel').children('.details_wrap').slideUp('slow');
+            $('.active').children('.details_wrap').slideDown('slow');
+        }
+
+        $('.accordian_panel').click(function (e) {
+            if (!$(this).hasClass('active')) {
+                $(this).addClass('active').siblings().removeClass('active');
+                active_drop();
+            }
+        });
+        active_drop();
+    }
+
+    $(document).ready(function (e) {
+        var pathname = window.location.pathname;
+        atag = $('.jobs_count_wrap a[href="' + pathname + '"]');
+        {% if request.user.is_agency_recruiter %}
+          if(pathname == '/recruiter/job/list/'){
+            atag.first().parent().addClass("active-page");
+          }
+          else{
+            atag.parent().addClass("active-page");
+          }
+        {% else %}
+          if(pathname != '/recruiter/job/list/'){
+              atag.parent().addClass("active-page");
+          }
+        {% endif %}
+        if(pathname == '/recruiter/job/full-time/new/' || pathname == "/agency/job/full-time/new/"){
+          atag = $('#menu .post-new')
+        }
+        else{
+          atag = $('#menu a[href="' + pathname + '"]');
+        }
+        console.log(atag.parent().parent().parent('li').length)
+        if (atag.parent().parent().parent('li').length > 0) {
+            atag.parent().parent().parent('li').addClass('active_menu')
+        }
+        else {
+            atag.parent().addClass('active_menu')
+        }
+
+    });
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        $.feedback({
+            ajaxURL: "{% url 'tellme:post_feedback' %}",
+            html2canvasURL: "{% static 'tellme_js/html2canvas.min.js' %}",
+            feedbackButton: "#feedback-btn",
+            initButtonText: "{% filter escapejs %}{%  include 'tellme/initButtonText.txt' %}{% endfilter %}",
+            postHTML: false,
+            tpl: {
+                description: "{% filter escapejs %}{%  include 'tellme/tpl-description.html' %}{% endfilter %}",
+                highlighter: "{% filter escapejs %}{%  include 'tellme/tpl-highlighter.html' %}{% endfilter %}",
+                overview: "{% filter escapejs %}{%  include 'tellme/tpl-overview.html' %}{% endfilter %}",
+                submitSuccess: "{% filter escapejs %}{%  include 'tellme/tpl-submit-success.html' %}{% endfilter %}",
+                submitError: "{% filter escapejs %}{%  include 'tellme/tpl-submit-error.html' %}{% endfilter %}"
+            },
+            initialBox: true
+        });
+    });
+</script>
+<script type="text/javascript">
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", "4GGTffvfVTU9hD7LEl6N03yuZ7qO5XLJ");
+            }
+        }
+    });
+
+</script>
+
+<!--/ accordian script -->
+</body>
+</html>

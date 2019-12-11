@@ -1,0 +1,84 @@
+ {% load thumbnail %}
+{% load page_tags %}
+<!-- profile_left_container starts here -->
+  <div class="profile_left_container col-md-3">
+
+    <div class="left_block">
+      <h5 class="heading">Profile Details</h5>
+      <div class="profile_percentage">
+        {% if request.user.profile_completion_percentage == 100 %}
+          <div class="head_profile">Your Profile Completed </div>
+        {% else %}
+          <div class="head_profile">Your Profile Completeness </div>
+        {% endif %}
+        <div class="count" id='circle'>
+          <span class="count_value"><small class="applicant_profile_percantage">{{ request.user.profile_completion_percentage }}%</small></span>
+        </div>
+      </div>
+      <ul class="profile_links" id="profile_span">
+        <li id="applied_jobs"><a href="#">Applied Jobs <span class="pull-right">{{ request.user.get_applied_jobs|length }}</span></a></li>
+        <li id="profile"><a href="#">Profile <span class="pull-right" id="user_profile">{% if not request.user.mobile %}20%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
+        <li id="resume_upload"><a href="#">Resume Upload <span class="pull-right" id="resume_upload_icon">{% if not request.user.resume %}15%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
+        <li id="user_profile_description"><a href="#">Profile Description <span class="pull-right">{% if not request.user.profile_description %}5%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
+        <li id="professional_info"><a href="#">Professional Info <span class="pull-right" id="professional_info_icon">{% if not request.user.year %}10%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
+        <li id="education"><a href="#">Educational Details <span class="pull-right">{% if not request.user.education.all %}10%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
+        <li id="technical_skills"><a href="#">Technical Skills <span class="pull-right" id="technical_skills_icon">{% if not request.user.skills.all %}15%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
+        <li id="project"><a href="#">Project Details <span class="pull-right">{% if not request.user.project.all %}10%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
+        <li id="language"><a href="#">Languages Known <span class="pull-right">{% if not request.user.language.all %}5%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
+      </ul>
+      <h5 class="heading">Privacy Settings</h5>
+      <ul class="profile_links verifications">
+        <li><a href="#">Email Notifications<span class="pull-right" id="email_notifications"> <span class="btn-group btn-toggle">
+      <button class="btn btn-xs {% if request.user.email_notifications %}btn-success{% else %}btn-default{% endif %}" id="on_note">ON</button>
+      <button class="btn btn-xs {% if not request.user.email_notifications %}btn-danger{% else %}btn-default{% endif %}" id="off_note">OFF</button>
+      </span></span></a></li>
+        <li><a href="{% url 'my:user_password_change' %}">Change Password</a> </li>
+        <li><a href="{% url 'my:messages' %}">Messages <span class="pull-right">{{ unread_messages }}</span></a></li>
+      </ul>
+      <h5 class="heading">Job Alerts</h5>
+      <div class="job_alert_content">Get all relevant jobs to your inbox as per your requirement by creating alerts</div>
+      <div class="job_alert_block">
+         <a class="create_job_alert" href="{% url 'my:job_alert' %}" target="_blank">Create Job alert</a>
+      </div>
+       <h5 class="heading">Connect with Social networks</h5>
+       <ul class="profile_social_connections">
+
+        <li>
+          {% if request.user.is_fb_connected %}
+          <a href="{{ request.user.get_facebook_url }}" class="facebook"  target="_blank"><i class="fa fa-facebook"></i>Connected</a>
+          {% else %}
+            <a href="{% url 'social:facebook_connect' %}" class="facebook"><i class='fa fa-facebook'></i>Connect with <b>FaceBook</b></a>
+          {% endif %}
+        </li>
+         <li>
+            {% if request.user.is_tw_connected %}
+              <a href="{{ request.user.get_twitter_url }}" class="twitter" target="_blank"><span class='twit'><i class='fa fa-twitter'></i>Connected</span></a>
+            {% else %}
+                <a href="{% url 'social:twitter_login' %}" class="twitter"><span class='twit'><i class='fa fa-twitter'></i>Connect with <b>Twitter</b></span></a>
+            {% endif %}
+          </li>
+        <li>
+          {% if request.user.is_ln_connected %}
+            <a href="{{ request.user.get_linkedin_object.linkedin_url }}" class="linkedin"><i class="fa fa-linkedin"></i> Connected</a>
+          {% else %}
+            <a href="{% url 'social:linkedin_connect' %}" class="linkedin" target="_blank"><span class='in'><i class='fa fa-linkedin'></i>Connect with <b>LinkedIn</b></span></a>
+          {% endif %}
+        </li>
+        <li>
+          {% if request.user.is_gp_connected %}
+            <a href="{{ request.user.get_google_url }}" class="google" target="_blank"><span class='gplus'><i class='fa fa-google-plus'></i> Connected</a>
+          {% else %}
+            <a href="{% url 'social:google_connect' %}" class="google"><i class="fa fa-google-plus"></i>Connect With Google Plus</a>
+          {% endif %}
+        </li>
+        <li>
+          {% if request.user.is_so_connected %}
+            <a href="{{ request.user.get_stack_overflow_object.link }}" class="stack" target="_blank"><span class='stack'><i class='fa fa-stack-overflow'></i> Connected</a>
+          {% else %}
+          <a href="{% url 'social:sofconnect' %}" class="stack"><i class="fa fa-stack-overflow"></i>Connect With Stack Over Flow</a>
+          {% endif %}
+        </li>
+       </ul>
+    </div>
+  </div>
+<!-- profile_left_container ends here -->

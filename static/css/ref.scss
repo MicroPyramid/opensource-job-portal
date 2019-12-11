@@ -1,0 +1,356 @@
+//colors
+$med_min:992px;
+$med_max:1199px;
+$tab_max:991px;
+$tab_min:768px;
+$smob_max:767px;
+$smob_min:480px;
+$mob_max:479px;
+$mob_min:240px;
+
+$bg:#f5f6f7;
+$dark_bg:#26262f;
+$text: #9e9ea1;
+$green:#62bb46;
+$white_bg_text:#9e96a1;
+$sky_color:#00aeef;
+$border:#ced5df;
+$grey:#45586d;
+$green_sky:#00aeef;
+$theme_blue:#0060b9;
+$blue:#5AA2CE;
+
+$fb:#3b5998;
+$in:#0077b5;
+$git:#999999;
+$gplus:#dd4b39;
+$stack:#fe7a15;
+$twit:#55acee;
+$git_yellow:#ff9933;
+$git_green:#6cc644;
+
+a{
+  &:hover{
+    text-decoration:none;
+  }
+}
+
+.form-control_opt{
+  box-shadow:none;
+  height: 40px;
+  border:none;
+  border-radius:0;
+  font-size: 12px;
+}
+.heading{
+  color: $sky_color;
+  font-size:13px;
+  font-weight:500;
+  padding-bottom:6px;
+  margin-bottom:10px;
+  border-bottom:1px solid $border;
+}
+.white_box{
+  background: #fff;
+  padding:15px 0;
+  margin-top: 10px;
+  /*-webkit-box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);
+  -moz-box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);
+  box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);*/
+}
+.radius_btn{
+  border-radius:20px;
+  padding:7px 30px;
+  border:none;
+  font-size:12px;
+  font-weight:500;
+}
+  .social_links{
+      margin-top:20px;
+      ul{
+        margin:0;
+        padding: 0;
+        li{
+          list-style:none;
+          display: inline-block;
+          margin:2px;
+          a{
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            color: darken($text ,10%);
+            text-align: center;
+            padding-top:7px;
+            border-radius: 50%;
+            background:$bg;
+            &:hover{
+              background:darken($text ,10%);
+              color:#fff;
+            }
+          }
+        }
+      }
+    }
+
+.view-more{
+  background: $green_sky;
+  color: white;
+  border-radius: 2px;
+  padding: 3px 10px;
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: 500;
+  &:hover{
+    background: darken($green_sky, 15%);
+    text-decoration: none;
+  }
+}
+a{
+  &:hover{
+    text-decoration:none;
+  }
+}
+
+.green{
+  color: $green;
+  font-size: 12px;
+}
+.grey{
+  color: $grey;
+  font-size: 12px;
+}
+
+
+ .job_list_section{
+      margin-top:10px;
+      .job_item{
+        @extend .white_box;
+        min-height: 225px;
+         @media(min-width: $med_max){
+           padding:0;
+           min-height:auto;
+           height:auto;
+         }
+        .logo_post_date{
+          max-width:140px;
+          float:right;
+          text-align:right;
+          img{
+            max-width:100%;
+            width: 100px;
+            height: auto;
+            margin-top:20px;
+          }
+          small{
+            display:block;
+            color: #88898a;
+            margin-top:6px;
+            font-size:12px;
+          }
+          .apply{
+          background: $green;
+          color: #fff;
+          height: 29px;
+          padding-top: 6px;
+          padding-bottom: 4px;
+          font-weight: 500;
+          font-size: 11px;
+          display: inline-block;
+          text-align: center;
+          width: 80px;
+          text-transform: uppercase;
+          }
+        }
+        .title{
+            display:block;
+            a{
+              color:#1b7fdc;
+              font-weight: 500;
+              font-size:16px;
+              line-height:23px;
+              .exp{
+                color: $green_sky;
+                font-size: 12px;
+                font-weight:500;
+              }
+              .highlight{
+                font-size: 16px;
+              }
+            }
+          }
+          .apply_btn{
+            a{
+              border-radius: 20px;
+              padding: 3px 12px;
+              border: none;
+              font-size: 12px;
+              font-weight: 400;
+              color: #fff;
+              background: $green;
+            }
+          }
+          p{
+            color: lighten($grey, 11%);
+            margin:0;
+            /*&.location{
+              font-size: 10px;
+              margin-top:3px;
+              color: lighten($grey, 11%);
+              a{
+                color: lighten($grey, 11%);
+              }
+            }*/
+          }
+          .job_type{
+            display: block;
+            color: lighten($grey, 11%);
+            margin:5px 0;
+            font-size: 12px;
+            span{
+              font-size: 12px;
+              margin-left: 20px;
+              margin-top:3px;
+              color: lighten($grey, 11%);
+              a{
+                color: lighten($grey, 11%);
+              }
+            }
+          }
+          .ind_type{
+            display: block;
+            color: lighten($grey, 11%);
+            margin:5px 0;
+            font-size: 12px;
+          }
+
+          .company{
+            i{
+              display: inline-block;
+              width: 20px;
+              color: $grey;
+            }
+            display: block;
+            margin-top: 6px;
+            color: lighten($grey, 11%);
+            span{
+              color: #88898a;
+            }
+          }
+          .description{
+            display: block;
+            margin: 5px 0;
+            .head{
+              width: 90px;
+              float: left;
+              color: lighten($grey, 20%);
+            }
+            .content{
+              width: 81%;
+              float: left;
+              color: lighten($grey, 10%);
+              line-height: 22px;
+            }
+            &.Keyskills{
+              margin-top:5px;
+              .tags{
+                a{
+                  color: lighten($grey, 11%);
+                  border: 1px solid #e5e8e5;
+                  display: inline-block;
+                  padding: 1px 6px;
+                  padding-bottom: 0;
+                  margin: 0px 2px;
+                  margin-bottom:4px;
+                  font-size: 10px;
+                }
+              }
+            }
+          }
+      .social_share_group{
+        .btn{
+          border:none;
+          &:first-child{
+            padding-left :0;
+            font-size: 12px;
+          }
+          &.disabled{
+            opacity: 1;
+            color: $grey;
+          }
+          &.facebook{
+            color:$fb !important;
+            }
+        }
+      }
+      }
+    }
+
+    .jobs_columns{
+        .job_outer_col{
+          padding:0 5px 0 5px;
+          .job_col{
+            padding:10px;
+            min-height: 160px;
+            position: relative;
+            margin-bottom: 12px;
+            border-bottom: 1px solid lighten($border, 7%);
+            &:hover{
+              box-shadow: 3px 2px 10px rgba(0,0,0,0.2);
+            }
+            .title{
+                a{
+                  color:$grey;
+                  font-weight: 500;
+                }
+              }
+              p{
+                color: lighten($grey, 14%);
+                a{
+                  color: lighten($grey, 14%);
+                }
+                margin:0;
+                font-weight: 400;
+                &.location{
+                  margin-top:6px;
+                  color: lighten($grey, 5%);
+                   a{
+                    color: lighten($grey, 5%);
+                  }
+                }
+                .apply{
+                  display: inline-block;
+                  background:$green;
+                  text-transform: uppercase;
+                  font-size: 12px;
+                  font-weight: 600;
+                  padding:3px 12px;
+                  padding-bottom: 0px;
+                  color: #fff !important;
+                  margin-top: 8px;
+                  position: absolute;
+                  bottom: 10px;
+                  right: 15px;
+                }
+              }
+          }
+        }
+       }
+       .sty{
+        i{
+            display:inline-block;
+            width:20px;
+            color: #5b748f;
+           }
+          a{
+          color: #5b748f;
+           i{
+            display:inline-block;
+            width:20px;
+           }
+          }
+       }
+      
+      .no_border{
+            border:none;
+          }

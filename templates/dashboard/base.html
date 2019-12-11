@@ -1,0 +1,337 @@
+{% load compress %}
+{% load compress %}
+{% load static %}
+{% load page_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PeelJobs Admin</title>
+    <link rel="icon" type="image/x-icon" href="{{logo}}"/>
+    <!-- FONT-->
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic'
+          rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <!--/ FONT-->
+    <!-- GLOBAL CSS-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+    {% compress css %}
+        <link rel="stylesheet" type="text/less" href="{% static 'css/jquery.dataTables.min.css' %}">
+        <link rel="stylesheet" type="text/less" href="{% static 'css/select2.min.css' %}">
+        <link rel="stylesheet" type="text/less" href="{% static 'css/admin_stylesheet.less' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'r1/css/bootstrap-datetimepicker.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/daterangepicker.css' %}"/>
+
+    {% endcompress %}
+    <!--/ MY STYLE -->
+</head>
+<body>
+<!-- WRAPPER -->
+<div class="wrapper">
+    <!-- TOP BAR -->
+    <section id='header'>
+        <div class="row mt">
+            <div class="logo">
+            <span class="img_div">
+            <img src="{% static 'logo.png' %}">
+            </span>
+            <span class="text_logo">
+            <span style="color: rgb(96, 125, 189); font-size: 23px;">Peel</span>
+            <span style="color: rgb(194, 85, 85); font-size: 23px;">Jobs</span>
+            </span>
+          </div>
+          <div class="top_menu">
+          <ul>
+            <li><a href="{% url "dashboard:clear_cache" %}" class="settings">Clear Cache</a>
+            </li>
+            <li><a href="{% url "dashboard:admin_user_list" %}" class="admin"><i class='fa fa-user-plus'></i>Admin</a>
+            </li>
+            <!--<li><a class="requiter"><i class='fa fa-user'></i>Recruiters</a></li>-->
+            <li><a class="settings"><i class='fa fa-cogs'></i>Settings</a>
+            <ul class="sub_list">
+            <li><a href="{% url "dashboard:change_password" %}">Change Password</a></li>
+            <li><a href="{% url "get_out" %}">Logout</a></li>
+            </ul>
+            </li>
+          </ul>
+          </div>
+        </div>
+    </section>
+    <!--/ TOP BAR -->
+    <!-- CONTENT AND MENU CONTAINER -->
+    <!-- MENU -->
+    <section id='menu'>
+        <ul>
+            <li {% ifequal request.session.url_id 'dashboard' %}class="active_menu"{% endifequal %}><a
+                    href="/dashboard/" class="menu_item"><i class="fa fa-tachometer"></i><span>Dashboard</span></a></li>
+            <li {% ifequal request.session.url_id 'data' %}class="active_menu"{% endifequal %}>
+                <a><i class="fa fa-clipboard"></i><span>Data</span></a>
+                <ul class="sub_list">
+                    <li><a href="{% url "dashboard:country" %}" class="menu_item"><i class='fa fa-caret-right'></i>Country</a>
+                    </li>
+                    <li><a href="{% url "dashboard:tech_skills" %}" class="menu_item"><i class='fa fa-caret-right'></i>Technical
+                        skills</a></li>
+                    <li><a href="{% url "dashboard:languages" %}" class="menu_item"><i class='fa fa-caret-right'></i>Languages</a>
+                    </li>
+                    <li><a href="{% url "dashboard:qualifications" %}" class="menu_item"><i
+                            class='fa fa-caret-right'></i>Qualifications</a></li>
+                    <li><a href="{% url "dashboard:industries" %}" class="menu_item"><i class='fa fa-caret-right'></i>Industries</a>
+                    </li>
+                    <li><a href="{% url "dashboard:functional_area" %}" class="menu_item"><i
+                            class='fa fa-caret-right'></i>Functional Areas</a></li>
+                    <li><a href="{% url "dashboard:locations" 'active' %}" class="menu_item"><i class='fa fa-caret-right'></i>Locations</a>
+                    <li><a href="{% url "dashboard:save_meta_data" %}" class="menu_item"><i class='fa fa-caret-right'></i>Meta Data</a>
+                    <li><a href="{% url "dashboard:redirect_data" %}" class="menu_item"><i class='fa fa-caret-right'></i>Redirect Data</a>
+                    </li>
+                </ul>
+            </li>
+          <li {% ifequal request.session.url_id 'company' %}class="active_menu"{% endifequal %}>
+            <a><i class="fa fa-medkit"></i><span>Agencies</span></a>
+            <ul class="sub_list">
+              <li><a href="{% url "dashboard:companies" 'company' %}" class="menu_item"><i class='fa fa-caret-right'></i>Companies</a></li>
+              <li><a href="{% url "dashboard:companies" 'consultant' %}" class="menu_item"><i class='fa fa-caret-right'></i>Agencies</a></li>
+            </ul>
+          </li>
+          <li {% ifequal request.session.url_id 'recruiter' %}class="active_menu"{% endifequal %}><a href="{% url "dashboard:recruiters_list" "active" %}" class="menu_item"><i class="fa fa-users"></i><span>Recruiters</span></a></li>
+          <li {% ifequal request.session.url_id 'job_post' %}class="active_menu"{% endifequal %}>
+            <a class="menu_item"><i class="fa fa-briefcase"></i><span>Job Posts</span></a>
+            <ul class="sub_list">
+              <li><a href="{% url 'dashboard:new_govt_job' 'full-time' %}" class="menu_item"><i class='fa fa-caret-right'></i>Post A New Job</a></li>
+              <li><a href="{% url 'dashboard:job_posts' "full-time" %}"  class="menu_item"><i class='fa fa-caret-right'></i>Full Time</a></li>
+              <li><a href="{% url "dashboard:job_posts" 'internship' %}" class="menu_item"><i class='fa fa-caret-right'></i>Internship</a></li>
+              <li><a href="{% url "dashboard:job_posts" 'walk-in' %}" class="menu_item"><i class='fa fa-caret-right'></i>Walk-in</a></li>
+              <li><a href="{% url "dashboard:job_posts" 'government' %}" class="menu_item"><i class='fa fa-caret-right'></i>Government Jobs</a></li>
+                </ul>
+            </li>
+            <li {% ifequal request.session.url_id 'applicant' %}class="active_menu"{% endifequal %}><a
+                    href="{% url "dashboard:applicants" %}" class="menu_item"><i class="fa fa-graduation-cap"></i><span>Job Seekers</span></a>
+            </li>
+            <li {% ifequal request.session.url_id 'search_log' %}class="active_menu"{% endifequal %}>
+                <a href="{% url "dashboard:search_log" %}" class="menu_item"><i class="fa fa-search"></i><span>Search Log</span></a>
+                <ul class="sub_list">
+                    <li><a href="{% url "dashboard:search_summary" 'skills' %}" class="menu_item"><i class="fa fa-question"></i>Search
+                        Summary</a></li>
+                </ul>
+            </li>
+          <li {% ifequal request.session.url_id 'subscribers' %}class="active_menu"{% endifequal %}><a href="{% url "dashboard:subscribers" %}" class="menu_item"><i class="fa fa-bell"></i><span>Subscribe</span></a></li>
+          <li {% ifequal request.session.url_id 'subscribers' %}class="active_menu"{% endifequal %}>
+            <a><i class="fa fa-share"></i><span>Sent Mails</span></a>
+            <ul class="sub_list">
+              <li><a href="{% url "dashboard:applicants_mail" %}" class="menu_item"><i class='fa fa-caret-right'></i>Today's Mails</a></li>
+              <li><a href="{% url "dashboard:mobile_campaign" %}" class="menu_item"><i class='fa fa-caret-right'></i>Mobile Campaign</a></li>
+            </ul>
+          </li>
+          <li><a><i class="fa fa-medkit"></i><span>Duplicates</span></a>
+            <ul class="sub_list">
+              <li><a href="{% url "dashboard:removing_duplicate_companies" %}" class="menu_item"><i class='fa fa-caret-right'></i>Company Jobposts</a></li>
+              <li><a href="{% url "dashboard:move_duplicates" 'skills' %}" class="menu_item"><i class='fa fa-caret-right'></i>Skills</a></li>
+              <li><a href="{% url "dashboard:move_duplicates" 'degrees' %}" class="menu_item"><i class='fa fa-caret-right'></i>Degrees</a></li>
+              <li><a href="{% url "dashboard:move_duplicates" 'locations' %}" class="menu_item"><i class='fa fa-caret-right'></i>Loations</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="{% url 'dashboard:assessment_skills' %}" class="menu_item"><i class="fa fa-briefcase"></i><span>Assesments</span></a>
+            <ul class="sub_list">
+              <li><a href="{% url 'dashboard:assessment_skills' %}" class="menu_item"><i class='fa fa-caret-right'></i>Skills</a></li>
+              <li><a href="{% url 'dashboard:new_question' %}"  class="menu_item"><i class='fa fa-caret-right'></i>Post A New Question</a></li>
+                </ul>
+            </li>
+        {% if request.user|check_perm %}
+          <li {% ifequal request.session.url_id 'helpdesk' %}class="active_menu"{% endifequal %}>
+            <a><i class="fa fa-envelope"></i><span>Support</span></a>
+            <ul class="sub_list">
+              <li><a href="{% url "tickets:admin_tickets_list" %}" class="menu_item"><i class="fa fa-question"></i>Support</a></li>
+              <li><a href="/admin/tellme/feedback/" class="menu_item"><i class="fa fa-question"></i>Feedback</a></li>
+            </ul>
+          </li>
+
+          {% endif %}
+          <li>
+            <a><i class="fa fa-envelope"></i><span>Mailing</span></a>
+            <ul class="sub_list">
+              <li><a href="{% url "dashboard:emailtemplates" %}" class="menu_item"><i class='fa fa-caret-right'></i>Templates</a></li>
+              <li><a href="{% url "dashboard:sent_mails" %}" class="menu_item"><i class='fa fa-caret-right'></i>Sent Mails</a></li>
+            </ul>
+          </li>
+          <li {% ifequal request.session.url_id 'reports' %}class="active_menu"{% endifequal %}><a href="{% url "dashboard:reports" %}" class="menu_item"><i class="fa fa-flag" aria-hidden="true"></i><span>Reports</span></a></li>
+        </ul>
+    </section>
+    <!-- MENU -->
+    <!-- CONTENT WRAPPER -->
+    <div class="content_wrapper">
+        <div class="row mt">
+            <!-- CONTENT -->
+            {% block stage %}
+            {% endblock stage %}
+            <!--/ CONTENT -->
+        </div>
+    </div>
+    <!--/ CONTENT WRAPPER -->
+    <!--/ CONTENT AND MENU CONTAINER -->
+</div>
+<div id="block_question" style="display: none">
+</div>
+<!--/ WRAPPER -->
+<!-- GLOBAL SCRIPTS-->
+ {% compress js %}
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    {% endcompress %}
+
+<script src="https://code.jquery.com/jquery-migrate-1.4.1.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdn.ckeditor.com/4.5.1/standard/ckeditor.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js" type="text/javascript"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.0.0/js/bootstrap-datetimepicker.min.js"
+        type="text/javascript"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDa7EJOrUaEl8v6yA71gbSsHximjgMR9TU&libraries=places&sensor=false"
+        type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/assets/gmap3.js?body=1" type="text/javascript"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+{% compress js %}
+
+    <script type="text/javascript" src="{% static 'js/bootstrap-tagsinput.min.js' %}"></script>
+    <script type="text/javascript" src='{% static 'r1/js/timepicker.js' %}'></script>
+    <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/daterangepicker.js' %}"></script>
+
+{% endcompress %}
+<script type="text/javascript">
+    function SetCaretAtEnd(elem) {
+        var elemLen = elem.value.length;
+        // For IE Only
+        if (document.selection) {
+            // Set focus
+            elem.focus();
+            // Use IE Ranges
+            var oSel = document.selection.createRange();
+            // Reset position to 0 & then set at end
+            oSel.moveStart('character', -elemLen);
+            oSel.moveStart('character', elemLen);
+            oSel.moveEnd('character', 0);
+            oSel.select();
+        }
+        else if (elem.selectionStart || elem.selectionStart == '0') {
+            // Firefox/Chrome
+            elem.selectionStart = elemLen;
+            elem.selectionEnd = elemLen;
+            // alert()
+            elem.focus();
+        } // if
+    } // SetCaretAtEnd()
+</script>
+{% block script %}
+{% endblock script %}
+
+<!-- tabs -->
+<script type="text/javascript">
+    $('.tab_button_row .button').click(function (e) {
+        $(this).addClass('active').siblings().removeClass('active');
+        var id_panel = $(this).attr('panelid');
+        $('#' + id_panel).addClass('active').siblings().removeClass('active');
+    })
+    // date-timepicker
+
+    $(document).ready(function () {
+        $(".knowledge-date").click(function () {
+            $("#reportrange").click();
+        });
+        $('.ui-dialog-buttonset button').attr('class', 'btn')
+
+        function cb(start, end) {
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        }
+
+        cb(moment().subtract(29, 'days'), moment());
+        var Ranges = {
+            'Today': [moment({hour: 0, minute: 0}), moment()],
+            'Yesterday': [moment({hour: 0, minute: 0}).subtract(1, 'days'), moment({
+                hour: 23,
+                minute: 59
+            }).subtract(1, 'days')],
+            'Last 7 Days': [moment({hour: 0, minute: 0}).subtract(6, 'days'), moment({hour: 23, minute: 59})],
+            'Last 30 Days': [moment({hour: 0, minute: 0}).subtract(29, 'days'), moment({hour: 23, minute: 59})],
+            'This Month': [moment({hour: 0, minute: 0}).startOf('month'), moment({
+                hour: 23,
+                minute: 59
+            }).endOf('month')],
+            'Last Month': [moment({hour: 0, minute: 0}).subtract(1, 'month').startOf('month'), moment({
+                hour: 23,
+                minute: 59
+            }).subtract(1, 'month').endOf('month')]
+        };
+        $('#reportrange').daterangepicker({
+            autoApply: true,
+            format: 'MMM DD, YYYY HH:mm',
+            ranges: Ranges
+        }, cb);
+
+        $('#reportrange1').daterangepicker({
+            autoApply: true,
+            format: 'MMM DD, YYYY HH:mm',
+            ranges: Ranges
+        }, cb);
+
+        $('#reportrange2').daterangepicker({
+            autoApply: true,
+            format: 'MMM DD, YYYY HH:mm',
+            ranges: Ranges
+        }, cb);
+        $('#event_date').daterangepicker({
+            autoApply: true,
+            format: 'MM/DD/YYYY HH:mm:ss',
+            singleDatePicker: true,
+            showDropdowns: true,
+            ranges: Ranges
+        }, cb);
+    });
+    function open_dialog(text, title){
+    $('#block_question').text(text);
+    $('#block_question').dialog({
+        modal: true,
+        draggable: false,
+        title: title,
+        buttons: [
+            {
+                text: "OK",
+                click: function () {
+                    $(this).dialog("close");
+                    window.scrollTo(0, 0);
+                }
+            }
+        ]
+    });
+              // $('.ui-dialog-titlebar-close').html('<span>X</span>')
+
+  }
+  function open_dialog_with_url(text, title, url){
+    $('#block_question').text(text);
+    $('#block_question').dialog({
+        modal: true,
+        draggable: false,
+        title: title,
+        buttons: [
+            {
+                text: "OK",
+                click: function () {
+                    window.location = url;
+                }
+            }
+        ]
+    });
+  }
+</script>
+<!--/ tabs -->
+<!--/GLOBAL SCRIPTS-->
+</body>
+</html>

@@ -1,0 +1,99 @@
+{% extends 'recruiter/index.html' %}
+{% block 'stage' %}
+    <div class="container">
+        <div class="row mt">
+
+            <div class="editable_content_wrap">
+
+                <section id="change_password">
+                    {% if not request.user.is_active and not request.user.mobile_verified %}
+                        <div class="alert alert-danger">
+                            {% if activate_url %}<h1>Your account is Successfully Activated</h1>A confirmation email has
+                                been sent to you. Please click on the Activation Link to Activate your account & verify
+                                your mobile number too.{% else %}A confirmation email has been sent to you. Please click
+                                on the Activation Link to Activate your account & verify your mobile number
+                                too.{% endif %}
+                        </div>
+                    {% endif %}
+                    <h3><i class="fa fa-refresh"></i>Verify<span>Mobile</span></h3>
+                    <div class="panel_wrap">
+                        <div class="col-md-12 form_div">
+                            <form id="mobileverifyfrom" name="mobileverifyfrom" method="post">
+                                <div class="form-group">
+                                    <label>Otp</label>
+                                    <input type="password" class="form-control" placeholder="Please enter Your OTP"
+                                           name="mobile_verification_code" id="mobile_verification_code">
+                                </div>
+                                <div class="form-group">
+                                    <div class="click-here"><a href="#" class="send_otp">Click Here</a> To re-generate
+                                        otp
+                                    </div>
+                                    <div class="click-here"><a href="{% url 'recruiter:edit_profile' %}">Click Here</a>
+                                        To Change Mobile Number
+                                    </div>
+                                </div>
+                                <button class="change_btn" type="submit"><i class="fa fa-refresh"></i>Sumbit</button>
+                                <button class="change_btn cancelbutton" type="button"><i class="fa fa-refresh"></i>Reset
+                                </button>
+                            </form>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block 'extra_js' %}
+    <script type="text/javascript">
+        $("form#mobileverifyfrom").submit(function (e) {
+            e.preventDefault();
+            {% if request.user.is_company_recruiter %}
+                href = "{% url 'recruiter:verify_mobile' %}"
+            {% else %}
+                href = "{% url 'agency:verify_mobile' %}"
+            {% endif %}
+            $.post(href, $("form#mobileverifyfrom").serialize(), function (data) {
+                if (data.error) {
+                    $('p.failure').remove();
+                    if (data.response_message) {
+                        open_dialog(data.response_message, 'Error!')
+                    }
+                    for (var key in data.response) {
+                        $('#' + key).after('<p class="failure">' + data.response[key] + '</p>');
+                    }
+                } else {
+                    {% if request.user.is_company_recruiter %}
+                        href = "{% url 'recruiter:list' %}"
+                    {% else %}
+                        href = "{% url 'agency:list' %}"
+                    {% endif %}
+                    open_dialog_with_url(data.message, 'Info!', href)
+                }
+            }, 'json');
+        });
+
+        $("a.send_otp").click(function (e) {
+            e.preventDefault();
+            $("#mobile_verification_code").val('');
+            {% if request.user.is_company_recruiter %}
+                href = "{% url 'recruiter:send_mobile_verification_code' %}"
+            {% else %}
+                href = "{% url 'agency:send_mobile_verification_code' %}"
+            {% endif %}
+
+            $.post(href, {}, function (data) {
+                if (data.error) {
+                    open_dialog(data.message, 'Error!')
+                } else {
+                    open_dialog(data.message, ;'Info!')
+                }
+            }, 'json');
+
+        });
+        $(".cancelbutton").click(function (e) {
+            $("#mobile_verification_code").val('');
+        });
+    </script>
+{% endblock %}

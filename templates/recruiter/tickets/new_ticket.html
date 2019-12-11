@@ -1,0 +1,108 @@
+{% extends 'recruiter/index.html' %}
+{% load tz %}
+
+{% block 'stage' %}
+    <!-- content -->
+    <div class="content_wrap">
+        <form name="ticketform" id="ticketform" method="post">
+            <div class="raise_ticket">
+                <h3><i class='fa fa-ticket'></i><span>Raise a</span>ticket</h3>
+                <div class="category">
+                    <div class="content_job_post">
+                        <div class="form_div">
+                            <div class="input_element area_element">
+                                <label>Ticket Title</label>
+                                <input type="text" class="input full_wid" placeholder="Ticket Title" name="title"
+                                       id="title">
+                            </div>
+                            <div class="input_element area_element">
+                                <label>Ticket Description</label>
+                                <textarea class="input full_wid" placeholder="Description" id="description"
+                                          name="description"></textarea>
+                            </div>
+                            <div class="input_element area_element">
+                                <label>Ticket Priority</label>
+                                <select class="input full_wid" name="priority" id="priority">
+                                    <option value="">Select a ticket priority</option>
+                                    {% for priority in priorities %}
+                                        <option value="{{ priority.0 }}">{{ priority.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="input_element area_element">
+                                <label>Ticket Type</label>
+                                <select class="form-control" name="ticket_type" id="ticket_type">
+                                    <option value="">Select a ticket type</option>
+                                    {% for ticket_type in ticket_types %}
+                                        <option value="{{ ticket_type.0 }}">{{ ticket_type.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="input_element area_element file_attachments">
+                                <label>Attachments</label>
+                                <input type="file" class="input full_wid attachments" placeholder="Ticket Title"
+                                       name="attachment_1" id="attachment_1" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf,  .docx, .odt, image/*">
+                                <a href="#" class="other_attachment"><i class='fa fa-paperclip'></i>Add another
+                                    attachment</a>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="button_row">
+                                <button type="submit" class="button change"><i class='fa fa-check'></i>Submit</button>
+                                <button type="button" class="button cancel"><i class='fa fa-times'></i>Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+{% block 'extra_js' %}
+    <!-- TICKETS -->
+    <script type="text/javascript">
+        $('.cancel').click(function (e) {
+            window.location = '/tickets/'
+        });
+        $('.other_attachment').click(function (e) {
+            e.preventDefault();
+            attachments_count = $('.attachments').length + 1
+            $('.other_attachment').before('<div class="input_element area_element"><input type="file" class="input full_wid attachments" placeholder="Ticket Title" name="attachment_' + attachments_count + '" id="attachment_' + attachments_count + '"></div>')
+        });
+         // Setup the ajax indicator
+            $('body').append('<div id="ajaxBusy"><p><img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="60px" width="60px"></p></div>');
+            $('#ajaxBusy').css({
+                display: "none",
+                margin: "0px",
+                paddingLeft: "0px",
+                paddingRight: "0px",
+                paddingTop: "0px",
+                paddingBottom: "0px",
+                position: "fixed",
+                left: "48%",
+                top: "47%",
+                width: "auto",
+            });
+             $(document).ajaxStart(function () {
+            $('#ajaxBusy').show();
+        }).ajaxStop(function () {
+            $('#ajaxBusy').hide();
+        });
+        $('form#ticketform').ajaxForm({
+            type: 'POST',
+            dataType: 'json',
+            data: $('#ticketform').serialize(),
+            success: function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url(data.response, 'Info!', "/tickets/")
+                } else {
+                    $('div.error').remove();
+                    for (var key in data.response) {
+                        $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                    }
+                }
+            }
+        });
+    </script>
+    <!--/ TICKETS -->
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% load schedule_tags %}
+{% for date in week_days %}
+  <td class="cal-check">
+      {% ifequal date 0 %}
+      {% else %}
+          <a class="project_overview" href="{% url 'jobposts_by_date' year month.id date %}"><span class="day">{{ date }}</span>
+            <p class="projects_list">
+            {% get_per_day_jobposts year month.id date as per_day_projects %}
+                <p class="each_project {% if project.status == "New" %}{% if project.name %}mgmt-project-{{project.status}}{% else %}project-{{project.status}}{% endif %}{% else %}project-{{project.status}}{% endif %}">
+                  <span class="label label-info">{{per_day_projects|length}}</span>
+                </p>
+            </p>
+          </a>
+      {% endifequal %}
+  </td>
+{% endfor %}

@@ -1,0 +1,368 @@
+{% extends "dashboard/base.html" %}
+{% load page_tags %}
+{% load tz %}
+{% load static %}
+{% block stage %}
+    <style type="text/css">
+        table tbody tr td {
+            padding: 3px !important;
+        }
+    </style>
+
+    <div class="list_table">
+        <div class='filter'>
+            <div class="form-inline">
+                <div class="form-group">
+                    <span><a href="{% url 'dashboard:new_govt_job' job_type %}"><button class="btn btn-warning"><i
+                            class="fa fa-plus"></i> Add New Job Post</button></a></span>
+                </div>
+            </div>
+        </div>
+        <form id="search_form" name="adv-search-form" class="search-form" method="POST">
+            <div class="col-md-12 search_form">
+                <div class="col-md-4">
+                    <input type="text" name="search" id="search" class="form-control"
+                           placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
+                </div>
+                <div class="col-md-4">
+                    <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
+                    <input type="hidden" name="page" id="page" value="{{ page }}"/>
+                    <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange"
+                           name="timestamp" value="{{ request.POST.timestamp }}" placeholder="Select the date">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="form-control submit">Submit</button>
+                </div>
+            </div>
+        </form>
+        <h4>Job Post List</h4>
+        <table class="table jobposts_table" id="sample_1">
+            <thead>
+            <tr>
+                <th width="12%">Job Title</th>
+                <th width="13%">Location</th>
+                <th width="15%">Company Name</th>
+                <th width="5%">Job Status</th>
+                <th width="5%">Posted By</th>
+                <th width="10%">Posted On</th>
+                <th width="10%">Applied Users</th>
+                <th width="30%">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for post in posts %}
+                <tr data-href='/dashboard/jobpost/view/{{ post.id }}/' class='job_detail'>
+                    <td>{{ post.title }}</td>
+                    <td>{% for location in post.location.all %}{% if forloop.last and not forloop.next_element %}
+                        {{ location.name }}{% else %}{{ location.name }},<br> {% endif %}{% endfor %}
+                    </td>
+                    <td>{% if post.company %}{{ post.company.name }}{% else %}{{ post.company_name }}{% endif %}</td>
+                    <td class='status_{{ post.id }}'>{{ post.status }}</td>
+                    <td><a href="{% url 'dashboard:view_recruiter' post.user.id %}"
+                           {% if post.user.company and post.user.company.company_type == 'Consultant' %}title="Consultant"
+                           {% else %}title="Recruiter"{% endif %}>{{ post.user.username }}</a></td>
+                    <td>{{ post.published_on|timezone:'Asia/Calcutta'|date:"M. d, Y h:i a" }}</td>
+                    <td class="text-center">{{ post.get_all_applied_users_count }}</td>
+                    <td>
+                        {% ifequal post.user.id|slugify request.user.id|slugify %}
+                            <a href="{% url 'dashboard:edit_govt_job' post.id %}" id="{{ post.id }}" class="edit-job"><i
+                                    class="fa fa-edit edit" title="edit Job"></i></a>{% else %}{% endifequal %}
+
+                        {% ifequal post.status 'Disabled' %}
+                            <a href="#" id="{{ post.id }}" class="enable-job "
+                               data-href="{% url 'dashboard:enable' post.id %}"><i class="fa fa-check edit"
+                                                                                   title="Enable Job"></i></a>
+                        {% else %}
+                            <a href="#" id="{{ post.id }}" class="deactivate-job" class="deactivate-job"
+                               data-href="{% url 'dashboard:deactivate_job' post.id %}"><i class="fa fa-times delete"
+                                                                                           title="Deactivate Job"></i></a>
+                        {% endifequal %}
+
+                        {% if post.status == 'Pending' %}
+                            <a href="#" id="{{ post.id }}" class="publish-job"
+                               data-href="{% url 'dashboard:publish' post.id %}"><i class="fa fa-hand-o-up pending"
+                                                                                    title="Pending"></i></a>
+                        {% elif post.status == 'Published' %}
+                            <a href="#" id="{{ post.id }}" data-href="{% url 'dashboard:publish' post.id %}"
+                               class="publish-job"><i class="fa fa-check published" title="Published"></i></a>
+                        {% elif post.status == 'Live' %}
+                            <a href="#" id="{{ post.id }}" class="live-job"><i class="fa fa-check published"
+                                                                               title="Live"></i></a>
+                        {% endif %}
+
+                        <a href="#" id="{{ post.id }}" class="delete-job"
+                           data-href="{% url 'dashboard:delete' post.id %}"><i class="fa fa-trash-o delete"
+                                                                               title="Delete Job"></i></a>
+
+                        <a href="{% url 'dashboard:edit_job_title' post.id %}" id="{{ post.id }}" class="edit-job"><i
+                                class="fa fa-edit edit" title="edit Job title"></i></a>
+
+                        <a href="#" data-href="{% url 'dashboard:post_on_all_fb_groups' post.id %}" id="{{ post.id }}"
+                           class="fb_groups_post_job"><i class="fa fa-facebook-official edit" aria-hidden="true"
+                                                         title="Post Jobs In All Fb Groups"></i></a>
+
+                        <a href="#" data-href="{% url 'dashboard:adding_existing_candidates_to_jobposts' post.id %}"
+                           id="{{ post.id }}" class="adding_existing_candidates_to_jobposts"><i class="fa fa-user edit" aria-hidden="true" title="Post Jobs In All Fb Groups"></i></a>
+                         {% if post.status == 'Live' %}
+                         <a data-href="{{post.slug}}" id="{{ post.id }}" class="front_end_url"><i class="fa fa-eye edit" aria-hidden="true"
+                            title="See Front-End View"></i></a>
+                        {% endif %}
+
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!--/ post details -->
+    <div class="pagination_wrap">
+        {% get_page current_page last_page as pages %}
+        <nav>
+            <ul class="pagination">
+                {% if current_page != 1 %}
+                    <li class="prev"><a href="#" class="{{ previous_page }}"><i class="fa fa-angle-double-left"></i></a>
+                    </li>
+                    <li class="prev"><a href="#" class="{{ prev_page }}"><i class="fa fa-angle-left"></i></a></li>
+                    <li><a href="#" class="1">first</a></li>               {% endif %}
+                {% for s in pages %}
+                    <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="#"
+                                                                                        class="{{ s }}">{{ s }}</a>
+                    </li>               {% endfor %}               {% if current_page != last_page %}
+                <li><a href="{{ last_page }}" class="{{ last_page }}">last</a></li>
+                <li><a href="#" id="{{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+                <li><a href="#" class="{{ after_page }}"><i class="fa fa-angle-double-right"></i></a>
+                </li>
+            {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock stage %}
+{% block script %}
+
+    <script type="text/javascript">
+        $('.delete-job').click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            href = $(this).attr('data-href')
+            $('#block_question').text('Do you want to delete Jobpost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post(href, $("form#jobform").serialize(), function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog('Job Post Deleted Successfully', 'Success!')
+                                    $('#search_form').submit();
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('.deactivate-job').click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            href = $(this).attr('data-href')
+            $('#block_question').text('Do you want to deactivate Jobpost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post(href, $("form#jobform").serialize(), function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog('Job Post Disabled Successfully', 'Success!')
+                                    $('#search_form').submit();
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('.enable-job').click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            href = $(this).attr('data-href')
+            $('#block_question').text('Do you want to enable JobPost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post(href, {}, function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog('Job Post Enabled Successfully', 'Success!')
+                                    $('#search_form').submit();
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('.publish-job').click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            href = $(this).attr('data-href')
+            id = $(this).attr('id')
+            $('#block_question').text('Do you want to Publish JobPost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post(href, {}, function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog('Job Post Published Successfully', 'Success!')
+                                    $('#search_form').submit();
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('.fb_groups_post_job').click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            href = $(this).attr('data-href')
+            $('#block_question').text('Do you want to post this job in all fb groups?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post(href, {}, function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog_with_url(data.response, 'Success!!', '.')
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+
+        $('.adding_existing_candidates_to_jobposts').click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            href = $(this).attr('data-href')
+            $('#block_question').text('Do you want to add all the candidates to the jobpost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post(href, {}, function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog_with_url(data.response, 'Success!', '.')
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+
+        $('.pagination li a').click(function (e) {
+            e.preventDefault();
+            $('#page').val($(this).attr('class'))
+            $('#search_form').submit();
+        });
+        $(".job_detail").click(function () {
+            window.document.location = $(this).data("href");
+        });
+        $(".job_detail .front_end_url").click(function (e) {
+            e.stopPropagation()
+            e.preventDefault()
+            window.open($(this).attr("data-href"), '_blank')
+        });
+    </script>
+{% endblock script %}

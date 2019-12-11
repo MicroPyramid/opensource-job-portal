@@ -1,0 +1,39 @@
+<!-- another location -->
+<div class="interview_location">
+  <div class="row marl_15 another_location">
+    <span class="delete-interview" id="interview_location_{{interview_location_count}}"><i class='fa fa-trash delete_location'></i></span>
+    <div id="interview_location_{{interview_location_count}}">
+      <!--input element
+      <div class="col-md-8 form_left">
+        <div class="input_element area_element">
+          <label>Location</label>
+          <div class="map_wrapper">
+            <input id="search_{{interview_location_count}}" class="controls" style="width: 29%;" type="text" placeholder="Search Box">
+            <div id="location_{{interview_location_count}}" class="map_canvas mapping"></div>
+            <textarea class="input" style="display:none;" name='final_location_{{interview_location_count}}' id='final_location_{{interview_location_count}}' class="final_location_{{interview_location_count}}" placeholder='Company Address'></textarea>
+          </div>
+        </div>
+        <div class="input_element">
+          <input type="checkbox" name="show_location_{{interview_location_count}}" id="show_location_{{interview_location_count}}" class="interview_location_show_location_{{interview_location_count}}" value="True" checked><span class='name'>Show Location</span>
+        </div>
+      </div>
+      /input element -->
+      <!--input element -->
+     <div class="input_element row marl_15">
+          <label class="col-md-3">Venue Details</label>
+            <div class="col-md-9 pad_lr_0">
+          <textarea class="input" name='venue_details_{{interview_location_count}}' id='venue_details_{{interview_location_count}}' class="interview_location_venue_details_{{interview_location_count}}" placeholder='Company Address' rows="10"></textarea>
+        </div>
+      </div>
+      <!--/ input element -->
+      <!--input element -->
+      <!--/ input element -->
+    </div>
+  </div>
+</div>
+<!--/ another location -->
+<script type="text/javascript">
+  $(document).ready(function(e){
+    getGoogleMap();
+  })
+</script>

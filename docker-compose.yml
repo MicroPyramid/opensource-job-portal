@@ -1,0 +1,11 @@
+version: "3"
+services:
+  webapp:
+    build:
+      context: ./
+      dockerfile: dockerfile_dj
+    volumes:
+      - .:/home/peeljobs
+    network_mode: "host"
+    entrypoint:
+      - /home/entrypoint.sh

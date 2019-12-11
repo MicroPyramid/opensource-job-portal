@@ -1,0 +1,122 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load tz %}
+{% block stage %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Email Tempalte Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="tile_each">
+            <label>Title</label>
+            <span class="description">
+            <span>{{ sent_mail.template.title }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Subject</label>
+            <span class="description">
+            <span>{{ sent_mail.template.subject }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Message</label>
+            <span class="description">
+            <span>{{ sent_mail.template.message|safe }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <div class="profile_individual" id="">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Recruiters</h4>
+        </div>
+        <div id="recruiters">
+          <div class="list_table">
+            <table class="table table-hover" id="sample_1">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Email</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>No of Job Posts(Active/Inactive)</th>
+                  <th>Joined On</th>
+                  <th>Social Links</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for recruiter in sent_mail.recruiter.all  %}
+                <tr {% if not recruiter.is_active %} style="background-color:#E8E8E8;" {% endif %}>
+                  <th scope="row">{{forloop.counter}}</th>
+                  <td><a href="{% url 'dashboard:view_recruiter' recruiter.id %}">{{ recruiter.email }}</a></td>
+                  <td>{{recruiter.first_name}}</td>
+                  <td>{{recruiter.last_name}}</td>
+                  <td>{{ recruiter.get_active_jobposts_count  }}/{{ recruiter.get_inactive_jobposts_count }}</td>
+                  <td>{{ recruiter.date_joined|timezone:'Asia/Calcutta' }}</td>
+                  <td>
+                    <ul class="social_integration">
+                      <li>
+                        {% if recruiter.is_fb_connected %}
+                        <i class="fa fa-facebook fb"></i>
+                        {% else %}
+                        <i class="fa fa-facebook"></i></a>
+                        {% endif %}
+                      </li>
+                      <li>
+                        {% if recruiter.is_tw_connected %}
+                        <i class="fa fa-twitter twit"></i>
+                        {% else %}
+                        <i class="fa fa-twitter"></i>
+                        {% endif %}
+                      </li>
+                      <li>
+                        {% if recruiter.is_gp_connected %}
+                        <i class="fa fa-google-plus plus"></i>
+                        {% else %}
+                        <i class="fa fa-google-plus"></i>
+                        {% endif %}
+                      </li>
+                      <li>
+                        {% if recruiter.is_ln_connected %}
+                        <i class="fa fa-linkedin in"></i>
+                        {% else %}
+                        <i class="fa fa-linkedin"></i>
+                        {% endif %}
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!--/ post details -->
+    </div>
+  </div>
+</section>
+{% endblock %}
+<script type="text/javascript">
+$('#sample_1').DataTable({
+      "sPaginationType": "full_numbers",
+      "aaSorting": [],
+      "bSort": true,
+      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+      "pageLength": 20,
+    });
+$('.disable-recruiter').click(function(e){console.log("hello")});
+</script>

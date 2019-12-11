@@ -1,0 +1,204 @@
+{% extends 'dashboard/base.html' %}
+{% load page_tags %}
+{% load tz %}
+{% block stage %}
+<section id='recruiters'>
+
+  <div class="list_table">
+    <h4>{% if company_type == 'company' %}Companies {% else %}Agencies {% endif %}
+    {% if not company_type == 'company' %}
+    &nbsp;&nbsp;
+    <span>
+        <a class="label {% if status == 'active' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?active=true">Active</a> /
+        <a class="label {% if status == 'inactive' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?active=false">Inactive</a>
+        <a class="label {% if status == 'admin_active' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?admin=true">Active Agency Admins</a>
+        <a class="label {% if status == 'admin_inactive' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?admin=false">Inactive Agency Admins</a>
+      </span>
+    {% endif %}
+    {% if company_type == 'company' %}
+    &nbsp;&nbsp;
+    <span>
+        <a class="label {% if status == 'true' %}label-primary{% elif active == 'true' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'company' %}?active=true">Active</a> /
+        <a class="label {% if status == 'false' %}label-primary{% elif active == 'false' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'company' %}?active=false">Inactive</a>
+
+      </span>
+    {% endif %}
+    </h4>
+    {% if company_type == 'company' %}
+    <div class="form-inline pull-right">
+       <div class="form-group">
+          <span><a href="{% url 'dashboard:new_company' %}"><button class="btn btn-warning"><i class="fa fa-plus"></i> Add New Company</button></a></span>
+       </div>
+    </div>
+    {% endif %}
+    <form id="search_form" name="adv-search-form" class="search-form" method="GET">
+    <div class="col-md-12 search_form">
+      <div class="col-md-4">
+        <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.search }}"/>
+        <input type="hidden" name="active" id="active" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.active }}"/>
+        <input type="hidden" name="admin" id="admin" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.admin }}"/>
+        <input type="hidden" name="page" id="page" value="{% if page %}{{page}}{% else %}1{% endif %}">
+      </div>
+      <div class="col-md-4">
+        <button type="submit" class="form-control submit">Submit</button>
+      </div>
+      <span class="pull-right" style="margin-top: 13px;">
+        <ul class="list-inline">
+          <li class="draft"><i class="fa fa-circle"></i> Draft</li>
+          <li class="pending"><i class="fa fa-circle"></i> Pending</li>
+          <li class="published"><i class="fa fa-circle"></i> Published</li>
+          <li class="live"><i class="fa fa-circle"></i> Live</li>
+          <li class="deleted"><i class="fa fa-circle"></i> Deleted</li>
+        </ul>
+      </span>
+    </div>
+
+  </form>
+    <table class="table table-hover" id="sample_1">
+      <thead>
+        <tr>
+          <th>Company Name</th>
+          <th width="10%">Website</th>
+          <th>Created On</th>
+          <th width="10%">Created by</th>
+          <th width="10%">Admin</th>
+          <th width="10%">Created From</th>
+          <th width="8%">No of Recruiters/Tickets</th>
+          <th width="17%">Job Posts</th>
+          <th width="30%">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for company in companies %}
+        {% with company.get_company_admin as agency_admin %}
+        <tr>
+          <td>
+            <a href="{% url 'dashboard:view_company' company.id %}">{{ company.name }}</a>
+            {% if company.profile_pic %}
+              <img src="{{ company.profile_pic }}" width="60" height="60">
+            {% endif %}
+          </td>
+          <td style="word-break: break-all;">
+            {% if company.website %}{{ company.website }}{% else %}Not Specified{% endif %}
+          </td>
+          <td>{{ company.registered_date }}</td>
+          <td style="word-break: break-all;">
+            {% if agency_admin %}
+              <a href="{% url 'dashboard:view_recruiter' agency_admin.id %}">{{ agency_admin.email }}</a>
+            {% elif company.get_unique_recruiters %}
+              {% for user in company.get_unique_recruiters %}
+                <a href="{% url 'dashboard:view_recruiter' user.id %}">{{user.email}}</a>
+                {% if forloop.last %}{% else %},<br> {% endif %} {% endfor %}{% else %}{% endif %}
+          </td>
+          <td style="word-break: break-all;">
+            {% if agency_admin %}
+              <a href="{% url 'dashboard:view_recruiter' agency_admin.id %}">{{ agency_admin.email }}</a>
+            {% else %}None{% endif %}
+          </td>
+          <td>
+            {% if company.created_from %}{{company.created_from}}{% else %}N/A{% endif %}
+          </td>
+          <td>
+            <span class="view-recruiters">{{ company.get_company_recruiters|length }}</span>
+            <span class="view-tickets">{{ company.get_company_tickets|length }}</span>
+          </td>
+          <td>
+            <span class="draft-bg">{{ company.get_total_jobposts|filter_jobposts:'Draft' }}</span>
+            <span class="pending-bg">{{ company.get_total_jobposts|filter_jobposts:'Pending' }}</span>
+            <span class="published-bg">{{ company.get_total_jobposts|filter_jobposts:'Published' }}</span>
+            <span class="live-bg">{{ company.get_total_jobposts|filter_jobposts:'Live' }}</span>
+            <span class="deleted-bg">{{ company.get_total_jobposts|filter_jobposts:'Disabled' }}</span>
+          </td>
+          <td>
+            <a href="/{{ company.slug }}-job-openings/" id="{{ company.id }}" target="_blank" class=""><i class="fa fa-medkit view-recruiters" title="View Company In dashboard"></i></a>
+
+            <a href="{% url "dashboard:edit_company" company.id %}" id="{{ company.id }}" class=""><i class="fa fa-edit edit" title="Edit Company"></i></a>
+
+            <a href="#" data-href="{% url "dashboard:delete_company" company.id %}" id="{{ company.id }}" class="delete-company"><i class="fa fa-trash edit" title="Delete Company"></i></a>
+
+            <a href="#" data-href="{% url "dashboard:enable_company" company.id %}?page={{ current_page }}" id="enable_{{ company.id }}" class="enable_company">{% if company.is_active %}<i class="fa fa-times delete" title="Deactivate Company"></i>{% else %}<i class="fa fa-check delete" title="Enable Company"></i>{% endif %}</a>
+
+            {% if agency_admin %}<a href="{% url "dashboard:enable_agency" agency_admin.id %}?page={{ current_page }}&status={{status}}" class="enable_agency">{% if agency_admin.is_active %}<i class="fa fa-times delete" title="Deactivate Agency Admin"></i>{% else %}<i class="fa fa-check delete" title="Activate Agency Admin"></i>{% endif %}</a>{% endif %}
+
+            <a href="{% url 'dashboard:company_recruiters' company.id "active" %}" id="{{ company.id }}" class=""><i class="fa fa-users view-recruiters" title="View Recruiters"></i></a>
+
+            <a href="{% url 'dashboard:company_jobposts' company.id %}" id="{{ company.id }}" class=""><i class="fa fa-briefcase view-jobposts" title="View JobPosts"></i></a>
+
+            <a href="{% url 'dashboard:company_tickets' company.id %}" id="{{ company.id }}" class=""><i class="fa fa-question view-tickets" title="View Tickets"></i></a>
+            {% if company.get_live_jobposts|length >= 100 %}<a href="{% url 'dashboard:enable_paid_company' company.id %}" id="{{ company.id }}" class="">{% if agency_admin.is_paid %}<i class="fa fa-money" title="Paid"></i>{% else %}<i class="fa fa-money paid" title="Un Paid"></i>{% endif %}</a>{% endif %}
+            {% if company.is_active and company.slug %}
+              <a href="{% url 'company_jobs' company.slug %}" target="_blank" id="{{ company.id }}" class="">
+                <i class="fa fa-eye paid" title="See Company Front-End View"></i>
+              </a>
+            {% endif %}
+            {% if agency_admin and agency_admin.is_active %}
+              <a href="{% url 'recruiter_profile' agency_admin.username %}" target="_blank" id="{{ agency_admin.id }}" class="">
+                <i class="fa fa-eye paid" title="See Admin Front-End View"></i>
+              </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endwith %}
+      {% endfor %}
+      </tbody>
+    </table>
+        <div class="pagination_wrap">
+        {% get_page current_page last_page as pages %}
+        <nav>
+            <ul class="pagination">
+            {% if current_page != 1 %}
+              <li class="prev"><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+              <li class="prev"><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+              <li><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page=1">first</a></li>
+              {% endif %}
+              {% for s in pages %}
+              <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page={{s}}">{{s}}</a></li>
+              {% endfor %}
+              {% if current_page != last_page %}
+              <li><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page={{last_page}}">last</a></li>
+              <li><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+              <li><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+              {% endif %}
+            </ul>
+        </nav>
+      </div>
+  </div>
+</section>
+{% endblock stage %}
+{% block script %}
+    <script type="text/javascript">
+      $('.delete-company').click(function(e){
+          e.stopPropagation();
+        if (!confirm('Do you want to delete Company?'))
+          return;
+        href = $(this).attr('data-href');
+            search = $('#search').val();
+            page = $('#page').val();
+            admin = $('#admin').val();
+
+        $.post(href, {'search': search, 'page': page, 'admin': admin}, function(data) {
+              open_dialog("Company Deleted Successfully", 'Success')
+              url = data.url
+                  window.location = '.' + "?page=" + page + '&search=' + search + '&active=' + data.is_active + '&admin=' + admin;
+          }, 'json');
+        });
+
+        $('body').on("click", '.enable_company', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            href = $(this).attr('data-href');
+            id = $(this).attr('id');
+            search = $('#search').val();
+            page = $('#page').val();
+            admin = $('#admin').val();
+            $.post(href, {'search': search, 'page': page, 'admin': admin}, function (data) {
+                if (data.error) {
+                  open_dialog(data.response, 'Error!!')
+                } else {
+                  url = data.url
+                  window.location = '.' + "?page=" + page + '&search=' + search + '&active=' + data.is_active + '&admin=' + admin;
+                }
+            }, 'json');
+        });
+    </script>
+{% endblock script %}

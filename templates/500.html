@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block block_title %}
+    <title>500 - Internal Server Error -  Peeljobs.com</title>
+{% endblock %}
+{% block base %}
+       		<div class="row	mar_lr_0">
+            	<div class="page-404">
+<!--                	<h1>{{ message_type }},</h1>
+                    <h4>{{ message }}</h4>!-->
+                    <h1>{% if message_type %}{{message_type}}{% else %}500{% endif %}<span> {% if message %}{{ message }}{% else %}We are sorry! The server Encountered an Internal error{% endif %}</span></h1>
+                    <h4>{% if reason %}{{ reason }}{% else %}We are unable to complete your request. Please try again later{% endif %}</h4>
+                    <a href="/"><i class="fa fa-home"></i> Back to Home Page</a>
+                </div>
+            </div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}

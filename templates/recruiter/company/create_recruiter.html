@@ -1,0 +1,116 @@
+{% extends 'recruiter/index.html' %}
+{% block jobs %}
+<li class="job"><a class="post-new" href="#">Post A new job</a></li>
+<li class="job"><a href="{% url 'recruiter:list' %}">jobs list</a></li>
+{% endblock %}
+{% block 'stage' %}
+<div class="content_wrap">
+  <section class="create_company_profile_form">
+    <h3><i class="fa fa-building"></i> <span>{% if recruiter %}Edit{% else %}New{% endif %}</span> Recruiter
+    </h3>
+    <!-- row one -->
+    <form name="recruiterform" id="recruiterform" method="post">
+      <div class="row_one company_profile">
+        <!-- ticket -->
+        <div class="pp_div company_new_form">
+          <div class="category">
+            <div class="content_job_post">
+              <div class="form_div">
+                <div class="input_element area_element">
+                  <label>Name<span class="error">*</span></label>
+                  <input type="text" class="input full_wid" id="first_name" name="first_name"
+                    value="{{ recruiter.first_name }}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Profile Pic</label>
+                  <input type="file" class="input full_wid" name="profile_pic" accept="image/*" id="profile_pic"
+                    value="{{ recruiter.profile_pic }}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Email<span class="error">*</span></label>
+                  <input type="email" class="input full_wid" id="email" name="email"
+                    value="{{ recruiter.email }}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Password<span class="error">*</span></label>
+                  <input type="password" class="input full_wid" id="password" name="password"
+                    value="{{ recruiter.password }}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Mobile  <span class="error">*</span></label>
+                  <input type="text" class="input full_wid" name="mobile" id="mobile"
+                    value="{{ recruiter.mobile }}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Designation<span class="error">*</span></label>
+                  <input type="text" class="input full_wid" name="job_role" id="job_role"
+                    value="{{ recruiter.job_role }}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Is Admin</label>
+                  <input type="checkbox" class="input" name="is_admin" id="is_admin"
+                    value="True" {% if recruiter.agency_admin %}checked{% endif %}>
+                </div>
+                <div class="input_element area_element" style="{% if recruiter.agency_admin %}display:none{% endif %}">
+                  <label>Permissions</label>
+                  <select class="input select2" multiple name="permissions" id="permissions">
+                    {% for permission in permissions %}
+                      <option value='{{ permission.id }}' {% if recruiter.agency_admin %}{% else %}{% if permission in recruiter.user_permissions.all %}selected {% endif %}{% endif %}>{{ permission.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="clearfix"></div>
+                <div class="button_row">
+                  <button type="submit" class="button change"><i class="fa fa-floppy-o"></i>Save
+                  </button>
+                  <button type="button" class="button cancel"><i class="fa fa-times"></i>Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--/ ticket -->
+        <div class="clearfix"></div>
+      </div>
+    </form>
+    <!--/ row one -->
+  </section>
+</div>
+{% endblock %}
+{% block 'extra_js' %}
+<script>
+  $('form#recruiterform').ajaxForm({
+      type: 'POST',
+      dataType: 'json',
+      data: $('#recruiterform').serialize(),
+      success: function (data) {
+          $.blockUI({message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+          if (data.error == false) {
+              $.unblockUI()
+              open_dialog_with_url(data.response, "Infoo!!", "{% url 'agency:company_recruiter_list' %}")
+          } else {
+              $.unblockUI();
+              open_dialog('Some Content Misssing', 'Info!!')
+              $('div.error').remove();
+              for (var key in data.response) {
+                  $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+              }
+          }
+      }
+  });
+  $('.cancel').click(function (e) {
+      window.location = "{% url 'agency:company_recruiter_list' %}";
+  });
+  $('#is_admin').change(function(e){
+    if(document.getElementById('is_admin').checked){
+      $("select#permissions").parent().hide()
+      $("#permissions").select2('val', "")
+    }else{
+      $("#permissions").select2('val', "")
+      $("select#permissions").parent().show()
+    }
+  });
+  $("select#permissions").select2({placeholder: "Select A Permission"});
+</script>
+{% endblock %}

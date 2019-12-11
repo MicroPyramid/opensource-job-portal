@@ -1,0 +1,65 @@
+{% extends 'recruiter/index.html' %}
+{% block 'stage' %}
+    <div class="content_wrap">
+        <div class="create_email_template">
+            <h3><i class='fa fa-file-code-o'></i>create <span>email template</span></h3>
+            <form id="emailtemplateform" name="emailtemplateform" method="post">
+                <div class="category">
+                    <div class="content_job_post">
+                        <div class="form_div">
+                            <div class="input_element area_element">
+                                <label>Title</label>
+                                <input type="text" class="input full_wid" name="title" id="title" placeholder="Title">
+                            </div>
+                            <div class="input_element area_element">
+                                <label>Subject</label>
+                                <input type="text" class="input full_wid" placeholder="Subject" name="subject"
+                                       id="subject">
+                            </div>
+                            <div class="input_element area_element">
+                                <label>Template</label>
+                                <textarea class="input full_wid" name='textareacontents' id='textareacontents'
+                                          placeholder='Description'></textarea>
+                                <input type="hidden" name="message" id="message">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="button_row">
+                                <button type="submit" class="button save"><i class='fa fa-floppy-o'></i>Save</button>
+                                <button type="button" class="button cancel"><i class='fa fa-times'></i>Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block 'extra_js' %}
+    <script type="text/javascript">
+        jobpost_id = {{jobpost_id}}
+                CKEDITOR.config.allowedContent = true;
+        var editor = CKEDITOR.replace('textareacontents', {});
+
+        $(".cancelbutton").click(function (e) {
+            e.preventDefault();
+            window.location = "{% url 'recruiter:emailtemplates' jobpost_id %}";
+        });
+
+        $('form#emailtemplateform').ajaxForm({
+            beforeSerialize: function () {
+                $("input[name='message']").val(CKEDITOR.instances.textareacontents.getData());
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.error) {
+                    $('div.error').remove();
+                    for (var key in data.message) {
+                        $('#' + key).after('<div class="error">' + data.message[key] + '</div>');
+                    }
+                } else {
+                    open_dialog_with_url(data.message, 'Success!', "{% url 'recruiter:emailtemplates' jobpost_id %}")
+                }
+            }
+        });
+    </script>
+{% endblock %}

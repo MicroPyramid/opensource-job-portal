@@ -1,0 +1,1 @@
+{{ object.skill_name }}

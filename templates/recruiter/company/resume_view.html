@@ -1,0 +1,233 @@
+{% load thumbnail %}
+{% load page_tags %}
+{% load static %}
+{% block 'stage' %}
+<style type="text/css">
+  .download{
+    cursor: pointer;
+  }
+</style>
+<!-- content -->
+     <!-- content job post -->
+     <div class="profile_details_block">
+        <div class="edit_button clearfix">
+          <a href="{% url "agency:resume_edit" agency_resume.id %}">
+            <i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Profile
+          </a>
+        </div>
+        <!-- category -->
+         <div class="col-md-6 col-sm-6 profile_block">
+                 <div class="name">
+                  <strong>Name :</strong>
+                  <span>{{ agency_resume.candidate_name }}</span>
+                 </div>
+                 <div class="name">
+                  <strong>Email :</strong><span>{{ agency_resume.email }}</span>
+                 </div>
+                 <div class="name">
+                  <strong>Mobile :</strong><span>{% if agency_resume.mobile %}{{ agency_resume.mobile }}{% else %}N/A{% endif %}</span>
+                 </div>
+                 <div class="name">
+                  <strong>Experience :</strong>
+                  <span>{{ agency_resume.experience }}</span>
+                 </div>
+           </div>
+            <div class="col-md-6 col-sm-6  profile_block">
+                 <div class="name">
+                  <strong>Skill :</strong>
+                  <span>{% for skill in agency_resume.skill.all %}{{ skill.name }}{% if forloop.last %}.{% else %}, {% endif %}{% endfor %}</span>
+                 </div>
+                 <div class="name">
+                  <strong>Uploaded By :</strong>
+                  <span>{{ agency_resume.uploaded_by.username }}</span>
+                 </div>
+                 <div class="name">
+                  <strong>Resume :</strong>
+                  <span>
+                  <p class="download" title="{{ agency_resume.resume|get_resume_name }}" id="{{ agency_resume.resume|get_s3_url }}"><i class="fa fa-download"></i>{{ agency_resume.resume|get_resume_name }}</p>
+                  </span>
+                 </div>
+           </div>
+        <!--/ category -->
+        <br clear="all">
+     <!--/ content job post -->
+     <!-- content job post -->
+     <div class="content_job_post company_view_profile">
+      <div class="edit_button adding_jobs">
+        <i class="fa fa-plus" aria-hidden="true"></i> Add Job Posts
+      </div>
+      <div class="clearfix"></div>
+        <!-- category -->
+        <div class='add_job_posts'>
+          <form action="{% url 'recruiter:resume_view' agency_resume.id %}" name="menuform" id="menuform" method="post">
+            <div class="form-group">
+              <div>
+              <select class="input select2" name="job_post" id="new_job_post">
+                <option value=''>Select Jobposts</option>
+                {% for jobpost in agency_jobposts %}
+                  <option value="{{ jobpost.id }}">{{ jobpost.title }}</option>
+                {% endfor %}
+              </select></div>
+            </div>
+            <div class="form-group"><div>
+              <select class="input select2" name="status" id="new_status">
+                <option value=''>Select Status</option>
+                {% for each in status %}
+                  <option value="{{ each.0 }}">{{ each.1 }}</option>
+                {% endfor %}
+              </select></div>
+            </div>
+            <div class="button_block">
+              <button type="button" class="btn btn-default close_jobs">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+         <div class="profile_menu_table">
+          <div class="Table" id="sortable">
+          {% if applicants %}
+              <div class="Heading">
+                  <div class="Cell">
+                      <p>Job Post</p>
+                  </div>
+                  <div class="Cell">
+                      <p>Status</p>
+                  </div>
+                  <div class="Cell">
+                      <p>applied_on On</p>
+                  </div>
+                  <div class="Cell">
+                      <p>Actions</p>
+                  </div>
+              </div>
+              {% for applicant in applicants %}
+              <div class="Row ui-state-default" id="{{ menu.id }}">
+                  <div class="Cell">
+                      <p><a href="{% url 'agency:view' applicant.job_post.id%}">{{ applicant.job_post.title }}</a></p>
+                  </div>
+                  <div class="Cell">
+                      <p>
+                      <form name="applicantstatusform" id="applicantstatusform" method="post" action="{% url "agency:applicant_status_change" applicant.id %}">
+                        <select class="input select2 applicant_status" name="applicant_status" id="applicant_status">
+                          <option value=''>Select Jobpost</option>
+                          {% for each in status %}
+                            <option value="{{ each.0 }}" {% ifequal applicant.status each.0 %}selected{% endifequal %}>{{ each.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </form>
+                      </p>
+                  </div>
+                  <div class="Cell">
+                      <p>{{ applicant.applied_on }}</p>
+                  </div>
+                  <div class="Cell actions">
+                  <a href="#" class="delete" id="{{ applicant.id }}" data-href='{% url "agency:delete_applicant_status" applicant.id %}'><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
+                  </div>
+
+              </div>
+              {% endfor %}
+          {% else %}
+           <div class="alert alert-danger alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+            <h4>There are no Job Posts for this User</h4>
+            </p>
+            </div>
+          {% endif %}
+          </div>
+         </div>
+        <!--/ category -->
+        <br clear="all">
+     </div>
+     <br>
+     <!--/ content job post -->
+     </div>
+     <br>
+<!--/ content -->
+{% endblock %}
+{% block 'extra_js' %}
+    <script type="text/javascript">
+        $("select#applicant_status").select2({placeholder: "Select A Status"});
+        $("select#new_job_post").select2({placeholder: "Select A JobPost"});
+        $("select#new_status").select2({placeholder: "Select Status"});
+        $('.download').click(function (e) {
+            e.preventDefault();
+            window.location = $(this).attr('id');
+        })
+        $(".applicant_status").change(function (e) {
+            e.preventDefault();
+            $(this).closest('form').submit();
+        })
+        $(document).on('click', '.adding_jobs', function(e){
+          $(this).hide()
+          $(".add_job_posts").show()
+          $(".profile_menu_table").hide()
+        })
+         $(document).on('click', '.close_jobs', function(e){
+          $(".add_job_posts").hide()
+          $(".adding_jobs").show()
+          $(".profile_menu_table").show()
+        })
+
+        $('#applicantstatusform').submit(function(e){
+          e.preventDefault()
+           $.post($(this).attr('action'), $(this).serialize(), function (data) {
+            if (data.error) {
+                open_dialog('Something went erong', 'Error!')
+            } else {
+                open_dialog('Status Updated Successfully', 'Success!!')
+            }
+        }, 'json');
+        })
+         $("form#menuform").submit(function (e) {
+            e.preventDefault();
+            $.post($(this).attr('action'), $("form#menuform").serialize() + "&mode=" + 'add_job', function (msg) {
+              console.log(msg)
+              if (msg.error) {
+                $('.error').remove();
+                for (var key in msg.response) {
+                    $('#new_' + key).parent().after('<div class="error">' + msg.response[key] + '</div>');
+                    ;
+                }
+              } else {
+                  open_dialog('Job Included Successfully', 'Success!!')
+                  $(".details_block").click()
+              }
+            }, 'json');
+        });
+
+        $('.delete').click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            row = $(this).closest('.Row')
+            href = $(this).attr('data-href')
+            $('#block_question').text('Do you want to delete Jobpost?')
+            $('#block_question').dialog({
+                modal: true,
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                      text: "Yes",
+                      click: function () {
+                        $(this).dialog("close");
+                        $.post(href, {}, function (data) {
+                          if (data.error) {
+                           open_dialog('Something Went Wrong', 'Error!!')
+                          } else {
+                           open_dialog('Jobpost Deleted Successfully', 'Success!!')
+                           $(row).remove()
+                          }
+                        }, 'json');
+                      }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,583 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load cache %}
+{% load searchtags %}
+{% load thumbnail %}
+{% block block_canonical_tag %}
+  {% if current_page|slugify == '1'|slugify %}
+    {% else %}
+    <link rel="prev" href="https://peeljobs.com{{ current_url }}{% if prev_page != 1 %}{{prev_page}}/{% endif %}" />
+  {% endif %}
+  {% if current_page <= last_page %}
+    {% if current_page == last_page %}
+    {% else %}
+      <link rel="next" href="https://peeljobs.com{{ current_url }}{{current_page| add:"1"}}/" />
+    {% endif %}
+  {% endif %}
+{% endblock %}
+{% block block_title %}
+
+ {% include "meta_data/jobs_list_data.html" with meta_data=True%}
+ {% endblock %}
+
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<div class="se-pre-con"></div>
+<!-- main_container starts here -->
+<div class="row mar_lr_0 main_container">
+  <div class="container">
+    <!-- breadcrumb_section starts here -->
+    <div class="breadcrumb_section row mar_lr_0">
+      <nav>
+        <ol class="cd-breadcrumb triangle">
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+              <span class="name" >Home</span>
+            </a>
+          </li>
+          {% if searched_skills and searched_locations %}
+            <li>
+              <a href="/{% for skill in searched_skills %}{{ skill.slug }}-{% endfor %}jobs/">
+                <span class="name">{%for skill in searched_skills %}{{ skill.name|capfirst}}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+              </a>
+            </li>
+            <li class='current'>
+              <span class="name">
+                {% for loc in searched_locations %}{{ loc|capfirst}}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}
+              </span>
+            </li>
+          {% elif searched_locations %}
+            <li>
+              <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/jobs-by-location/" class="name">
+                <span class="name" >{% if walkin %}Walkins{% else %}Jobs{% endif %} by location</span>
+              </a>
+            </li>
+            <li class="current">
+              <span href="{{ request.path }}" class="job_detail active" >
+                <span class="name" >
+                  {% if walkin %}Walkins{% else %}Jobs{% endif %} In {% for location in searched_locations %}{{ location }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}
+                </span>
+              </span>
+            </li>
+          {% elif searched_skills %}
+            <li>
+              <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/jobs-by-skill/" class="active">
+                <span class="name" >Jobs by skill</span>
+              </a>
+            </li>
+          <li class="current">
+            <span class="active job_detail">
+              <span class="name" >
+                {% for skill in searched_skills %}{{ skill }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}  {% if fresher %}Freshers{% endif %}{% if walkin %}Walkins{% else %}Jobs{% endif %}
+              </span>
+            </span>
+          </li>
+          {% elif searched_industry %}
+            <li>
+              <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/jobs-by-industry" class="active">
+                <span class="name" >Jobs by industry</span>
+              </a>
+            </li>
+            <li class="current">
+              <span class="job_detail active">
+                <span class="name" >Jobs For {% for industry in searched_industry %}{{ industry.name|get_industry_name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}
+                </span>
+              </span>
+            </li>
+          {% elif internship_location %}
+            <li class="current">
+              <span class="job_detail active">
+                <span class="name" >Internship in {{ internship_location.0.name|capfirst }}</span>
+              </span>
+            </li>
+          {% endif %}
+        </ol>
+      </nav>
+    </div>
+    <!-- breadcrumb_section ends here -->
+    <div class="job_text">
+     {% include "meta_data/jobs_list_data.html" with page_h1=True%}
+      <!--<span class="last-date"> - Last Update On {{current_date }}</span>-->
+    </div>
+    {% if searched_skills.0 and searched_skills.0.page_content %}
+    <div class="more">
+      {{ searched_skills.0.page_content|safe}}
+    </div>
+    {% elif searched_industry.0 and searched_industry.0.page_content %}
+    <div class="more">
+      {{ searched_industry.page_content|safe}}
+    </div>
+    {% elif searched_locations.0 and searched_locations.0.page_content %}
+    <div class="more">
+      {{ searched_locations.0.page_content|safe}}
+    </div>
+    {% elif searched_locations.0 and searched_locations.0.internship_content %}
+    <div class="more">
+      {{ searched_locations.0.internship_content|safe}}
+    </div>
+    {% endif %}
+    <div class="row mar_lr_0">
+      <div class="col-md-9 left_container">
+        <!-- side_filter_section starts here -->
+        <div class="row ">
+          <div class="col-sm-3 col-md-3"   >
+            <div class="panel-group side_filter_section" id="accordion">
+              <h4 class="refine_head">Refine Filters</h4>
+              <form name="refine-search" id="refine-search" method="POST" class='refine-autocomplete-me' action=".">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Location</a>
+                    </h4>
+                  </div>
+                  <div id="collapseOne" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <div class="search_input">
+                        <input class="form-control" placeholder="Enter Any Location" name="location" id="refine_location" autocomplete="off">
+                        <input type="hidden" class="form-control" name="refine_search" id="refine_search" value="">
+                      </div>
+                      {% if state %}
+                        {% get_refine_locations searched_location as total_refine_locations %}
+                      {% else %}
+                        {% get_refine_locations searched_locations as total_refine_locations %}
+                      {% endif %}
+                      <ul class="list-group">
+                        {% for location in total_refine_locations %}
+                        <li class="list-group-item"><input type="checkbox" {% for each in searched_locations %}{% if location == each %}checked{% else %}{% endif %}{% endfor %} class="refine_search refine-skill refine_location" name="refine_location" value="{{ location.name }}">{{ location.name }}({{ location.num_posts }})</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> States</a>
+                    </h4>
+                  </div>
+                  <div id="collapseSix" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <div class="search_input">
+                        <input class="form-control" placeholder="Enter Any State" name="state" id="refine_state" autocomplete="off">
+                      </div>
+                      {% get_refine_states searched_states as total_refine_states %}
+                      <ul class="list-group">
+                        {% for state in total_refine_states %}
+                        <li class="list-group-item"><input type="checkbox" {% for each in searched_states %}{% if state == each %}checked{% else %}{% endif %}{% endfor %} class="refine_search refine-state refine_state" name="refine_state" value="{{ state.name }}">{{ state.name }}({{ state.num_posts }})</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Skills</a>
+                    </h4>
+                  </div>
+                  <div id="collapseTwo" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <div class="search_input">
+                        <input class="form-control" placeholder="Enter Any Skill" name="q" autocomplete="off">
+                        <input type="hidden" class="form-control" name="page" id="page" value="1">
+                        {% if not searched_skills %}
+                          {% for text in searched_text %}
+                          <input type="hidden" class="form-control" name="refine_skill" value="{{ text }}">
+                          {% endfor %}
+                        {% endif  %}
+                      </div>
+                      <ul class="list-group">
+                      {% get_refine_skills searched_skills as total_refine_skills %}
+                        {% for skill in total_refine_skills %}
+                        <li class="list-group-item"><input type="checkbox" {% for each in searched_skills %}{% if skill == each %}checked{% else %}{% endif %}{% endfor %} class="refine_search refine-skill refine_skill" name="refine_skill" value="{{ skill.name }}">{{ skill.name }}({{ skill.num_posts }})</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseInd" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Industry</a>
+                    </h4>
+                  </div>
+                  <div id="collapseInd" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <div class="search_input">
+                        <input class="form-control" placeholder="Enter Any Industry" name="industry" autocomplete="off">
+                      </div>
+                      <ul class="list-group">
+                        {% get_refine_industries searched_industry as total_refine_industries %}
+                        {% for industry in total_refine_industries %}
+                        <li class="list-group-item"><input type="checkbox" class="refine_search refine-industry refine_industry" name="refine_industry" value="{{ industry.name }}" {% if industry in searched_industry %}checked{% else %}{% endif %}>{{ industry.name|get_industry_name }}({{ industry.num_posts }})</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i>Degrees</a>
+                    </h4>
+                  </div>
+                  <div id="collapseFive" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <div class="search_input">
+                        <input class="form-control" placeholder="Enter Any Degree" name="education" autocomplete="off">
+                      </div>
+                      <ul class="list-group">
+                      {% get_refine_educations searched_edu as total_refine_edu %}
+                        {% for edu in total_refine_edu %}
+                        <li class="list-group-item">
+                          <input type="checkbox" class="refine_search refine-edu refine_edu" name="refine_education" value="{{ edu.name }}" {% for each in searched_edu %}{% if edu == each %}checked{% endif %}{% endfor %}>{{ edu.name }}({{ edu.num_posts }})</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div> 
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Job Type</a>
+                    </h4>
+                  </div>
+                  <div id="collapseThree" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <ul class="list-group">
+                        <li class="list-group-item"><input type="checkbox" class="refine_search refine-functional-area" name="job_type" value="full-time" {% if searched_job_type == 'full-time' %}checked{% endif %}{% if job_type == 'full-time' %}checked{% endif %}>Full-Time</li>
+                        <li class="list-group-item"><input type="checkbox" class="refine_search refine-functional-area" name="job_type" value="internship" {% if searched_job_type == 'internship' %}checked{% endif %}{% if job_type == 'internship' %}checked{% endif %}>Internship</li>
+                        <li class="list-group-item"><input type="checkbox" name="job_type" class="refine_search refine-functional-area" value="walk-in" {% if searched_job_type == 'walk-in' %}checked{% endif %}{% if job_type == 'walk-in' %}checked{% endif %}>Walk-in</li>
+                        <li class="list-group-item"><input type="checkbox" name="job_type" class="refine_search refine-functional-area" value="Fresher" {% if searched_job_type == 'Fresher' %}checked{% endif %}{% if job_type == 'Fresher' %}checked{% endif %}>Fresher</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Experience</a>
+                    </h4>
+                  </div>
+                  <div id="collapseFour" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <div class="range-form">
+                        <!--<input type="text" class="form-control" placeholder="10000"/>-->
+                        <input type="hidden" name="refine_experience_min" id="refine_experience_min" value="{{ request.POST.refine_experience_min }}">
+                        <input type="hidden" name="refine_experience_max" id="refine_experience_max" value="{% if request.POST.refine_experience_max %}{{ request.POST.refine_experience_max }}{% else %}{% endif %}">
+                        <div id="slider-range"></div>
+                        <!--<div id="slider-range"></div>
+                          <input type="text" id="amount" readonly class="form-control1">-->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- side_filter_section ends here -->
+          </div>
+          <!-- job_list_section starts here -->
+          <div class="col-md-9 jobs_list">
+  <!-- job_list_section starts here -->
+          {% if '/walkin-jobs/' in request.path or "/government-jobs/" in request.path%}
+            {% include 'company_job_list.html' with job_list=job_list %}
+          {% else %}
+            {% include 'job_list.html' with job_list=job_list %}
+          {% endif %}
+          <!-- job_list_section ends here -->
+          {% if last_page > 1 %}
+          <div class="pagination_wrap text-center">
+            {% get_page current_page last_page as pages %}
+            <nav>
+              <ul class="pagination">
+                {% if current_page != 1 %}
+                  <li class="prev">
+                    <a class="{{previous_page}}" data-href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}{% endif %}"><i class="fa fa-angle-double-left"></i>
+                    </a>
+                  </li>
+                  <li class="prev">
+                    <a class="{{prev_page}}" data-href="{{current_url}}{% if prev_page == 1 %}{% else %}{{prev_page}}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}{% endif %}">
+                      <i class="fa fa-angle-left"></i>
+                    </a>
+                  </li>
+                  <li><a class="1" data-href="{{current_url}}{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}">first</a></li>
+                {% endif %}
+                {% for s in pages %}
+                  <li {% ifequal s current_page %} class="active" {% endifequal %}>
+                    <a  class="{{ s }}" data-href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}{% endif %}">{{s}}</a>
+                  </li>
+                {% endfor %}
+                {% if current_page != last_page %}
+                  <li><a class="{{ last_page }}" data-href="{{current_url}}{{ last_page }}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}">last</a></li>
+                  <li>
+                    <a class="{{ aft_page }}" data-href="{{current_url}}{{ aft_page }}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}">
+                      <i class="fa fa-angle-right pagination-next"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="{{ after_page }}" data-href="{{current_url}}{{after_page}}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}">
+                      <i class="fa fa-angle-double-right"></i>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+          {% endif %}
+          <!-- jobs_tabs starts here -->
+          <!-- Similar Links starts -->
+          {% if searched_locations or searched_skills %}
+            <div class="popular_links clearfix">
+              <h2>Most Similar Links</h2>
+              <ul class="clear">
+                {% with state.get_state_cities as state_cities %}
+                {% if fresher %}
+                  {% for loc in searched_locations %}
+                    <li><a href="{% url 'job_locations' loc.slug %}">&raquo; Jobs in {{ loc.name }}</a></li>
+                    <li><a href="{% url 'location_walkin_jobs' loc.slug %}">&raquo; Walkins in {{ loc.name }}</a></li>
+                  {% endfor %}
+                  {% for city in state_cities %}
+                    <li><a href="{% url 'job_locations' city.slug %}">&raquo; Jobs in {{ city.name }}</a></li>
+                    <li><a href="{% url 'location_walkin_jobs' city.slug %}">&raquo; Walkins in {{ city.name }}</a></li>
+                  {% endfor %}
+                  {% for search in searched_skills %}
+                    <li><a href="{% url 'job_skills' search.slug %}">&raquo; {{ search.name }} Jobs</a></li>
+                    <li><a href="{% url 'skill_walkin_jobs' search.slug %}">&raquo; {{ search.name }} Walkins</a></li>
+                  {% endfor %}
+                {% elif walkin %}
+                  {% for loc in searched_locations %}
+                    <li><a href="{% url 'job_locations' loc.slug %}">&raquo; Jobs in {{ loc.name }}</a></li>
+                    <li><a href="{% url 'location_fresher_jobs' loc.slug %}">&raquo; Fresher Jobs in {{ loc.name }}</a></li>
+                  {% endfor %}
+                  {% for city in state_cities %}
+                    <li><a href="{% url 'job_locations' city.slug %}">&raquo; Jobs in {{ city.name }}</a></li>
+                    <li><a href="{% url 'location_fresher_jobs' city.slug %}">&raquo; Fresher Jobs in {{ city.name }}</a></li>
+                  {% endfor %}
+                  {% for search in searched_skills %}
+                    <li><a href="{% url 'job_skills' search.slug %}">&raquo; {{ search.name }} Jobs</a></li>
+                    <li><a href="{% url 'skill_fresher_jobs' search.slug %}">&raquo; {{ search.name }} Fresher Jobs</a></li>
+                  {% endfor %}
+                {% else %}
+                  {% for loc in searched_locations %}
+                    <li><a href="{% url 'location_walkin_jobs' loc.slug %}">&raquo; Walkins in {{ loc.name }}</a></li>
+                    <li><a href="{% url 'location_fresher_jobs' loc.slug %}">&raquo; Fresher Jobs in {{ loc.name }}</a></li>
+                  {% endfor %}
+                  {% for city in state_cities %}
+                    <li><a href="{% url 'location_walkin_jobs' city.slug %}">&raquo; Walkins in {{ city.name }}</a></li>
+                    <li><a href="{% url 'location_fresher_jobs' city.slug %}">&raquo; Fresher Jobs in {{ city.name }}</a></li>
+                  {% endfor %}
+                  {% for search in searched_skills %}
+                    <li><a href="{% url 'skill_walkin_jobs' search.slug %}">&raquo; {{ search.name }} Walkins</a></li>
+                    <li><a href="{% url 'skill_fresher_jobs' search.slug %}">&raquo; {{ search.name }} Fresher Jobs</a></li>
+                  {% endfor %}
+                {% endif %}
+                {% endwith %}
+              </ul>
+            </div>
+          {% endif %}
+          <!-- Similar Links ends -->
+           <!-- Location Skill wise jobs section starts here -->
+          {% if searched_skills %}
+            {% get_related_skills searched_skills as related_skills %}
+            <div class="jobs_tabs_panel clearfix">
+              <div class="col-md-12">
+                <div class="top_colleges_row row marl">
+                  <div class="bs-example bs-example-tabs">
+                    <ul class="nav nav-tabs nav-tabs-responsive">
+                      {% for location in total_locations|slice:"8" %}
+                        <li>
+                          <a class='{% if forloop.first %}active{% endif %} tab_button' data-url='{{ forloop.counter }}'><span class="text">{{ location.name }}</span></a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                    {% if total_locations %}
+                    <div id="myTabContent" class="tab-content">
+                      {% if fresher %}
+                        {% for location in total_locations|slice:"8" %}
+                          <div class="tab-pane fade in {% if forloop.first %}active{% endif %} tab_block" id="{{ forloop.counter }}">
+                            <div class="row">
+                              {% for skill in related_skills %}
+                                <div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+                                  <ul>
+                                    <li><a href="{% url 'skill_location_wise_fresher_jobs' skill.0.slug location.slug %}" target="_blank">
+                                    {{ skill.0.name }} Fresher Jobs in {{ location.name }}</a></li>
+                                  </ul>
+                                </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        {% endfor %}
+                      {% elif walkin %}
+                        {% for location in total_locations|slice:"8" %}
+                          <div class="tab-pane fade in {% if forloop.first %}active{% endif %} tab_block" id="{{ forloop.counter }}">
+                            <div class="row">
+                              {% for skill in related_skills %}
+                                <div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+                                  <ul>
+                                    <li><a href="{% url 'custom_walkins' skill.0.slug location.slug %}" target="_blank">
+                                    {{ skill.0.name }} Walkins in {{ location.name }}</a></li>
+                                  </ul>
+                                </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        {% endfor %}
+                      {% else %}
+                        {% for location in total_locations|slice:"8" %}
+                          <div class="tab-pane fade in {% if forloop.first %}active{% endif %} tab_block" id="{{ forloop.counter }}">
+                            <div class="row">
+                              {% for skill in related_skills %}
+                                <div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+                                  <ul>
+                                    <li><a href="{% url 'custome_search' skill.0.slug location.slug %}" target="_blank">
+                                    {{ skill.0.name }} Jobs in {{ location.name }}</a></li>
+                                  </ul>
+                                </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+           <!-- Location Skill wise jobs section ends here -->
+        </div>
+          <!-- job_list_section ends here -->
+        </div>
+      </div>
+      {% include 'left_menu.html' %}
+    </div>
+  </div>
+</div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+<!-- main_container ends here -->
+{% endblock %}
+{% block 'extra_js' %}
+<script>
+
+</script>
+<script type="text/javascript">
+$(window).load(function() {
+    // Animate loader off screen
+    $(".se-pre-con").fadeOut("slow");;
+  });
+  $(document).ready(function () {
+      // Configure/customize these variables.
+      var showChar = 130;  // How many characters are shown by default
+      var ellipsestext = "...";
+      var moretext = "more";
+      var lesstext = "less";
+      $('.more').each(function () {
+          var content = $(this).children('p').html();
+          if (content && content.length > showChar) {
+              var c = content.substr(0, showChar);
+              var h = content.substr(showChar, content.length - showChar);
+              var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="moretext">' + h + '</span><span class="morelink">' + moretext + '</span></span>';
+              $(this).children('p').html(html);
+          }
+      });
+      $('body').on("click", ".morelink", function (e) {
+          e.preventDefault();
+          if ($(this).hasClass("less")) {
+              $(this).removeClass("less");
+              $(this).html(moretext);
+          } else {
+              $(this).addClass("less");
+              $(this).html(lesstext);
+          }
+          $(this).parent().prev().toggle();
+          $(this).prev().toggle();
+          return false;
+      });
+  });
+  $(document).ready(function () {
+      $('#job_skills').empty()
+      $('#job_skills').append(new Option('Select a Skill', ''))
+      $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+          $.each(JSON.parse(data.response), function (key, field) {
+              $('#job_skills').append(new Option(field.fields.name, field.pk))
+          })
+      });
+      $(window).scroll(function(e){
+        var $el = $('.inner_login_box, .upload_btn_block, .subscribe_box');
+        $('.inner_login_box, .upload_btn_block, .subscribe_box').css({'position': 'static', 'top': '0px'});
+        var isPositionFixed = ($el.css('position') == 'fixed');
+        job_height = $('.main_container').height()
+        if ($(this).scrollTop() < $(".right_container").height() && isPositionFixed)
+        {
+          $('.inner_login_box, .upload_btn_block, .subscribe_box').css({'position': 'static', 'top': '0px'});
+        }
+        // if ($(this).scrollTop() > 4015 && isPositionFixed)
+        // {
+        //   $('.inner_login_box, .upload_btn_block, .subscribe_box').css({'position': 'static', 'top': '0px'});
+        // }
+
+        if ($(this).scrollTop() > $(".right_container").height() && $(this).scrollTop() < (job_height-650) && !isPositionFixed){
+          $('.subscribe_box').css({'position': 'fixed', 'top': '181px'});
+          $('.subscribe_box').addClass('scroll_subscribe');
+          $('.upload_btn_block').css({'position': 'fixed', 'top': '121px'});
+          $('.upload_btn_block').addClass('scroll_upload')
+
+          $('.left_login_text').text('Already a Member? Login')
+          $('#left_register_type').val('login')
+          $('.left_new_user_login').hide()
+          $('.left_new_account').show()
+          $('p.hint').remove();
+          $('.left_login_form_button').text('Login Here')
+          $('#mail_password').show()
+          $('.left_forgot_password').show();
+
+          $('.inner_login_box').css({'position': 'fixed', 'top': '426px'});
+          $('.inner_login_box').addClass('scroll_loginbox');
+
+        }
+      });
+
+  });
+
+
+  $('ul.pagination li a').click(function(e){
+    href = $(this).attr('data-href');
+    $('#page').val($(this).attr('class'));
+    $('#refine_search').val('True');
+    $('#refine-search').attr("action", href)
+    $('#refine-search').submit();
+  });
+
+</script>
+<script>
+  $( function() {
+    $( "#slider-range").slider({
+      range: true,
+      min: 0,
+      max: 20,
+      values: [$('#refine_experience_min').val(), $('#refine_experience_max').val()],
+      slide: function( event, ui ) {
+        $('#refine_experience_min').val(ui.values[0]);
+        $('#refine_experience_max').val(ui.values[1]);
+        $('#refine_search').val('True');
+        $('#refine-search').submit();
+      }
+    }).slider("pips").slider("float");
+  } );
+
+  $('.tab_button').click(function (e) {
+      e.preventDefault();
+      $('.tab_button').removeClass('active');
+      $(this).addClass('active')
+      var panel = $(this).attr('data-url');
+      $('.tab_block').removeClass('active')
+      $('#' + panel).addClass('active');
+    })
+  </script>
+{% endblock %}

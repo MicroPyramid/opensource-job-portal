@@ -1,0 +1,412 @@
+{% load compress %}
+{% load page_tags %}
+{% load static %}
+{% load compress %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head prefix="og: https://ogp.me/ns# fb: https://ogp.me/ns/fb# peeljobs: https://ogp.me/ns/fb/peeljobs#">
+    <meta property="fb:app_id" content="469881999753251" />
+    <meta property="og:type"   content="peeljobs:job" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    {% block block_title %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+    <title>Free Job Posting - Peeljobs</title>
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{favicon}}"/>
+    <link href="https://fonts.googleapis.com/css?family=Muli:200,300,400,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" >
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
+    {% block css %}
+    {% compress css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/feedback.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'r1/css/jquery.tagsinput.css' %}">
+
+    <link rel="stylesheet" type="text/x-scss" href="{% static 'r1/css/recruiter_4.scss' %}">
+    {% endcompress %}
+    {% endblock %}
+    <!-- Start of Async Drift Code -->
+    <script>
+    !function() {
+      var t;
+      if (t = window.driftt = window.drift = window.driftt || [], !t.init) return t.invoked ? void (window.console && console.error && console.error("Drift snippet included twice.")) : (t.invoked = !0, 
+      t.methods = [ "identify", "config", "track", "reset", "debug", "show", "ping", "page", "hide", "off", "on" ], 
+      t.factory = function(e) {
+        return function() {
+          var n;
+          return n = Array.prototype.slice.call(arguments), n.unshift(e), t.push(n), t;
+        };
+      }, t.methods.forEach(function(e) {
+        t[e] = t.factory(e);
+      }), t.load = function(t) {
+        var e, n, o, i;
+        e = 3e5, i = Math.ceil(new Date() / e) * e, o = document.createElement("script"), 
+        o.type = "text/javascript", o.async = !0, o.crossorigin = "anonymous", o.src = "https://js.driftt.com/include/" + i + "/" + t + ".js", 
+        n = document.getElementsByTagName("script")[0], n.parentNode.insertBefore(o, n);
+      });
+    }();
+    drift.SNIPPET_VERSION = '0.3.1';
+    drift.load('btt4wcagxd7a');
+    </script>
+
+    <!-- Google Tag Manager -->
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-T622TS"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-T622TS');
+    </script>
+    <!-- End Google Tag Manager -->
+  </head>
+  <body>
+    <style type="text/css">
+    .vertical-right-aligned {
+        transform: rotate(-90deg);
+        transform-origin: 100% 100%;
+        position: fixed;
+        right: 0;
+        top: 42%;
+        z-index: 100;
+        background: #2795e9;
+        border-color: #2795e9;
+    }
+    .ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-front.no-close.ui-dialog-buttons.ui-resizable {
+        z-index: 2000;
+    }
+
+</style>
+    <div class="wrapper">
+      <!-- navbar starts here -->
+      <nav class="navbar navbar-expand-lg  navbar-fixed-top">
+        <a class="navbar-brand" href="{% if request.user.is_agency_recruiter %}{% url "agency:dashboard" %}{% else %}{% url "recruiter:dashboard" %}{% endif %}">Peeljobs</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"><i class="fa fa-bars"></i></span>
+        </button>
+        <div class="collapse navbar-collapse jobs_count_wrap" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a href="#" class="post-new nav-link"><i class="fas fa-paper-plane"></i>Post A Job</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"><i class="fas fa-envelope"></i> Jobs Posted<span class="count yellow">{{ request.user.get_jobposts_count }}</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'recruiter:list' %}"><i class="fas fa-toggle-on"></i> Active Jobs <span class="count green">{{ request.user.get_active_jobposts_count }}</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'recruiter:inactive_jobs' %}"><i class="fas fa-toggle-off"></i> Inactive Jobs<span class="count red">{{ request.user.get_inactive_jobposts_count }}</span></a>
+            </li>
+            {% get_unread_messages request.user '' '' as unread_messages %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'recruiter:messages' %}"><i class="fa fa-comments"></i>Messages 
+              <span class="count green">{{ unread_messages }}</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" {% ifequal request.session.url_id 'recruiter_tickets' %}class="active"{% endifequal %} href="{% url 'tickets:index' %}"><i class="fas fa-phone"></i>Support</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{ request.user.username }}  <img src="{% if request.user.profile_pic %}{{ request.user.profile_pic.url }}{% else %}{% static 'dummy.jpg' %}{% endif %}" />
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="{% if request.user.is_agency_recruiter %}{% url 'agency:change_password' %}{% else %}{% url 'recruiter:change_password' %}{% endif %}">Change Password</a>
+                <a class="dropdown-item" href="{% if request.user.is_agency_recruiter %}{% url 'agency:profile' %}{% else %}{% url 'recruiter:profile' %}{% endif %}">Profile</a>
+                <a class="dropdown-item" href="{% url 'recruiter:getout' %}">Logout</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- navbar ends here -->
+      <!-- main_container starts here -->
+      <div class="main_container">
+        <!-- side_menu starts here -->
+        <div class="side_menu" id='menu'>
+          <ul>
+            {% if request.user.is_agency_recruiter %}
+                <li class="active"><a href="{% url "agency:dashboard" %}"  class="menu_item"><i class="fa fa-tachometer"></i><span>Dashboard</span></a></li>
+                {% endif %}
+                {% if request.user.is_agency_recruiter %}
+                 <li class=""><a href="{% url "agency:list" %}"  class="menu_item"><i class="fa fa-briefcase"></i><span>Jobs List</span></a></li>
+                 {% else %}
+                 <li class=""><a href="{% url "recruiter:dashboard" %}"  class="menu_item"><i class="fa fa-briefcase"></i><span>Jobs List</span></a></li>
+                 {% endif %}
+                {% if request.user.is_agency_admin or request.user.is_company_recruiter or request.user|check_recruiter_perm:"jobposts_edit" %}
+                <li><a class="menu_item post-new" href="#"><i class='fa fa-briefcase'></i><span>Post A Job</span></a></li>
+                {% endif %}
+                <li>
+                    <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}" style="padding-bottom: 15px;"><i class="fa fa-user" aria-hidden="true"></i><span>Company Profile</span></a>
+                </li>
+                {% if request.user.is_agency_recruiter %}
+                    <li>
+                        <a><i class="fa fa-users" aria-hidden="true"></i><span>Recruiters</span></a>
+                        <ul class="sub_list">
+                            {% if request.user.is_agency_admin %}
+                                <li><a href="{% url "agency:company_recruiter_create" %}" class="menu_item"><i
+                                        class='fa fa-caret-right'></i>New Recruiter</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'agency:company_recruiter_list' %}" class="menu_item"><i
+                                    class='fa fa-caret-right'></i>Recruiter List</a></li>
+                        </ul>
+                    </li>
+                    {% if request.user.is_agency_admin %}
+                      <li>
+                          <a><i class="fa fa-user" aria-hidden="true"></i><span>Client</span></a>
+                          <ul class="sub_list">
+                                  <li><a href="{% url 'agency:add_client' %}" class="menu_item"><i
+                                          class='fa fa-caret-right'></i>New Client</a></li>
+                              <li><a href="{% url 'agency:client_list' %}" class="menu_item"><i
+                                      class='fa fa-caret-right'></i>Client List</a></li>
+                          </ul>
+                      </li>
+                    {% endif %}
+                    <li>
+                        <a><i class="fa fa-user" aria-hidden="true"></i><span>Resume Pool</span></a>
+                        <ul class="sub_list">
+                            <li><a href="{% url 'agency:resume_pool' %}" class="menu_item"><i
+                                    class='fa fa-caret-right'></i>Resume Pool</a></li>
+                            <li><a href="{% url 'agency:resume_upload' %}" class="menu_item"><i
+                                    class='fa fa-caret-right'></i>Resume Upload</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                <li>
+                    <a><i class="fa fa-user" aria-hidden="true"></i><span>Resume Pool</span></a>
+                    <ul class="sub_list">
+                        <li><a href="{% url 'recruiter:resume_pool' %}" class="menu_item"><i
+                                class='fa fa-caret-right'></i>Resume Pool</a></li>
+                        <li><a href="{% url 'recruiter:resume_upload' %}" class="menu_item"><i
+                                class='fa fa-caret-right'></i>Resume Upload</a></li>
+                    </ul>
+                    </li>
+                {% endif %}
+          </ul>
+        </div>
+        <!-- side_menu ends here -->
+        <input type="hidden" name="is_mobile_verifed" id="is_mobile_verifed" value="{{ request.user.mobile_verified }}">
+        <input type="hidden" name="is_active" id="is_active" value="{{ request.user.is_active }}">
+        <!--inner_container starts here -->
+        {% block 'stage' %}
+        {% endblock %}
+        <!--inner_container ends here -->
+      </div>
+      <!-- main_container ends here -->
+      <!-- social_connections starts here -->
+      <div id="block_question" style="display: none">
+      </div>
+      {% block social_links %}
+      <div class="social_connections">
+        <span class="active">
+        {% if not request.user.is_fb_connected %}
+        <a href="{% url 'recruiter:facebook_login' %}" class="fb"><i class="fab fa-facebook"></i> Connect Now</a>
+        {% else %}
+        <a href="{{ request.user.get_facebook_url }}" target="_blank" class="fb"><i class="fab fa-facebook"></i> Connected</a>
+        {% endif %}
+        </span>
+        <span>
+        {% if not request.user.is_tw_connected %}
+        <a href="{% url 'recruiter:twitter_login' %}" class="twit"><i class="fab fa-twitter"></i> Connect Now</a>
+        {% else %}
+        <a href="{{ request.user.get_twitter_url }}" target="_blank" class="twit"><i class="fab fa-twitter"></i> Connected</a>
+        {% endif %}
+        </span>
+
+        <button type="button" id="feedback-btn" class="btn btn-info vertical-right-aligned">Feedback <span
+        class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span></button>
+      </div>
+      {% endblock social_links %}
+      <!-- social_connections ends here -->
+    </div>
+  </body>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <script type="text/javascript" src="{% static 'tellme_js/feedback.min.js' %}"></script>
+  <script src="https://cdn.ckeditor.com/4.5.4/basic/ckeditor.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js" type="text/javascript"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?libraries=places&sensor=false" type="text/javascript"></script>
+  <script src="https://maps.googleapis.com/maps/api/assets/gmap3.js?body=1" type="text/javascript"></script>
+    <!-- select2 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+
+  {% compress js %}
+    <!-- date time picker -->
+    <!-- tags -->
+    <script type="text/javascript" src='{% static 'r1/js/jquery.tagsinput.js' %}'></script>
+    <script type="text/javascript" src='{% static 'r1/js/timepicker.js' %}'></script>
+    <script type="text/javascript" src="{% static 'r1/js/jquery.blockui.js' %}"></script>
+    <script type="text/javascript" src="{% static 'r1/js/dropzone.min.js' %}"></script>
+
+  {% endcompress %}
+
+  {% block 'extra_js' %}
+  {% endblock %}
+  <!-- accordian script -->
+  <script type="text/javascript">
+
+    if ($(window).width() < 853) {
+        function active_drop() {
+            $('.accordian_panel').children('.details_wrap').slideUp('slow');
+            $('.active').children('.details_wrap').slideDown('slow');
+        }
+
+        $('.accordian_panel').click(function (e) {
+            if (!$(this).hasClass('active')) {
+                $(this).addClass('active').siblings().removeClass('active');
+                active_drop();
+            }
+        });
+        active_drop();
+    }
+
+    $(document).ready(function (e) {
+        var pathname = window.location.pathname;
+        atag = $('.jobs_count_wrap a[href="' + pathname + '"]');
+        atag.parent().addClass("active");
+        atag = $('#menu a[href="' + pathname + '"]');
+        console.log(atag.parent().parent().parent('li').length)
+        if (atag.parent().parent().parent('li').length > 0) {
+            atag.parent().parent().parent('li').addClass('active_menu')
+        }
+        else {
+            atag.parent().addClass('active_menu')
+        }
+
+    });
+
+</script>
+  <script>
+    function open_dialog(text, title){
+    $('#block_question').text(text);
+    $('#block_question').dialog({
+        modal: true,
+        title: title,
+        draggable: false,
+        buttons: [
+            {
+                text: "OK",
+                click: function () {
+                    $(this).dialog("close");
+                    $('header').removeClass('fixed')
+                    // window.scrollTo(0, 0);
+                }
+            }
+        ]
+    });
+    $('.ui-dialog-titlebar-close').html('<span>X</span>')
+  }
+
+
+function open_dialog_with_url(text, title, url){
+    $('#block_question').text(text);
+    // $('.ui-dialog-titlebar-close').empty()
+    $('#block_question').dialog({
+        modal: true,
+        title: title,
+        draggable: false,
+        buttons: [
+            {
+                text: "OK",
+                click: function () {
+                    window.location = url;
+                }
+            }
+        ]
+    });
+    $('.ui-dialog-titlebar-close').html('<span>X</span>')
+  }
+    $('.post-new').click(function (e) {
+        e.preventDefault();
+        $('.job').removeClass('active_menu_item')
+        is_mobile_verifed = $('#is_mobile_verifed').val()
+        is_active = $('#is_active').val()
+        if (is_mobile_verifed == 'True' & is_active == 'True') {
+            {% if request.user.is_agency_recruiter %}
+                window.location = "{% url 'agency:new' 'full-time' %}"
+            {% else %}
+                window.location = "{% url 'recruiter:new' 'full-time' %}"
+              {% endif %}
+            }
+        else{
+          if(is_mobile_verifed == 'False'){
+            {% if request.user.is_agency_recruiter %}
+                var url = "{% url 'agency:verify_mobile' %}"
+            {% else %}
+                var url = "{% url 'recruiter:verify_mobile' %}"
+            {% endif %}
+            open_dialog_with_url('Please Verify Your Mobile number', 'Info!', url)
+              }
+              else if(is_active == 'False') {
+                // alert('Please Activate Your Account');
+                open_dialog('Please Activate Your Account', 'Info!!')
+              }
+            }
+    });
+    function SetCaretAtEnd(elem) {
+        var elemLen = elem.value.length;
+        // For IE Only
+        if (document.selection) {
+            // Set focus
+            elem.focus();
+            // Use IE Ranges
+            var oSel = document.selection.createRange();
+            // Reset position to 0 & then set at end
+            oSel.moveStart('character', -elemLen);
+            oSel.moveStart('character', elemLen);
+            oSel.moveEnd('character', 0);
+            oSel.select();
+        }
+        else if (elem.selectionStart || elem.selectionStart == '0') {
+            // Firefox/Chrome
+            elem.selectionStart = elemLen;
+            elem.selectionEnd = elemLen;
+            // alert()
+            elem.focus();
+        } // if
+    } // SetCaretAtEnd()
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        $.feedback({
+            ajaxURL: "{% url 'tellme:post_feedback' %}",
+            html2canvasURL: "{% static 'tellme_js/html2canvas.min.js' %}",
+            feedbackButton: "#feedback-btn",
+            initButtonText: "{% filter escapejs %}{%  include 'tellme/initButtonText.txt' %}{% endfilter %}",
+            postHTML: false,
+            tpl: {
+                description: "{% filter escapejs %}{%  include 'tellme/tpl-description.html' %}{% endfilter %}",
+                highlighter: "{% filter escapejs %}{%  include 'tellme/tpl-highlighter.html' %}{% endfilter %}",
+                overview: "{% filter escapejs %}{%  include 'tellme/tpl-overview.html' %}{% endfilter %}",
+                submitSuccess: "{% filter escapejs %}{%  include 'tellme/tpl-submit-success.html' %}{% endfilter %}",
+                submitError: "{% filter escapejs %}{%  include 'tellme/tpl-submit-error.html' %}{% endfilter %}"
+            },
+            initialBox: true
+        });
+    });
+</script>
+<script type="text/javascript">
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", "4GGTffvfVTU9hD7LEl6N03yuZ7qO5XLJ");
+            }
+        }
+    });
+
+</script>
+</html>

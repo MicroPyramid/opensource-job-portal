@@ -1,0 +1,76 @@
+{% extends 'dashboard/base.html' %}
+{% load page_tags %}
+{% block stage %}
+<section id='recruiters'>
+  <div class="list_table">
+    <h4>Daily Search Summary</h4>
+     <span>
+        <a class="label {% if search_type == 'skills' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:search_summary" 'skills' %}">Skills</a>
+        <a class="label {% if search_type == 'other-skills' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:search_summary" 'other-skills' %}">Other Skills</a>
+        <a class="label {% if search_type == 'locations' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:search_summary" 'locations' %}">Locations</a>
+        <a class="label {% if search_type == 'other-locations' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:search_summary" 'other-locations' %}">Other Locations</a>
+      </span>
+    <form id="search_form" name="adv-search-form" class="search-form" method="POST" action=".">
+      <div class="col-md-offset-1 col-md-11 search_form">
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="search" name="search" value="{{ request.POST.search }}" placeholder="Enter Search Values i.e: python,java">
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{ request.POST.timestamp }}" placeholder="Select the date" autocomplete="off">
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="form-control submit">Submit</button>
+        </div>
+      <div class="clearfix"></div>
+      </div>
+    </form>
+    <div class="col-xs-10">
+      <div style="width:500; height;500">
+        <div id="myChart" width="500" height="500"></div>
+      </div>
+    </div>
+    <div id="values" style="display:none;">{{ values|safe }}</div>
+    <div id="count" style="display:none;">{{ count|safe }}</div>
+    <div id="no_of_jobposts" style="display:none;">{{ no_of_jobposts|safe }}</div>
+  </div>
+  <div class="clearfix"></div>
+</section>
+{% endblock stage %}
+{% block script%}
+
+<script type="text/javascript">
+
+  var recruiter_layout = {
+    title:'Number of Searches',
+    height: 500,
+    width: 1000
+  };
+
+  var trace1 = {
+    x: JSON.parse($('#values').html()),
+    y: JSON.parse($('#count').html()),
+    mode: 'lines',
+    name: 'No Of Searches'
+  };
+
+  // var trace2 = {
+  //   x: JSON.parse($('#values').html()),
+  //   y: JSON.parse($('#no_of_jobposts').html()),
+  //   mode: 'lines',
+  //   name: 'No Of JobPosts'
+  // };
+  var recruiter_data = [ trace1 ];
+
+
+Plotly.newPlot('myChart', recruiter_data, recruiter_layout, {
+      displaylogo:false,
+      displayModeBar: false,
+    });
+
+
+$('.pagination li a').click(function(e) {
+    e.preventDefault();
+    $('#search_form').submit();
+});
+</script>
+{% endblock script %}

@@ -1,0 +1,51 @@
+{% extends 'dashboard/base.html' %}
+{% load tz %}
+{% block stage %}
+    <!-- CONTENT -->
+    <section id='recruiters'>
+      <div class="list_table">
+      <span class="title"> Ticket List </span>
+      <a href="{% url 'tickets:index'%}" class="new">New Ticket</a>
+        <table class="table table-hover" id="sample_1">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Ticket Title</th>
+              <th>Priority</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Created By</th>
+              <th>Created On</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for ticket in tickets %}
+            <tr>
+              <th scope="row">{{ forloop.counter }}</th>
+              <td><a href="{% url 'tickets:admin_ticket_view' ticket.id %}">{{ ticket.title }}</a></td>
+              <td>{{ ticket.priority }}</td>
+              <td>{{ ticket.ticket_type }}</td>
+              <td>{{ ticket.status }}</td>
+              <td>{{ ticket.user.email }}</td>
+              <td>{{ ticket.created_on|timezone:'Asia/Calcutta' }}</td>
+            </tr>
+            </a>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <!--/ CONTENT -->
+{% endblock %}
+
+{% block script%}
+<script type="text/javascript">
+$('#sample_1').DataTable({
+      "sPaginationType": "full_numbers",
+      "aaSorting": [],
+      "bSort": true,
+      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+      "pageLength": 20,
+    });
+</script>
+{% endblock script %}

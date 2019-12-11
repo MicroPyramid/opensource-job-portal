@@ -1,0 +1,734 @@
+{% extends 'dashboard/base.html' %}
+{% block stage %}
+<style type="text/css">
+    .city-form-control {
+        width: 350px !important;
+    }
+    .meta_data {
+        display: none;
+    }
+</style>
+    <section id='three_panel_layout'>
+        <section class="col-md-4 country">
+            <div class="title">Country(No Of Job Posts)</div>
+            <div class="add_form_div active_ticket_form" id="add_conform">
+                <form id="newcountryform" method="post">
+                    <div class="form-inline">
+                        <input type="text" class="form-control" name="country" id="country">
+                        <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                    </div>
+                </form>
+            </div>
+            <div class="edit_form_div" id="edit_conform">
+                <div class="form-inline">
+                    <form id="editcountryform" method="post">
+                        <input type="text" class="form-control" id="country_name" placeholder="Name" name="country">
+                        <input type="hidden" id="country_id">
+                        <input type="text" class="form-control" placeholder="Slug" id="country_slug" name="slug">
+                        <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
+                        <button id="btnconcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
+                    </form>
+                </div>
+            </div>
+            <div class="list_div_wrap" id="country-list-div">
+                {% for country in countries %}
+                    <div class="ticket {% if country.status == "Disabled" %}disabled_ticket{% endif %}">
+                        <a class='name_ticket' id="{{ country.status }}"
+                           href="{{ country.id }}">{{ country.name }}</a><span class="job_count">({{ country.get_no_of_jobposts|length }})</span>
+                        <div class="remove_ticket remove_country">
+                            <a class="delete" href="{{country.id}}">
+                                <i class="fa fa-trash-o"></i>
+                            </a>
+                        </div>
+                        <div class="actions_ticket">
+                            {% if country.status == "Enabled" %}
+                                <a href="{{ country.id }}" id="{{ country.status }}"><i
+                                        class="fa fa-toggle-off"></i></a>
+                            {% else %}
+                                <a class="edit" href="{{ country.id }}" id="{{ country.status }}"><i
+                                        class="fa fa-toggle-on"></i></a>
+                            {% endif %}
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+        <section class="col-md-4 state">
+            <div class="title">State</div>
+            <div class="add_form_div active_ticket_form" id="add_stform">
+                <form id="newstateform" method="post">
+                    <div class="form-inline">
+                        <input type="text" class="form-control" name="state" id="state">
+                        <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                    </div>
+                </form>
+            </div>
+            <div class="edit_form_div" id="edit_stform">
+                <div class="form-inline">
+                    <form id="editstateform" method="post">
+                        <input type="text" class="form-control" placeholder="State Name" id="state_name" name="state">
+                        <input type="hidden" id="state_id">
+                        <select id="state_country" class="form-control" name="country">
+                         {% for country in countries %}
+                            <option value="{{ country.id }}" >{{ country.name }}</option>
+                        {% endfor %}
+                        </select>
+                        <input type="text" class="form-control" id="state_slug" placeholder='Slug' name="slug">
+                        <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
+                        <button id="btnstcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
+                    </form>
+                </div>
+            </div>
+            <div class="list_div_wrap" id="state-list-div">
+            </div>
+        </section>
+        <section class="col-md-4 city">
+            <div class="title">City</div>
+            <div class="add_form_div active_ticket_form" id="add_ctform">
+                <form id="newcityform" method="post" action="{% url 'dashboard:country' %}">
+                    <div class="form-inline">
+                        <input type="text" class="form-control" name="city" id="city">
+                        <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                    </div>
+                </form>
+            </div>
+            <div class="edit_form_div" id="edit_ctform">
+                <div class="form-inline">
+                    <form id="editcityform" method="post" action="{% url 'dashboard:country' %}">
+                        <input type="text" class="form-control city-form-control" id="editcity" name="city">
+                         <select id="city_country" class="form-control" name="state">
+                         {% for country in countries %}
+                            <option value="{{ country.id }}" >{{ country.name }}</option>
+                        {% endfor %}
+                        </select>
+                         <select id="city_state" class="form-control" name="state">
+                            <option value=""  >Select State</option>
+                         {% for state in states %}
+                            <option value="{{ state.id }}" class="hide" id="city_{{ state.country.id }}">{{ state.name }}</option>
+                        {% endfor %}
+                        </select>
+                        <select id="city_parent" class="form-control" name="parent_city">
+                            <option value=""  >Select Parent City</option>
+                         {% for city in cities %}
+                            <option value="{{ city.id }}">{{ city.name }}</option>
+                        {% endfor %}
+                        </select>
+                        <input type="text" class="form-control city-form-control" placeholder="Slug" id="slug" name="slug">
+                        <input type="hidden" id="city_id">
+                        <textarea class="form-control city-form-control meta_title" name='meta_title' id='meta_title'
+                                  placeholder='City Meta Title'>{{ skill.meta_title }}</textarea>
+                        <textarea class="form-control city-form-control meta_description" name='meta_description'
+                                  id='meta_description'
+                                  placeholder='City Meta Description'>{{ skill.meta_description }}</textarea>
+                        <textarea class="form-control city-form-control internship_meta_title"
+                                  name='internship_meta_title' id='internship_meta_title'
+                                  placeholder='Internship Meta Title'>{{ skill.internship_meta_title }}</textarea>
+                        <textarea class="form-control city-form-control internship_meta_description"
+                                  name='internship_meta_description' id='internship_meta_description'
+                                  placeholder='Internship Meta Description'>{{ skill.internship_meta_description }}</textarea>
+                        <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
+                        <button id="btnctcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
+                    </form>
+                </div>
+            </div>
+            <div class="list_div_wrap" id="city-list-div">
+            </div>
+            <div class="add_form_div" id='add_other_id'>
+              <form id="othercityform" method="post" action="{% url 'dashboard:country' %}">
+                <div class="form-inline">
+                  <input type="text" class="form-control" name="name" id="city">
+                  <input type="hidden" class="form-control" name="state" id="state">
+                  <input type="hidden" class="form-control" name="parent_city" id="parent_city">
+                  <input type="hidden" class="form-control" name="mode" value="add_other_city">
+                  <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                </div>
+              </form>
+            </div>
+        </section>
+    </section>
+{% endblock stage %}
+
+{% block script %}
+    <script type="text/javascript">
+        $("#newcountryform").submit(function (e) {
+            e.preventDefault();
+            console.log("hello")
+            $.post('.', {mode: 'add_country', name: $('#country').val()}, function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url(data.message, 'Success!!!', ".")
+                } else {
+                    open_dialog(data.message, 'Error!')
+                }
+            }, 'json');
+        });
+
+        $("#editcountryform").submit(function (e) {
+            e.preventDefault();
+            $.post('.', {
+                mode: 'edit_country',
+                id: $('#country_id').val(),
+                name: $('#country_name').val(),
+                slug: $('#country_slug').val()
+            }, function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url(data.message, 'Success!!!', ".")
+                } else {
+                    for (key in data.message){
+                        $('#country_'+key).css('border', '1px solid red');
+                        $('#country_'+key).prop('title', data.message[key])
+                    }
+                }
+            }, 'json');
+        });
+
+        $('#country-list-div .ticket a.name_ticket').click(function (e) {
+            e.preventDefault();
+            $('#country_slug, #country_name').css('border', '1px solid #cdcdcd');
+            $('#country_name, #country_slug').prop('title', '')
+            $('#country_id').val($(this).attr('href'));
+            $('#country_name').val($(this).text());
+            $('#country-list-div').find('.active_ticket').removeClass('active_ticket');
+            $(this).parent().addClass('active_ticket');
+            $('#add_conform').removeClass('active_ticket_form');
+            $('#edit_conform').addClass('active_ticket_form');
+            if ($(this).attr('id') == "Disabled") {
+                $('#add_conform').removeClass('active_ticket_form');
+                $('#edit_conform').removeClass('active_ticket_form');
+                $('#add_stform').removeClass('active_ticket_form');
+                $('#edit_stform').removeClass('active_ticket_form');
+                $('#add_ctform').removeClass('active_ticket_form');
+                $('#edit_ctform').removeClass('active_ticket_form');
+            } else {
+                $('#add_stform').addClass('active_ticket_form');
+                $('#edit_stform').removeClass('active_ticket_form');
+            }
+            $('#city-list-div').html('');
+            $('#state').val('');
+            $.post('.', {mode: 'get_states', c_id: $(this).attr('href')}, function (data) {
+                if (data.error == true) {
+                    open_dialog(data.message, 'Error!')
+                }
+
+                else {
+                    $('#state-list-div').html(data.html);
+                    $('#city-list-div').html('');
+                    $('#country_slug').val(data.slug);
+                }
+            }, 'json');
+        });
+
+        $('#country-list-div .ticket .actions_ticket a').click(function (e) {
+            e.preventDefault();
+            $.post('.', {mode: 'country_status', id: $(this).attr('href')}, function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url(data.message, 'Success!!!', ".")
+                }
+            }, 'json');
+
+        });
+        $('#country-list-div').on('click', '.remove_country a', function (e) {
+            e.preventDefault();
+            var element = $(this).parent().parent()
+                       var id = $(this).attr('href')
+            $('#block_question').text('Do you want to delete this Country?')
+             $('#block_question').dialog({
+                        modal: true,
+                        dialogClass: "no-close",
+                        draggable: false,
+                        title: "Success!!",
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function () {
+                                    $.post('.', {mode: 'remove_country', id: id}, function (data) {
+                                        if (data.error == false) {
+                                            open_dialog(data.message, 'Success!')
+                                            element.remove()
+                                            }
+                                         else{
+                                            open_dialog(data.message, 'Error!')
+                                            return;
+                                            }
+                                    }, 'json');
+                                    $(this).dialog("close");
+                                }
+                            },
+                            {
+                                text: "Cancel",
+                                click: function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        ]
+                    });
+        });
+
+        $('#btnconcancel').on("click", function (e) {
+            e.preventDefault();
+            $('#country_slug, #country_name').css('border', '1px solid #cdcdcd');
+            $('#country_name, #country_slug').prop('title', '')
+            $('#country-list-div').find('.active_ticket').removeClass('active_ticket');
+            $('#country_id').val("")
+            $('#add_conform').addClass('active_ticket_form');
+            $('#edit_conform').removeClass('active_ticket_form');
+            $('#add_stform').addClass('active_ticket_form');
+            $('#edit_stform').removeClass('active_ticket_form');
+            $('#add_ctform').addClass('active_ticket_form');
+            $('#edit_ctform').removeClass('active_ticket_form');
+            $('#state-list-div').html('');
+            $('#city-list-div').html('');
+        });
+
+        $("#newstateform").submit(function (e) {
+            e.preventDefault();
+            if ($('#country_id').val()) {
+                $.post('.', {
+                    mode: 'add_state',
+                    country: $('#country_id').val(),
+                    name: $('#state').val()
+                }, function (data) {
+                    if (data.error == false) {
+                        $('#block_question').text(data.message)
+                        $('#block_question').dialog({
+                            modal: true,
+                            dialogClass: "no-close",
+                            draggable: false,
+                            title: "Success!!",
+                            buttons: [
+                                {
+                                    text: "OK",
+                                    click: function () {
+                                        var newcontent = $('#state-list-div').html();
+                                        newcontent += '<div class="ticket"><a class="name_ticket" href="' + data.id + '">' + data.name + '(0)</a><div class="remove_ticket remove_states"><a class="delete" href="' + data.id +'"'+
+                        'id="' + data.status + ' "><i class="fa fa-trash-o"></i></a></div><div class="actions_ticket"><a class="edit" href="' + data.id + '" id="' + data.status + '"><i class="fa fa-toggle-off"></i></a></div><div class="clearfix"></div></div>';
+                                        $('#state-list-div').html(newcontent);
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            ]
+                        });
+
+                    } else {
+                        open_dialog(data.message, 'Error!')
+                    }
+                }, 'json');
+                $('#state').val('');
+            } else {
+                open_dialog("You can't add State, Please select country", 'Error!')
+            }
+        });
+        $("#editstateform").submit(function (e) {
+            e.preventDefault();
+            $.post('.', {
+                mode: 'edit_state',
+                country: $('#state_country').val(),
+                id: $('#state_id').val(),
+                name: $('#state_name').val(),
+                slug: $('#state_slug').val(),
+            }, function (data) {
+                if (data.error == false) {
+                    $('#block_question').text(data.message)
+                    $('#block_question').dialog({
+                        modal: true,
+                        dialogClass: "no-close",
+                        draggable: false,
+                        title: "Success!!",
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function () {
+                                    $('#state-list-div').find('a.name_ticket').each(function () {
+                                        if ($(this).attr('href') == $('#state_id').val()) {
+                                            $(this).text($('#state_name').val());
+                                        }
+                                    });
+                                    $(this).dialog("close");
+                                }
+                            }
+                        ]
+                    });
+                } else {
+                    for (var key in data.message) {
+                        $('#state_'+key).css('border', '1px solid red');
+                        $('#state_'+key).prop('title', data.message[key])
+                        }
+                    }
+            }, 'json');
+        });
+
+        $('#state-list-div').on('click', '.ticket a.name_ticket', function (e) {
+            e.preventDefault();
+            $('#state_name, #state_slug').css('border', '1px solid #cdcdcd');
+            $('#state_name, #state_slug').prop('title', '')
+            $('#state_id').val($(this).attr('href'));
+            $('#state_name').val($(this).text());
+            $('#state-list-div').find('.active_ticket').removeClass('active_ticket');
+            $(this).parent().addClass('active_ticket');
+            if ($(this).attr('id') == "Disabled") {
+                $('#add_stform').removeClass('active_ticket_form');
+                $('#edit_stform').removeClass('active_ticket_form');
+                $('#add_ctform').removeClass('active_ticket_form');
+                $('#edit_ctform').removeClass('active_ticket_form');
+            } else {
+                $('#add_stform').removeClass('active_ticket_form');
+                $('#edit_stform').addClass('active_ticket_form');
+                $('#add_ctform').addClass('active_ticket_form');
+                $('#edit_ctform').removeClass('active_ticket_form');
+                $('#edit_conform').addClass('active_ticket_form');
+            }
+            $('#city').val('');
+            $.post('.', {mode: 'get_cities', s_id: $(this).attr('href')}, function (data) {
+                if (data.error == true) {
+                    open_dialog(data.message, 'Error!')
+                }
+                else {
+                $('#city-list-div').html(data.html);
+                $('#state_country').val(data.country)
+                $('#state_slug').val(data.state_slug)
+                }
+            }, 'json');
+        });
+
+        $('#state-list-div').on('click', '.ticket .actions_ticket a', function (e) {
+            e.preventDefault();
+            $('#add_stform').addClass('active_ticket_form');
+            $('#edit_stform').removeClass('active_ticket_form');
+            $('#add_ctform').addClass('active_ticket_form');
+            $('#edit_ctform').removeClass('active_ticket_form');
+            $('#city-list-div').html('');
+            $('#city').val('');
+            var _this = $(this)
+            $.post('.', {mode: 'state_status', id: $(this).attr('href')}, function (data) {
+                if (data.error == false) {
+                    open_dialog(data.message, 'Error!')
+                    console.log($(this))
+                    if($(_this).find('i').hasClass('fa-toggle-on')){
+                        $(_this).find('i').removeClass('fa-toggle-on')
+                        $(_this).find('i').addClass('fa-toggle-off')
+                    }else{
+                        $(_this).find('i').removeClass('fa-toggle-off')
+                        $(_this).find('i').addClass('fa-toggle-on')
+                    }
+                    $("#country-list-div").children().each(function () {
+                        if ($(this).find("a.name_ticket").attr('href') == data.country_id) {
+                            if (data.country_status == true) {
+                                if ($(this).hasClass("disabled_ticket") == false) {
+                                    $(this).find("a.name_ticket").attr('id', 'Disabled')
+                                    $("#edit_conform").removeClass("active_ticket_form")
+                                    $("#add_conform").removeClass("active_ticket_form")
+                                    $(this).addClass("disabled_ticket");
+                                }
+                                $('#add_stform').removeClass('active_ticket_form');
+                            } else {
+                                if ($(this).hasClass("disabled_ticket")) {
+                                    $(this).find("a.name_ticket").attr('id', 'Enabled')
+                                    $(this).removeClass("disabled_ticket");
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    return;
+                }
+            }, 'json');
+
+            if ($(this).attr('id') == "Enabled") {
+                $(this).parent().parent().find('a.name_ticket').attr('id', 'Disabled')
+                $(this).find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on')
+                $(this).parent().parent().addClass('disabled_ticket')
+                $(this).attr('id', 'Disabled')
+            } else {
+                $(this).parent().parent().find('a.name_ticket').attr('id', 'Enabled')
+                $(this).find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off')
+                $(this).parent().parent().removeClass('disabled_ticket')
+                $(this).attr('id', 'Enabled')
+            }
+        });
+        $('#state-list-div').on('click', '.remove_ticket a', function (e) {
+            e.preventDefault();
+            var element = $(this).parent().parent()
+            var id = $(this).attr('href')
+            $('#block_question').text('Do you want to delete this State?')
+             $('#block_question').dialog({
+                        modal: true,
+                        dialogClass: "no-close",
+                        draggable: false,
+                        title: "Success!!",
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function () {
+                                    $.post('.', {mode: 'remove_state', id: id}, function (data) {
+                                        if (data.error == false) {
+                                            open_dialog(data.message, 'Success!')
+                                            element.remove()
+                                            }
+                                         else{
+                                            open_dialog(data.message, 'Error!')
+                                            return;
+                                            }
+                                    }, 'json');
+                                    $(this).dialog("close");
+                                }
+                            },
+                            {
+                                text: "Cancel",
+                                click: function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        ]
+                    });
+        });
+
+
+        $('#btnstcancel').on("click", function (e) {
+            e.preventDefault();
+            $('#state_name, #state_slug').css('border', '1px solid #cdcdcd');
+            $('#state_name, #state_slug').prop('title', '')
+            $('#state-list-div').find('.active_ticket').removeClass('active_ticket');
+            $('#state_id').val("");
+            $('#add_stform').addClass('active_ticket_form');
+            $('#edit_stform').removeClass('active_ticket_form');
+            $('#add_ctform').addClass('active_ticket_form');
+            $('#edit_ctform').removeClass('active_ticket_form');
+            $('#city-list-div').html('');
+        });
+
+        $("#newcityform").submit(function (e) {
+            e.preventDefault();
+            if ($('#state_id').val()) {
+                $.post('.', {mode: 'add_city', state: $('#state_id').val(), name: $('#city').val()}, function (data) {
+                    if (data.error == false) {
+                        open_dialog(data.message, 'Error!')
+                        var newcontent = $('#city-list-div').html();
+                        newcontent += '<div class="ticket"><a class="name_ticket" href="' + data.id + '">' + data.name + '</a><div class="remove_ticket remove_city"><a class="delete" href="' + data.id +'"'+
+                        'id="' + data.status + ' "><i class="fa fa-trash-o"></i></a></div><div class="actions_ticket"><a class="edit" href="' + data.id + '" id="' + data.status + '"><i class="fa fa-toggle-off"></i></a></div><div class="clearfix"></div></div>';
+                        $('#city-list-div').html(newcontent);
+                    } else {
+                        open_dialog(data.message, 'Error!')
+                    }
+                }, 'json');
+                $('#city').val('');
+            } else {
+                open_dialog("You can't add city, Please select State", 'Info!')
+
+            }
+
+        });
+
+        $("#editcityform").submit(function (e) {
+            e.preventDefault();
+            ss = $(this).find('.meta_title').val()
+            meta_title = $(this).find('.meta_title').val()
+            meta_description = $(this).find('.meta_description').val()
+            internship_meta_description = $(this).find('.internship_meta_description').val()
+            internship_meta_title = $(this).find('.internship_meta_title').val()
+            href = $(this).attr('href')
+            $('#block_question').text('Do you want to update city details?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "OK",
+                        click: function () {
+                            $.post('.', {
+                                mode: 'edit_city',
+                                state: $('#city_state').val(),
+                                id: $('#city_id').val(),
+                                name: $('#editcity').val(),
+                                slug : $('#slug').val(),
+                                parent_city : $('#city_parent').val(),
+                                'meta_title': meta_title,
+                                'meta_description': meta_description,
+                                'internship_meta_description': internship_meta_description,
+                                'internship_meta_title': internship_meta_title
+                            }, function (data) {
+                                if (data.error == false) {
+                                    open_dialog(data.message, 'Info!')
+                                    $('#city-list-div').find('a.name_ticket').each(function () {
+                                        if (href == $('#city_id').val()) {
+                                            $("#editcityform").text($('#editcity').val());
+                                        }
+                                    });
+                                } else {
+                                    for (var key in data.message) {
+                                    open_dialog(data.message[key], 'Error!')
+                                    }
+                                }
+                            }, 'json');
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('#city-list-div').on('click', '.ticket a.name_ticket', function (e) {
+            e.preventDefault();
+            $('#city_id').val($(this).attr('href'));
+            $('#editcity').val($(this).text());
+            $('#meta_title').val($(this).siblings('.actions_ticket').find('.meta_title').text());
+            $('#meta_description').val($(this).siblings('.actions_ticket').find('.meta_description').text());
+            $('#internship_meta_title').val($(this).siblings('.actions_ticket').find('.internship_meta_title').text());
+            $('#internship_meta_description').val($(this).siblings('.actions_ticket').find('.internship_meta_description').text());
+            $('#city-list-div').find('.active_ticket').removeClass('active_ticket');
+            $(this).parent().addClass('active_ticket');
+            if ($(this).attr('id') == "Disabled") {
+                $('#add_ctform').removeClass('active_ticket_form');
+                $('#edit_ctform').removeClass('active_ticket_form');
+            } else {
+                $('#add_ctform').removeClass('active_ticket_form');
+                $('#edit_ctform').addClass('active_ticket_form');
+                $('#edit_stform').addClass('active_ticket_form');
+                $('#edit_conform').addClass('active_ticket_form');
+            }
+            $.post('.', {mode: 'get_city_info', city: $(this).attr('href')}, function (data) {
+                $('#city_country').val(data.country)
+                $('#city_state').val(data.state)
+                $('#city_parent').val(data.parent)
+                $('#slug').val(data.slug)
+                $('select#city_state option[id="city_'+ data.country + '"]').removeClass('hide');
+            }, 'json');
+        });
+
+        $('#city-list-div').on('click', '.ticket .actions_ticket a', function (e) {
+            e.preventDefault();
+            $('#add_ctform').addClass('active_ticket_form');
+            $('#edit_ctform').removeClass('active_ticket_form');
+            $('#city').val('');
+
+            if ($(this).attr('id') == "Enabled") {
+                $(this).parent().parent().find('a.name_ticket').attr('id', 'Disabled')
+                $(this).find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on')
+                $(this).parent().parent().addClass('disabled_ticket')
+                $(this).attr('id', 'Disabled')
+            } else {
+                $(this).parent().parent().find('a.name_ticket').attr('id', 'Enabled')
+                $(this).find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off')
+                $(this).parent().parent().removeClass('disabled_ticket')
+                $(this).attr('id', 'Enabled')
+            }
+            $.post('.', {mode: 'city_status', id: $(this).attr('href')}, function (data) {
+                if (data.error == false) {
+                    open_dialog(data.message, 'Info!')
+                    $("#state-list-div").children().each(function () {
+                        if ($(this).find("a.name_ticket").attr('href') == data.state_id) {
+                            if (data.state_status == true) {
+                                if ($(this).hasClass("disabled_ticket") == false) {
+                                    $(this).find("a.name_ticket").attr('id', 'Disabled')
+                                    $(this).addClass("disabled_ticket");
+                                    $(this).find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                                    $(this).find('i').parent().attr('id', 'Disabled')
+                                }
+                                $('#add_ctform').removeClass('active_ticket_form');
+                            } else {
+                                if ($(this).hasClass("disabled_ticket")) {
+                                    $(this).find("a.name_ticket").attr('id', 'Enabled')
+                                    $(this).removeClass("disabled_ticket");
+                                    $(this).find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                                    $(this).find('i').parent().attr('id', 'Enabled')
+                                    $('#edit_stform').addClass('active_ticket_form');
+                                    $('#edit_conform').addClass('active_ticket_form');
+                                }
+                            }
+                        }
+                    });
+                    $("#country-list-div").children().each(function () {
+                        if ($(this).find("a.name_ticket").attr('href') == data.country_id) {
+                            if (data.country_status == true) {
+                                if ($(this).hasClass("disabled_ticket") == false) {
+                                    $(this).addClass("disabled_ticket");
+                                    $(this).find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                                }
+                            } else {
+                                if ($(this).hasClass("disabled_ticket")) {
+                                    $(this).removeClass("disabled_ticket");
+                                    $(this).find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                                }
+                            }
+                        }
+                    });
+                }else{
+                    open_dialog(data.message, 'Alert!')
+                }
+            }, 'json');
+        });
+        $('#city-list-div').on('click', '.remove_city a', function (e) {
+            e.preventDefault();
+            var element = $(this).parent().parent()
+            var id = $(this).attr('href')
+            $('#block_question').text('Do you want to delete this City?')
+             $('#block_question').dialog({
+                        modal: true,
+                        dialogClass: "no-close",
+                        draggable: false,
+                        title: "Success!!",
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function () {
+                                    $.post('.', {mode: 'remove_city', id: id}, function (data) {
+                                        if (data.error == false) {
+                                            open_dialog(data.message, 'Success!')
+                                            element.remove()
+                                            }
+                                         else{
+                                            open_dialog(data.message, 'Error!')
+                                            return;
+                                            }
+                                    }, 'json');
+                                    $(this).dialog("close");
+                                }
+                            },
+                            {
+                                text: "Cancel",
+                                click: function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        ]
+                    });
+        });
+        $('#btnctcancel').on("click", function (e) {
+            e.preventDefault();
+            $('#city-list-div').find('.active_ticket').removeClass('active_ticket');
+            $('#add_ctform').addClass('active_ticket_form');
+            $('#edit_ctform').removeClass('active_ticket_form');
+        });
+
+  $("select#city_country").on('change', function (e) {
+      $('select#city_state option').addClass('hide')
+      $('select#city_state').val('')
+      $('select#city_state option[id="city_'+ $('#city_country').val() + '"]').removeClass('hide');
+  });
+  $('#city-list-div').on('click', '.ticket a.add_other_city', function (e) {
+      if ($(this).find('.fa').hasClass('fa-plus')){
+      var other_form = $('#add_other_id').show().detach();
+      $(this).parent().append(other_form)
+      $(this).parent().find('#parent_city').val($(this).attr('id'))
+      $(this).parent().find('#state').val($(this).attr('data-state'))
+    }else{
+      $(this).parent().find('#add_other_id').hide()
+    }
+      $(this).find('.fa').toggleClass('fa-plus fa-times')
+    })
+      $("#othercityform").submit(function (e) {
+         e.preventDefault();
+          console.log("hello")
+          var state = $(this).find('#state').val()
+          $.post('.', $(this).serialize(), function (data) {
+            if (data.error == false) {
+                  $('#state-list-div .ticket a.name_ticket[href='+state+']').click()
+                  open_dialog('City Saved Successfully!', 'Success!!!', ".")
+              } else {
+                  open_dialog(data.message, 'Error!')
+              }
+          }, 'json');
+      })
+    </script>
+{% endblock script %}

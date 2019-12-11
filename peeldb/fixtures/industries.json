@@ -1,0 +1,281 @@
+[{
+    "model": "peeldb.industry",
+    "pk": 1,
+    "fields": {
+        "name": "IT-Software / Software Services\r\n",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 2,
+    "fields": {
+        "name": "IT-Hardware & Networking",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 3,
+    "fields": {
+        "name": "BPO / Call Centre / ITES",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 4,
+    "fields": {
+        "name": "Automobile / Auto Anciliary / Auto Components",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 5,
+    "fields": {
+        "name": "Accounting / Finance",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 6,
+    "fields": {
+        "name": "Advertising / PR / MR / Event Management",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 7,
+    "fields": {
+        "name": "Agriculture / Dairy",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 8,
+    "fields": {
+        "name": "Animation / Gaming",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 9,
+    "fields": {
+        "name": "Architecture / Interior Design",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 10,
+    "fields": {
+        "name": "Aviation / Aerospace Firms",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 11,
+    "fields": {
+        "name": "Banking / Financial Services / Broking",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 12,
+    "fields": {
+        "name": "Broadcasting",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 13,
+    "fields": {
+        "name": "Chemicals / PetroChemical / Plastic / Rubber",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 14,
+    "fields": {
+        "name": "Construction / Engineering / Cement / Metals",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 15,
+    "fields": {
+        "name": "Consumer Electronics / Appliances / Durables",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 16,
+    "fields": {
+        "name": "Education / Teaching / Training",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 17,
+    "fields": {
+        "name": "FMCG / Foods / Beverage",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 18,
+    "fields": {
+        "name": "Fresher / Trainee / Entry Level",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 19,
+    "fields": {
+        "name": "Government / Defence",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 20,
+    "fields": {
+        "name": "Insurance",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 21,
+    "fields": {
+        "name": "KPO / Research / Analytics",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 22,
+    "fields": {
+        "name": "Media / Entertainment / Internet",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 23,
+    "fields": {
+        "name": "Internet / Ecommerce",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 24,
+    "fields": {
+        "name": "Medical / Healthcare / Hospitals",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 25,
+    "fields": {
+        "name": "NGO / Social Services / Regulators / Industry Associations",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 26,
+    "fields": {
+        "name": "Pharma / Biotech / Clinical Research",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 27,
+    "fields": {
+        "name": "Printing / Packaging",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 28,
+    "fields": {
+        "name": "Real Estate / Property",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 29,
+    "fields": {
+        "name": "Recruitment / Staffing",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 30,
+    "fields": {
+        "name": "Retail / Wholesale",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 31,
+    "fields": {
+        "name": "Security / Law Enforcement",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 32,
+    "fields": {
+        "name": "Strategy / Management Consulting Firms",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 33,
+    "fields": {
+        "name": "Telecom/ISP",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 34,
+    "fields": {
+        "name": "Textiles / Garments / Accessories",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 35,
+    "fields": {
+        "name": "Travel / Hotels / Restaurants / Airlines / Railways",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 36,
+    "fields": {
+        "name": "Other",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 40,
+    "fields": {
+        "name": "sales & marketing",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 41,
+    "fields": {
+        "name": "Project manager",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 42,
+    "fields": {
+        "name": "web development industry",
+        "status": "Active"
+    }
+}, {
+    "model": "peeldb.industry",
+    "pk": 44,
+    "fields": {
+        "name": "Embedded systems and semi conductor",
+        "status": "Active"
+    }
+}]

@@ -1,0 +1,147 @@
+{% extends 'dashboard/base.html' %}
+{% block stage %}
+<style type="text/css">
+  .location{
+    display: none;
+  }
+</style>
+<section id='recruiters'>
+  <div class="table">
+    <h4>Mobile Campaign</h4>
+     <form id="search_form" name="adv-search-form" class="search-form" method="POST" action=".">
+      <div class="row">
+          <div class="col-md-offset-2 col-md-8 search_form">
+          <div class="row">
+          <div class="col-md-4">
+            <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
+            <input type="hidden" name="page" id="page" value="{{ page }}"/>
+            <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{request.POST.timestamp}}" placeholder="Select the date">
+          </div>
+          <div class="col-md-6">
+            <select name='skills' id='skills' class='form-control select2' multiple>
+              <option value=''>Select A Skill</option>
+              {% for skill in all_skills %}
+                <option value="{{ skill.id }}" {% if skill.id|slugify in selected_skills %}selected {% endif %}>{{ skill }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="form-control submit">Submit</button>
+          </div>
+          </div>
+        <div class="clearfix"></div>
+        </div>
+      </div>
+    </form>
+<div id="location" style="display:none;">{{ location|safe }}</div>
+<div id="jobs_location" style="display:none;">{{ jobs_location|safe }}</div>
+
+<div id="active_recruiters" style="display:none;">{{ active_recruiters|safe }}</div>
+<div id="inactive_recruiters" style="display:none;">{{ inactive_recruiters|safe }}</div>
+<div id="job_posts" style="display:none;">{{ job_posts|safe }}</div>
+
+<div id="skills_names" style="display:none;">{{ skills_names|safe }}</div>
+
+<div id="skill_wise_jobs_count" style="display:none;">{{ skill_wise_jobs_count|safe }}</div>
+{{location|length}}
+{% if location|length > 1 %}
+<div style="width:500; height;500">
+  <div id="myChart" width="500" height="500">
+  </div>
+</div>
+
+<div style="width:500; height;500">
+  <div id="jobpostchart" width="500" height="500">
+  </div>
+</div>
+{% endif %}
+{% if skills_names|length > 0 %}
+<div style="width:500; height;500">
+  <div id="skillschart" width="500" height="500">
+  </div>
+</div>
+{% endif %}
+
+  </div>
+</section>
+{% endblock %}
+{% block script %}
+<script>
+  {% if location|length > 1 %}
+  var trace1 = {
+    x: JSON.parse($('#location').html()),
+    y: JSON.parse($('#active_recruiters').html()),
+    mode: 'lines',
+    name: 'Active Recruiters'
+  };
+
+  var trace2 = {
+    x: JSON.parse($('#location').html()),
+    y: JSON.parse($('#inactive_recruiters').html()),
+    mode: 'lines',
+    name: 'In Active Recruiters'
+  };
+
+  var recruiter_data = [ trace1, trace2];
+
+  var jobposts_data = {
+    x: JSON.parse($('#jobs_location').html()),
+    y: JSON.parse($('#job_posts').html()),
+    mode: 'lines',
+    name: 'Job Posts'
+  };
+
+  var jobposts = [ jobposts_data];
+  {% endif %}
+  {% if skills_names|length > 0 %}
+  var skills_data = {
+    x: JSON.parse($('#skills_names').html()),
+    y: JSON.parse($('#skill_wise_jobs_count').html()),
+    mode: 'lines',
+    name: 'Skills'
+  };
+  var skills = [ skills_data];
+  {% endif %}
+
+  {% if location|length > 0 %}
+  var recruiter_layout = {
+    title:'Number of Recruiters',
+    height: 600,
+    width: 1215
+  };
+
+  var jobpost_layout = {
+    title:'Number of Job Posts',
+    height: 600,
+    width: 1215
+  };
+  {% endif %}
+  {% if skills_names|length > 0 %}
+  var skill_layout = {
+    title:'No Of Skills',
+    height: 600,
+    width: 1215
+  };
+  {% endif %}
+  {% if location|length > 0 %}
+  Plotly.newPlot('myChart', recruiter_data, recruiter_layout, {
+    displaylogo:false,
+    displayModeBar: false,
+  });
+  {% endif %}
+  {% if jobs_location|length > 0 %}
+  Plotly.newPlot('jobpostchart', jobposts, jobpost_layout,{
+    displaylogo:false,
+    displayModeBar: false,
+  });
+  {% endif %}
+  {% if skills_names|length > 0 %}
+  Plotly.newPlot('skillschart', skills, skill_layout,{
+    displaylogo:false,
+    displayModeBar: false,
+  });
+  {% endif %}
+console.log(recruiter_data)
+$('.select2').select2({placeholder:'Select A Skill'});
+</script>
+{% endblock script %}

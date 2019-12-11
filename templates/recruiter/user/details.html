@@ -1,0 +1,345 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% block 'stage' %}
+<!-- content -->
+<div class="content_wrap">
+  <section id='job_post' class="user_profile">
+    <form name="personalform" id="personalform" method="post" enctype="multipart/form-data">
+      <h3>Edit Profile</h3>
+      <!-- content job post -->
+      <div class="content_job_post">
+        <!-- category -->
+        <div class="category edit">
+          <h6>General Info</h6>
+          <!-- form div -->
+          <div class="form_div">
+            <!--input element -->
+            <div class="input_element">
+              <label>User Name</label>
+              <input type="text" class="input" placeholder="First name" name="username" id="username"
+                value="{{ user.username }}">
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>First Name</label>
+              <input type="text" class="input" placeholder="First name" name="first_name"
+                id="first_name" value="{{ user.first_name }}">
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>Last Name</label>
+              <input type="text" class="input" placeholder="Last name" name="last_name" id="last_name"
+                value="{{ user.last_name|default_if_none:'' }}">
+              <input type="hidden" class="form-control" placeholder="Last name" name="user_id"
+                id="user_id" value="{{ user.id }}">
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>Marital status</label>
+              <select class="input" name="marital_status" id="marital_status">
+                <option value="">Select A Status</option>
+                {% for status in martial_status %}
+                <option value="{{ status.0 }}"
+                {% ifequal status.0|slugify user.marital_status|slugify %}
+                selected {% endifequal %}>{{ status.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>Date Of Birth</label>
+              <input type="text" id='dob' class="input" placeholder="Date of Birth(dd/mm/yyyy)"
+              name="dob" id="dob" value="{{ user.dob|date:"m/d/Y" }}">
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>Gender</label>
+              <input type="radio" name="gender" id="gender" value="M"
+              {% if user.gender == 'M' %} checked {% endif %}><span
+                class='name'>Male</span>
+              <input type="radio" name="gender" id="gender" value="F"
+              {% if user.gender == 'F' %} checked {% endif %}><span class='name'>Female</span>
+            </div>
+            <!--/ input element -->
+            <div class="clearfix"></div>
+            <div class="clearfix"></div>
+          </div>
+          <!--/ category -->
+        </div>
+        <!--/ category -->
+        <!-- category -->
+        <div class="category offer">
+          <h6>Contact Info</h6>
+          <!-- form div -->
+          <div class="form_div">
+            <!--input element -->
+            <div class="input_element">
+              <label>Mobile Number</label>
+              <input type="text" class="input" placeholder="Mobile Number" name="mobile" id="mobile"
+                value="{{ user.mobile }}">
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>Email Address</label>
+              <input type="email" class="input" placeholder="Email Address" name="email" id="email"
+                value="{{ user.email }}" readonly>
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>&nbsp;</label>
+              <input type="checkbox" name="show_email" id="show_email"
+              {% if user.show_email %}checked{% endif %}><span class='name'>Show Email Address</span>
+              <input type="checkbox" name="email_notifications" id="email_notifications"
+              {% if user.email_notifications %}checked{% endif %}><span class='name'>Email Notifications</span>
+            </div>
+            <!--input element -->
+            <!--/ input element -->
+            <div class="clearfix"></div>
+            <!--input element -->
+            <div class="input_element">
+              <label>Nationality</label>
+              <select class="input" name="nationality" id="nationality">
+                <option value="">Select A Location</option>
+                {% for country in countries %}
+                <option value="{{ country.id }}"
+                {% ifequal country.id|slugify user.nationality|slugify %}
+                selected {% endifequal %}>{{ country.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>State</label>
+              <select class="input" name="state" id="state">
+                <option value="">select a state</option>
+                {% for state in states %}
+                <option value="{{ state.id }}" class="hide" id="{{ state.country.id }}"
+                {% ifequal state.id|slugify user.state.id|slugify %}
+                selected {% endifequal %}>{{ state.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <!--/ input element -->
+            <!--input element -->
+            <div class="input_element">
+              <label>Cities</label>
+              <select class="input" name="city" id="city">
+                <option value="">select a city</option>
+                {% for city in cities %}
+                <option value="{{ city.id }}" class="hide"
+                id="{{ city.state.id }}_{{ city.state.country.id }}"
+                {% ifequal city.id|slugify user.city.id|slugify %}
+                selected {% endifequal %}>{{ city.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <!--/ input element -->
+            <div class="clearfix"></div>
+          </div>
+          <!--/ form_div -->
+        </div>
+        <!--/ category -->
+        <!-- category -->
+        <div class="category deadline">
+          <h6>Residential Info</h6>
+          <!-- form div -->
+          <div class="form_div">
+            <div class="input_element area_element">
+              <label>Present Address</label>
+              <textarea class="input" name="address" id="address"
+                placeholder="Present Address">{{ user.address }}</textarea>
+            </div>
+            <!--input element -->
+            <div class="input_element">
+              <label>&nbsp;</label>
+              <input type="checkbox" name="present_address" id="present_address"><span class='name'>If Present Address is same as Permanent Address</span>
+            </div>
+            <!--/ input element -->
+            <div class="input_element area_element">
+              <label>Permanent Address</label>
+              <textarea class="input" name="permanent_address" id="permanent_address"
+                placeholder="Permanent Address">{{ user.permanent_address }}</textarea>
+            </div>
+            <!--/ input element -->
+            <!--/ input element -->
+            <div class="input_element area_element">
+              <label>Profile Description</label>
+              <textarea class="input" name="profile_description" id="profile_description"
+                placeholder="Permanent Address">{{ user.profile_description }}</textarea>
+            </div>
+            <!--/ input element -->
+            <div class="input_element">
+              <label>Industry</label>
+              <select class="input industry" multiple placeholder="Industries" name="industry"
+                id="industry">
+                <option value="">select a Industry</option>
+                {% for industry in industries %}
+                <option value="{{ industry.id }}" {% if industry in user.industry.all %}
+                selected {% endif %}>{{ industry.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="input_element">
+              <label>Functional Area</label>
+              <select class="input functional_area" multiple placeholder="Functional Area"
+                name="functional_area" id="functional_area">
+                <option value="">select a Functional Area</option>
+                {% for fa in functional_areas %}
+                <option value="{{ fa.id }}" {% if fa in user.functional_area.all %}
+                selected {% endif %}>{{ fa.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="input_element">
+              <label>Skills</label>
+              <select class="input skills" multiple name="technical_skills" id="technical_skills">
+                <option value="">select a Skill</option>
+                {% for skill in skills %}
+                <option value="{{ skill.id }}"
+                {% if skill in user.technical_skills.all %}
+                selected {% endif %}>{{ skill.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="input_element">
+              <label>Current Designation</label>
+              <input type="text" class="input" placeholder="Current Designation" name="job_role"
+                id="job_role" value="{{ user.job_role }}">
+            </div>
+            <div class="input_element">
+              <label>Total Experience</label>
+              <input type="text" class="input" placeholder="Year" name="year" id="year"
+                value="{{ user.year|default_if_none:'' }}">
+            </div>
+            <div class="input_element">
+              <input type="text" class="input" placeholder="Month" name="month" id="month"
+                value="{{ user.month|default_if_none:'' }}">
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <!--/ form_div -->
+        </div>
+        <!--/ category -->
+        <!-- category -->
+        <!--<div class="category company">
+          <h6>Company Details</h6>
+          <div class="form_div">
+            <div class="input_element">
+              <label>Company Type</label>
+              <input type="radio" name="company_type" id="company_type" value="Consultant"
+                          {% if user.company.company_type == 'Consultant' %} checked {% endif %}><span class='name'>Consultancy</span>
+              <input type="radio" name="company_type" id="company_type" value="Company"
+                          {% if user.company.company_type == 'Company' %} checked {% endif %}><span class='name'>Company</span>
+            </div>
+            <div class="input_element">
+              <label>Company Name</label>
+              <input type="text" class="input" placeholder="Enter company name" name="name" id="name"  value="{{ user.company.name }}">
+            </div>
+            <div class="input_element">
+              <label>Company Website</label>
+              <input type="text" class="input" placeholder="Enter company website" name="website" id="website"  value="{{ user.company.website }}">
+            </div>
+            </div>
+          <div class="clearfix"></div>
+          </div>-->
+        <!--/ category -->
+        <!-- button row -->
+        <div class="button_row">
+          <button class='button change' type="submit"><i class='fa fa-floppy-o'></i>Save</button>
+          <button class='button cancel' type="button"><i class='fa fa-times'></i>Cancel</button>
+        </div>
+        <!--/ button row -->
+        <!--/ content job post -->
+      </div>
+    </form>
+  </section>
+</div>
+<!--/ content -->
+</div>
+<!--/ container -->
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+
+  $(".cancel").click(function (e) {
+      e.preventDefault();
+      window.location = "{% url 'recruiter:profile' %}";
+  });
+
+  $(document).ready(function () {
+      $ = jQuery;
+      $("#dob").datepicker({
+          changeMonth: true,
+          changeYear: true,
+          yearRange: "1950:2015"
+      });
+      $(".skills").select2({
+          tags: true,
+          placeholder: 'Select A Skill'
+      })
+      $(".industry").select2({
+          tags: true,
+          placeholder: 'Select A Industry'
+      })
+      $(".functional_area").select2({
+          tags: true,
+          placeholder: 'Select A Functional Area'
+      })
+  $('select#city option[id=' + $('#state').val() + '_' + $("select#nationality option:selected").val() + ']').removeClass('hide');
+  $('select#state option[id=' + $('#nationality').val() + ']').removeClass('hide');
+  });
+  $("select#state").on('change', function (e) {
+      $('select#city option').addClass('hide');
+      $('select#city').val('');
+      $('select#city option[id=' + $('#state').val() + '_' + $("select#nationality option:selected").val() + ']').removeClass('hide');
+  });
+  $("select#nationality").on('change', function (e) {
+      $('select#state option').addClass('hide')
+      $('select#city option').addClass('hide');
+      $('select#state').val('')
+      $('select#city').val('');
+      $('select#state option[id=' + $('#nationality').val() + ']').removeClass('hide');
+  });
+  $('#present_address').click(function () {
+      if (document.getElementById('present_address').checked) {
+          $("#permanent_address").val('');
+          $("#permanent_address").val($("#address").val());
+      }
+      else {
+          $("#permanent_address").val('');
+      }
+  });
+  $("#address").keyup(function(){
+       if (document.getElementById('present_address').checked) {
+          $("#permanent_address").val($("#address").val());
+      }
+  })
+
+
+  $('form#personalform').ajaxForm({
+      type: 'POST',
+      dataType: 'json',
+      data: $(this).serialize(),
+      success: function (data) {
+          if (data.error) {
+              open_dialog('Some Content Missing', 'Info!!')
+              $('div.error').remove();
+              for (var key in data.response) {
+                  $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+              }
+            }
+            else {
+            open_dialog_with_url(data.response, 'Info!!', "{% url 'recruiter:profile' %}")
+            }
+        }
+  });
+</script>
+{% endblock %}

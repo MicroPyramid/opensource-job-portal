@@ -1,0 +1,154 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% load static %}
+{% block 'stage' %}
+<!-- content -->
+<div class="content_wrap">
+  <section id='profile'>
+    <h3>Reach Job Seekers</h3>
+     <div class="panel message_panel">
+     <div class="panel-body">
+        <div class="row marl chat_main_block mar_lr_0">
+          {% if users %}
+          <div class="col-md-3 pad_lr_0 recruiters_list_block">
+            <form class="user_search" name='user_search' method="POST">
+              <input class="search_users_input" type="" placeholder="Search Applicants.." id='search_user' name="search_user"> 
+              <button class="search_users_button"><i class="fa fa-search" aria-hidden="true"></i>
+              </button>
+            </form>
+            <ul class="users_list">
+              {% for user in users %}
+                {% get_unread_messages request.user user '' as unread %}
+                <li class="col-md-12 pad_lr_0 recruiter_button" id="{{ user.id }}"><a>
+                {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.email }}{% endif %}
+                {% if unread %}<span class="msg_count pull-right">{{ unread }}</span>{% endif %}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="col-md-9 pad_lr_0 message_box">
+            <h2 class="empty_msg">Select Applicants and Message</h2>
+          </div>
+          {% else %}
+          <div class="empty_msg">
+            <h2>No Applicants to Reach</h2>
+          </div>
+          {% endif %}
+        </div>
+    </div>
+</div>
+  </section>
+</div>
+<li class="right clearfix pull-right message_div" id='' style="display:none">
+<i class="fa fa-trash-o pull-right delete_msg" aria-hidden="true"></i>
+  <span class="chat-img pull-right">
+    <img src="{% if request.user.profile_pic %}{{ request.user.profile_pic.url }}{% else %}{% static 'dummy.jpg' %}{% endif %}" alt="User Avatar" class="img-circle" id='message_image'>
+  </span>
+  <div class="chat-body clearfix">
+      <div class="header">
+        <p id='message_text'></p>
+        <small class=" text-muted">
+          <span class="glyphicon glyphicon-time"></span>
+          <span id='message_time'></span>
+        </small>
+      </div>
+  </div>
+</li>
+<!--/ content -->
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+$(document).ready(function(e){
+  $('body').on('keypress', "input[type=text], textarea", function (e) {
+    if(e.which == 13 && !e.shiftKey) {
+        $(this).closest("form").submit();
+    }
+});
+  $(".recruiter_button").click(function(e){
+    e.preventDefault()
+    $('.recruiter_button').removeClass('active')
+    $(this).addClass('active')
+    $(this).find('.msg_count').remove()
+    $.post(".", {'r_id': $(this).attr('id'), 'mode': 'get_messages'}, function(data) {
+        if (data.error == false) {
+          $('.message_box').html(data.messages)
+          $(".messages_container").scrollTop($(".messages_container")[0].scrollHeight);
+        }
+        else {
+         open_dialog('Something Went Wrong!', 'Alert!')
+        }
+      }, 'json');
+  })
+  $('body').on('submit', 'form#messageform', function(e) {
+  e.preventDefault();
+  if ($('input[name=message], textarea').val().trim() == ''){
+    open_dialog('Please Enter any message!', 'Alert!')
+    return false
+  }
+  $.post(".", $(this).serialize(), function(data) {
+    $('div.error').remove();
+    if (data.error == false) {
+      $li = $('.users_list li')
+      ind = $('.recruiter_button.active').index()
+      $('.users_list').animate({ scrollTop: 0 }, "slow");
+      $li.eq(ind).insertBefore($li.first())
+      $msg = $('.message_div').clone()
+      $($msg).attr('id', data.msg_id)
+      $($msg).removeClass('message_div')
+      $($msg).find('#message_text').text(data.message)
+      $($msg).find('#message_time').text(data.time)
+      $(".empty_msg").remove()
+      $("ul.chat").append($msg.show())
+      $(".messages_container").scrollTop($(".messages_container")[0].scrollHeight);
+      $('input[name=message], textarea').val('')
+    }
+    else {
+     open_dialog('Something Went Wrong!', 'Alert!')
+    }
+  }, 'json');
+});
+})
+$(document).ready(function() {
+ $('#search_user').keyup(function(e){
+  if ($("#search_value").val() == ''){
+     $(".users_list li").show()
+    return
+  }
+ $.get('.', {'search': $('#search_user').val()}, function (data) {
+    var results = data.users || []
+    if(results.length > 0) {
+      $(".users_list li").hide()
+      for(var key in results) {
+        $(".users_list #"+results[key]).show()
+      }
+    }
+  }, 'json');
+});
+$('body').on('click', '.delete_msg', function(e){
+  e.stopPropagation()
+  id = $(this).parent().attr('id')
+   $.post('.', {'mode': 'delete_message', 'id': id}, function (data) {
+    if(data.error == false){
+      $('#'+id).remove()
+      open_dialog("Message Removed Successfully!", 'Success!')
+    }
+    else{
+      open_dialog(data.message, 'Alert!')
+    }
+  }, 'json');
+})
+$('body').on('click', '.delete_chat', function(e){
+  e.preventDefault()
+  id = $('.recruiter_button.active').attr('id')
+   $.post('.', {'mode': 'delete_chat', 'user': id}, function (data) {
+    if(data.error == false){
+      open_dialog("Chat cleared Successfully!", 'Success!')
+      $('.chat').html('<div class="text-center empty_msg"><h2> No Messages</h2></div>')
+    }
+    else{
+      open_dialog("Something Went Wrong!", 'Alert!')
+    }
+  }, 'json');
+})
+});
+</script>
+{% endblock %}

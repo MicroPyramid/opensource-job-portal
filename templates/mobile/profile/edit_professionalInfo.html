@@ -1,0 +1,147 @@
+{% extends "mobile/base.html" %}
+{% block block_canonical %}
+    <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+    <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+    <meta name="description"
+          content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+
+    <meta name="Keywords"
+          content="job, jobs, tech jobs, it jobs, job sites, job vacancies, find jobs, search jobs, resume tips, job search engines, careers, technology jobs, career search, job descriptions, employment, work, job listings, peeljobs.com"/>
+{% endblock %}
+
+{% block stage %}
+
+    <!-- PROFILE edit wrap -->
+    <div class='profile_edit_wrap'>
+        <div class='overlay_div_profile'></div>
+        {% include 'mobile/abc.html' %}
+
+    </div>
+    <!--/ PROFILE edit wrap -->
+    <!-- form -->
+    <form name="professionalform" id="professionalform" method="post">
+    <div class="profile_edit_from_wrap">
+    <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Experience<span class="error">*</span></div>
+      <div class='input_wrap'>
+        <select class="input experience" name="year" id="year">
+          <option value="" default>years</option>
+            {% for year in years %}
+            <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
+            {% endfor %}
+        </select>
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='input_wrap'>
+        <select class="input experience" id="month" name="month">
+          <option value="" default>months</option>
+            {% for month in months %}
+            <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.month|slugify month.0 %} selected {% endifequal %}>{{ month.1}}</option>
+            {% endfor %}
+        </select>
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Preferred Industry<span class="error">*</span></div>
+      <div class='input_wrap'>
+        <select class="input" name="prefered_industry" id="prefered_industry">
+          <option value="">Select A Industry</option>
+          {% for industry in industires%}
+          <option value="{{ industry.id }}" {% ifequal request.user.prefered_industry.id|slugify industry.id|slugify %} selected {% endifequal %}>{{ industry.name }}</option>
+          {% endfor%}
+           <option value="36" {% ifequal request.user.prefered_industry.id|slugify 36|slugify %} selected {% endifequal %}>Other Industry</option>
+        </select>
+      </div>
+      </div>
+      <!--/ input group -->
+       <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Current Salary(Per Anum)</div>
+      <div class='input_wrap'>
+        <input type="text" class="input" placeholder="Current Salary" id="current_salary" name="current_salary" 
+        {% if request.user.current_salary %} value="{{ request.user.current_salary }}" {% endif %}>
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Expected Salary(Per Anum)</div>
+      <div class='input_wrap'>
+        <input type="text" class="input" placeholder="Expected Salary" id="expected_salary" name="expected_salary"   {% if request.user.expected_salary %} value="{{ request.user.expected_salary }}" {% endif %}>
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Relocation</div>
+      <div class='input_wrap'>
+        <input type="checkbox" name="relocation" id="relocation" {% if request.user.relocation %}checked{% endif %}>
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Notice Period(In Months)</div>
+      <div class='input_wrap'>
+        <input type="text" class="input" placeholder="Notice Period" name="notice_period" id="notice_period"
+        {% if request.user.notice_period %} value="{{ request.user.notice_period }}" {% endif %}>
+        <div class="clearfix"></div>
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Job Role<span class="error">*</span></div>
+      <div class='input_wrap'>
+        <input type="text" class="input" placeholder="Job Role"  name="job_role" id="job_role" value="{{ request.user.job_role }}">
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- button row -->
+      <div class="button_row">
+        <button type="submit" class="button submit"><span class='pj-reset i'></span>Submit</button>
+        <button type="button" class="button reset_filter cancelbutton"><span class='pj-checkbox i'></span>Cancel</button>
+      </div>
+      <!--/ button row -->
+    </div>
+    </form>
+    <!--/ form -->
+{% endblock %}
+{% block 'extra_js' %}
+    <script type="text/javascript">
+    $("#prefered_industry").select2({"placeholder": 'Select Preferred Industry'})
+        $(".cancelbutton").click(function (e) {
+            window.location = "{% url 'my:profile' %}";
+        });
+
+        $("form#professionalform").submit(function (e) {
+            e.preventDefault();
+            $.post(".", $("form#professionalform").serialize(), function (data) {
+                if (data.error) {
+                  open_dialog("Some Content Missing", 'Warning!')
+                    $('p.hint').remove();
+                    for (var key in data.response) {
+                        if(key == 'prefered_industry'){
+                        $('#prefered_industry').parent().after('<p class="hint">' + data.response[key] + '</p>');
+                        }else{
+                        $('#' + key).after('<p class="hint">' + data.response[key] + '</p>');
+                      }
+                    }
+                } else {
+                open_dialog_with_url('Profile Updated Successfully', 'Success!', "{% url 'my:profile' %}")
+                }
+            }, 'json');
+        });
+
+    </script>
+{% endblock %}

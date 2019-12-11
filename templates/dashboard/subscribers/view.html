@@ -1,0 +1,62 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load tz %}
+{% block stage %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>{{ subscribers.0.skill.name }} Subscribers Details</h4>
+        </div>
+      <div class="profile_individual" id="">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Job Posts</h4>
+        </div>
+        {% if subscribers %}
+        <div id="recruiters">
+          <div class="list_table">
+            <table class="table table-hover" id="sample_1">
+              <thead>
+                <tr>
+                  <th width="8%">Email</th>
+                  <th width="20%">Subscribed On</th>
+                  <th width="25%">Other skills subscribed</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for subscriber in subscribers  %}
+                <tr>
+                  <td>{{ subscriber.email }}</td>
+                  <td>{{ subscriber.created_on }}</td>
+                  <td>{% for skill in subscriber.user_subscription_list %}{{ skill.skill.name }}{% if forloop.last %}.{%else %}, {% endif %}{% endfor %}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% else %}
+          No Results Found
+        {% endif %}
+      </div>
+      <!--/ post details -->
+    </div>
+  </div>
+</section>
+{% endblock %}
+<script type="text/javascript">
+$('#sample_1').DataTable({
+      "sPaginationType": "full_numbers",
+      "aaSorting": [],
+      "bSort": true,
+      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+      "pageLength": 20,
+    });
+$('.disable-recruiter').click(function(e){console.log("hello")});
+</script>

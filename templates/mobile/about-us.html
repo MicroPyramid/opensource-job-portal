@@ -1,0 +1,97 @@
+{% extends 'mobile/base.html'%}
+{% load thumbnail %}
+{% block block_title %}
+  <title>About US - Peeljobs</title>
+
+  <meta name="description" content="Online Jobs and Career site in India to build bright career. Read more about PeelJobs"/>
+
+{% endblock %}
+
+{% block stage %}
+<style type="text/css">
+  .morecontent span.moretext {
+        display: none;
+    }
+</style>
+<div class="static_pages_from_wrap">
+  <!-- SEARCH PART -->
+  <section id='content_wrap_list'>
+    <div class="container">
+      <div class="row mt content-page about-us">
+        <!-- content starts here -->
+          <h3 class="title">About US</h3>
+            <div class="content more">
+              <div>
+               <p>Peeljobs.com is one of the leading jobs board now a days, attracting a lot of job seekers every month on the hunt of more than hundreds live job ads the site carries at any one time. What you want is what you get at right time with right information at right place is what the motto of this job board. Hundreds of recruiters from multinational to smaller company, consultants and advertising agencies use peeljobs.com to recruit individuals almost in every sector.
+               Peeljobs.com is a comprehensive online service job portal which aims at providing one stop platform for all the participants of job market. Be it a job seeker, a recruiter or an employer all would find a worth of their search. Peeljobs.com with its user friendly interface, intends to make the work effortless and simple. </p>
+              </div>
+               <!--<p>Peeljobs.com is constantly working on improving the coverage of jobs and relevance of the results to help the users in finding their continuous and ever changing needs. Anyone visiting/logging onto this website is assured of finding the suitable fit. The essence of the entire functionality is based on the focused approach for focused people logging on to the job portal.</p>
+               <p>Typically job hunt is also a job. Definitely, Peeljobs.com does it for you.</p><p>we provide a fast and better way to find a job for jobseeker according to location, skills, qualifications, experience etc. </p>
+               <p>our online system helps recruiter finds the best available talent from its large continuously refreshed candidate database of active &nbsp;job seekers which includes indians, US citizens, Green card holders, H1B work permit holders etc.</p>
+               <p>Our integrated technology greatly benefits the large staffing agencies with multiple recruiters by reducing over 99% &nbsp;of their sourcing time and effort in identifying resumes that most a fit a job requirement.</p>
+               <p>Applying to jobs are completely free for candidates. Our site completely eliminates the need for search and connects them with the right job opportunity multiple times a day. </p>
+               <p>Peeljobs.com provides the perfect platform for the young candidates to seize the best job opportunity suiting their backgrounds by screening them the huge of available job opportunities.</p>
+               <p>The platform is provided for candidates from backgrounds like finance/accounts, IT/ITES, Pharmaceuticals, marketing, manufacturing and many other sectors.</p><p><b>In short Peeljobs.com is….</b></p>
+               <ul>
+               <li>Your source for employment information and inspiration</li>
+               <li>The place to manage your career</li>
+               <li>Your pathway to career success</li>
+               <li>Tools to help job seekers, students and career professionals. </li></ul>
+               <p>Peeljobs.com is the fastest online recruitment company which attracts huge amount of job seekers generating tremendous amount of applications. To enquire about advertising your job vacancies on peeljobs.com please contact the address mentioned below.</p>-->
+            </div>
+            <div class="about_pj">
+            <div class="contact about_contact">
+              <span style="">Follow Us On</span>
+              <!--<i class='fa fa-share-alt'></i>-->
+              <ul>
+                <li><a class="btn btn-primary fb_footer social" target="_blank" href="https://facebook.com/peeljobs/"><i class='fa fa-facebook'></i></a></li>
+                <li><a class="btn btn-primary git_footer social" target="_blank" href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home"><i class='fa fa-linkedin'></i></a></li>
+                <li><a class="btn btn-danger gplus_footer social" target="_blank" href="https://plus.google.com/b/105171863747311260917/105171863747311260917"><i class='fa fa-google-plus'></i></a></li>
+                <li><a class="btn btn-info twit_footer social" target="_blank" href="https://twitter.com/PeelJobs"><i class='fa fa-twitter'></i></a></li>
+              </ul>
+            </div>
+          </div>
+    </section>
+        <!-- content ends here -->
+          <!-- Tab panes -->
+      </div>
+    </div>
+  </section>
+  <!-- content of job page -->
+</div>
+{% endblock %}
+    {% block 'extra_js' %}
+<script type="text/javascript">
+ $(document).ready(function() {
+    // Configure/customize these variables.
+    var showChar = 639;  // How many characters are shown by default
+    var ellipsestext = "";
+    var moretext = "  more";
+    var lesstext = "      less";
+
+
+    $('.more').each(function() {
+        var content = $(this).children('div').html();
+        if(content.length > showChar) {
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+            var html = '<p>' + c + '</p>' + '<span class="moreellipses">' + ellipsestext+ '</span><span class="morecontent"><span class="moretext">' + h + '</span><span class="morelink">' + moretext + '</span></span>';
+            $(this).children('div').html(html);
+        }
+    });
+     $('body').on("click", ".morelink", function(e){
+      e.preventDefault();
+        if($(this).hasClass("less")) {
+            $(this).removeClass("less");
+            $(this).html(moretext);
+        } else {
+            $(this).addClass("less");
+            $(this).html(lesstext);
+        }
+        $(this).parent().prev().toggle();
+        $(this).prev().toggle();
+        return false;
+    });
+});
+</script>
+{% endblock %}

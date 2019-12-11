@@ -1,0 +1,98 @@
+{% extends 'recruiter/index.html' %}
+{% block 'stage' %}
+<div class="container">
+  <div class="row mt">
+    <div class="editable_content_wrap">
+      <!-- CONTENT GOES HERE ROW INCLUDED -->
+      <section id="new_job_post">
+        <!-- POST DETAILS -->
+        <div class="col-md-12 post_details">
+          <h4><i class="fa fa-list-ul"></i>Mail Template</h4>
+          <div class="form_wrap">
+              <div class="form-group col-md-6" id="div-code">
+                <label>Title</label>
+                <span>{{sent_mail.template.title }}</span>
+              </div>
+              <div class="form-group col-md-6" id="div-title">
+                <label>Subject</label>
+                <span>{{sent_mail.template.subject}}</span>
+              </div>
+              <div class="form-group col-md-12" id="div-description">
+                <label>Body</label>
+                <span>{{sent_mail.template.title|safe }}</span>
+              </div>
+              <div class="form-group col-md-12" id="div-description">
+                <label>Send On</label>
+                <span>{{sent_mail.send_on}}</span>
+              </div>
+              <div class="form-group col-md-12" id="div-description">
+                <label>Job Post Title</label>
+                <span><a href="{% url 'recruiter:view' sent_mail.job_post.id %}">{{sent_mail.job_post.title}}</a></span>
+              </div>
+              <div class="clearfix"></div>
+              <table class="table table-hover" id="sample_1">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Profile Completion Percentage</th>
+                    <th>Social Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for applicant in sent_mail.recruiter.all %}
+                  <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td><a href="{% url 'dashboard:view_applicant' applicant.id %}">{{ applicant.email }}</a></td>
+                    <td>{{ applicant.first_name }}</td>
+                    <td>{{ applicant.last_name }}</td>
+                    <td>{{ applicant.profile_completion_percentage }}%</td>
+                    <td>
+                      <ul class="social_integration">
+                        <li>
+                          {% if applicant.is_fb_connected %}
+                          <i class="fa fa-facebook fb"></i>
+                          {% else %}
+                          <i class="fa fa-facebook"></i></a>
+                          {% endif %}
+                        </li>
+                        <li>
+                          {% if applicant.is_tw_connected %}
+                          <i class="fa fa-twitter twit"></i>
+                          {% else %}
+                          <i class="fa fa-twitter"></i>
+                          {% endif %}
+                        </li>
+                        <li>
+                          {% if applicant.is_gp_connected %}
+                          <i class="fa fa-google-plus plus"></i>
+                          {% else %}
+                          <i class="fa fa-google-plus"></i>
+                          {% endif %}
+                        </li>
+                        <li>
+                          {% if applicant.is_ln_connected %}
+                          <i class="fa fa-linkedin in"></i>
+                          {% else %}
+                          <i class="fa fa-linkedin"></i>
+                          {% endif %}
+                        </li>
+                      </ul>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </section>
+      <!--/ CONTENT GOES HERE ROW INCLUDED -->
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block 'extra_js' %}
+{% endblock %}

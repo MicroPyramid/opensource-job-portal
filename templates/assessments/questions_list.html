@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load searchtags %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+{% block block_title %}
+{% include "meta_data/assessments.html" %}
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<!-- main_container starts here -->
+<div class="row mar_lr_0 main_container">
+  <div class="container">
+    <!-- breadcrumb_section starts here -->
+    <div class="breadcrumb_section row mar_lr_0" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <nav>
+        <ol class="cd-breadcrumb triangle">
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+              <span class="name" >Home</span>
+            </a>
+          </li>
+          <li class="current">
+            <a href="">
+              <span itemprop="name" class="name">Assessment Questions</span>
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </div>
+    <!-- breadcrumb_section ends here -->
+    <div class="row mar_lr_0">
+      <div class="col-md-9 left_container">
+        <div class="questions_block">
+          <div class="heading">HR Interview Questions and Answers</div>
+            <ul class="questions">
+            {% for question in questions %}
+              <li class='clearfix'>
+                <a href="{% url 'question_view' question.id %}" class="ques">{{ question.title }}</a>
+                <span class="ans_author">Asked By <a href="#">{{ question.created_by }}</a> {{ question.get_solutions|length }} Answers</span>
+                <span class="comment_section">
+                <a href="#" class="view_comment pull-right">View Comments [{{ question.get_comments|length }}]</a>
+                </span>
+                <span class="review-block text-right">
+                  <span class="like dis-like {% if request.user.is_authenticated %}logged{% endif %}" data-href='question' id='{{ question.id }}'>
+                    <i class="fa fa-thumbs-down {% if request.user.is_authenticated and request.user|is_disliked_question:question.id %}active{% endif %}" aria-hidden="true"></i> <span class='count'>{{ question.get_dislikes|length }}</span></span>
+                  <span class="add-like {% if request.user.is_authenticated %}logged{% endif %}" data-href='question' id='{{ question.id }}'>
+                    <i class="fa fa-thumbs-up {% if request.user.is_authenticated and request.user|is_liked_question:question.id %}active{% endif %}" aria-hidden="true"></i> <span class='count'>{{ question.get_likes|length }}</span></span>
+                </span>
+                <div class="replies_block cmments_repls">
+                    <div class="heading">Viewer Replies</div>
+                    <ul>
+                      {% for comment in question.get_comments %}
+                        <li>
+                          <span>{{ comment.user }}</span>
+                          {{ comment.comment }}
+                        </li>
+                      {% empty %}
+                        <li class='no_comment'>
+                          <h5>No comments!</h5>
+                        </li>
+
+                      {% endfor %}
+                    </ul>
+                    <div class="comments_block cmments_repls">
+                    <form class="form-horizontal comment_form {% if request.user.is_authenticated %}logged{% endif %}" id="{{ answer.id }}" method="POST">
+                      <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Comment</label>
+                        <div class="col-sm-10">
+                          <textarea class="form-control comment" name='comment' rows="3" placeholder="{% if not request.user.is_authenticated %}Please login to submit your Comment{% endif %}"></textarea>
+                          <input type="hidden" name="model" value="question">
+                          <input type="hidden" name="id" value="{{ question.id }}">
+                          <input type="hidden" name="mode" value="add_comment">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                          <button type="submit" class="btn btn-default">Submit your comment</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  </div>
+              </li>
+            {% endfor %}
+            </ul>
+        </div>
+         {% if last_page %}
+          <div class="pagination_wrap text-center">
+            {% get_page current_page last_page as pages %}
+            <nav>
+              <ul class="pagination">
+                {% if current_page != 1 %}
+                  <li class="prev">
+                    <a class="{{previous_page}}" href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% endif %}{% if search %}?search={{ search }}{% endif %}"><i class="fa fa-angle-double-left"></i>
+                    </a>
+                  </li>
+                  <li class="prev">
+                    <a class="{{prev_page}}" href="{{current_url}}{% if prev_page == 1 %}{% else %}{{prev_page}}/{% endif %}{% if search %}?search={{ search }}{% endif %}">
+                      <i class="fa fa-angle-left"></i>
+                    </a>
+                  </li>
+                  <li><a class="1" href="{{current_url}}{% if search %}?search={{ search }}{% endif %}">first</a></li>
+                {% endif %}
+                {% for s in pages %}
+                  <li {% ifequal s current_page %} class="active" {% endifequal %}>
+                    <a  class="{{ s }}" href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% endif %}{% if search %}?search={{ search }}{% endif %}">{{s}}</a>
+                  </li>
+                {% endfor %}
+                {% if current_page != last_page %}
+                  <li><a class="{{ last_page }}" href="{{current_url}}{{ last_page }}/{% if search %}?search={{ search }}{% endif %}">last</a></li>
+                  <li>
+                    <a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/{% if search %}?search={{ search }}{% endif %}">
+                      <i class="fa fa-angle-right pagination-next"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="{{ after_page }}" href="{{current_url}}{{after_page}}/{% if search %}?search={{ search }}{% endif %}">
+                      <i class="fa fa-angle-double-right"></i>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+          {% endif %}
+      </div>
+      <!-- Left menu starts here-->
+      <!-- walkin_jobs starts here -->
+      <div class="col-md-3 right_container">
+        <!-- blog_search starts here -->
+        <div class="blog_search">
+          <p class="head text-capitalize">Search Questions</p>
+          <form name="searchform" id="searchfrom" method="GET"  action="{{ current_url }}">
+          <div class="input-group">
+            <input type="text" class="form-control" name="search" id="search" value="{{ search }}">
+            <span class="input-group-btn">
+              <button class="btn btn-secondary" type="submit">Go!</button>
+            </span>
+          </div>
+          </form>
+        </div>
+        <!-- blog_search ends here -->
+        <!-- upload_btn_block starts here -->
+        {% if request.user.is_authenticated %}
+          {% if request.user.is_jobseeker and not request.user.resume %}
+            <div class="upload_btn_block">
+              <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+                <div class="upload_btn" id="resume_upload_but"><a href="/profile/"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+                <input type="file" name="resume" id="resume" style="display:none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt"></span>
+                <button type="submit" name="submit" class="submit" style="
+                  display:none;"><span>Submit</span></button>
+              </form>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="upload_btn_block">
+            <div class="upload_btn upload_btn_resume"><a href="#" data-toggle="modal" data-target="#login_register"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+          </div>
+        {% endif %}
+        <!--register_login form starts here -->
+        {% if not request.user.is_authenticated %}
+       <div class="inner_login_box">
+          <div class="login_box">
+            <p class="head text-capitalize left_login_text">ALREADY A MEMBER? LOGIN</p>
+            <form  id="JobMailRegisterForm" name="JobMailRegisterForm" class="JobMailRegisterForm"
+              method = "POST" >
+              <div class="form-group">
+                <input type="text" name="email" id="mail_email" class="form-control" placeholder="Enter Your Email Address"/>
+                <p id="mail_response_message"></p>
+              </div>
+              <div class="form-group">
+                <input type="password" name="password" id="mail_password" class="form-control" placeholder="Enter Password"/>
+                <input type="hidden" name="register_type" id='left_register_type' value="login">
+              </div>
+              <button type="submit" class="btn btn-default left_login_form_button">Sign In</button>
+              <div class="forgot_create-new">
+                <a href="#" class="left_forgot_password">Forgot Password?</a> 
+                <a href="#" class="pull-right left_new_account">Create New Account?</a>
+                <a href="#" class="pull-right left_new_user_login" style="display:none;">Already a Member? Login</a>
+              </div>
+              <div class="clearfix"></div>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+        <!--register_login form ends here -->
+        <div class="strip_box">
+          <div class="strip">Show Your CODING Skills at <span style="color: #202b2e;">Runcode.io</span> (Launching soon)
+          </div>
+        </div>
+        <div class="walkin_jobs">
+          <div class="heading text-uppercase">Latest Jobs</div>
+          <ul class="walkin_blocks">
+            {% for post in latest_jobs %}
+            <li class="walkin_block" id="{{ post.slug }}">
+              <strong class="title"><a href="{{ post.slug }}" target="_blank">{{ post.title }}</a></strong>
+              {% if post.company %}
+              <p>{{ post.company.name }}</p>
+              {% endif %}
+              <p class="location"><i class="fa fa-map-marker"></i>{%for location in post.location.all %}
+                {% if location.status == 'Enabled' %}
+                <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+                {% else %}
+                <a style="cursor:default">{{ location.name }}</a>
+                {% endif %}{% if forloop.last %}{% else %}, {% endif %}{% endfor %} 
+              </p>
+            </li>
+            {% endfor %}
+            <a href="{% url 'jobs:index' %}" target="_blank"><span class="view_all">See More</span></a>
+          </ul>
+        </div>
+      </div>
+      <!-- Left menu ends here-->
+    </div>
+  </div>
+</div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+        $('.view_comment').click(function(){
+        var cmt_bloc = $(this).closest(".comment_section").siblings(".replies_block");
+        $(this).closest(".comment_section").siblings(".cmments_repls").not(cmt_bloc).slideUp();
+        if (cmt_bloc.is(':visible')){
+          cmt_bloc.slideUp();
+        }
+        else{
+          cmt_bloc.slideDown();
+        }
+      });
+      $('.add-like').click(function(){
+        var _this = $(this)
+        if ($(_this).hasClass('logged')){
+          if ($(_this).find('.fa').hasClass('active') != true){
+            model = $(_this).attr('data-href')
+            id = $(_this).attr('id')
+            $(_this).find('.fa').addClass('active')
+            $.post('/assessment-changes/', {mode: 'add_like', model: model, id: id}, function (data) {
+              $(_this).find('.count').text(parseInt($(_this).find('.count').text())+1)
+              var dis_like = $(_this).prev()
+              if ($(dis_like).find('.fa').hasClass('active')){
+                $(dis_like).find('.fa').removeClass('active')
+                $(dis_like).find('.count').text(parseFloat($(dis_like).find('.count').text())-1)
+              }
+            })
+          }
+        }
+        else{
+          $('#login_register').modal('show')
+        }
+      });
+      $('.dis-like').click(function(){
+        var _this = $(this)
+        if ($(_this).hasClass('logged')){
+          if ($(_this).find('.fa').hasClass('active') != true){
+            model = $(_this).attr('data-href')
+            id = $(_this).attr('id')
+            $(_this).find('.fa').addClass('active')
+            $.post('/assessment-changes/', {mode: 'dis_like', model: model, id: id}, function (data) {
+              $(_this).find('.count').text(parseInt($(_this).find('.count').text())+1)
+              add_like = $(_this).next()
+              if ($(add_like).find('.fa').hasClass('active')){
+                $(add_like).find('.fa').removeClass('active')
+                $(add_like).find('.count').text(parseFloat($(add_like).find('.count').text())-1)
+              }
+            })
+          }
+        }
+      else{
+          $('#login_register').modal('show')
+        }
+      });
+      $(".comment_form").submit(function(e){
+        var _this = $(this)
+        e.preventDefault()
+        if ($(_this).hasClass('logged')){
+          $.post('/assessment-changes/', $(this).serialize(), function (data) {
+            var data = JSON.parse(data);
+              if(data.error){
+                $(_this).find('.comment').after('<p class="error">'+ data.message +'</p>')
+              }else{
+                $(_this).find('.comment').val('')
+                $(_this).closest('.replies_block').find('.no_comment').remove()
+                $(_this).closest  ('.replies_block').find('ul').append('<li><span>You</span>'+ data.comment +'</li>')
+              }
+            })
+          }
+        else{
+          $('#login_register').modal('show')
+        }
+      })
+</script>
+{% endblock %}

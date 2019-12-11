@@ -1,0 +1,830 @@
+@import "ref_4.scss";
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -ms-overflow-style: scrollbar;
+  font-size: 15px;
+  @media (min-width: 1450px) {
+    font-size:18px;
+  }
+  @media (min-width: 1700px) {
+    font-size: 18px;
+  }
+}
+body {
+  font-family: 'Muli', sans-serif;
+  padding: 0;
+  margin: 0;
+  font-weight: 400;
+  color: $text;
+  padding-top: 50px;
+  line-height: 1.7;
+  background: #ebebeb;
+  @media(min-width: $mob_min) and (max-width: $tab_max) {
+    padding-bottom: 50px;
+  }
+}
+p {
+  font-size: 0.83rem;
+}
+.sml_heading {
+  font-size: 1rem;
+  margin: 0;
+}
+.no-padding {
+  padding: 0 !important;
+}
+.no-margin {
+  margin: 0 !important;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  li {
+    list-style: none;
+  }
+}
+a {
+  cursor: pointer;
+  color: darken($sky_color, 25%);
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+  }
+}
+.mar_lr_0 {
+  margin-left: 0;
+  margin-right: 0;
+}
+.mar_lr_5 {
+  margin-left: -5px;
+  margin-right: -5px;
+}
+.heading {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: $text;
+  margin: 0;
+}
+.null-border {
+  border: none !important;
+  padding-left: 0 !important;
+}
+/* navbar starts here */
+.navbar {
+  background: white;
+  padding: 0 15px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 99999;
+  @media(min-width: $mob_min) and (max-width: $tab_max) {
+    padding:0;
+  }
+  .navbar-brand {
+    font-weight: 700;
+    color: darken($text, 10%);
+    @media(min-width: $mob_min) and (max-width: $tab_max) {
+      padding-left:15px;
+    }
+  }
+  .navbar-toggler {
+    position: relative;
+    top: 5px;
+    outline: none;
+  }
+  .navbar-collapse {
+    @media(min-width: $mob_min) and (max-width: $tab_max) {
+      z-index:99999;
+      background: $theme_blue;
+      ul {
+        li {
+          a {
+            color: #fff;
+            padding-left: 10px;
+          }
+          &.active {
+            a {
+              display: block;
+              background: #fff;
+              color: $text;
+            }
+          }
+          .dropdown-menu {
+            a {
+              color: $theme_blue;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+  ul {
+    padding: 5px;
+    li {
+      display: inline-block;
+      font-size: 0.83rem;
+      font-weight: 600;
+      position: relative;
+      padding: 0 4px;
+      @media(min-width: $tab_min) and (max-width: $med_max) {
+        padding:0 0;
+      }
+      &.active {
+        a {
+          background: $theme_blue;
+          color: #fff;
+          padding: 8px;
+          display: inline-block;
+          border-radius: 3px;
+        }
+      }
+      svg {
+        display: inline-block;
+        margin-right: 8px;
+        /* color: $header_blue; */
+      }
+      .count {
+        margin-left: 8px;
+        color: #fff;
+        padding: 0px 3px;
+        border-radius: 2px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .red {
+        background: $orange;
+      }
+      .green {
+        background: $l_green;
+      }
+      .yellow {
+        background: $sky_color;
+      }
+      &:hover {
+        /* cursor: pointer; */
+        ul {
+          display: block;
+          transition: 0.2s;
+        }
+      }
+      &.dropdown {
+        .dropdown-toggle {
+          img {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            margin-left: 5px;
+          }
+        }
+        .dropdown-menu {
+          padding: 0;
+          font-size: 0.83rem;
+          border-radius: 0;
+          .dropdown-item {
+            padding: .25rem 1rem;
+            &:hover {
+              color: #fff;
+              background: $theme_blue;
+            }
+            &.active {
+              color: #fff;
+              background: $theme_blue;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/* navbar ends here */
+
+#menu {
+  position: fixed;
+  left: 0px;
+  top: 45px;
+  width: 70px;
+  height: 100%;
+  background: #fff;
+  color: #767676;
+  z-index: 999;
+  box-shadow: 3px 3px 10px -2px #CBCBCB;
+  @media(min-width: $mob_min) and (max-width: $med_max) {
+    top:40px;
+  }
+  ul {
+    li {
+      position: relative;
+      &.active {
+        border-left: 3px solid $theme_blue;
+        background-color: #EEE;
+        a {
+          border-left: none;
+          background: $theme_blue;
+          color: #fff;
+        }
+        &:hover {
+          @extend .active;
+        }
+      }
+      a {
+        display: block;
+        position: relative;
+        text-align: center;
+        transition: 0.2s;
+        color: darken($sky_color, 25%);
+        border-bottom: 1px solid #eee;
+        border-left: 3px solid $theme_blue;
+        &:hover {
+          background: $green;
+          color: #fff;
+          transition: 0.2s;
+          border-left: 3px solid darken($green, 25%);
+        }
+        svg {
+          font-size: 18px;
+          padding-top: 5px;
+        }
+        span {
+          display: block;
+          font-size: 0.7rem;
+          padding-bottom: 5px;
+          height: 22px;
+        }
+      }
+      .sub_list {
+        display: none;
+        margin: 0px;
+        padding: 0px;
+        position: absolute;
+        left: 71px;
+        top: 2px;
+        background: #fff;
+        min-width: 160px;
+        z-index: 30;
+        li {
+          list-style: none;
+          a {
+            padding: 8px 0px;
+            text-align: left;
+            display: block;
+            color: #888;
+            font-size: 13px;
+            i {
+              padding-left: 5px;
+              padding-right: 8px;
+            }
+            &:hover {
+              color: #fff;
+            }
+          }
+        }
+        &:hover {
+          display: block!important;
+        }
+        &::before {
+          content: '';
+          z-index: 10;
+          position: absolute;
+          width: 0;
+          height: 0;
+          top: 12px;
+          left: -9px;
+          border-top: 8px solid transparent;
+          border-right: 9px solid darken($green, 25%);
+          border-bottom: 8px solid transparent;
+        }
+      }
+      &:hover {
+        .sub_list {
+          display: block!important;
+        }
+      }
+    }
+  }
+}
+
+
+/* inner_container starts here */
+
+.inner_container {
+  padding: 15px;
+  margin-left: 70px;
+}
+
+
+/* inner_container ends here */
+
+.tabs {
+  .tab {
+    background: $text;
+    color: #fff;
+    font-weight: 700;
+    padding: 4px 6px;
+    text-transform: uppercase;
+    display: inline-block;
+    font-size: 0.8rem;
+    &.active {
+      background: $git_yellow;
+    }
+  }
+}
+
+.white_card {
+  background: #fff;
+  border-radius: 0;
+  .card-body {
+    padding: 10px;
+    font-size: 0.83rem;
+    .radio_block {
+      input {
+        display: inline-block;
+        margin: 0 5px;
+      }
+      input[type=checkbox],
+      input[type=radio] {
+        position: relative;
+        top: 2px;
+      }
+    }
+  }
+}
+.social {
+  a {
+    display: inline-block;
+    margin: 0 2px;
+    font-size: 0.85rem;
+    &.facebook {
+      color: $facebook;
+    }
+    &.twitter {
+      color: $twitter;
+    }
+    &.linkedin {
+      color: $in;
+    }
+    &.gplus {
+      color: $gplus;
+    }
+  }
+}
+.actions {
+  a {
+    display: inline-block;
+    margin: 0 2px;
+    font-size: 0.85rem;
+    &.edit {
+      color: $l_green;
+    }
+    &.delete {
+      color: $gplus;
+    }
+  }
+}
+.pagination_block {
+  margin-top: 20px;
+  .pagination {
+    display: flex;
+    justify-content: center;
+    @media(min-width: $mob_min) and (max-width: $smob-max){
+      display: none;
+    }
+    li {
+        margin:0 2px;
+      a {
+        display: inline-block;
+        width: 32px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        height: 32px;
+        border-radius: 50% !important;
+        background: #fff;
+        border:2px solid $git_yellow;
+        text-align: center;
+        color: darken($text, 15%)
+      }
+      &.active{
+        a{
+          bordeR: none;
+          font-weight: 800;
+          background: $git_yellow;
+        }
+      }
+    }
+  }
+  .mobile{
+    @media(min-width: $smob_max){
+      display: none;
+    }
+    .count{
+      float: left;
+      background: $theme_blue;
+      display: inline-block;
+      border-radius: 2px;
+      text-align: center;
+      color: #fff;
+      font-size: 0.83rem;
+      padding: 2px 5px;
+      strong{
+        margin: 0 3px;
+        display: inline-block;
+      }
+    }
+    .pages{
+      a{
+        display: inline-block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        height: 28px;
+        padding:2px 10px;
+        border-radius: 3px !important;
+        background: #fff;
+        border:2px solid $git_yellow;
+        text-align: center;
+        color: darken($text, 15%)
+      }
+    }
+  }
+}
+.joblist_table {
+  width: 100%;
+  font-size: 13px;
+  border-collapse: separate;
+  border-spacing: 0 6px;
+  @media (min-width: $mob_min) and (max-width: $smob_max) {
+    display: block;
+    border-spacing: 0px;
+    margin-top: 10px;
+  }
+  thead {
+    @media (min-width: $mob_min) and (max-width: $smob_max) {
+      display: none;
+    }
+    tr {
+      background: #efefef;
+      border: none;
+      th {
+        padding: 8px 8px;
+        font-size: 13px;
+        font-weight: 700;
+        border: none;
+        color: darken($text, 40%);
+        &:first-child {
+          width: 25%
+        }
+        &:nth-child(2) {
+          width: 10%
+        }
+        &:nth-child(3) {
+          width: 15%
+        }
+        &:nth-child(4) {
+          width: 10%;
+        }
+        &:nth-child(5) {
+          width: 10%;
+        }
+        &:nth-child(6) {
+          width: 8%;
+        }
+        &:nth-child(7) {
+          width: 10%;
+        }
+        &:nth-child(8) {
+          width: 5%
+        }
+      }
+    }
+  }
+  tbody {
+    @media (min-width: $mob_min) and (max-width: $smob_max) {
+      display: block;
+    }
+    tr {
+      cursor: pointer;
+      @media (min-width: $mob_min) and (max-width: $smob_max) {
+        display: block;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      td {
+        padding: 3px 8px;
+        font-weight: 600;
+        vertical-align: middle;
+        border-top: 1px solid #dedede;
+        border-bottom: 1px solid #dedede;
+        color: darken($text, 25%);
+        &.social{
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            a{
+              text-indent: 0;
+              display: inline-block;
+              width: 25px;
+            }
+          }
+        }
+        &.actions{
+          @extend .social;
+        }
+        &.status {
+          padding-left: 0 !important;
+          font-size: 0.7rem;
+          color: #fff;
+          svg {
+            margin-right: 3px;
+            display: block;
+            margin-bottom: 3px;
+            padding-left: 0;
+            text-align: center;
+            width: 100%;
+            font-size: 0.9rem;
+          }
+        }
+        &:nth-child(1) {
+          &:before {
+            @media (min-width: $mob_min) and (max-width: $smob_max) {
+              content:'Job Code'!important;
+            }
+          }
+        }
+        &:nth-child(2) {
+          &:before {
+            @media (min-width: $mob_min) and (max-width: $smob_max) {
+              content:'Job Title'!important;
+            }
+          }
+        }
+        &:nth-child(3) {
+          &:before {
+            @media (min-width: $mob_min) and (max-width: $smob_max) {
+              content:'Location'!important;
+            }
+          }
+        }
+        &:nth-child(4) {
+          &:before {
+            @media (min-width: $mob_min) and (max-width: $smob_max) {
+              content:'Job Role'!important;
+            }
+          }
+        }
+        &:nth-child(5) {
+          &:before {
+            @media (min-width: $mob_min) and (max-width: $smob_max) {
+              content:'Expire Date'!important;
+            }
+          }
+        }
+        &:nth-child(6) {
+          &:before {
+            @media (min-width: $mob_min) and (max-width: $smob_max) {
+              content:'Job Type'!important;
+            }
+          }
+        }
+        &:nth-child(7) {
+          &:before {
+            @media (min-width: $mob_min) and (max-width: $smob_max) {
+              content:'Actions'!important;
+            }
+          }
+        }
+        @media (min-width: $mob_min) and (max-width: $smob_max) {
+          background: #fff;
+          display: table!important;
+          width: 100%;
+          padding: 0px;
+          border-top: 1px solid #dedede;
+          border-bottom: none;
+        }
+        i {
+          cursor: pointer;
+        }
+        &:before {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            display: table-cell;
+            width: 40%;
+            padding: 10px 5px;
+            background: #fafafa;
+            content: '';
+            font-weight: 700;
+            font-size: 0.83rem;
+            text-transform: capitalize;
+          }
+        }
+        .skill{
+          .tag{
+            display: inline-block;
+            padding:0px 4px;
+            font-size: 0.7rem;
+            border-radius: 2px;
+            color: #fff;
+            background: $text;
+            font-weight: 600;
+          }
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            width: 100%;
+            margin-bottom: 5px;
+            display: block;
+          }
+        }
+        span {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            display: table-cell;
+            width: 60%;
+            padding: 0px;
+            vertical-align: middle;
+          }
+        }
+
+        &:nth-last-child(2) {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            text-align: left;
+          }
+          &:before {
+            @media (min-width: $mob_min) and (max-width: $smob_max) {
+              color: darken($text, 55%);
+            }
+          }
+        }
+        &:last-child {
+          background: #fff;
+          border: none;
+          padding: 0px;
+          padding-left: 14px;
+          text-align: right;
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            display: none!important;
+          }
+        }
+        @media (min-width: $mob_min) and (max-width: $smob_max) {
+          display: block;
+        }
+        &:first-child {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            border-left: none !important;
+          }
+        }
+      }
+      &.live {
+        td{
+          &:first-child {
+            border-left: 5px solid $green;
+          }
+          &.status {
+            background: $green;
+          }
+        }
+        @media (min-width: $mob_min) and (max-width: $smob_max) {
+          border:1px solid $green;
+        }
+        &:before {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            @include job_status($green);
+            content: 'live';
+          }
+        }
+      }
+      &.disabled {
+        td{
+          &:first-child {
+            border-left: 5px solid $violet;
+          }
+          &.status {
+            background: $violet;
+          }
+        }
+        @media (min-width: $mob_min) and (max-width: $smob_max) {
+          border:1px solid $violet;
+        }
+        &:before {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            @include job_status($violet);
+            content: 'Disabled';
+          }
+        }
+      }
+      &.drafted {
+        td{
+          &:first-child {
+            border-left: 5px solid $stack;
+          }
+          &.status {
+            background: $stack;
+          }
+        }
+        @media (min-width: $mob_min) and (max-width: $smob_max) {
+          border: 1px solid $stack;
+        }
+        &:before {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            @include job_status($stack);
+            content: 'drafted';
+          }
+        }
+      }
+      &.expired {
+        td{
+          &:first-child {
+            border-left: 5px solid $red;
+          }
+          &.status {
+            background: $red;
+          }
+        }
+        @media (min-width: $mob_min) and (max-width: $smob_max) {
+          border:1px solid $red;
+        }
+        &:before {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            @include job_status($red);
+            content: 'expired';
+          }
+        }
+      }
+      &.published {
+        td{
+          &:first-child {
+            border-left: 5px solid $theme_blue;
+          }
+          &.status {
+            background: $theme_blue;
+          }
+        }
+        @media (min-width: $mob_min) and (max-width: $smob_max) {
+          border:1px solid $theme_blue;
+        }
+        &:before {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            @include job_status($theme_blue);
+            content: 'published';
+          }
+        }
+      }
+      &.pending {
+        td{
+          &:first-child {
+            border-left: 5px solid $git_yellow;
+          }
+          &.status {
+            background: $git_yellow;
+          }
+        }
+        @media (min-width: $mob_min) and (max-width: $smob_max) {
+          border:1px solid $git_yellow;
+        }
+        &:before {
+          @media (min-width: $mob_min) and (max-width: $smob_max) {
+            @include job_status($git_yellow);
+            content: 'pending';
+          }
+        }
+      }
+    }
+  }
+}
+/* social_connections */
+.social_connections{
+  position: fixed;
+  right: 10px;
+  bottom: 0;
+  span{
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    a{
+      display: inline-block;
+      padding:3px 7px;
+      color: #fff;
+      background: #fff;
+      svg{
+        width: 28px !important;
+        display: inline-block;
+      }
+      &.fb{
+        color: $facebook;
+        border:1px solid $facebook;
+      }
+      &.twit{
+        color: $twitter;
+        border:1px solid $twitter;
+      }
+    }
+    &.active{
+      a{
+        &.fb{
+          color: #fff;
+          background: $facebook;
+        }
+        &.twit{
+          color: #fff;
+          background: $twitter;
+        }
+      }
+    }
+  }
+}
+/* social_connections */

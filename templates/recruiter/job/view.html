@@ -1,0 +1,1225 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% load tz %}
+{% load static %}
+{% load thumbnail %}
+{% block block_title %}
+{% include 'meta_data/detail.html' with job=jobpost %}
+{% endblock %}
+{% block 'stage' %}
+<style>
+  #map_wrapper {
+  height: 400px;
+  }
+  #map_canvas {
+  width: 100%;
+  height: 100%;
+  }
+  .job_item {
+  padding: 15px;
+  }
+  .tab_content {
+  display: none !important; 
+  }
+  .active_tab_content {
+  display: block !important;
+  }
+  .tab_content1 {
+  display: none;
+  }
+  .active_tab_content1 {
+  display: block !important;
+  }
+  .tab_content2 {
+  display: none;
+  }
+  .active_tab_content2 {
+  display: block !important;
+  }
+  .select2-search__field{
+    width:100% !important;
+  }
+  .ticket_each:hover{
+    cursor: pointer;
+  }
+  #download{
+  background-color: #1485C3;
+  text-decoration: none;
+  border-color: #1485C3;
+  border-width: 0;
+  color: #FFFFFF;
+  padding: 9px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 3px;
+  font-size: 1.3rem;
+  width: 35px;
+  margin-left: 53px;
+}
+</style>
+<!--
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Work Log Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form name="worklogform" id="worklogform" method="POST">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="recipient-name" class="form-control-label">No of profile's submitted :</label>
+            <input type="text" class="form-control" id="no_of_profiles" name="no_of_profiles">
+            <input type="hidden" name="job_post" id="job_post_id" value="{{ jobpost.id }}"/>
+            <input type="hidden" name="start_time" id="start_time" class="datetimepicker">
+            <input type="hidden" name="end_time" id="end_time" class="datetimepicker">
+            <input type="hidden" name="time_gap" id="time_gap">
+            <input type="hidden" name="user" id="user" value="{{ request.user_id }}">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="form-control-label">Summary:</label>
+            <textarea class="form-control" id="summary" name="summary"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div> 
+</div>-->
+<!-- content -->
+<div class="content_wrap">
+<div id="job_detail_wrap">
+{% if not jobpost.send_email_notifications %}
+<div class="alert alert-danger alert-dismissible fade in" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+  <h4>Enable Email Notifications settings to receive jobpost, applicant updates.</h4>
+  </p>
+</div>
+{% endif %}
+<!-- tabs -->
+<div class="tab_row">
+  <span class='tab_button' panelid='job_post' id="jobpost_button">
+  View Job
+  </span>
+  <span class='tab_button' panelid='applicants' id="applicants_button">
+  Applicants
+  </span>
+  <!--<span class='tab_button' panelid='worklogs' id="worklogs_button">
+  Worklogs
+  </span>-->
+</div>
+<!--/ tabs -->
+{% if request.user.is_agency_recruiter and jobpost.get_hired_applicants|length > 1 %}
+{% if jobpost.status == 'Hired' %}
+<a href="{% url "agency:hired_candidates" jobpost.id %}">Billing</a>
+{% endif %}
+<div class="">
+  {% if not jobpost.status == 'Hired' %}
+  <form name="changejobpoststatusform" id="changejobpoststatusform" method="post" action="{% url "agency:job_status_change" jobpost.id %}">
+  <select name="jobposts_status" id="jobposts_status" {% if jobpost.status  == 'Hired' %}disabled{% endif %}>
+  <option value=''>Select A Status</option>
+  {% for status in jobpost_assigned_status %}
+  <option value='{{ status.0 }}'>{{ status.1 }}</option>
+  {% endfor %}
+  </select>
+  <textarea name="message" id="message" {% if jobpost.status == 'Hired' %}disabled{% endif %}></textarea>
+  <button type="submit">Submit</button>
+  </form>
+  {% else %}
+  <p>Message : {{ jobpost.get_recruiter_hired_jobpost.message }}</p>
+  <p>Status: Hired</p>
+  <a href=""></a>
+  {% endif %}
+</div>
+{% endif %}
+<div class="categories_wrap">
+<div class="row marl_15 inner_main_container">
+<div class="col-md-12 left_forms_container">
+<div class="panel panel-default">
+<div class="panel-content">
+  <!--panel content -->
+  <div id="job_detail_wrap row">
+    <!--<div id="time">00</div>-->
+    <div class="tab_content" id='job_post'>
+      <div class="col-md-9">
+        {% include 'job_detail.html' with job=jobpost recruiter=True %}
+      </div>
+    </div>
+    <div class="col-md-3 right_menu">
+      <div class="right_list_container">
+        <nav class="bs-docs-sidebar hidden-print hidden-sm hidden-xs ">
+          <ul class="side_bar_list">
+            <li ><a title='Edit' href="{% url 'recruiter:edit' jobpost.id%}">
+              <i class='fa fa-pencil-square-o edit'></i> Edit Job</a>
+            </li>
+            <!--<li ><a title='Edit' href="#" class="start_worklog start">
+              Start Worklog</a>
+            </li>-->
+            {% ifnotequal jobpost.status 'Disabled'  %}
+            <li>{% if request.user.is_agency_recruiter %}
+              <a title='Applicants' href="{% url 'agency:enable_email_notifications' jobpost.id %}">
+              {% else %}
+              <a title='Applied Users' href="{% url 'recruiter:enable_email_notifications' jobpost.id %}">
+              {% endif %}
+              <i class='fa fa-bell'></i>
+              {% if jobpost.send_email_notifications %} Disable{% else %} Enable{% endif %} Email Notifications</a>
+            </li>
+            <li class="deactivate-job" data-href="{% url 'recruiter:deactivate_job' jobpost.id %}"><a ><i class="fa fa-times" aria-hidden="true"></i> Close this Job</a></li>
+            {% ifequal jobpost.status 'Live'  %}
+            <li ><a href="mailto:?subject=Peeljobs%20Job%20post%20sharing&body={{ jobpost.get_job_minified_url }}" target="_blank" class="envelope social"><i class="fa fa-envelope" aria-hidden="true"></i> Email Job</a></li>
+            <li ><a href="https://www.facebook.com/sharer/sharer.php?u={{ jobpost.get_job_minified_url }}&t={{ jobpost.title }}" target="_blank" class="facebook social"><i class="fa fa-facebook" aria-hidden="true"></i> Share on Facebook</a></li>
+            <li ><a href="https://twitter.com/intent/tweet?text={{ jobpost.title }}&url={{ jobpost.get_job_minified_url }}&via=PeelJobs" target="_blank" class="twitter social"><i class="fa fa-twitter" aria-hidden="true"></i> Share on Twitter</a></li>
+            <li ><a href="https://plus.google.com/share?hl=en-US&url={{ jobpost.get_job_minified_url }}" class=" google social" target="_blank"><i class="fa fa-google-plus" aria-hidden="true"></i> Share on Google+</a></li>
+            <li ><a href="https://www.linkedin.com/cws/share?url={{ jobpost.get_job_minified_url }}&token=&isFramed=true" target="_blank" class="linkedin social"><i class="fa fa-linkedin" aria-hidden="true"></i> Share on LinkedIn</a></li>
+            {% else %}
+            <li ><a href="https://www.facebook.com/sharer/sharer.php?u={{ jobpost.get_job_minified_url }}&t={{ jobpost.title }}" target="_blank" class="share_post facebook social"><i class="fa fa-facebook" aria-hidden="true"></i> Share on Facebook</a></li>
+            <li ><a href="https://twitter.com/intent/tweet?text={{ jobpost.title }}&url={{ jobpost.get_job_minified_url }}&via=PeelJobs" target="_blank" class="share_post twitter social"><i class="fa fa-twitter" aria-hidden="true"></i> Share on Twitter</a></li>
+            <li ><a href="https://plus.google.com/share?hl=en-US&url={{ jobpost.get_job_minified_url }}" class="share_post google social" target="_blank"><i class="fa fa-google-plus" aria-hidden="true"></i> Share on Google+</a></li>
+            <li ><a href="https://www.linkedin.com/cws/share?url={{ jobpost.get_job_minified_url }}&token=&isFramed=true" target="_blank" class="share_post linkedin social"><i class="fa fa-linkedin" aria-hidden="true"></i> Share on LinkedIn</a></li>
+            {% endifequal %}
+            {% else %}
+            <li ><a title='Activate' href="{% url 'recruiter:edit' jobpost.id%}">
+              <i class='fa fa-check edit'></i>Activate this job</a>
+            </li>
+            {% endifnotequal %}
+            {% if request.user.is_fb_connected %}
+            <li> <a><i class="fa fa-facebook" aria-hidden="true"></i> Total Facebook Views: {{ jobpost.fb_views }} </a></li>
+            {% else %}
+            <li>
+              <a href="{% url 'recruiter:facebook_login' %}" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i> Connect with Facebook</a></span>
+            </li>
+            {% endif %}
+            {% if request.user.is_tw_connected %}
+            <li> <a><i class="fa fa-twitter" aria-hidden="true"></i> Total Twitter Views: {{ jobpost.tw_views }} </a></li>
+            {% else %}
+            <li>
+              <a href="{% url 'recruiter:twitter_login' %}" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i> Connect with Twitter</a></span>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="tab_content" id='applicants'>
+    <div class="applicants_wrap">
+    <div class="tab_row" style="margin-bottom:5px">
+    <input type="hidden" name="jobpost_id" id='jobpost_id' value="{{jobpost.id}}">
+    <form name="applicantform" id="applicantform" method="post">
+    <div class="col-md-12 search_form">
+         <div class="col-md-3 pad_lr_0">
+        <select class="input select2" multiple name="location" id="location" placeholder="Search by location">
+        {% get_locations as cities %}
+            {% for city in cities %}
+            <option value="{{city.id}}" {% if city.id|slugify in search_location %} selected {% endif %}>{{city.name}}</option>
+            {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="input select2" multiple name="skills" id="skills">
+        {% get_all_skills as skills %}
+          {% for skill in skills %}
+            <option value="{{skill.id}}" {% if skill.id|slugify in search_skills %} selected {% endif %}>{{skill.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="form-control submit">Submit</button>
+      </div>
+    </div>
+  <br clear="all">
+  </div>
+      <!-- tab button row -->
+      <div class="tab_row">
+        <span class='tab_button1 Pending active' panelid='pending'>New Applicants
+        ({{ pending_applicants|length }})</span>
+        <span class='tab_button1 Process' panelid='process'>Process ({{ process_applicants|length }})</span>
+        <span class='tab_button1 Shortlisted' panelid='shortlisted'>Shortlisted ({{ shortlisted_applicants|length }})
+        </span>
+        <span class='tab_button1 Rejected' panelid='rejected'>Rejected ({{ rejected_applicants|length }})</span>
+        <span class='tab_button1 Selected' panelid='selected'>Selected ({{ selected_applicants|length }})</span>
+        <span class='tab_button1' panelid='resumepool' id="resumepool1">Resume Pool ({{ agency_resumes|length }})</span>
+        <a href=""  title="Download Applicants" id="download"><i class="fa fa-download" aria-hidden="true" style="cursor: pointer;"></i></a>
+        <span class="main_title job_add_resume pull-right" style="display: none;">
+          <a class="job_add_resume1" id="mass_update"><i class="fa fa-plus" aria-hidden="true"></i> Add to Job</a>
+          <a class="job_add_resume2" href="{% url 'agency:resume_upload' %}"><i class="fa fa-plus" aria-hidden="true"></i> Resume Upload</a></span>
+          </span>
+          <span class="pull-right checkbox_block">
+          <input type="hidden" name="page" id="page" value="{{ current_page }}"/>
+          <input type="radio" name="search_value" value="all" class="job_type" {% if request.POST.search_value|slugify == 'all' %}checked{% endif %}>All<input type="radio" name="search_value" value="users" class="job_type" {% if request.POST.search_value|slugify == 'users' %}checked{% endif %}>Users<input type="radio" name="search_value" value="resume_pool" class="job_type" {% if request.POST.search_value|slugify == 'resume_pool' %}checked{% endif %}>Resume Applicants
+          </span>
+        </form>
+      </div>
+      <!--/ tab button row -->
+
+      <!--tab content -->
+    <div class="tab_content1 clearfix active_tab_content1" id='pending'>
+    {% for user in pending_applicants %}
+      {% if user.user %}
+
+        <div class="ticket_each" id='{{ user.user_id }}' data-href='user'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              <a >{{ user.user.get_full_name }}</a>
+            </div>
+            <div class="email">
+              {{ user.user.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden" value="user">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% else %}
+
+        <div class="ticket_each" id='{{ user.resume_applicant.id }}' data-href='resume_pool'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              {{ user.resume_applicant.candidate_name }}
+            </div>
+            <div class="email">
+              {{ user.resume_applicant.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden"  value="resume">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% endif %}
+        <!--/ ticket-->
+        {% empty %}
+        <div class="ticket_each empty_users">
+          <h3>No Candidates</h3>
+        </div>
+        {% endfor %}
+      </div>
+      <!--/ tab content -->
+
+      <!--tab content -->
+    <div class="tab_content1 clearfix" id='process'>
+    {% for user in process_applicants %}
+      {% if user.user %}
+
+        <div class="ticket_each" id='{{ user.user_id }}' data-href='user'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              <a >{{ user.user.get_full_name }}</a>
+            </div>
+            <div class="email">
+              {{ user.user.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden" value="user">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% else %}
+
+        <div class="ticket_each" id='{{ user.resume_applicant.id }}' data-href='resume_pool'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              {{ user.resume_applicant.candidate_name }}
+            </div>
+            <div class="email">
+              {{ user.resume_applicant.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden"  value="resume">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% endif %}
+        <!--/ ticket-->
+        {% empty %}
+        <div class="ticket_each empty_users">
+          <h3>No Candidates</h3>
+        </div>
+        {% endfor %}
+      </div>
+      <!--/ tab content -->
+
+
+      <!--tab content -->
+      <div class="tab_content1 clearfix" id='shortlisted'>
+        {% for user in shortlisted_applicants %}
+        {% if user.user %}
+        <div class="ticket_each" id='{{ user.user_id }}' data-href='user'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              <a>{{ user.user.get_full_name }}</a>
+            </div>
+            <div class="email">
+              {{ user.user.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden" value="user">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% else %}
+
+        <div class="ticket_each" id='{{ user.resume_applicant.id }}' data-href='resume_pool'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              {{ user.resume_applicant.candidate_name }}
+            </div>
+            <div class="email">
+              {{ user.resume_applicant.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden"  value="resume">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% endif %}
+        <!--/ ticket-->
+        {% empty %}
+        <div class="ticket_each empty_users">
+          <h3>No Candidates</h3>
+        </div>
+        {% endfor %}
+      </div>
+      <!--/ tab content -->
+      <!--tab content -->
+      <div class="tab_content1 clearfix" id='rejected'>
+        {% for user in rejected_applicants %}
+                {% if user.user %}
+
+        <div class="ticket_each" id='{{ user.user_id }}' data-href='user'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              <a >{{ user.user.get_full_name }}</a>
+            </div>
+            <div class="email">
+              {{ user.user.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden" value="user">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% else %}
+
+        <div class="ticket_each" id='{{ user.resume_applicant.id }}' data-href='resume_pool'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              {{ user.resume_applicant.candidate_name }}
+            </div>
+            <div class="email">
+              {{ user.resume_applicant.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden"  value="resume">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% endif %}
+        <!--/ ticket-->
+        {% empty %}
+        <div class="ticket_each empty_users">
+          <h3>No Candidates</h3>
+        </div>
+        {% endfor %}
+      </div>
+      <!--/ tab content -->
+      <!--tab content -->
+      <div class="tab_content1 clearfix" id='selected'>
+      {% for user in selected_applicants %}
+               {% if user.user %}
+
+        <div class="ticket_each" id='{{ user.user_id }}' data-href='user'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              <a>{{ user.user.get_full_name }}</a>
+            </div>
+            <div class="email">
+              {{ user.user.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden" value="user">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div> 
+        </div>
+    {% else %}
+
+        <div class="ticket_each" id='{{ user.resume_applicant.id }}' data-href='resume_pool'>
+          <div class="img_div">
+            <img src="{% static 'dummy.jpg' %}">
+          </div>
+          <div class="content_div">
+            <div class="title">
+              {{ user.resume_applicant.candidate_name }}
+            </div>
+            <div class="email">
+              {{ user.resume_applicant.email }}
+            </div>
+            {% if jobpost.status == 'Disabled' or jobpost.status == 'Expired' %}
+            {% else %}
+            <input type="hidden"  value="resume">
+            {% get_user_status user as user_status %}
+            {{ user_status.as_table }}
+            {% endif %}
+          </div>
+          <div class="clearfix"></div>
+        </div>
+    {% endif %}
+        <!--/ ticket-->
+        {% empty %}
+        <div class="ticket_each empty_users">
+          <h3>No Candidates</h3>
+        </div>
+        {% endfor %}
+      </div>
+      <!--/ tab content -->
+
+
+      <!--tab content -->
+      <div class="tab_content1 table_wraper" id='resumepool'>
+        {% if agency_resumes %}
+        <table class='job_list_table resume_table'>
+          <thead>
+            <tr>
+              <th width="5%"><input type="checkbox" id="bulk_select" value="0"></th>
+              <th>Candidate Name</th>
+              <th>Email Id</th>
+              <th>Skill</th>
+              <th>Experience(Y)</th>
+              {% if request.user.is_admin %}
+              <th>Uploaded By</th>
+              {% endif %}
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="resume_list">
+            {% for resume in agency_resumes %}
+            <tr data-url="https://docs.google.com/gview?url=http://peeljobs.s3.amazonaws.com/{{ resume.resume }}&embedded=true" class="resume-detail" id="{{ resume.id }}">
+              <td><input  type="checkbox" id="resume_check{{resume.id}}" value="{{resume.id}}"></td>
+              <td><span class='resume-caption'>{{ resume.candidate_name }}</span></td>
+              <td><span>{{ resume.email }}</span></td>
+              <td><span>{% for skill in resume.skill.all %}{{ skill.name }}
+                {% if forloop.last %}{% else %}, {% endif %}{% empty %}N/A{% endfor %}</span>
+              </td>
+              <td><span>{{ resume.experience|default_if_none:'N/A' }}</span></td>
+              <td style="color: black;">
+                <a href="{% url 'agency:company_recruiter_profile' resume.uploaded_by.id %}"><span>{{ resume.uploaded_by.email }}</span></a>
+              </td>
+              <td>{{ resume.status }}</td>
+            </tr>
+            {% empty %}
+            <tr><td>No Resumes</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </div>
+      <!--/ tab content -->
+       <div class="ticket_each empty_users" style="display:none">
+          <h3>No Candidates</h3>
+        </div>
+      <!-- JobPost add form starts -->
+        <form name="menuform" id="menuform" method="post" style="display:none">
+          <select class="input select2" name="job_post" id="job_post">
+            <option value="{{jobpost.id}}">{{ jobpost.title }}</option>
+          </select>
+          <select class="input select2" name="status" id="status">
+            <option value="Pending">{{ status.1 }}</option>
+          </select>
+          <select id="applicants_resume" name="applicants" multiple></select>
+        </form>
+      <!-- JobPost add form ends -->
+      <!-- resume display starts-->
+        <div class="modal fade resume-display" id="modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <div class="text-center resume-head">
+                  <div class="current_title"></div>
+                  <div class="resume-count">[<span class="current_num"></span> of <span class="total_num"></span>]</div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <i class="fa fa-times-circle-o" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div class="resume-frame" id='resume_block'>
+                <iframe id="set_url" src="" height='537px' width="657px"></iframe>
+              </div>
+               <a class="left carousel-control"  data-slide="prev">‹</a>
+               <a class="right carousel-control" data-slide="next">›</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- resume display ends-->
+    </div>
+  </div>
+
+  <!--tab content worklogs
+  <div class="tab_content" id='worklogs'>
+    <div class="col-md-9">
+      <div class="applicants_wrap">
+      <table class="work_logs">
+        <thead>
+          <th>
+          <tr>summary</tr>
+          <tr>start_time</tr>
+          <tr>end_time</tr>
+          <tr>timegap</tr>
+          <tr>no_of_profiles</tr>
+          </th>
+        </thead>
+        <tbody>
+          {% for work_log in work_logs %}
+                <tr>
+                <td>{{ work_log.summary }}</td>
+                <td>{{ work_log.start_time }}</td>
+                <td>{{ work_log.end_time }}</td>
+                <td>{{ work_log.timegap }}</td>
+                <td>{{ work_log.no_of_profiles }}
+                </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+-->
+</div>
+<!--/ panel content endss -- >
+  </div>
+  </div>
+  </div>
+  </div> 
+  </div>
+  </div>
+  </div>
+  <!--/ content -->
+  <!-- Modal -->
+  <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel2" style="margin-left:211px;">
+            <span type="button" class="btn btn-info btn-arrow-left prev_user" id='' data-href='' >Prev</span>
+            <span class="current_num"></span> of <span class="total_num"></span>
+            <span type="button" class="btn btn-info btn-arrow-right next_user" id='' data-href=''>Next</span>
+          </h4>
+        </div>
+
+        <div class="modal-body" id='applicant_profile'>
+        </div>
+      </div><!-- modal-content -->
+    </div><!-- modal-dialog -->
+  </div><!-- modal -->
+  <div id="block_dialog"></div>
+{% endblock %}
+{% block 'extra_js' %}
+<script>
+$('.resume-detail').click(function (e) {
+    e.preventDefault()
+    $next = $(this).next()
+    $prev = $(this).prev()
+    // $(".current_title").text($(this).parent().find('.resume-caption').text())
+    $('.current_num').text($(this).index()+1)
+    $('.total_num').text($(this).parent().find('.resume-detail').length)
+    if ($prev.length > 0){
+      $('.left').show()
+      $('.left').attr('id', $prev.attr('id'))
+    }else{
+      $('.left').hide()
+    }
+    if ($next.length > 0){
+      $('.right').show()
+    $('.right').attr('id', $next.attr('id'))
+  }else{
+      $('.right').hide()
+    }
+    $("#set_url").attr('src', $(this).attr('data-url'))
+    $("#modal3").modal('show')
+});
+  $('.left, .right').click(function(e){
+    id = $(this).attr('id')
+    $('.resume-detail#'+id).trigger('click')
+  })
+  $(document).keydown(function(e){
+  if (e.keyCode == 37){
+    if( $('.left').is(':visible') ) {
+    $('.left').click()
+    }
+  }
+  if (e.keyCode == 39){
+    if( $('.right').is(':visible') ) {
+    $('.right').click()
+    }
+  }
+});
+  $("#skills").select2({'placeholder': "Search by Skill"})
+  $("#location").select2({'placeholder': "Search by Location"})
+  // {% if is_show_google_map %}
+  // var venue_details = []
+  // for (var key in JSON.parse($('#venue_data').html())) {
+  //   var msg = []
+  //   var message = ''
+  //   temp_message = JSON.stringify(JSON.parse($('#venue_data').html())[key]['info'])
+  //   temp_message = temp_message.replace(/\\r\\n/g, "<br />")
+  //   temp_message = temp_message.replace('"', '').replace('"', '')
+  //   message = '<div class="info_content"><h3>' + temp_message + '</h3></div>'
+  //   msg.push(message)
+  //   venue_details.push(msg)
+  //           }
+  
+  // jQuery(function($) {
+  //     // Asynchronously Load the map API
+  //     var script = document.createElement('script');
+  //     script.src = "https://maps.googleapis.com/maps/api/js?sensor=false&callback=initialize";
+  //     document.body.appendChild(script);
+  // });
+  
+  // function initialize() {
+  //     var map;
+  //     var bounds = new google.maps.LatLngBounds();
+  //     var mapOptions = {
+  //         mapTypeId: 'roadmap'
+  //     };
+  
+  //     // Display a map on the page
+  //     map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+  //     map.setTilt(45);
+  
+  //     // Multiple Markers
+  //     var markers = JSON.parse($('#map_data').html());
+  
+  //     var infoWindowContent = venue_details;
+  
+  //     // Display multiple markers on a map
+  //     var infoWindow = new google.maps.InfoWindow(), marker, i;
+  //     // Loop through our array of markers & place each one on the map
+  //     for( i = 0; i < markers.length; i++ ) {
+  //         var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+  //         bounds.extend(position);
+  //         marker = new google.maps.Marker({
+  //             position: position,
+  //             map: map,
+  //             title: markers[i][0]
+  //         });
+  
+  //         // Allow each marker to have an info window
+  //         google.maps.event.addListener(marker, 'click', (function(marker, i) {
+  //             return function() {
+  //                 infoWindow.setContent(infoWindowContent[i][0]);
+  //                 infoWindow.open(map, marker);
+  //             }
+  //         })(marker, i));
+  
+  //         // Automatically center the map fitting all markers on the screen
+  //         map.fitBounds(bounds);
+  //     }
+  
+  //     // Override our map zoom level once our fitBounds function runs (Make sure it only runs once)
+  //     var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+  //         this.setZoom(5);
+  //         google.maps.event.removeListener(boundsListener);
+  //     });
+  // }
+  // {% endif %}
+  $(document).ready(function(){
+   {% if request.POST or request.GET.applicants %}
+      $("#applicants_button").addClass('active').siblings().removeClass('active');
+      $('.tab_content').removeClass('active_tab_content')
+      $('#applicants').addClass('active_tab_content');
+      {% if request.GET.status and request.GET.user %}
+        $('#'+"{{ request.GET.status }}"+' .ticket_each#'+"{{ request.GET.user }}").trigger('click')
+        console.log("{{ request.GET.status }}"+' .ticket_each#'+"{{ request.GET.user }}")
+      {% endif %}
+  {% else %}
+    $('#job_post').addClass('active_tab_content');
+    $("#jobpost_button").addClass('active').siblings().removeClass('active');
+   {% endif %}
+
+      //   var time;
+      //   var timeinsec = Math.round($('#time').text())
+      //   var min;
+      //   var sec
+      //   var container;
+      //   var qtime;
+      //   var start_time;
+      //   var end_time;
+      //   var format =  "mm/dd/yy HH:mm:ss";
+      // function getFormattedDate() {
+      //     var date = new Date();
+      //     console.log(date)
+      //     console.log(date.getMonth())
+      //     var str = getFormattedPartTime(date.getMonth()+1) + '/' + getFormattedPartTime(date.getDate()) + '/' + date.getFullYear() + " " +  getFormattedPartTime(date.getHours()) + ":" + getFormattedPartTime(date.getMinutes()) + ":" + getFormattedPartTime(date.getSeconds());
+  
+      //     return str;
+      // }
+      // function getFormattedPartTime(partTime){
+      //     console.log(partTime)
+      //     if (partTime<10)
+      //        return "0"+partTime;
+      //     return partTime;
+      // }
+  
+        $("button.submit-exam-button").removeAttr('disabled');
+        $("#complete").removeAttr('disabled');
+        container = $('#time');
+        // $('.start_worklog').click(function(e){
+        //   e.preventDefault();
+        //   if ($(this).hasClass('start')){
+        //   $(this).text('Stop Worklog')
+        //   $(this).removeClass('start')
+        //   $(this).addClass('stop')
+        //   start_time = new Date()
+        //   start_time = getFormattedDate()
+  
+        //   interval = setInterval(function () {
+        //     ++timeinsec;
+        //         if (timeinsec>0) {
+        //       min = Math.floor(timeinsec/60);
+        //       sec = timeinsec%60;
+        //       if(min){
+        //         container.html(min+'min'+' '+sec+'sec');
+        //       }else{
+        //         container.text(sec+'sec');
+        //       }
+  
+        //     } else {
+        //       $('a.submit-exam-button').click();
+        //     }
+        //     // Run interval every 1000ms (1 second)
+        //     }, 1000);
+  
+        //   }
+        //   else{
+        //       $(this).text('Start Worklog')
+        //       $(this).addClass('start')
+        //       $(this).removeClass('stop')
+        //       clearInterval(interval);
+        //       $('#myModal').modal('show')
+        //       end_time = new Date();
+        //       end_time = getFormattedDate()
+        //       console.log(end_time)
+        //   }
+        // });
+  
+  $(".datetimepicker").datetimepicker({
+      collapse:false,
+      sideBySide:true,
+      useCurrent:false,
+      showClose:true,
+      format: "MM/DD/YYYY HH:mm:ss",
+  });
+  $('.resume-detail input').click(function(e){
+      e.stopPropagation()
+  })
+  $('#resumepool1').click(function(){
+    $('.job_add_resume').show();
+  })
+
+  $("#bulk_select").change(function() {
+  var $input = $(this);
+  if ($input.is(":checked")) {
+  $("#resume_list input[type=checkbox]").prop('checked', true);
+  } else {
+  $("#resume_list input[type=checkbox]").prop('checked', false);
+  }
+  });
+  function grab_selected() {
+  var applicants = [];
+  $('#resume_list input:checked').each(function() {
+  applicants.push($(this).val());
+  });
+  return applicants;
+  }
+  $("#mass_update").click(function(e) {
+    e.preventDefault()
+    var applicants= grab_selected()
+    if(applicants==0){
+      open_dialog("No Applicant selected", 'Alert')
+    } else {
+      var len = $.map(applicants, function(n, i) { return i; }).length;
+      for (var i = 0; i < len;  i ++){
+        $("#applicants_resume").append('<option selected value="'+applicants[i]+'"></option>')
+      }
+      $('#menuform').submit()
+    }
+  });
+  $('#menuform').submit(function(e){
+    e.preventDefault()
+    $.post(".", $(this).serialize(), function(data) {
+      var data = JSON.parse(data);
+      if (data.error == true) {
+        $('.error').remove();
+        for (var key in data.response) {
+          $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+          ;
+        }
+      } else {
+        open_dialog_with_url('Job post added to applicants', 'Success', '.?applicants=True')
+      }
+    })
+  });
+  
+  $("select#job_post").select2({placeholder: "Select A Job Post"});
+  $("select#status").select2({placeholder: "Select A Status"});
+
+  
+        // $('form#worklogform').submit(function(e) {
+        //   e.preventDefault();
+        //   $('#start_time').val(start_time)
+        //   $('#end_time').val(end_time)
+        //   $('#time_gap').val($('#time').text())
+        //   $.post("{% url 'agency:user_work_log' %}", $('form#worklogform').serialize(), function(data) {
+        //     $('div.error').remove();
+        //     if (data.error == false) {
+        //       open_dialog_with_url(data.response, 'Info!!', '.')
+        //     } else {
+        //       $('#forgot-email').after('<div class="error">' + data.email + '</div>');
+        //     }
+        //   }, 'json');
+        // });
+
+       $(window).scroll(function(e){
+          var  scroll = ($(this).scrollTop())
+          $('.right_list_container').css({'position': 'static', 'margin-top': '10px'});
+          if ($(this).scrollTop() > 70)
+          {
+            {% ifnotequal job.status 'Disabled' %}
+              if($('.enable_email_notifications').size() > 0){
+              $('.right_list_container').css({'position': 'fixed', 'margin-top': '-55px', 'width':'275px'});
+              }
+              else{
+              $('.right_list_container').css({'position': 'fixed', 'margin-top': '-55px', 'width':'275px'});
+              }
+
+            {% else %}
+              $('.right_list_container').css({'position': 'fixed', 'margin-top': '-80px', 'width':'275px'});
+            {% endifnotequal %}
+          }
+        });
+     $('.deactivate-job').click(function (e) {
+        e.stopPropagation();
+        url = $(this).attr('data-href')
+        $('#block_question').text('Do you want to deactivate Jobpost?')
+        $('#block_question').dialog({
+            modal: true,
+            draggable: false,
+            title: "Info!!",
+            buttons: [
+                {
+                    text: "Yes",
+                    click: function () {
+                        $(this).dialog("close");
+                        $.post(url, $("form#jobform").serialize(), function (data) {
+                            if (data.error) {
+                              open_dialog(data.response, 'Error!')
+                            } else {
+                            open_dialog_with_url('Job Post Deactivated Successfully', 'Success!', "{% url 'recruiter:inactive_jobs' %}")
+                            }
+                        }, 'json');
+                    }
+                },
+                {
+                    text: "No",
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            ]
+        });
+    });
+    });
+        $('body').on('click', '.tab_button', function (e) {
+              e.preventDefault();
+              $(this).addClass('active').siblings().removeClass('active');
+              var panel = $(this).attr('panelid');
+              $('.tab_content').removeClass('active_tab_content')
+              $('#' + panel).addClass('active_tab_content');
+          })
+         $('.tab_button1').click(function (e) {
+              $('.job_add_resume').hide();
+              e.preventDefault();
+              $(this).addClass('active').siblings().removeClass('active');
+              var panel = $(this).attr('panelid');
+              $('.tab_content1').removeClass('active_tab_content1')
+              $('#' + panel).addClass('active_tab_content1');
+              download_option()
+          })
+         job_post_id = {{jobpost.id}}
+        $('body').on('change', '.user_status', function (e) {
+            e.preventDefault();
+            type = $(this).parent().find('input').val()
+            parent = $(this).parent().parent()
+            val = $(this).val()
+            ticket = $(this).closest('.ticket_each')
+            content = $(this).closest('.tab_content1')
+            $.post('/recruiter/job/applicants/' + job_post_id + '/', {
+                'user_id': $(this).attr('id'),
+                'status': $(this).val(),
+                'type': type,
+            }, function (data) {
+                if (data.error) {
+                    open_dialog(data.response, 'Error!')
+                } else {
+                  $('#'+val.toLowerCase() + ' .empty_users').remove()
+                  $(ticket).detach().appendTo('#'+val.toLowerCase())
+                  if ($(content).find('.ticket_each').length == 0){
+                    $('.empty_users').last().clone().appendTo($(content)).show()
+                  }
+                  $('.' + data.prev_status).text(data.prev_status+' ('+data.prev_count+')')
+                  $('.' + data.next_status).text(data.next_status+' ('+data.next_count+')')
+                  $("#block_dialog").text(data.response)
+                  $("#block_dialog").dialog({
+                      modal: true,
+                      draggable: false,
+                      title: "Success!",
+                      buttons: [
+                          {
+                              text: "Yes",
+                              click: function () {
+                                  $(this).dialog("close");
+                                  download_option()
+                              }
+                          },
+                      ]
+                  })
+                }
+            }, 'json');
+        });
+          $(".job_type").click(function(){
+            $("#applicantform").submit()
+          })
+$('body').on('change', '.click_status', function(e){
+    e.preventDefault()
+    id = $(this).attr('id')
+    $('.active_tab_content1 #user_status_'+id).val($(this).val()).change()
+  })
+
+ $(".ticket_each").click(function(e){
+    e.preventDefault();
+    $status = $(this).find('.user_status').clone()
+    $($status).attr('id',  $(this).attr('id'))
+    $($status).attr('class',  'click_status')
+    $($status).addClass('pull-right btn btn-default')
+    $('.current_num').text($(this).index()+1)
+    $('.total_num').text($(this).parent().find('.ticket_each').length)
+    $next = $(this).next()
+    $prev = $(this).prev()
+    if ($prev.length > 0){
+      $('.prev_user').show()
+      $('.prev_user').attr('id', $prev.attr('id'))
+      $('.prev_user').attr('data-href', $prev.attr('data-href'))
+    }else{
+      $('.prev_user').hide()
+    }
+    if ($next.length > 0){
+      $('.next_user').show()
+    $('.next_user').attr('id', $next.attr('id'))
+    $('.next_user').attr('data-href', $next.attr('data-href'))
+  }else{
+      $('.next_user').hide()
+    }
+    $.post('.', {
+        'user_id': $(this).attr('id'),
+        'user_type': $(this).attr('data-href'),
+        'get_applicant': true,
+    }, function (data) {
+        if (data.error) {
+            open_dialog(data.response, 'Error!')
+        } else {
+          $("#applicant_profile").html(data.profile)
+          $(".status_change").html($status)
+          $("#myModal2").modal('show')
+        }
+    }, 'json');
+});
+  $('.prev_user, .next_user').click(function(e){
+    id = $(this).attr('id')
+    ac = $('.tab_content1.active_tab_content1').attr('id')
+    $('#'+ac+' .ticket_each#'+id).trigger('click')
+  })
+    $(".ticket_each select").click(function(e){
+      e.stopPropagation()
+    })
+    $(".share_post").click(function(e){
+      e.preventDefault()
+        open_dialog('JobPost cannot be Shared until it goes live!', 'Alert!')
+    })
+  $('body').on('click', '.download', function(e){
+    window.open($(this).attr('id'));
+  });
+
+  $(function (e) {
+    $(".ticket_each").draggable({
+        revert: true,
+        refreshPositions: true,
+        drag: function (event, ui) {
+          id = $(".tab_button1.active").attr('panelid')
+        },
+        stop: function (event, ui) {
+        }
+    });
+    $(".tab_button1:not(#resumepool1)").droppable({
+      hoverClass: "active_tab",
+      // tolerance: "touch",
+        drop: function (event, ui) {
+          status = $(this).attr('panelid').charAt(0).toUpperCase() + $(this).attr('panelid').slice(1)
+            if (ui.helper.find('.user_status').val() != status){
+            ui.helper.find('.user_status').val(status).change()}
+            }
+    });
+});
+$('body').on('submit', 'form#messageform', function(e) {
+  e.preventDefault();
+   if ($('input[name=message]').val().trim() == ''){
+    open_dialog('Please Enter any message!', 'Alert!')
+    return false
+  }
+  $.post(".", $(this).serialize(), function(data) {
+    $('div.error').remove();
+    if (data.error == false) {
+      $('.empty_msg').remove()
+      $msg = $('.message_box').clone()
+      $($msg).attr('id', data.msg_id)
+      $($msg).removeClass('message_box')
+      $($msg).find('#message_text').text(data.message)
+      $($msg).find('#message_time').text(data.time)
+      $("ul.chat").append($msg.show())
+      $('input[name=message]').val('')
+    }
+    else {
+     open_dialog('Something Went Wrong!', 'Alert!')
+    }
+  }, 'json');
+});
+var search_locations = {{search_location|safe}}
+$('body').on('click', '.tab_button2', function (e) {
+        e.preventDefault();
+        $(this).addClass('active').siblings().removeClass('active');
+        var panel = $(this).attr('panelid');
+        $('.tab_content2').removeClass('active_tab_content2')
+        $('#' + panel).addClass('active_tab_content2');
+    })
+$('body').on('click', '.delete_msg', function(e){
+  e.stopPropagation()
+  id = $(this).parent().attr('id')
+   $.post("{% url 'recruiter:messages'%}", {'mode': 'delete_message', 'id': id}, function (data) {
+    if(data.error == false){
+      $('#'+id).remove()
+      open_dialog("Message Removed Successfully!", 'Success!')
+    }
+    else{
+      open_dialog(data.message, 'Alert!')
+    }
+  }, 'json');
+})
+$('body').on('click', '.delete_chat', function(e){
+  e.preventDefault()
+   $.post("{% url 'recruiter:messages'%}", {'mode': 'delete_chat', 'user': $(this).attr('id'), 'job': $(this).attr('data-href')}, function (data) {
+    if(data.error == false){
+      open_dialog("Chat cleared Successfully!", 'Success!')
+      $('.chat').html('<div class="text-center empty_msg"><h2> No Messages</h2></div>')
+    }
+    else{
+      open_dialog("Something Went Wrong!", 'Alert!')
+    }
+  }, 'json');
+})
+var search_skills = {{ search_skills|safe }}
+console.log(search_skills)
+$('#download').click(function(e){
+  e.preventDefault()
+  status = $('.tab_button1.active').attr('panelid')
+  window.location = "/recruiter/download/{{jobpost.id}}/"+ status + "/?search_skills=" + search_skills +"&search_locations=" + search_locations
+})
+$(document).ready(function(){
+  download_option()
+  if(typeof(search_skills) === "undefined"){
+    search_skills = ""
+  }
+  if(typeof(search_locations) === "undefined"){
+    search_locations = ""
+  }
+})
+function download_option(){
+  panel = $('.tab_button1.active').attr('panelid')
+  applicants_count = $("#"+panel+" div[data-href='user']").length + $("#"+panel+" div[data-href='resume_pool']").length
+  if (applicants_count == 0){
+    $('#download').css('display', 'none');
+  }
+  else{
+     $('#download').css('display', '');
+  }
+}
+</script>
+{% endblock %}

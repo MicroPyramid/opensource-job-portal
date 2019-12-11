@@ -1,0 +1,95 @@
+{% extends 'mobile/base.html'%}
+{% load thumbnail %}
+{% load page_tags %}
+{% block block_title %}
+  {% include "meta_data/jobs_by_industry.html" %}
+{% endblock %}
+{% block stage %}
+
+    <!-- content of job_list -->
+    <section id='job_list'>
+    <h1 class='internship-text' style="margin-left:10px">{{ h1_tag }}</h1>
+    <div class="browse_heading">Browse jobs by Industry</div>
+
+    <div class="sorting_alphabetics">
+    <a href="#" class="ascending"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i> A to Z</a>
+    <a href="#" class="descending"><i class="fa fa-sort-alpha-desc" aria-hidden="true"></i> Z to A </a>
+    </div>
+    <div class="search_jobs">
+    <form name="skillform" id="skillform" method="post">
+      <input type="hidden" name="alphabet_value" id="alphabet_value">
+      <input type="hidden" name="sorting_value" id="sorting_value">
+      <input type="text" class="form-control" placeholder="Search By Industry" name="industry" id="search_value" value="{{ request.POST.search_value }}"/>
+      <button type="submit" style="display:none;"></button>
+    </form>
+    </div>
+    <div class="skills_results">
+      {% for industry in all_industries %}
+      <a href="{{ industry.get_job_url }}"> {{ industry.name|get_industry_name }} Jobs </a>
+      {% empty %}
+      <a class='empty_results'>No Industries Available Here.</a>
+      {% endfor %}
+    </div>
+    <div>
+          <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- PJ Right Nav -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-5756092160559539"
+                 data-ad-slot="3490610504"
+                 data-ad-format="auto"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    {% if request.user.is_authenticated %}
+      {% if request.user.profile_completion_percentage < 55 %}
+      <!-- profile alert -->
+      <a href="{% url 'my:profile' %}">
+      <div class="profile_complete">
+      Complete the profile to apply jobs.<span class='pj-close close_icon'></span>
+      </div></a>
+      {% endif %}
+    {% endif %}
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+  $('.sorting_alphabetics a').click(function(e){
+      e.preventDefault();
+      $('#sorting_value').val($(this).attr('class'));
+      $('#skillform').submit();
+  })
+    $(document).ready(function() {
+     $('#search_value').keyup(function(e){
+      if ($("#search_value").val() == ''){
+        $(".skills_results").show()
+        $('.ac-cityresults').remove()
+        return
+      }
+     $.get('/search/industry-auto/', $("#skillform").serialize(), function (data) {
+        $(".skills_results").hide()
+        $('.ac-cityresults').remove()
+        var results = data.results || []
+        var re = new RegExp(' ', 'g');
+        var results_wrapper = $('<div class="ac-cityresults"></div>')
+        var base_elem = $('<div class="result-wrapper"><a href="" class="ac-result"></a><br><p class="auther"></p></div>')
+        if(results.length > 0) {
+          for(var res_offset in results) {
+            elem = $('<div class="result-wrapper"><a href="/'+ results[res_offset]['slug']+'-industry-jobs/" class="ac-cityresult"><span>'+results[res_offset]['name'] + '</span></a></div>');
+            results_wrapper.append(elem);
+          }
+        }
+        else {
+        $(".skills_results").show()
+          return false
+        }
+        $(".skills_results").hide()
+        $("#search_value").after(results_wrapper)
+          }, 'json');
+    });
+});
+  $('.ac-cityresults').on('click', '.result-wrapper', function(e){
+        $('.ac-cityresults').remove()
+  })
+</script>
+{% endblock %}

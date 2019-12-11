@@ -1,0 +1,243 @@
+{% load page_tags %}
+{% load static %}
+{% load thumbnail %}
+{% load cache %}
+{% load thumbnail %}
+<!-- walkin_jobs starts here -->
+<div class="col-md-3 right_container">
+  <!-- upload_btn_block starts here -->
+  <div class="similar_job_posts" style="margin-bottom:10px;">
+    <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fpeeljobs%2F&width=300&height=150&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=892560280818752" width="300" height="150" style="border:none;overflow:hidden"></iframe>
+  </div>
+
+  {% if request.user.is_authenticated %}
+  {% if request.user.is_jobseeker and not request.user.resume %}
+  <div class="upload_btn_block">
+   <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+    <div class="upload_btn" id="resume_upload_but"><a href="/profile/"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+      <input type="file" name="resume" id="resume" style="display:none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt"></span>
+      <button type="submit" name="submit" class="submit" style="
+        display:none;"><span>Submit</span></button>
+      </form>
+  </div>
+  {% endif %}
+  {% else %}
+  <div class="upload_btn_block">
+    <div class="upload_btn upload_btn_resume"><a href="#" data-toggle="modal" data-target="#login_register"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+  </div>
+  {% endif %}
+  <!--subscribe_box form starts here -->
+  <div class="subscribe_box">
+    <div class="login_box">
+      <p class="head text-capitalize">SUBSCRIBE WITH US, TO GET JOBS INTO YOUR INBOX</p>
+      <form id="Jobsubscribeform" name="Jobsubscribeform" class="Jobsubscribeform" method = "POST">
+        <div class="form-group">
+          <select class="form-control" id="job_skills" name="skill" multiple>
+          </select>
+          <span class="skill_err"></span>
+          <p id="job_response_message"></p>
+        </div>
+        <div class="form-group">
+          {% if request.user.email %}
+          <input type="hidden" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address" value="{{ request.user.email }}" />
+          {% else %}
+          <input type="text" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address"/>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-default">Subscribe Here</button>
+      </form>
+    </div>
+  </div>
+  <div style="margin-top:10px;margin-bottom:10px;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- PJ Right Nav -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5756092160559539"
+           data-ad-slot="3490610504"
+           data-ad-format="auto"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+  <!--subscribe_box form ends here -->
+  <!--register_login form starts here -->
+  {% if not request.user.is_authenticated %}
+  <div class="inner_login_box">
+    <div class="login_box">
+      <p class="head text-capitalize left_login_text">ALREADY A MEMBER? LOGIN</p>
+      <form  id="JobMailRegisterForm" name="JobMailRegisterForm" class="JobMailRegisterForm"
+        method = "POST" >
+        <div class="form-group">
+          <input type="text" name="email" id="mail_email" class="form-control" placeholder="Enter Your Email Address"/>
+          <p id="mail_response_message"></p>
+        </div>
+        <div class="form-group">
+          <input type="password" name="password" id="mail_password" class="form-control" placeholder="Enter Password"/>
+          <input type="hidden" name="register_type" id='left_register_type' value="login">
+        </div>
+        <button type="submit" class="btn btn-default left_login_form_button">Sign In</button>
+        <div class="forgot_create-new">
+          <a href="#" class="left_forgot_password">Forgot Password?</a> <a href="#" class="pull-right left_new_user_login" style="display:none;">Already a Member? Login</a>
+          <a href="#" class="pull-right left_new_account">Create New Account?</a>
+        </div>
+       <div class="clearfix"></div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+  <div class="strip_box">
+    <div class="strip">Show Your CODING Skills at <span style="color: #202b2e;">Runcode.io</span> (Launching soon)
+    </div>
+</div>
+<!--Skill wise jobs starts -->
+  {% if searched_skills %}
+    <div class="walkin_jobs">
+      <div class="heading text-uppercase">Jobs by Smiliar Skills</div>
+      <ul class="walkin_blocks">
+        {% get_related_skills searched_skills as related_skills %}
+        {% if fresher %}
+          {% for skill in related_skills|slice:'10' %}
+            <li class="walkin_block" id="{% url 'skill_fresher_jobs' skill.0.slug %}">
+              <strong class="title">
+                <a href="{% url 'skill_fresher_jobs' skill.0.slug %}" target="_blank">{{ skill.0.name }} Fresher Jobs</a>
+              </strong>
+            </li>
+          {% endfor %}
+          <li class="walkin_block" id="{% url 'fresher_jobs_by_skills' 'fresher' %}">
+            <a href="{% url 'fresher_jobs_by_skills' 'fresher' %}" target="_blank"><span class="view_all">See More</span></a>
+          </li>
+        {% elif walkin %}
+          {% for skill in related_skills|slice:'10' %}
+            <li class="walkin_block" id="{% url 'skill_walkin_jobs' skill.0.slug %}">
+              <strong class="title">
+                <a href="{% url 'skill_walkin_jobs' skill.0.slug %}" target="_blank">{{ skill.0.name }} Walkins</a>
+              </strong>
+            </li>
+          {% endfor %}
+          <li class="walkin_block" id="{% url 'fresher_jobs_by_skills' 'walkin' %}">
+            <a href="{% url 'fresher_jobs_by_skills' 'walkin' %}" target="_blank"><span class="view_all">See More</span></a>
+          </li>
+        {% else %}
+          {% for skill in related_skills|slice:'10' %}
+            <li class="walkin_block" id="{% url 'job_skills' skill.0.slug %}">
+              <strong class="title">
+                <a href="{% url 'job_skills' skill.0.slug %}" target="_blank">{{ skill.0.name }} Jobs</a>
+              </strong>
+            </li>
+          {% endfor %}
+          <li class="walkin_block" id="{% url 'jobs_by_skill' %}">
+            <a href="{% url 'jobs_by_skill' %}" target="_blank"><span class="view_all">See More</span></a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
+-<!--Skill wise jobs ebds -->
+
+<!--Location wise jobs starts -->
+  {% if skill_jobs %}
+    <div class="walkin_jobs">
+      <div class="heading text-uppercase">Jobs by Locations</div>
+      <ul class="walkin_blocks">
+        {% for location in total_locations|slice:"10" %}
+          {% if location not in searched_locations %}
+            <li class="walkin_block" id="/{% if fresher %}fresher-{% endif %}jobs-in-{{ location.slug }}/">
+              <strong class="title">
+                <a href="/{% if fresher %}fresher-{% endif %}jobs-in-{{ location.slug }}/" target="_blank">{% if fresher %}Fresher{% endif %} Jobs in {{ location.name }}</a>
+              </strong>
+            </li>
+          {% endif %}
+        {% endfor %}
+        <li class="walkin_block" id="{% url 'jobs_by_location' 'jobs' %}">
+          <a href="{% url 'jobs_by_location' 'jobs' %}" target="_blank"><span class="view_all">See More</span></a>
+        </li>
+      </ul>
+    </div>
+  {% endif %}
+<!--Location wise jobs Ends -->
+  {% cache 86400 left_walkin_jobs %}
+  <!--register_login form ends here -->
+  {% get_latest_walkins as walkins %}
+  {% if walkins %}
+  <div class="walkin_jobs">
+    <div class="heading text-uppercase">Walk-in Jobs</div>
+    <ul class="walkin_blocks">
+    {% for walkin in walkins|slice:"7" %}
+      <li class="walkin_block" id="{{ walkin.get_absolute_url }}">
+        <strong class="title"><a href="{{ walkin.get_absolute_url }}" target="_blank">{{ walkin.title }}</a></strong>
+        {% if walkin.company %}<p>{{ walkin.company.name }}</p>{% endif %}
+        <p class="location"><i class="fa fa-map-marker"></i>{%for location in walkin.location.all %} <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}{% if forloop.last %}{% else %}, {% endif %}</a>{% endfor %} </p>
+      </li>
+    {% endfor %}
+    <li class="walkin_block">
+      <a href="{% url 'walkin_jobs' %}" target="_blank"><span class="view_all">See More</span></a>
+    </li>
+    </ul>
+  </div>
+  {% endif %}
+  {% endcache %}
+  <!-- walkin_jobs ends here -->
+  <!-- top_recruiters starts here -->
+  {% cache 604800 left_recruiters %}
+    {% get_latest_recruiters as latest_recruiters %}
+    {% if latest_recruiters %}
+    <div class="top_recruiters">
+      <div class="heading text-uppercase">Top Recruiters</div>
+      <ul class="recruiter_blocks">
+        {% for recruiter in latest_recruiters|slice:"7" %}
+        <li class="recruiter_block" id="{% url 'recruiter_profile' recruiter.username %}">
+          <div class="img_part">
+            <img src="{% if recruiter.profile_pic %}{% thumbnail recruiter.profile_pic.url "45x45" crop="80% top" %}
+            {% else %}{% thumbnail 'https://cdn.peeljobs.com/dummy.jpg' "45x45" crop="80% top" %}{% endif %}" alt="Jobs Posted By {{ recruiter.get_full_name }}"/>
+          </div>
+          <div class="content">
+            <strong class="title"><a href="{% url 'recruiter_profile' recruiter.username %}" target="_blank">{{ recruiter.get_full_name }}</a></strong>
+            {% if recruiter.company %}<p>{{ recruiter.company.name }}</p>{% endif %}
+            <p class="redirect"><a href="{% url 'recruiter_profile' recruiter.username %}" target="_blank">View {{ recruiter.num_posts }} Jobs</a></p>
+          </div>
+        </li>
+        {% endfor %}
+        <li class="recruiter_block" id='{% url 'recruiters' %}'>
+          <a href="{% url 'recruiters' %}" target="_blank"><span class="view_all">See More</span></a>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+  {% get_companies as latest_companies %}
+    {% if latest_companies %}
+      <div class="top_recruiters">
+        <div class="heading text-uppercase">Top Companies</div>
+        <ul class="recruiter_blocks">
+          {% for company in latest_companies|slice:"7" %}
+            <li class="recruiter_block" id="{% if company.slug %}{% url 'company_jobs' company.slug %}{% endif %}">
+              <div class="img_part">
+                {% thumbnail company.get_logo_url "40x40" crop="80% top" as im %}
+                  <img src="{{ im.url }}">
+                {% endthumbnail %}
+              </div>
+              <div class="content">
+                <strong class="title">
+                  <a href="{% if company.slug %}{% url 'company_jobs' company.slug %}{% endif %}" target="_blank">{{ company.name }}</a>
+                </strong>
+                {% if company.website %}
+                  <p>{{ company.get_website }}</p>
+                {% endif %}
+                <p class="redirect">
+                  <a rel="nofollow" href="{% if company.slug %}{% url 'company_jobs' company.slug %}{% endif %}"
+                  target="_blank">View {{ company.num_posts}} Jobs</a>
+                </p>
+              </div>
+            </li>
+          {% endfor %}
+          <li class="recruiter_block" id="{% url 'companies' %}">
+            <a href="{% url 'companies' %}" target="_blank"><span class="view_all">See More</span></a>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+  {% endcache %}
+</div>
+
+
+

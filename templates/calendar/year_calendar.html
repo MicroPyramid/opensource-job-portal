@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load compress %}
+{% load schedule_tags %}
+{% load searchtags %}
+{% load static %}
+{% block block_title %}
+  <title>{{ meta_title|safe }}</title>
+  <meta name="description" content="{{ meta_description|safe }}"/>
+  <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+   <meta property="og:title"  content="{{ meta_title|safe }}"/>
+  <meta property="og:description"  content="{{ meta_description|safe }}"/>
+  <meta property="og:image"  content="{{jobopenings}}"/>
+  <meta property="og:image:width" content="200" />
+  <meta property="og:image:height" content="200" />
+
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+ {% compress css %}
+<link rel="stylesheet" type="text/less" href="{% static 'css/calendar.css' %}">
+{% endcompress %}
+<style type="text/css">
+  .breadcrumb_calendar{
+    background: none;
+    margin-bottom: 0px;
+    padding-top: 17px;
+  }
+</style>
+<div class="content_div">
+      <!-- main_container starts here -->
+      <div class="row mar_lr_0 main_container">
+        <div class="container">
+
+        <!-- breadcrumb_section starts here -->
+        <div class="breadcrumb_section row mar_lr_0">
+          <nav>
+            <ol class="cd-breadcrumb triangle">
+              <li>
+                <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+                  <span class="name" >Home</span>
+                </a>
+              </li>
+              <li class="current">
+                <span href="." class="job_detail">
+                <span class="name">Calendar</span>
+                </span>
+              </li>
+            </ol>
+          </nav>
+        </div>
+        <!-- breadcrumb_section ends here -->
+
+          <div class="row mar_lr_0">
+            <div class="col-md-12 left_container">
+              <!-- side_filter_section starts here -->
+              <div class="row">
+          <div class='select_year_month select_box'>
+          <select class="form-control pull-right calender-top-select" id="month_calendar">
+            {% for month in months %}
+            <option value="{{ month.id }}" {% ifequal requested_month.id|slugify month.id|slugify %}selected{% endifequal %}>{{ month.Name }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class='select_year_month select_box'>
+          <select class="form-control pull-right calender-top-select" id="week_calendar">
+            {% for week_count in year|get_weekdays:month.id %}
+              <option value="{{ forloop.counter }}" {% ifequal week|slugify forloop.counter|slugify %}selected{% endifequal %}>Week {{ forloop.counter }}</option>
+              {% endfor %}
+          </select>
+         <span class="calendar-header">
+        {% if prev_year %}
+        <a href="{% url 'year_calendar' prev_year%}" class="prev_next" data="{{prev_year}}"><i class="fa fa-angle-double-left"></i></a>
+        {% endif %}
+        <a href="{% url 'year_calendar' year%}" class="full_year_view" data="{{year}}">{{ year }}</a>
+        {% if next_year %}
+        <a href="{% url 'year_calendar' next_year%}" class="prev_next" data="{{next_year}}"><i class="fa fa-angle-double-right"></i></a>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+        <!--<div class="pull-right add_event_button">
+            <a href="{% url 'calendar_add_event' %}" class="event"><span><i class="fa fa-plus"></i> Add Event</span></a>
+            <a href="{% url 'calendar_event_list' %}" class="event"><span><i class="fa fa-plus"></i> Event List</span></a>
+          </a>
+        </div>-->
+        {% endif %}
+      </span>
+        </div>
+        <div class="calendar-row">
+        <!-- calendar item starts here -->
+        <div class="calendar-item-month">
+          <div class="cal cal-month">
+          {% if calendar_type == 'year' %}
+            {% for month in months %}
+            <div class="col-md-3 col-lg-3 col-sm-6 calendar-item">
+              <div class="cal">
+                {% month_table request month %}
+              </div>
+            </div>
+            {% endfor %}
+          {% elif calendar_type == 'month' %}
+            {% month_table request month "large" %}
+          {% else %}
+            {% month_table request month "large" %}
+          {% endif %}
+          </div>
+          <br clear="all">
+        </div>
+        <!-- calendar item ends here -->
+        <form id="calander_form" method="post">
+          {% csrf_token %}
+          <input id="year" name="year" type="hidden" value="{{ year }}">
+          <input id="month" name="month" type="hidden" value="{{ month.id }}">
+          <input id="week" name="week" type="hidden" value="{{ week }}">
+          <input id="deadline" name="deadline" type="hidden">
+          <input id="clint_id" name="client" type="hidden">
+          <input id="am_id" name="am" type="hidden">
+        </form>
+      </div>
+      <!-- calendar block row starts here -->
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- main_container ends here -->
+</div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+<!--/ content row -->
+{% block 'extra_js' %}
+<!-- header drop_down -->
+<!-- date range picker -->
+<script type="text/javascript" src='{% static 'js/calendar.js' %}'></script>
+<script type="text/javascript">
+  $('body').click(function(e){
+    $('.drp_level_one').css('display','none')
+  });
+  $('.drop_down_user').click(function(e){
+    e.stopPropagation();
+    if($(window).width()<767){
+      //console.log($(window).width());
+    }
+    else{
+      /*console.log('Globe large screen')*/
+      $('.drp_level_one').css('display','block');
+    }
+  });
+  
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+<!-- menu -->
+<!-- scroll -->
+<script>
+
+  $(document).ready(function(){
+      $("#calendar_toogle").click(function(){
+          $(".left-nav-block").slideToggle();
+      });
+      $(".main_row").hide()
+      $(".pp_action_table").hide()
+      $(".project-overview-heading").hide()
+  });
+
+$(".get_project_add_form").click(function(e){
+  $(".full-calendar-block").hide()
+  $(".pp_action_table").hide()
+  $(".main_row").show()
+  id=$(this).attr("rel");
+   $('select.sub_category option[id='+ id +']').attr('selected', true);
+
+});
+
+
+  /* Create events script for desktop through Pop-up */
+  $('select#project_type').change(function(e){
+    e.preventDefault();
+    subcat_id = $(this).val();
+    $.ajax({
+      type: "GET",
+      url: "",
+      data: {'type_id':subcat_id},
+      success: function(response){
+        options = ''
+        $('.cs_class').remove()
+        $.each(JSON.parse(response),function(i){
+            options += '<option value="'+JSON.parse(response)[i][0]+'" class="cs_class">'+JSON.parse(response)[i][1]+'</option>';
+        });
+        $("#type_status").append(options);
+      }
+    });
+  });
+$('.unset').click(function(e){
+  e.preventDefault();
+  $("#week").val($('#week_calendar').val());
+  $("#calander_form").attr("action", window.location.pathname);
+  $("#calander_form").submit();
+})
+  /* Create events script for desktop through Pop-up */
+</script>
+{% endblock %}

@@ -1,0 +1,968 @@
+{% extends "base.html" %}
+{% load searchtags %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load static %}
+{% load tz %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+{% block block_title %}
+<title>Profile - Apply Jobs - Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+<meta name="description" content="Profile - Apply Jobs - PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs. Fill Your Profile to receive email notifications. "/>
+<meta name="Keywords" content="job, jobs, tech jobs, it jobs, job sites, job vacancies, find jobs, search jobs, resume tips, job search engines, careers, technology jobs, career search, job descriptions, employment, work, job listings, peeljobs.com" />
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<style type="text/css">
+  .error{
+  color: red ;
+  }
+</style>
+<!-- main_container starts here -->
+<div class="row mar_lr_0 main_container">
+  <div class="container">
+    <!-- breadcrumb_section starts here -->
+    <div class="breadcrumb_section row mar_lr_0">
+      <nav>
+        <ol class="cd-breadcrumb triangle">
+          <li><a href="/">Home</a></li>
+          <li class="current"><a>Profile</a></li>
+        </ol>
+      </nav>
+    </div>
+    <!-- breadcrumb_section ends here -->
+    <div class="row mar_lr_0">
+      <div class="profile_container">
+        <!-- profile_left_container starts here -->
+        {% include 'candidate/profile_completion.html' %}
+        <!-- profile_left_container ends here -->
+        <!-- profile_right_container starts here -->
+        <div class="profile_right_container col-md-9">
+          <div class="profile_top_view_block">
+            <div class="title">Hi {{request.user.get_email_name}}, Welcome Back!
+              <span class="hint">Update and fill your details to complete your profile and get desired jobs</span>
+              <span class="pull-right last_up">Last Update : {{ request.user.profile_updated|timezone:"Asia/Calcutta" }}</span>
+            </div>
+            <div class="profile_pic_others row">
+              <div class="col-md-3">
+                <div class="profile_pic">
+                  <form name="profilepicform" id="profilepicform">
+                    {% if request.user.profile_pic|length > 0 %}
+                    <img src="{{ request.user.profile_pic.url  }}" style="height:165px;width:165px;">
+                    {% elif request.user.photo %}
+                    <img src="{{ request.user.photo }}" style="height:165px;width:165px;">
+                    {% else %}
+                    <img src="{% static 'dummy.jpg' %}" />
+                    {% endif %}
+                    <a class='file_upload' href="#">Upload Profile Picture</a>
+                    <input type="file" id='file_input' name="profile_pic" id="profile_pic" style="display: none;" accept="image/*"><input type="submit" id='submit' name="submit" style="display: none;">
+                  </form>
+                </div>
+              </div>
+              <div class="col-md-9 other_details">
+                <!--   <div class="notify">
+                  <span class="item">Downloads <small>32</small></span>
+                  <span class="item">Views <small>16</small></span>
+                  <span class="item">Job Alerts <small>26</small></span>
+                  </div> -->
+                <div class="verification_block">
+                  <div class="title">
+                    <span class="hint resume_title">{% if request.user.resume_title %}{{ request.user.resume_title }}{% endif %}</span>
+                  </div>
+                  {% if request.user.mobile %}
+                  <div class="verify_block ">
+                    Mobile Number : {{ request.user.mobile }}
+                  </div>
+                  {% endif %}
+                  <div class="verify_block">
+                    Email: {{ request.user.email }} {% if request.user.is_active %}<span class="verified">Verified <i class="fa fa-check"></i></span>{% else %}<span class="">Not Verified <i class="fa fa-times"></i></span>{% endif %}
+                  </div>
+                </div>
+                {% if request.user.mobile and request.user.resume and request.user.skills.all and request.user.year %}
+                {% else %}
+                <div class="skip_close_tour">
+                  <span class="pull-right close_tour"><i class="fa fa-times"></i></span>
+                  {% if not request.user.mobile %}
+                  <div class="skip_block show" id="skip_personal_info">
+                    <div class="head">Update your personal info</div>
+                    <div class="fields_block">
+                      <form name="profileform" id="profileform" method="POST" class="profileform" data-href="{% url "my:edit_personalinfo" %}">
+                      <div class="form-group" style="width: 98%;">
+                        <input type='text' class='form-control' id="profile_resume_title" name="resume_title" placeholder="Resume Title" value='{% if request.user.resume_title %}{{ request.user.resume_title }}{% endif %}'>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control" placeholder="First Name" name="first_name" id="profile_first_name" value="{{ request.user.first_name }}">
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Mobile Number" id="profile_mobile" name="mobile" value="{% if request.user.mobile > 0 %}{{ request.user.mobile }}{% endif %}">
+                      </div>
+                      <div class="form-group">
+                        <input type='text' id='profile_dob' class="datepicker form-control" placeholder="Date Of Birth" name="dob" value="{{ request.user.dob|date:"m/d/Y" }}"/>
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control" name="current_city" id="profile_current_city">
+                          <option value="">Select A Location</option>
+                          {% for city in cities%}
+                          <option value="{{ city.id }}" id="{{ city.state.country.id}}" {% ifequal city.id request.user.current_city.id %} selected {% endifequal %}>{{ city.name }}</option>
+                          {% endfor%}
+                        </select>
+                      </div>
+                      <div class="row mar_lr_0" style="clear: both;">
+                      <button class="verify_btn" type="submit">Save</button>
+                      <span class="pull-right"><a class="skip" href="#">Skip</a></span>
+                      <br clear="all">
+                      </div>
+                      </form>
+                    </div>
+                  </div>
+                  {% endif %}
+                  {% if not request.user.resume %}
+                  <div class="skip_block hide" id="skip_resume">
+                    <div class="head">Upload Your resume</div>
+                    <div class="fields_block">
+                      <form name="resumeform" id="resumeform" method="POST" class="profileform" data-href="{% url "my:upload_resume" %}" enctype="multipart/form-data">
+                      <div class="form-group update_location">
+                        <input type="file" name="resume" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt">
+                        <p class="help_text">doc, docx, pdf, odt - 300kb max</p>
+                      </div>
+                      <button class="verify_btn" type="submit">Save</button>
+                      <br clear="all">
+                      </form>
+                    </div>
+                    <div class="text-right"><a class="skip_previous" href="#">Previous</a> <a class="skip" href="#">Skip</a></div>
+                  </div>
+                  {% endif %}
+                  {% if not request.user.year %}
+                  <div class="skip_block hide" id="skip_professional">
+                    <div class="head">Update Your Professional info</div>
+                    <!--<div class="hint">Helps in professional networking for jobs.</div>-->
+                    <div class="fields_block">
+                      <form name="techskillform" id="techskillform" method="POST" class="profileform" data-href="{% url "my:edit_professionalinfo" %}">
+                      <div class="form-group">
+                        <select class="form-control" name="prefered_industry" id="profile_prefered_industry">
+                          <option value="">Select A Industry</option>
+                          {% for industry in industries %}
+                          <option value="{{ industry.id }}" {% ifequal request.user.prefered_industry.id|slugify industry.id|slugify %} selected {% endifequal %}>{{ industry.name }}</option>
+                          {% endfor%}
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control" name="year" id="profile_year">
+                          <option value="" default>years</option>
+                          {% for year in years %}
+                          <option value="{{ year.0 }}" id="{{ forloop.counter }}">{{ year.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control" name="month" id="profile_month">
+                          <option value="" default>months</option>
+                          {% for month in months %}
+                          <option value="{{ month.0 }}" id="{{ forloop.counter }}">{{ month.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Job Role" name="job_role" id="profile_job_role" value="{{ request.user.job_role }}">
+                      </div>
+                      <button class="verify_btn" type="submit">ADD</button>
+                      <br clear="all">
+                      </form>
+                    </div>
+                    <div class="text-right"><a href="#" class="skip_previous">Previous</a> <a class="skip" href="#">Skip</a></div>
+                  </div>
+                  {% endif %}
+                  {% if not request.user.skills.all %}
+                  <div class="skip_block hide" id="skip_skills">
+                    <div class="head">Update your technical skills</div>
+                    <!--<div class="hint">Helps in professional networking for jobs.</div>-->
+                    <div class="fields_block">
+                      <form name="techskillform" id="techskillform" method="POST" class="profileform" data-href="{% url "my:add_technicalskill" %}">
+                      <div class="form-group">
+                        <select class="form-control" name="skill" id="profile_skill">
+                          <option value="">Select A Skill</option>
+                          {% for skill in skills %}
+                          <option value="{{ skill.id }}">{{ skill.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control" name="year" id="profile_year">
+                          <option value="" default>years</option>
+                          {% for year in years %}
+                          <option value="{{ year.0 }}" id="{{ forloop.counter }}">{{ year.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control" name="month" id="profile_month">
+                          <option value="" default>months</option>
+                          {% for month in months %}
+                          <option value="{{ month.0 }}" id="{{ forloop.counter }}">{{ month.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <button class="verify_btn" type="submit">ADD</button>
+                      <br clear="all">
+                      </form>
+                    </div>
+                    <div class="text-right"><a href="#" class="skip_previous">Previous</a> <a class="skip" href="#">Skip</a></div>
+                  </div>
+                  {% endif %}
+                </div>
+                {% endif %}
+                <!--  <span class="view_recruiter"><a href="#">View Recruiter Profile</a></span><span class="active_inactive">Your Profile Is Active <i class="fa fa-check"></i></span> -->
+                <br clear="all">
+              </div>
+            </div>
+          </div>
+          <div class="row prfofile_summary_job_list mar_lr_0">
+            <div class="profile_job_list">
+              <div class="profile_detail_block parent_block" id="div_profile">
+                <div class="head">Profile Sumamry<span class="edit pull-right"><a href="" class="edit_this">Edit</a></span></div>
+                <div class="content row child1">
+                  <div class="item_col col-md-4">
+                    <div class="item_block ">
+                      <span class="title">First Name</span>
+                      <span class="ans first_name">{% if request.user.first_name %}{{ request.user.first_name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Last Name</span>
+                      <span class="ans">{% if request.user.last_name %}{{ request.user.last_name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Email Address</span>
+                      <span class="ans">{% if request.user.email %}{{ request.user.email }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Current Location</span>
+                      <span class="ans current_city">{% if request.user.current_city %}{{ request.user.current_city.name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Nationaility</span>
+                      <span class="ans"><span class="nationality">{% if nationality %}{{ nationality.name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Marital Status</span>
+                      <span class="ans">{% if request.user.marital_status %}{{ request.user.marital_status }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                  </div>
+                  <div class="item_col col-md-4">
+                    <div class="item_block ">
+                      <span class="title">Industry</span>
+                      <span class="ans">{% if request.user.industry.all %}{% for industry in request.user.industry.all %}{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Phone Number</span>
+                      <span class="ans mobile">{% if request.user.mobile %}{{ request.user.mobile }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Alternate Phone Number</span>
+                      <span class="ans mobile">{% if request.user.alternate_mobile %}{{ request.user.alternate_mobile }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Functional Area</span>
+                      <span class="ans">{% if request.user.functional_area.all %}{% for functional_area in request.user.functional_area.all %}{{ functional_area.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Preferred Location</span>
+                      <span class="ans">{% if request.user.preferred_city.all %}{%for location in request.user.preferred_city.all %}{{ location.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                  </div>
+                  <div class="item_col col-md-4">
+                    <div class="item_block">
+                      <span class="title">Pin code</span>
+                      <span class="ans">{% if request.user.pincode %}{{ request.user.pincode }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block ">
+                      <span class="title">Present Address</span>
+                      <span class="ans">{% if request.user.address %}{{ request.user.address }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Permanent Address</span>
+                      <span class="ans">{% if request.user.permanent_address %}{{ request.user.permanent_address }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Gender</span>
+                      <span class="ans">{% if request.user.gender %}{%if request.user.gender == 'F' %}Female{% else %}Male{% endif %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Date OF Birth</span>
+                      <span class="ans dob">{% if request.user.dob %}{{ request.user.dob }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="content row child2" style="display:none">
+                 <form name="personalform" id="personalform" class="personalform" method="post">
+                   <div class="item_col col-md-4">
+                    <div class="item_block ">
+                      <span class="title">First Name<span class="error">*</span></span>
+                      <span class="ans first_name">
+                        <input type="text" class="form-control" placeholder="First Name" name="first_name" id="first_name" value="{{ request.user.first_name }}">
+                      </span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Last Name</span>
+                      <span class="ans">
+                        <input type="text" class="form-control" placeholder="Last Name" name="last_name" id="last_name" value="{% if request.user.last_name %}{{ request.user.last_name }}{% endif %}">
+                      </span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Current Location<span class="error">*</span></span>
+                      <span class="ans current_city">
+                        <select class="form-control" name="current_city" id="current_city">
+                          <option value="">Select A Location</option>
+                          {% for city in cities %}
+                            <option value="{{ city.id }}" {% ifequal city.id request.user.current_city.id %} selected {% endifequal %}>{{ city.name }}</option>
+                          {% endfor %}
+                          {% if request.user.current_city.status == 'Disabled' %}
+                            <option value="{{request.user.current_city.id}}" selected>
+                              {{request.user.current_city.name}}
+                            </option>
+                          {% endif %}
+                        </select>
+                        <input type="text" class="form-control" placeholder="Enter Other Location" id="another_location" name="other_location" style="display:none">
+                        <span><input type="checkbox" name="other_loc" id="other_loc"> Other Location </span>
+                      </span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Functional Area</span>
+                      <span class="ans">
+                        <select class="form-control" name="functional_area" id="functional_area" multiple="multiple">
+                          <option value="">Select A Industry</option>
+                          {% for functional_area in functional_areas %}
+                            <option value="{{ functional_area.id }}" id="{{ functional_area.id}}" {% if functional_area in request.user.functional_area.all %} selected {% endif %}>{{ functional_area.name }}</option>
+                          {% endfor%}
+                        </select>
+                      </span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Marital Status</span>
+                      <span class="ans">
+                        <select class="form-control" name="marital_status" id="marital_status">
+                          <option value="">Select A Status</option>
+                          {% for status in martial_status%}
+                          <option value="{{ status.0 }}" {% ifequal status.0|slugify request.user.marital_status|slugify %} selected {% endifequal %}>{{ status.1 }}</option>
+                          {% endfor%}
+                        </select>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="item_col col-md-4">
+                    <div class="item_block">
+                      <span class="title">Profile Title<span class="error">*</span></span>
+                      <span class="ans">
+                        <input type='text' class='form-control' id="resume_title" name="resume_title" placeholder="Resume Title" value='{% if request.user.resume_title %}{{ request.user.resume_title }}{% endif %}'>
+                      </span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Phone Number</span>
+                      <span class="ans mobile"><input type="text" class="form-control" placeholder="Mobile Number" id="mobile" name="mobile" value="{% if request.user.mobile %}{{ request.user.mobile }}{% endif %}"></span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Preferred Location</span>
+                      <span class="ans">
+                        <select class="form-control" name="preferred_city" id="preferred_city" multiple="multiple">
+                          <option value="">Select A Location</option>
+                          {% for city in cities%}
+                          {% if request.user.nationality|length > 0 %}
+                          <option value="{{ city.id }}" id="{{ city.state.country.id}}" {% if city in request.user.preferred_city.all %} selected {% endif %} {% ifnotequal city.state.country.id|slugify request.user.nationality|slugify %} disabled {% endifnotequal %}>{{ city.name }}</option>
+                          {% else %}
+                          <option value="{{ city.id }}" id="{{ city.state.country.id}}">{{ city.name }}</option>
+                          {% endif %}
+                          {% endfor%}
+                        </select>
+                      </span>
+                    </div>
+                    <div class="item_block ">
+                      <span class="title">Present Address</span>
+                      <span class="ans">
+                        <textarea class="form-control" name="address" id="address">{% if request.user.address %}{{ request.user.address }}{%endif%}</textarea>
+                        <span><input type="checkbox" name="present_address" id="present_address">Click Here If Present Address is same as Permanent Address</span>
+                          </span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Gender:
+                          <input type="radio" class="in_span" name="gender" id="gender" value="M" {% if request.user.gender == 'M' %} checked {% endif %}>
+                          <span class="in_span">Male</span>
+                          <input type="radio" class="in_span" name="gender" id="gender" value="F" {% if request.user.gender == 'F' %} checked {% endif %}>
+                          <span class="in_span">Female</span>
+                        </span>
+                      </span>
+
+                    </div>
+                  </div>
+                  <div class="item_col col-md-4">
+                    <div class="item_block">
+                      <span class="title">Date OF Birth<span class="error">*</span></span>
+                      <span class="ans dob">
+                        <input type='text' id='dob' class="form-control" placeholder="Date Of Birth" name="dob" value="{{ request.user.dob|date:"m/d/Y" }}"/>
+                      </span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Alternate Phone Number</span>
+                      <span class="ans mobile"><input type="text" class="form-control" placeholder="Alterate Mobile Number" id="alternate_mobile" name="alternate_mobile" value="{% if request.user.alternate_mobile > 0 %}{{ request.user.alternate_mobile }}{% endif %}"></span>
+                    </div>
+                    <div class="item_block ">
+                        <span class="title">Industry</span>
+                        <span class="ans">
+                          <select class="form-control" name="industry" id="industry" multiple="multiple">
+                            <option value="">Select A Industry</option>
+                            {% for industry in industries %}
+                              <option value="{{ industry.id }}" id="{{ industry.id}}" {% if industry in request.user.industry.all %} selected {% endif %}>{{ industry.name }}</option>
+                            {% endfor%}
+                            <option value="36" {% for i in request.user.industry.all %}{% if i.id == 36 %} selected {% endif %}{% endfor %}>Other Industry</option>
+                          </select>
+                      </span>
+                      </div>
+                    <div class="item_block">
+                      <span class="title">Permanent Address</span>
+                      <span class="ans">
+                        <textarea class="form-control" name="permanent_address" id="permanent_address">{% if request.user.permanent_address %}{{ request.user.permanent_address }}{% endif %}</textarea>
+                        <input type="hidden" name="user_id" id="user_id" value="{{ request.user.id }}">
+                      </span>
+                    </div>
+                    <div class="item_block">
+                      <span class="title">Pin code</span>
+                      <span class="ans">
+                        <input type="text" class="form-control" placeholder="pincode" name="pincode" id="pincode" value="{% if request.user.pincode > 0 %}{{ request.user.pincode }}{% endif %}">
+                      </span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label"></label>
+                  <div class="col-sm-9">
+                    <button type="submit" class='submit'>Save</button>
+                    <button type="button" class="cancelbutton">Cancel</button>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+                </form>
+                </div>
+              </div>
+              <div class="profile_detail_block parent_block" id="div_user_profile_description">
+                <div class="head">Profile Description
+                  <span class="edit pull-right">
+                    <a href="" class="edit_this">Edit</a>
+                  </span>
+                </div>
+                <div class="content">
+                  <div class="item_block no_border">
+                    <div class="child1">
+                      <span class="title">Description :</span>
+                      <span class="ans">
+                        {% if request.user.profile_description %}
+                        <p>{{ request.user.profile_description}}</p>
+                        {% else %}<span class="error">Not Specified</span>{% endif %}
+                      </span>
+                    </div>
+                    <div class="child2" style="display:none">
+                      <form name="profiledescrptionform" id="profiledescrptionform" method="post" >
+                        <div class="form-group">
+                          <textarea class="form-control" style="height:100px" name="profile_description"
+                          id="profile_description" rows="4" cols="50">{{ request.user.profile_description }}</textarea>
+                        </div>
+                        <div class="form-group"><label for="inputEmail3" class="col-sm-3 control-label"></label>
+                            <div class="col-sm-9">
+                                <button type="submit" class='submit'>Save</button>
+                                <button type="button" class="cancelbutton">Cancel</button>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="profile_detail_block">
+                <div class="head">Resume</div>
+                <div class="content" id="div_resume_upload">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="item_block no_border">
+                        <span class="title">Upload Your Resume :</span>
+                        <span class="ans upload">
+                          <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+                            <input type="file" name="resume" id="resume" onchange="javascript:submitform()" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt">
+                        </span>
+                        <p class="help_text">doc, docx, pdf, odt - 300kb max</p>
+                        <button type="submit" name="submit" class="submit" style="
+                          display:none;"><span>Submit</span></button>
+                        </form>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="col-md-5">
+                      <div class="item_block no_border resume_block" {% if not request.user.resume %}style="display:none;"{% endif %}>
+                      <span class="title">Attached Resume :</span>
+                      <span class="ans upload">
+                      <span class="resume_name">{{ request.user.resume|get_resume_name }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                      <br clear="all">
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 ">
+                    <div class="item_block down_del no_border text-right" {% if not request.user.resume %}style="display:none;"{% endif %}>
+                      <span class="ans upload marg">
+                      <a href="#" class="error download" id="{{ request.user.resume|get_s3_url }}" >Download</a>
+                      <a href="#" class="error delete delete-resume">Delete</a>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="profile_detail_block">
+            <div class="head">User Emails {% if request.user.get_user_emails|length > 1 %}
+              <span class="edit pull-right"><a href="{% url 'my:edit_email' %}">Edit</a></span>{% endif %}
+            </div>
+            <div class="content">
+              <div class="item_block no_border">
+                {% for email in request.user.get_user_emails %}
+                  {% if email.is_primary %}
+                    <span class="title">{{ email.email }} <small class="pull-right green">Primary</small>
+                    </span>
+                  {% else%}
+                    <span class="title alternate_email">{{ email.email }} <small class="pull-right grey">Alternate</small></span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="profile_detail_block parent_block" id="div_professional_info">
+          <div class="head">Professional Information
+            <span class="edit pull-right"><a href="" class="edit_this">Edit</a></span>
+          </div>
+          <div class="content row child1">
+            <div class="item_col col-md-6">
+              <div class="item_block ">
+                <span class="title">Total Experience</span>
+                <span class="ans"><span class="year">{% if request.user.year %}{{ request.user.year }} Year(s) {{ request.user.month }} Month(s){% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+              </div>
+              <div class="item_block ">
+                <span class="title">Expected Salary</span>
+                <span class="ans"><span class="expected_salary"> {% if request.user.expected_salary %}
+                <i class="fa fa-inr" aria-hidden="true"></i> {{ request.user.expected_salary|get_formatted_salary }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+              </div>
+              <div class="item_block no_border">
+                <span class="title">Job Role</span>
+                <span class="ans"><span class="job_role">{% if request.user.job_role %}{{ request.user.job_role }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+              </div>
+            </div>
+            <div class="item_col col-md-6">
+              <div class="item_block ">
+                <span class="title">Preferred Industry</span>
+                <span class="ans"><span class="prefered_industry">{% if request.user.prefered_industry %}{{ request.user.prefered_industry.name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span> 
+              </div>
+              <div class="item_block ">
+                <span class="title">Current Salary</span>
+                <span class="ans"><span class="current_salary">{% if request.user.current_salary %}
+                <i class="fa fa-inr" aria-hidden="true"></i> {{ request.user.current_salary|get_formatted_salary }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+              </div>
+              <div class="item_block no_border">
+                <span class="title">Notice Period</span>
+                <span class="ans"><span class="notice_period">{% if request.user.notice_period %}{{ request.user.notice_period }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="content row child2" style="display:none">
+              <form name="professionalform" id="professionalform" class="personalform" method="post">
+                <div class="item_col col-md-6">
+                <div class="item_block ">
+                  <div class="title">Total Experience <span class="error">*</span></div>
+                  <span class="ans col-md-12 pad_lr_0">
+                    <span class="col-md-6">
+                      <select class="form-control experience" name="year" id="year">
+                        <option value="" default>years</option>
+                          {% for year in years %}
+                          <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
+                          {% endfor %}
+                      </select>
+                    </span>
+                    <span class="col-md-6 pad_lr_0">
+                      <select class="form-control experience col-md-12 pad_lr_0" id="month" name="month">
+                        <option value="" default>months</option>
+                          {% for month in months %}
+                          <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.month|slugify month.0 %} selected {% endifequal %}>{{ month.1}}</option>
+                          {% endfor %}
+                      </select>
+                    </span>
+                  </span>
+                  <div class="clearfix"></div>
+                </div>
+              <div class="item_block ">
+                <span class="title">Expected Salary</span>
+                <span class="ans">
+                  <input type="text" class="form-control" placeholder="Expected Salary" id="expected_salary" name="expected_salary" value="{% if request.user.expected_salary %}{{ request.user.expected_salary }}{% endif %}">
+                </span>
+              </div>
+              <div class="item_block no_border">
+                <div class="title">Job Role <span class="error">*</span></div>
+                <span class="ans">
+                  <input type="text" class="form-control" placeholder="Job Role"  name="job_role" id="job_role"
+                    value="{{ request.user.job_role }}">
+                </span>
+              </div>
+              <div class="item_block no_border">
+                <div class="title">Relocation <input type="checkbox" name="relocation" id="relocation" {% if request.user.relocation %}checked{% endif %}></div>
+              </div>
+            </div>
+            <div class="item_col col-md-6">
+              <div class="item_block ">
+                <div class="title">Preferred Industry <span class="error">*</span></div>
+                <span class="ans">
+                  <select class="form-control select2" name="prefered_industry">
+                      <option value="">Select A Industry</option>
+                      {% for industry in industries%}
+                      <option value="{{ industry.id }}" {% ifequal request.user.prefered_industry.id|slugify industry.id|slugify %} selected {% endifequal %}>{{ industry.name }}</option>
+                      {% endfor%}
+                      <option value="36" {% ifequal request.user.prefered_industry.id|slugify 36|slugify %} selected {% endifequal %}>Other Industry</option>
+                    </select>
+                    <span id="prefered_industry"></span>
+                </span>
+              </div>
+              <div class="item_block ">
+                <span class="title">Current Salary</span>
+                <span class="ans">
+                  <input type="text" class="form-control" placeholder="Current Salary" id="current_salary" name="current_salary" value="{% if request.user.current_salary %}{{ request.user.current_salary }}{% endif %}">
+                </span>
+              </div>
+              <div class="item_block no_border">
+                <span class="title">Notice Period</span>
+                <span class="ans">
+                  <input type="text" class="form-control" placeholder="Notice Period" name="notice_period" id="notice_period" value="{% if request.user.notice_period %}{{ request.user.notice_period }}{% endif %}">
+                </span>
+              </div>
+            </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label"></label>
+                  <div class="col-sm-9">
+                    <button type="submit" class='submit'>Save</button>
+                    <button type="button" class="cancelbutton">Cancel</button>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+          </div>
+        </div>
+        <div class="profile_detail_block" id="div_professional_info">
+          <div class="head">Employement Details
+            <span class="edit pull-right"><a href="{% url 'my:add_experience' %}">ADD</a></span>
+          </div>
+          <div class="content row mar_lr_0">
+            {% if not request.user.employment_history.all %}
+            <div class="detail_each_wrap error">
+              Add Your Employment Details Here
+            </div>
+            {% else %}
+            <div class="table-responsive">
+              <table class="table table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th width="30%">Company</th>
+                    <th width="25%">Designation</th>
+                    <th width="30%">From / To</th>
+                    <th width="15%">Salary</th>
+                    <th width="15%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for history in request.user.employment_history.all %}
+                  <tr>
+                    <td>{{ history.company }}</td>
+                    <td>{{ history.designation }}</td>
+                    <td>{{ history.from_date }}/{% if history.to_date == None %}Till Now{% else %}{{ history.to_date }}{%endif%}</td>
+                    <td>{% if history.salary %}{{ history.salary|get_formatted_salary }}{% else %}Not Specified{% endif %}</td>
+                    <td class="actions">
+                      <a href="{% url 'my:edit_experience' history.id %}" class="tech_edit" id="{{ history.id }}"><span><i class='fa fa-pencil edit_icon'></i></span></a>
+                      <a href="{% url 'my:delete_experience' history.id %}" class='employment-delete'><span id="{{ history.id }}"><i class='fa fa-trash del_icon'></i></span></a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="profile_detail_block" id="div_education">
+          <div class="head">Educational Details<span class="edit pull-right"><a href="{% url 'my:add_education' %}">ADD</a></span></div>
+          <div class="content row mar_lr_0">
+            {% if not request.user.education.all %}
+            <div class="detail_each_wrap error">
+              Add Your Education Details Here
+            </div>
+            {% else %}
+            <div class="table-responsive">
+              <table class="table table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th width="20%">Institute</th>
+                    <th width="10%">Degree</th>
+                    <th width="15%">From</th>
+                    <th width="15%">To</th>
+                    <th width="15%">Specialization</th>
+                    <th width="10%">Score</th>
+                    <th width="15%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for education in request.user.education.all %}
+                  <tr>
+                    <td>{{ education.institute.name }}</td>
+                    <td>{{ education.degree.degree_name }}</td>
+                    <td>{{ education.from_date }}</td>
+                    <td>{% if education.to_date == None %}Till Now{% else %}{{ education.to_date }}{%endif%}</td>
+                    <td>{{ education.degree.specialization }}</td>
+                    <td>{% if education.score %}{{ education.score }}{% else %}Not Specified{% endif %}</td>
+                    <td class="actions">
+                      <a href="{% url 'my:edit_education' education.id %}" class="tech_edit" id="{{ education.id }}"><span><i class='fa fa-pencil edit_icon'></i></span></a>
+                      <a href="{% url 'my:delete_education' education.id %}" class='education-delete'><span id="{{ education.id }}"><i class='fa fa-trash del_icon'></i></span></a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="profile_detail_block" id="div_technical_skills">
+          <div class="head">Technical Skills<span class="edit pull-right"><a href="{% url 'my:add_technicalskill' %}">ADD</a></span></div>
+          <div class="content row mar_lr_0">
+            {% if not request.user.skills.all %}
+            <div class="detail_each_wrap error">
+              Add Your Technical Skills Details Here
+            </div>
+            {% else %}
+            <div class="table-responsive">
+              <table class="table table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th width="20%">Name</th>
+                    <th width="15%">Experience</th>
+                    <th width="15%">Version</th>
+                    <th width="15%">Proficiency</th>
+                    <th width="15%">Last Used</th>
+                    <th width="10%">Is Major</th>
+                    <th width="10%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for skill in request.user.skills.all %}
+                  <tr>
+                    <td>{{ skill.skill.name }}</td>
+                    <td>{% if skill.year == None and skill.month == None %}Not Specified{% else %}
+                      {% if skill.year == None %}{% else %}{{ skill.year }} Yr {% endif %}{% if skill.month == None %}{% else %}{{ skill.month }} months{% endif %}{% endif %}
+                    </td>
+                    <td>{% if skill.version %}{{ skill.version }}{% else %}Not Specified{% endif %}</td>
+                    <td>{% if skill.proficiency %}{{ skill.proficiency }}{% else %}Not Specified{% endif %}</td>
+                    <td>{% if skill.last_used %}{{ skill.last_used }}{% else %}Not Specified{% endif %}</td>
+                    <td>{{ skill.is_major }}</td>
+                    <td class="actions">
+                      <a href="{% url 'my:edit_technicalskill' skill.id %}" class="tech_edit" id="{{ skill.id }}"><span><i class='fa fa-pencil edit_icon'></i></span></a>
+                      <a href="{% url 'my:delete_technicalskill' skill.id %}" class='technicalskill-delete'><span id="{{ skill.id }}"><i class='fa fa-trash del_icon'></i></span></a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="profile_detail_block" id="div_project">
+          <div class="head">Project Details<span class="edit pull-right"><a href="{% url 'my:add_project' %}">ADD</a></span></div>
+          <div class="content row mar_lr_0">
+            {% if not request.user.project.all %}
+            <div class="detail_each_wrap error">
+              Add Your Project Details Here
+            </div>
+            {% else %}
+            <div class="table-responsive">
+              <table class="table table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th width="20%">Name</th>
+                    <th width="20%">Duration</th>
+                    <th width="15%">Skills</th>
+                    <th width="10%">Location</th>
+                    <th width="10%">Role</th>
+                    <th width="5%">Size</th>
+                    <th width="20%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for project in request.user.project.all %}
+                  <tr>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.from_date }} - {% if project.to_date %}{{ project.to_date }}{% else %}Not Specified{% endif %}</td>
+                    <td>{% for skill in project.skills.all %}{{ skill.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</td>
+                    <td>{% if project.location %}{{ project.location.name }}{% else %}Not Specified{% endif %}</td>
+                    <td>{% if project.role %}{{ project.role }}{% else %}Not Specified{% endif %}</td>
+                    <td>{% if project.size %}{{ project.size }}{% else %}Not Specified{% endif %}</td>
+                    <td class="actions">
+                      <a href="{% url 'my:edit_project' project.id %}" class="tech_edit" id="{{ project.id }}"><span><i class='fa fa-pencil edit_icon'></i></span></a>
+                      <a href="{% url 'my:delete_project' project.id %}" class='project-delete'><span id="{{ project.id }}"><i class='fa fa-trash del_icon'></i></span></a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="profile_detail_block parent_block" id="div_language">
+          <div class="head">Languages Known<span class="edit pull-right"><a href="" class="edit_this">ADD</a></span></div>
+          <div class="content row mar_lr_0 child1 show_lang">
+            {% if not request.user.language.all %}
+            <div class="detail_each_wrap error">
+              Add Your Languages Here
+            </div>
+            {% else %}
+            <div class="table-responsive">
+              <table class="table table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th width="30%">Language</th>
+                    <th width="15%">Read</th>
+                    <th width="15%">Write</th>
+                    <th width="15%">Speak</th>
+                    <th width="25%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for language in request.user.language.all %}
+                  <tr>
+                    <td>{{ language.language.name }}</td>
+                    <td>{{ language.read }}</td>
+                    <td>{{ language.write }}</td>
+                    <td>{{ language.speak }}</td>
+                    <td class="actions">
+                      <a href="" class="tech_edit edit_language" id="{{ language.id }}" data-href="{% url 'my:edit_language' language.id %}"><span><i class='fa fa-pencil edit_icon'></i></span></a>
+                      <a href="{% url 'my:delete_language' language.id %}" class='language-delete'><span id="{{ language.id }}"><i class='fa fa-trash del_icon'></i></span></a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% endif %}
+          </div> 
+          <div class="content row mar_lr_0 child2 edit_lang" style="display:none">
+            <form name="languageform" id="languageform" method="post">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-3 control-label">Language Name</label>
+                <div class="col-sm-9">
+                  <select class="form-control" name="language" id="language_id">
+                    <option value="">Select A Language</option>
+                    {% for language in languages %}
+                    <option value="{{ language.id }}" >{{ language.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div> 
+              <input type="hidden" name="edit_lang" id="edit_language" value="">
+              <input type="hidden" name="lang_url" id="lang_url" value="">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-3 control-label">Read</label>
+                <div class="col-sm-9">
+                  <input type="checkbox" name="read" id="read">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-3 control-label">Write</label>
+                <div class="col-sm-9">
+                  <input type="checkbox" name="write" id="write">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-3 control-label">Speak</label>
+                <div class="col-sm-9">
+                  <input type="checkbox" name="speak" id="speak">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-3 control-label"></label>
+                <div class="col-sm-9">
+                  <button type="submit" class='submit'>Save</button>
+                  <button type="button" class="cancelbutton">Cancel</button>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </form>
+          </div>
+        </div>
+        {% if request.user.resume %}
+        <div class="profile_detail_block" style="margin-bottom:-10px"  >
+          <div class="head">Your Resume </div>
+        </div>
+        <div class="content row mar_lr_0">
+          <div class="detail_each_wrap">
+            {{request.user.resume_text|linebreaks}}
+          </div>
+        </div>
+        {% endif %}
+        <div class="job_list_section" id="div_applied_jobs">
+          <div class="profile_detail_block" style="margin-bottom:-10px"  >
+            <div class="head">Suggested Jobs </div>
+          </div>
+          <!-- job_item starts here -->
+          {% include 'company_job_list.html' with job_list=request.user.related_jobs %}
+          <!-- job_item ends here -->
+        </div>
+        <div class="job_list_section" id="div_applied_jobs">
+          <div class="profile_detail_block" style="margin-bottom:-10px"  >
+            <div class="head">Applied Jobs </div>
+          </div>
+          {% if request.user.get_applied_jobs %}
+          <!-- job_item starts here -->
+          {% include 'company_job_list.html' with job_list=request.user.get_applied_jobs %}
+          <!-- job_item ends here -->
+          {% else %}
+          <div class="job_item">
+            <div class="detail_each_wrap error">
+              You Haven't Applied For Any Jobs
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <!-- profile_right_container ends here -->
+  </div>
+</div>
+</div>
+</div>
+<br clear="all">
+</div>
+<div class="modal_loading"></div>
+<!-- main_container ends here -->
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript" src='{% static 'js/userinfo.js' %}'></script>
+<script type="text/javascript">
+  /* profile title */
+   $(document).ready(function () {
+  {% if request.user.is_authenticated and request.GET.verify %}
+  open_dialog('Account Activated successfully', 'Success!')
+  {% endif %}
+  {% if request.GET.goto%}
+    id = "{{request.GET.goto}}"
+    $(window).scrollTop($('#div_'+id).offset().top-280);
+  {% endif %}
+  })
+  /* profile title */
+</script>
+{% endblock %}

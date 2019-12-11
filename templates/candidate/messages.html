@@ -1,0 +1,63 @@
+{% load static %}
+{% load page_tags %}
+<div class='user_head'>
+  <span class='full_name text-uppercase'>{% if job %}{{ job.title }}{% else%}{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.email }}{% endif %}{% endif %}</span>
+  <span class="dropdown pull-right">
+    <i class="fa fa-ellipsis-v dropdown-toggle" data-toggle="dropdown" aria-hidden="true"></i>
+    <ul class="dropdown-menu">
+      <li><a data-href="{% if job %}{{ job.id }}{% endif %}" class="delete_chat" id='{{ user.id }}'>Clear Chat</a></li>
+    </ul>
+  </span>
+  <span class="pull-right"></span>
+</div>
+<div class="messages_container">
+  <ul class="chat clearfix">
+    {% for msg in messages %}
+      {% if msg.message_from|slugify == request.user.id|slugify %}
+        <li class="right clearfix pull-right" id='{{ msg|get_obj_id }}'>
+        <i class="fa fa-trash-o pull-right delete_msg" aria-hidden="true"></i>
+          <span class="chat-img pull-right">
+            <img src="{{ profile_pic }}" alt="User Avatar" class="img-circle">
+          </span>
+          <div class="chat-body clearfix">
+              <div class="header">
+                <p>{{ msg.message }}</p>
+                <small class=" text-muted">
+                  <span class="glyphicon glyphicon-time"></span>{{ msg.created_on }}
+                </small>
+              </div>
+          </div>
+        </li>
+      {% else %}
+        <li class="left clearfix pull-left " id='{{ msg|get_obj_id }}'>
+        <i class="fa fa-trash-o pull-right delete_msg" aria-hidden="true"></i>
+          <span class="chat-img pull-left">
+            <img src="{{ user_pic }}" alt="User Avatar" class="img-circle">
+          </span>
+          <div class="chat-body clearfix">
+            <div class="header">
+              <p>{{ msg.message }}</p>
+              <small class="pull-right text-muted">
+                <span class="glyphicon glyphicon-time"></span>{{ msg.created_on }}
+              </small>
+            </div>
+        </div>
+        </li>
+      {% endif %}
+    {% empty %}
+      <div class="text-center empty_msg">
+        <h2> No Messages</h2>
+      </div>
+    {% endfor %}
+  </ul>
+</div>
+  <div class="panel-footer">
+    <form name='messageform' class='messageform' id='messageform' action="" method="POST">
+      <textarea class="form-control custom-control" rows="2" style="resize:none" placeholder="Type your message here" name='message' id='message_org' class="message_text"></textarea>
+      <button class="btn btn-warning btn-sm" id="btn-chat">Send</button>
+    <input type="hidden" class='form-control' name='post_message' value="True" />
+    <input type="hidden" class='form-control' name='message_to' value="{{ user.id }}" />
+    <input type="hidden" class='form-control' name='job_id' value="{{ job.id }}" />
+   </form>
+  </div>
+  </div>

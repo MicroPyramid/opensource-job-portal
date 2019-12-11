@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load searchtags %}
+{% load thumbnail %}
+{% block block_canonical_tag %}
+{% if current_page|slugify == '1'|slugify %}
+{% else %}
+<link rel="prev" href="https://peeljobs.com{{ request.path }}" />
+{% endif %}
+{% if current_page <= last_page %}
+{% if current_page == last_page %}{% else %}
+<link rel="next" href="https://peeljobs.com{{ request.path }}{{current_page| add:"1"}}/" />
+{% endif %}{% endif %}
+{% endblock %}
+{% block block_title %}
+<title>{{ meta_title|safe }}</title>
+<meta name="description" content="{{ meta_description|safe }}"/>
+<meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+<meta property="og:title" content="{{ meta_title|safe }}" />
+<meta property="og:description" content="{{ meta_description|safe }}" />
+{% endblock %}
+{% block base %}
+<div class="content_div">
+  <!-- SEARCH PART -->
+  {% show_search_filter %}
+  <!--/ SEARCH PART -->
+  <!-- main_container starts here -->
+  <div class="row mar_lr_0 main_container">
+    <div class="container">
+      <!-- breadcrumb_section starts here -->
+      <div class="breadcrumb_section row mar_lr_0">
+        <nav>
+          <ol class="cd-breadcrumb triangle">
+            <li>
+              <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+              <span class="name" >Home</span>
+              </a>
+            </li>
+            <li>
+              <a href=""><span class="name">Calendar</span></a>
+            </li>
+            <li>
+              <a href="{% url 'year_calendar' year%}"><span class="name">{{ year }}</span></a>
+            </li>
+            <li>
+              <a href="{% url 'month_calendar' year month_num %}"><span class="name">{{ month }}</span></a>
+            </li>
+            <li class="current">
+              <span href="{% url 'jobposts_by_date' year month_num date %}" class="job_detail">
+              <span class="name">{{ date }}</span></span>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <!-- breadcrumb_section ends here -->
+      <div class="row mar_lr_0">
+        <div class="col-md-9 left_container">
+          <!-- side_filter_section starts here -->
+          <div class="row">
+            <!-- job_list_section starts here -->
+            <div class="col-md-12">
+              <div class="job_list_section">
+                <!-- job_list_section starts here -->
+                <div class="clearfix">
+                  <div class="job_list_section">
+                    {% if events %}
+                    <div class="job_bottom">
+                      <span class="sal">Events</span>
+                    </div>
+                    {% include 'job_list.html' with job_list=events %}
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="job_bottom">
+                  <span class="sal">JobPosts</span>
+                </div>
+                <!-- job_list_section ends here -->
+                {% include 'company_job_list.html' with job_list=results %}
+                <br clear="all">
+              </div>
+              {% if results %}
+              <div class="pagination_wrap">
+                {% get_page current_page last_page as pages %}
+                <nav>
+                  <ul class="pagination">
+                    {% if current_page != 1 %}
+                    <li class="prev"><a class="{{previous_page}}" href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% endif %}"><i class="fa fa-angle-double-left"></i></a></li>
+                    <li class="prev"><a class="{{prev_page}}" dhref="{{current_url}}{% if prev_page == 1 %}
+                      {% else %}{{prev_page}}/{% endif %}"><i class="fa fa-angle-left"></i></a></li>
+                    <li><a class="1" href="{{current_url}}">first</a></li>
+                    {% endif %}
+                    {% for s in pages %}
+                    <li {% ifequal s current_page %} class="active" {% endifequal %}><a  class="{{ s }}" href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% endif %}">{{s}}</a></li>
+                    {% endfor %}
+                    {% if current_page != last_page %}
+                    <li><a class="{{ last_page }}" href="{{current_url}}{{ last_page }}/">last</a></li>
+                    <li><a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/"><i class="fa fa-angle-right pagination-next"></i></a></li>
+                    <li><a class="{{ after_page }}" href="{{current_url}}{{after_page}}/"><i class="fa fa-angle-double-right"></i></a></li>
+                    {% endif %}
+                  </ul>
+                </nav>
+              </div>
+              {% endif %}
+            </div>
+            <!-- job_list_section ends here -->
+          </div>
+        </div>
+        {% include 'left_menu.html' %}
+      </div>
+    </div>
+  </div>
+  <!-- main_container ends here -->
+</div>
+{% block pj_info %}
+<div class="col-md-2 col-sm-8 col-xs-8 about">
+</div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script>
+  $('#job_skills').empty()
+  $('#job_skills').append(new Option('Select a Skill', ''))
+  $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+      $.each(JSON.parse(data.response), function (key, field) {
+          $('#job_skills').append(new Option(field.fields.name, field.pk))
+      })
+  });
+</script>
+{% endblock %}

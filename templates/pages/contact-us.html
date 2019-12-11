@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load searchtags %}
+
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Contact Us - PeelJobs</title>
+
+  <meta name="description" content="Peeljobs contact us information - Kindly contact us if you have any queries, we'll get back to you shortly."/>
+
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<style type="text/css">
+  .error{
+    margin-left: 2px;
+  }
+</style>
+<div class="content_div">
+  <!-- SEARCH PART -->
+  <section id='content_pages' class="main_container">
+    <div class="container">
+      <div class="breadcrumb_section">
+        <nav>
+          <ol class="cd-breadcrumb triangle">
+            <li>
+              <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+                <span class="name" >Home</span></a>
+            </li>
+            <li class="current">
+              <span class='job_detail'>
+                <span class="name">FAQ</span>
+              </span>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div class="row mar_lr_0 content-page" style="margin-left:17px;margin-top: 12px;">
+        <!-- content starts here -->
+        <h3 class="title">CONTACT US</h3>
+        <div class="content">
+          <div class="col-md-8 contact-form">
+          <form name="personalform" id="personalform" method="post">
+            <div class="tile_deafult">
+              <div class="form_div">
+                <div class="form-group ">
+                  <label for="inputEmail3" class="control-label">First Name<span class="error">*</span></label>
+                  <div class="input_wrap">
+                    <input type="text" class="form-control" placeholder="First Name" name="first_name" id="first_name">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="control-label">Last Name</label>
+                  <div class="input_wrap">
+                    <input type="text" class="form-control" placeholder="Last Name" name="last_name" id="last_name">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="control-label">Email<span class="error">*</span>  </label>
+                  <div class="input_wrap">
+                    <input type="email" class="form-control" placeholder="Email" name="email" id="email">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="control-label">Type of Comment<span class="error">*</span></label>
+                  <div class="input_wrap">
+                    <select class="form-control" name="enquery_type" id="enquery_type">
+                      <option value="">Select A Comment</option>
+                      {% for enquery_type in enquery_types %}
+                      <option value="{{ enquery_type.0 }}">{{ enquery_type.1 }}</option>
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="control-label">Mobile Number</label>
+                  <div class="input_wrap">
+                    <input type="text" class="form-control" placeholder="Mobile Number" id="phone" name="phone">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="control-label">Subject</label>
+                  <div class="input_wrap">
+                    <input type="text" class="form-control" placeholder="Subject" name="subject" id="subject" >
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="control-label">Comment<span class="error">*</span></label>
+                  <div class="input_wrap">
+                    <textarea class="form-control" name="comment" id="comment" placeholder="Comment" rows="4"></textarea>
+                  </div>
+                </div>
+                <div  class="form-group col-xs-12 form-field wow fadeInUp animated captcha">
+                      <label>&nbsp;</label>
+                      <div class="button_div">
+                        <div class="g-recaptcha" data-sitekey="6LdZcgkTAAAAAD7-f9vAtRfoTsu1K7bnPfyB4i88"></div>
+                      </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="buttons">
+                  <button type="submit" class='submit'>Save</button>
+                  <button type="button" class="cancelbutton">Cancel</button></div>
+                </div>
+                <div class="clearfix"></div> 
+              </div>
+            </div>
+            </form>
+            </div>
+
+            <div class="col-md-4 contact-details">
+            <div class="contact-add">
+            <div class="contact-col">
+              <ul>
+                <li class="clist-head"> Contact Us :- </li>
+                <li> Email:<a href="#"> support@peeljobs.com</a> </li>
+                <li> Ph No:<a href="#"> 850 009 9499 </a> </li>
+              </ul>
+            </div>
+            <div class="contact-col">
+              <ul>
+                <li class="clist-head">  Address :-</li>
+                <li>Krishe Sapphire, 6th Floor, Madhapur, Hyderabad, India, 500081</li>
+              </ul>
+            </div>
+            <div class="contact-col">
+              <ul>
+                <li class="clist-head">  Business Hours :-</li>
+                <li> Monday - Friday : 10:00 - 19:00 </li>
+                <li> Saturday : 10:00 - 19:00 </li>
+              </ul>
+            </div>
+          </div>
+          </div>
+        </div>
+        <!-- content ends here -->
+        <!-- Tab panes -->
+      </div>
+    </div>
+  </section>
+  <!-- content of job page -->
+</div>
+  <script src='https://www.google.com/recaptcha/api.js'%}></script>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+
+  <script type="text/javascript">
+
+  $(".cancelbutton").click(function(e){
+      window.location="/";
+    });
+
+  $("form#personalform").submit(function(e) {
+      e.preventDefault();
+      $.post(".", $("form#personalform").serialize(), function(data) {
+        if (data.error) {
+          open_dialog("Some content Missing", 'Error!')
+          $('p.hint').remove();
+          if(data.captcha_response){
+            $('.captcha').append('<p class="hint"><b>' + data.captcha_response + '</b></p>');
+          }
+          for (var key in data.response) {
+            $('#'+key).after('<p class="hint">' + data.response[key] + '</p>');
+          }
+        } else {
+          open_dialog_with_url("Your request has been registered, we will reach you soon", 'Success!', '/')
+        }
+      }, 'json');
+    });
+
+</script>
+
+{% endblock %}
+  

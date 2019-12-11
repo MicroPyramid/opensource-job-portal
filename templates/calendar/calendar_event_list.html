@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block block_canonical %}
+    <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+    <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+    <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+    <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+{% endblock %}
+
+{% block base %}
+    <!-- content of list page -->
+    <section class="content_wrap_list">
+        <div class="container">
+            <div class="row mt">
+                <!-- == create new list == -->
+                <div class="col-md-offset-1 col-md-10">
+                    <div class="create_new_alert">
+                        <a href="{% url 'calendar_add_event' %}"><span class='button'><i class='fa fa-plus'></i>Add new Calendar Event</span></a>
+                    </div>
+                </div>
+                <!--/ == create new list == -->
+                <!-- list -->
+                {% if not events %}
+                    <div class="col-md-offset-1 col-md-10 list">
+                        <div class="no-results">
+                            <!--                  <h1>{{ message_type }},</h1>
+                    <h4>{{ message }}</h4>!-->
+                            <h1>Sorry, <span>No Job Events available</span></h1>
+                            <h6>Create job Event and sync with your google calendar</h6>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-md-offset-1 col-md-10 list">
+                        <h4>Calendar Events</h4>
+                        <ul>
+                            {% for event in events %}
+                                <li>
+            <span class="post_wrap">
+            <!--<span class='check_box_div'><input type="checkbox"></span>-->
+            <span class='text_div'>
+            <span class='title_div'>
+            <a href="#" class='title'>{% if event.summary %}{{ event.summary }}{% else %}No Title{% endif %}</a>
+            <span class='posted'>
+              <a href="{{ event.htmlLink }}" target="_blank" title="View in Calendar"><i class='fa fa-eye edit'></i>View</a>
+              <a href="#" class="delete-event" title="Delete" id="{{ event.id }}"><i
+                      class='fa fa-trash-o delete'></i></a>
+            </span>
+            </span>
+            <span class='details'>
+            {% if event.start_date %}
+                <span class='row mt'>
+            <label>Start Date</label>
+            <span class='content'>{{ event.start_date }}</span>
+            </span>
+            {% endif %}
+                {% if event.last_date %}
+                    <span class='row mt'>
+            <label>End Date</label>
+            <span class='content'>{{ event.last_date }}</span>
+            </span>
+                {% endif %}
+                {% if event.description %}
+                    <span class='row mt'>
+            <label>Description</label>
+            <span class='content'>{{ event.description }}</span>
+            </span>
+                {% endif %}
+            </span>
+            </span>
+            <span class='clearfix'></span>
+            </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <!--/ list -->
+                <!-- register -->
+                <!--<div class="col-md-2 register">
+                  <h3>Register free</h3>
+                  <div class="register_form">
+                    <input type='text' placeholder='Enter email id to register'>
+                    <input type="text" placeholder="Create Password">
+                    <button>Register Now</button>
+                  </div>
+                </div>-->
+                <!--/ register -->
+            </div>
+        </div>
+    </section>
+    <!--/ content of list page -->
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+
+{% block 'extra_js' %}
+
+    <script type="text/javascript">
+
+        $(".delete-event").click(function (e) {
+            e.preventDefault();
+            id = $(this).attr('id')
+            $.post('.', {'event_id': $(this).attr('id')}, function (data) {
+                if (data.error) {
+                    if (data.response_message) {
+                        open_dialog(data.response_message, 'Error!')
+                    }
+                    $('p.hint').remove();
+                    for (var key in data.response) {
+                        $('#' + key).after('<p class="hint">' + data.response[key] + '</p>');
+                    }
+                } else {
+                    open_dialog_with_url('Event Deleted Successfully', 'Success!', "{% url 'calendar_event_list' %}")
+                }
+            }, 'json');
+        });
+
+    </script>
+
+{% endblock %}

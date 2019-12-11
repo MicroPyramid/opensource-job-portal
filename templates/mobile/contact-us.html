@@ -1,0 +1,163 @@
+{% extends 'mobile/base.html' %}
+{% load thumbnail %}
+{% block block_canonical %}
+    <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Contact Us - PeelJobs</title>
+
+  <meta name="description" content="Peeljobs contact us information - Kindly contact us if you have any queries, we'll get back to you shortly."/>
+
+{% endblock %}
+{% block stage %}
+    <!-- job alert -->
+
+    </section>
+    <section id='job_alert_form'>
+
+
+        <h1>CONTACT US</h1>
+        <form name="contactform" id="contactform" method="post">
+            <div class='form_group'>
+                <div class='label'>First Name<span class="error">*</span></div>
+                <div class='input_wrap'>
+                    <input type="text" class="input" placeholder="First Name" name="first_name" id="first_name">
+                </div>
+            </div>
+            <!--/ input group -->
+            <!-- input group -->
+            <div class='form_group'>
+                <div class='label'>Last Name</div>
+                <div class='input_wrap'>
+                    <input type="text" class="input" placeholder="Last Name" name="last_name" id="last_name">
+                </div>
+            </div>
+            <!--/ input group -->
+            <!-- input group -->
+            <div class='form_group'>
+                <div class='label'>Email<span class="error">*</span></div>
+                <div class='input_wrap'>
+                    <input type="email" class="input" placeholder="Email" name="email" id="email">
+                </div>
+            </div>
+            <!--/ input group -->
+            <!-- input group -->
+            <div class='form_group'>
+                <div class='label'>Mobile Number</div>
+                <div class='input_wrap'>
+                    <input type="text" class="input" placeholder="Mobile Number" id="mobile" name="mobile">
+                </div>
+            </div>
+            <!--/ input group -->
+            <!-- input group -->
+            <div class='form_group'>
+                <div class='label'>Type of Comment<span class="error">*</span></div>
+                <div class='input_wrap'>
+                    <select class="input" name="enquery_type" id="enquery_type">
+                        <option value="">Select A Comment</option>
+                        {% for enquery_type in enquery_types %}
+                            <option value="{{ enquery_type.0 }}">{{ enquery_type.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <!--/ input group -->
+            <!-- input group -->
+            <div class='form_group'>
+                <div class='label'>Subject</div>
+                <div class='input_wrap'>
+                    <input type="text" class="input" placeholder="Subject" name="subject" id="subject">
+                </div>
+            </div>
+            </div>
+            <!--/ input group -->
+            <!-- input group -->
+            <div class='form_group'>
+                <div class='label'>Your Comment<span class="error">*</span></div>
+                <div class='input_wrap'>
+                    <textarea class="input" name="comment" id="comment" placeholder="Comment"></textarea>
+                    <input type="hidden" class="input" placeholder="Email" name="user_authenticated"
+                           id="user_authenticated"
+                           value="{% if not request.user.is_authenticated %}False{% else %}True{% endif %}">
+                </div>
+            </div>
+            <!--/ input group -->
+            <!-- input group -->
+            <div  class="form-group col-xs-12 form-field wow fadeInUp animated">
+                      
+                      <div class="button_div">
+                        <div class="g-recaptcha" data-sitekey="6LdZcgkTAAAAAD7-f9vAtRfoTsu1K7bnPfyB4i88"></div>
+                      </div>
+                    </div>
+            <!--/ input group -->
+
+            <!-- button row -->
+            <div class="button_row">
+                <button type="submit" class="button reset_filter"><span class='pj-reset i'></span>Submit</button>
+                <button type="button" class="button submit cancelbutton"><span class='pj-checkbox i'></span>Cancel
+                </button>
+
+            </div>
+            <!--/ button row -->
+        </form>
+        <!--/ form -->
+        <div class="row mt content-page about-us address_block">
+            <!-- content starts here -->
+            <div class="content more">
+                <div class="contact-details">
+                    <ul>
+                        <li class="clist-head"> Contact Us :-</li>
+                        <li><i class="fa fa-envelope"></i> Email:<a href="#"> support@peeljobs.com</a></li>
+                        <li><i class="fa fa-mobile"></i> Ph No:<a href="#"> 850 009 9499 </a></li>
+                    </ul>
+                    <!--  <ul>
+                       <li class="clist-head">  Address :-</li>
+                       <li><i class="fa fa-building"></i>HIG499, Viswa sai dham apartment, <br>behind anupama hospital,<br> 6th phase KPHB, <br>Hyderabad - 72</li>
+                     </ul>
+                     <ul>
+                       <li class="clist-head">  Business Hours :-</li>
+                       <li> <i class="fa fa-clock-o"></i> Monday - Friday : 10:00 - 19:00 </li>
+                       <li> <i class="fa fa-clock-o"></i> Saturday : 10:00 - 19:00 </li>
+                     </ul> -->
+                </div>
+            </div>
+            <!-- content ends here -->
+            <!-- Tab panes -->
+        </div>
+
+    </section>
+    <!--/ job alert -->
+{% endblock %}
+{% block 'extra_js' %}
+          <script src='https://www.google.com/recaptcha/api.js'></script>
+
+    <script type="text/javascript">
+        $(".cancelbutton").click(function (e) {
+            window.location = "{% url 'jobs:index'%}";
+        });
+
+
+        $("form#contactform").submit(function (e) {
+            e.preventDefault();
+             $.post(".", $("form#contactform").serialize(), function(data) {
+                if (data.error) {
+          open_dialog("Some content Missing", 'Error!')
+          $('p.hint').remove();
+          for (var key in data.response) {
+            $('#' + key).after('<p class="hint">' + data.response[key] + '</p>');
+          }
+        } else {
+          open_dialog_with_url("Your request has been registered, we will reach you soon", 'Success!', '/')
+        }
+      }, 'json');
+        });
+
+        $("select.cities").select2({placeholder: "Select the city", maximumSelectionSize: 20});
+
+        $("select.skills").select2({placeholder: "Select the skill", maximumSelectionSize: 20});
+        $("select.indutry").select2({placeholder: "Select the  industry", maximumSelectionSize: 20});
+
+    </script>
+
+{% endblock %}

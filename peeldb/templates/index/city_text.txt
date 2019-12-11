@@ -1,0 +1,1 @@
+{{ object.city_name }}

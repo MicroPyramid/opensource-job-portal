@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load searchtags %}
+{% block block_title %}
+    <title>{% if meta_title %}{{ meta_title|safe }}{% else %}404 - Page Not Found - PeelJobs{% endif %}</title>
+    <meta name="description" content="{% if meta_description %}{{ meta_description|safe }}{% else %}404 - Page Not Found - Peeljobs{% endif %}"/>
+{% endblock %}
+{% block robot_tag %}
+    {% if data_empty %}
+        <meta name="robots" content="NOINDEX">
+    {% else %}
+       {{ block.super }}
+    {% endif %}
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+  <div class="content_div">
+		<div class="row	mar_lr_0 text-center">
+    	<div class="page-404">
+            <h3>{% if message_type %}{{ message_type }}, {% endif %}{% if message %}{{ message }}{% else %}Sorry, the page you requested can not be found{% endif %}</h3>
+            <h5>Did you enter any words incorrectly?</h5>
+            <h4>{% if reason %}{{ reason }}{% else %}The URL may be misspelled or the page you're looking for is no longer available.{% endif %}</h4>
+            {% if job_search %}
+            <h5>You can browse jobs by <a href="{% url 'jobs_by_skill' %}">Skills</a>, <a href="{% url 'jobs_by_location' 'jobs' %}">Locations</a>, <a href="{% url 'jobs_by_industry' %}">Industries</a> and <a href="{% url 'jobs_by_degree' %}">Qualifications</a></h5>
+            {% endif %}
+            <div class="redirects">
+                <a href="/" class='home'>Back to Home</a>
+                <a href="{% url 'my:job_alert' %}" class='home'>Create a Job Alert</a>
+                <a href="{% url 'jobs:index' %}" class='home'>Latest Jobs</a>
+            </div>
+        </div>
+    </div>
+    </div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}

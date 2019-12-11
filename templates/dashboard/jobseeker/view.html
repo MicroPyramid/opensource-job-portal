@@ -1,0 +1,834 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load tz %}
+{% load static %}
+{% load page_tags %}
+{% block stage %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="wrap">
+        <span>
+          <span class='name'>{{ applicant.username }}</span>
+          <!--<span class='other_details'>Web Designer</span>-->
+          <span class='other_details'>{{ applicant.email }}</span>
+        </span>
+        <img src="{% if applicant.photo %}{{ applicant.photo }}{% else %}{% static 'dummy.jpg' %}{% endif %}">
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>User Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>First Name</label>
+              <span class="description">
+              <span>{{ applicant.first_name }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Email</label>
+              <span class="description">
+              <span>{{ applicant.email }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Date Of Birth</label>
+              <span class="description">
+              <span>{{ applicant.dob }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Gender</label>
+              <span class="description">
+              {% if applicant.gender %}
+              <span>{{ applicant.gender }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Registered On<label>
+              <span class="description">
+                {{ applicant.date_joined|timezone:"Asia/Calcutta" }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Profile Updated On<label>
+              <span class="description">
+                {{ applicant.profile_updated|timezone:"Asia/Calcutta" }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Social Status</label>
+              <ul class="social_integration">
+                <li>
+                  {% if applicant.is_fb_connected %}
+                  <a href="{{applicant.get_facebook_object.facebook_url}}" target="_blank"><i class="fa fa-facebook fb"></i></a>
+                  {% else %}
+                  <i class="fa fa-facebook"></i></a>
+                  {% endif %}
+                </li>
+                <li>
+                  {% if applicant.is_tw_connected %}
+                  <a href="{{applicant.get_twitter_url}}" target="_blank"><i class="fa fa-twitter twit"></i></a>
+                  {% else %}
+                  <i class="fa fa-twitter"></i>
+                  {% endif %}
+                </li>
+                <li>
+                  {% if applicant.is_gp_connected %}
+                  <a href="{{applicant.get_google_object.google_url}}" target="_blank"><i class="fa fa-google-plus plus"></i></a>
+                  {% else %}
+                  <i class="fa fa-google-plus"></i>
+                  {% endif %}
+                </li>
+                <li>
+                  {% if applicant.is_ln_connected %}
+                  <a href="{{applicant.get_linkedin_object.linkedin_url}}" target="_blank"><i class="fa fa-linkedin in"></i></a>
+                  {% else %}
+                  <i class="fa fa-linkedin"></i>
+                  {% endif %}
+                </li>
+                <li>
+                  {% if applicant.is_gh_connected %}
+                  <a href="{{applicant.get_github_object.git_url}}" target="_blank"><i class="fa fa-github gh"></i></a>
+                  {% else %}
+                  <i class="fa fa-github"></i>
+                  {% endif %}
+                </li>
+                <li>
+                  {% if applicant.is_so_connected %}
+                  <a href="{{applicant.get_stack_overflow_object.link}}" target="_blank"><i class="fa fa-stack-overflow stack"></i></a>
+                  {% else %}
+                  <i class="fa fa-stack-overflow"></i>
+                  {% endif %}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="profile_complete">
+              <span class="label">Profile Completeness</span>
+              <span class="percentage {% if applicant.profile_completion_percentage|slugify < 50|slugify %}red_text{% else %}green_text{% endif %}">{{applicant.profile_completion_percentage}}%</span>
+            </div>
+            <div class="tile_each">
+              <label>Last Name</label>
+              <span class="description">
+              {% if applicant.last_name %}
+                <span>{{ applicant.last_name }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Current Location</label>
+              <span class="description">
+              {% if applicant.current_city %}
+                <span>{{ applicant.current_city.name }}</span>
+              {% else %}
+                <span>Not Available</span>
+              {% endif  %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Mobile</label>
+              <span class="description">
+              {% if applicant.mobile %}
+                <span>{{ applicant.mobile }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Martial Status</label>
+              <span class="description">
+              {% if applicant.marital_status %}
+                <span>{{ applicant.marital_status }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Last Login</label>
+              <span class="description">
+                {{ applicant.last_login|timezone:"Asia/Calcutta" }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+               <div class="tile_each">
+              <label>Status</label>
+              <span class="description">{% if applicant.is_active %}
+              Active
+              {% else %}
+              Inactive
+              {% endif %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+             <div class="tile_each">
+              <label>Registration</label>
+              <span class="description">
+                {% if applicant.registered_from == 'Email' %}
+                Manual
+                {% else %}
+                Social
+                {% endif %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+          {% if applicant.resume %}
+          <div class="tile_each">
+            <label><i class="fa fa-file-text"></i>Resume</label>
+            <span class="description">
+            <span class="resume key_word download" id="{{ applicant.resume|get_s3_url }}">{{ applicant.resume|get_resume_name }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          {% endif %}
+          {% if applicant.get_major_skills %}
+          <div class="tile_each major_skills">
+            <label><i class="fa fa-star"></i>Major Skills</label>
+            <span class="description">
+            {% for skill in applicant.get_major_skills %}
+              <span class="key_word">{{ skill.skill.name }}</span>
+            {% endfor %}
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <!-- tabs -->
+      <div class="tab_button_row">
+      <span class='button gplus linked' panelid='user_profile'><i class="fa fa-user"></i>Profile</span>
+      <span class='button linked {% if applicant.is_ln_connected %}linkedin{% endif %}' panelid='linkedin'><i class="fa fa-linkedin"></i>Linkedin</span>
+      <span class='button linked {% if applicant.is_gh_connected %}github{% endif %}' panelid='github'><i class="fa fa-github"></i>Github</span>
+      <span class='button linked {% if applicant.is_so_connected %}stackoverflow{% endif %}' panelid='stackoverflow'><i class="fa fa-stack-overflow"></i>Stack Over Flow</span>
+      <span class='button gplus linked' panelid='applied_jobs'><i class="fa fa-check-square-o"></i>Applied Jobs</span>
+      <span class='button gplus linked' panelid='visited_jobs'><i class="fa fa-eye"></i>Visited Jobs</span>
+      <span class='button gplus linked' panelid='skills_subscribed'><i class="fa fa-envelope"></i>Skills Subscribed</span>
+      <span class='button gplus linked' panelid='search_done'><i class="fa fa-search"></i>Search Done</span>
+      <span class='button gplus linked' panelid='alerts_created'><i class="fa fa-search"></i>Alerts Created</span>
+
+      </div>
+      <!-- fb friends -->
+      <div class="tab_content"  id='applied_jobs'>
+      {% for job in applicant.get_all_applied_jobs %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Job Title</label>
+              <span class="description">
+              <a href="/dashboard/jobpost/view/{{ job.job_post.id }}/"><span>{{ job.job_post.title }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Job Created By</label>
+              <span class="description">
+              <span>{{ job.job_post.user.email }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Applied On</label>
+              <span class="description">
+              <span>{{ job.job_post.applied_on }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% empty %}
+          User not Applied Any Job
+        {% endfor %}
+      </div>
+      <div class="tab_content"  id='linkedin'>
+      {% if applicant.is_ln_connected %}
+        {% with applicant.get_linkedin_object as linkedin %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Name</label>
+              <span class="description">
+              <a href="{{linkedin.linkedin_url}}"><span>{{ linkedin.first_name }} {{ linkedin.last_name }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Email</label>
+              <span class="description">
+              <span>{{ linkedin.email }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Location</label>
+              <span class="description">
+              <span>{{ linkedin.location }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endwith %}
+        {% else %}
+          User not connected to linkedin
+        {% endif %}
+      </div>
+      <div class="tab_content"  id='github'>
+      {% if applicant.is_gh_connected %}
+        {% with applicant.get_github_object as github %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Git Hub Name</label>
+              <span class="description">
+              <a href="{{github.git_url}}"><span>{{ github.name }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>GitHub Id</label>
+              <span class="description">
+              <span>{{ github.id }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Company</label>
+              <span class="description">
+              <span>{% if github.company %}{{ github.company }}{% else %}None{% endif %}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endwith %}
+        {% else %}
+          User not connected to github
+        {% endif %}
+      </div>
+            <!-- gplus friends  -->
+      <div class="tab_content"  id='stackoverflow'>
+      {% if applicant.is_so_connected %}
+        {% with applicant.get_stack_overflow_object as stack_overflow %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>User Id</label>
+              <span class="description">
+              <a href="{{stack_overflow.link}}"><span>{{ stack_overflow.stack_user_id }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Account Id</label>
+              <span class="description">
+              <span>{{ stack_overflow.account_id }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Name</label>
+              <span class="description">
+              <span>{{ stack_overflow.display_name }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endwith %}
+        {% else %}
+          User not connected to stack overflow
+        {% endif %}
+      </div>
+      <div class="tab_content"  id='search_done'>
+      {% for search in applicant.get_search_done %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Search Skills</label>
+              <span class="description">
+              <a href="{% url 'dashboard:view_search_log' search.id %}"><span>{{ search.search_text.skills }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Searched On</label>
+              <span class="description">
+              <span>{{ search.search_on|timezone:'Asia/Calcutta' }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>No Of JobPosts Displayed</label>
+              <span class="description">
+              <span>{{ search.job_post }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% empty %}
+          No Search done by user
+        {% endfor %}
+      </div>
+      <div class="tab_content"  id='visited_jobs'>
+      {% if applicant.get_visited_jobs %}
+      {% for job in applicant.get_visited_jobs %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Job Title</label>
+              <span class="description">
+              <a href="/dashboard/jobpost/view/{{ job.job_post.id }}/"><span>{{ job.job_post.title }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Job Created By</label>
+              <span class="description">
+              <span>{{ job.job_post.user.email }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Visited On</label>
+              <span class="description">
+              <span>{{ job.visited_on }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endfor %}
+        {% else %}
+          User didnt visit any page.
+        {% endif %}
+      </div>
+      <div class="tab_content"  id='skills_subscribed'>
+      {% if applicant.get_subscribed_skills %}
+      {% for skill in applicant.get_subscribed_skills %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Skill Name(No of jobposts)</label>
+              <span class="description">
+              <a href="{{skill.get_job_url}}" target="_blank"><span>{{ skill.name }}({{skill.get_no_of_jobposts|length}})</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endfor %}
+        {% else %}
+          User didnt visit any page.
+        {% endif %}
+      </div>
+      <!--/ post details -->
+      <!-- user profile stars-->
+       <div class="tab_content"  id='user_profile'>
+        <div class="detail_description_column">
+              <!-- profile -->
+              <div class="tile_deafult" id="profile">
+                <div class="title">
+                  <h4>Profile</h4>
+                </div>
+                <div class="left_div">
+                  <div class="detail_each_wrap">
+                    <label>Current Location</label><span class='value'>{% if applicant.current_city %}{{ applicant.current_city.name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Preffered Location</label><span class='value'>{% if applicant.preferred_city.all %}{%for location in applicant.preferred_city.all %}{{ location.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Nationality</label><span class='value'>{% if nationality %}{{ nationality.name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Industry</label><span class='value'>{% if applicant.industry.all %}{% for industry in applicant.industry.all %}{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Present Address</label><span class='value'>{% if applicant.address %}{{ applicant.address|linebreaks }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                  </div>
+                </div>
+                <div class="right_div">
+                  <div class="detail_each_wrap">
+                    <label>Functional Area</label><span class='value'>{% if applicant.functional_area.all %}{% for functional_area in applicant.functional_area.all %}{{ functional_area.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Permanent Address</label><span class='value'>{% if applicant.permanent_address %}{{ applicant.permanent_address|linebreaks }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <!--/ profile -->
+              <!-- profile description -->
+              <div class="tile_deafult" id="user_profile_description">
+                <div class="title">
+                  <h4>Profile Description</h4>
+                </div>
+                  <div class="detail_each_wrap">
+                    <div class="tag_line">
+                    <p>{% if applicant.profile_description %}{{ applicant.profile_description}}{% else %}<span class="error">Not Specified</span>{% endif %}</p>
+                    </div>
+                  </div>
+                </div>
+              <!--/ profile description -->
+              <!-- user emails -->
+              <div class="tile_deafult" id="user_emails">
+                <div class="title">
+                  <h4>User Emails</h4>
+                </div>
+                <div class="detail_each_wrap">
+                  <div class="tag_line">
+                  {% for email in applicant.get_user_emails %}
+                    {% if email.is_primary %}
+                      <p>{{ email.email }} -- <span>Primary</span></p>
+                    {% else%}
+                      <p>{{ email.email }} </p>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                </div>
+                </div>
+              <!--/ user emails -->
+              <!-- professional info -->
+              <div class="tile_deafult" id="professional_info">
+                <div class="title">
+                  <h4>Professional Info</h4>
+                </div>
+                <div class="left_div">
+                  <div class="detail_each_wrap">
+                    <label>Total Experience</label><span class='value'>
+                    <span>{% if applicant.year %}{{ applicant.year }} Year(s) {{ applicant.month }} Month(s){% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Prefered Industry</label><span class='value'><span>{% if applicant.prefered_industry %}{{ applicant.prefered_industry.name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Current Salary</label><span class='value'><span>{% if applicant.current_salary %}
+                    <i class="fa fa-inr" aria-hidden="true"></i> {{ applicant.current_salary|get_formatted_salary }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+                  </div>
+                </div>
+                <div class="right_div">
+                  <div class="detail_each_wrap">
+                    <label>Expected Salary</label><span class='value'><span>{% if applicant.expected_salary %}
+                    <i class="fa fa-inr" aria-hidden="true"></i> {{ applicant.expected_salary|get_formatted_salary }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Job Role</label><span class='value'><span>{% if applicant.job_role %}{{ applicant.job_role }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+                  </div>
+                  <div class="detail_each_wrap">
+                    <label>Notice Period</label><span class='value'><span>{% if applicant.notice_period %}{{ applicant.notice_period }}{% else %}<span class="error">Not Specified</span>{% endif %}</span></span>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+                </div>
+
+              <!--/ professional info -->
+              <!-- employment details -->
+              <div class="tile_deafult" id="experience">
+                <div class="title">
+                  <h4>Employment Details</h4>
+                </div>
+                {% if not applicant.employment_history.all %}
+                  <div class="detail_each_wrap error">
+                    Not Specified
+                  </div>
+                {% else %}
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th width="25%">Company</th>
+                        <th width="15%">Designation</th>
+                        <th width="15%">From</th>
+                        <th width="15%">To</th>
+                        <th width="15%">Salary</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for history in applicant.employment_history.all %}
+                      <tr>
+                        <td>{{ history.company }}</td>
+                        <td>{{ history.designation }}</td>
+                        <td>{{ history.from_date }}</td>
+                        <td>{% if history.to_date == None %}Till Now{% else %}{{ history.to_date }}{%endif%}</td>
+                        <td>{% if history.salary %}<i class="fa fa-inr" aria-hidden="true"></i> {{ history.salary|get_formatted_salary }}{% else %}Not Specified{% endif %}</td>
+                      </tr>
+                    {% endfor %}
+                      </tbody>
+                      </table>
+                </div>
+                {% endif %}
+              </div>
+              <div class="tile_deafult" id="education">
+                <div class="title">
+                  <h4>Education Details</h4>
+                </div>
+                {% if not applicant.education.all %}
+                  <div class="detail_each_wrap error">
+                    Not specified
+                  </div>
+                {% else %}
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                     <tr>
+                        <th width="20%">Institute</th>
+                        <th width="10%">Degree</th>
+                        <th width="15%">From</th>
+                        <th width="15%">To</th>
+                        <th width="15%">Specialization</th>
+                        <th width="10%">Score</th>
+                      </tr> 
+                    </thead>
+                    <tbody>
+                    {% for education in applicant.education.all %}
+                      <tr>
+                        <td>{{ education.institute.name }}</td>
+                        <td>{{ education.degree.degree_name }}</td>
+                        <td>{{ education.from_date }}</td>
+                        <td>{% if education.to_date == None %}Till Now{% else %}{{ education.to_date }}{%endif%}</td>
+                        <td>{{ education.degree.specialization }}</td>
+                        <td>{% if education.score %}{{ education.score }}{% else %}Not Specified{% endif %}</td>
+                      </tr>
+                    {% endfor %}
+                      </tbody>
+                      </table>
+                </div>
+                {% endif %}
+              </div>
+              <div class="tile_deafult" id="technical_skills">
+                <div class="title">
+                  <h4>Technical Skills Details</h4>
+                </div>
+                {% if not applicant.skills.all %}
+                  <div class="detail_each_wrap error">
+                    Not Specified
+                  </div>
+                {% else %}
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th width="20%">Name</th>
+                        <th width="15%">Experience</th>
+                        <th width="15%">Version</th>
+                        <th width="15%">Proficiency</th>
+                        <th width="10%">Last Used</th>
+                        <th width="10%">Is Major</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for skill in applicant.skills.all %}
+                      <tr>
+                        <td>{{ skill.skill.name }}</td>
+                        <td>{{ skill.year }} Yr {{ skill.month }} months</td>
+                        <td>{% if skill.version %}{{ skill.version }}{% else %}Not Specified{% endif %}</td>
+                        <td>{% if skill.proficiency %}{{ skill.proficiency }}{% else %}Not Specified{% endif %}</td>
+                        <td>{% if skill.last_used %}{{ skill.last_used }}{% else %}Not Specified{% endif %}</td>
+                        <td>{{ skill.is_major }}</td>
+                      </tr>
+                    {% endfor %}
+                      </tbody>
+                      </table>
+                </div>
+                {% endif %}
+              </div>
+              <div class="tile_deafult" id="project">
+                <div class="title">
+                  <h4>Project Details</h4>
+                </div>
+                {% if not applicant.project.all %}
+                  <div class="detail_each_wrap error">
+                  Not Specified
+                  </div>
+                {% else %}
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th width="20%">Name</th>
+                        <th width="20%">Duration</th>
+                        <th width="15%">Skills</th>
+                        <th width="10%">Location</th>
+                        <th width="10%">Role</th>
+                        <th width="5%">Size</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for project in applicant.project.all %}
+                      <tr>
+                        <td>{{ project.name }}</td>
+                        <td>{{ project.from_date }} - {% if project.to_date %}{{ project.to_date }}{% else %}Not Specified{% endif %}</td>
+                        <td>{% for skill in project.skills.all %}{{ skill.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</td>
+                        <td>{% if project.location %}{{ project.location.name }}{% else %}Not Specified{% endif %}</td>
+                        <td>{% if project.role %}{{ project.role }}{% else %}Not Specified{% endif %}</td>
+                        <td>{% if project.size %}{{ project.size }}{% else %}Not Specified{% endif %}</td>
+                      </tr>
+                    {% endfor %}
+                      </tbody>
+                      </table>
+                </div>
+                {% endif %}
+              </div>
+              <!--/ employment details -->
+              <!-- upload resume -->
+              <div class="tile_deafult" id="language">
+                <div class="title">
+                  <h4>Languages</h4>
+                </div>
+                {% if not applicant.language.all %}
+                  <div class="detail_each_wrap error">
+                   Not Specified
+                  </div>
+                {% else %}
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th width="30%">Language</th>
+                      <th width="15%">Read</th>
+                      <th width="15%">Write</th>
+                      <th width="15%">Speak</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for language in applicant.language.all %}
+                    <tr>
+                      <td>{{ language.language.name }}</td>
+                      <td>{{ language.read }}</td>
+                      <td>{{ language.write }}</td>
+                      <td>{{ language.speak }}</td>
+                    </tr>
+                  {% endfor %}
+                    </tbody>
+                    </table>
+                    </div>
+                </div>
+                {% endif %}
+              </div>
+              <!--/ upload resume -->
+            </div>
+      <!-- user profile ends-->
+      </div>
+      <!-- Created alerts strts-->
+       <div class="tab_content"  id='alerts_created'>
+      <div class="list">
+        <ul>
+        {% for alert in applicant.get_user_alerts %}
+          <li>
+            <span class="post_wrap">
+            <!--<span class='check_box_div'><input type="checkbox"></span>-->
+            <span class='text_div'>
+            <span class='title_div'>
+            <a href="{% url 'my:job_alert_results' alert.id %}" class='title'>{{ alert.name }}</a>
+            </span>
+            <span class='details'>
+              <div class="row  job_alert_details_row">
+                <div class="col-md-6 details_left">
+                  <div class='row mt'>
+                    <label>Skills</label>
+                    <span class='content'>{%for skill in alert.skill.all %}{{ skill.name }}{% if forloop.last %}{% else %},&nbsp;{% endif%}{% endfor %}</span>
+                  </div>
+
+
+                  <div class='row mt'>
+                    <label>Location(s)</label>
+                    <span class='content'>{%if alert.location.all %}{%for location in alert.location.all %}{{ location.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}{% else %}Not Specified{% endif %}</span>
+                  </div>
+
+                  <div class='row mt'>
+                    <label>Experience (Y)</label>
+                    <span class='content'>{% if alert.min_year|stringformat:"i" == '' and alert.max_year|stringformat:"i" == '' %}Not Specified{% else %}{{ alert.min_year }} Year(s) - {{ alert.max_year }} Year(s){% endif %}</span>
+                  </div>
+
+                </div>
+
+
+                <div class="col-md-6 details_right">
+                   <div class='row mt'>
+                    <label>Salary</label>
+                    <span class='content'>{% if alert.min_salary|stringformat:"i" == '' and alert.max_salary|stringformat:"i" == '' %}Not Specified{% else %}<i class="fa fa-inr" aria-hidden="true"></i> {{ alert.min_salary|get_formatted_salary }} - {{ alert.max_salary|get_formatted_salary }}{% endif %}</span>
+                    </div>
+                    <div class='row mt'>
+                    <label>Role</label>
+                    <span class='content'>{% if not alert.role %}Not Specified{% else %} {{ alert.role }} {% endif %}</span>
+                    </div>
+                    <div class='row mt'>
+                    <label>Industry(s)</label>
+                    <span class='content'>{%if alert.industry.all %}{%for industry in alert.industry.all %}{{ industry.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}{% else %}Not Specified{% endif %}</span>
+                    </div>
+              </div>
+            </span>
+            </span>
+            <span class='clearfix'></span>
+            </span>
+          </li>
+          {% empty%}
+           <div class="no-results">
+<!--                  <h1>{{ message_type }},</h1>
+                    <h4>{{ message }}</h4>!-->
+                    <h1>Sorry, <span>No Job Alerts available</span></h1>
+                    <h6>Create job alert and get job notifications</h6>
+                </div>
+        {% endfor %}
+        </ul>
+      </div>
+      </div>
+      <!-- Created alerts ends-->
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+$("span.download").click(function(e) {
+    window.location = $(this).attr('id');
+  });
+$(document).ready(function() {
+    $('.fb_friends').click(function(e) {
+      e.preventDefault();
+      window.open('http://facebook.com/' + $(this).attr('href') + '/');
+    });
+    $('.tw_friends').click(function(e) {
+      e.preventDefault();
+      window.open('http://twitter.com/' + $(this).attr('href') + '/');
+    });
+  });
+</script>
+{% endblock %}

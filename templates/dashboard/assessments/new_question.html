@@ -1,0 +1,182 @@
+{% extends 'dashboard/base.html' %}
+{% block stage %}
+  <div class="content_wrapper">
+    <div class="row mt">
+      <!-- CONTENT -->
+      <section id='blog-post-create'>
+        <h4>New Questions</h4>
+        <form name="questionform" id="questionform" method="post">
+        {{ question_form_set.management_form }}
+        <div class="form-horizontal mail_form qform" style="margin:8px auto;border:2px solid #9E9E9E;padding:38px;">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Title<span class="error">*</span></label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" placeholder='Question Title' name="form-0-title" class="title">
+              <input type="hidden" name="form-0-created_by" value="{{ request.user.id }}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Description<span class="error">*</span></label>
+            <div class="col-sm-10">
+              <textarea name='form-0-description' class='description form-control' rows='4' placeholder="Question Description"></textarea>
+            </div> 
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Skills<span class="error">*</span></label>
+            <div class="col-sm-10">
+              <select name='form-0-skills' class='skills form-control'>
+              <option value="">Select A Skill</option>
+              {% for skill in skills %}
+                <option value="{{ skill.id }}" {% if skill.id == request.GET.skill|add:'0' %}selected{% endif %}>
+                {{ skill.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="solutions">
+          </div>
+        <div class="form-group">
+          <button type='button' class="add_solution pull-right"><i class="fa fa-plus"></i>Add Solution</button>
+        </div>
+        </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">&nbsp;</label>
+            <div class="col-sm-8">
+              <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
+              <button class="add_question"><i class="fa fa-plus"></i>Add Another Question</button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="clearfix"></div>
+    </section>
+      <!--/ CONTENT -->
+    </div>
+  </div>
+  <div class="hidden_solution" style="display:none">
+            <div class="form-group solution">
+              <label class="col-sm-2 control-label">Solution<span class="error">*</span></label>
+              <div class="col-sm-9">
+                <textarea name='answer_0' class="answer form-control" rows='4' placeholder="Solution Description"></textarea>
+              </div>
+              <div class="col-sm-1 mar_lr_0">
+                <button type='button' class="close_ans">Cancel</button>
+              </div>
+          </div>
+      </div>
+    <div class="form-horizontal hidden_question mail_form" style="display:none;margin:8px auto;border:2px solid #9E9E9E;padding:38px;">
+            <div class="form-group">
+              <button type='button' class="cancelbutton pull-right">Cancel</button>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Title<span class="error">*</span></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" placeholder='Question Title' name="form-0-title" class="title">
+                <input type="hidden" name="form-0-created_by" value="{{ request.user.id }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Description<span class="error">*</span></label>
+              <div class="col-sm-10">
+                <textarea name='form-0-description' class='description form-control' rows='4' placeholder="Question Description"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Skills<span class="error">*</span></label>
+              <div class="col-sm-10">
+                <select name='form-0-skills' class='skills form-control'>
+                {%for skill in skills%}
+                  <option value="{{ skill.id }}" {% if skill.id == request.GET.skill|add:'0' %}selected{% endif %}>
+                  {{ skill.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="solutions">
+            </div>
+            <div class="form-group">
+              <button type='button' class="add_solution pull-right"><i class="fa fa-plus"></i>Add Solution</button>
+            </div>
+            <div class="clearfix"></div>
+       </div>
+{% endblock stage %}
+
+{% block script%}
+  <script type="text/javascript">
+  $(document).ready(function () {
+    $(".add_question").click(function (e) {
+        e.preventDefault()
+        forms_count = $(".qform").length
+        $temp_reminder = $(".hidden_question").clone();
+
+            $temp_reminder.addClass('qform')
+            $temp_reminder.removeClass('hidden_question')
+            $($temp_reminder).find('p.error').remove()
+            processed_html = $temp_reminder.html().replace(/form-\d-/g, "form-" + (parseInt(forms_count)) + "-")
+            $temp_reminder.html(processed_html)
+            $(".qform").last().after($temp_reminder)
+            $temp_reminder.show()
+            $("#id_form-TOTAL_FORMS").val($(".qform").length)
+    })
+
+  $('form#questionform').ajaxForm({
+    dataType: 'json',
+    success: function(data) {
+      if (data.error == true) {
+        $('p.error').remove();
+        $('.answer').filter(function(){
+            return !$(this).val();
+          }).after("<p class='error'>This Field is required</p>")
+          $.each(data.response, function(index, element) {
+            $.each(element, function(num, key){
+              if (num != 'answer'){
+                if (num == '__all__'){
+                  $('[name=form-'+ index + '-title]').after("<p class='error'>"+key+"</p>")
+                }
+                else{
+                $('[name=form-'+ index + '-' + num + ']').after("<p class='error'>"+key+"</p>")
+              }
+            }
+            if (num == 'duplicates'){
+              for (i in key){
+              $('[name=form-'+ index + '-answer]').eq(i+1).after("<p class='error'>Duplicate Answer</p>")
+             }
+            }
+            })
+          })
+      } else {
+          open_dialog_with_url(data.response, 'Success', "{% url 'dashboard:assessment_skills' %}")
+        }
+      }
+  });
+
+});
+
+$("body").on("click", ".cancelbutton", function (e) {
+    if ($('.qform').length != 1) {
+        $(this).closest(".qform").remove();
+        $("#id_form-TOTAL_FORMS").val($(".qform").length)
+    }
+});
+$("body").on("click", ".close_ans", function (e) {
+      $(this).closest(".solution").remove();
+});
+$("body").on("click", ".add_solution", function (e) {
+  forms_count = $(".qform").length
+   $solution = $('.hidden_solution').clone()
+   $($solution).find('p.error').remove()
+    copied_html = $solution.html().replace(/answer_0/g, "form-" + (forms_count-1) + "-answer")
+    $(this).parent().parent().find('.solutions').append(copied_html)
+      $solution.show()
+    if($(this).parent().parent().find('.solution').length > 0){
+      $(this).text('Add Another Solution')
+    }
+})
+$("body").on("click", ".add_another_solution", function (e) {
+    $solution = $('.solutions').first().clone()
+    copied_html = $solution.html();
+     $('.solutions').last().append(copied_html)
+})
+
+</script>
+{% endblock script %}

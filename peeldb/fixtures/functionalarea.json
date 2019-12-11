@@ -1,0 +1,421 @@
+[{
+	"model": "peeldb.functionalarea",
+	"pk": 1,
+	"fields": {
+		"name": "IT Software - Application Programming, Maintenance",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 2,
+	"fields": {
+		"name": "IT Software - Other",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 4,
+	"fields": {
+		"name": "Sales, Retail, Business Development",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 5,
+	"fields": {
+		"name": "ITES, BPO, KPO, LPO, Customer Service, Operations",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 6,
+	"fields": {
+		"name": "Production, Manufacturing, Maintenance",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 7,
+	"fields": {
+		"name": "Accounts, Finance, Tax, Company Secretary, Audit",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 8,
+	"fields": {
+		"name": "Analytics & Business Intelligence",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 9,
+	"fields": {
+		"name": "Architecture, Interior Design",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 10,
+	"fields": {
+		"name": "Defence Forces, Security Services",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 11,
+	"fields": {
+		"name": "Design, Creative, User Experience",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 12,
+	"fields": {
+		"name": "Engineering Design, R&D",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 13,
+	"fields": {
+		"name": "Executive Assistant, Front Office, Data Entry",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 14,
+	"fields": {
+		"name": "Export, Import, Merchandising",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 15,
+	"fields": {
+		"name": "Fashion Designing, Merchandising",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 16,
+	"fields": {
+		"name": "Hotels, Restaurants",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 17,
+	"fields": {
+		"name": "HR, Recruitment, Administration, IR",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 18,
+	"fields": {
+		"name": "Financial Services, Banking, Investments, Insurance",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 19,
+	"fields": {
+		"name": "IT Hardware, Technical Support, Telecom Engineering",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 20,
+	"fields": {
+		"name": "IT Software - Client/Server Programming",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 21,
+	"fields": {
+		"name": "IT Software - eCommerce, Internet Technologies",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 22,
+	"fields": {
+		"name": "IT Software - Mainframe",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 23,
+	"fields": {
+		"name": "IT Software - Middleware",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 24,
+	"fields": {
+		"name": "IT Software - Mobile",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 25,
+	"fields": {
+		"name": "IT Software - System Programming",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 26,
+	"fields": {
+		"name": "IT Software - Telecom Software",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 27,
+	"fields": {
+		"name": "IT Software - DBA, Datawarehousing",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 28,
+	"fields": {
+		"name": "IT Software - Embedded, EDA, VLSI, ASIC, Chip Design",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 29,
+	"fields": {
+		"name": "IT Software - ERP, CRM",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 30,
+	"fields": {
+		"name": "IT Software - Network Administration, Security",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 31,
+	"fields": {
+		"name": "IT Software - QA & Testing",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 32,
+	"fields": {
+		"name": "IT Software - Systems, EDP, MIS",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 33,
+	"fields": {
+		"name": "Journalism, Editing, Content",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 34,
+	"fields": {
+		"name": "Legal, Regulatory, Intellectual Property",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 35,
+	"fields": {
+		"name": "Marketing, Advertising, MR, PR, Media Planning",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 36,
+	"fields": {
+		"name": "Medical, Healthcare, R&D, Pharmaceuticals, Biotechnology",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 37,
+	"fields": {
+		"name": "Packaging",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 38,
+	"fields": {
+		"name": "Self Employed, Entrepreneur, Independent Consultant",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 39,
+	"fields": {
+		"name": "Shipping",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 40,
+	"fields": {
+		"name": "Site Engineering, Project Management",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 41,
+	"fields": {
+		"name": "Strategy, Management Consulting, Corporate Planning",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 42,
+	"fields": {
+		"name": "Supply Chain, Logistics, Purchase, Materials",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 43,
+	"fields": {
+		"name": "Teaching, Education, Training, Counselling",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 44,
+	"fields": {
+		"name": "Top Management",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 45,
+	"fields": {
+		"name": "Travel, Tours, Ticketing, Airlines",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 46,
+	"fields": {
+		"name": "TV, Films, Production, Broadcasting",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 50,
+	"fields": {
+		"name": "sales",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 51,
+	"fields": {
+		"name": "packaging",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 53,
+	"fields": {
+		"name": "Research Analyst",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 54,
+	"fields": {
+		"name": "Academic Field ",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 56,
+	"fields": {
+		"name": "Quality Analyst",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 57,
+	"fields": {
+		"name": "Jewellery Design",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 58,
+	"fields": {
+		"name": "Autocad",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 59,
+	"fields": {
+		"name": "Electronics",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 60,
+	"fields": {
+		"name": "Driving",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 61,
+	"fields": {
+		"name": "Marketing executive",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 62,
+	"fields": {
+		"name": "system operator",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 63,
+	"fields": {
+		"name": "graphical designing",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 64,
+	"fields": {
+		"name": "purchase",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 66,
+	"fields": {
+		"name": "Logistics",
+		"status": "Active"
+	}
+}, {
+	"model": "peeldb.functionalarea",
+	"pk": 67,
+	"fields": {
+		"name": "Test Engineer",
+		"status": "Active"
+	}
+}]

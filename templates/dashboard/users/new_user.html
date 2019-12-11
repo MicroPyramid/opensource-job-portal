@@ -1,0 +1,162 @@
+{% extends 'dashboard/base.html' %}
+
+{% block stage %}
+  <div class="content_wrapper">
+    <div class="row mt">
+      <!-- CONTENT -->
+      <section id='blog-post-create'>
+        <h4>New User Creation</h4>
+        <form name="personalform" id="personalform" method="post" enctype="multipart/form-data">
+        <div class="form-horizontal mail_form">
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Profile Pic</label>
+              <div class="col-sm-10">
+              <input type="file" class="form-control" id="profile_pic" name="profile_pic" accept="image/*">
+              </div>
+            </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" placeholder='Email Address' name='email' id='email'>
+            </div>
+          </div>
+          <!--<div class="form-group">
+            <label class="col-sm-2 control-label">Password</label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control" placeholder='Password' name='password' id='password'>
+            </div>
+          </div>-->
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">First Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" placeholder='First Name' name='first_name' id='first_name'>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Last Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" placeholder='Last Name' name='last_name' id='last_name'>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Mobile</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" placeholder='Mobile' name='mobile' id='mobile'>
+            </div>
+          </div>
+            <div class="form-group">
+              <label for="inputEmail3" class="col-sm-2 control-label">Gender</label>
+              <div class="col-sm-10">
+                <span class='radio_wrap'>
+                <input type="radio" name="gender" id="gender" value="M" {% if request.user.gender == 'M' %} checked {% endif %}>
+                <span>Male</span>
+                </span>
+                <span class='radio_wrap'>
+                <input type="radio" name="gender" id="gender" value="F" {% if request.user.gender == 'F' %} checked {% endif %}>
+                <span>FeMale</span>
+                </span>
+              </div>
+            </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Current Address</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" name='address' id='address' placeholder='Current Address'></textarea>
+              <input type="hidden" name="description" id="description">
+            </div>If present address is same as current address
+            <input type="checkbox" name="present_address" id="present_address">
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Permanent Address</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" name='permanent_address' id='permanent_address' placeholder='Permanent Address'></textarea>
+              <input type="hidden" name="description" id="description">
+            </div>
+          </div>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">User Role</label>
+              <div class="col-sm-10">
+              <select class="form-control user_type" name="user_type" id="user_type" multiple>
+                <option value="">Select A Permission</option>
+                {% for permission in permissions %}
+                <option value="{{ permission.id }}" id="{{ permission.id }}">{{ permission.codename }}</option>
+                {% endfor%}
+              </select>
+              </div>
+            </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">&nbsp;</label>
+            <div class="col-sm-10">
+              <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
+              <button class="cancelbutton"><i class="fa fa-floppy-o"></i>Cancel</button>
+            </div>
+          </div>
+        </div>
+        </form>
+      </section>
+      <!--/ CONTENT -->
+    </div>
+  </div>
+{% endblock stage %}
+
+{% block script%}
+
+<script type="text/javascript">
+
+ $( "select.user_type" ).select2( { placeholder: "Select User Role Here", maximumSelectionSize: 6 } );
+
+ $( "select.user_type" ).change(function(e) {
+    console.log($("select.user_type").select2("val").length)
+    $('select.user_type option').removeAttr('disabled', 'disabled')
+    if ($("select.user_type").select2("val").length != 0){
+      console.log("....................")
+      if ($("select.user_type").select2("val") == 'Admin'){
+        console.log("hello..........")
+        $('select.user_type option').attr('disabled', true)
+      }
+      else{
+        console.log("bye")
+        $('select.user_type option[id=Admin]').attr('disabled', true)
+      }
+    }
+    else{
+      console.log("hello")
+      $("select.user_type").select2("val", "")
+      $('select.user_type option').removeAttr('disabled', 'disabled')
+    }
+
+});
+
+
+  $(".cancelbutton").click(function(e){
+    e.preventDefault();
+    window.location="{% url 'dashboard:admin_user_list' %}";
+  });
+  $('#present_address').click(function () {
+   if(document.getElementById('present_address').checked) {
+      $( "#permanent_address").val('');
+      console.log($("#address").val())
+      $("#permanent_address").val($( "#address").val());
+    }
+   else{
+      $( "#permanent_address").val('');
+    }
+});
+
+  $('form#personalform').ajaxForm({
+    type:'POST',
+    dataType:'json',
+    success: function(data) {
+      if (data.error) {
+        $('p.help-block').remove();
+        for (var key in data.response) {
+          $('#' + key).after('<p class="help-block" style="color:red;">' + data.response[key] + '</p>');
+        }
+      } else {
+        window.location = "{% url 'dashboard:admin_user_list' %}";
+      }
+    }
+  });
+</script>
+{% endblock script %}

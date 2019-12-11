@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load searchtags %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Add Experience - Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+  <meta name="description" content="Add Experience - PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs. Fill Your Profile to receive email notifications. "/>
+
+  <meta name="Keywords" content="job, jobs, tech jobs, it jobs, job sites, job vacancies, find jobs, search jobs, resume tips, job search engines, careers, technology jobs, career search, job descriptions, employment, work, job listings, peeljobs.com" />
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+  <!-- main_container starts here -->
+    <div class="row mar_lr_0 main_container">
+      <div class="container">
+        <div class="row mar_lr_0">
+          <div class="profile_container">
+            <!-- profile_left_container starts here -->
+              {% include 'candidate/profile_completion.html' %}
+            <!-- profile_left_container ends here -->
+            <!-- profile_right_container starts here -->
+          <div class="col-md-9 col-sm-9 detail_description_column">
+          <div class="panel">
+            <div class="panel-heading text-center text-uppercase">ADD Employment details</div>
+            <div class="panel-body">
+            <form name="experienceform" id="experienceform" method="post">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Current Job</label>
+                  <div class="col-sm-9">
+                    <input type="checkbox" name="current_job" id="current_job">
+                  </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-3 control-label">Job Profile</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" placeholder="Job Profile" name="job_profile"
+                        id="job_profile">{% if experience.job_profile %}
+                        {{ experience.job_profile }}{% endif %}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Company Name<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="Company Name" name="company" id="company">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">From<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="From Date" name="from_date" id="from_date">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">To<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="To Date" name="to_date" id="to_date">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Designation<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="Designation" id="designation" name="designation">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Salary(Per Anum)</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="Salary" name="salary" id="salary">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Job Profile</label>
+                  <div class="col-sm-9">
+                    <textarea class="form-control" placeholder="Job Profile" name="job_profile" id="job_profile"></textarea>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label"></label>
+                  <div class="col-sm-9">
+                    <button type="submit" class='submit'>Save</button>
+                    <button type="button" class='add_another'>Save & Add Other</button>
+                    <button type="button" class="cancelbutton">Cancel</button>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+           </div>
+          </div>
+          </div>
+        </div>
+    </div>
+    </div>
+    {% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+  {% endblock %}
+
+  {% block 'extra_js' %}
+  <script type="text/javascript">
+$(function() {
+  $( "#from_date" ).datepicker({
+    changeMonth: true,
+    changeYear: true,
+    yearRange: "1950:2020"
+  });
+});
+  $(function() {
+  $( "#to_date" ).datepicker({
+    changeMonth: true,
+    changeYear: true,
+    yearRange: "1950:2020"
+  });
+});
+
+</script>
+  <script type="text/javascript">
+
+  $(".cancelbutton").click(function(e){
+      window.location="{% url 'my:profile' %}";
+    });
+
+
+$('#current_job').click(function(e){
+  if ($('#current_job').is(":checked")){
+      $( "#to_date" ).val('');
+        $( "#to_date" ).attr("disabled", "disabled");
+            }
+  else{
+    $( "#to_date" ).removeAttr("disabled" );
+  }
+});
+
+  $("form#experienceform").submit(function(e) {
+      e.preventDefault();
+      $.post(".", $("form#experienceform").serialize(), function(data) {
+        if (data.error) {
+          if(data.response_message){
+            open_dialog(data.response_message, 'Info!');
+          }
+          $('p.hint').remove();
+          $('.add_another').removeClass('save_other')
+          for (var key in data.response) {
+            $('#' + key).after('<p class="hint">' + data.response[key] + '</p>');
+          }
+        } else {
+            if($('.add_another').hasClass('save_other')){
+              open_dialog_with_url('Your profile has been updated successfully', 'Success!!!', ".")
+            }
+            else{
+              open_dialog_with_url('Your profile has been updated successfully', 'Success!!!', "{% url 'my:profile' %}")
+            }
+        }
+      }, 'json');
+    });
+
+</script>
+
+  {% endblock %}
+  

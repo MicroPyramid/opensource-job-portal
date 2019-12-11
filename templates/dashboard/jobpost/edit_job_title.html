@@ -1,0 +1,344 @@
+{% extends 'dashboard/base.html' %}
+{% load page_tags %}
+{% load static %}
+{% block stage %}
+<style>
+.map_wrapper {
+    height: 300px;
+}
+.map_canvas {
+    width: 100%;
+    height: 100%;
+}
+.company{
+  display:none;
+}
+</style>
+    <!-- content -->
+    <div class="content_wrap">
+      <section id='job_post_new'>
+        <h3>Post a Job</h3>
+        <form id="jobform" name="jobform" method="post">
+
+          <!-- category -->
+          <div class="category">
+            <h6>Job Details</h6>
+            <!-- form div -->
+             <div class="alert alert-warning" id="errors_display"style="display:none">
+            <div><i class="fa fa-times-circle" aria-hidden="true" style="color:red"></i>
+             <span id="error_count"></span></div>
+            <a href="#" class="close" data-dismiss="alert" style="color: #FF0505;opacity:0.8;margin-top:-10px">&times;</a>
+             <strong>Please correct the information as per instructions provided in RED and re-submit the page</strong>
+          </div>
+            <div class="form_div">
+              <!--input element -->
+              <!--input element -->
+              <div class="input_element">
+                <label>Job Title</label>
+                <input type="text" class="input" placeholder="Enter complete title, Eg. Assisant Manager, not ast. mngr" name="title" id="title" value="{{ job_post.title }}">
+              </div>
+              <!--/ input element -->
+              <!--/ input element -->
+              <div class="clearfix"></div>
+              <!--input element -->
+              <div class="input_element area_element">
+                <label>Job Description</label>
+                <textarea class="input" name='textareacontents' id='textareacontents' placeholder='Description'>{{ job_post.description }}</textarea>
+                <input type="hidden" name="description" id="description" value="{{ job_post.description }}">
+              </div>
+              <div class="input_element area_element">
+                <label>Meta Title</label>
+                <textarea class="input" name='meta_title' id='meta_title' placeholder='Meta Title'>{{ job_post.meta_title }}</textarea>
+              </div>
+              <div class="input_element area_element">
+                <label>Meta Description</label>
+                <textarea class="input" name='textareacontents' id='textareacontents' placeholder='Meta Description'>{{ job_post.meta_description }}</textarea>
+              </div>
+              <div class="input_element company_id" id="{{job_post.company.id}}">
+                <label>Company </label>
+                <select class='input select2' name='company' id="company">
+                  <option value="">Select A Company</option>
+                  {% for company in companies %}
+                    <option value="{{ company.id }}" class="{{company.is_active}}" {% if company.id == job_post.company.id %}selected{% endif %}>{{ company.name }} - {{ company.id }}</option>
+                  {% endfor %}
+                </select>
+                <div class="pull-right">
+                <span class="company_status">
+                {% if job_post.company.is_active  %} Active {% else %}InActive{% endif %}</span>
+               <a href="" target="_blank" class="edit_company"><i class="fa fa-edit"></i></a></div>
+               {% if job_post.company.profile_pic %}
+                <img src="{{ job_post.company.profile_pic }}" style="width:125px;height:115px">
+              {% endif %}
+              </div>
+               <!--input element -->
+              <div class="input_element select2_div">
+                <label>Major Skill{% if job_type == 'government' %}{% else %}<span class="error">*</span>{% endif %}</label>
+                <select class="input select2" name="major_skill" id="major_skill">
+                  {% for skill in skills %}
+                  <option value="{{skill.id}}" {% ifequal skill.id job_post.major_skill.id %} selected {% endifequal %}>{{skill.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element select2_div">
+                <label>Technical Skills</label>
+                <select class="input select2" multiple name="skills" id="skills">
+                  {% for skill in skills %}
+                  <option value="{{skill.id}}" {% for jskill in job_post.skills.all %}{% if jskill == skill %}selected{% endif %}{% endfor %}>{{skill.name}}</option>
+                  {% endfor %}
+                </select>
+                <input type="hidden" class="form-control" placeholder="Maximum Salary" id='status' name="status">
+              </div>
+               <!--input element -->
+              <div class="input_element select2_div">
+                <label>Educational Qualification</label>
+                <select class="input select2" multiple name="edu_qualification" id="edu_qualification">
+                  <option value=''>select a Qualification</option>
+                  {% for qualification in qualifications %}
+                  <option value="{{ qualification.id }}" {% for edu in job_post.edu_qualification.all %}{% if qualification == edu %}selected{% endif %}{% endfor %}>{{ qualification.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="input_element select2_div">
+                <label>Industry</label>
+                <select class="input select2" multiple name="industry" id="industry">
+                  <option value=''>select a Industry</option>
+                  {% for industry in industries %}
+                  <option value="{{ industry.id }}" {% for job_industry in job_post.industry.all %}{% if industry == job_industry %}selected{% endif %}{% endfor %}>{{ industry.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="input_element select2_div">
+                <label>Functional Area</label>
+                <select class="input select2" multiple name="functional_area" id="functional_area">
+                  <option value=''>select a Functional Area</option>
+                  {% for functional_area in functional_areas %}
+                  <option value="{{ functional_area.id }}" {% for fa in job_post.functional_area.all %}{% if functional_area == fa %}selected{% endif %}{% endfor %}>{{ functional_area.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element select2_div">
+                <label>Job Location</label>
+                <select class="input select2" multiple name="location" id="location">
+                  <option>Job Location</option>
+                  {% for city in cities %}
+                    <option value="{% firstof city.parent_city.id city.id %}" {% if city in job_post.location.all %}selected{% endif %}>{{city.name}}</option>
+                  {% endfor %}
+=
+                </select>
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element">
+                <label>Pincode</label>
+                <input type="text" class="input" placeholder="Pincode" name="pincode" id="pincode" value="{{ job_post.pincode|default_if_none:'' }}">
+              </div>
+              <div class="input_element">
+                <label>Company email</label>
+                <input type="email" class="input" placeholder="Company Email" name="company_emails" id="company_emails" value="{{ job_post.company_emails|default_if_none:'' }}">
+              </div>
+              <!--/ input element -->
+                <!--input element -->
+              <div class="input_element select2_div">
+                <label>JobPost Status</label>
+                <select class="input select2" name="post_status" id="post_status">
+                  {% for status in status %}
+                  <option value="{{ status.0 }}" {% if status.1 == job_post.status %}selected{% endif %}>{{ status.1 }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!--/ input element -->
+               <!-- category -->
+                <!-- form div -->
+              <div class="clearfix"></div>
+                <div class="form_div">
+                {% if job_post.job_interview_location.all %}
+                  {% for location in job_post.job_interview_location.all %}
+                    <div class="another_location">
+                      <div id="interview_location_{{ forloop.counter }}" class="interview_location">
+                        <!--input element  area_element">
+                          <label>Location
+                          </label>
+                          <div class="map_wrapper">
+                              <input id="search_{{ forloop.counter }}" style="width: 29%;" class="controls" type="text" placeholder="Search Box">
+                              <div id="location_{{ forloop.counter }}" class="map_canvas mapping"></div>
+                          </div>
+                        </div>
+                        <div class="location_{{ forloop.counter }}" style="display:none">{{ location.get_map_coordinates_list|safe }}</div>
+                        /input element -->
+                        <!--input element -->
+                        <div class="input_element area_element">
+                          <label>Venue Details</label>
+                          <textarea name='venue_details_{{ forloop.counter }}' id='venue_details_{{ forloop.counter }}' class="input interview_location_venue_details_{{ forloop.counter }}" placeholder='Company Address'>{{ location.venue_details }}</textarea>
+                          <textarea class="input" style="display:none;" name='final_location_{{ forloop.counter }}' id='final_location_{{ forloop.counter }}' class="final_location_{{ forloop.counter }}" placeholder='Company Address'>{{ location.get_coordinates_list }}</textarea>
+                        </div>
+                        <!--/ input element -->
+                      </div>
+                      <div class="clearfix"></div>
+                    </div>
+                  {% endfor %}
+                  <span class='add_location' id="another_location"><i class='fa fa-plus'></i>Another Location</span>
+                {% else %}
+                  <span class='add_location' id="another_location"><i class='fa fa-plus'></i>Add Location</span>
+                {% endif %}
+              </div>
+            <!--/ form_div -->
+               <!--input element -->
+              <div class="input_element area_element">
+                <label>Annual salary</label>
+                <div class="row">
+                <div class="col-sm-4">
+                 <select class="input half_select" name="salary_type" style="width:100%" id="salary_type">
+                    <option value="">Select Salary Type</option>
+                    <option value="Month" {% if job_post.salary_type == 'Month' %}selected{% endif %}>Per Month</option>
+                    <option value="Year"{% if job_post.salary_type == 'Year' %}selected{% endif %} >Per Year</option>
+                  </select>
+                </div>
+                <div class="col-sm-4">
+                <input type="text" class="input half_select" style="width:100%" placeholder="Minimum Salary" id='min_salary' name="min_salary" value="{{ job_post.min_salary }}"></div>
+                <div class="col-sm-4">
+                <input type="text" style="width:100%" class="input half_select pull-right" placeholder="Maximum Salary" id='max_salary' name="max_salary" value="{{ job_post.max_salary }}"></div>
+                </div>
+              </div>
+                <input type="hidden" name="all_skills" id="all_skills">
+              <!--/input element -->
+                <div class="input_element area_element">
+                <label>Published Message</label>
+                <textarea class="input" placeholder="The message which you enter will display in peeljobs facebook page" name="published_message" id="published_message" title="The message which you enter will display in peeljobs facebook page">{{job_post.published_message}}</textarea>
+                <input type="hidden" class="form-control" placeholder="Post Published On" id='no_of_interview_location' name="no_of_interview_location">
+              </div>
+              <!--/ input element -->
+              <div class="clearfix"></div>
+            <div class="button_row wrap">
+              <button type="submit" class='button save' id="save">Save</button>
+              <button type="button" class='button cancel cancel_btn' id="cancel_btn">Cancel</button>
+            </div>
+
+              <!--/ input element -->
+              <div class="clearfix"></div>
+            </div>
+            <!--/ category -->
+          </div>
+          <!--/ category -->
+          <!-- category -->
+      </section>
+    </div>
+      <!--/ content -->
+    </div>
+    <!--/ container -->
+    <style>
+    .jobposts{
+      display: none;
+    }
+    .max_experience{
+      display:none;
+    }
+    </style>
+{% endblock %}
+{% block script %}
+    <!-- select2 -->
+
+    <script type="text/javascript">
+
+        $("#cancel_btn").click(function (e) {
+            e.preventDefault();
+            window.location = "{% url 'dashboard:job_posts' job_post.job_type %}";
+        });
+        CKEDITOR.config.allowedContent = true;
+        CKEDITOR.config.forcePasteAsPlainText = true;
+        CKEDITOR.config.pasteFromWordRemoveFontStyles = true;
+        CKEDITOR.config.pasteFromWordRemoveStyles = true;
+
+        var editor = CKEDITOR.replace('textareacontents', {});
+
+  $('form#jobform').ajaxForm({
+    beforeSerialize: function() {
+      $("input[name='description']").val(CKEDITOR.instances.textareacontents.getData());
+      $('#no_of_interview_location').val($('div.interview_location').length)
+    },
+    dataType: 'json',
+    success: function(data) {
+      if (data.error) {
+        $('p.error').remove();
+        open_dialog('Some Content Missing', 'Error!!')
+         $("#errors_display").show()
+        var err_len = Object.keys(data.response).length
+        $("#error_count").html("<strong>There are "+err_len+" error(s) in the Form</strong>")
+        for (var key in data.response) {
+          $('#' + key).after('<p class="error">' + data.response[key] + '</p>');
+        }
+      } else {
+        $('p.error').remove();
+        open_dialog_with_url('Job Post Updated successfully', "Success!!!", "{% url 'dashboard:job_posts' job_post.job_type %}")
+      }
+    }
+  });
+$(".select2").select2()
+$("body").on("click", "#another_location", function (e) {
+  last_interview_location = $('div.interview_location').length
+  var selected_interview_location = []
+
+
+  $('.interview_city').each(function () {
+      console.log($(this).val());
+      selected_interview_location.push($(this).val())
+      /* rest of the code for each name retrieved */
+  })
+
+  console.log(JSON.stringify(selected_interview_location))
+  $.post('/recruiter/job/interview-location/' + last_interview_location + '/', {'selected_locations': JSON.stringify(selected_interview_location)}, function (data) {
+      $("#another_location").before(data);
+  });
+
+  location_count = last_interview_location + 1
+  location_name = 'location_' + location_count
+  searchbox_name = 'search_' + location_count
+  $('#location_name').val(location_name)
+  $('#searchbox_name').val(searchbox_name)
+
+  $('#location_name').val(location_name)
+});
+$('.edit_company').attr('href', '/dashboard/companies/edit/'+ $('#company').val() +'/')
+    all_skills = []
+  $("body" ).on("change", "select#skills",function(e) {
+    e.preventDefault();
+    $.each($( "select#skills" ).val(), function( index, value ) {
+      if (jQuery.inArray(value,  all_skills) >= 0){
+      }
+      else{
+        all_skills.push(value)
+      }
+    $("#all_skills").val(all_skills)
+    });})
+  $.each(all_skills, function( index, value ) {
+    if (jQuery.inArray(value,  $( "select#skills" ).val()) == -1){
+      all_skills.pop(value)
+    }
+    else{
+    }
+  $("#all_skills").val(all_skills)
+  });
+        $("select#skills").on("select2:select", function (evt) {
+        var element = evt.params.data.element;
+        var $element = $(element);
+        $element.detach();
+        $(this).append($element);
+        $(this).trigger("change");
+      });
+        $('#company').select2()
+        .on("change", function(e) {
+          // mostly used event, fired to the original element when the value changes
+          id = $(this).val()
+          status = $(this).find('option:selected').attr('class');
+          if(status == 'True'){
+          $(".company_status").text('Active')
+        }else{
+          $(".company_status").text('InActive')
+        }
+          $('.edit_company').attr('href', '/dashboard/companies/edit/'+ id +'/')
+        })
+</script>
+{% endblock %}

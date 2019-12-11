@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load searchtags %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Add Education - Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+  <meta name="description" content="Add Education - PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs. Fill Your Profile to receive email notifications. "/>
+
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+
+ <!-- main_container starts here -->
+    <div class="row mar_lr_0 main_container">
+      <div class="container">
+        <div class="row mar_lr_0">
+          <div class="profile_container">
+            <!-- profile_left_container starts here -->
+              {% include 'candidate/profile_completion.html' %}
+            <!-- profile_left_container ends here -->
+            <!-- profile_right_container starts here -->
+          <div class="col-md-9 col-sm-9 detail_description_column">
+          <div class="panel">
+            <div class="panel-heading text-center text-uppercase">Add Education Details</div>
+            <div class="panel-body">
+            <form name="educationform" id="educationform" method="post">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Current Education</label>
+                  <div class="col-sm-9">
+                    <input type="checkbox" name="current_education" id="current_education">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Institute Name<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="Institute Name" name="name" id="name">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">City<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <select class="form-control" name="city" id="city">
+                      <option value="">Select A Location</option>
+                      {% for city in cities %}
+                      <option value="{{ city.id }}">{{ city.name }}</option>
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">From<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                  <input type='text' class="form-control" placeholder="From Date" name="from_date" id="from_date"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">To<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="To Date" name="to_date" id="to_date">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Degree Name<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <select class="form-control" name="degree_name" id="degree_name">
+                      <option value="">Select A Degree Name</option>
+                      {% for qualification in qualifications %}
+                      <option value="{{ qualification.id }}">{{ qualification.name }}</option>
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Degree Type<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                    <select class="form-control" name="degree_type" id="degree_type">
+                      <option value="">Select A Degree Type</option>
+                      {% for degree_type in degree_types %}
+                      <option value="{{ degree_type.0 }}">{{ degree_type.1 }}</option>
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Specialization<span class="important">*</span></label>
+                  <div class="col-sm-9">
+                  <input type="text" class="form-control" placeholder="Specialization" id="specialization" name="specialization">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label">Score(Percentage/CGPA)</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="Score" name="score" id="score">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-3 control-label"></label>
+                  <div class="col-sm-9">
+                    <button type="submit" class='submit'>Save</button>
+                    <button type="button" class='add_another'>Save & Add Other</button>
+                    <button type="button" class="cancelbutton">Cancel</button>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+          </div>
+          </div>
+          </div>
+        </div>
+    </div>
+    </div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+  {% endblock %}
+
+
+{% block 'extra_js' %}
+    <script type="text/javascript">
+        $(function () {
+            $("#from_date").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "1950:2050"
+            });
+        });
+        $(function () {
+            $("#to_date").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "1950:2050"
+            });
+        });
+        $('#city').select2();
+
+    </script>
+    <script type="text/javascript">
+        $(".cancelbutton").click(function (e) {
+            window.location = "{% url 'my:profile' %}";
+        });
+
+
+        $('#current_education').click(function (e) {
+            if ($('#current_education').is(":checked")) {
+                $("#to_date").val('');
+                $("#to_date").attr("disabled", "disabled");
+            }
+            else {
+                $("#to_date").removeAttr("disabled");
+            }
+        });
+
+        $("form#educationform").submit(function (e) {
+            e.preventDefault();
+            $.post(".", $("form#educationform").serialize(), function (data) {
+                if (data.error) {
+                    if (data.response_message) {
+                        open_dialog(data.response_message, 'Error!')
+                    }
+                    $('p.hint').remove();
+                    $('.add_another').removeClass('save_other')
+                    for (var key in data.response) {
+                        $('#' + key).parent().append('<p class="hint">' + data.response[key] + '</p>');
+                    }
+                } else {
+                  if($('.add_another').hasClass('save_other')){
+                    open_dialog_with_url('Your profile has been updated successfully', 'Success!!!', ".")
+                  }
+                  else{
+                    open_dialog_with_url('Your profile has been updated successfully', 'Success!!!', "{% url 'my:profile' %}")
+                  }
+                }
+            }, 'json');
+        });
+
+     $.fn.select2.amd.require([
+      "select2/utils",
+      "select2/dropdown",
+      "select2/dropdown/attachContainer",
+      "select2/dropdown/search"
+    ], function (Utils, DropdownAdapter, AttachContainer, DropdownSearch) {
+      var CustomAdapter = Utils.Decorate(
+        Utils.Decorate(
+          DropdownAdapter,
+          DropdownSearch
+        ),
+        AttachContainer
+      );
+  $("select#degree_name").select2({placeholder: "Select Degree", maximumSelectionSize: 100,
+    dropdownAdapter: CustomAdapter
+  });
+})
+    </script>
+
+{% endblock %}

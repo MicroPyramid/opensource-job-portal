@@ -1,0 +1,14 @@
+install the following ubuntu packages
+-------------------------------------
+
+apt-get install git python-dev python-virtualenv python-pip redis-server libpq-dev libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk libxml2-dev libxslt1-dev python3-dev build-essential libssl-dev libffi-dev
+
+
+
+Other Software
+--------------
+
+* postgresql
+* redis-server
+* elasticsearch
+* nodejs for scss to css

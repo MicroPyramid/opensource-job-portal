@@ -1,0 +1,58 @@
+{% extends 'dashboard/base.html' %}
+{% load tz %}
+{% block stage %}
+<section id='recruiters'>
+  <div class="list_table">
+    <div class="title_div">
+               <h4>Subscribers</h4>
+               <div class="records">
+                  <div class="form-inline">
+                  </div>
+               </div>
+               <div class="clearfix"></div>
+            </div>
+    <table class="table table-hover" id="sample_1">
+      <thead>
+        <tr>
+          <th width="10%">#</th>
+          <th width="20%">Skills(No of Job Posts)</th>
+          <th width="10%">No of Subscribers</th>
+          <th width="20%">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for skill in skills %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td>{{ skill.name }}({{ skill.get_no_of_jobposts|length }})</td>
+          <td>{{ skill.get_no_of_subscriptions|length }}</td>
+          <td><a href="{% url 'dashboard:view_subscribers' skill.id %}"><i class="fa fa-eye view" title="View" data-toggle="modal" data-target="#myModal"></i></a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+<!--
+  <div class="pagination">
+  {% if recruiters.has_previous %}
+    <span class='pagintion_btn'><a href="?page={{ recruiters.previous_page_number }}">Previous</a></span>
+  {% endif %}
+  <span class='pagination_text'>Page <b>{{ recruiters.number }}</b> of <b>{{ recruiters.paginator.num_pages }}</b></span>
+  {% if recruiters.has_next %}
+  <span class='pagintion_btn'><a href="?page={{ recruiters.next_page_number }}">Next</a></span>
+  {% endif %}
+  </div>
+  !-->
+  </div>
+</section>
+{% endblock stage %}
+{% block script %}
+<script type="text/javascript">
+$('#sample_1').DataTable({
+      "sPaginationType": "full_numbers",
+      "aaSorting": [],
+      "bSort": true,
+      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+      "pageLength": 20,
+    });
+</script>
+{% endblock script %}

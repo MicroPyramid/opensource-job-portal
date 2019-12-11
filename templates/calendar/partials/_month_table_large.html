@@ -1,0 +1,51 @@
+{% load schedule_tags %}
+    <table class="cal-table cal-tab-month">
+      <caption class="cal-caption">
+        {% if prev_month %}
+          <a href="{% url 'month_calendar' year prev_month.id %}" class="prev prev_next_month" data="{{prev_month.id}}" data_event="prev">&laquo;</a>
+        {% endif %}
+        {% if next_month %}
+          <a href="{% url 'month_calendar' year next_month.id %}" class="next prev_next_month" data="{{next_month.id}}" data_event="next">&raquo;</a>
+        {% endif %}
+          <a href="{% url 'month_calendar' year month.id %}" class="full_month_view" data="{{month.id}}">{{ month.Name }} {{ year }}</a>
+        </caption>
+        <thead>
+        	<tr>
+              {% if week %}
+              {% else %}
+                <th>Weeks</th>
+              {% endif %}
+            	{% for day in day_names %}
+                    <th>{{ day }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+
+        <tbody class="cal-body">
+        {% if week %}
+          <tr>
+            {% week_table %}
+          </tr>
+        {% else %}
+          {% for week in year|get_weekdays:month.id %}
+            <tr>
+            <td><a class="week" data="{{ forloop.counter }}" data_month="{{ month.id }}" href="{% url 'week_calendar' year month.id forloop.counter %}">Week{{ forloop.counter }}</a></td>
+            {% for date in week %}
+              <td class="cal-check">
+                  {% ifequal date 0 %}
+                  {% else %}
+                      <a class="project_overview" href="{% url 'jobposts_by_date' year month.id date %}" data="{{ year }}" data_month="{{ month.id }}" data_date="{{ date }}">
+                        <span class="day">{{ date }}</span>
+                        <p class="projects_list" style="color:red;">
+                        {% get_per_day_jobposts year month.id date as per_day_projects %}
+                          {% if per_day_projects|length > 0 %}{{per_day_projects|length}}{% endif %}
+                        </p>
+                      </a>
+                  {% endifequal %}
+              </td>
+            {% endfor %}
+            </tr>
+         {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>

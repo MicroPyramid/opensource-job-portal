@@ -1,0 +1,577 @@
+  {% load page_tags %}
+  {% load static %}
+  <!-- content -->
+  <div class="content_wrap" style="margin-left:0px;margin-top:0px;">
+  <div class="tab_row">
+    <span class='tab_button2' panelid='user_profile' id="jobpost_button">View Profile
+    </span>
+    <span class='tab_button2' panelid='messages' id="applicants_button">
+    Messages
+    </span>
+  </div>
+  <div class='tab_content2 active_tab_content2' id='user_profile'>
+  <div class='applicant_title'>
+  <span class='name'>{{ user.email }}</span>
+  <span class="status_change"></span>
+  </div>
+    <!-- accordian panel -->
+    <div class="accordian_panel active"> 
+      <div class="title">Profile</div>
+      <div class="details_wrap">
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>First Name</span>
+          <span class='detail'>{{ user.first_name }} {{user.profile_completion_percentage}}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Last Name</span>
+          <span class='detail'>{{ user.last_name }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Email</span>
+          <span class='detail'>{{ user.email }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Phone Number</span>
+          <span class='detail'>{{ user.mobile }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Current Location</span>
+          <span class='detail'>{{ user.current_city.name }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Prefered Location</span>
+          <span class='detail'>{%for location in user.preferred_city.all %}{{ location.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Permanent Address</span>
+          <span class='detail'>{{ user.permanent_address|linebreaks }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Pin Code</span>
+          <span class='detail'>{{ user.pincode }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Marital Status</span>
+          <span class='detail'>{{ user.marital_status }}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Gender</span>
+          <span class='detail'>{%ifequal user.gender 'F' %}Female{% else %}Male{% endifequal %}</span>
+        </div>
+        <!--/ detail -->
+        <!-- detail -->
+        <div class="detail_each">
+          <span class='heading'>Date of Birth</span>
+          <span class='detail'>{{ user.dob }}</span>
+        </div>
+        <!--/ detail -->
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    <!--/ accordian panel-->
+    {% if user.resume %}
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Resume</div>
+      <div class="details_wrap">
+        Resume.doc
+        <span class='button download' id="{{ user.resume|get_s3_url }}"><i class='fa fa-download'></i>{{ user.resume|get_resume_name }}</span>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    {% endif %}
+    <!--/ accordian panel-->
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Profile Description</div>
+      {% if user.profile_description  %}
+        <div class="details_wrap">
+          {{ user.profile_description}}
+          <div class="clearfix"></div>
+        </div>
+      {% else %}
+      <div class="details_wrap">
+          No Description Found
+          <div class="clearfix"></div>
+        </div>
+      {% endif %}
+    </div>
+    <!--/ accordian panel-->
+
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Professional Info</div>
+      <div class="details_wrap">
+      {% if user.prefered_industry %}
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Total Experience</span>
+              <span class='detail'>{{ user.year }} Year(s) {{ user.month }} Month(s)</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Prefered Industry</span>
+              <span class='detail'>{{ user.prefered_industry.name }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Prefered Industry</span>
+              <span class='detail'>{{ user.prefered_industry.name }}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Current Salary</span>
+              <span class='detail'><i class="fa fa-inr" aria-hidden="true"></i> {{ user.current_salary|get_formatted_salary }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Job Role</span>
+              <span class='detail'>{{ user.job_role }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Notice Period</span>
+              <span class='detail'>{{ user.notice_period }}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <div class="clearfix"></div>
+        {% else %}
+          <div class="details_wrap">
+          <div class="tabular_details_wrap">
+            No Records Found
+          </div>
+          <div class="clearfix"></div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <!--/ accordian panel-->
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Employment Details</div>
+      {% for history in user.employment_history.all %}
+      <div class="details_wrap">
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Company</span>
+              <span class='detail'>{{ history.company }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Designation</span>
+              <span class='detail'>{{ history.designation }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Salary</span>
+              <span class='detail'><i class="fa fa-inr" aria-hidden="true"></i> {{ history.salary|get_formatted_salary }}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>From</span>
+              <span class='detail'>{{ history.from_date }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>To</span>
+              <span class='detail'>{% if history.to_date == None %}Till Now{% else %}{{ history.to_date }}{%endif%}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <div class="clearfix"></div>
+      </div>
+      {% empty %}
+        <div class="details_wrap">
+          <div class="tabular_details_wrap">
+            No Records Found
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      {% endfor %}
+    </div>
+    <!--/ accordian panel-->
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Educational Details</div>
+      {% for education in user.education.all %}
+      <div class="details_wrap">
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Institute</span>
+              <span class='detail'>{{ education.institute.name }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Degree</span>
+              <span class='detail'>{{ education.degree.degree_name }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>From</span>
+              <span class='detail'>{{ education.from_date }}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Specialization</span>
+              <span class='detail'>{{ education.degree.specialization }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Score</span>
+              <span class='detail'>{{ education.score }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>To</span>
+              <span class='detail'>{% if education.to_date == None %}Till Now{% else %}{{ education.to_date }}{%endif%}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <div class="clearfix"></div>
+      </div>
+      {% empty %}
+      <div class="details_wrap">
+        <div class="tabular_details_wrap">
+          No Records Found
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      {% endfor %}
+    </div>
+    <!--/ accordian panel-->
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Technical Skills</div>
+      {% for skill in user.skills.all %}
+      <div class="details_wrap">
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Name</span>
+              <span class='detail'>{{ skill.skill.name }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Experience</span>
+              <span class='detail'>{{ skill.year }} Year(s) {{ skill.month }} Month(s)</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Last Used</span>
+              <span class='detail'>{{ skill.last_used }}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Version</span>
+              <span class='detail'>{{ skill.version }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Proficiency</span>
+              <span class='detail'>{{ skill.proficiency }}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <div class="clearfix"></div>
+      </div>
+      {% empty %}
+      <div class="details_wrap">
+        <div class="tabular_details_wrap">
+          No Records Found
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      {% endfor %}
+    </div>
+    <!--/ accordian panel-->
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Project Details</div>
+      {% for project in user.project.all %}
+      <div class="details_wrap">
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Name</span>
+              <span class='detail'>{{ project.name }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Duration</span>
+              <span class='detail'>{% if project.to_date and project.from_date %}{{ project.from_date }} - {{ project.to_date }}{% else %}Not Specified{% endif %}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Skills</span>
+              <span class='detail'>{% for skill in project.skills.all %}{{ skill.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Location</span>
+              <span class='detail'>{{ project.location.name }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Role</span>
+              <span class='detail'>{{ project.role }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Size</span>
+              <span class='detail'>{{ project.size }}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <div class="clearfix"></div>
+      </div>
+      {% empty %}
+      <div class="details_wrap">
+      <div class="tabular_details_wrap">
+        No Records Found
+      </div>
+      <div class="clearfix"></div>
+      </div>
+      {% endfor %}
+    </div>
+    <!--/ accordian panel-->
+    <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Languages</div>
+      {% for language in user.language.all %}
+      <div class="details_wrap">
+        <!-- table each -->
+        <div class="tabular_details_wrap">
+          <div class="table_wrap">
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Language</span>
+              <span class='detail'>{{ language.language.name }}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Read</span>
+              <span class='detail'>{% if language.read %}True{% else %}False{%endif%}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Write</span>
+              <span class='detail'>{% if language.write %}True{% else %}False{%endif%}</span>
+            </div>
+            <!--/ detail -->
+            <!-- detail -->
+            <div class="detail_each">
+              <span class='heading'>Speak</span>
+              <span class='detail'>{% if language.speak %}True{% else %}False{%endif%}</span>
+            </div>
+            <!--/ detail -->
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <!--/ table each -->
+        <div class="clearfix"></div>
+      </div>
+      {% empty %}
+      <div class="details_wrap">
+      <div class="tabular_details_wrap">
+        No Records Found
+      </div>
+      <div class="clearfix"></div>
+      </div> 
+      {% endfor %}
+    </div>
+    <!--/ accordian panel-->
+  </div>
+
+
+      <!-- Messages panel Startsss-->
+  <div class="messages tab_content2" id='messages'>
+      <!-- accordian panel -->
+    <div class="accordian_panel">
+      <div class="title">Message History
+        <span class="dropdown pull-right">
+          <i class="fa fa-ellipsis-v dropdown-toggle" data-toggle="dropdown" aria-hidden="true"></i>
+          <ul class="dropdown-menu">
+            <li><a data-href="{{ job_id }}" class="delete_chat" id='{{ user.id }}'>Clear Chat</a></li>
+          </ul>
+        </span>
+      </div>
+      <div class="details_wrap">
+          <ul class="chat clearfix">
+            {% for msg in messages %}
+              {% if msg.message_from|slugify == request.user.id|slugify %}
+                <li class="right clearfix pull-right" id='{{ msg|get_obj_id }}'>
+                <i class="fa fa-trash-o pull-right delete_msg" aria-hidden="true"></i>
+                  <span class="chat-img pull-right">
+                    <img src="{{ profile_pic }}" alt="User Avatar" class="img-circle">
+                  </span>
+                  <div class="chat-body clearfix">
+                      <div class="header">
+                        <p>{{ msg.message }}</p>
+                        <small class=" text-muted">
+                          <span class="glyphicon glyphicon-time"></span>{{ msg.created_on }}
+                        </small>
+                      </div>
+                  </div>
+                </li>
+              {% else %} 
+               <li class="left clearfix pull-left" id='{{ msg|get_obj_id }}'>
+               <i class="fa fa-trash-o pull-right delete_msg" aria-hidden="true"></i>
+                  <span class="chat-img pull-left">
+                    <img src="{{ user_pic }}" alt="User Avatar" class="img-circle">
+                  </span>
+                  <div class="chat-body clearfix">
+                    <div class="header">
+                      <p>{{ msg.message }}</p>
+                      <small class="pull-right text-muted">
+                        <span class="glyphicon glyphicon-time"></span>{{ msg.created_on }}
+                      </small>
+                    </div>
+                </div>
+              </li>
+              {% endif %}
+            {% endfor %}
+            </ul>
+            <div class="panel-footer">
+              <div class="input-group" style="display: block;width: 91%;">
+                  <form name='messageform' class='messageform' id='messageform' action="" method="POST">
+                  <span class="input-group-btn">
+                  <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here" autocomplete="off" name='message' id='message_org'>
+                  <button class="btn btn-warning btn-sm" id="btn-chat">Send</button>
+                  </span>
+                  <input type="hidden" class='form-control' name='post_message' value="True" />
+                  <input type="hidden" class='form-control' name='message_to' value="{{ user.id }}" />
+                  <input type="hidden" class='form-control' name='job_id' id='job_id' value="{{ job_id }}" />
+                 </form>
+              </div>
+            </div>
+          <!-- detail -->
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    <!--/ accordian panel-->
+       <li class="right clearfix pull-right message_box" style="display:none">
+       <i class="fa fa-trash-o pull-right delete_msg" aria-hidden="true"></i>
+        <span class="chat-img pull-right">
+          <img src="{{ user_pic }}" alt="User Avatar" class="img-circle" id='message_image'>
+        </span>
+        <div class="chat-body clearfix">
+            <div class="header">
+              <p id='message_text'>{{ msg.message }}</p> 
+              <small class=" text-muted">
+                <span class="glyphicon glyphicon-time"></span>
+                <span id='message_time'>{{ msg.created_on }}</span>
+              </small>
+            </div>
+        </div>
+      </li>
+    </div>
+      <!-- Messages panel ends-->
+<!--/ content -->
+  </div>

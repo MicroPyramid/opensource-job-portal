@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load searchtags %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load tz %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Profile - Apply Jobs - Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+  <meta name="description" content="Profile - Apply Jobs - PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs. Fill Your Profile to receive email notifications. "/>
+
+  <meta name="Keywords" content="job, jobs, tech jobs, it jobs, job sites, job vacancies, find jobs, search jobs, resume tips, job search engines, careers, technology jobs, career search, job descriptions, employment, work, job listings, peeljobs.com" />
+{% endblock %}
+
+{% block page_search_block %}
+  {% show_search_filter %}
+{% endblock %}
+
+{% block base %}
+<style type="text/css">
+  .error{
+    color: red ;
+  }
+</style>
+    <!-- main_container starts here -->
+    <div class="row mar_lr_0 main_container">
+      <div class="container">
+        <!-- breadcrumb_section starts here -->
+        <div class="breadcrumb_section row mar_lr_0">
+          <nav>
+            <ol class="cd-breadcrumb triangle">
+              <li><a href="/">Home</a></li>
+              <li class="current"><a>Profile</a></li>
+            </ol>
+          </nav>
+        </div>
+        <!-- breadcrumb_section ends here -->
+        <div class="row mar_lr_0">
+          <div class="profile_container">
+            <!-- profile_left_container starts here -->
+              {% include 'candidate/profile_completion.html' %}
+            <!-- profile_left_container ends here -->
+            <!-- profile_right_container starts here -->
+            <div class="profile_right_container col-md-9">
+              <div class="row prfofile_summary_job_list mar_lr_0">
+                <div class="profile_job_list">
+                  <div class="job_list_section" id="div_applied_jobs">
+                  <div class="profile_detail_block" style="margin-bottom:-10px"  >
+                    <div class="head">Applied Jobs  {% if applied_jobs %}
+                    <span class="pull-right">
+                    {% if current_page|slugify == '1'|slugify %}
+                      {% if applied_jobs|length == 10%}
+                        {% widthratio 1 1 prev_page %} - {% widthratio 10 1 1 %}
+                      {% else %}
+                       {% widthratio 1 1 prev_page %} - {{applied_jobs|length}}
+                      {% endif %}
+                    {% else %}
+                      {% if applied_jobs|length == 10%}
+                        {% widthratio 10 1 prev_page %} - {% widthratio 10 1 prev_page|add:"1" %}
+                      {% else %}
+                       {% widthratio 10 1 prev_page %} - {{no_of_jobs}}
+                      {% endif %}
+                    {% endif %} of
+                    {% if applied_jobs|length == 10%}
+                      {% widthratio 10 1 last_page %}
+                    {% else %}
+                      {{no_of_jobs}}
+                    {% endif %}
+                    </span>
+                    {% endif %}
+
+                    </div>
+                  </div>
+                  {% if applied_jobs %}
+                    <!-- job_item starts here -->
+                    {% include 'company_job_list.html' with job_list=applied_jobs %}
+                    <!-- job_item ends here -->
+                     <div class="pagination_wrap text-center">
+                {% get_page current_page last_page as pages %}
+                <nav>
+                    <ul class="pagination">
+                    {% if current_page != 1 %}
+                      <li class="prev"><a href="?page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+                      <li class="prev"><a href="?page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+                      <li><a href="?page=1">first</a></li>
+                      {% endif %}
+                      {% for s in pages %}
+                      <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="?page={{s}}">{{s}}</a></li>
+                      {% endfor %}
+                      {% if current_page != last_page %}
+                      <li><a href="?page={{last_page}}">last</a></li>
+                      <li><a href="?page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+                      <li><a href="?page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+                      {% endif %}
+                    </ul>
+                </nav>
+                </div>
+                  {% else %}
+                    <div class="job_item" style="min-height:100px">
+                       <div class="detail_each_wrap text-center">
+                        <h3> You Haven't Applied For Any Jobs</h3>
+                      </div>
+                    </div>
+                    <div class="job_list_section">
+                     <h3 class="text-center" style="color:#45586d"><b>Suggested Jobs</b></h3>
+               {% include 'job_list.html' with job_list=suggested_jobs %}
+                <br clear="all">
+              </div>
+                  {% endif %}
+                  </div>
+                </div>
+              </div>
+              <!-- profile_right_container ends here -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <br clear="all">
+    </div>
+      <!-- main_container ends here -->
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load searchtags %}
+{% load thumbnail %}
+{% load static %}
+{% block block_canonical_tag %}
+{% if current_page|slugify == '1'|slugify %}
+{% else %}
+<link rel="prev" href="https://peeljobs.com{{ current_url }}{% if prev_page != 1 %}{{ prev_page }}/{% endif %}" />
+{% endif %}
+{% if current_page <= last_page %}
+{% if current_page == last_page %}{% else %}
+<link rel="next" href="https://peeljobs.com{{ current_url }}{{ current_page| add:"1" }}/" />
+{% endif %}{% endif %}
+{% endblock %}
+{% block block_title %}
+{% include "meta_data/company_detail.html" %}
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<style>
+  .recruiter_breadcrumbs{
+  background: none;
+  padding-top: 21px;
+  }
+  .company_heading{
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+  padding-left: 0px !important;
+  }
+</style>
+<!-- main_container starts here -->
+<div class="row mar_lr_0 main_container">
+  <div class="container">
+    <!-- breadcrumb_section starts here -->
+    <div class="breadcrumb_section row mar_lr_0">
+      <nav>
+        <ol class="cd-breadcrumb triangle">
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+              <span itemprop="name" class="name">Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/companies">
+              <span class="name">Companies List</span>
+            </a>
+          </li>
+          <li class="current">
+            <span href="." class="job_detail">
+            <span class="name">{{ company.name|capfirst }}</span>
+            </span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+    <!-- breadcrumb_section ends here -->
+    <div class="row mar_lr_0">
+      <div class="left_container col-md-9">
+        <div class="row company_page_container">
+        {% if company.get_company_menu %}
+          <ul class="company_menu">
+          {% for menu in company.get_company_menu %}
+            <li><a href="{{menu.url}}">{{menu.title}}</a></li>
+          {% endfor %}
+          </ul>
+          {% endif %}
+          <div class="row mar_lr_0 company_top_block">
+            <div class="logo col-md-2">
+              {% thumbnail company.get_logo_url "80x80" as im %}
+                <img src="{{ im.url }}" alt="{{ company.name|capfirst}} Job Openings"/>
+              {% endthumbnail %}
+            </div>
+            <div class="title col-md-5">
+              {{ company.name|capfirst}}
+              {% if company.website %}
+             <div class="url"><a rel="nofollow" href="{% if 'http' in company.website %}{{ company.website }}{% else %}http://{{ company.website }}{% endif %}" target="_blank">{{ company.get_website }}</a></div>
+             {% endif %}
+
+            </div>
+            {% if company.address %}
+            <div class="reach col-md-5">
+              <strong>Reach Us: </strong>
+              <p>{{company.address}}</p>
+            </div>
+            {% endif %}
+            <br clear="all">
+          </div>
+          <div class="description">
+          <div class="internship-text company_heading">Company Description: </div>
+            {{ company.profile|safe }}
+          </div>
+          <br clear="all">
+          <h1 class="internship-text company_heading">{{ h1_tag }}</h1>
+          <div class="job_list_section company_prof_job_list row mar_lr_0 jobs_list">
+         {% include 'company_job_list.html' with job_list=job_list %}
+            {% if job_list %}
+                  <div class="pagination_wrap text-center">
+                    {% get_page current_page last_page as pages %}
+                    <nav>
+                       <ul class="pagination">
+                {% if current_page != 1 %}
+                <li class="prev"><a class="{{previous_page}}" href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% endif %}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}"><i class="fa fa-angle-double-left"></i></a></li>
+                <li class="prev"><a class="{{prev_page}}" href="{{current_url}}{% if prev_page == 1 %}
+                {% else %}{{prev_page}}/{% endif %}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}"><i class="fa fa-angle-left"></i></a></li>
+                <li><a class="1" href="{{current_url}}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}">first</a></li>
+                {% endif %}
+                {% for s in pages %}
+                <li {% ifequal s current_page %} class="active" {% endifequal %}><a  class="{{ s }}" href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% endif %}">{{s}}</a></li>
+                {% endfor %}
+                {% if current_page != last_page %}
+                <li><a class="{{ last_page }}" href="{{current_url}}{{ last_page }}/">last</a></li>
+                <li><a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/"><i class="fa fa-angle-right pagination-next"></i></a></li>
+                <li><a class="{{ after_page }}" href="{{current_url}}{{after_page}}/"><i class="fa fa-angle-double-right"></i></a></li>
+                {% endif %}
+              </ul>
+                    </nav>
+                  </div>
+                  {% endif %}
+
+            <br clear="all">
+          </div>
+
+          <div class="related_jobs_container">
+            <p class="head text-uppercase">{{ company.name|capfirst }} Related Jobs</p>
+            <div class="row">
+              <div class="col-md-6 related_jobs_block">
+                <strong>Skill Related Jobs</strong>
+                <ul>
+                {% for skill in job_list.0.skills.all %}
+                  <li><a href="/{{skill.slug}}-jobs/">{{skill.name}} Jobs</a></li>
+                {% empty %}
+                  {% for skill in skills|slice:":6"  %}
+                    <li><a href="/{{skill.slug}}-jobs/">{{skill.name}} Jobs</a></li>
+                  {% endfor %}
+                {% endfor %}
+
+                </ul>
+              </div>
+              <div class="col-md-6 related_jobs_block">
+                <strong>Industry related Jobs</strong>
+                <ul>
+                  {% for industry in job_list.0.industry.all %}
+                    <li><a href="/{{industry.slug}}-industry-jobs/">{{industry.name}} Jobs</a></li>
+                    {% empty %}
+                      {% for industry in industries|slice:":6"  %}
+                        <li><a href="/{{industry.slug}}-industry-jobs/">{{industry.name}} Jobs</a></li>
+                      {% endfor %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+      
+
+<!-- walkin_jobs starts here -->
+<div class="col-md-3 right_container">
+  <!-- upload_btn_block starts here -->
+  <div class="similar_job_posts" style="margin-bottom:10px;">
+    <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fpeeljobs%2F&width=300&height=150&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=892560280818752" width="300" height="150" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+  </div>
+  {% if request.user.is_authenticated %}
+  {% if request.user.is_jobseeker and not request.user.resume %}
+  <div class="upload_btn_block">
+   <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+    <div class="upload_btn" id="resume_upload_but"><a href="/profile/"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+      <input type="file" name="resume" id="resume" style="display:none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt"></span>
+      <button type="submit" name="submit" class="submit" style="
+        display:none;"><span>Submit</span></button>
+      </form>
+  </div>
+  {% endif %} 
+  {% else %}
+  <div class="upload_btn_block">
+    <div class="upload_btn upload_btn_resume"><a href="#" data-toggle="modal" data-target="#login_register"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+  </div>
+  {% endif %}
+  <!--subscribe_box form starts here -->
+  <div class="subscribe_box">
+    <div class="login_box">
+      <p class="head text-capitalize">SUBSCRIBE WITH US, TO GET JOBS INTO YOUR INBOX</p>
+      <form id="Jobsubscribeform" name="Jobsubscribeform" class="Jobsubscribeform" method = "POST">
+        <div class="form-group">
+          <select class="form-control" id="job_skills" name="skill" multiple>
+          </select>
+          <span class="skill_err"></span>
+          <p id="job_response_message"></p>
+        </div>
+        <div class="form-group">
+          {% if request.user.email %}
+          <input type="hidden" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address" value="{{ request.user.email }}" />
+          {% else %}
+          <input type="text" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address"/>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-default">Subscribe Here</button>
+      </form>
+    </div>
+  </div>
+  <!--subscribe_box form ends here -->
+    <div style="margin-top:10px;margin-bottom:10px;">
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- PJ Right Nav -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-5756092160559539"
+             data-ad-slot="3490610504"
+             data-ad-format="auto"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+
+  <!--register_login form starts here -->
+  {% if not request.user.is_authenticated %}
+  <div class="inner_login_box">
+    <div class="login_box">
+      <p class="head text-capitalize left_login_text">ALREADY A MEMBER? LOGIN</p>
+      <form  id="JobMailRegisterForm" name="JobMailRegisterForm" class="JobMailRegisterForm"
+        method = "POST" >
+        <div class="form-group">
+          <input type="text" name="email" id="mail_email" class="form-control" placeholder="Enter Your Email Address"/>
+          <p id="mail_response_message"></p>
+        </div>
+        <div class="form-group">
+          <input type="password" name="password" id="mail_password" class="form-control" placeholder="Enter Password"/>
+          <input type="hidden" name="register_type" id='left_register_type' value="login">
+        </div>
+        <button type="submit" class="btn btn-default left_login_form_button">Sign In</button>
+        <div class="forgot_create-new">
+          <a href="#" class="left_forgot_password">Forgot Password?</a> <a href="#" class="pull-right left_new_user_login" style="display:none;">Already a Member? Login</a>
+          <a href="#" class="pull-right left_new_account">Create New Account?</a>
+        </div>
+        <div class="clearfix"></div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+  <!--register_login form ends here -->
+  <div class="strip_box">
+                  <div class="strip">Show Your CODING Skills at <span style="color: #202b2e;">Runcode.io</span> (Launching soon)
+                  </div>
+              </div>
+  {%get_latest_walkins as walkins%}
+  {% if walkins %}
+  <div class="walkin_jobs">
+    <div class="heading text-uppercase">Walk-in Jobs</div>
+    <ul class="walkin_blocks">
+    {% for walkin in walkins|slice:"7" %}
+      <li class="walkin_block" id="{{ walkin.get_absolute_url }}">
+        <strong class="title"><a href="{{ walkin.get_absolute_url }}" target="_blank">{{ walkin.title }}</a></strong>
+        {% if walkin.company %}<p>{{ walkin.company.name }}</p>{% endif %}
+        <p class="location"><i class="fa fa-map-marker"></i>{%for location in walkin.location.all %} 
+        {% if location.status == 'Enabled' %}
+        <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+        {% else %}
+        <a style="cursor:default">{{ location.name }}</a>
+        {% endif %}
+        {% if forloop.last %}{% else %}, {% endif %}{% endfor %} </p>
+      </li>
+    {% endfor %}
+    <a href="{% url 'walkin_jobs' %}" target="_blank"><span class="view_all">See More</span></a>
+    </ul>
+  </div>
+  {% endif %}
+  <!-- walkin_jobs ends here -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- main_container ends here -->
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script>
+  $('#job_skills').empty()
+     $('#job_skills').append(new Option('Select a Skill', ''))
+     $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+         $.each(JSON.parse(data.response), function (key, field) {
+             $('#job_skills').append(new Option(field.fields.name, field.pk))
+         })
+     });
+</script>
+{% endblock %}

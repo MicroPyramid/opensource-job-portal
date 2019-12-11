@@ -1,0 +1,80 @@
+{% load compress %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PeelJobs</title>
+    <link rel="icon" type="image/x-icon" href="{{favicon}}"/>
+    <!-- FONT-->
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic'
+          rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <!--/ FONT-->
+    <!-- GLOBAL CSS-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <!--/ GLOBAL CSS-->
+    <!-- MY STYLE -->
+    {% compress css %}
+        <link rel="stylesheet" type="text/less" href="{% static 'css/admin_stylesheet.less' %}">
+    {% endcompress %}
+    <!--/ MY STYLE -->
+    <!-- GLOBAL SCRIPTS-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <!--/GLOBAL SCRIPTS-->
+</head>
+<body>
+<div class="login_wrapper">
+    <div class="logo">
+        <a href="/"><span class="img_div">
+          <img src="{{logo}}">
+        </span>
+        <span class="text_logo">
+
+          <span style="color: rgb(96, 125, 189); font-size: 35px;">Peel</span>
+          <span style="color: rgb(194, 85, 85); font-size: 35px;">Jobs</span>
+        </span>
+        </a>
+    </div>
+    <div class="clearfix"></div>
+    <h3 class="logo-text">Best Online Job Portal</h3>
+    <a class="customGPlusSignIn" href="{% url 'dashboard:google_login' %}">
+      <span class="icon"></span>
+      <span class="buttonText">Sign in With Google</span>
+    </a>
+    <!--<form id="login" action="." method="post">
+        <section id='sign_in' class="active_login_panel">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+                    <input type="text" class="form-control" name="email" placeholder="Email">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+                    <input type="password" class="form-control" name="password" placeholder="Password">
+                </div>
+            </div>
+            <div class="button_row_login">
+                <button class="sign_in_button" type="submit"><i class="fa fa-sign-in"></i>Sign In</button>
+            </div>
+        </section>
+    </form>-->
+</div>
+<!--<script type="text/javascript">
+    $('form#login').submit(function (e) {
+        e.preventDefault();
+        $.post('.', $('form#login').serialize(), function (data) {
+            if (data.error) {
+                alert(data.message)
+            }
+            else {
+                window.location = '/dashboard/';
+            }
+        }, 'json');
+    });
+</script>-->
+</body>
+</html>

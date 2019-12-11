@@ -1,0 +1,528 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load tz %}
+{% load static %}
+{% load page_tags %}
+{% block stage %}
+<style type="text/css">
+  .jobposts_table tr{
+    cursor: pointer;
+  }
+</style>
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="wrap">
+        <span>
+          <span class='name'>{{ recruiter.username }}</span>
+          <!--<span class='other_details'>Web Designer</span>-->
+          <span class='other_details'>{{ recruiter.email }}</span>
+        </span>
+        <img src="{% if recruiter.photo %}{{ recruiter.photo }}{% else %}{% static 'dummy.jpg' %}{% endif %}">
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>User Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Name</label>
+              <span class="description">
+              <span>{{ recruiter.first_name }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Email</label>
+              <span class="description">
+              <span>{{ recruiter.email }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Date Of Birth</label>
+              <span class="description">
+              {% if recruiter.dob %}
+                <span>{{ recruiter.dob }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Gender</label>
+              <span class="description">
+              {% if recruiter.gender %}
+                <span>{{ recruiter.gender }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Registered On<label>
+              <span class="description">
+                {{ recruiter.date_joined|timezone:"Asia/Calcutta"  }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>User-type<label>
+              <span class="description">
+                {{ recruiter.user_type  }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Last Name</label>
+              <span class="description">
+              {% if recruiter.last_name %}
+                <span>{{ recruiter.last_name }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Current Location</label>
+              <span class="description">
+              {% if recruiter.current_location %}
+                <span>{{ recruiter.current_location }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Mobile</label>
+              <span class="description">
+              {% if recruiter.mobile %}
+                <span>{{ recruiter.mobile }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Martial Status</label>
+              <span class="description">
+              {% if recruiter.marital_status %}
+                <span>{{ recruiter.marital_status }}</span>
+              {% else %}
+                <span>None</span>
+              {% endif  %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Last Login</label>
+              <span class="description">
+                {{ recruiter.last_login|timezone:"Asia/Calcutta"  }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!-- tabs -->
+      <div class="tab_button_row">
+      {% if recruiter.company %}
+      <span class='button fb linked active' panelid='user_company'><i class="fa fa-building"></i>Company</span>
+      {% endif %}
+      {% if recruiter.is_agency_admin %}
+        <span class='button fb linked' panelid='agency_recruiters'><i class="fa fa-user"></i>Agency Recruiters</span>
+      {% endif %}
+      <span class='button fb linked' panelid='fb_friends'><i class="fa fa-facebook"></i>Friends</span>
+      <span class='button fb' panelid='fb_pages'><i class="fa fa-facebook"></i>Pages</span>
+      <span class='button fb' panelid='fb_groups'><i class="fa fa-facebook"></i>Groups</span>
+      <span class='button twit linked' panelid='twit_friends'><i class="fa fa-twitter"></i>Friends</span>
+      <span class='button twit' panelid='twit_pages'><i class="fa fa-twitter"></i>Followers</span>
+      <span class='button linked' panelid='gplus_friends'><i class="fa fa-google-plus"></i>Friends</span>
+      <span class='button linked job_posts' panelid='job_posts'><i class="fa fa-building"></i>JobPosts</span>
+      {% if recruiter.get_active_jobposts_count >= 100 %}
+        <span class='button gplus linked' panelid='bank_details'><i class="icon-money"></i>Payment Details</span>
+      {% endif %}
+      </div>
+      {% if recruiter.company %}
+      <!-- Recruiter Company -->
+      <div class="tab_content active" id='user_company'>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Name</label>
+              <span class="description">
+              <span>{{ recruiter.company.name }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Type</label>
+              <span class="description">
+              <span>{{ recruiter.company.company_type  }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Website</label>
+              <span class="description">
+              {%if recruiter.company.website %}
+               <a href="{{ recruiter.company.website }}" target="_blank"><span>{{ recruiter.company.website }}</span></a>
+               {% else %}Not Specified{% endif %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Level</label>
+              <span class="description">
+              {% if recruiter.company.level %}
+                <span>{{ recruiter.company.level }}</span>
+              {% else %}
+                <span>N/A</span>
+              {% endif  %}
+
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <img src="{{ recruiter.company.get_logo_url }}" width="150" height="150">
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Address</label>
+              <span class="description">
+              {% if recruiter.company.address %}
+                <span>{{ recruiter.company.address }}</span>
+              {% else %}
+                <span>N/A</span>
+              {% endif  %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="tile_each">
+              <label>Description<label>
+              <span class="description">
+                {{ recruiter.company.profile|safe }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!--/Recruiter Company ends -->
+      {% endif %}
+      <!--/Agency Recruiter starts -->
+      <div class="tab_content" id='agency_recruiters'>
+        {% if agency_recruiters %}
+        <table class="table jobposts_table" id="sample_1">
+          <thead>
+            <tr>
+              <th width="1%"></th>
+              <th width="15%">Email</th>
+              <th width="10%">Name</th>
+              <th width= "25%";>Job Posts</th>
+              <th width="10%">Joined On</th>
+              <th width="10%">Mobile Verified</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for agency in agency_recruiters %}
+              <tr data-href="{% url 'dashboard:view_recruiter' agency.id %}" class="job_detail">
+                <td>{{ forloop.counter }}</td>
+                <td><a>{{ agency.email }}</a></td>
+                <td>{{ agency.get_full_name }}</td>
+                <td><span class="draft-bg">{{ agency.get_total_jobposts|filter_jobposts:'Draft' }}</span><span class="pending-bg">{{ agency.get_total_jobposts|filter_jobposts:'Pending' }}</span><span class="published-bg">{{ agency.get_total_jobposts|filter_jobposts:'Published' }}</span><span class="live-bg">{{ agency.get_total_jobposts|filter_jobposts:'Live' }}</span><span class="deleted-bg">{{ agency.get_total_jobposts|filter_jobposts:'Disabled' }}</span></td>
+                <td>{{ agency.date_joined|timezone:'Asia/Calcutta' }}</td>
+                <td align="center">{% if agency.mobile_verified %}<span class="verified"><i class="fa fa-mobile"></i></span>{% else %}<span class="not_verified"><i class="fa fa-mobile"></i></span>{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+            <!--/ post details -->
+            {% else %}
+          No Agency Recruiters available
+      {% endif %}
+      </div>
+      <!--/Agency Recruiter ends -->
+      <!-- fb friends -->
+      <div class="tab_content" id='fb_friends'>
+      {% if recruiter.get_user_facebook_friends %}
+        {% for friend in recruiter.get_user_facebook_friends %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>User Name</label>
+              <span class="description">
+              <a href="{{ friend.facebook_id }}" class="fb_friends"><span>{{ friend.name }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endfor %}
+        {% else %}
+          User not connected to facebook
+        {% endif %}
+      </div>
+      <!--/fb friends -->
+      <!-- fb pages -->
+      <div class="tab_content" id='fb_pages'>
+      {% if recruiter.get_user_facebook_pages %}
+      {% for page in recruiter.get_user_facebook_pages %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>First Name</label>
+              <span class="description">
+              <a href="{{ page.page_id }}" class="fb_friends"><span>{{ page.name }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endfor %}
+        {% else %}
+          User not connected to facebook
+        {% endif %}
+
+      </div>
+      <!--/fb pages -->
+
+      <!-- fb groups -->
+      <div class="tab_content" id='fb_groups'>
+      {% if recruiter.get_user_facebook_groups %}
+      {% for group in recruiter.get_user_facebook_groups %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>First Name</label>
+              <span class="description">
+              <a href="{{ group.group_id }}"><span>{{ group.name }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endfor %}
+        {% else %}
+          User not connected to facebook
+        {% endif %}
+
+      </div>
+      <!--/fb groups -->
+
+      <!-- twit friends  -->
+      <div class="tab_content" id='twit_friends'>
+      {% if  recruiter.get_user_twitter_friends%}
+      {% for friend in recruiter.get_user_twitter_friends %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>First Name</label>
+              <span class="description">
+              <a href="{{ friend.screen_name }}" class="tw_friends"><span>{{ friend.screen_name }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endfor %}
+        {% else %}
+          User not connected to Twitter
+        {% endif %}
+
+      </div>
+      <!--/ twit friends -->
+
+      <!-- twit pages  -->
+      <div class="tab_content" id='twit_pages'>
+      {% if recruiter.get_user_twitter_followers %}
+      {% for follower in recruiter.get_user_twitter_followers %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>First Name</label>
+              <span class="description">
+              <a href="{{ follower.screen_name }}" class="tw_friends"><span>{{ follower.screen_name }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endfor %}
+        {% else %}
+          User not connected to Twitter
+        {% endif %}
+
+      </div>
+      <!--/ twit pages -->
+
+
+      <!-- gplus friends  -->
+      <div class="tab_content"  id='gplus_friends'>
+      {% if recruiter.get_user_google_friends %}
+        {% for friend in recruiter.get_user_google_friends %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>First Name</label>
+              <span class="description">
+              <a href="{{ friend.friend_id }}" class="gp_friends"><span>{{ friend.fullname }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        {% endfor %}
+        {% else %}
+          User not connected to G+
+        {% endif %}
+      </div>
+      {% if recruiter.get_active_jobposts_count >= 100 %}
+      <div class="tab_content"  id='bank_details'>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Account Holder Name</label>
+              <span class="description">
+              <span>{{ recruiter.account_holder_name }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Account Number</label>
+              <span class="description">
+              <span>{{ recruiter.account_number }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Bank Name</label>
+              <span class="description">
+              <span>{{ recruiter.bank_name }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+
+            <div class="tile_each">
+              <label>Branch Name</label>
+              <span class="description">
+              <span>{{ recruiter.branch_name }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Is Paid</label>
+              <span class="description">
+              <span>{{recruiter.is_paid }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      {% endif %}
+      <!--/ gplus friends -->
+      <!--JobPosts -->
+      <div class="tab_content" id='job_posts'>
+        {% if posts %}
+        <h4>Job Posts</h4>
+        <table class="table jobposts_table" id="sample_1">
+          <thead>
+            <tr>
+              <th width="8%"></th>
+              <th width="12%">Job Title</th>
+              <th width="25%">Location</th>
+              <th width="5%">Job Status</th>
+              <th width="10%">Posted By</th>
+              <th width="15%">Posted On</th>
+              <th width="10%">Applied Users</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in posts %}
+              <tr data-href="{% url 'dashboard:post_detail' post.id %}" class="job_detail">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ post.title }}</td>
+                <td>{% for location in post.location.all %}{% if forloop.last and not forloop.next_element %}{{ location.name }}{% else %}{{ location.name }},{% endif %}{% endfor %}
+                </td>
+                <td>{{ post.status }}</td>
+                <td>{{ post.user.username }}</td>
+                <td>{{ post.published_on|date:"M. d, Y" }}</td>
+                <td>{{ post.responses }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+            <!--/ post details -->
+            <div class="pagination_wrap">
+              {% get_page current_page last_page as pages %}
+              <nav>
+                  <ul class="pagination">
+                  {% if current_page != 1 %}
+                    <li class="prev"><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+                    <li class="prev"><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page=1">first</a></li>
+                    {% endif %}
+                    {% for s in pages %}
+                    <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{s}}">{{s}}</a></li>
+                    {% endfor %}
+                    {% if current_page != last_page %}
+                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{last_page}}">last</a></li>
+                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+                    {% endif %}
+                  </ul>
+              </nav>
+            </div>
+            {% else %}
+      No jobposts available
+      {% endif %}
+      </div>
+      <!--JobPosts ends-->
+
+      <!--/ tabs -->
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+  $(".job_detail").click(function() {
+      window.document.location = $(this).data("href");
+  });
+  {% if 'page' in request.GET %}
+    $('.tab_button_row').find('span').removeClass('active')
+    $('.tab_content').removeClass('active')
+    $('.job_posts, #job_posts').addClass('active')
+  {% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,1153 @@
+[{
+    "model": "peeldb.skill",
+    "pk": 1,
+    "fields": {
+        "name": "Java",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 2,
+    "fields": {
+        "name": ".Net",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 3,
+    "fields": {
+        "name": "Python",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 4,
+    "fields": {
+        "name": "C",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 5,
+    "fields": {
+        "name": "PHP",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 6,
+    "fields": {
+        "name": "Ajax",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 7,
+    "fields": {
+        "name": "Html",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 8,
+    "fields": {
+        "name": "Css",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 9,
+    "fields": {
+        "name": "Django",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 10,
+    "fields": {
+        "name": "Flask",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 11,
+    "fields": {
+        "name": "MySQL",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 12,
+    "fields": {
+        "name": "Mongodb",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 13,
+    "fields": {
+        "name": "AWS",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 14,
+    "fields": {
+        "name": "SEO",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 15,
+    "fields": {
+        "name": "Search Engine Optimization",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 16,
+    "fields": {
+        "name": "Web Marketing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 17,
+    "fields": {
+        "name": "Internet Marketing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 18,
+    "fields": {
+        "name": "Content Writing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 19,
+    "fields": {
+        "name": "PPC",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 20,
+    "fields": {
+        "name": "Social Media Marketing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 21,
+    "fields": {
+        "name": "Cognos",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 22,
+    "fields": {
+        "name": "Datastage",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 23,
+    "fields": {
+        "name": "mbm",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 24,
+    "fields": {
+        "name": "Testing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 25,
+    "fields": {
+        "name": "C++",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 27,
+    "fields": {
+        "name": "Sales\r\n",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 28,
+    "fields": {
+        "name": "Marketing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 32,
+    "fields": {
+        "name": "Content Editing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 33,
+    "fields": {
+        "name": "Technical Writing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 34,
+    "fields": {
+        "name": "",
+        "status": "InActive",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 35,
+    "fields": {
+        "name": "Adobe Photoshop",
+        "status": "Active",
+        "icon": "http://d2pt99vxm3n8bc.cloudfront.net/technology/icons/PSicon.png"
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 38,
+    "fields": {
+        "name": "Fresher",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 39,
+    "fields": {
+        "name": "CorelDraw",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 40,
+    "fields": {
+        "name": "Quark Express",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 41,
+    "fields": {
+        "name": "Adobe Illustrator",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 45,
+    "fields": {
+        "name": "DIGITAL ELECTRONICS",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 46,
+    "fields": {
+        "name": "Fresher, Telemarketing",
+        "status": "Active",
+        "icon": "http://d2pt99vxm3n8bc.cloudfront.net/technology/icons/250*250.png"
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 49,
+    "fields": {
+        "name": "Android",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 50,
+    "fields": {
+        "name": "Iphone/IOS",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 51,
+    "fields": {
+        "name": "J2EE",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 52,
+    "fields": {
+        "name": "ASP.NET",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 53,
+    "fields": {
+        "name": "Pharma",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 54,
+    "fields": {
+        "name": "Biology",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 57,
+    "fields": {
+        "name": "biotechnology",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 59,
+    "fields": {
+        "name": "programming languages",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 62,
+    "fields": {
+        "name": "Telecalling services",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 63,
+    "fields": {
+        "name": "Angular Js",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 64,
+    "fields": {
+        "name": "oops concepts",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 65,
+    "fields": {
+        "name": "Mean stack",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 67,
+    "fields": {
+        "name": "web Designing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 68,
+    "fields": {
+        "name": "Microsoft Access skills",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 69,
+    "fields": {
+        "name": "ASP",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 70,
+    "fields": {
+        "name": "MIS Reporting",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 71,
+    "fields": {
+        "name": "Operations  Management",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 72,
+    "fields": {
+        "name": "sharepoint",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 73,
+    "fields": {
+        "name": "LINQ",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 74,
+    "fields": {
+        "name": "Jquery",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 75,
+    "fields": {
+        "name": "WCF",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 77,
+    "fields": {
+        "name": "Javascript",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 78,
+    "fields": {
+        "name": "Database",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 79,
+    "fields": {
+        "name": "Adv MVC arch",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 81,
+    "fields": {
+        "name": "Flash",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 82,
+    "fields": {
+        "name": "wordpress",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 83,
+    "fields": {
+        "name": "c#",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 84,
+    "fields": {
+        "name": "Angular JS ",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 86,
+    "fields": {
+        "name": "Mathematics",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 87,
+    "fields": {
+        "name": "science",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 89,
+    "fields": {
+        "name": "Drupal",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 92,
+    "fields": {
+        "name": "BPO",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 93,
+    "fields": {
+        "name": "Hr",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 94,
+    "fields": {
+        "name": "Designing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 95,
+    "fields": {
+        "name": "joomla",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 98,
+    "fields": {
+        "name": "physics",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 100,
+    "fields": {
+        "name": "MS-office",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 102,
+    "fields": {
+        "name": "e-learning projects",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 103,
+    "fields": {
+        "name": "accounting",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 104,
+    "fields": {
+        "name": "cashflow",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 105,
+    "fields": {
+        "name": "finance",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 106,
+    "fields": {
+        "name": "Teamwork",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 108,
+    "fields": {
+        "name": "verbal communication",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 109,
+    "fields": {
+        "name": "software implementations",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 110,
+    "fields": {
+        "name": "data entry",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 113,
+    "fields": {
+        "name": "symphony",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 114,
+    "fields": {
+        "name": "cake php",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 115,
+    "fields": {
+        "name": "Magento ",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 116,
+    "fields": {
+        "name": "windows server 2008,2012",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 118,
+    "fields": {
+        "name": "Ms sql",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 120,
+    "fields": {
+        "name": "JSF",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 121,
+    "fields": {
+        "name": "non technical",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 122,
+    "fields": {
+        "name": "Pile Foundation Job",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 123,
+    "fields": {
+        "name": "Banking",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 124,
+    "fields": {
+        "name": "ED coders",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 125,
+    "fields": {
+        "name": "Spring",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 126,
+    "fields": {
+        "name": "Electrical",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 127,
+    "fields": {
+        "name": "Hybernate",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 128,
+    "fields": {
+        "name": "Jaspersoft",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 129,
+    "fields": {
+        "name": "Servlet",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 130,
+    "fields": {
+        "name": "Struts",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 131,
+    "fields": {
+        "name": "plsql",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 132,
+    "fields": {
+        "name": "Sql Server",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 133,
+    "fields": {
+        "name": "Database Integration",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 134,
+    "fields": {
+        "name": "Bootstrap",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 135,
+    "fields": {
+        "name": "Unix",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 136,
+    "fields": {
+        "name": "Linux",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 139,
+    "fields": {
+        "name": "Illustrator",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 140,
+    "fields": {
+        "name": "Photoshop",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 141,
+    "fields": {
+        "name": "Micro controller",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 143,
+    "fields": {
+        "name": "windows based application using c++",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 144,
+    "fields": {
+        "name": "VBA",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 145,
+    "fields": {
+        "name": "ABAP",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 146,
+    "fields": {
+        "name": "VB script",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 147,
+    "fields": {
+        "name": "Xml",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 148,
+    "fields": {
+        "name": "Apache Tomcat ",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 149,
+    "fields": {
+        "name": "Spring Framework",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 150,
+    "fields": {
+        "name": "Hibernate",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 151,
+    "fields": {
+        "name": "Web frame work",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 152,
+    "fields": {
+        "name": "Eclipse",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 155,
+    "fields": {
+        "name": "JMS",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 156,
+    "fields": {
+        "name": "JPA",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 157,
+    "fields": {
+        "name": "Jsp",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 158,
+    "fields": {
+        "name": "VB.Net",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 159,
+    "fields": {
+        "name": "Json",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 160,
+    "fields": {
+        "name": "ADO .Net",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 161,
+    "fields": {
+        "name": "WEB API",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 162,
+    "fields": {
+        "name": "MVC",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 163,
+    "fields": {
+        "name": "Web service",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 164,
+    "fields": {
+        "name": "Web Application",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 165,
+    "fields": {
+        "name": "Windows service",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 166,
+    "fields": {
+        "name": "Azure",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 167,
+    "fields": {
+        "name": "Entity Framework",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 168,
+    "fields": {
+        "name": ".Net Framework",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 169,
+    "fields": {
+        "name": "CAD/PLM testing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 170,
+    "fields": {
+        "name": "Trainee",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 171,
+    "fields": {
+        "name": "Graphical designer",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 172,
+    "fields": {
+        "name": "Intellimatch",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 173,
+    "fields": {
+        "name": "Data structures",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 174,
+    "fields": {
+        "name": "Hadoop",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 175,
+    "fields": {
+        "name": "xml",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 176,
+    "fields": {
+        "name": "Flex",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 177,
+    "fields": {
+        "name": "jdbc",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 178,
+    "fields": {
+        "name": "Graphical designing",
+        "status": "Active",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 181,
+    "fields": {
+        "name": "Business analysis",
+        "status": "InActive",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 182,
+    "fields": {
+        "name": "Arduino",
+        "status": "InActive",
+        "icon": ""
+    }
+}, {
+    "model": "peeldb.skill",
+    "pk": 183,
+    "fields": {
+        "name": "Oracle",
+        "status": "InActive",
+        "icon": ""
+    }
+}]

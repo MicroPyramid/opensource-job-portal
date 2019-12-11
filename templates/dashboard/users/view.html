@@ -1,0 +1,105 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% block stage %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="wrap">
+        <span>
+          <span class='name'>{{ user.username }}</span>
+          <!--<span class='other_details'>Web Designer</span>-->
+          <span class='other_details'>{{ user.email }}</span>
+        </span>
+        <img src="{% if user.profile_pic %}//d2pt99vxm3n8bc.cloudfront.net/{{ user.profile_pic }}{% else %}{% static 'dummy.jpg' %}{% endif %}">
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>User Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>First Name</label>
+              <span class="description">
+              <span>{% if user.first_name %}{{ user.first_name }}{% else %} Not Specified {% endif %}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Email</label>
+              <span class="description">
+              <span>{{ user.email }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+
+            <div class="tile_each">
+              <label>Gender</label>
+              <span class="description">
+              {% if user.gender %}
+              <span>{{ user.gender }}</span>
+              {% else %}
+                <span>Not Specified</span>
+              {% endif  %}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Last Name</label>
+              <span class="description">
+              {% if user.last_name %}
+                <span>{{ user.last_name }}</span>
+              {% else %}
+                <span>Not Specified</span>
+              {% endif  %}
+
+              </span>
+              <div class="clearfix"></div>
+            </div>
+
+            <div class="tile_each">
+              <label>Mobile</label>
+              <span class="description">
+              {% if user.mobile %}
+                <span>{{ user.mobile }}</span>
+              {% else %}
+                <span>Not Specified</span>
+              {% endif  %}
+
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!--/ post details -->
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+$("span.download").click(function(e) {
+    window.location = $(this).attr('id');
+  });
+
+$(document).ready(function() {
+    $('.fb_friends').click(function(e) {
+      e.preventDefault();
+      window.open('http://facebook.com/' + $(this).attr('href') + '/');
+    });
+    $('.tw_friends').click(function(e) {
+      e.preventDefault();
+      window.open('http://twitter.com/' + $(this).attr('href') + '/');
+    });
+  });
+</script>
+{% endblock %}

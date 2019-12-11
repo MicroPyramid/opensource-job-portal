@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load searchtags %}
+
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>About US - Peeljobs</title>
+
+  <meta name="description" content="Online Jobs and Career site in India to build bright career. Read more about PeelJobs"/>
+
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+
+    <div class="content_div">
+      <!-- SEARCH PART -->
+      <section id='content_pages' class="main_container">
+        <div class="container">
+        <div class="breadcrumb_section">
+          <nav>
+            <ol class="cd-breadcrumb triangle">
+              <li>
+                <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+                  <span class="name" >Home</span>
+                </a>
+              </li>
+              <li class="current">
+                <span class='job_detail'>
+                  <span class="name">About Us</span>
+                </span>
+              </li>
+            </ol>
+          </nav>
+        </div>
+          <div class="row mar_lr_0 content-page" style="margin-left:17px;margin-top: 12px;">
+            <!-- content starts here -->
+              <h3 class="title">About US</h3>
+                <div class="content">
+                   <p>Peeljobs.com is one of the leading jobs board now a days, attracting a lot of job seekers every month on the hunt of more than hundreds live job ads the site carries at any one time. What you want is what you get at right time with right information at right place is what the motto of this job board. Hundreds of recruiters from multinational to smaller company, consultants and advertising agencies use peeljobs.com to recruit individuals almost in every sector.It helps both IT and non IT companies to find the best fitting resumes open for a job, position or a project. We help thousands of tech professionals to find a job every day.</p>
+                   <p>Peeljobs.com is a comprehensive online service job portal which aims at providing one stop platform for all the participants of job market. Be it a job seeker, a recruiter or an employer all would find a worth of their search. Peeljobs.com with its user friendly interface, intends to make the work effortless and simple. </p>
+                   <p>Peeljobs.com is constantly working on improving the coverage of jobs and relevance of the results to help the users in finding their continuous and ever changing needs. Anyone visiting/logging onto this website is assured of finding the suitable fit. The essence of the entire functionality is based on the focused approach for focused people logging on to the job portal.</p>
+                   <p>Typically job hunt is also a job. Definitely, Peeljobs.com does it for you.</p><p>we provide a fast and better way to find a job for jobseeker according to location, skills, qualifications, experience etc. </p>
+                   <p>our online system helps recruiter finds the best available talent from its large continuously refreshed candidate database of active &nbsp;job seekers which includes indians, US citizens, Green card holders, H1B work permit holders etc.</p>
+                   <p>Our integrated technology greatly benefits the large staffing agencies with multiple recruiters by reducing over 99% &nbsp;of their sourcing time and effort in identifying resumes that most a fit a job requirement.</p>
+                   <p>Applying to jobs are completely free for candidates. Our site completely eliminates the need for search and connects them with the right job opportunity multiple times a day. </p>
+                   <p>Peeljobs.com provides the perfect platform for the young candidates to seize the best job opportunity suiting their backgrounds by screening them the huge of available job opportunities.</p>
+                   <p>The platform is provided for candidates from backgrounds like finance/accounts, IT/ITES, Pharmaceuticals, marketing, manufacturing and many other sectors.</p><p><b>In short Peeljobs.com is….</b></p>
+                   <ul>
+                   <li>Your source for employment information and inspiration</li>
+                   <li>The place to manage your career</li>
+                   <li>Your pathway to career success</li>
+                   <li>Tools to help job seekers, students and career professionals. </li></ul>
+                   <p>Peeljobs.com is the fastest online recruitment company which attracts huge amount of job seekers generating tremendous amount of applications. To enquire about advertising your job vacancies on peeljobs.com please contact the address mentioned below.</p>
+                
+                </div>
+                
+            <!-- content ends here -->
+             
+            
+              <!-- Tab panes -->
+              
+          </div>
+        </div>
+      </section>
+      <!-- content of job page -->
+    </div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,1639 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% block jobs %}
+<li class="job active"><a class="post-new" href="#">Post A new job</a></li>
+<li class="job"><a href="{% url 'recruiter:list' %}">jobs list</a></li>
+{% endblock %}
+{% block 'stage' %}
+<style>
+  .map_wrapper {
+  height: 300px;
+  }
+  .map_canvas {
+  width: 100%;
+  height: 100%;
+  }
+  .error_border{
+    border: 1px solid red !important;
+  }
+  .hide{
+    display: none;
+  }
+  .show{
+    display: block;
+  }
+</style>
+
+<!-- content -->
+<div class="content_wrap">
+<section id='job_post_new'>
+  <!--menu-->
+  <div class="tab_row">
+    <a href="{% url 'recruiter:new' 'full-time' %}">
+      <span class="tab_button {% if status == 'full-time' %}active{% endif %}"> Full-Time</span>
+    </a>
+    <a href="{% url 'recruiter:new' 'internship' %}">
+      <span class="tab_button {% if status == 'internship' %}active{% endif %}">Internship</span>
+    </a>
+    <a href="{% url 'recruiter:new' 'walk-in' %}">
+      <span class="tab_button {% if status == 'walk-in' %}active{% endif %}">Walk-In</span>
+    </a>
+  </div>
+  <!--menu-->
+  <div class="row marl_15 inner_main_container">
+    <div class="job_text_upper col-md-12">
+      <h3>Post a Job</h3>
+      <p>Peeljobs is offering unlimited job posting and for the unlimited time period<br>
+      Your post will be on live within one hour and you will get a notification mail if any job seeker applied for your job</p>
+    </div>
+    <div class="col-md-8 left_forms_container">
+      <div class="panel panel-default">
+      <div class="panel-content">
+
+        {% if show_recruiters %}
+          <!-- copy_row starts here -->
+          <div class="row copy_row">
+            <div class="copy_left">
+              <!-- copy job post from -->
+              <div class="copy_job panel panel-default">
+                <div class="panel-body">
+                  <div class="text-center action_button_row">
+                    <a><span id="active" class='button active_job active_class jobpost'>Active jobs</span></a>
+                    <a><span id="inactive" class='button active_job jobpost'>Inactive jobs</span></a>
+                  </div>
+                  <div class="row">
+                  <label class="copy_title col-md-3">Copy from an existing job</label>
+                  <div class="col-md-9 pad_lr_0">
+                  <select class="input" name="jobpost" id='jobpost' >
+                   <option id="empty" value="">Select From Active Jobs To Autofill</option>
+                    {% for jobpost in jobposts %}
+                    <option value="{{jobpost.id}}" id="{% if jobpost.status == 'Disabled' %}inactive{% elif jobpost.status == 'Expired' %}inactive{%else%}active{% endif %}" {% if jobpost.status == 'Disabled' %}class="jobposts"{% elif jobpost.status == 'Expired' %}class="jobposts"{%else%}{% endif %}>{{jobpost.title}}</option>
+                    {% endfor %}
+                  </select>
+                  </div>
+                  </div>
+                </div>
+              </div>
+              <!--/ copy job post from -->
+            </div>
+          </div>
+        <!-- copy_row ends here -->
+
+            <!--Alert warning starts-->
+            <div class="alert alert-warning" id="errors_display"style="display:none">
+              <div><i class="fa fa-times-circle" aria-hidden="true" style="color:red"></i>
+                <span id="error_count"></span>
+              </div>
+              <a href="#" class="close" data-dismiss="alert" style="color: #FF0505;opacity:0.8;margin-top:-10px">&times;</a>
+              <i class="fa fa-times-circle" aria-hidden="true" style="color:red"></i>
+              <strong>Please fill the details which are in RED colour and re-submit the page</strong>
+            </div>
+            <!--Alert warning ends-->
+           <form id="jobform" name="jobform" method="post" enctype="multipart/form-data">
+              <!-- individual_form starts here -->
+           {% if request.user.is_agency_recruiter or request.user.is_agency_admin %}
+              <div class="individual_form">
+                <h4 class="heading">Agency Options</h4>
+                  <div class="form_block">
+                 <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Job Type <span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                         <select class="input" name='agency_job_type' id="agency_job_type">
+                          <option value=''>Select A Job Type</option>
+                          {% for agency_job_type in agency_job_types %}
+                          <option value="{{ agency_job_type.0 }}">{{ agency_job_type.1 }}</option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                      </div>
+                      <!--/input element -->
+                  <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Invoice</label>
+                        <div class="col-md-9 pad_lr_0">
+                         <select class="input" name="agency_invoice_type" id="agency_invoice_type">
+                            <option value=''>Select Invoice Type</option>
+                            {% for invoice in agency_invoice_types %}
+                            <option value="{{ invoice.0 }}">{{ invoice.1 }}</option>
+                            {% endfor %}
+                          </select> 
+                          <span>If you are a consultancy choose your invoice type to get amount from your client company</span>
+                        </div>
+                      </div>
+                      <!--/input element -->
+                       <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Amount</label>
+                       <input type="text" class="input col-md-9" name="agency_amount" id="agency_amount">
+                      </div>
+                      <!--/input element -->
+                       <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Recruiter <span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                        <select class="input select2" multiple name="agency_recruiters" id="agency_recruiters">
+                          <option value=''>Select Recruiter</option>
+                          {% for recruiter in recruiters %}
+                            {% if recruiter.agency_admin or recruiter|check_recruiter_perm:"jobposts_edit"  %}
+                              <option value="{{recruiter.id}}" {% ifequal request.user.email recruiter.email %} selected{% endifequal %}>{{ recruiter.email }}</option>
+                            {% endif %}
+                          {% endfor %}
+                        </select>
+                        </div>
+                      </div>
+                      <!--/input element -->
+                        <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Client </label>
+                        <div class="col-md-9 pad_lr_0">
+                        <select class="input " name='agency_client' id="agency_client">
+                            <option value=''>Select A Client</option>
+                            {% for client in clients %}
+                            <option value="{{ client.id }}">{{ client.name }}</option>
+                            {% endfor %}
+                          </select>
+                          <span class="hint">
+                          If you are a consultancy please select your client {% if not clients %} <strong data-toggle="modal"  class="mytip"><a href="{% url 'agency:add_client'%}" target="_blank">Create Clients Here</a></strong>{% endif %}</span>
+                        </div>
+                      </div>
+                      <!--/input element -->
+                  </div>
+              </div>
+              {% endif %}
+              <!-- /individual_form ends here -->
+              <!-- Job details individual_form starts here -->
+              <div class="individual_form">
+                <h4 class="heading">Job Details</h4>
+                  <div class="form_block">
+                     <!--input element
+                      {% if not status == 'walk-in' %}
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Job Code <span class="red_hint">*</span></label>
+                        <input type="text" class="input col-md-9" placeholder="Job Code" name="code" id="code">
+                         <span class="hint col-md-offset-3">Click here for sample <strong data-toggle="modal" data-target="#myModal" class="mytip">Job Code</strong>
+                         <span style="display:none" class="mylist">
+                         <ol type="1" >
+                                <li>Helloooooo aaaalllllll</li>
+                                 <li>Toggle a modal via JavaScript by clicking the button below. It will</li>
+                              </ol></span>
+                         </span>
+                      </div>
+                      {% endif %}
+                       input element -->
+                      <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Job Title <span class="red_hint">*</span></label>
+                        <input type="text" class="input col-md-9" name="title" id="title" title="Be specific with your titles as Openings for java developer or Urgent Requirement for Java developer">
+                        <span class="hint col-md-offset-3">
+                        Be specific with your Job Title. <strong data-toggle="modal" data-target="#myModal" class="mytip">View Instructions</strong>
+                          <span style="display:none" class="mylist">
+                            <ol type="1" >
+                              <li>Avoid using Abbreviations eg: Use Assistant manager Instead of Asst.mgnr</li>
+                              <li>Job title is the first thing job seekers see when they search for jobs</li>
+                            </ol>
+                          </span>
+                        </span>
+                      </div>
+                      <!-- Modal -->
+                      <div class="modal post_job_modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <h4 class="modal-title">Instructions - <span id="myModalLabel">Job title</span></h4>
+                            </div>
+                            <div class="modal-body">
+                             <!-- <span class="location"><i class="fa fa-map-marker"></i> Hyderabad/Secunderabad</span>-->
+                             <span id="target_list">
+                              <ol type="1">
+                                <li>Toggle a modal via JavaScript by clicking the button below. It will slide down and fade in from the top of the page.</li>
+                                 <li>Toggle a modal via JavaScript by clicking the button below. It will</li>
+                              </ol></span>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                      <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Job Role <span class="red_hint">*</span></label>
+                        <input type="text" class="input col-md-9" name="job_role" id="job_role" title="Use Complete words, Avoid using Abbreviations eg: Use Assistant manager Instead of Asst.mgnr">
+                      </div>
+                      <!--/ input element -->
+                      <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Number of Vacancies</label>
+                      <input type="number" class="input col-md-9" min='0' name="vacancies" id="vacancies">
+                      </div>
+                      <!--/ input element -->
+                       <!--input element
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Country<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                          <select class="input" name="country" id="country">
+                          <option value="">Country</option>
+                          {% for country in countries %}
+                          <option value="{{country.id}}">{{country.name}}</option>
+                          {% endfor %}
+                           </select>
+                        </div>
+                      </div>
+                      input element -->
+                      <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Job Location<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                        <select class="input select2" multiple name="location" id="location">
+                            {% for city in cities %}
+                            <option value="{% firstof city.parent_city.id city.id %}">{{city.name}}</option>
+                            {% endfor %}
+                          <option value="other_location">Other Location</option>
+                        </select>
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                      <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Pincode</label>
+                      <input type="text" class="input col-md-9" name="pincode" id="pincode">
+                      </div>
+                      <!--/ input element -->
+                       <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Keywords</label>
+                       <input type="text" class="input key_words col-md-9" name="keywords" id="keywords" title="Enter Keywords like Designation, skills required, special qualifications, certifications, Profissional skills etc">
+                        <span class="hint col-md-offset-3">
+                        Add if any certifications/special skills are required. View samples  <strong data-toggle="modal" data-target="#myModal" class="mytip">Here</strong>
+                          <span style="display:none" class="mylist">
+                         <ol type="1" >
+                                <li>Enter Keywords like Designation, skills required, special qualifications, certifications, Profissional skills etc</li>
+                                 <li>Avoid using Abbrevations eg:  Use Technical support Executive instead of Tech suppt exec</li>
+                              </ol>
+                            </span>
+                        </span>
+                      </div>
+                      <!--/ input element -->
+
+                       <!--input element -->
+                      <div class="input_element row marl_15 has-feedback">
+                        <label class="col-md-3">Industry<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                      <select class="input select2" multiple name="industry" id="industry">
+                      {% for industry in industries %}
+                        <option value="{{industry.id}}">{{industry.name}}</option>
+                      {% endfor %}
+                      <option value="other_industry">Other Industry</option>
+                      </select>
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                      <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Functional area<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                       <select class="input select2" multiple name="functional_area" 
+                        id="functional_area">
+                          {% for fa in functional_area %}
+                          <option value="{{ fa.id }}">{{ fa.name }}</option>
+                          {% endfor %}
+                          <option value="other_functional_area">Other Functional Area</option>
+                        </select>
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                       <!--input element -->
+                      <div class="input_element  row marl_15  area_element">
+                        <label class="col-md-3">Job Description<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                        <textarea class="input" name='textareacontents' id='textareacontents' ></textarea>
+                        <input type="hidden" name="description" id="description">
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                  </div>
+              </div>
+              <!-- Job details individual_form ends here -->
+
+              <!-- Eligability details individual_form starts here -->
+              <div class="individual_form">
+                <h4 class="heading">Eligibility Details</h4>
+                  <div class="form_block">
+                     <!--input element -->
+                      <div class="input_element row marl_15 ">
+                        <label class="col-md-3">Experience<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                        <div class="col-md-12 pad_lr_0">
+                        <div class="col-md-3 pad_lr_0">
+                        <select class="input" name="min_year" id="min_year" style="width:96%">
+                          <option value="" default>Min Year</option>
+                          {% for year in years %}
+                          <option value="{{ year.0 }}" id="{{ forloop.counter }}">{{ year.1}}</option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                         <div class="col-md-3 pad_lr_0">
+                        <select class="input" name="min_month" id="min_month" style="width:96%">
+                          <option value="" default>Min Month</option>
+                          {% for month in months%}
+                          <option value="{{ month.0 }}" id="{{ forloop.counter }}">{{ month.1 }}</option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                         <div class="col-md-3 pad_lr_0">
+                        <select class="input experience" name="max_year" id="max_year" style="width:96%">
+                          <option value="" default>Max Year</option>
+                          {% for year in years %}
+                          <option value="{{ year.0 }}" class="max_experience" id="{{ forloop.counter }}">{{ year.1}}</option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                         <div class="col-md-3 pad_lr_0">
+                        <select class="input" name="max_month" id="max_month">
+                          <option value="" default>Max Month</option>
+                          {% for month in months%}
+                          <option value="{{ month.0 }}" class="max_experience" id="{{ forloop.counter }}">{{ month.1 }}</option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                        </div></div>
+                      </div>
+                      <!--/ input element -->
+
+                        <!--input element -->
+                      <div class="input_element row marl_15 ">
+                        <label class="col-md-3">Educational Qualification</label>
+                        <div class="col-md-9 pad_lr_0">
+                          <select class="input select2" multiple name="edu_qualification" id="edu_qualification">
+                            {% for qualification in qualifications %}
+                            <option value="{{ qualification.id }}">{{ qualification.name }}</option>
+                            {% endfor %}
+                            <option value="other_edu_qualification">Other Educational Qualification</option>
+                          </select>
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                      <!--input element -->
+                      <div class="input_element row marl_15 ">
+                        <label class="col-md-3">Technical Skills<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                       <select class="input select2" multiple name="skills" id="skills">
+                        {% for skill in skills %}
+                          <option value="{{skill.id}}">{{skill.name}}</option>
+                        {% endfor %}
+                          <option value="other_skills">Other Technical Skill</option>
+                    </select>
+                    <select style="display:none" name="major_skill" id="major_skill">
+                    </select>
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                        <!--input element
+                      <div class="input_element area_element row marl_15">
+                        <div class="col-md-offset-3">
+                        <input type="checkbox" name="visa_required" id="visa_required" value="True">
+                        <span class='name'>Visa Required?</span>
+                        </div>
+                      </div>
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Visa Country</label>
+                        <div class="col-md-9 pad_lr_0">
+                        <select class="input select2" name="visa_country" id="visa_country" disabled="disabled">
+                          <option value="">Visa Country</option>
+                          {% for country in countries %}
+                          <option value="{{country.id}}">{{country.name}}</option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                      </div>
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Required Visa type</label>
+                      <input type="text" class="input col-md-9" id="visa_type" name="visa_type"
+                       disabled="disabled">
+                               </div>
+                       input element -->
+                  </div>
+              </div>
+              <!-- Eligability details individual_form ends here -->
+
+              <!-- COmpany details individual_form starts here -->
+               <input type="hidden" name="job_interview_location" id="job_interview_location">
+                <input type="hidden" class="form-control" id='status'
+                      name="status">
+                <input type="hidden" name="company_description" id="company_description">
+              <div class="individual_form">
+                <h4 class="heading">Company Details</h4>
+                  <div class="form_block">
+                      <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Company Name<span class="red_hint">*</span></label>
+                        <input type="text" class="input col-md-9" name="company_name"
+                        id="company_name" value="{{ request.user.company.name }}">
+                        <input type="hidden" class="input col-md-9" name="company_id"
+                        id="company_id" value="{{ request.user.company.id }}">
+                        <span class="col-md-3"></span><span class="col-md-9" id="company_results"></span>
+                        </div>
+                      <!--/input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Company Website</label>
+                        <input type="text" class="input col-md-9" name="company_website" id="company_website" value="{{ request.user.company.website }}">
+                      </div>
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Company Logo</label>
+                        <input type="file" class="input col-md-9" accept="image/*" name="company_logo" id="company_logo">
+                      </div>
+
+                      <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label  class="col-md-3">Company Address<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                          <textarea class="input" name='company_address' id='company_address'  rows="5"></textarea>
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                       <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Company Description<span class="red_hint">*</span></label>
+                        <div class="col-md-9 pad_lr_0">
+                        <textarea class="input" name='contents' id='contents' ></textarea>
+                      </div>
+                      <!--/ input element -->
+                       <!--input element -->
+                      <div class="input_element area_element row marl_15">
+                        <div class="col-md-offset-3">
+                         <input type="checkbox" name="send_email_notifications" id="send_email_notifications" checked value="True"/>Send A Notification Email if any job seeker applied for the job
+                        </div>
+                      </div>
+                      <!--/ input element -->
+                      {% if status == 'walk-in' %}
+                      <div class="individual_form">
+                      <h4 class="heading">Walk In Details</h4>
+                        <div class="form_block">
+                            <!--input element -->
+                            <div class="input_element row marl_15">
+                              <label class="col-md-3">Contact Person<span class="red_hint">*</span></label>
+                              <input type="text" class="input col-md-9" name="walkin_contactinfo" id='walkin_contactinfo'>
+                              </div>
+                            <!--/input element -->
+                              <!--input element -->
+                            <div class="input_element row marl_15">
+                              <label class="col-md-3">Interview Time</label>
+                              <div class="bootstrap-timepicker timepicker">
+                              <input id="walkin_time" name="walkin_time" type="text" class="input col-md-9">
+                              </div>
+                              </div>
+                            <!--/input element -->
+                             <!--input element -->
+                            <div class="input_element row marl_15">
+                              <label class="col-md-3">Walkin start date<span class="red_hint">*</span></label>
+                              <div class="bootstrap-timepicker timepicker">
+                              <input type="text" class="input col-md-9"
+                              id='walkin_from_date' name="walkin_from_date"></span>
+                              </div>
+                              </div>
+                            <!--/input element -->
+                              <!--input element -->
+                            <div class="input_element row marl_15">
+                              <label class="col-md-3">Walkin end date<span class="red_hint">*</span></label>
+                              <div class="bootstrap-timepicker timepicker">
+                              <input type="text" class="input col-md-9"  name="walkin_to_date" id='walkin_to_date'>
+                             </span>
+                              </div>
+                              </div>
+                            <!--/input element -->
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+              <!-- company details individual_form ends here -->
+
+              <!-- individual_form starts here -->
+              <div class="individual_form">
+                <h4 class="heading">Interview Location</h4>
+                  <div class="form_block">
+                <div class="">
+                <div class="row marl_15 another_location interview_location">
+                  <span class="delete-interview" id="interview_location_1">
+                    <i class='fa fa-trash delete_location'></i>
+                    <!--Intervw Mpping starts
+                    <div class="col-md-8 form_left">
+                      <div class="">
+                        <div id="interview_location_1">
+                          <div class="input_element area_element">
+                            <label>Location</label>
+                            <div class="map_wrapper">
+                              <input id="search_1" class="controls" style="width: 29%;" type="text" placeholder="Search Box">
+                              <div id="location_1" class="map_canvas mapping"></div>
+                              <textarea class="input" style="display:none;" name='final_location_1' id='final_location_1' class="final_location_1" placeholder='Company Address'></textarea>
+                            </div>
+                          </div>
+                          <div class="input_element">
+                            <input type="checkbox" name="show_location_1" id="show_location_1" class="show_location" value="True" checked><span class='name'>Show Location</span>
+                          </div>
+                        </div>
+                      </div>
+                      <br clear="all">
+                    </div>
+                    Intervw Mpping ends -->
+                    <div class="input_element row marl_15">
+                        <label class="col-md-3">Venue Details</label>
+                        <div class="col-md-9 pad_lr_0">
+                        <textarea class="input" name='venue_details_1' id='venue_details_1' class="input interview_location_venue_details_1" rows="10"></textarea>
+                      </div>
+                      <!--/ input element -->
+                    </div>
+                  </span>
+                <div class="row marl_plus15">
+                  <span class='add_location pull-right' id="another_location">
+                  <i class='fa fa-plus'></i>Another Location</span>
+                      </div>
+                </div>
+              </div>
+                      <!--/ input element -->
+                    </div>
+                    <br clear="all">
+                  </div>
+              <!-- individual_form ends here -->
+
+              <!-- individual_form starts here -->
+              <div class="individual_form">
+                <h4 class="heading">OFFERING DETAILS</h4>
+                  <div class="form_block">
+                       <!--input element -->
+                      <div class="input_element row marl_15">
+                        <label class="col-md-3">Annual salary</label>
+                        <div class="col-md-3 pad_lr_0">
+                          <select class="input" name="salary_type" style="width:96%" id="salary_type">
+                            <option value="">Select Salary Type</option>
+                            <option value="Month" >Per Month</option>
+                            <option value="Year" >Per Year</option>
+                          </select></div><div class="col-md-3 pad_lr_0">
+                          <input type="text" class="input half_select" placeholder="Minimum Salary" id='min_salary' name="min_salary" style="width:96%">
+                        </div>
+                        <div class="col-md-3 pad_lr_0">
+                          <input type="text" class="input half_select" placeholder="Maximum Salary"
+                          id='max_salary' name="max_salary" style="width:96%">
+                        </div>
+                          <input type="hidden" class="input half_select"  id='location_name' name="location_name" value="location_1">
+                          <input type="hidden" class="input half_select"  id='searchbox_name' name="searchbox_name" value="search_1">
+                          <input type="hidden" class="form-control" id='job_type' name="job_type" value="{{ status }}">
+                        </div>
+                      <!--/input element -->
+                    </div>
+                  </div>
+              <!-- individual_form ends here -->
+               <!-- individual_form starts here -->
+              <div class="individual_form">
+                <h4 class="heading">Deadline DETAILS</h4>
+                  <div class="form_block">
+                       <!--input element -->
+                      {% if not status == 'walk-in' %}
+                        <div class="input_element row marl_15 date_time">
+                          <label class="col-md-3">Post Validity</label>
+                          <input type="text" class="input col-md-9" id='last_date'
+                          name="last_date">
+                        </div>
+                        {% endif %}
+                        <!--/input element -->
+                        <!--input element -->
+                        <div class="input_element row marl_15">
+                          <label class="col-md-3">Publish On</label>
+                          <input type="text" class="input col-md-9" id='published_date' name="published_date">
+                          <input type="hidden" class="input" id='no_of_interview_location'
+                            name="no_of_interview_location">
+                        </div>
+                        <!--/input element -->
+                          <!--input element -->
+                        <div class="input_element row marl_15">
+                          <label class="col-md-3">Message</label>
+                          <div class="col-md-9 pad_lr_0">
+                          <textarea class="input" id='published_message' name="published_message" rows="3" title="The message which you enter will display in peeljobs facebook page"></textarea>
+                          <span class="hint">
+                          It will be displayed in all peeljobs social networking sites to reach right candidates.  <strong data-toggle="modal" data-target="#myModal" class="mytip">View Sample</strong>
+
+                          <span style="display:none" class="mylist">
+                            <ol type="1" >
+                              <li>The message will be displayed in all peeljobs social networking sites to reach right candidates.</li>
+                              <li>It should represent and enhance the Job Role</li>
+                              <li>View Sample below</li>
+                            </ol>
+                            <div class="social_sample">
+                              <div class="socail_image">
+                                <img src="https://cdn.peeljobs.com/static/pj_fb_job_profile.png">
+                              </div>
+                            </div>
+                          </span>
+                        </span>
+                          </div>
+                        </div>
+                        <!--/input element -->
+                    </div>
+                  </div>
+              <!-- individual_form ends here -->
+               <!-- individual_form starts here -->
+              <div class="individual_form">
+                <div class="form_block">
+                    <!-- button row -->
+                      <div class="button_row wrap">
+                        <!--<span class='button post' id="publish">Post Job</span>-->
+                        <span class='button save' id="preview">Post &amp; Preview</span>
+                      </div>
+                      <!--/ button row -->
+                    </div>
+                  </div>
+              <!-- individual_form ends here -->
+              <br clear="all">
+              </div>
+            </div>
+      </div>
+          </div>
+
+{% with request.user.is_fb_connected  as fb_connected %}
+{% with request.user.is_tw_connected  as tw_connected %}
+    <div class="col-md-4 right_list_container">
+          <!-- right div starts here-->
+             <nav class="bs-docs-sidebar hidden-print hidden-sm hidden-xs affix" style="top:190px;">
+              <div class="social_links1">
+              <div class="panel panel-default content_fixed_block">
+                <div class="panel-content">
+                <p>Connect with social Networking sites to post jobs on your timeline</p>
+              <ul>
+               {% if fb_connected %}
+              <li class="facebook"><a href="{{ request.user.get_facebook_url }}" target="_blank"><i class="fa fa-facebook"></i><span>Connected</span> </a></li>
+              {% else %}
+               <li class="facebook"><a href="{% url 'recruiter:facebook_login' %}" target="_blank"><i class="fa fa-facebook"></i><span>Connect with facebook</span> </a></li>
+              {% endif %}
+              {% if tw_connected %}
+               <li class="twitter"><a href="{{ request.user.get_twitter_url }}" target="_blank"><i class="fa fa-twitter"></i> <span>Connected</span> </a></li>
+              {% else %}
+                <li class="twitter"><a href="{% url 'recruiter:twitter_login' %}" target="_blank"><i class="fa fa-twitter"></i> <span>Connect with twitter</span> </a></li>
+              {% endif %}
+                <br clear="all">
+              </ul>
+              </div>
+            </div>
+            </div>
+            <div class="panel panel-default content_fixed_block">
+              <div class="panel-content">
+                 <strong>Profile Update</strong>
+                <p>Job Seekers will follow your profile to view your latest jobs. Please update with your latest data</p>
+                <a href="{% url 'recruiter:profile' %}"  target="_blank">
+                  <span class="button">Update Profile</span>
+                </a>
+              </div>
+            </div>
+            <div class="panel panel-default content_fixed_block">
+              <div class="panel-content">
+                 <strong>Company Profile</strong>
+                <p>Update your company profile page to get the best job seeker profiles into your dashboard</p>
+                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}"  target="_blank">
+                  <span class="button">Update Company Profile</span>
+                </a>
+              </div>
+            </div>
+            <br clear="all">
+            </nav>
+            <br clear="all">
+          <!--right div ends here-->
+    </div></div>
+  <div class="bottom_connect_fixed text-capitalize">
+       Connect and post your job on your timeline
+        <!-- post on row -->
+                        <div class="post_details">
+                          <span class='button fb' onclick="location.href='{% url 'recruiter:facebook_login' %}'">
+                          {% if fb_connected %}
+                          <span class='name'><input type="checkbox" name="fb_post" id="fb_post" checked> facebook</span>
+                        {% else %}
+                          <span class='name' ><i class="fa fa-facebook"></i>facebook</span>
+                          {% endif %}
+                          </span>
+                          <span class='button twit' onclick="location.href='{% url 'recruiter:twitter_login' %}'">
+                          {% if tw_connected %}
+                       <span class='name'> <input type="checkbox" name="tw_post" id="tw_post" checked> twitter</span>
+                        {% else %}
+                          <span class='name'><i class="fa fa-twitter"></i> Twitter</span>
+                          {% endif %}
+                          </span>
+                             <!-- fb groups -->
+                          {% if fb_connected  and request.user.get_user_facebook_groups %}
+                          <div class='social_wrap'>
+                            <ul>
+                              {% for group in request.user.get_user_facebook_groups %}
+                              <li class="facebook_groups">
+                                <div class="ticket_wrap">
+                                  <input type="checkbox" class='social_selected'name="fb_groups" id="fb_groups" 
+                                  value="{{ group.group_id }}"><span>{{group.name}}</span>
+                              </div>
+                            </li>
+                            {% endfor %}
+                            <div class="clearfix"></div>
+                          </ul>
+                        </div>
+                        {% endif %}
+                      <!--/ fb groups -->
+                        </div>
+                    <!--/ post on row -->
+      {% endwith %}
+      {% endwith %}
+      {% else %}
+       {% if not show_recruiters %}
+        <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert">x</button>
+          <strong>!</strong> No recruiters were added . click to add <a href="{% url "agency:company_recruiter_create" %}"><button type="button" class="btn btn-default"><strong>Recruiter</strong</button></a>
+        </div>
+        {% endif %}
+        {% if not show_clients %}
+        <!--<div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert">x</button>
+          <strong>!</strong> No clients were added . click to add <a href="{% url "agency:add_client" %}"><button type="button" class="btn btn-default"><strong>Client</strong</button></a>
+        </div>-->
+        {% endif %}
+        {% endif %}
+      </div>
+      </form>
+</section>
+</div>
+<!--/ content -->
+
+
+
+ <div id="dialog-form" style="display:none">
+    <form>
+        <label for="name">Message </label>
+        <input type="text" name="message" id="enter_message" class="text ui-widget-content ui-corner-all" />
+    </form>
+</div>
+<!--/ container -->
+<style>
+  .jobposts{
+  display: none;
+  }
+  .max_experience{
+  display:none;
+  }
+</style>
+{% block social_links %}
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<!-- select2 -->
+<script type="text/javascript">
+  function other_fields(form_data){
+    console.log("other fields")
+   industry = []
+   functional_area = []
+   edu_qualification = []
+   skills = []
+  
+   interview_location = []
+   venue_details = []
+   interview_location_count = $('div.interview_location').length
+   jQuery.each( form_data, function( i, field ) {
+
+     if (field['name'].indexOf('other_industry_name') >= 0){
+      industry_temp={}
+      industry_temp[field['name']]=field['value']
+      industry.push(industry_temp)
+     }
+     if (field['name'].indexOf('interview_city') >= 0){
+      interview_temp={}
+      interview_temp[field['name']]=field['value']
+      interview_location.push(interview_temp)
+     }
+     if (field['name'].indexOf('venue_details') >= 0){
+      interview_temp={}
+      interview_temp[field['name']]=field['value']
+      venue_details.push(interview_temp)
+     }
+     if (field['name'].indexOf('other_functional_area') >= 0){
+       functional_area_temp={}
+      functional_area_temp[field['name']]=field['value']
+     functional_area.push(functional_area_temp)
+     }
+     if (field['name'].indexOf('other_edu_qualification') >= 0){
+       edu_qualification_temp={}
+      edu_qualification_temp[field['name']]=field['value']
+      edu_qualification.push(edu_qualification_temp)
+     }
+     if (field['name'].indexOf('other_skill_name') >= 0){
+       skills_temp={}
+       skills_temp[field['name']]=field['value']
+       skills.push(skills_temp)
+  
+     }
+  
+   });
+  
+   console.log(JSON.stringify(interview_location))
+   console.log(JSON.stringify(venue_details))
+   // console.log(JSON.stringify(show_location))
+  
+   $("#jobform").append('<textarea class="form-control other_functional_area"  name="final_functional_area" id="final_functional_area" style="display:none;">'+ JSON.stringify(functional_area) +'</textarea>');
+  
+   $("#jobform").append('<textarea class="form-control other_functional_area" name="final_skills" id="final_skills" style="display:none;">'+ JSON.stringify(skills) +'</textarea>');
+  
+   $("#jobform").append('<textarea class="form-control other_functional_area" name="final_edu_qualification" id="final_edu_qualification" style="display:none;">'+ JSON.stringify(edu_qualification) +'</textarea>');
+  
+   $("#jobform").append('<textarea class="form-control other_functional_area"  name="final_industry" id="final_industry" style="display:none;">'+ JSON.stringify(industry) +'</textarea>');
+  
+   $("#jobform").append('<textarea class="form-control other_functional_area" name="final_interview_location" id="final_interview_location" style="display:none;">'+ JSON.stringify(interview_location) +'</textarea>');
+  
+   $("#jobform").append('<textarea class="form-control other_functional_area"  name="final_venue_details" id="final_venue_details" style="display:none;">'+ JSON.stringify(venue_details) +'</textarea>');
+  
+   // $("#jobform").append('<textarea class="form-control other_functional_area" placeholder="Other Functional Area" name="final_show_location" id="final_show_location" style="display:none;">'+ JSON.stringify(show_location) +'</textarea>');
+  
+   $('#no_of_interview_location').val(interview_location_count)
+   }
+   
+</script>
+<script type="text/javascript">
+  // google.maps.event.addDomListener(window, "load", getGoogleMap)
+  
+  
+  // function getGoogleMap() {
+  
+  //     var map;
+  //     location_name = $('#location_name').val()
+  //     searchbox_name = $('#searchbox_name').val()
+  //     var bounds = new google.maps.LatLngBounds();
+  //     var mapOptions = {
+  //         mapTypeId: 'roadmap',
+  //         zoom: 4,
+  //         center: {lat:17.385044, lng:78.486671 },
+  //         id: location_name
+  //     };
+  
+  //     // Display a map on the page
+  //     map = new google.maps.Map(document.getElementById(location_name), mapOptions);
+  //     map.setTilt(45);
+  
+  //   // Create the search box and link it to the UI element.
+  //     var input = document.getElementById(searchbox_name);
+  //     var searchBox = new google.maps.places.SearchBox(input);
+  //     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+  
+  
+  //     var markersArray = [];
+  
+  
+  //   searchBox.addListener('places_changed', function(e) {
+  //     var places = searchBox.getPlaces();
+  
+  //     if (places.length == 0) {
+  //       return;
+  //     }
+  //     if (places.length > 1) {
+  //       alert("Please map only 1 location")
+  //       return;
+  //     }
+  
+  //     // Clear out the old markers.
+  //     markersArray.forEach(function(marker) {
+  //       marker.setMap(null);
+  //     });
+  
+  //     // For each place, get the icon, name and location.
+  //     var bounds = new google.maps.LatLngBounds();
+  //     places.forEach(function(place) {
+  //       // Create a marker for each place.
+  //         final_location = 'final_' + map.id
+  //         $('#'+ final_location).val('')
+  //         var latitude = place.geometry.location.lat();
+  //         var longitude = place.geometry.location.lng();
+  //         var info = []
+  //         info.push(latitude)
+  //         info.push(longitude)
+  //         $('#'+ final_location).val(JSON.stringify(info))
+  //         markersArray.push(new google.maps.Marker({
+  //           map: map,
+  //           title: place.name,
+  //           position: place.geometry.location
+  //         }));
+  //         console.log($('#'+ final_location).val())
+  
+  //       if (place.geometry.viewport) {
+  //         // Only geocodes have viewport.
+  //         bounds.union(place.geometry.viewport);
+  //       } else {
+  //         bounds.extend(place.geometry.location);
+  //       }
+  //     });
+  //     map.fitBounds(bounds);
+  //   });
+  //     function deleteOverlays() {
+  //       if (markersArray) {
+  //         for (i in markersArray) {
+  //           markersArray[i].setMap(null);
+  //         }
+  //         markersArray.length = 0;
+  //       }
+  //     }
+  
+  //     google.maps.event.addListener(map, 'click', function(event) {
+  //       console.log("hello")
+  //        deleteOverlays();
+  //        placeMarker(event.latLng);
+  //     });
+  
+  //     function placeMarker(location) {
+  //         var marker = new google.maps.Marker({
+  //             position: location,
+  //             map: map
+  //         });
+  //         final_location = 'final_' + map.id
+  //         $('#'+ final_location).val('')
+  //         var latitude = location.lat();
+  //         var longitude = location.lng();
+  //         var info = []
+  //         info.push(latitude)
+  //         info.push(longitude)
+  //         $('#'+ final_location).val(JSON.stringify(info))
+  //         console.log($('#'+ final_location).val())
+  //         markersArray.push(marker);
+  //     }
+  // }
+
+        $(".select2").select2({ placeholder : 'Select or Start typing'})
+
+    </script>
+    <!--/ select2 -->
+    <!-- tags -->
+    <!--/ tags -->
+    <script type="text/javascript">
+        $('.social_wrap .selected').children('.social_selected').click();
+        $('.social_wrap ul li').click(function (e) {
+            $(this).toggleClass('selected');
+            $(this).children('.social_selected').click();
+        })
+  $('.social_selected').click(function(e){
+    e.stopPropagation();
+  })
+ var date = new Date()
+  $("#published_date").datetimepicker({
+    collapse:false,
+    sideBySide:true,
+    useCurrent:false,
+    showClose:true,
+    format: "MM/DD/YYYY HH:mm:ss",
+    defaultDate:date.setMinutes ( date.getMinutes() + 10 )
+  });
+
+</script>
+<script type="text/javascript">
+  $("body" ).on("click",".remove_other_field",function(e){
+      e.preventDefault();
+      id = $(this).attr('id')
+      $(this).parent().remove();
+  
+    });
+  $("#jobpost option[id='#empty']").click(function(){
+    window.location = "/recruiter/job/"+$('#job_type').val()+"/new/"
+   })
+  
+      $('.jobpost').click(function(e){
+      id = $(this).attr('id')
+      if(id=="active"){
+        $(this).addClass("active_class")
+        $("#inactive").removeClass("active_class")
+      }
+      else{
+        $(this).addClass("active_class")
+        $("#active").removeClass("active_class")
+      }
+      count = $('select#jobpost option[id='+ id +']').length
+      if (count == 0){
+              $('select#jobpost option[id=empty]').text('There are no jobs')
+              }
+      else{
+        if (id == 'active'){
+          $('select#jobpost option[id=empty]').text('Select From Active Jobs To Autofill')
+        }
+        else{
+          $('select#jobpost option[id=empty]').text('Select From Inactive Jobs To Autofill')
+        }
+      }
+    $( "select#jobpost" ).val('');
+      $('.jobpost').removeClass('active')
+      $(this).addClass('active')
+      $('select#jobpost option').addClass('jobposts')
+      $('select#jobpost option[id='+ id +']').removeClass('jobposts')
+    });
+  
+  $("body" ).on("click","#another_location",function(e){
+    last_interview_location=$('div.interview_location').length
+    var selected_interview_location = []
+  
+  
+    $('.interview_city').each(function() {
+           console.log( $(this).val() );
+           selected_interview_location.push($(this).val())
+           /* rest of the code for each name retrieved */
+    })
+  
+    console.log(JSON.stringify(selected_interview_location))
+    $.post('/recruiter/job/interview-location/'+last_interview_location+'/',{'selected_locations': JSON.stringify(selected_interview_location)}, function (data) {
+        $("#another_location").before(data);
+      });
+  
+    location_count = last_interview_location + 1
+    location_name = 'location_' + location_count
+    searchbox_name = 'search_' + location_count
+    $('#location_name').val(location_name)
+    $('#searchbox_name').val(searchbox_name)
+  
+    $('#location_name').val(location_name)
+    });
+  
+  
+  $("body" ).on("change","select.interview_city",function(e){
+    console.log($(this).val())
+    $('select.interview_city option').removeClass('max_experience')
+    $('select.interview_city').each(function() {
+          console.log($(this).val());
+          console.log("hai")
+          id=$(this).val()
+          if (id.length > 0){
+          $('select.interview_city option[id='+ id +']').addClass('max_experience')
+          }
+    })
+  });
+  $("body" ).on("click","i.delete_location",function(e){
+    id=$(this).parent().attr('id')
+    if ($('.interview_location').length > 1){
+    $(this).parent().parent().parent().remove();
+  }
+    else{
+      open_dialog('Job Post Should Contain Atleast One Interview Location', "Info!!")
+    }
+  })
+    $( "select#jobpost" ).on('change',function(e) {
+      jobpost_id = $(this).val()
+      option_id = $('select#jobpost option:selected').attr('id')
+      $('.jobpost').removeClass('active')
+      $('#'+option_id).addClass('active')
+  
+      if (jobpost_id == ''){
+        {% if request.user.is_agency_recruiter %}
+          window.location = '/agency/job/full-time/new/'
+        {% else %}
+      window.location = '/recruiter/job/full-time/new/'
+      {% endif %}
+      }else{
+        job_type = $('#job_type').val()
+        {% if request.user.is_agency_recruiter %}
+      window.location = '/agency/job/'+ job_type +'/copy/?jobpost_id='+ jobpost_id;
+      {% else %}
+      window.location = '/recruiter/job/'+ job_type +'/copy/?jobpost_id='+ jobpost_id;
+      {% endif %}
+      }
+  });
+    $("body" ).on("change","select#industry",function(e) {
+        e.preventDefault();
+  
+    if (jQuery.inArray( "other_industry",  $( "select#industry" ).val()) >= 0)
+    {
+    new_data = $.grep($('select#industry').select2('val'), function (val) {
+        return val != 'other_industry';
+    });
+    $( "select#industry" ).select2('val', new_data);
+      if ($('.other_industry_name').length < 0)
+      {
+        $( "select#industry" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="input col-md-12 other_industry_name"  placeholder="Other Industry Name" name="other_industry_name_1" id="other_industry_name_1"><span class="input-group-btn remove_other_field"><button class="btn btn-secondary" type="button"><i class="fa fa-times"></i></button></span></div>');
+          $('#other_industry_name_1').focus();
+          SetCaretAtEnd(document.getElementById('other_industry_name_1'))
+      }
+      else{
+        industry_count = $('.other_industry_name').length + 1
+        $( "select#industry" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="input col-md-12 other_industry_name"  placeholder="Other Industry Name" name="other_industry_name_'+ industry_count +'" id="other_industry_name_'+ industry_count +'"><span class="input-group-btn remove_other_field"><button class="btn btn-secondary" type="button"><i class="fa fa-times"></i></button></span></div>')
+          $( "select#industry" ).focusout();
+          $('#other_industry_name_'+industry_count).focus();
+          SetCaretAtEnd(document.getElementById('other_industry_name_'+industry_count))
+      }
+    }
+  
+    });
+  
+    $( "select#location" ).on('change',function(e) {
+        e.preventDefault();
+  
+    if (jQuery.inArray( "other_location",  $( "select#location" ).val()) >= 0)
+    {
+    new_data = $.grep($('select#location').select2('val'), function (val) {
+        return val != 'other_location';
+    });
+    $( "select#location" ).select2('val',  new_data);
+    $( "select#location" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="form-control col-md-12 other_location_name"  placeholder="Other location Name" name="other_location" id="other_location_name_1"><span class="input-group-btn remove_other_field"><button class="btn btn-secondary" type="button"><i class="fa fa-times"></i></button></span></div>')
+    }
+    });
+  
+  
+    $("body" ).on("change", "select#skills",function(e) {
+        e.preventDefault();
+        skill = $('#skills').val()
+        if (skill){
+        if (skill.length==1){
+          if ($('#skills').val() != 'other_skills'){
+          $("#major_skill").append('<option value='+$('#skills').val()+' selected></option>')
+        }
+         // what you would like to happen
+        }
+      }
+
+    if (jQuery.inArray( "other_skills",  $( "select#skills" ).val()) >= 0)
+    {
+      new_data = $.grep($('select#skills').select2('val'), function (val) {
+        return val != 'other_skills';
+      });
+      $( "select#skills" ).select2('val', new_data);
+  
+      if ($('.other_skill_name').length < 0)
+      {
+        $( "select#skills" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="input col-md-12 other_skill_name"  placeholder="Other Skill Name" name="other_skill_name_1" id="other_skill_name_1"><span class="input-group-btn remove_other_field"><button class="btn btn-secondary" type="button"><i class="fa fa-times"></i></button></span></div>')
+      }
+      else{
+        industry_count = $('.other_skill_name').length + 1
+        $( "select#skills" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="input col-md-12 other_skill_name"  placeholder="Other Skill Name" name="other_skill_name_'+ industry_count +'" id="other_skill_name_'+ industry_count +'"><span class="input-group-btn remove_other_field"><button class="btn btn-secondary" type="button"><i class="fa fa-times"></i></button></span></div>')
+      }
+    }
+    });
+  
+    $( "select#functional_area" ).on('change',function(e) {
+        e.preventDefault();
+  
+    if (jQuery.inArray( "other_functional_area",  $( "select#functional_area" ).val()) >= 0)
+    {
+      new_data = $.grep($('select#functional_area').select2('val'), function (val) {
+        return val != 'other_functional_area';
+      });
+      $( "select#functional_area" ).select2('val', new_data);
+      if ($('.other_functional_area').length < 0)
+      {
+        $( "select#functional_area" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="input col-md-12 other_functional_area"  placeholder="Other Functional Area Name" name="other_functional_area_1" id="other_functional_area_1"><span class="input-group-btn remove_other_field"><button class="btn btn-secondary" type="button"><i class="fa fa-times"></i></button></span></div>')
+      }
+      else{
+        functional_area_count = $('.other_functional_area').length + 1
+        $( "select#functional_area" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="input col-md-12 other_functional_area"  placeholder="Other Functional Area Name" name="other_functional_area_'+ functional_area_count +'" id="other_functional_area_'+ functional_area_count +'"><span class="input-group-btn remove_other_field"><button class="btn btn-secondary" type="button"><i class="fa fa-times"></i></button></span></div>')
+      }
+    }
+    });
+  
+    $( "select#edu_qualification" ).on('change',function(e) {
+  
+    if (jQuery.inArray( "other_edu_qualification",  $( "select#edu_qualification" ).val()) >= 0)
+    {
+      new_data = $.grep($('select#edu_qualification').select2('val'), function (val) {
+        return val != 'other_edu_qualification';
+      });
+      $( "select#edu_qualification" ).select2('val', new_data);
+  
+      if ($('.other_edu_qualification').length < 0)
+      {
+        $( "select#edu_qualification" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="input col-md-12 other_edu_qualification"  placeholder="Other Qualification Name" name="other_edu_qualification_1" id="other_edu_qualification_1"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>')
+      }
+      else{
+        edu_qualification_count = $('.other_edu_qualification').length + 1
+        $( "select#edu_qualification" ).siblings('span').after('<div class="input-group extra_field"><input type="text" class="input col-md-12 other_edu_qualification"  placeholder="Other Qualification Name" name="other_edu_qualification_'+ edu_qualification_count +'" id="other_edu_qualification_'+edu_qualification_count+'"><span class="input-group-btn remove_other_field"><button class="btn btn-secondary" type="button"><i class="fa fa-times"></i></button></span></div>')
+      }
+    }
+    });
+
+    $( "select#location" ).select2({placeholder:"Select or Start typing",
+      "language": {
+      "noResults": function(){
+           return "The location you entered is not available, Please select <strong>Other location</strong> and enter your location"; }},
+      escapeMarkup: function (markup) {
+          return markup;}
+        });
+    $( "select#industry" ).select2({placeholder:"Select or Start typing",
+      "language": {
+      "noResults": function(){
+           return "The Industry you entered is not available, Please select <strong>Other Industry</strong> and enter your Industry";}},
+      escapeMarkup: function (markup) {
+          return markup;}
+        });
+    $( "select#functional_area" ).select2({placeholder:"Select or Start typing",
+      "language": {
+      "noResults": function(){
+           return "The Functional Area you entered is not available, Please select <strong>Other Functional Area</strong> and enter your Industry";}},
+      escapeMarkup: function (markup) {
+          return markup;}
+        });
+    $( "select#edu_qualification" ).select2({placeholder:"Select or Start typing",
+      "language": {
+      "noResults": function(){
+           return "The Qualification you entered is not available, Please select <strong>Other Educational Qualification</strong> and enter your Own";}},
+      escapeMarkup: function (markup) {
+          return markup;}
+        });
+    $( "select#skills" ).select2({placeholder:"Select or Start typing",
+      "language": {
+      "noResults": function(){
+           return "The Technical Skill you entered is not available, Please select <strong>Other Technical Skill</strong> and enter your Skill";}},
+      escapeMarkup: function (markup) {
+          return markup;}
+        });
+//$( "select#visa_country" ).select2( { placeholder: "Select A Visa Country" } );
+
+$( "select#agency_recruiters" ).select2( { placeholder: "Select A Recruiter" } );
+
+    $( "select#min_year" ).on('change',function(e) {
+    $('select#max_year').val('');
+     $('select#max_year option').addClass('max_experience');
+    for(i=$('select#min_year option:selected').attr('id');i<$('select#min_year option').length;i++)
+      {
+        $('select#max_year option[id='+ i +']').removeClass('max_experience');
+      }
+    });
+  
+    $( "select#min_month" ).on('change',function(e) {
+    $('select#max_month').val('');
+      if($('select#max_year').val() == $('select#min_year').val())
+      {
+         $('select#max_month option').addClass('max_experience');
+        for(i=$('select#min_month option:selected').attr('id');i<$('select#min_month option').length;i++)
+          {
+            $('select#max_month option[id='+ i +']').removeClass('max_experience');
+          }
+      }
+      else{
+        $('select#max_month option').removeClass('max_experience');
+      }
+    });
+  
+    $( "select#max_year" ).on('change',function(e) {
+    $('select#max_month').val('');
+      if($('select#max_year').val() == $('select#min_year').val())
+      {
+         $('select#max_month option').addClass('max_experience');
+        for(i=$('select#min_month option:selected').attr('id');i<$('select#min_month option').length;i++)
+          {
+            $('select#max_month option[id='+ i +']').removeClass('max_experience');
+          }
+      }
+      else{
+        $('select#max_month option').removeClass('max_experience');
+      }
+    });
+  
+    $( "select#min_salary" ).on('change',function(e) {
+      $('select#max_salary').val('');
+       $('select#max_salary option').addClass('max_salary');
+      for(i=$('select#min_salary option:selected').attr('id');i<$('select#min_salary option').length;i++)
+      {
+        $('select#max_salary option[id='+ i +']').removeClass('max_salary');
+      }
+    });
+  
+    // $( "select#country" ).change(function(e) {
+    // $('select#location optgroup').children().removeAttr('disabled')
+    // $('select#location optgroup[id!='+ $(this).val() +']').children().attr('disabled', true)
+    // });
+    $("select#agency_category").val("");
+
+    $( "select#agency_client" ).on('change',function(e) {
+      e.preventDefault();
+      $('select#agency_category').val("")
+      $('select#agency_category option').addClass('hide')
+      $('select#agency_category option[id=agency_'+ $(this).val() +']').removeClass('hide')
+    });
+
+    $( "#demonstrations" ).select2( { placeholder: "Select2 version", minimumResultsForSearch: -1 } ).on( "change", function() {
+    document.location = $( this ).find( ":selected" ).val();
+    } );
+  
+    $( "button[data-select2-open]" ).click( function() {
+    $( "#" + $( this ).data( "select2-open" ) ).select2( "open" );
+    });
+  
+    $('#fb_post').click(function () {
+    if(document.getElementById('fb_post').checked) {
+      $(".social_wrap").show();
+    }
+    else{
+      $(".social_wrap").hide();
+    }
+    });
+  
+    $( "#last_date" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+      yearRange: "2015:2050"
+   })
+  
+    $( "#walkin_from_date" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+      yearRange: "2015:2050"
+   })
+  
+    $( "#walkin_to_date" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+      yearRange: "2015:2050"
+   })
+
+
+  $(document).ready(function(e){
+    CKEDITOR.config.allowedContent = true;
+    CKEDITOR.config.forcePasteAsPlainText = true;
+    CKEDITOR.config.pasteFromWordRemoveFontStyles = true;
+    CKEDITOR.config.pasteFromWordRemoveStyles = true;
+
+    var editor = CKEDITOR.replace('textareacontents', {
+    });
+    //$('#textareacontents').val("Please Enter Job Description")
+    var editor = CKEDITOR.replace('contents', {
+    });
+    //$('#contents').val("Please Enter Company Description")
+  })
+  $(".mytip").click(function(){
+    $('#myModalLabel').text($(this).parent().parent().find('label').text())
+     if ($('#myModalLabel').text() == ''){
+      $('#myModalLabel').text($(this).parent().parent().parent().find('label').text())
+    }
+    $("#target_list").html($(this).parent().parent().find('.mylist').html())
+  })
+    $('.mytip').hover(function(){
+       $(this).css('cursor','pointer')
+     })
+    $("#save").click(function(e) {
+        e.preventDefault();
+    /*      $('#save').attr("disabled","disabled");*/
+    $('#status').val('Draft');
+    /*form_data = $('#jobform').serializeArray();*/
+    form_data = $('#jobform').serializeArray();
+    other_fields(form_data)
+    $("input[name='description']").val(CKEDITOR.instances.textareacontents.getData());
+    $("input[name='company_description']").val(CKEDITOR.instances.contents.getData());
+    form = $('#jobform')
+    var job_form_data = new FormData(form[0]);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: job_form_data,
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            url: '.',
+            success: function (data) {
+            $.blockUI({ message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+
+            if (data.error) {
+                $.unblockUI();
+          /*    $('#save').removeAttr("disabled");*/
+              // alert("Some Content Missing");
+              open_dilogue('Spme Content Missing')
+              $("#errors_display").show()
+              var err_len = Object.keys(data.response).length
+              $("#error_count").html("<strong>There are "+err_len+" error(s) in the Form</strong>")
+              $('div.error').remove();
+              $('.input').removeClass('error_border');
+              $('#cke_textareacontents').removeClass('error_border');
+              $('#cke_contents').removeClass('error_border');
+              for (var key in data.response) {
+                if(key== 'description'){
+                  $('#cke_textareacontents').addClass('error_border');
+                }
+                if(key=='company_description'){
+                  $('#cke_contents').addClass('error_border');
+                }
+
+                $('#' + key).addClass('error_border');
+                if (data.response[key][0] == 'This field is required.' || data.response[key] == 'This field is required.' ){
+                }
+                else{
+                  $('#' + key).after('<div class="col-md-3"></div> <div class="error">' + data.response[key] + '</div>');
+                }
+                if (key.indexOf("final_location_") == 0){
+                  $('#' + key).parent().parent().parent().parent().parent().addClass('error_border');
+                }
+              }
+                $(window).scrollTop($('#job_post_new').offset().top-$('.page-top').height()-650);
+            } else {
+              $.unblockUI();
+              {% if request.user.is_company_recruiter %}
+                  var url = "{% url 'recruiter:list' %}";
+              {% else %}
+                  var url = "{% url 'agency:list' %}";
+              {% endif %}
+              open_dialog_with_url('New JobPost Drafted Successfully', 'Info!', url)
+            }
+        }
+      });
+    });
+
+    $("#preview").click(function(e) {
+        e.preventDefault();
+    /*      $('#save').attr("disabled","disabled");*/
+    $('#status').val('Pending');
+    form_data = $('#jobform').serializeArray();
+    other_fields(form_data)
+    $("input[name='description']").val(CKEDITOR.instances.textareacontents.getData());
+    $("input[name='company_description']").val(CKEDITOR.instances.contents.getData());
+
+    form = $('#jobform')
+    var job_form_data = new FormData(form[0]);
+
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: job_form_data,
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+
+            url: '.',
+            success: function (data) {
+            $.blockUI({ message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+
+            if (data.error) {
+          /*    $('#save').removeAttr("disabled");*/
+              $.unblockUI();
+              // alert("Some Content Missing");
+              open_dialog('Some Content Missing', 'Error!!')
+              $("#errors_display").show()
+              var err_len = Object.keys(data.response).length
+              $("#error_count").html("<strong>There are "+err_len+" error(s) in the Form</strong>")
+              $('div.error').remove();
+              $('.input').removeClass('error_border');
+              $('.cke_chrome').removeClass('error_border');
+              for (var key in data.response) {
+                if(key== 'description'){
+                  $('#cke_textareacontents').addClass('error_border');
+                }
+                if(key=='company_description'){
+                  $('#cke_contents').addClass('error_border');
+                }
+
+                $('#' + key).addClass('error_border');
+                if (data.response[key][0] == 'This field is required.' || data.response[key] == 'This field is required.' ){
+                }
+                else{
+                  $('#' + key).after('<div class="col-md-3"></div> <div class="error col-md-9">' + data.response[key] + '</div>');
+                }
+                if (key.indexOf("final_location_") == 0){
+                  $('#' + key).parent().parent().parent().parent().parent().addClass('error_border');
+                }
+              }
+              $(window).scrollTop($('#job_post_new').offset().top-$('.page-top').height()-650);
+
+            } else {
+              $.unblockUI();
+               {% if request.user.is_company_recruiter %}
+                url = "/recruiter/job/preview/"+data.post + '/';
+              {% else %}
+                  url = "/agency/job/preview/"+data.post + '/';
+              {% endif %}
+              open_dialog_with_url('New JobPost Published Successfully', 'Success!', url)
+            }
+        }
+      });
+  });
+
+    $("#publish").click(function(e) {
+        e.preventDefault();
+    /*      $('#save').attr("disabled","disabled");*/
+
+    $('#status').val('Pending');
+    form_data = $('#jobform').serializeArray();
+    other_fields(form_data)
+    $("input[name='description']").val(CKEDITOR.instances.textareacontents.getData());
+    $("input[name='company_description']").val(CKEDITOR.instances.contents.getData());
+
+    form = $('#jobform')
+    var job_form_data = new FormData(form[0]);
+
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: job_form_data,
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+
+            url: '.',
+            success: function (data) {
+
+            $.blockUI({ message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="150px" width="150px"><h1>Please Wait...</h1>'});
+
+          if (data.error) {
+          /*    $('#save').removeAttr("disabled");*/
+            $.unblockUI();
+            // alert("Some Content Missing");
+            open_dialog('Some Text missing', 'Error!')
+            $("#errors_display").show()
+            var err_len = Object.keys(data.response).length
+            $("#error_count").html("<strong>There are "+err_len+" error(s) in the Form</strong>")
+            $('div.error').remove();
+            $('.input').removeClass('error_border');
+            $('.cke_chrome').removeClass('error_border');
+            for (var key in data.response) {
+              if(key== 'description'){
+                $('#cke_textareacontents').addClass('error_border');
+              }
+              if(key=='company_description'){
+                $('#cke_contents').addClass('error_border');
+              }
+              $('#' + key).addClass('error_border');
+              if (data.response[key][0] == 'This field is required.' || data.response[key] == 'This field is required.' ){
+              }
+              else{
+                $('#' + key).after('<div class="col-md-3"></div> <div class="error col-md-9">' + data.response[key] + '</div>');
+              }
+              if (key.indexOf("final_location_") == 0){
+                $('#' + key).parent().parent().parent().parent().parent().addClass('error_border');
+              }
+            }
+            $(window).scrollTop($('#job_post_new').offset().top-$('.page-top').height()-650);
+          }
+          else {
+            $.unblockUI();
+            open_dialog_with_url('New JobPost Published Successfully', 'Success!!', "{% url 'recruiter:list' %}")
+                }
+                      }
+      });
+      });
+/*    $("#cancel_btn").click(function(e){
+        e.preventDefault();
+        {% if request.user.is_company_recruiter %}
+        window.location="{% url 'recruiter:list' %}";
+        {% else %}
+        window.location="{% url 'agency:list' %}";
+        {% endif %}
+      }); 
+*/  $(document).ready(function(e){
+    var getData = function (request, response) {
+      if ($('#company_name').val() == ''){
+        $('.ac-result').parent().remove();
+      }
+      $.getJSON("/agency/job/full-time/new/?&q=" + request.term, function (data) {
+          if (data.response){
+            $('.ac-result').parent().remove();
+            for (i = 0; i < data.response.length; i++) {
+                elem = $('<div class="result-wrapper"><a href="" class="ac-result"><span>'+data.response[i] + '</span></a></div>');
+                $('#company_results').append(elem)
+            }
+          }
+          else if (data.message){
+            $('#company_name').parent().after('<div class="error">This field is required</div>');
+          }
+          else{
+            $('.ac-result').parent().remove();
+          }
+        });
+      };
+      $("#company_name").autocomplete({
+        source: getData,
+        minLength: 0,
+        change: function() {
+        }
+      });
+    $("body" ).on("click",".ac-result",function(e){
+      e.preventDefault();
+      $('#company_name').val($(this).text())
+      $('.ac-result').parent().remove();
+      search_value  = $('#company_name').val()
+      $.getJSON("{% url 'recruiter:new_user' %}?&register_name=" + search_value + '&q=' + search_value, function (data) {
+            $("#company_address").val(data.company.company_address)
+            $("#content").val(data.company.company_profile);
+            CKEDITOR.instances['contents'].setData(data.company.company_profile)
+            $("#company_website").val(data.company.website);
+            $("#company_id").val(data.company.company_id);
+        });
+      });
+   $(window).scroll(function(e){
+        $('.list_container, .social_links1').css({'position': 'static', 'margin-top': '0px'});
+        if ($(this).scrollTop() > 57)
+        {
+          $('.list_container, .social_links1').css({'position': 'static', 'margin-top': '-109px'});
+        }
+      });
+  });
+
+</script>
+<script type="text/javascript">
+  $('#walkin_time').timepicker().val('');
+$("#jobform :input").tooltip({
+      'trigger':'focus',
+      // place tooltip on the right edge
+       position:{
+                at:"right top",
+                my:"center top",
+            },
+      // a little tweaking of the position
+      offset: [10, 30],
+      // use the built-in fadeIn/fadeOut effect
+      effect: "fade",
+      // custom opacity setting
+      opacity: 0.7
+      });
+$("#jobform :input").tooltip().off("mouseover mouseout");
+
+</script>
+{% endblock %}

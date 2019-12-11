@@ -1,0 +1,179 @@
+{% extends 'recruiter/index.html' %}
+{% block 'stage' %}
+{% load static %}
+<!-- content -->
+ <div class="content_wrap">
+    <div class="how-it-works">
+       <h3>How It Works</h3>
+       <div class="content_job_post">
+          <div class="wizard">
+             <ul class="list-inline hidden-xs wizard-list">
+                <li>
+                   <a href="#postnew" class="active"><span class="tab-btn">Post A New Job <span class="icon"><i class="fa fa-circle"></i></span></span></a>
+                </li>
+                <li>
+                   <a href="#joblist"><span class="tab-btn">Jobs List <span class="icon"><i class="fa fa-circle"></i></span></span></a>
+                </li>
+                <li>
+                   <a href="#applicants"><span class="tab-btn">Applicants <span class="icon"><i class="fa fa-circle"></i></span></span></a>
+                </li>
+                <li>
+                   <a href="#support"><span class="tab-btn">Support <span class="icon"><i class="fa fa-circle"></i></span></span></a>
+                </li>
+                 <li>
+                   <a href="#profile1"><span class="tab-btn">Profile & Account Verification <span class="icon"><i class="fa fa-circle"></i></span></span></a>
+                </li>
+             </ul>
+             <div class="postnew wizard-item" id="postnew">
+                <div class="content row">
+                  <div class="content-para col-md-6 col-sm-6 col-xs-7">
+                     <h3>Post A New Job</h3>
+                     <p>Curabitur aliquet quam id dui posuere blandit. Vivamus suscipit
+        tortoreget felis porttitor volutpat. Nulla quis lorem ut libero malesuada
+        feugiat. Vivamus magna justo, lacinia eget consectetur sed, convallis at
+        tellus. Curabitur aliquet quam id dui posuere blandit. Mauris blandit 
+        aliquet elit, eget tincidunt nibh pulvinar a.  </p>
+      <p>Cras ultricies ligula sed magna dictum porta. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+                  </div>
+                  <div class="image col-md-6 col-sm-6 col-xs-5 text-right"><img src="{% static 'r1/images/Post-Free-Job.png' %}" /></div>
+                  <br clear="all">
+                </div>
+             </div>
+
+
+
+                <div class="joblist wizard-item" id="joblist">
+                <div class="content">
+                  <div class="text-left col-md-6 col-sm-6 col-xs-5 image"><img src="{% static 'r1/images/Job-List.png' %}" /></div>
+                   <div class="content-para col-md-6 col-sm-6 col-xs-7 text-right">
+                     <h3>Job List</h3>
+                     <p>Curabitur aliquet quam id dui posuere blandit. Vivamus suscipit
+        tortoreget felis porttitor volutpat. Nulla quis lorem ut libero malesuada
+        feugiat. Vivamus magna justo, lacinia eget consectetur sed, convallis at
+        tellus. Curabitur aliquet quam id dui posuere blandit. Mauris blandit 
+        aliquet elit, eget tincidunt nibh pulvinar a.  </p>
+      <p>Cras ultricies ligula sed magna dictum porta. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+                  </div>
+                  <br clear="all">
+                </div>
+             </div>
+
+
+
+
+               <div class="applicant wizard-item" id="applicants">
+                <div class="content row">
+                  <div class="content-para col-md-6 col-sm-6 col-xs-7">
+                     <h3>Applicants</h3>
+                     <p>Curabitur aliquet quam id dui posuere blandit. Vivamus suscipit
+        tortoreget felis porttitor volutpat. Nulla quis lorem ut libero malesuada
+        feugiat. Vivamus magna justo, lacinia eget consectetur sed, convallis at
+        tellus. Curabitur aliquet quam id dui posuere blandit. Mauris blandit 
+        aliquet elit, eget tincidunt nibh pulvinar a.  </p>
+      <p>Cras ultricies ligula sed magna dictum porta. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+                  </div>
+                  <div class="image col-md-6 col-sm-6 col-xs-5 text-right"><img src="{% static 'r1/images/Applicants.png' %}" /></div>
+                  <br clear="all">
+                </div>
+             </div>
+
+
+
+                <div class="support wizard-item" id="support">
+                <div class="content row">
+                  <div class="text-left col-md-6 col-sm-6 col-xs-5 image"><img src="{% static 'r1/images/profile&support.png' %}" /></div>
+                   <div class="content-para col-md-6 col-sm-6 col-xs-7 text-right">
+                     <h3>Support</h3>
+                     <p>Curabitur aliquet quam id dui posuere blandit. Vivamus suscipit
+        tortoreget felis porttitor volutpat. Nulla quis lorem ut libero malesuada
+        feugiat. Vivamus magna justo, lacinia eget consectetur sed, convallis at
+        tellus. Curabitur aliquet quam id dui posuere blandit. Mauris blandit 
+        aliquet elit, eget tincidunt nibh pulvinar a.  </p>
+      <p>Cras ultricies ligula sed magna dictum porta. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+                  </div>
+                  <br clear="all">
+                </div>
+             </div>
+
+
+
+               <div class="profile1 wizard-item" id="profile1">
+                <div class="content row">
+                  <div class="content-para col-md-6 col-sm-6 col-xs-7">
+                     <h3>Profile & Account Authentication</h3>
+                     <p>Curabitur aliquet quam id dui posuere blandit. Vivamus suscipit
+        tortoreget felis porttitor volutpat. Nulla quis lorem ut libero malesuada
+        feugiat. Vivamus magna justo, lacinia eget consectetur sed, convallis at
+        tellus. Curabitur aliquet quam id dui posuere blandit. Mauris blandit 
+        aliquet elit, eget tincidunt nibh pulvinar a.  </p>
+      <p>Cras ultricies ligula sed magna dictum porta. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+                  </div>
+                  <div class="image col-md-6 col-sm-6 col-xs-5 text-right"><img src="{% static 'r1/images/profile&authentication.png' %}" height="350" width="400" /></div>
+                  <br clear="all">
+                </div>
+             </div>
+
+
+
+          </div>
+       </div>
+    </div>
+ </div>
+ <!--/ content -->
+{% endblock %}
+{% block 'extra_js' %}
+     <script>
+        var temp = false;
+        /* active_li */
+        function get_height (div_id, temp) {
+          if(temp){
+            return $(div_id).offset().top - dom_height - 50
+          }else{
+            return $(div_id).offset().top - dom_height - 125
+          }
+        }
+        $('.wizard-list li a').click(function(e){
+          e.preventDefault();
+
+          div_id = $(this).attr("href");
+          dom_height = $(this).parent().parent().height();
+         // console.log($(this).attr('href').slice(1))
+         $('.wizard-item').removeClass('active_tab');
+          $($(this).attr('href')).addClass('active_tab');
+          $('html,body').animate({
+             scrollTop: get_height(div_id, temp)
+           }, 800);
+        })
+        /* active l;i */
+        /* wizard-fixed-top */
+        $(window).scroll(function(e){
+         if($(window).scrollTop()  >200){
+            $(".wizard-list").addClass("wizard-fixed-top");
+            temp = true;
+            }
+          else{
+             $(".wizard-list").removeClass("wizard-fixed-top");
+              temp = false;
+             }
+        })
+        /* wizard-fixed-top */
+
+
+        /* scroll position active tab */
+        $(window).scroll(function(e){
+          $.each( $('.wizard-item'), function(index, value){
+            // if ($(window).scrollTop() <= $(value).offset().top + $(value).height() - 60){
+            console.log($(value).offset().top + 100)
+            if ($(window).scrollTop() <= $(value).offset().top + 100){
+              $('.wizard-list li a[href="#'+ $(value).attr("id") +'"]').parent().siblings().children('a').removeClass('active');
+              $('.wizard-list li a[href="#'+ $(value).attr("id") +'"]').addClass('active')
+              return false;
+            }
+          });
+          })
+        /* scroll position active tab */
+
+
+
+      </script>
+{% endblock %}

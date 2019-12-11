@@ -1,0 +1,232 @@
+{% extends 'dashboard/base.html' %}
+{% load tz %}
+{% load page_tags %}
+{% block stage %}
+<section id='recruiters'>
+  <div class="list_table">
+  <div>
+    <h4>Recruiters
+      <span>
+        <a class={% if status == 'active'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:recruiters_list' "active" %}">Active</a> /
+        <a class={% if status == 'inactive'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:recruiters_list' "inactive" %}">Inactive</a>
+      </span>
+    </h4>
+  <span class="pull-right">
+    <ul class="list-inline">
+      <li class="draft"><i class="fa fa-circle"></i> Draft</li>
+      <li class="pending"><i class="fa fa-circle"></i> Pending</li>
+      <li class="published"><i class="fa fa-circle"></i> Published</li>
+      <li class="live"><i class="fa fa-circle"></i> Live</li>
+      <li class="deleted"><i class="fa fa-circle"></i> Deleted</li>
+    </ul>
+  </span>
+  </div>
+   <form name="recruiterform" id="recruiterform" class="search-form" method="POST">
+    <div class="col-md-12 search_form"><div class="col-md-1"></div>
+      <div class="col-md-4">
+        <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{request.POST.timestamp}}" placeholder="Select the date">
+         <input type="hidden" name="alphabet_value" id="alphabet_value"
+         value="{{request.POST.alphabet_value}}">
+         <input type="hidden" name="page" id="page" value={% if request.POST %}"{{ request.POST.page }}"
+            {% else %}"{{ request.GET.page}}" {% endif %}>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="form-control submit">Submit</button>
+      </div>
+    </div>
+  </form>
+          <div class="clearfix"></div>
+          <div class="alphabetics">
+            <ul class="list-inline">
+              <li><a href="#" class="">All</a></li>
+              <li><a href="#" class="a">A</a></li>
+              <li><a href="#" class="b">B</a></li>
+              <li><a href="#" class="c">C</a></li>
+              <li><a href="#" class="d">D</a></li>
+              <li><a href="#" class="e">E</a></li>
+              <li><a href="#" class="f">F</a></li>
+              <li><a href="#" class="g">G</a></li>
+              <li><a href="#" class="h">H</a></li>
+              <li><a href="#" class="i">I</a></li>
+              <li><a href="#" class="j">J</a></li>
+              <li><a href="#" class="k">K</a></li>
+              <li><a href="#" class="l">L</a></li>
+              <li><a href="#" class="m">M</a></li>
+              <li><a href="#" class="n">N</a></li>
+              <li><a href="#" class="o">O</a></li>
+              <li><a href="#" class="p">P</a></li>
+              <li><a href="#" class="q">Q</a></li>
+              <li><a href="#" class="r">R</a></li>
+              <li><a href="#" class="s">S</a></li>
+              <li><a href="#" class="t">T</a></li>
+              <li><a href="#" class="u">U</a></li>
+              <li><a href="#" class="v">V</a></li>
+              <li><a href="#" class="w">W</a></li>
+              <li><a href="#" class="x">X</a></li>
+              <li><a href="#" class="y">Y</a></li>
+              <li><a href="#" class="z">Z</a></li>
+            </ul>  
+          </div>
+{% if recruiters %}
+    <table class="table table-hover" id="sample_1">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th width="5%">Email</th>
+          <th width="3%">Name</th>
+          <th width= "25%";>Job Posts</th>
+          <th width="10%">Joined On</th>
+          <th >Mobile Verified</th>
+          <th width="20%">Social Links</th>
+          <th >Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for recruiter in recruiters %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="{% url 'dashboard:view_recruiter' recruiter.id %}">{{ recruiter.email }}</a></td>
+          <td>{{recruiter.username}}</td>
+          <td><span class="draft-bg">{{ recruiter.get_total_jobposts|filter_jobposts:'Draft' }}</span><span class="pending-bg">{{ recruiter.get_total_jobposts|filter_jobposts:'Pending' }}</span><span class="published-bg">{{ recruiter.get_total_jobposts|filter_jobposts:'Published' }}</span><span class="live-bg">{{ recruiter.get_total_jobposts|filter_jobposts:'Live' }}</span><span class="deleted-bg">{{ recruiter.get_total_jobposts|filter_jobposts:'Disabled' }}</span></td>
+          <td>{{ recruiter.date_joined|timezone:'Asia/Calcutta' }}</td>
+          <td align="center">{% if recruiter.mobile_verified %}<span class="verified"><i class="fa fa-mobile"></i></span>{% else %}<span class="not_verified"><i class="fa fa-mobile"></i></span>{% endif %}</td>
+          <td>
+            <ul class="social_integration">
+              <li>
+                {% if recruiter.is_fb_connected %}
+                <i class="fa fa-facebook fb"></i>
+                {% else %}
+                <i class="fa fa-facebook"></i></a>
+                {% endif %}
+              </li>
+              <li>
+                {% if recruiter.is_tw_connected %}
+                <i class="fa fa-twitter twit"></i>
+                {% else %}
+                <i class="fa fa-twitter"></i>
+                {% endif %}
+              </li>
+              <li>
+                {% if recruiter.is_gp_connected %}
+                <i class="fa fa-google-plus plus"></i>
+                {% else %}
+                <i class="fa fa-google-plus"></i>
+                {% endif %}
+              </li>
+              <li>
+                {% if recruiter.is_ln_connected %}
+                <i class="fa fa-linkedin in"></i>
+                {% else %}
+                <i class="fa fa-linkedin"></i>
+                {% endif %}
+              </li>
+            </ul>
+          </td>
+          <td align="center">
+            {% if recruiter.is_active %}
+              <a data-href="{% url 'dashboard:recruiter_status_change' recruiter.id %}?page={{ current_page }} " id="{{ recruiter.id }}"
+              class="disable-recruiter"><i class="fa fa-check edit" title="Disable"></i></a>
+            {% else %}
+              <a data-href="{% url 'dashboard:recruiter_status_change' recruiter.id %}?page={{ current_page }}" id="{{ recruiter.id }}" class="enable-recruiter"><i class="fa fa-times delete" title="Enable"></i></a>
+            {% endif %}
+            <a data-href="{% url 'dashboard:recruiter_delete' recruiter.id %}" id="{{ recruiter.id }}" class="delete-recruiter"><i class="fa fa-trash-o delete" title="Delete Recruiter"></i>
+            </a>
+
+            {% if recruiter.get_active_jobposts_count >= 100 %}
+             {% if recruiter.is_paid %}
+             <a href="{% url 'dashboard:recruiter_paid_status_change' recruiter.id %}" id="{{ recruiter.id }}" class="paid-recruiter"><i class="fa fa-check edit" title="Paid"></i></a>
+             {% else %}
+             <a href="{% url 'dashboard:recruiter_paid_status_change' recruiter.id %}" id="{{ recruiter.id }}" class="unpaid-recruiter"><i class="fa fa-times delete" title="UnPaid"></i></a>
+             {% endif %}
+            {% endif %}
+            {% if recruiter.is_active %}
+            <a href="{% url 'recruiter_profile' recruiter.username %}" target="_blank" id="{{ recruiter.id }}" class="unpaid-recruiter"><i class="fa fa-eye delete" title="See Front-End Page"></i></a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  <div class="pagination_wrap">
+    {% get_page current_page last_page as pages %}
+    <nav>
+        <ul class="pagination">
+            {% if current_page != 1 %}
+              <li class="prev"><a href="#" class="{{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+              <li class="prev"><a href="#" class="{{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+              <li><a href="#" class="1">first</a></li>
+              {% endif %}
+              {% for s in pages %}
+              <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="#" class="{{s}}">{{s}}</a></li>
+              {% endfor %}
+              {% if current_page != last_page %}
+              <li><a href="{{last_page}}" class="{{ last_page }}">last</a></li>
+              <li><a href="#" class="{{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+              <li><a href="#" class="{{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+              {% endif %}
+            </ul>
+    </nav>
+  </div>
+    {% else%}
+  <div class="row  mt">
+              <div class="page-404 text-center"  style="height:400px;width:100%">
+<!--                  <h1>{{ message_type }},</h1>
+                    <h4>{{ message }}</h4>!-->
+                    <h1><span> Sorry, No Recruiters available with this search</span></h1>
+                </div>
+            </div>
+  {% endif %}
+  </div>
+</section>
+{% endblock stage %}
+{% block script %}
+<script type="text/javascript">
+
+$('.delete-recruiter').click(function(e){
+  if(!confirm('Do you want to delete this Recruiter?')){
+  e.preventDefault();
+  e.stopPropagation();
+  }
+  else{
+  $("#recruiterform").attr("action", $(this).data("href"));
+  $('#recruiterform').submit();
+}
+ })
+$('.disable-recruiter').click(function(e){
+  if(!confirm('Do you want to Disable this Recruiter Status?')){
+  e.preventDefault();
+  e.stopPropagation();
+  }
+  else{
+  $("#recruiterform").attr("action", $(this).data("href"));
+  $('#recruiterform').submit();
+}
+ })
+$('.enable-recruiter').click(function(e){
+  if(!confirm('Do you want to Enable this Recruiter Status?')){
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  else{
+  $("#recruiterform").attr("action", $(this).data("href"));
+  $('#recruiterform').submit();
+  }
+ })
+$('.list-inline li a').click(function(e){
+  e.preventDefault();
+  $("#recruiterform").attr("action", "/dashboard/recruiters/"+"{{status}}"+"/list/");
+  $('#page').val(1)
+  $('#alphabet_value').val($(this).attr('class'));
+  $('#recruiterform').submit();
+});
+$('.pagination li a').click(function(e) {
+    e.preventDefault();
+    $('#page').val($(this).attr('class'))
+    $("#recruiterform").attr("action", "/dashboard/recruiters/"+"{{status}}"+"/list/");
+    $('#recruiterform').submit();
+});
+</script>
+{% endblock script %}

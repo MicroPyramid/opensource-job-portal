@@ -1,0 +1,243 @@
+{% extends "dashboard/base.html" %}
+{% load page_tags %}
+{% block stage %}
+    <div class="list_table">
+        <h3>{{ company.name }} Job Post List</h3>
+        <table class="table jobposts_table" id="sample_1">
+            <thead>
+            <tr>
+                <th width="3%">Job Code</th>
+                <th width="12%">Job Title</th>
+                <th width="2%">Location</th>
+                <th width="5%">Job Status</th>
+                <th width="10%">Posted By</th>
+                <th width="10%">Posted On</th>
+                <th width="10%">Applied Users</th>
+                <th width="25%">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for post in job_posts %}
+                <tr data-href='/dashboard/jobpost/view/{{ post.id }}/' class='job_detail'>
+                    <td>{{ post.code }}</td>
+                    <td>{{ post.title }}</td>
+                    <td>{% for location in post.location.all %}{% if forloop.last and not forloop.next_element %}
+                        {{ location.name }}{% else %}{{ location.name }},{% endif %}{% endfor %}
+                    </td>
+                    <td>{{ post.status }}</td>
+                    <td>{{ post.user.email }}</td>
+                    <td>{{ post.published_on|date:"M. d, Y" }}</td>
+                    <td>{{ post.get_all_applied_users_count }}</td>
+                    <td>
+                        {% ifequal post.job_type 'government' %}
+                            <a href="{% url 'dashboard:edit_govt_job' post.id %}" id="{{ post.id }}" class="edit-job"><i
+                                    class="fa fa-edit edit" title="enable Job"></i></a>{% endifequal %}
+                        {% ifequal post.status 'Disabled' %}
+                            <a href="#" id="{{ post.id }}" class="enable-job"><i class="fa fa-check edit"
+                                                                                 title="enable Job"></i></a>{% else %}
+                            <a href="#" id="{{ post.id }}" class="deactivate-job" class="deactivate-job"><i
+                                    class="fa fa-times delete" title="Deactivate Job"></i></a>{% endifequal %}
+                        {% if post.status == 'Pending' %}
+                            <a href="{% url 'dashboard:publish' post.id %}" id="{{ post.id }}" class="pending-job"><i
+                                    class="fa fa-hand-o-up pending"
+                                    title="Pending"></i></a>{% elif post.status == 'Published' %}
+                            <a href="{% url 'dashboard:publish' post.id %}" id="{{ post.id }}" class="publish-job"><i
+                                    class="fa fa-check published"
+                                    title="Published"></i></a>{% elif post.status == 'Live' %}
+                            <a href="#" id="{{ post.id }}" class="live-job"><i class="fa fa-check published"
+                                                                               title="Live"></i></a>{% else %}
+                            <a href="#" id="{{ post.id }}" class="draft-job"><i class="fa fa-check published"
+                                                                                title="Draft"></i></a>{% endif %}
+                        <a href="#" id="{{ post.id }}" class="delete-job"><i class="fa fa-trash-o delete"
+                                                                             title="Delete Job"></i></a>
+                        {% if post.status == 'Live' %}
+                        <a href="{{ post.slug }}"  target="_blank"><i class="fa fa-eye published"
+                                                                             title="View Job"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!--/ post details -->
+    <div class="pagination_wrap">
+        {% get_page current_page last_page as pages %}
+        <nav>
+            <ul class="pagination">
+                {% if current_page != 1 %}
+                    <li class="prev"><a
+                            href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ previous_page }}"><i
+                            class="fa fa-angle-double-left"></i></a></li>
+                    <li class="prev"><a
+                            href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ prev_page }}"><i
+                            class="fa fa-angle-left"></i></a></li>
+                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page=1">first</a></li>
+                {% endif %}
+                {% for s in pages %}
+                    <li {% ifequal s current_page %} class="active" {% endifequal %}><a
+                            href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ s }}">{{ s }}</a>
+                    </li>
+                {% endfor %}
+                {% if current_page != last_page %}
+                    <li>
+                        <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ last_page }}">last</a>
+                    </li>
+                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><i
+                            class="fa fa-angle-right pagination-next"></i></a></li>
+                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><i
+                            class="fa fa-angle-double-right"></i></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock stage %}
+{% block script %}
+
+    <script type="text/javascript">
+        $('.delete-job').click(function (e) {
+            e.preventDefault();
+            url = $(this).attr('id') + '/'
+            $('#block_question').text('Do you want to delete Jobpost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/dashboard/jobpost/delete/' + url, $("form#jobform").serialize(), function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog_with_url('Job Post Deleted Successfully', 'Success!!!', ".")
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('.deactivate-job').click(function (e) {
+            e.preventDefault();
+            url = $(this).attr('id') + '/'
+            $('#block_question').text('Do you want to deactivate Jobpost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/dashboard/jobpost/deactivate/' + url, $("form#jobform").serialize(), function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog_with_url('Job Post Disabled Successfully', 'Success!!!', ".")
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('.enable-job').click(function (e) {
+            e.preventDefault();
+            url = $(this).attr('id') + '/'
+            $('#block_question').text('Do you want to enable JobPost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/dashboard/jobpost/enable/' + url, {}, function (data) {
+                                if (data.error) {
+                                    open_dialog(dat.response, 'Error!')
+                                } else {
+                                    open_dialog_with_url('Job Post Enabled Successfully', 'Success!!!', ".")
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('.publish-job').click(function (e) {
+            e.preventDefault();
+            url = $(this).attr('id') + '/'
+            $('#block_question').text('Do you want to Publish JobPost?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/dashboard/jobpost/publish/' + url, {}, function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog_with_url('Job Post Published Successfully', 'Success!!!', ".")
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('#sample_1').DataTable({
+            "sPaginationType": "full_numbers",
+            "aaSorting": [],
+            "bSort": true,
+            "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+            "pageLength": 20,
+        });
+        $(".job_detail").click(function () {
+            window.document.location = $(this).data("href");
+        });
+
+    </script>
+{% endblock script %}

@@ -1,0 +1,519 @@
+{% load page_tags %}
+{% load thumbnail %}
+{% load tz %}
+{% load thumbnail %}
+<style type="text/css">
+  .blog_title{
+    font-size: 16px;
+    color: #00aeef;
+    display:inline;
+  }
+</style>
+
+{% if recruiter %}
+<div class="job_detail_section">
+  <!-- job_item starts here -->
+  <div class="job_item">
+    <strong class="title"><a href="#">{{ job.title }} <span class="exp">[{{ job.min_year }}-{{ job.max_year }} Year(s) Exp]</span> </a></strong>
+    <span class="company" itemprop="experienceRequirements">
+    {% if job.company or job.company_name %}
+    {% if job.company.is_active and job.company.slug %}
+      <a href="{% url 'company_jobs' job.company.slug %}" target="_blank">{{ job.company.name|capfirst }}</a>
+    {% elif job.company %}
+      {{ job.company.name|capfirst }}
+    {% elif job.company_name %}
+    {{ job.company_name|capfirst }}
+    {% endif %}
+  {% endif %}
+
+     </span>
+    <div class="job_typ">{% if job.industry.all %}<i class="fa fa-briefcase"></i>{% endif %}
+      {%for industry in job.industry.all %}
+      <a href="{% url 'job_industries' industry.slug %}" target="_blank">{{ industry.name|get_industry_name }}</a>
+      {% if forloop.last %}{% else %}, {% endif%}
+      {% endfor %}
+      <span><span itemprop="jobLocation"><i class="fa fa-map-marker"></i>
+      {%for location in job.location.all %}
+      {% if location.status == 'Enabled' %}
+        <a href="{{ location.get_job_url }}" target="_blank">{{ location.name }}</a>
+        {% else %}
+        <a style="cursor:default">{{ location.name }}</a>{% endif %}{% if forloop.last %}{% else %}, {% endif%}
+      {% endfor %}</span></span>
+    </div>
+    <div class="description row">
+      <span class="head">Experience :</span>
+      <span class="content" itemprop="experienceRequirements">{{ job.min_year }}-{{ job.max_year }} Years</span>
+    </div>
+    <div class="description row">
+      <span class="head">Salary :</span>
+      <span class="content" itemprop="salaryCurrency"> 
+      {% if job.min_salary == 0 and job.max_salary == 0 %}
+      Not Specified
+      {% else %}
+      <i class="fa fa-inr" aria-hidden="true"></i> {{ job.get_job_salary.0 }} - {{ job.get_job_salary.1 }} P.A
+      {% endif %}</span>
+    </div>
+    <div class="description row">
+      <span class="head">Job Type :</span>
+      <span class="content" itemprop="employmentType"><a href="/{{ job.get_job_type }}-jobs/" target="_blank"> {{ job.job_type|get_string }} </a></span>
+    </div>
+    <div class="description row">
+      <span class="head">Job Status :</span>
+      <span class="content">{{ job.status }}</span>
+    </div>
+    {% if job.skills.all %}
+    <div class="description row Keyskills">
+      <span class="head">Key skills :</span>
+      <span class="tags" itemprop="skills">
+      {%for skill in job.skills.all %}
+        {% if skill.status == 'Active' %}
+          <a href="{{ skill.get_job_url }}" target="_blank">{{ skill }}</a>&nbsp;
+        {% else %}
+          <a class="inactive_class">{{ skill }}</a>&nbsp;
+        {% endif %}
+      {% endfor %}
+      </span>
+    </div>
+    {% endif %}
+    <!-- description row starts-->
+    <div class="job_description_section" id="job_detail_id">
+      <div class="row">
+        <div class="description_block" {% if recruiter %}{% else %} style="padding-left:21px" {% endif %}>
+        <div class="head_title">Job Description :</div>
+        <div class="description">
+          <p itemprop="description"></p>
+          {{ job.description|safe }}
+        </div>
+        <div class="job_detail_options">
+          <div class="description row">
+            <span class="head"><strong>Role Category:</strong></span>
+            <span class="content" itemprop="occupationalCategory">{% if job.job_role %}{{ job.job_role }}{% else %} Not Specified {% endif %}</span>
+          </div>
+          <div class="description row">
+            <span class="head"><strong>Educational Qualification:</strong></span>
+            <span class="content">{%for qualification in job.edu_qualification.all %}{{ qualification.name }} {% if forloop.last %}{% else %}, {% endif%}{% empty %}Not Specified{% endfor %}</span>
+          </div>
+          <div class="description row">
+            <span class="head"> <strong>Functional Area:</strong></span>
+            <span class="content"itemprop="qualifications">
+            {% if job.functional_area.all %}
+            {%for functional_area in job.functional_area.all %}
+            {{ functional_area.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}
+            {% endif %}
+            </span>
+          </div>
+          {% if job.vacancies > 0 %}
+          <div class="description row">
+            <span class="head"><strong> Vacancies :</strong></span>
+            <span class="content">{{ job.vacancies }} </span>
+          </div>
+          {% endif %}
+          {% if job.walkin_contactinfo %}
+          {% if job.walkin_show_contact_info %}
+          <div class="description row">
+            <span class="head"><strong>Walkin Contact Info</strong></span>
+            <span class="content">{{ job.walkin_contactinfo|safe }}</span> 
+          </div>
+          {% if job.walkin_time %}
+          <div class="description row">
+            <span class="head"><strong>Walkin Time</strong></span>
+            <span class="content">{{ job.walkin_time }}</span>
+          </div>
+          {%endif%}
+          {%endif%}
+          {%endif%}
+          <div class="description row">
+            <span class="head"><strong>Job Posted On </strong></span>
+            <span class="content">{{job.published_date|date:"M. d, Y"}}</span> 
+          </div>
+          {% if job.last_date %}
+          <div class="description row">
+            <span class="head"><strong>Last Date To Apply </strong></span>
+            <span class="content">{{ job.last_date }}</span> 
+          </div>
+          {% endif %}
+        </div>
+          <div class="job_detail_options">
+            <div class="head_title">Company Details</div>
+            <div class="description" itemprop="description">
+              <span class="head"><strong>Company Name :</strong></span>
+              <p>
+                {% if job.company.is_active and job.company.slug %}
+                <a href="{% url 'company_jobs' job.company.slug %}" target="_blank">{{ job.company.name|capfirst }}</a>
+              {% elif job.company %}
+                {{ job.company.name|capfirst }}
+              {% elif job.company_name %}
+              {{ job.company_name|capfirst }}
+              {% endif %}
+              </p>
+            </div>
+            <div class="description" itemprop="description">
+              <span class="head"><strong>Company Address :</strong></span>
+              <p class="content">{{ job.company_address|linebreaks }}</p>
+            </div>
+            {% if job.company.website %}
+            <div class="description">
+              <span class="head"><strong>Company Website :</strong></span>
+              <span class="content" itemprop="description">
+              {{ job.company.website }}
+              </span>
+            </div>
+            {% endif %}
+            {% if job.company_links %}
+            <div class="description">
+              <span class="head"><strong>Company Links :</strong></span>
+              <span class="content" itemprop="description">
+              {{ job.company_links }}
+              </span>
+            </div>
+            {% endif %}
+            {% if job.company_emails %}
+            <div class="description">
+              <div class="head">Company Emails :</div>
+              <span class="content" itemprop="description">
+              {{ job.company_emails }}
+              </span>
+            </div>
+            {% endif %}
+            <div class="clearfix"></div>
+            {% if job.company.is_active and job.company.profile %}
+            <div class="description">
+              <span class="head"><strong>Company Profile :</strong></span>
+              <span class="content" itemprop="description">
+              {{ job.company.profile|safe }}
+              </span>
+            </div>
+            {% endif %}
+            <div class="description">
+              {% if location.venue_details %}
+              <span class="head"><strong>Venue Location: </strong></span>
+              <span class="content" itemprop="description">
+              {{ location.venue_details|linebreaks }}
+              </span>
+              {% else %}
+              {% for location in job.job_interview_location.all %}
+              {% if location.venue_details %}
+              <span class="head"><strong>Venue Location {{ forloop.counter }}: </strong></span>
+              <span class="content" itemprop="description">
+                <p>{{ location.venue_details|linebreaks }}</p>
+              </span>
+              {% endif %}
+              {% empty %}
+              <span class="head"><strong>Venue Location: </strong></span>
+              <span class="content" itemprop="description"> Not Specified</span>
+              {% endfor %}
+              {% endif  %}
+            </div>
+          </div>
+        <!-- Agency details-->
+        {% if request.user.is_agency_recruiter or request.user.is_agency_admin %}
+        <div class="job_detail_options">
+          <div class="head_title">Agency Details</div>
+          <div class="description" itemprop="description">
+            <span class="head"><strong>Assigned Recruiters:</strong></span>
+            <p>
+              {% for recruiter in job.agency_recruiters.all %}<a href="{% url 'agency:company_recruiter_profile' recruiter.id %}">
+              {{ recruiter.get_full_username }}</a>{% if forloop.last %}{% else %}, {% endif %}{% empty %} N/A {% endfor %}
+            </p>
+          </div>
+          {% if job.agency_invoice_type %}
+            <div class="description" itemprop="description">
+              <span class="head"><strong>Invoice type:</strong></span>
+              <p>{{ job.agency_invoice_type }}</p>
+            </div>
+          {% endif %}
+          {% if job.agency_client.name %}
+            <div class="description" itemprop="description">
+              <span class="head"><strong>Client:</strong></span>
+              <p>{{ job.agency_client.name }}</p>
+            </div>
+          {% endif %}
+        </div>
+        {% endif %}
+        <!-- Agency details-->
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+  <!-- description row ends-->
+</div>
+<!-- job_item ends here -->
+
+
+
+{% else %}
+<div class="job_detail_section">
+  <!-- job_item starts here -->
+  <div class="job_item">
+  <div class="job"> 
+    <div class="logo_apply">
+      {% if job.job_type == 'walk-in' %}
+      {% elif job.user.is_superuser %}
+        {% if job.company_emails %}
+          <span class="pull-right apply_btn">
+            <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="latest_job_type send_mail {% if request.user.is_active %}active{% endif %} {% if request.user.profile_completion_percentage > 50 %}completed{% endif %} {% if request.user.is_authenticated %}logged{% endif %}">Apply</a>
+          </span>
+        {% endif %}
+      {% else %}
+        {% if request.user.id|is_applied_for_job:job.pk  %}
+          <span class="pull-right apply_btn">
+            <a href="{{ job.slug }}" class="latest_job_type">Applied</a>
+          </span>
+        {% else%}
+          <span class="pull-right apply_btn">
+            <a href="{% if not request.user.is_authenticated %}#{% endif %}" class='latest_job_type job_apply {% if not request.user.is_authenticated %}job_apply_login{% else %} applicant_apply {% endif %}' id="{{ job.pk }}" data-href="{{ job.slug }}?job_apply=applied">Apply</a>
+          </span>
+        {% endif %}
+      {% endif %}
+
+      {% if job.company.profile_pic %}
+        <span class="company_pic">
+          {% thumbnail job.company.get_logo_url "70x70" as im %}
+            <img src="{{ im.url }}" alt="{{ job.company.name|capfirst}} Job Openings"/>
+          {% endthumbnail %}
+        </span>
+      {% endif %}
+    </div>
+    <strong class="title"><h1 class="blog_title">{{ job.title }}</h1> <span class="exp">[{{ job.min_year }}-{{ job.max_year }} Year(s) Exp]</span> </strong>
+    <span class="company" itemprop="experienceRequirements">
+    {% if job.company or job.company_name %}
+    {% if job.company.is_active and job.company.slug %}
+      <a href="{% url 'company_jobs' job.company.slug %}" target="_blank">{{ job.company.name|capfirst }}</a>
+    {% elif job.company %}
+      {{ job.company.name|capfirst }}
+    {% elif job.company_name %}
+    {{ job.company_name|capfirst }}
+    {% endif %}
+  {% endif %}
+    </span>
+    <!-- job item starts -->
+    <div class="job_typ"><i class="fa fa-briefcase"></i>
+      {%for industry in job.industry.all %}
+      <a href="{{ industry.get_job_url }}">{{ industry.name|get_industry_name }}</a>
+      {% if forloop.last %}{% else %}, {% endif%}
+      {% endfor %}
+      <span><span itemprop="jobLocation"><i class="fa fa-map-marker"></i>
+      {%for location in job.location.all %}
+        {% if location.status == 'Enabled' %}
+        <a href="{{ location.get_job_url }}" target="_blank">{{ location.name }}</a>
+        {% else %}
+        <a style="cursor:default">{{ location.name }}</a>
+        {% endif %}{% if forloop.last %}{% else %}, {% endif%}
+      {% endfor %}</span></span>
+    </div>
+    <!-- job item ends -->
+    <!-- description rowssss starts -->
+    <div class="description row">
+      <span class="head">Experience :</span>
+      <span class="content" itemprop="experienceRequirements">{{ job.min_year }}-{{ job.max_year }} Years</span>
+    </div>
+    {% if job.min_salary != 0 and job.max_salary != 0 %}
+      <div class="description row">
+        <span class="head">Salary :</span>
+        <span class="content" itemprop="salaryCurrency">
+          <i class="fa fa-inr" aria-hidden="true"></i> {{ job.get_job_salary.0 }} - {{ job.get_job_salary.1 }} P.A
+        </span>
+      </div>
+    {% endif %}
+    <div class="description row">
+      <span class="head">Job Type :</span>
+      <span class="content" itemprop="employmentType"><a href="/{{ job.get_job_type }}-jobs/" target="_blank"> {{ job.job_type|get_string }} </a></span>
+    </div>
+    {% if job.skills.all %}
+    <div class="description row Keyskills">
+      <span class="head">Key skills :</span>
+      <span class="tags" itemprop="skills">
+      {%for skill in job.skills.all %}
+        {% if skill.status == 'Active' %}
+          <a href="{{ skill.get_job_url }}" target="_blank">{{ skill }}</a>&nbsp;
+        {% else %}
+          <a class="inactive_class">{{ skill }}</a>&nbsp;
+        {% endif %}
+      {% endfor %}
+      </span>
+    </div>
+    {% endif %}
+    <!-- description rowssss ends -->
+    <!-- job_description_section row starts-->
+    <div class="job_description_section" id="job_detail_id">
+      <!-- row division starts-->
+      <div class="row">
+        <!-- description_block division starts-->
+        <div class="description_block" {% if recruiter %}{% else %} style="padding-left:21px" {% endif %}>
+        <div class="head_title">Job Description :</div>
+        <div class="description">
+          <p itemprop="description"></p>
+          {{ job.description|safe }}
+        </div>
+        <!-- job_detail_options division starts-->
+        <div class="job_detail_options">
+          <div class="description row">
+            <span class="head"><strong>Role Category:</strong></span>
+            <span class="content" itemprop="occupationalCategory">{% if job.job_role %}{{ job.job_role }}{% else %} Not Specified {% endif %}</span>
+          </div>
+          <div class="description row">
+            <span class="head"><strong>Educational Qualification:</strong></span>
+            <span class="content">{%for qualification in job.edu_qualification.all %}{{ qualification.name }} {% if forloop.last %}{% else %}, {% endif%}{% empty %}Not Specified{% endfor %}</span>
+          </div>
+          {% if job.functional_area.all %}
+
+          <div class="description row">
+            <span class="head"> <strong>Functional Area:</strong></span>
+            <span class="content"itemprop="qualifications">
+            {%for functional_area in job.functional_area.all %}
+            {{ functional_area.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}
+            </span>
+          </div>
+          {% endif %}
+          {% if job.vacancies > 0 %}
+          <div class="description row">
+            <span class="head"><strong> Vacancies :</strong></span>
+            <span class="content">{{ job.vacancies }} </span>
+          </div>
+          {% endif %}
+          {% if job.walkin_contactinfo %}
+          {% if job.walkin_show_contact_info %}
+          <div class="description row">
+            <span class="head"><strong>Walkin Contact Info</strong></span>
+            <span class="content">{{ job.walkin_contactinfo|safe }}</span> 
+          </div>
+          {% if job.walkin_time %}
+          <div class="description row">
+            <span class="head"><strong>Walkin Time</strong></span>
+            <span class="content">{{ job.walkin_time }}</span>
+          </div>
+          {%endif%}
+          {%endif%}
+          {%endif%}
+          <div class="description row">
+            <span class="head"><strong>Job Posted On </strong></span>
+            <span class="content">{{ job.published_on|date:"M. d, Y" }}</span> 
+          </div>
+          {% if job.last_date %}
+          <div class="description row">
+            <span class="head"><strong>Last Date To Apply </strong></span>
+            <span class="content">{{ job.last_date }}</span> 
+          </div>
+          {% endif %}
+        </div>
+        <!-- job_detail_options division ends-->
+        <!-- job_detail_options division starts-->
+        <div class="job_detail_options">
+          <div class="head_title">Company Details</div>
+         {% if job.company or job.company_name %}
+          <div class="description row" itemprop="description">
+            <span class="head"><strong>Company Name :</strong></span>
+            <p class="content">
+              {% if job.company.is_active and job.company.slug %}
+                <a href="{% url 'company_jobs' job.company.slug %}" target="_blank">{{job.company.name|capfirst}}</a>
+              {% elif job.company %}
+                {{ job.company.name|capfirst }}
+              {% elif job.company_name %}
+              {{ job.company_name|capfirst }}
+              {% endif %}
+            </p>
+          </div>
+          {% endif %}
+          <div class="description row" itemprop="description">
+            <span class="head"><strong>Company Address :</strong></span>
+            <p class="content">{% if job.company_address %}{{ job.company_address|linebreaks }}{% else %}Not Specified{% endif %}</p>
+          </div>
+          {% if job.company.website %}
+          <div class="description row">
+            <span class="head"><strong>Company Website :</strong></span>
+            <span class="content" itemprop="description">
+            {% if job.company.website %}{{ job.company.website }}{% else %}Not Specified{% endif %}
+            </span>
+          </div>
+          {% endif %}
+          {% if job.company_links %}
+          <div class="description row">
+            <span class="head"><strong>Company Links :</strong></span>
+            <span class="content" itemprop="description">
+            {% if job.company_links %}{{ job.company_links }}{% else %}Not Specified{% endif %}
+            </span>
+          </div>
+          {% endif %}
+          {% if job.company_emails %}
+          <div class="description row">
+            <div class="head">Company Emails :</div>
+            <span class="content" itemprop="description">
+            {% if job.company_emails %}{{ job.company_emails }}{% else %}Not Specified{% endif %}
+            </span>
+          </div>
+          {% endif %}
+          {% if job.company.is_active and job.company.profile %}
+          <div class="description row">
+            <span class="head"><strong>Company Profile :</strong></span>
+            <span class="content" itemprop="description">
+            {{ job.company.profile|safe }}
+            </span>
+          </div>
+          {% endif %}
+          <div class="description row">
+            {% if location.venue_details %}
+            <span class="head"><strong>Venue Location: </strong></span>
+            <span class="content" itemprop="description">
+            {{ location.venue_details|linebreaks }}
+            </span>
+            {% else %}
+            {% for location in job.job_interview_location.all %}
+            {% if location.venue_details %}
+            <span class="head"><strong>Venue Location {{ forloop.counter }}: </strong></span>
+            <span class="content" itemprop="description">
+              <p>{{ location.venue_details|linebreaks }}</p>
+            </span>
+            {% endif %}
+            {% empty %}
+            <span class="head"><strong>Venue Location: </strong></span>
+            <span class="content" itemprop="description"> Not Specified</span>
+            {% endfor %}
+            {% endif  %}
+          </div>
+        </div>
+        <!-- job_detail_options division ends-->
+        {% if not job.user.is_superuser %}
+        <div class="job_detail_options" style="margin-top:10px">
+          <div class="head_title">Recruiter Details</div>
+          <div class="description" itemprop="description">
+            <a href="{% url 'recruiter_profile' job.user.username %}" class="rec_url" target="_blank">
+              <span class="head"><strong>Recruiter:</strong></span>
+              <p>{{ job.user.get_full_username }}</p>
+            </a>
+          </div>
+          {% if job.user.show_email %}
+          <div class="description" itemprop="description">
+            <a href="{% url 'recruiter_profile' job.user.username %}" class="rec_url" target="_blank">
+              <span class="head"><strong>Email:</strong></span>
+              <p>{{ job.user.email }}</p>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+        <!--
+          <div class="btn-group social_share_group">
+            <button class="btn btn-default btn-xs disabled">Share This Job:</button>
+            <a class="btn btn-default btn-xs" target="_blank" title="On Facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fostr.io/code/html-social-like-share-buttons-no-javascript.html&amp;t=Social%20Buttons%20in%20HTML%20only%20using%20Twitter%20Bootstrap%203%20and%20Font%20Awesome%20Icons">
+            <i class="fa fa-facebook fa-lg fb"></i>
+            </a>
+            <a class="btn btn-default btn-xs" target="_blank" title="On Twitter" href="http://twitter.com/share?url=http%3A%2F%2Fostr.io/code/html-social-like-share-buttons-no-javascript.html&amp;text=Social%20Buttons%20in%20HTML%20only%20using%20Twitter%20Bootstrap%203%20and%20Font%20Awesome%20Icons">
+            <i class="fa fa-twitter fa-lg tw"></i>
+            </a>
+            <a class="btn btn-default btn-xs" target="_blank" title="On Google Plus" href="https://plusone.google.com/_/+1/confirm?hl=en&amp;url=http%3A%2F%2Fostr.io/code/html-social-like-share-buttons-no-javascript.html">
+            <i class="fa fa-google-plus fa-lg google"></i>
+            </a>
+            <a class="btn btn-default btn-xs" target="_blank" title="On LinkedIn" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http%3A%2F%2Fostr.io/code/html-social-like-share-buttons-no-javascript.html">
+            <i class="fa fa-linkedin fa-lg linkin"></i>
+            </a>
+          </div> -->
+      </div>
+      <!-- description_block division ends-->
+    </div>
+    <!-- row division starts-->
+  </div>
+  <!-- job_description_section row ends-->
+</div></div>
+<!-- job_item ends here -->
+{% endif %}
+<div id="block_job_apply" style="display: none;"></div>

@@ -1,0 +1,111 @@
+{% extends 'mobile/base.html'%}
+{% load thumbnail %}
+{% load static %}
+{% load page_tags %}
+{% block block_title %}
+  {% include "meta_data/recruiter_profile.html" %}
+{% endblock %}
+
+{% block stage %}
+<div class="recruiters_detail_section">
+  <div class="container">
+    <div class="recruiter_detail_block">
+      <div class="logo_title">
+        <div class="logo">
+          <a href="#">
+            <img src="{% if user.profile_pic %}{% thumbnail user.profile_pic.url "100x100" upscale=True padding=True %}{% else %}{% static 'static/img/dummy.jpg' %}{% endif %}" />
+          </a>
+        </div>
+        <div class="title">{{ user.get_full_name }}</div>
+      </div>
+      <div class="description_wrap">
+        {% if user.job_role %}
+            <div class="detail_each">
+              <div class="label">Designation</div>
+              <div class="detail">{{ user.job_role }}</div>
+            </div>
+        {% endif %}
+        {% if user.company.is_active and user.company.slug %}
+            <div class="detail_each">
+              <div class="label">Company</div>
+              <div class="detail"><a {% if user.company.is_active %}href="{% url 'company_jobs' user.company.slug %}" target="_blank" {% endif %}>{{ user.company.name }}</a></div>
+            </div>
+        {% endif %}
+        {% if user.technical_skills.all %}
+          <div class="detail_each">
+            <div class="label">Skills</div>
+            <div class="detail">{%for skill in user.technical_skills.all %}{{ skill.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</div>
+          </div>
+        {% endif %}
+        {% if user.functional_area.all %}
+          <div class="detail_each">
+            <div class="label">Functional Area</div>
+            <div class="detail">{%for fa in user.functional_area.all %}{{ fa.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</div>
+          </div>
+        {% endif %}
+        {% if user.industry.all %}
+          <div class="detail_each">
+            <div class="label">Industry</div>
+            <div class="detail">{%for industry in user.industry.all %}{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</div>
+          </div>
+        {% endif %}
+        {% if user.year %}
+          <div class="detail_each">
+            <div class="label">Total Experience</div>
+            <div class="detail">{{user.year}} Year(s) - {{ user.month }} Month(s)</div>
+          </div>
+        {% endif %}
+        {% if profile_description %}
+          <div class="detail_each">
+            <div class="label">About</div>
+            <div class="detail">
+              <p>{{ user.profile_description }}
+              </p>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+          <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- PJ Right Nav -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-5756092160559539"
+                 data-ad-slot="3490610504"
+                 data-ad-format="auto"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    {% if job_list %}
+    <div id="job_list">
+        {% include 'mobile/job_list.html' with job_list=job_list %}
+    </div>
+     <!-- pagination starts here -->
+       {% if last_page > 1 %}
+ <div class="pagination_row text-center">
+      <ul class="pagination pagination-sm text-center">
+      {% if prev_page < current_page %}
+      <li><a href="{{current_url}}{% if prev_page == 1%}{% else %}{{ prev_page }}{% endif %}">Previous</a></li>
+      {% endif %}
+      <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="{{current_url}}{% if current_page == 1%}{% else %}{{ current_page }}{% endif %}">{{current_page}} of {{ last_page }}</a></li>
+     {% if aft_page > current_page %} 
+     <li><a href="{{current_url}}{{aft_page}}">Next</a></li>{% endif %}
+    </ul>
+    </div>
+    {% endif %}
+    <br clear="all">
+    <div class="clearfix"></div>
+    <!-- pagination ends here -->
+    {% else %}
+        No Job Posts Available
+    {% endif %}
+
+  </div>
+</div>
+</div>
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript"></script>
+{% endblock %}

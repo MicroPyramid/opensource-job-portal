@@ -1,0 +1,785 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load page_tags %} 
+{% load searchtags %}
+{% load static %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+{% block block_title %}
+ {% include "meta_data/detail.html" %}
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<!-- main_container starts here -->
+<div class="row mar_lr_0 main_container">
+  {% with job.get_job_minified_url as job_url %}
+  <ul class="social-share ">
+    <li><a href="https://www.facebook.com/sharer/sharer.php?u={{ job_url }}&t={{ job.title }}" target="_blank" class="facebook social"><i class="fa fa-facebook"></i></a></li>
+    <li><a href="https://www.linkedin.com/cws/share?url={{ job_url }}&token=&isFramed=true" target="_blank" class="linkedin social"><i class="fa fa-linkedin"></i></a></li>
+    <li><a href="https://plus.google.com/share?hl=en-US&url={{ job_url }}" class="google social" target="_blank"><i class="fa fa-google-plus"></i></a></li>
+    <li><a href="https://twitter.com/intent/tweet?text={{ job.title }}&url={{ job_url }}&via=PeelJobs" target="_blank" class="twitter social"><i class="fa fa-twitter"></i></a></li>
+    <li><a href="mailto:?subject=Peeljobs%20Job%20post%20sharing&body={{ job_url }}" target="_blank" class="envelope social"><i class="fa fa-envelope"></i></a></li>
+  </ul>
+  {% endwith %}
+  <div class="container">
+    <!-- breadcrumb_section starts here -->
+    <div class="breadcrumb_section row mar_lr_0">
+      <nav>
+        <ol class="cd-breadcrumb triangle">
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+              <span class="name" >Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{job.skills.all.0.get_job_url}}">
+              <span class="name">{{job.skills.all.0.name}} Jobs</span>
+            </a>
+          </li>
+          <li class="current">
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/{{ job.skills.all.0.slug }}-jobs-in-{{ job.location.all.0.slug }}/">
+              <span class="name">{{ job.skills.all.0.name }} Jobs in {{ job.location.all.0.name }}</span>
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </div>
+    <!-- breadcrumb_section ends here -->
+    <div class="row mar_lr_0">
+      <div class="col-md-9 left_container">
+        <div class="row success_view">
+          <div class="col-md-1 sucess">
+            <i class="fa fa-check"></i>
+          </div>
+          <div class="col-md-11 sucess_walkin">
+            <h2> Congratulations </h2>
+             <p>you have successfully applied to this job, to get mails from recruiter you need to verify your email id. Check your inbox to verify your email ID </p>
+          </div>
+        </div>
+        <!-- side_filter_section starts here -->
+        <div class="row">
+          <!-- job_list_section starts here -->
+          <div class="col-md-12">
+            <div class="job_detail_section">
+              <!-- job_item starts here -->
+              {% if request.GET.job_apply == 'apply' %}
+                {% if request.user.profile_completion_percentage < 50 %}
+                  <div class="alert alert-warning alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Warning!</strong> Please update your profile to apply for this job. <a href="/profile" target="_blank">Click Here</a> to update profile
+                  </div>
+                {% elif not request.user.is_active %}
+                  <div class="alert alert-warning alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Alert!</strong> Please Activate your account to apply for jobs.
+                  </div>
+                {% elif request.user.id|is_applied_for_job:job.pk %}
+                  <div class="alert alert-warning alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Info!</strong> User already applied for this job
+                  </div>
+                {% endif %}
+              {% elif request.GET.job_apply == 'applied' and request.user.id|is_applied_for_job:job.pk %}
+                <div class="alert alert-success alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <strong>Congratulations!</strong> You have successfully applied for this Job
+                </div>
+              {% endif %}
+
+              {% include 'job_detail.html' with job=job recruiter=False %}
+              <!-- job_item ends here -->
+              <div class="tag_div">
+                  {% if job.job_type == 'walk-in' %}
+                  {% elif job.user.is_superuser %}
+                    {% if job.company_emails %}
+                      <span class="apply_btn">
+                        <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="latest_job_type send_mail {% if request.user.is_active %}active{% endif %} {% if request.user.profile_completion_percentage > 50 %}completed{% endif %} {% if request.user.is_authenticated %}logged{% endif %}">Apply</a>
+                      </span>
+                    {% endif %}
+                  {% else %}
+                    {% if request.user.id|is_applied_for_job:job.pk %}
+                      <span class="apply_btn">
+                        <a href="{{ job.get_absolute_url }}" class="latest_job_type">Applied</a>
+                      </span>
+                    {%  else%}
+                      <span class="apply_btn">
+                        <a href="{% if not request.user.is_authenticated %}#{% endif %}" class='latest_job_type job_apply {% if not request.user.is_authenticated %}job_apply_login{% else %} applicant_apply {% endif %}' id="{{ job.pk }}" data-href="{{ job.get_absolute_url }}?job_apply=applied">Apply Now</a>
+                      </span>
+                    {% endif %}
+                    {% if not request.user.is_authenticated %}
+                      <span class="apply_btn">
+                        <a class='latest_job_type job_apply job_apply_register' id="{{ job.pk }}" data-href="{{ job.get_absolute_url }}?job_apply=applied">Register & Apply</a>
+                      </span>
+                    {% endif %}
+                  {% endif %}
+                  {% if not request|is_events_created:job %}
+                    <form class='event_form' action="/jobs/add/event/" method="POST">
+                      <input type="hidden" name="job_id" value="{{ job.pk }}">
+                      <button class='add_event' id="{{ job.pk }}" data-href="">Add Event</button>
+                    </form>
+                  {% endif %}
+                <a href="{{job.skills.all.0.get_job_url}}" target="_blank">View similar jobs</a>
+                {% if not job.user.is_superuser %}
+                  <a href="{% url 'recruiter_profile' job.user.username %}" target="_blank">View jobs by this recruiter</a>
+                {% endif %}
+                <a target="_blank" id="similar_job_alert">Send Me Jobs Like this</a>
+              </div>
+              <div class="modal fade" id="create_similarjob_alert" data-keyboard="true" >
+                <div class="modal-content">
+                  <div class="modal-header">
+                    Please specify required details
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-close"></i></button>
+                    <!-- <h4 class="modal-title" id="login_modal_title">Login with</h4> -->
+                  </div>
+                  <div class="modal-body">
+                    <div class="form_panel ">
+                        <div class="form" id="loginBox" style="display: block;">
+                          <form id="CreateSimilarAlert" name="CreateSimilarAlert" class="CreateSimilarAlert" method = "POST">
+                            {% if request.user.is_authenticated and request.user.user_type == 'JS' %}
+                            <input type="hidden" name="email" value="{{request.user.email}}">
+                            {% else %}
+                            <input id="alert_email" class="form-control" placeholder="Enter Email" name="email" type="text" id="alert_email">
+                            {% endif %}
+                            <input type="text" class="form-control" placeholder="Enter a name that will help you recognize this Job Alert" name="name" id="alert_name">
+                            <select class="form-control" name="skill" style="display:none" multiple>
+                              {% for skill in job.skills.all %}
+                              <option value="{{skill.id}}" selected></option>
+                              {% endfor %}
+                            </select>
+                            <select class="form-control" name="location" style="display:none" multiple>
+                              {% for location in job.location.all %}
+                              <option value="{{location.id}}" selected></option>
+                              {% endfor %}
+                            </select>
+                            <select  name="industry" style="display:none" multiple>
+                              {% for industry in job.industry.all %}
+                              <option value="{{industry.id}}" selected></option>
+                              {% endfor %}
+                            </select>
+                            {% if job.min_year%}
+                            <input type="hidden" name="min_year" value="{{job.min_year}}">
+                            {% endif %}
+                            {% if job.max_year%}
+                            <input type="hidden" name="max_year" value="{{job.max_year}}">
+                            {% endif %}
+                            {% if job.min_salary%}
+                            <input type="hidden" name="min_salary" value="{{job.min_salary}}">
+                            {% endif %}
+                            {% if job.max_salary%}
+                            <input type="hidden" name="max_salary" value="{{job.max_salary}}">
+                            {% endif %}
+                            {% if job.job_role %}
+                            <input type="hidden" name="role" value="{{job.job_role}}">
+                            {% endif %}
+                            <p id="similaralert_response_message"></p>
+                            <input class="btn btn-default btn-login" value="Submit" type="submit">
+                          </form>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top:10px;margin-bottom:10px;">
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                  <!-- PJ Right Nav -->
+                  <ins class="adsbygoogle"
+                       style="display:block"
+                       data-ad-client="ca-pub-5756092160559539"
+                       data-ad-slot="3490610504"
+                       data-ad-format="auto"></ins>
+                <script>
+                  (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+              </div>
+              <!-- similar_jobs starts here -->
+              <div class="similar_jobs_section">
+                <p class="head text-uppercase">Recommended Jobs</p>
+                <div id="recommended_jobs_carousel" class="carousel slide">
+                  <ol class="carousel-indicators">
+                    <li data-target="#recommended_jobs_carousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#recommended_jobs_carousel" data-slide-to="1"></li>
+                    <li data-target="#recommended_jobs_carousel" data-slide-to="2"></li>
+                  </ol>
+                  <!-- Carousel items -->
+                  {% get_recommended_jobposts job as all_internship_jobs %}
+                  <div class="carousel-inner">
+                    <div class="item active">
+                      <div class="row">
+                        {% for job in all_internship_jobs.0 %}
+                            <div class="col-md-4 col-sm-6 job_outer_col">
+                              <div class="job_col redirect_job_click">
+                              <strong class="title"><a class='job_url' href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ job.get_absolute_url }}" target="_blank" >{{ job.title }} [{% if job.min_year == 0 and job.max_year == 0 %}Fresher{% else %}{{ job.min_year }} - {{ job.max_year }} Years{% endif %}]</a></strong>
+                                {% if job.company.is_active and job.company.slug %}
+                                  <p><a href="{% url 'company_jobs' job.company.slug %}" target="_blank">{{job.company.name|capfirst|truncatewords:4 }}</a></p>
+                                {% elif job.company %}
+                                  <p>{{job.company.name|capfirst|truncatewords:4}}</p>
+                                {% elif job.company_name %}
+                                  <p>{{job.company_name|capfirst|truncatewords:4}}</p>
+                                {% endif %}
+                              {% if job.min_salary == 0 %}{% else %}<p><i class="fa fa-inr" aria-hidden="true"></i> <span>{{ job.get_job_salary.0 }} P.A</span></p>{% endif %}
+                              <p class="location"><i class="fa fa-map-marker"></i> {%for location in job.location.all|slice:'4' %}
+                              {% if location.status == 'Enabled' %}
+                              <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+                              {% else %}
+                              <a style="cursor:default">{{ location.name }}</a>
+                              {% endif %}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</p>
+                              <!--<p><a href="https://peeljobs.com/{{job.get_job_type}}-jobs/" target="_blank" class="apply">{{ job.job_type|get_string }}</a></p>-->
+                              <p><a href="{{ job.get_absolute_url }}" target="_blank" class="apply">Apply Job</a></p>
+                              </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                              </div>
+                              <div class="row">
+                            {% endif %}
+                        {% endfor %}
+                      </div>
+                      <!--/item-->
+                    </div>
+                    <div class="item ">
+                      <div class="row">
+                        {% for job in all_internship_jobs.1 %}
+                            <div class="col-md-4 col-sm-6 job_outer_col">
+                              <div class="job_col redirect_job_click">
+                              <strong class="title" ><a class='job_url' href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ job.get_absolute_url }}" target="_blank" >{{ job.title }} [{% if job.min_year == 0 and job.max_year == 0 %}Fresher{% else %}{{ job.min_year }} - {{ job.max_year }} Years{% endif %}]</a></strong>
+                                {% if job.company.is_active and job.company.slug %}
+                                  <p><a href="{% url 'company_jobs' job.company.slug %}" target="_blank">{{job.company.name|capfirst|truncatewords:4 }}</a></p>
+                                {% elif job.company %}
+                                  <p>{{job.company.name|capfirst|truncatewords:4}}</p>
+                                {% elif job.company_name %}
+                                  <p>{{job.company_name|capfirst|truncatewords:4}}</p>
+                                {% endif %}
+                              {% if job.min_salary == 0 %}{% else %}<p><i class="fa fa-inr" aria-hidden="true"></i> <span >{{ job.get_job_salary.0 }} P.A</span></p>{% endif %}
+                              <p class="location" ><i class="fa fa-map-marker"></i> {%for location in job.location.all|slice:'4' %}{% if location.status == 'Enabled' %}
+                                <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+                                {% else %}
+                                <a style="cursor:default">{{ location.name }}</a>
+                                {% endif %}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</p>
+                              <!--<p><a href="https://peeljobs.com/{{job.get_job_type}}-jobs/" target="_blank" class="apply">{{ job.job_type|get_string }}</a></p>-->
+                              <p><a href="{{ job.get_absolute_url }}" target="_blank" class="apply">Apply Job</a></p>
+                              </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                              </div>
+                              <div class="row">
+                            {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="row">
+                        {% for job in all_internship_jobs.2 %}
+                            <div class="col-md-4 col-sm-6 job_outer_col">
+                              <div class="job_col redirect_job_click">
+                              <strong class="title"><a class='job_url' href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ job.get_absolute_url }}" target="_blank" >{{ job.title }} [{% if job.min_year == 0 and job.max_year == 0 %}Fresher{% else %}{{ job.min_year }} - {{ job.max_year }} Years{% endif %}]</a></strong>
+                                {% if job.company.is_active and job.company.slug %}
+                                  <p><a href="{% url 'company_jobs' job.company.slug %}" target="_blank">{{job.company.name|capfirst|truncatewords:4 }}</a></p>
+                                {% elif job.company %}
+                                  <p>{{job.company.name|capfirst|truncatewords:4}}</p>
+                                {% elif job.company_name %}
+                                  <p>{{job.company_name|capfirst|truncatewords:4}}</p>
+                                {% endif %}
+                              {% if job.min_salary == 0 %}{% else %}<p><i class="fa fa-inr" aria-hidden="true"></i> <span >{{ job.get_job_salary.0 }} P.A</span></p>{% endif %}
+                              <p class="location" ><i class="fa fa-map-marker"></i> {%for location in job.location.all|slice:'4' %}{% if location.status == 'Enabled' %}
+                                <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+                                {% else %}
+                                <a style="cursor:default">{{ location.name }}</a>
+                                {% endif %}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</p>
+                              <!--<p><a href="https://peeljobs.com/{{job.get_job_type}}-jobs/" target="_blank" class="apply">{{ job.job_type|get_string }}</a></p>-->
+                              <p><a href="{{ job.get_absolute_url }}" target="_blank" class="apply">Apply Job</a></p>
+                              </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                              </div>
+                              <div class="row">
+                            {% endif %}
+                        {% endfor %}
+                            <div class="col-md-4 col-sm-6 job_outer_col">
+                            <div class="job_col view_more_div">
+                              <a class="view_more" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/{{ job.get_skills.0.slug }}{% if job.get_skills %}-{% endif %}jobs-in-{{job.location.all.0.slug}}/" target="_blank">
+                                View More Jobs
+                             </a></div>
+                            </div>
+                      </div>
+                    </div>
+                    <!--/carousel-inner-->
+                  </div>
+                  <!--/myCarousel-->
+                  <a class="left carousel-control" href="#recommended_jobs_carousel" data-slide="prev">‹</a>
+                    <a class="right carousel-control" href="#recommended_jobs_carousel" data-slide="next">›</a>
+                </div>
+              </div>
+              <!-- similar_jobs ends here -->
+
+          <!-- Similar Links starts -->
+          <div class="popular_links clearfix">
+            <h2>Most Similar Links</h2>
+            <ul class="clear">
+              {% for loc in job.location.all %}
+                {% for search in job.skills.all %}
+                  {% if search.status == 'Active' and loc.status == 'Enabled' %}
+                    <li>
+                      <a href="{% url 'custome_search' search.slug loc.slug %}">&raquo; {{ search.name }} Jobs in {{ loc.name }}</a>
+                    </li>
+                    <li>
+                      <a href="{% url 'custom_walkins' search.slug loc.slug %}">&raquo; {{ search.name }} Walkins in {{ loc.name }}</a>
+                    </li>
+                    <li>
+                      <a href="{% url 'skill_location_wise_fresher_jobs' search.slug loc.slug %}">&raquo; {{ search.name }} Fresher Jobs in {{ loc.name }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+          <!-- Similar Links ends -->
+
+            </div>
+          </div>
+          <!-- job_list_section ends here -->
+          </div>
+          <!-- job_list_section ends here -->
+        </div>
+      </div>
+      <!-- Left menu starts here-->
+<!-- walkin_jobs starts here -->
+<div class="col-md-3 right_container">
+  <!-- upload_btn_block starts here -->
+  <div class="similar_job_posts" style="margin-bottom:10px;">
+    <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fpeeljobs%2F&width=300&height=150&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=892560280818752" width="300" height="150" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+  </div>
+  {% if request.user.is_authenticated %}
+ {% if request.user.is_jobseeker and not request.user.resume %}
+  <div class="upload_btn_block">
+   <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+    <div class="upload_btn" id="resume_upload_but"><a href="/profile/"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+      <input type="file" name="resume" id="resume" style="display:none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt"></span>
+      <button type="submit" name="submit" class="submit" style="
+        display:none;"><span>Submit</span></button>
+      </form>
+  </div>
+  {% endif %} 
+  {% else %}
+  <div class="upload_btn_block">
+    <div class="upload_btn upload_btn_resume"><a href="#" data-toggle="modal" data-target="#login_register"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+  </div>
+  {% endif %}
+  <!--subscribe_box form starts here -->
+  <div class="subscribe_box">
+    <div class="login_box">
+      <p class="head text-capitalize">SUBSCRIBE WITH US, TO GET JOBS INTO YOUR INBOX</p>
+      <form id="Jobsubscribeform" name="Jobsubscribeform" class="Jobsubscribeform" method = "POST">
+        <div class="form-group">
+          <select class="form-control" id="job_skills" name="skill" multiple>
+          </select>
+          <span class="skill_err"></span>
+          <p id="job_response_message"></p>
+        </div>
+        <div class="form-group">
+          {% if request.user.email %}
+          <input type="hidden" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address" value="{{ request.user.email }}" />
+          {% else %}
+          <input type="text" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address"/>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-default">Subscribe Here</button>
+      </form>
+    </div>
+  </div>
+  <!--subscribe_box form ends here -->
+
+  <!--register_login form starts here -->
+  {% if not request.user.is_authenticated %}
+  <div class="inner_login_box">
+    <div class="login_box">
+      <p class="head text-capitalize left_login_text">ALREADY A MEMBER? LOGIN</p>
+      <form  id="JobMailRegisterForm" name="JobMailRegisterForm" class="JobMailRegisterForm"
+        method = "POST" >
+        <div class="form-group">
+          <input type="text" name="email" id="mail_email" class="form-control" placeholder="Enter Your Email Address"/>
+          <p id="mail_response_message"></p>
+        </div>
+        <div class="form-group">
+          <input type="password" name="password" id="mail_password" class="form-control" placeholder="Enter Password"/>
+          <input type="hidden" name="register_type" id='left_register_type' value="login">
+        </div>
+        <button type="submit" class="btn btn-default left_login_form_button">Sign In</button>
+
+        <div class="forgot_create-new">
+          <a href="#" class="left_forgot_password">Forgot Password?</a> 
+          <a href="#" class="pull-right left_new_account">Create New Account?</a>
+          <a href="#" class="pull-right left_new_user_login" style="display:none;">Already a Member? Login</a>
+        </div>
+        <div class="clearfix"></div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+  <!--register_login form ends here -->
+  <div class="strip_box">
+                  <div class="strip">Show Your CODING Skills at <span style="color: #202b2e;">Runcode.io</span> (Launching soon)
+                  </div>
+              </div>
+{% if job.get_similar_jobposts %}
+  <div class="walkin_jobs">
+    <div class="heading text-uppercase">Similar Jobs</div>
+    <ul class="walkin_blocks">
+    {% for post in job.get_similar_jobposts|slice:":7" %}
+      <li class="walkin_block" id="{{ post.get_absolute_url }}">
+        <strong class="title"><a href="{{ post.get_absolute_url }}" target="_blank">{{ post.title }}</a></strong>
+        {% if post.company %}<p>{{ post.company.name }}</p>{% endif %}
+        <p class="location"><i class="fa fa-map-marker"></i>{%for location in post.location.all %}
+        {% if location.status == 'Enabled' %}
+        <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+        {% else %}
+        <a style="cursor:default">{{ location.name }}</a>
+        {% endif %}{% if forloop.last %}{% else %}, {% endif %}{% endfor %} </p>
+      </li>
+    {% endfor %}
+    <a href="{% url 'jobs:index' %}" target="_blank"><span class="view_all">See More</span></a>
+    </ul>
+  </div>
+  {% endif %}
+  <!-- walkin_jobs ends here -->
+  {% get_companies as latest_companies %}
+  {% if latest_companies %}
+  <div class="top_recruiters">
+    <div class="heading text-uppercase">Top Companies</div>
+    <ul class="recruiter_blocks">
+      <li class="recruiter_block" id="/ibm-india-pvt-limited-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/ibm.png' "70x70" %}" alt="IBM-India-pvt-limited"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>IBM India Private Limited.</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <li class="recruiter_block" id="/infosys-multinational-private-limited-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/infosys.png' "70x70" %}" alt="Infosys Private Limited"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>Infosys Private Limited</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <li class="recruiter_block" id="/tcs-pvt-ltd-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/tcs.png' "70x70" %}" alt="TCS Pvt Ltd"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>TCS Pvt Ltd</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <li class="recruiter_block" id="/dell-private-limited-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/dell.png' "70x70" %}" alt="Dell Private Limited"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>Dell Private Limited</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <li class="recruiter_block" id="/accenture-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/accenture.png' "70x70" %}" alt="Accenture"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>Accenture</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <li class="recruiter_block" id="/tech-mahindra-private-limited-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/mahindra.png' "70x70" %}" alt="Tech Mahindra Private Limited"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>Tech Mahindra Private Limited</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <li class="recruiter_block" id="/cognizant-technology-solutions-india-ltd-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/cts.png' "70x70" %}" alt="Cognizant Technology Solutions India Ltd"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>Cognizant Technology Solutions India Ltd</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <li class="recruiter_block" id="/ravsoft-solutions-india-pvt-ltd-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/rav.png' "70x70" %}" alt="RAVSoft Solutions India Pvt Ltd"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>RAVSoft Solutions India Pvt Ltd</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <li class="recruiter_block" id="/ace-group-private-limited-job-openings/">
+        <div class="img_part">
+          <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/ace.png' "70x70" %}" alt="ACE Group Private Limited"/>
+        </div>
+        <div class="content">
+          <strong class="title"><a>ACE Group Private Limited</a></strong>
+          <p class="redirect"><a>View Jobs</a></p>
+        </div>
+      </li>
+      <a href="{% url 'companies' %}" target="_blank"><span class="view_all">See More</span></a>
+    </ul>
+  </div>
+  {% endif %}
+
+</div>
+      <!-- Left menu ends here-->
+    </div>
+  </div>
+</div>
+<!-- main_container ends here -->
+<div id="block_job_apply" style="display: none;"></div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% if not job.is_expired %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "JobPosting",
+      "datePosted": "{{ job.published_on }}",
+      "hiringOrganization": "{{ job.company.name }}",
+      "description": "{{ job.description|safe|striptags }}",
+      "employmentType": "{{ job.job_type }}",
+      "experienceRequirements": "{{ job.min_year }}-{{ job.max_year }} Years",
+      {% if job.min_salary and job.max_salary %}
+      "baseSalary":{
+          "@type":"MonetaryAmount",
+          "currency":"INR",
+          "value":
+            {
+            "@type":"QuantitativeValue",
+            "minValue":"{{ job.get_job_salary.0 }}",
+            "maxValue":"{{ job.get_job_salary.1 }}",
+            "unitText":"YEARLY"
+            }
+          },
+        {% endif %}
+      "industry": "{%for skill in job.industry.all %}{% if skill.status == 'Active' %}{{ skill.name }}{% endif %}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}",
+      "jobLocation": [
+        {% for each in job.location.all %}
+          {% if each.status == "Enabled" %}
+            {% get_street_address each job as street_address %}
+            {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "{{ each.name }}",
+              {% if street_address.1 %}
+              "streetAddress": "{{ street_address.0 }}",
+              "postalCode": "{{ street_address.1 }}"
+              {% else %}
+              {% if street_address.0 %}
+              "streetAddress": "{{ street_address.0 }}",
+              {% endif %}
+              {% endif %}
+            }
+            {% if job.is_work_from_home %}
+              ,"additionalProperty" : {
+                "@type" : "PropertyValue",
+                "value" : "TELECOMMUTE"}
+            {% endif %}
+          {% endif %}
+{% if forloop.last %}}{% else %}},{% endif %}
+        {% endfor %}
+      ],
+      "qualifications": "{%for skill in job.edu_qualification.all %}{% if skill.status == 'Active' %}{{ skill.name }}{% endif %}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}",
+      "skills": "{%for skill in job.skills.all %}{% if skill.status == 'Active' %}{{ skill.name }}{% endif %}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}",
+      "title": "{{ job.title }}"
+
+     }
+  </script>
+{% endif %}
+
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+  {% if 'event' in request.GET %}
+    {% if request.GET.event == 'success' %}
+      open_dialog('Event Created successfully', 'Success')
+    {% else %}
+      open_dialog('Event Not Created', 'Alert')
+    {% endif %}
+  {% endif %}
+  $('form#CreateSimilarAlert').ajaxForm({
+      type: 'POST',
+      dataType: 'json',
+      data: $('#CreateSimilarAlert').serialize(),
+      url: '{% url "my:job_alert" %}',
+      success: function (data) {
+          console.log(data.error, data.message)
+          if (data.error == false) {
+              $("#create_similarjob_alert").modal('hide')
+              open_dialog('Success, We will reach you with Jobs of this type', 'Success!')
+          }
+          else {
+              $('p.hint').remove();
+              for (var key in data.message) {
+                  $('#alert_' + key).after('<p class="hint">' + data.message[key] + '</p>');
+              }
+          }
+      }
+  })
+  $('#similar_job_alert').click(function () {
+    $('p.hint').remove();
+    $('#CreateSimilarAlert')[0].reset()
+    $("#create_similarjob_alert").modal('show')
+  })
+  $('#recommended_jobs_carousel').carousel({
+    interval: 7000
+  });
+  $('#recommended_jobs_carousel2').carousel({
+    interval: 7000
+  });
+  $('body').on('click', '.recommended_job', function () {
+    window.location = $(this).find("a").attr("href");
+  });
+  $('.less').click(function (e) {
+    e.preventDefault();
+    $(this).addClass('limited_job_posts');
+    $('.see_more').removeClass('limited_job_posts');
+    $(this).siblings('ul').children('li').slice('5').addClass('limited_job_posts');
+  });
+  // $('.add_event').click(function (e) {
+  //   e.preventDefault()
+  //   $.post('/jobs/add/event/', {'job_id': $(this).attr('id')}, function (data) {
+  //     if (data.error) {
+  //     } else {
+  //         window.location = '.';
+  //     }
+  //   }, 'json')
+  // });
+
+</script>
+<script>
+  // {% if is_show_google_map %}
+      // var venue_details = []
+      // for (var key in JSON.parse($('#venue_data').html())) {
+      //   var msg = []
+      //   var message = ''
+      //   var temp_message = ''
+      //   temp_message = JSON.stringify(JSON.parse($('#venue_data').html())[key]['info'])
+      //   temp_message = temp_message.replace(/\\r\\n/g, "<br />")
+      //   temp_message = temp_message.replace('"', '').replace('"', '')
+      //   message = '<div class="info_content"><h3>' + temp_message + '</h3></div>'
+  
+      //   msg.push(message)
+      //   venue_details.push(msg)
+      //           }
+  
+      // jQuery(function($) {
+      //     // Asynchronously Load the map API
+      //     var script = document.createElement('script');
+      //     script.src = "https://maps.googleapis.com/maps/api/js?sensor=false&callback=initialize";
+      //     document.body.appendChild(script);
+      // });
+  
+      // function initialize() {
+      //     var map;
+      //     var bounds = new google.maps.LatLngBounds();
+      //     var mapOptions = {
+      //         mapTypeId: 'roadmap',
+      //         zoom: 4
+      //     };
+  
+      //     // Display a map on the page
+      //     map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+      //     map.setTilt(45);
+  
+      //     // Multiple Markers
+      //     var markers = JSON.parse($('#map_data').html());
+  
+      //     var infoWindowContent = venue_details;
+  
+      //     // Display multiple markers on a map
+      //     var infoWindow = new google.maps.InfoWindow(), marker, i;
+      //     // Loop through our array of markers & place each one on the map
+      //     for( i = 0; i < markers.length; i++ ) {
+      //         var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+      //         bounds.extend(position);
+      //         marker = new google.maps.Marker({
+      //             position: position,
+      //             map: map,
+      //             title: markers[i][0]
+      //         });
+  
+      //         // Allow each marker to have an info window
+      //         google.maps.event.addListener(marker, 'click', (function(marker, i) {
+      //             return function() {
+      //                 infoWindow.setContent(infoWindowContent[i][0]);
+      //                 infoWindow.open(map, marker);
+      //             }
+      //         })(marker, i));
+  
+      //         // Automatically center the map fitting all markers on the screen
+      //         map.fitBounds(bounds);
+      //     }
+  
+      //     // Override our map zoom level once our fitBounds function runs (Make sure it only runs once)
+      //     var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+      //         this.setZoom(5);
+      //         google.maps.event.removeListener(boundsListener);
+      //     });
+  
+      // }
+      // {% endif %}
+$(document).ready(function () {
+  $("select#job_skills").select2({placeholder: "Select here", maximumSelectionSize: 100});
+  $('#job_skills').empty()
+  $('#job_skills').append(new Option('Select a Skill', ''))
+  job_skills = []
+  {% for skill in job.skills.all %}
+    skill_id = {{skill.id}}
+    job_skills.push(skill_id)
+  {% endfor %}
+  $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+    $.each(JSON.parse(data.response), function (key, field) {
+        if ($.inArray(field.pk, job_skills) == -1) {
+            $('#job_skills').append('<option value="' + field.pk + '">' + field.fields.name + '</option>')
+        }
+        else {
+            $('#job_skills').append('<option value="' + field.pk + '" selected>' + field.fields.name + '</option>')
+        }
+    })
+    a = $("select#job_skills option:selected")
+    $.each($("select#job_skills option:selected"), function (i, field) {
+        $(".Jobsubscribeform .select2-search").remove()
+        span = $('.Jobsubscribeform .select2').children().children().children().append('<li class="select2-selection__choice" title="' + $(this).text() + '"><span class="select2-selection__choice__remove" role="presentation">×</span>' + $(this).text() + '</li>')
+    });
+    $(".Jobsubscribeform .select2-selection__choice__remove").click(function (e) {
+        option = $(this).parent().attr('title')
+        $.each($("select#job_skills option:selected"), function (k, f) {
+            if ($(this).text() == option) {
+                $(this).prop("selected", false);
+            }
+        });
+        $(this).parent().remove()
+        if (!($('.Jobsubscribeform .select2').children().children().children().children()).length) {
+            $('.Jobsubscribeform .select2').children().children().children().append('<li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="textbox" placeholder="Select here" style="width: 254px;"></li>')
+        }
+    })
+  });
+    $(".redirect_job_click").click(function(e){
+      e.preventDefault()
+      window.open($(this).find('.job_url').attr('href'))
+    })
+    $(".redirect_job_click a").click(function(e){
+      e.stopPropagation()
+    })
+  })
+</script>
+{% endblock %}

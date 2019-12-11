@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load searchtags %}
+{% block block_title %}
+{% include "meta_data/job_alert.html" %}
+{% endblock %}
+{% block block_canonical_tag %}
+  {% if current_page|slugify == '1'|slugify %}
+    {% else %}
+    <link rel="prev" href="https://peeljobs.com{{ current_url }}{% if prev_page != 1 %}{{ prev_page }}/{% endif %}" />
+  {% endif %}
+  {% if current_page <= last_page %}
+    {% if current_page == last_page %}
+    {% else %}
+      <link rel="next" href="https://peeljobs.com{{ current_url }}{{ current_page| add:"1" }}/" />
+    {% endif %}
+  {% endif %}
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<style type="text/css">
+  .job_alert_details_row {
+  line-height: 24px;
+  }
+  .job_alert_details_row .details_left {
+  width: 50%;
+  }
+  .job_alert_details_row .details_right {
+  width: 50%;
+  }
+  .job_alert_details_row label {
+  width: 100px !important;
+  }
+  .main_container .left_container .job_alert_result_container .detail_container .detail {
+    border: none;
+  }
+</style>
+    <!-- main_container starts here -->
+      <div class="row mar_lr_0 main_container">
+        <div class="container">
+
+        <!-- breadcrumb_section starts here -->
+        <div class="breadcrumb_section row mar_lr_0">
+          <nav>
+            <ol class="cd-breadcrumb triangle">
+             <li>
+              <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+                <span class="name">Home</span>
+              </a>
+            </li>
+            <li class="current">
+              <span href="{% url 'my:alerts_list' %}" class="job_detail">
+                <span class="name">Job Alert</span>
+              </span>
+            </li>
+            </ol>
+          </nav>
+        </div>
+        <!-- breadcrumb_section ends here -->
+
+          <div class="row mar_lr_0">
+            <div class="col-md-9 left_container">
+              <!-- side_filter_section starts here -->
+              <div class="row">
+
+                <!-- job_list_section starts here -->
+                <div class="col-md-12">
+                <!--job_alert_result_container starts heere -->
+          <a href="{% url 'my:job_alert' %}" target="_blank" class="add_new_alert pull-right">Create Job Alert</a>                  <div class="clearfix"></div>
+          <h4 class="job_list_header text-center text-uppercase"> Job Alerts</h4>
+          {%  for job_alert in job_alerts %}
+                  <div class="job_alert_result_container" style="margin-bottom:15px;background:white">
+                <div class="pull-right actions">
+                  <a href="{% url 'my:modify_job_alert' job_alert.id %}" class="edit"><i class="fa fa-edit"></i></a>
+                  <a href="#" class="alert-delete del" id="{{ job_alert.id }}"><i class="fa fa-trash"></i></a>
+                </div>
+                <div class="title"><a href="{% url 'my:job_alert_results' job_alert.id %}" class='title'>{{ job_alert.name }}</a></div>
+                <div class="detail_container">
+                <div class="row">
+                <div class="col-md-6">
+                  <div class="detail">
+                    <div class="detail_title">Skills <span class="pull-right">:</span></div>
+                    <div class="detail_content">
+                      {% for skill in job_alert.skill.all %}
+                      <a href="{{ skill.get_job_url }}" target="_blank">{{ skill.name }}</a>{% if forloop.last %}{% else %},&nbsp;{% endif %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="detail">
+                    <div class="detail_title">Location(s) <span class="pull-right">:</span></div>
+                    <div class="detail_content">
+                      {% if job_alert.location.all %}
+                      {% for location in job_alert.location.all %}
+                      <a href="{{ location.get_job_url }}" target="_blank">{{ location.name }}</a>
+                      {% if forloop.last %}{% else %}, {% endif %}
+                      {% endfor %}
+                      {% else %}
+                      Not Specified
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="detail">
+                    <div class="detail_title">Salary <span class="pull-right">:</span></div>
+                    <div class="detail_content">
+                      {% if job_alert.min_salary and job_alert.max_salary %}<i class="fa fa-inr" aria-hidden="true"></i> {{ job_alert.min_salary|get_formatted_salary }} - {{ job_alert.max_salary|get_formatted_salary }}
+                      {% elif job_alert.min_salary %}
+                      <i class="fa fa-inr" aria-hidden="true"></i> {{ job_alert.min_salary|get_formatted_salary }} 
+                      {% elif job_alert.max_salary%}
+                      <i class="fa fa-inr" aria-hidden="true"></i> {{ job_alert.max_salary|get_formatted_salary }}
+                      {% else %}
+                      Not Specified
+                     {% endif %}
+                    </div>
+                  </div>
+                  </div>
+                  <div class="col-md-6">
+                  <div class="detail">
+                    <div class="detail_title">Experience <span class="pull-right">:</span></div>
+                    <div class="detail_content">
+                   {% if job_alert.min_year and job_alert.max_year %}
+                    {{ job_alert.min_year }} - {{ job_alert.max_year }} Year(s)
+                    {% elif job_alert.min_year %}
+                    {{ job_alert.min_year }} Year(s)
+                    {% elif job_alert.max_year %}
+                    {{ job_alert.max_year }} Year(s)
+                    {% else %}
+                    Not Specified
+                    {% endif %}
+
+                    </div>
+                  </div>
+                  <div class="detail">
+                    <div class="detail_title">Job Role <span class="pull-right">:</span></div>
+                    <div class="detail_content">{% if not job_alert.role %}Not Specified{% else %}
+                      {{ job_alert.role }}{% endif %}
+                    </div>
+                  </div>
+                  <div class="detail">
+                    <div class="detail_title">Industry <span class="pull-right">:</span></div>
+                    <div class="detail_content">{% if job_alert.industry.all %}{% for industry in job_alert.industry.all %}
+                      {{ industry.name }}
+                      {% if forloop.last %}{% else %}, {% endif %}{% endfor %}{% else %}Not Specified{% endif %}
+                    </div>
+                  </div>
+                  </div>
+                  <br clear="all">
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="no-results text-center">
+        <!--                  <h1>{{ message_type }},</h1>
+          <h4>{{ message }}</h4>!-->
+          <div class="job_alert_result_container" style="margin-bottom:15px;background:white;">
+        <h3>No Job Alerts available</h3>
+        <h6>Create job alert and get job notifications</h6>
+         <a href="{% url 'my:job_alert' %}" style="font-size:11px;" target="_blank" class="add_new_alert">Create Job Alert and get notifications</a>
+        </div>
+      </div>
+              {% endfor %}
+              <!-- job_alert_result_container ends here --> 
+            </div>
+            <!-- job_list_section ends here -->
+          </div>
+        </div>
+        {% include 'left_menu.html' %}
+      </div>
+    </div>
+  </div>
+  <!-- main_container ends here -->
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+ $("select#job_skills").select2({placeholder: "Select here", maximumSelectionSize: 100});
+   $(".alert-delete").click(function (e) {
+      e.preventDefault();
+      id = $(this).attr('id')
+       $('#block_question').text('Do you want to delete Alert?')
+            $('#block_question').dialog({
+                modal: true,
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                                  $.post('/alert/delete/' + id + '/', $("form#educationform").serialize(), function (data) {
+                                      if (data.error) {
+                                          if (data.response_message) {
+                                              open_dialog(data.response_message, 'Error!')
+                                          }
+                                          else{
+                                              open_dialog('Something went wrong', 'Error!')
+                                            }
+                                      } else {
+                                          open_dialog_with_url('Job Alert Deleted Successfully', 'Success!!!', ".")
+                                      }
+                                  }, 'json');
+                                }
+                 },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+          })
+  $("select.cities").select2({placeholder: "Select the city", maximumSelectionSize: 100});
+
+  $("select.skills").select2({placeholder: "Select the skill", maximumSelectionSize: 100});
+  $("select.industry").select2({placeholder: "Select the  industry", maximumSelectionSize: 100});
+
+  $('#job_skills').empty()
+      $('#job_skills').append(new Option('Select a Skill', ''))
+      $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+          $.each(JSON.parse(data.response), function (key, field) {
+              $('#job_skills').append(new Option(field.fields.name, field.pk))
+          })
+      });
+</script>
+{% endblock %}

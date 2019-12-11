@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load searchtags %}
+{% load static %}
+{% load thumbnail %}
+{% block block_canonical_tag %}
+
+{% if current_page|slugify == '1'|slugify %}
+{% else %}
+<link rel="prev" href="https://peeljobs.com{{current_url}}{% if prev_page != 1 %}page/{{ prev_page }}/{% endif %}" />
+{% endif %}
+{% if current_page <= last_page %}
+{% if current_page == last_page %}{% else %}
+<link rel="next" href="https://peeljobs.com{{current_url}}page/{{current_page| add:"1"}}/" />
+{% endif %}{% endif %}
+{% endblock %}
+
+
+{% block block_title %}
+  {% include "meta_data/recruiters_list.html" %}
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+  <!-- CONTENT -->
+  <style>
+  .recruiter_breadcrumbs{
+    background: none;
+  }
+  </style>
+  <div class="content_div">
+<!-- main_container starts here -->
+<div class="row mar_lr_0 main_container">
+  <div class="container">
+
+  <!-- breadcrumb_section starts here -->
+  <div class="breadcrumb_section row mar_lr_0">
+    <nav>
+      <ol class="cd-breadcrumb triangle">
+        <li>
+          <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+            <span class="name" >Home</span>
+          </a>
+        </li>
+        <li class="current">
+          <span href="{% url 'recruiters' %}" class="job_detail">
+            <span class="name">Recruiters List</span>
+          </span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+  <!-- breadcrumb_section ends here -->
+   <div class="row mar_lr_0">
+            <div class="col-md-9 left_container">
+              <div class="row">
+
+            <form name="recruiterform" action="{{ current_url }}"  id="recruiterform" class="hello" method="post">{% csrf_token %}
+            <input type="hidden" name="alphabet_value" id="alphabet_value" value="{{request.POST.alphabet_value}}">
+            <input type="hidden" name="page" id="page" value="{{request.POST.page}}">
+            <button type="submit" style="display:none;"></button>
+          </form>
+           <!--  alphabets_row starts here -->
+              <div class="alphabets_row col-md-12">
+              <ul>
+                <li><a href="#" class="">All Recruiters</a></li>
+                <li><a href="#" class="a">A</a></li>
+                <li><a href="#" class="b">B</a></li>
+                <li><a href="#" class="c">C</a></li>
+                <li><a href="#" class="d">D</a></li>
+                <li><a href="#" class="e">E</a></li>
+                <li><a href="#" class="f">F</a></li>
+                <li><a href="#" class="g">G</a></li>
+                <li><a href="#" class="h">H</a></li>
+                <li><a href="#" class="i">I</a></li>
+                <li><a href="#" class="j">J</a></li>
+                <li><a href="#" class="k">K</a></li>
+                <li><a href="#" class="l">L</a></li>
+                <li><a href="#" class="m">M</a></li>
+                <li><a href="#" class="n">N</a></li>
+                <li><a href="#" class="o">O</a></li>
+                <li><a href="#" class="p">P</a></li>
+                <li><a href="#" class="q">Q</a></li>
+                <li><a href="#" class="r">R</a></li>
+                <li><a href="#" class="s">S</a></li>
+                <li><a href="#" class="t">T</a></li>
+                <li><a href="#" class="u">U</a></li>
+                <li><a href="#" class="v">V</a></li>
+                <li><a href="#" class="w">W</a></li>
+                <li><a href="#" class="x">X</a></li>
+                <li><a href="#" class="y">Y</a></li>
+                <li><a href="#" class="z">Z</a></li>
+            </ul>
+              </div>
+              <!-- alphabets_row ends here -->
+          <div class="clearfix"></div>
+         <!-- companies_row starts here -->
+          <div class="companies_row recruiters_row" id="timelines">
+        {% for recruiter in recruiters %}
+                <!-- company_col starts here -->
+                <div class="col-md-4 browse_col">
+                  <div class="company_col">
+                    <a class="recruiter_url" href="{% url 'recruiter_profile' recruiter.username %}"></a>
+                    <div class="logo">
+                      <a href="#">
+                        <img src="{% if recruiter.profile_pic %}{% thumbnail recruiter.profile_pic.url "40x40" upscale=True padding=True %}{% else %}{% static 'static/img/dummy.jpg' %}{% endif %}" alt='{{ recruiter.username|capfirst }}'>
+                      </a>
+                    </div>
+                  <div class="details">
+                    <div class="title">{{ recruiter.get_full_name }}{% if recruiter.year %}<span class='exp'> [{{ recruiter.year }} Years{% if recruiter.month|add:'0' > 0 %}, {{ recruiter.month }} Months{% endif %}]</span>{% endif %}</div>
+
+                  {% if recruiter.company.is_active and recruiter.company.slug %}
+                     <div class="link"><i class="fa fa-building"></i><a href="{% url 'company_jobs' recruiter.company.slug %}" target="_blank"> {{ recruiter.company.name }}</a></div>
+                  {% endif %}
+                    <!-- <div class="posts"><a href="#">45 Jobs Posted</a></div> -->
+                     <div class="social_jobs">
+                      <span class="posts">Jobs Posted :{{ recruiter.num_posts }}</span>
+                      <span class="pull-right social">
+                        <ul>
+                    <li>
+                    {% if recruiter.is_fb_connected %}
+                    <a class="facebook" href="{{ recruiter.get_facebook_object.facebook_url }}" target="_blank">
+                      <i class='fa fa-facebook'></i>
+                    </a>
+                    {% endif %}</li>
+                    <li>
+                    {% if recruiter.is_tw_connected %}
+                    <a class="twitter" href="http://twitter.com/{{ recruiter.get_twitter_url }}/" target="_blank">
+                      <i class='fa fa-twitter'></i>
+                    </a>
+                    {% endif %}
+                    </li>
+                    <li>
+                    {% if recruiter.is_ln_connected %}
+                    <a class="linkedin" href="{{ recruiter.get_linkedin_object.linkedin_url }}" target="_blank">
+                      <i class='fa fa-linkedin'></i>
+                    </a>
+                    {% endif %}</li>
+
+                        </ul>
+                      </span>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+                <!-- company_col ends here -->
+        {% endfor %}
+          </div>
+        <!-- companies_row ends here -->
+         <div class="clearfix"></div>
+        <div class="pagination_wrap text-center">
+      {% get_page current_page last_page as pages %}
+      <nav>
+         <ul class="pagination">
+            {% if current_page != 1 %}
+              <li class="prev"><a href="#" class="{{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+              <li class="prev"><a href="#" class="{{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+              <li><a href="#" class="1">first</a></li>
+              {% endif %}
+              {% for s in pages %}
+              <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="#" class="{{s}}">{{s}}</a></li>
+              {% endfor %}
+              {% if current_page != last_page %}
+              <li><a href="{{last_page}}" class="{{ last_page }}">last</a></li>
+              <li><a href="#" class="{{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+              <li><a href="#" class="{{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+              {% endif %}
+            </ul>
+          </nav>
+              </div>
+        </div>
+      </div>
+      <div class="col-md-3 right_container">
+        <!-- upload_btn_block starts here -->
+        <div class="similar_job_posts" style="margin-bottom:10px;">
+          <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fpeeljobs%2F&width=300&height=150&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=892560280818752" width="300" height="150" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+        </div>
+        {% if request.user.is_authenticated %}
+        {% if request.user.is_jobseeker and not request.user.resume %}
+  <div class="upload_btn_block">
+   <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+    <div class="upload_btn" id="resume_upload_but"><a href="/profile/"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+      <input type="file" name="resume" id="resume" style="display:none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt"></span>
+      <button type="submit" name="submit" class="submit" style="
+        display:none;"><span>Submit</span></button>
+      </form>
+  </div>
+  {% endif %} 
+        {% else %}
+        <div class="upload_btn_block">
+          <div class="upload_btn upload_btn_resume"><a href="#" data-toggle="modal" data-target="#login_register"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
+        </div>
+        {% endif %}
+        <!--subscribe_box form starts here -->
+        <div class="subscribe_box">
+          <div class="login_box">
+            <p class="head text-capitalize">Subscribe with us, to get jobs to your inbox</p>
+            <form id="Jobsubscribeform" name="Jobsubscribeform" class="Jobsubscribeform" method = "POST">
+              <div class="form-group">
+                <select class="form-control" id="job_skills" name="skill" multiple>
+                </select>
+                <span class="skill_err"></span>
+                <p id="job_response_message"></p>
+              </div>
+              <div class="form-group">
+                {% if request.user.email %}
+                <input type="hidden" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address" value="{{ request.user.email }}" />
+                {% else %}
+                <input type="text" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address"/>
+                {% endif %}
+              </div>
+              <button type="submit" class="btn btn-default">Subscribe Here</button>
+            </form>
+          </div>
+        </div>
+        <!--subscribe_box form ends here -->
+          <div style="margin-top:10px;margin-bottom:10px;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- PJ Right Nav -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5756092160559539"
+           data-ad-slot="3490610504"
+           data-ad-format="auto"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+        <!--register_login form starts here -->
+        {% if not request.user.is_authenticated %}
+        <div class="inner_login_box">
+          <div class="login_box">
+            <p class="head text-capitalize left_login_text">ALREADY A MEMBER? LOGIN</p>
+            <form  id="JobMailRegisterForm" name="JobMailRegisterForm" class="JobMailRegisterForm"
+              method = "POST" >
+              <div class="form-group">
+                <input type="text" name="email" id="mail_email" class="form-control" placeholder="Enter Your Email Address"/>
+                <p id="mail_response_message"></p>
+              </div>
+              <div class="form-group">
+                <input type="password" name="password" id="mail_password" class="form-control" placeholder="Enter Password"/>
+                <input type="hidden" name="register_type" id='left_register_type' value="login">
+              </div>
+              <button type="submit" class="btn btn-default left_login_form_button">Sign In</button>
+
+              <div class="forgot_create-new">
+                <a href="#" class="left_forgot_password">Forgot Password?</a>
+                <a href="#" class="pull-right left_new_account">Create New Account?</a>
+                <a href="#" class="pull-right left_new_user_login" style="display:none;">Already a Member? Login</a>
+              </div>
+              <div class="clearfix"></div>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+        <!--register_login form ends here -->
+        <div class="strip_box">
+                  <div class="strip">Show Your CODING Skills at <span style="color: #202b2e;">Runcode.io</span> (Launching soon)
+                  </div>
+              </div>
+
+        {%get_latest_walkins as walkins%}
+        {% if walkins %}
+        <div class="walkin_jobs">
+          <div class="heading text-uppercase">Walk-in Jobs</div>
+          <ul class="walkin_blocks">
+          {% for walkin in walkins|slice:"7" %}
+            <li class="walkin_block" id="{{walkin.get_absolute_url}}">
+              <strong class="title"><a href="{{ walkin.get_absolute_url }}" target="_blank">{{ walkin.title }}</a></strong>
+              {% if walkin.company %}<p>{{ walkin.company.name }}</p>{% endif %}
+              <p class="location"><i class="fa fa-map-marker"></i>{%for location in walkin.location.all %}
+               {% if location.status == 'Enabled' %}
+                <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}</a>
+                {% else %}
+                <a style="cursor:default">{{ location.name }}</a>
+                {% endif %}{% if forloop.last %}{% else %}, {% endif %}{% endfor %} </p>
+            </li>
+          {% endfor %}
+          <a href="{% url 'walkin_jobs' %}" target="_blank"><span class="view_all">See More</span></a>
+          </ul>
+        </div>
+        {% endif %}
+        <!-- walkin_jobs ends here -->
+        <!-- top_recruiters starts here -->
+        {%get_companies as latest_companies%}
+        {% if latest_companies %}
+        <div class="top_recruiters">
+          <div class="heading text-uppercase">Top Companies</div>
+          <ul class="recruiter_blocks">
+            {% for company in latest_companies|slice:"7" %}
+            <li class="recruiter_block" id="{% if company.slug %}{% url 'company_jobs' company.slug %}{% endif %}">
+              <div class="img_part">
+              {% thumbnail company.get_logo_url "40x40" as im %}
+                <img src="{{ im.url }}" alt="{{ company.name|capfirst}} Job Openings"/>
+              {% endthumbnail %}
+              </div>
+              <div class="content">
+                <strong class="title"><a href="{% if company.slug %}{% url 'company_jobs' company.slug %}{% endif %}" target="_blank">{{ company.name }}</a></strong>
+                {% if company.website %}<p>{{ company.website }}</p>{% endif %}
+                <p class="redirect"><a href="{% if company.slug %}{% url 'company_jobs' company.slug %}{% endif %}" target="_blank">View {{ company.num_posts }} Jobs</a></p>
+              </div>
+            </li>
+            {% endfor %}
+            <a href="{% url 'companies' %}" target="_blank"><span class="view_all">See More</span></a>
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+      </div>
+    </div>
+  </div>
+  <!--/ CONTENT -->
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+$(document).ready(function(e){
+  $('#timelines').masonry({
+    // options
+    itemSelector: '.browse_col',
+    columnWidth: 0
+  });
+})
+  $('.alphabets_row ul li a').click(function(e){
+  e.preventDefault();
+  $('#page').val(1)
+  $('#alphabet_value').val($(this).attr('class'));
+  $('#recruiterform').submit();
+});
+
+function add_class(){
+  var cl = $("#alphabet_value").val()
+  if (cl){
+  $("."+cl).parent('li').addClass('active')
+}
+}
+add_class()
+
+$('.pagination li a').click(function(e) {
+    e.preventDefault();
+    $('#page').val($(this).attr('class'))
+    var clas = $(this).attr('class');
+    if (clas == 1){
+    $('#recruiterform').attr('action', '/recruiters/')
+    }
+    else{
+    $('#recruiterform').attr('action', '/recruiters/page/'+ clas + '/')
+    }
+    $('#recruiterform').submit();
+});
+$('.company_col').click(function(e){
+  window.open($(this).find(".recruiter_url").attr("href"), '_blank')
+  })
+  $(".company_col a").click(function(e){
+  e.stopPropagation();
+  })
+  $('#job_skills').empty()
+      $('#job_skills').append(new Option('Select a Skill', ''))
+      $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+          $.each(JSON.parse(data.response), function (key, field) {
+              $('#job_skills').append(new Option(field.fields.name, field.pk))
+          })
+      });
+
+</script>
+{% endblock %}

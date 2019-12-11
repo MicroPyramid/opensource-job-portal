@@ -1,0 +1,113 @@
+{% extends 'mobile/base.html'%}
+{% load thumbnail %}
+{% block block_title %}
+ {% include 'meta_data/fresher_jobs_by_skills_data.html'%}
+{% endblock %}
+
+{% block stage %}
+    <!-- content of job_list -->
+    <section id='job_list'>
+    <h1 class='internship-text' style="margin-left:10px">{{ h1_tag }}</h1>
+    <form name="skillform" id="skillform" method="post">
+        <input type="hidden" name="alphabet_value" id="alphabet_value" value="{{request.POST.alphabet_value}}">
+        <input type="hidden" name="sorting_value" id="sorting_value">
+        <button type="submit" style="display:none;"></button>
+    </form>
+    <div class="sorting_alphabetics">
+    <a href="#" id="all" class="alphabets"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i>All</a>
+    <a href="#" class="sort" id="ascending"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i> A to Z</a>
+    <a href="#" class="sort" id="descending"><i class="fa fa-sort-alpha-desc" aria-hidden="true"></i> Z to A </a>
+    </div>
+     <div class="alphabets_row alpha_block col-md-12">
+    <ul class="list-inline">
+      <li><a href="#" class="">All</a></li>
+      <li><a href="#" class="a">A</a></li>
+      <li><a href="#" class="b">B</a></li>
+      <li><a href="#" class="c">C</a></li>
+      <li><a href="#" class="d">D</a></li>
+      <li><a href="#" class="e">E</a></li>
+      <li><a href="#" class="f">F</a></li>
+      <li><a href="#" class="g">G</a></li>
+      <li><a href="#" class="h">H</a></li>
+      <li><a href="#" class="i">I</a></li>
+      <li><a href="#" class="j">J</a></li>
+      <li><a href="#" class="k">K</a></li>
+      <li><a href="#" class="l">L</a></li>
+      <li><a href="#" class="m">M</a></li>
+      <li><a href="#" class="n">N</a></li>
+      <li><a href="#" class="o">O</a></li>
+      <li><a href="#" class="p">P</a></li>
+      <li><a href="#" class="q">Q</a></li>
+      <li><a href="#" class="r">R</a></li>
+      <li><a href="#" class="s">S</a></li>
+      <li><a href="#" class="t">T</a></li>
+      <li><a href="#" class="u">U</a></li>
+      <li><a href="#" class="v">V</a></li>
+      <li><a href="#" class="w">W</a></li>
+      <li><a href="#" class="x">X</a></li>
+      <li><a href="#" class="y">Y</a></li>
+      <li><a href="#" class="z">Z</a></li>
+      <li><a href="#" class="0-9">0-9</a></li>
+    </ul>
+    <div class="clearfix"></div>
+  </div>
+    <div class="skills_results skills">
+      {% if all_skills %}
+        {% if job_type == 'fresher' %}
+            {% for skill in all_skills|dictsort:"name" %}
+            <a href="{% url 'skill_fresher_jobs' skill.slug %}"> {{skill.name}} Jobs </a>
+            {% endfor %}
+            {% else %}
+             {% for skill in all_skills|dictsort:"name" %}
+            <a href="{% url 'skill_walkin_jobs' skill.slug %}"> {{skill.name}} Jobs </a>
+            {% endfor %}
+            {% endif %}
+      {% else %}
+        <a class="empty_results">No Skills Available Here.</a>
+      {% endif %}
+    </div>
+<div>
+          <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- PJ Right Nav -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-5756092160559539"
+                 data-ad-slot="3490610504"
+                 data-ad-format="auto"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+
+    <!-- profile alert -->
+    {% if request.user.is_authenticated %}
+      {% if request.user.profile_completion_percentage < 50 %}
+      <!-- profile alert -->
+      <a href="{% url 'my:profile' %}">
+      <div class="profile_complete">
+      Complete the profile to apply jobs.<span class='pj-close close_icon'></span>
+      </div></a>
+      {% endif %}
+    {% endif %}
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+    $('.list-inline li a').click(function(e){
+      e.preventDefault();
+      $('#alphabet_value').val($(this).attr('class'));
+      $('#skillform').submit();
+    });
+    $('.sorting_alphabetics a, a.sort').click(function(e){
+        e.preventDefault();
+        $('#sorting_value').val($(this).attr('id'));
+        $('#skillform').submit();
+    })
+    function add_class(){
+  var cl = $("#alphabet_value").val()
+  if (cl){
+  $("."+cl).parent('li').addClass('active')
+}
+}
+add_class() 
+</script>
+{% endblock %}

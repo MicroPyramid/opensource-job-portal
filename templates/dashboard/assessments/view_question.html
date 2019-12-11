@@ -1,0 +1,395 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load tz %}
+{% load static %}
+{% block stage %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="job_details">
+      <!-- post details -->
+      <div class="profile_individual company_profile_detail">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Question Details</h4>
+        </div>
+        <div class='specific_detail question_view'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Title</label>
+              <span class="description">
+              <span>{{ question.title }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Status</label>
+              <span class="description">
+              <span>{{ question.status }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+             <div class="tile_each">
+              <label>No. of Solutions</label>
+              <span class="description">
+              <span>{{ question.solutions.all|length }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Created by</label>
+              <span class="description">
+              {{ question.created_by }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Created on</label>
+              <span class="description">
+              <span>{{ question.created_on }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+          <div class="tile_each">
+            <label>Description</label>
+            <span class="description">
+            <span>{{ question.description }}</span>
+            </span>
+          </div>
+           <div class="view_recruiters">
+            <a href="" class="view-recruiters edit_question">Edit Question</a>
+            <a href="" class="view-jobposts add_solution">Add Solutions</a>
+            <a class="view-jobposts remove_question" id='{{ solution.id }}'>Delete</a>
+          </div>
+        <form name="solutionsform" id="solutionsform" method="post" style="display:none">
+          <div class="more_solutions">
+            <input type="hidden" name="mode" value="add_solution">
+            <input type="hidden" name="count" id='sol_count' value="0">
+          </div>
+          <br></br>
+          <div class="view_recruiters form-group">
+            <a class="view-recruiters submit_answers">Save</a>
+            <a href="" class="view-jobposts add_solution">Add Another Solutions</a>
+            <a href="" class="view-jobposts cancel_adding_sol">Cancel</a>
+          </div> 
+          </form>
+        </div>
+        <div class='specific_detail question_edit' style="display:none">
+        <form name="questionform" id="questionform" method="post">
+          <div class="tile_each form-group">
+            <label>Title: <span class="error">*</span></label>
+            <input type="text" class="form-control" placeholder='Question Title' name="title" id="title" value="{{ question.title }}">
+            <input type="hidden" name="mode" value="edit_question">
+            <input type="hidden" name="created_by" value="{{ question.created_by.id }}">
+          </div>
+          <div class="tile_each form-group">
+            <label>Skills: <span class="error">*</span></label>
+            <select name='skills' class='form-control' id='skills'>
+            <option value="">Select A Skill</option>
+              {% for skill in skills %}
+                <option value="{{ skill.id }}" {% if skill == question.skills %}selected{% endif %}>{{ skill.name }}</option>
+                {% endfor %}
+              </select>
+          </div>
+           <div class="tile_each form-group">
+            <label>Status: <span class="error">*</span></label>
+            <select name='status' class='form-control' id='status'>
+                <option value="">Select Status</option>
+                <option value="Pending" {% if question.status ==  'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Live" {% if question.status == 'Live' %}selected{% endif %}>Live</option>
+                <option value="Closed" {% if question.status == 'Closed' %}selected{% endif %}>Closed</option>
+              </select>
+          </div>
+          <div class="tile_each form-group">
+            <label>Description: <span class="error">*</span></label>
+            <textarea name='description' id='description' class='form-control' rows='4' placeholder="Question Description">{{ question.description }}</textarea>
+          </div>
+          <br></br>
+          <div class="view_recruiters form-group">
+            <a class="view-recruiters update_question">Update Question</a>
+            <a class="view-jobposts edit_question">Cancel</a>
+          </div>
+        </form>
+        </div>
+        <!-- Solutions block-->
+        <div class="title_profile">
+          <h4>Solutions</h4>
+        </div>
+        {% for solution in question.solutions.all %}
+        <div class='specific_detail view_solution'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Status</label>
+              <span class="description">
+              <span class='sol_status'>{{ solution.status }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Given by</label>
+              <span class="description">
+              <span>{{ solution.given_by }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Created on</label>
+              <span class="description">
+              {{ solution.created_on }}
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+          <div class="tile_each">
+            <label>Description</label>
+            <span class="description">
+            <span class='sol_description'>{{ solution.description }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+           <div class="view_recruiters">
+            <a class="view-recruiters update_solution" id='{{ solution.id }}'>Update Solution</a>
+            <a class="view-jobposts remove_solution" id='{{ solution.id }}'>Remove</a>
+          </div>
+        </div>
+        {% endfor %}
+        <div class='specific_detail edit_solution' style="display:none">
+          <form name="solutionform" id="solutionform" method="post">
+            <div class="tile_each form-group">
+              <label class="col-sm-2 control-label">Status: </label>
+              <div class="col-sm-10">
+                 <select name='status' class='status form-control col-sm-10'>
+                  <option value="">Select Status</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Live" >Live</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each form-group">
+              <label class="col-sm-2 control-label">Description: </label>
+              <div class="col-sm-10">
+                <textarea name='answer' class="answer form-control" rows='4' placeholder="Solution Description"></textarea>
+              </div>
+                <input type="hidden" name="mode" value="edit_solution">
+                <input type="hidden" name="solution" id='solution' value="">
+              <div class="clearfix"></div>
+            </div>
+            </form>
+            <br></br>
+            <div class="view_recruiters form-group">
+              <a class="view-recruiters submit_solution">Update Solution</a>
+              <a class="view-recruiters cancel_solution">Cancel</a>
+            </div>
+        </div>
+      <!--/ Solutions details -->
+
+      </div>
+      <!--/ post details -->
+    </div>
+  </div>
+  <!--More soltutions block-->
+    <div class='specific_detail extra_solution' style="display:none">
+      <div class="tile_each form-group">
+       <label class="col-sm-2 control-label">Status</label>
+       <div class="col-sm-10">
+         <select name='status' class='status form-control'>
+          <option value="">Select Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Live" >Live</option>
+          <option value="Closed">Closed</option>
+        </select>
+        </div>
+      </div>
+      <div class="tile_each form-group">
+        <label class="col-sm-2 control-label">Description</label>
+        <div class="col-sm-10">
+          <textarea name='answer' class="answer form-control" rows='4' placeholder="Solution Description"></textarea>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  <!--More soltutions block ends-->
+  <!--/ category -->
+</section>
+{% endblock %}
+{% block script %}
+<script>
+$(document).ready(function(e){
+{% if request.GET.edit %}
+$('.edit_question').first().trigger('click')
+{% endif %}
+
+{% if request.GET.add_solution %}
+$('.add_solution').first().trigger('click')
+{% endif %}
+})
+$('.update_question').click(function (e) {
+    e.stopPropagation();
+    $.post('.', $('#questionform').serialize(), function (data) {
+        if (data.error == true) {
+          if (data.message){
+            open_dialog(data.message, 'Alert!')
+          }
+          else{
+          $('p.error').remove();
+            for (var key in data.response) {
+              if(key == '__all__'){
+                $('#title').after('<p class="error">' + data.response[key] + '</p>');
+              }
+              else{
+                $('#' + key).after('<p class="error">' + data.response[key] + '</p>');
+              }
+            }
+          }
+        }
+        else {
+          open_dialog_with_url('Question Updated Successfully', 'Success!!!', ".")
+        }
+    }, 'json');
+  });
+$('.submit_solution').click(function (e) {
+    e.stopPropagation();
+    $.post('.', $('#solutionform').serialize(), function (data) {
+        if (data.error == true) {
+          if (data.message){
+            open_dialog(data.message, 'Alert!')
+          }
+          else{
+          $('p.error').remove();
+            for (var key in data.response) {
+                $('.' + key).after('<p class="error">' + data.response[key] + '</p>');
+            }
+          }
+        }
+        else {
+          open_dialog_with_url('Solution Updated Successfully', 'Success!!!', ".")
+        }
+    }, 'json');
+  });
+$('.submit_answers').click(function (e) {
+    e.stopPropagation();
+    $.post('.', $('#solutionsform').serialize(), function (data) {
+        if (data.error == true) {
+            $('p.error').remove();
+            for (key in data.duplicate){
+              $('.answer').eq(key).after("<p class='error'>Duplicate Answer</p>")
+            }
+          if (data.message){
+            open_dialog(data.message, 'Alert!')
+          }
+          else{
+            $('.answer, .status').filter(function(){
+                return !$(this).val();
+            }).after("<p class='error'>This Field is required</p>")
+          }
+        }
+        else {
+          open_dialog_with_url('Solutions Updated Successfully', 'Success!!!', ".")
+        }
+    }, 'json');
+  });
+$('.remove_solution').click(function (e) {
+  e.preventDefault();
+  id = $(this).attr('id')
+  $('#block_question').text('Do you want to remove this Solution?')
+  $('#block_question').dialog({
+      modal: true,
+      dialogClass: "no-close",
+      draggable: false,
+      title: "Info!!",
+      buttons: [
+          {
+            text: "Yes",
+            click: function () {
+                $(this).dialog("close");
+                $.post('.', {"id": id, 'mode': 'remove_solution'}, function (data) {
+                      open_dialog_with_url('Solution Removed Successfully', 'Success!!!', ".")
+                }, 'json');
+            }
+          },
+          {
+              text: "No",
+              click: function () {
+                  $(this).dialog("close");
+              }
+          }
+      ]
+  });
+  });
+$('.remove_question').click(function (e) {
+  e.preventDefault();
+  $('#block_question').text('Do you want to remove this Question?')
+  $('#block_question').dialog({
+      modal: true,
+      dialogClass: "no-close",
+      draggable: false,
+      title: "Info!!",
+      buttons: [
+          {
+            text: "Yes",
+            click: function () {
+                $(this).dialog("close");
+                $.post('.', {'mode': 'remove_question'}, function (data) {
+                      open_dialog_with_url('Question Removed Successfully', 'Success!!!', data.redirect_url)
+                }, 'json');
+            }
+          },
+          {
+              text: "No",
+              click: function () {
+                  $(this).dialog("close");
+              }
+          }
+      ]
+  });
+  });
+$('.edit_question').click(function(e){
+  e.preventDefault()
+  $('.question_edit').toggle()
+  $('.question_view').toggle()
+})
+$('.update_solution').click(function(e){
+  e.preventDefault()
+  $('.view_solution').show()
+  $('.status').val($(this).closest('.view_solution').find('.sol_status').text())
+  $('.answer').val($(this).closest('.view_solution').find('.sol_description').text())
+  $('#solution').val($(this).attr('id'))
+  $edit_div = $('.edit_solution').detach().show()
+  $($edit_div).find('p.error').remove()
+  $(this).closest('.view_solution').after($edit_div)
+  $(this).closest('.view_solution').hide()
+})
+$('.cancel_solution').click(function(e){
+  e.preventDefault()
+  $('.view_solution').show()
+  $('.edit_solution').hide()
+})
+$('.add_solution').click(function(e){
+  e.preventDefault()
+  $answer = $('.extra_solution').clone().removeClass('extra_solution')
+  $($answer).find('p.error').remove()
+  $(".more_solutions").append($answer.show())
+  $('#sol_count').val($('#solutionsform').find('.specific_detail').length)
+  if ($('#solutionsform').find('.specific_detail').length > 0){
+    $('#solutionsform').show()
+  }
+  if ($('#solutionsform').find('.specific_detail').length == 1){
+    $(this).parent().hide()
+  }
+})
+$(".cancel_adding_sol").click(function(e){
+  e.preventDefault()
+  $('#solutionsform').find('.specific_detail').remove()
+  $('#solutionsform').hide()
+  $('.question_view').find('.view_recruiters').show()
+})
+</script>
+{% endblock %}

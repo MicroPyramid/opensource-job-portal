@@ -1,0 +1,1446 @@
+{% extends 'dashboard/base.html' %}
+{% load page_tags %}
+
+{% block stage %}
+<style>
+.map_wrapper {
+    height: 300px;
+}
+.map_canvas {
+    width: 100%;
+    height: 100%;
+}
+.company{
+  display:none;
+}
+</style>
+    <!-- content -->
+    <div class="content_wrap">
+      <section id='job_post_new'>
+        <h3>Post a Job</h3>
+        <form id="jobform" name="jobform" method="post">
+
+          <!-- category -->
+          <div class="category">
+            <h6>Job Details</h6>
+            <!-- form div -->
+             <div class="alert alert-warning" id="errors_display"style="display:none">
+            <div><i class="fa fa-times-circle" aria-hidden="true" style="color:red"></i>
+             <span id="error_count"></span></div>
+            <a href="#" class="close" data-dismiss="alert" style="color: #FF0505;opacity:0.8;margin-top:-10px">&times;</a>
+             <strong>Please correct the information as per instructions provided in RED and re-submit the page</strong>
+          </div>
+            <div class="form_div">
+              <div class="col-lg-12 inputs-block pad_lr_0">
+                <div class="col-lg-6 left_inputs pad_lr_0">
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Job Title</label>
+                    <input type="text" class="input" placeholder="Enter complete title, Eg. Assisant Manager, not ast. mngr" name="title" id="title" value="{{ job_post.title }}">
+                  </div>
+                  <!--/ input element -->
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Job Role</label>
+                    <input type="text" class="input" placeholder="Job Role" name="job_role" id="job_role" value="{{ job_post.job_role }}">
+                  </div>
+                  <!--/ input element -->
+                  <!--input element -->
+                  <div class="input_element has-feedback select2_div">
+                    <label>Industry</label>
+                    <select class="input select2" multiple placeholder="Industries" name="industry" id="industry">
+                      <option value="">select a Industry</option>
+                      {% for industry in industries %}
+                      <option value="{{industry.id}}" {% if industry in job_post.industry.all %} selected {% endif %}>{{industry.name}}</option>
+                      {% endfor %}
+                      <option value="other_industry">Other Industry</option>
+                    </select>
+                  </div>
+                  <!--/ input element -->
+                </div>
+                <div class="col-lg-6 right_inputs pad_lr_0">
+                  <!--input element -->
+                  <div class="input_element select2_div">
+                    <label>Job Location</label>
+                    <select class="input select2" multiple name="location" id="location">
+                      <option>Job Location</option>
+                        {% for city in cities %}
+                        <option value="{% firstof city.parent_city.id city.id %}" {% if city in job_post.location.all %} selected {% endif %} {% ifnotequal country.id job_post.country.id %} disabled {% endifnotequal %}>{{city.name}}</option>
+                      {% endfor %}
+                      <option value="other_location">Other Location</option>
+                    </select>
+                  </div>
+                  <!--/ input element -->
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Pincode</label>
+                    <input type="text" class="input" placeholder="Pincode" name="pincode" id="pincode" value="{{ job_post.pincode|default_if_none:'' }}">
+                  </div>
+                  <!--/ input element -->
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Number of vacancies</label>
+                    <input type="number" class="input" placeholder="Vacancies" name="vacancies" id="vacancies" value="{% if job_post.vacancies > 0%}{{ job_post.vacancies }}{% endif %}">
+                  </div>
+                  <!--/ input element -->
+                  <!--input element -->
+                  <div class="input_element select2_div">
+                    <label>Functional area</label>
+                    <select class="input select2" multiple placeholder="Functional Area" name="functional_area" id="functional_area">
+                      <option value="">select a Functional Area</option>
+                      {% for fa in functional_area %}
+                      <option value="{{ fa.id }}" {% if fa in job_post.functional_area.all %} selected {% endif %}>{{ fa.name }}</option>
+                      {% endfor %}
+                      <option value="other_functional_area">Other Functional Area</option>
+                    </select>
+                  </div>
+                  <!--/ input element -->
+                </div>
+              </div>
+              <!--input element
+              <div class="input_element">
+                <label>Country</label>
+                <select class="input" name="country" id="country">
+                  <option value="">Country</option>
+                  {% for country in countries %}
+                  <option value="{{country.id}}" {% ifequal country.id job_post.country.id %} selected {% endifequal %}>{{country.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              input element -->
+              <div class="clearfix"></div>
+              <!--input element -->
+              <div class="input_element area_element">
+                <label>Job Description</label>
+                <textarea class="input" name='textareacontents' id='textareacontents' placeholder='Description'>{{ job_post.description }}</textarea>
+                <input type="hidden" name="description" id="description" value="{{ job_post.description }}">
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element area_element">
+                <label>Key words</label>
+                <input type="text" class="input key_words" placeholder="Special Qualifications, Certifications, Professional Skills etc" name="keywords" id="keywords" value="{% for keyword in job_post.keywords.all %}{{ keyword.name }} {% if forloop.last %}{% else %},{% endif%} {% endfor %}">
+              </div>
+              <!--/ input element -->
+              <div class="clearfix"></div>
+            </div>
+            <!--/ category -->
+          </div>
+          <!--/ category -->
+          <!-- category -->
+          <div class="category">
+            <h6>Eligibility Details</h6>
+            <!-- form div -->
+            <div class="form_div">
+              <div class="col-lg-12 inputs-block pad_lr_0">
+                <div class="col-lg-6 left_inputs pad_lr_0">
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Min Experience</label>
+                    <select class="input experience" name="min_year" id="min_year">
+                      <option value="" default>years</option>
+                      {% for year in years %}
+                      <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.min_year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="input_element">
+                    <select class="input experience" name="min_month" id="min_month">
+                      <option value="" default>Months</option>
+                      {% for month in months%}
+                      <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.min_month|slugify month.0 %} selected {% endifequal %}>{{ month.1 }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <!--/ input element -->
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Technical Skills</label>
+                    <select class="input select2" multiple name="skills" id="skills">
+                      {% for skill in skills %}
+                      <option value="{{skill.id}}" {% if skill in job_post.skills.all %} selected {% endif %}>{{skill.name}}</option>
+                      {% endfor %}
+                      <option value="other_skills">Other Technical Skill</option>
+                    </select>
+                    <input type="hidden" name="company_description" id="company_description" value="{{ job_post.company_description }}">
+                    <input type="hidden" name="job_interview_location" id="job_interview_location">
+                    <input type="hidden" class="form-control" placeholder="Maximum Salary" id='status' name="status">
+                  </div>
+                  <!--/ input element -->
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Major Skill{% if job_type == 'government' %}{% else %}<span class="error">*</span>{% endif %}</label>
+                    <select class="input select2" name="major_skill" id="major_skill">
+                      {% for skill in skills %}
+                      <option value="{{skill.id}}" {% ifequal skill.id job_post.major_skill.id %} selected {% endifequal %}>{{skill.name}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <!--/ input element -->
+                </div>
+                <div class="col-lg-6 left_inputs pad_lr_0">
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Max Experience</label>
+                    <select class="input experience" name="max_year" id="max_year">
+                      <option value="" default>years</option>
+                      {% for year in years %}
+                      <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.max_year|slugify year.0 %} selected {% endifequal %}{% if job_post.min_year|change_to_int > year.0|change_to_int %} class="max_experience" {% endif %}>{{ year.1}}</option>
+                      {% endfor %}
+                      </select>
+                  </div>
+                  <div class="input_element">
+                      <select class="input experience" name="max_month" id="max_month">
+                        <option value="" default>Months</option>
+                        {% for month in months%}
+                          {% ifequal job_post.min_year|slugify  job_post.max_year|slugify %}
+                            <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% ifequal job_post.max_month|slugify month.0 %} selected {% endifequal %}>{{ month.1 }}</option>
+                          {% else %}
+                            <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% ifequal job_post.max_month|slugify month.0 %} selected {% endifequal %} {% if job_post.min_year >= job_post.max_year %} class="max_experience" {% endif %}>{{ month.1 }}</option>
+                          {% endifequal %}
+                        {% endfor %}
+                    </select>
+                  </div>
+                  <!--/ input element -->
+                  <!--input element -->
+                  <div class="input_element">
+                    <label>Educational Qualification</label>
+                    <select class="input select2" multiple name="edu_qualification" id="edu_qualification">
+                      <option value=''>select a Qualification</option>
+                      {% for qualification in qualifications %}
+                      <option value="{{ qualification.id }}" {% if qualification in job_post.edu_qualification.all %} selected {% endif %}>{{ qualification.name }}</option>
+                      {% endfor %}
+                      <option value="other_edu_qualification">Other Educational Qualification</option>
+                    </select>
+                  </div>
+                  <!--/ input element -->
+                </div>
+              </div>
+              <!--input element -->
+              <div class="input_element area_element">
+                <label class='visa'>&nbsp;</label>
+                <input type="checkbox" name="visa_required" id="visa_required" value="{% if job_post.visa_required %}True{%else%}False{% endif %}"{% if job_post.visa_required %}checked{% endif %}><span class='name'>Visa Required?</span>
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element wid_50 select2_div">
+                <label>Visa Country</label>
+                <select class="select2 input" name="visa_country" id="visa_country">
+                  <option value="">Visa Country</option>
+                  {% for country in countries %}
+                  <option value="{{country.id}}" {% ifequal country.id job_post.visa_country.id %} selected {% endifequal %}>{{country.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element wid_50">
+                <label>Required Visa type</label>
+                <input type="text" class="input" id="visa_type" name="visa_type" placeholder="Required Visa Type" value="{{ job_post.visa_type }}">
+              </div>
+              <!--/ input element -->
+              <div class="clearfix"></div>
+            </div>
+            <!-- form div -->
+          </div>
+          <!--/ category -->
+        {% if job_post.job_type == 'walk-in' %}
+          <div class="category">
+            <h6>Walkins</h6>
+             <!-- form div -->
+            <div class="form_div">
+                <!--input element -->
+                <div class="input_element area_element">
+                  <label>Contact Information</label>
+                  <textarea class="input" id="ckeditor_walkin_contactinfo" name="ckeditor_walkin_contactinfo" rows="4">{{ job_post.walkin_contactinfo }}</textarea>
+                  <input type="hidden" name="walkin_contactinfo" id="walkin_contactinfo" value="{{ job_post.walkin_contactinfo }}">
+                <!--/ input element -->
+              </div>
+              <!--input element -->
+              <div class="input_element date_time wid_50">
+                <label>From</label>
+                <input type="text" class="input" placeholder="Post Validity" id='walkin_from_date' name="walkin_from_date" value="{{job_post.walkin_from_date|date:"m/d/Y"}}">
+              </div>
+              <!--/input element -->
+              <!--input element -->
+              <div class="input_element date_time wid_50">
+                <label>To</label>
+                <input type="text" class="input" placeholder="Post Validity" id='walkin_to_date' name="walkin_to_date" value="{{job_post.walkin_to_date|date:"m/d/Y"}}">
+              </div>
+              <!--/input element -->
+              <!--input element -->
+              <div class="input_element date_time wid_50">
+                <label>Interview Time</label>
+                <div class="input-group bootstrap-timepicker timepicker">
+                  <input id="walkin_time" name="walkin_time" type="text" class="input input-small" value="{{job_post.walkin_time}}">
+                  <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                </div>
+              </div>
+              <!--/input element -->
+              <div class="clearfix"></div>
+
+            </div>
+              <div class="clearfix"></div>
+
+            </div>
+            <!-- form div -->
+          <!-- walkins  category here here -->
+          {% endif %}
+          <!-- category -->
+          <div class="category">
+            <h6>Company Details</h6>
+            <!-- form div -->
+            <div class="form_div">
+              <!--input element -->
+              <div class="input_element area_element company">
+                <label>Company Name</label>
+                <input type="text" class="input full_wid" placeholder="Company Name" name="company_name" id="company_name" value="{{ job_post.company_name }}">
+              </div>
+              <!--/input element -->
+                <!--input element -->
+
+              <div class="input_element area_element company">
+                <label>Company Website</label>
+                <input type="text" class="input full_wid" placeholder="Company Website" name="company_website" id="company_website" value="{{ job_post.company_website }}">
+              </div>
+              <!--/input element -->
+              <!--input element -->
+              <div class="input_element area_element company">
+                <label>Company Address</label>
+                <textarea class="input" name='company_address' id='company_address' placeholder='Company Address'>{{ job_post.company_address }}</textarea>
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element area_element company">
+                <label>About Company</label>
+                <textarea class="input" name='contents' id='contents' placeholder='Description'>{{ job_post.company_description }}</textarea>
+              </div>
+              <!--/ input element -->
+              <div class="input_element area_element">
+                <label>Company</label>
+                <select class="input select2" name="company" id="company">
+                  <option value="">Select a Company</option>
+                  {% for company in companies %}
+                    <option value="{{company.id}}" {% ifequal company.id job_post.company.id %} selected {% endifequal %}>{{company.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="input_element area_element">
+                <label>Company Links</label>
+                <textarea class="input" name='company_links' id='company_links' placeholder='Description'>{{ job_post.company_links }}</textarea>
+              </div>
+              <div class="input_element area_element">
+                <label>Company email</label>
+               <input type="email" name="company_emails" id='company_emails' placeholder='Company Email' value="{{ job_post.company_emails|default_if_none:'' }}" class="input full_wid">
+              </div>
+              <!--input element -->
+              {% if job_post.job_type == 'government' %}
+              <div class="input_element area_element">
+                <label>Application Fee</label>
+                <input type="text" class="input full_wid" placeholder="Application Fee" name="application_fee" id="application_fee" value="{{ job_post.application_fee }}">
+              </div>
+              <!--/input element -->
+              <!--input element -->
+              <div class="input_element">
+                <label>Govt Job Type</label>
+                <select class="input" name="govt_job_type" id="govt_job_type">
+                  <option value="">Select a Type</option>
+                  {% for type in gov_job_type %}
+                    <option value="{{type.0}}" {% ifequal type.0 job_post.govt_job_type %} selected {% endifequal %}>{{type.1}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element area_element">
+                <label>Selection Process</label>
+                <textarea class="input" name='ckeditor_selection_process' id='ckeditor_selection_process' placeholder='Selection Process'>{{ job_post.selection_process }}</textarea>
+                <input type="hidden" name="selection_process" id="selection_process" value="{{ job_post.selection_process }}">
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element area_element">
+                <label>How to apply</label>
+                <textarea class="input" name='ckeditor_how_to_apply' id='ckeditor_how_to_apply' placeholder='How to apply'>{{ job_post.how_to_apply }}</textarea>
+                <input type="hidden" name="how_to_apply" id="how_to_apply" value="{{ job_post.how_to_apply }}">
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element area_element">
+                <label>Important Dates</label>
+                <textarea class="input" name='ckeditor_important_dates' id='ckeditor_important_dates' placeholder='Important Dates'>{{ job_post.important_dates }}</textarea>
+                <input type="hidden" name="important_dates" id="important_dates" value="{{ job_post.important_dates }}">
+              </div>
+              <!--/ input element -->
+              <!--input element -->
+              <div class="input_element area_element">
+                <label>Age Relaxation</label>
+                <textarea class="input" name='ckeditor_age_relaxation' id='ckeditor_age_relaxation' placeholder='Age Relaxation'>{{ job_post.age_relaxation }}</textarea>
+                <input type="hidden" name="age_relaxation" id="age_relaxation" value="{{ job_post.age_relaxation }}">
+              </div>
+              {% endif %}
+              <!--/ input element -->
+              <div class="clearfix"></div>
+            </div>
+            <!--/ form_div -->
+          </div>
+          <!--/ category -->
+          <!-- category -->
+          <div class="category">
+            <h6>Interview location</h6>
+            <!-- form div -->
+            <div class="form_div">
+            {% for location in job_post.job_interview_location.all %}
+              <div class="another_location">
+                <span class="delete-interview" id="interview_location_{{ forloop.counter }}"><i class='fa fa-trash delete_location'></i></span>
+                <div id="interview_location_{{ forloop.counter }}" class="interview_location">
+                  <!--input element  area_element">
+                    <label>Location
+                    </label>
+                    <div class="map_wrapper">
+                        <input id="search_{{ forloop.counter }}" style="width: 29%;" class="controls" type="text" placeholder="Search Box">
+                        <div id="location_{{ forloop.counter }}" class="map_canvas mapping"></div>
+                    </div>
+                  </div>
+                  <div class="location_{{ forloop.counter }}" style="display:none">{{ location.get_map_coordinates_list|safe }}</div>
+                  /input element -->
+                  <!--input element -->
+                  <div class="input_element area_element">
+                    <label>Venue Details</label>
+                    <textarea name='venue_details_{{ forloop.counter }}' id='venue_details_{{ forloop.counter }}' class="input interview_location_venue_details_{{ forloop.counter }}" placeholder='Company Address'>{{ location.venue_details }}</textarea>
+                    <textarea class="input" style="display:none;" name='final_location_{{ forloop.counter }}' id='final_location_{{ forloop.counter }}' class="final_location_{{ forloop.counter }}" placeholder='Company Address'>{{ location.get_coordinates_list }}</textarea>
+                  </div>
+                  <!--/ input element -->
+                </div>
+              <div class="clearfix"></div>
+              </div>
+            {% endfor %}
+              <span class='add_location' id="another_location"><i class='fa fa-plus'></i>Another Location</span>
+            </div>
+            <!--/ form_div -->
+          </div>
+          <!--/ category -->
+          <div class="category">
+            <h6>Offering Details</h6>
+            <!-- form div -->
+            <div class="form_div">
+              <div class="col-lg-12 inputs-block pad_lr_0">
+                <div class="col-lg-4 left_inputs pad_lr_0">
+                  <!--input element -->
+                  <div class="input_element area_element">
+                    <label>Annual salary</label>
+                     <select class="input" name="salary_type" id="salary_type">
+                        <option value="">Select Salary Type</option>
+                        <option value="Month" {% if job_post.salary_type == 'Month' %}selected{% endif %}>Per Month</option>
+                        <option value="Year" {% if job_post.salary_type == 'Year' %}selected{% endif %}>Per Year</option>
+                      </select>
+                    <input type="hidden" class="form-control" placeholder="Maximum Salary" id='published_message' name="published_message" value="{{ job_post.published_message }}">
+                    <input type="hidden" class="input half_select" placeholder="Minimum Salary" id='location_name' name="location_name" value="location_0">
+                    <input type="hidden" class="input half_select" placeholder="Minimum Salary" id='searchbox_name' name="searchbox_name" value="search_0">
+                    <input type="hidden" class="form-control" placeholder="Maximum Salary" id='job_type' name="job_type" value="{{ job_post.job_type }}">
+                  </div>
+                  <!--/input element -->
+                </div>
+                <div class="col-lg-4 left_inputs pad_lr_0">
+                  <!--input element -->
+                  <div class="input_element area_element">
+                    <label>Min salary</label>
+                   <input type="text" class="input" placeholder="Minimum Salary" id='min_salary' name="min_salary" value="{{ job_post.min_salary }}">
+                  </div>
+                  <!--input element -->
+                </div>
+                <div class="col-lg-4 left_inputs pad_lr_0">
+                  <!--input element -->
+                  <div class="input_element area_element">
+                    <label>Max salary</label>
+                    <input type="text" class="input" placeholder="Maximum Salary" id='max_salary' name="max_salary" value="{{ job_post.max_salary }}">
+                  </div>
+                  <!--input element -->
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+            <!--/ form_div -->
+          </div>
+          <!--/ category -->
+          <!-- category -->
+          <div class="category">
+            <h6>Post Validity & Deadline Details</h6>
+            <!-- form div -->
+            <div class="form_div">
+              <!--input element -->
+              {% if job_post.job_type == 'government' %}
+              <div class="input_element date_time wid_50">
+                <label>From Date</label>
+                <input type="text" class="input" placeholder="From Date" id='govt_from_date' name="govt_from_date"  value="{{job_post.govt_from_date|date:"m/d/Y"}}">
+              </div>
+              <!--/input element -->
+              <!--input element -->
+              <div class="input_element date_time wid_50">
+                <label>To Date</label>
+                <input type="text" class="input" placeholder="To Date" id='govt_to_date' name="govt_to_date"  value="{{job_post.govt_to_date|date:"m/d/Y"}}">
+              </div>
+              <!--/input element -->
+              <!--input element -->
+              <div class="input_element date_time wid_50">
+                <label>Exam Date</label>
+                <input type="text" class="input" placeholder="Exam Date" id='govt_exam_date' name="govt_exam_date"  value="{{job_post.govt_exam_date|date:"m/d/Y"}}">
+              </div>
+              {% endif %}
+              <!--/input element -->
+              <!--input element -->
+                    {% if not job_post.job_type == 'walk-in' %}
+                      <div class="input_element wid_50 date_time">
+                        <label>Post Validity</label>
+                        <input type="text" class="input" placeholder="Post Validity" id='last_date' name="last_date" value="{{job_post.last_date|date:"m/d/Y"}}">
+                      </div>
+                    {% endif %}
+
+              <div class="input_element wid_50">
+                <label>Published On</label>
+                <input type="text" class="input" placeholder="Post Published On" id='published_date' name="published_date"  value="{{job_post.published_date|date:"m/d/Y H:i:s"}}">
+              <input type="hidden" class="form-control" placeholder="Post Published On" id='no_of_interview_location' name="no_of_interview_location">
+              </div>
+              <!--/input element -->
+              <div class="clearfix"></div>
+            </div>
+            <!--/ form_div -->
+          </div>
+          <!--/ category -->
+          <!-- button row -->
+          <div class="button_row wrap">
+            <button type="button" class='button post' id="publish">Post A Job</button>
+            <!--<button type="button" class='button save' id="save">Save as draft</button>-->
+            <button type="button" class='button save' id="preview">Save &amp; Preview</button>
+            <button type="button" class='button cancel cancel_btn' id="cancel_btn">Cancel</button>
+          </div>
+          <!--/ button row -->
+          <!-- post on row -->
+          <div class="post_details">
+
+          {% if request.user.is_fb_connected %}
+          <span class='button fb'>
+            <input type="checkbox" name="fb_post" id="fb_post" checked><span class='name'>facebook</span></span>
+            {% else %}
+            <a  href="{% url 'recruiter:facebook_login' %}" class="fb_btn unlink_button">
+              <span class='button fb'>
+            <i class="fa fa-facebook"></i>Get Connected With Facebook</span></a>
+          {% endif %}
+          {% if request.user.is_tw_connected %}
+          <span class='button twit'>
+            <input type="checkbox" name="tw_post" id="tw_post" checked><span class='name'>twitter</span>
+            </span>
+          {% else %}
+            <a href="{% url 'recruiter:twitter_login' %}" class="fb_btn unlink_button">
+            <span class='button twit'>
+            <i class="fa fa-twitter"></i>Get Connected With Twitter
+            </span>
+            </a>
+          {% endif %}
+          </span>
+          {% if request.user.is_ln_connected %}
+          <span class='button in'>
+            <input type="checkbox" name="ln_post" id="ln_post" checked><span class='name'>Linkedin</span></span>
+          {% else %}
+            <a href="{% url 'recruiter:linkedin_login' %}" class="in_btn unlink_button">
+              <span class='button in'>
+              <i class="fa fa-linkedin"></i>Get Connected With LinkedIn</span></a>
+          {% endif %}
+          </span>
+          </div>
+          <!--/ post on row -->
+          <!--/ content job post -->
+          <!-- fb groups -->
+          <div class='social_wrap'>
+            <ul>
+            {% if request.user.is_fb_connected %}
+              {% for group in request.user.get_user_facebook_groups %}
+              <li class="facebook_groups">
+                <div class="ticket_wrap">
+                  <input type="checkbox" class='social_selected'name="fb_groups" id="fb_groups" value="{{ group.group_id }}"><span>{{group.name}}</span>
+                </div>
+              </li>
+              {% endfor %}
+            {% endif %}
+            <div class="clearfix"></div>
+            </ul>
+          </div>
+          <!--/ fb groups -->
+          </form>
+      </section>
+    </div>
+      <!--/ content -->
+    </div>
+     <div id="dialog-form" style="display:none">
+    <form>
+        <label for="name">Message </label>
+        <input type="text" name="message" id="enter_message" class="text ui-widget-content ui-corner-all" />
+    </form>
+    </div>
+    <!--/ container -->
+    <style>
+    .jobposts{
+      display: none;
+    }
+    .max_experience{
+      display:none;
+    }
+    </style>
+{% endblock %}
+{% block script %}
+    <!-- select2 -->
+    <script type="text/javascript">
+        function other_fields(form_data) {
+
+            industry = []
+            functional_area = []
+            edu_qualification = []
+            skills = []
+
+            interview_location = []
+            venue_details = []
+            // show_location = []
+            interview_location_count = $('div.interview_location').length
+
+            jQuery.each(form_data, function (i, field) {
+                if (field['name'].indexOf('other_industry_name') >= 0) {
+                    industry_temp = {}
+                    industry_temp[field['name']] = field['value']
+                    industry.push(industry_temp)
+                }
+                if (field['name'].indexOf('interview_city') >= 0) {
+                    interview_temp = {}
+                    interview_temp[field['name']] = field['value']
+                    interview_location.push(interview_temp)
+                }
+                if (field['name'].indexOf('venue_details') >= 0) {
+                    interview_temp = {}
+                    interview_temp[field['name']] = field['value']
+                    venue_details.push(interview_temp)
+                }
+                // if (field['name'].indexOf('show_location') >= 0) {
+                //     interview_temp = {}
+                //     interview_temp[field['name']] = field['value']
+                //     show_location.push(interview_temp)
+                // }
+
+                if (field['name'].indexOf('other_functional_area') >= 0) {
+                    functional_area_temp = {}
+                    functional_area_temp[field['name']] = field['value']
+                    functional_area.push(functional_area_temp)
+                }
+                if (field['name'].indexOf('other_edu_qualification') >= 0) {
+                    edu_qualification_temp = {}
+                    edu_qualification_temp[field['name']] = field['value']
+                    edu_qualification.push(edu_qualification_temp)
+                }
+                if (field['name'].indexOf('other_skill_name') >= 0) {
+                    skills_temp = {}
+                    skills_temp[field['name']] = field['value']
+                    skills.push(skills_temp)
+
+                }
+
+            });
+
+            console.log(JSON.stringify(interview_location))
+            console.log(JSON.stringify(venue_details))
+            // console.log(JSON.stringify(show_location))
+
+            $("#jobform").append('<textarea class="form-control other_functional_area" placeholder="Other Functional Area" name="final_functional_area" id="final_functional_area" style="display:none;">' + JSON.stringify(functional_area) + '</textarea>');
+
+            $("#jobform").append('<textarea class="form-control other_functional_area" placeholder="Other Functional Area" name="final_skills" id="final_skills" style="display:none;">' + JSON.stringify(skills) + '</textarea>');
+
+            $("#jobform").append('<textarea class="form-control other_functional_area" placeholder="Other Functional Area" name="final_edu_qualification" id="final_edu_qualification" style="display:none;">' + JSON.stringify(edu_qualification) + '</textarea>');
+
+            $("#jobform").append('<textarea class="form-control other_functional_area" placeholder="Other Functional Area" name="final_industry" id="final_industry" style="display:none;">' + JSON.stringify(industry) + '</textarea>');
+
+            $("#jobform").append('<textarea class="form-control other_functional_area" placeholder="Other Functional Area" name="final_interview_location" id="final_interview_location" style="display:none;">' + JSON.stringify(interview_location) + '</textarea>');
+
+            $("#jobform").append('<textarea class="form-control other_functional_area" placeholder="Other Functional Area" name="final_venue_details" id="final_venue_details" style="display:none;">' + JSON.stringify(venue_details) + '</textarea>');
+
+            // $("#jobform").append('<textarea class="form-control other_functional_area" placeholder="Other Functional Area" name="final_show_location" id="final_show_location" style="display:none;">' + JSON.stringify(show_location) + '</textarea>');
+
+            $('#no_of_interview_location').val(interview_location_count)
+        }
+
+// google.maps.event.addDomListener(window, "load", getGoogleMap)
+
+// {% if job_post.job_interview_location.all %}
+// {% for location in job_post.job_interview_location.all %}
+// location_name = 'location_' + {{forloop.counter}}
+// searchbox_name = 'search_' + {{forloop.counter}}
+// get_google_map(location_name, searchbox_name)
+// {%endfor%}
+// {%endif%}
+// function getGoogleMap() {
+//     var map;
+//     location_name = $('#location_name').val()
+//     searchbox_name = $('#searchbox_name').val()
+//     var bounds = new google.maps.LatLngBounds();
+//     var mapOptions = {
+//         mapTypeId: 'roadmap',
+//         zoom: 4,
+//         center: {lat:17.385044, lng:78.486671 },
+//         id: location_name
+//     };
+
+//     // Display a map on the page
+//     map = new google.maps.Map(document.getElementById(location_name), mapOptions);
+//     map.setTilt(45);
+
+//   // Create the search box and link it to the UI element.
+//     var input = document.getElementById(searchbox_name);
+//     var searchBox = new google.maps.places.SearchBox(input);
+//     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+
+//     var markersArray = [];
+
+
+//   searchBox.addListener('places_changed', function() {
+//     var places = searchBox.getPlaces();
+
+//     if (places.length == 0) {
+//       return;
+//     }
+//     console.log(places.length)
+//     if (places.length > 1) {
+//       alert("Please map only 1 location")
+//       return;
+//     }
+
+//     // Clear out the old markers.
+//     markersArray.forEach(function(marker) {
+//       marker.setMap(null);
+//     });
+
+//     // For each place, get the icon, name and location.
+//     var bounds = new google.maps.LatLngBounds();
+//     places.forEach(function(place) {
+//       // Create a marker for each place.
+//         final_location = 'final_' + map.id
+//         $('#'+ final_location).val('')
+//         var latitude = place.geometry.location.lat();
+//         var longitude = place.geometry.location.lng();
+//         var info = []
+//         info.push(latitude)
+//         info.push(longitude)
+//         $('#'+ final_location).val(JSON.stringify(info))
+//         markersArray.push(new google.maps.Marker({
+//           map: map,
+//           title: place.name,
+//           position: place.geometry.location
+//         }));
+//         console.log($('#'+ final_location).val())
+
+//       if (place.geometry.viewport) {
+//         // Only geocodes have viewport.
+//         bounds.union(place.geometry.viewport);
+//       } else {
+//         bounds.extend(place.geometry.location);
+//       }
+//     });
+//     map.fitBounds(bounds);
+//   });
+
+
+
+
+//     var markersArray = [];
+
+//     function deleteOverlays() {
+//       if (markersArray) {
+//         for (i in markersArray) {
+//           markersArray[i].setMap(null);
+//         }
+//         markersArray.length = 0;
+//       }
+//     }
+
+//     google.maps.event.addListener(map, 'click', function(event) {
+//        deleteOverlays();
+//        placeMarker(event.latLng);
+//     });
+
+//     function placeMarker(location) {
+//         var marker = new google.maps.Marker({
+//             position: location,
+//             map: map
+//         });
+//         final_location = 'final_' + map.id
+//         console.log(final_location)
+//         console.log($('#'+ final_location).val())
+//         $('#'+ final_location).val('')
+//         var latitude = location.lat();
+//         var longitude = location.lng();
+//         var info = []
+//         info.push(latitude)
+//         info.push(longitude)
+//         $('#'+ final_location).val(JSON.stringify(info))
+//         console.log($('#'+ final_location).val())
+//         markersArray.push(marker);
+//     }
+// }
+
+// function get_google_map(location_name, searchbox_name){
+
+//     var map;
+//     var bounds = new google.maps.LatLngBounds();
+//     var mapOptions = {
+//         mapTypeId: 'roadmap',
+//         zoom: 4,
+//         center: {lat:17.385044, lng:78.486671 },
+//         id: location_name
+//     };
+
+//     // Display a map on the page
+//     map = new google.maps.Map(document.getElementById(location_name), mapOptions);
+//     map.setTilt(45);
+
+//   // Create the search box and link it to the UI element.
+//     var input = document.getElementById(searchbox_name);
+//     var searchBox = new google.maps.places.SearchBox(input);
+//     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+
+//     var markersArray = [];
+
+
+//   searchBox.addListener('places_changed', function() {
+//     var places = searchBox.getPlaces();
+
+//     if (places.length == 0) {
+//       return;
+//     }
+
+//     // Clear out the old markers.
+//     markersArray.forEach(function(marker) {
+//       marker.setMap(null);
+//     });
+
+//     // For each place, get the icon, name and location.
+//     var bounds = new google.maps.LatLngBounds();
+//     places.forEach(function(place) {
+//       // Create a marker for each place.
+//         final_location = 'final_' + map.id
+//         $('#'+ final_location).val('')
+//         var latitude = place.geometry.location.lat();
+//         var longitude = place.geometry.location.lng();
+//         var info = []
+//         info.push(latitude)
+//         info.push(longitude)
+//         $('#'+ final_location).val(JSON.stringify(info))
+//         markersArray.push(new google.maps.Marker({
+//           map: map,
+//           title: place.name,
+//           position: place.geometry.location
+//         }));
+//         console.log($('#'+ final_location).val())
+
+//       if (place.geometry.viewport) {
+//         // Only geocodes have viewport.
+//         bounds.union(place.geometry.viewport);
+//       } else {
+//         bounds.extend(place.geometry.location);
+//       }
+//     });
+//     map.fitBounds(bounds);
+//   });
+
+
+
+//     var markersArray = [];
+
+//     function deleteOverlays() {
+//       if (markersArray) {
+//         for (i in markersArray) {
+//           markersArray[i].setMap(null);
+//         }
+//         markersArray.length = 0;
+//       }
+//     }
+
+//     google.maps.event.addListener(map, 'click', function(event) {
+//        deleteOverlays();
+//        placeMarker(event.latLng);
+//     });
+
+//     function placeMarker(location) {
+//         var marker = new google.maps.Marker({
+//             position: location,
+//             map: map
+//         });
+//         final_location = 'final_' + map.id
+//         console.log($('#'+ final_location).val())
+//         console.log(final_location)
+
+//         $('#'+ final_location).val('')
+//         var latitude = location.lat();
+//         var longitude = location.lng();
+//         var info = []
+//         info.push(latitude)
+//         info.push(longitude)
+//         $('#'+ final_location).val(JSON.stringify(info))
+//         console.log($('#'+ final_location).val())
+//         markersArray.push(marker);
+//     }
+
+
+//         // Multiple Markers
+//     var markers = [JSON.parse($('.'+location_name).html())
+//     ];
+
+//     // Info Window Content
+//     var infoWindowContent = [
+//         ['<div class="info_content">' +
+//         '<h3>London Eye</h3>' +
+//         '<p>The London Eye is a giant Ferris wheel situated on the banks of the River Thames. The entire structure is 135 metres (443 ft) tall and the wheel has a diameter of 120 metres (394 ft).</p>' +        '</div>'],
+//     ];
+
+//     // Display multiple markers on a map
+//     var infoWindow = new google.maps.InfoWindow(), marker, i;
+//     // Loop through our array of markers & place each one on the map
+//     for( i = 0; i < markers.length; i++ ) {
+//         var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+//         bounds.extend(position);
+//         marker = new google.maps.Marker({
+//             position: position,
+//             map: map,
+//             title: markers[i][0]
+//         });
+//         markersArray.push(marker);
+//         // Automatically center the map fitting all markers on the screen
+//         map.fitBounds(bounds);
+//     }
+
+//     // Override our map zoom level once our fitBounds function runs (Make sure it only runs once)
+//     var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+//         this.setZoom(5);
+//         google.maps.event.removeListener(boundsListener);
+//     });
+// }
+
+      $(".select2").select2({
+        tags: true
+      })
+    </script>
+    <!-- tags -->
+    <!--/ tags -->
+    <script type="text/javascript">
+        $('.social_wrap .selected').children('.social_selected').click();
+        $('.social_wrap ul li').click(function (e) {
+            $(this).toggleClass('selected');
+            $(this).children('.social_selected').click();
+        })
+        $('.social_selected').click(function (e) {
+            e.stopPropagation();
+        })
+
+        $("#published_date").datetimepicker({
+            format: "MM/DD/YYYY HH:mm:ss",
+        });
+
+
+    </script>
+    <script type="text/javascript">
+
+        $("body").on("click", ".remove_other_field", function (e) {
+            e.preventDefault();
+            id = $(this).attr('id')
+            $(this).parent().remove();
+
+        });
+
+        $('.jobpost').click(function (e) {
+            id = $(this).attr('id')
+            count = $('select#jobpost option[id=' + id + ']').length
+            if (count == 0) {
+                $('select#jobpost option[id=empty]').text('There are no jobs')
+            }
+            else {
+                $('select#jobpost option[id=empty]').text('Select From Existing Job')
+            }
+            $("select#jobpost").val('');
+            $('.jobpost').removeClass('active')
+            $(this).addClass('active')
+            $('select#jobpost option').addClass('jobposts')
+            $('select#jobpost option[id=' + id + ']').removeClass('jobposts')
+        });
+
+        $("body").on("click", "#another_location", function (e) {
+            last_interview_location = $('div.interview_location').length
+            var selected_interview_location = []
+
+
+            $('.interview_city').each(function () {
+                console.log($(this).val());
+                selected_interview_location.push($(this).val())
+                /* rest of the code for each name retrieved */
+            })
+
+            console.log(JSON.stringify(selected_interview_location))
+            $.post('/recruiter/job/interview-location/' + last_interview_location + '/', {'selected_locations': JSON.stringify(selected_interview_location)}, function (data) {
+                $("#another_location").before(data);
+            });
+
+            location_count = last_interview_location + 1
+            location_name = 'location_' + location_count
+            searchbox_name = 'search_' + location_count
+            $('#location_name').val(location_name)
+            $('#searchbox_name').val(searchbox_name)
+
+            $('#location_name').val(location_name)
+        });
+
+
+        $("body").on("change", "select.interview_city", function (e) {
+            console.log($(this).val())
+            $('select.interview_city option').removeClass('max_experience')
+            $('select.interview_city').each(function () {
+                console.log($(this).val());
+                console.log("hai")
+                id = $(this).val()
+                if (id.length > 0) {
+                    $('select.interview_city option[id=' + id + ']').addClass('max_experience')
+                }
+            })
+        });
+
+
+        $("body").on("click", "span.delete-interview", function (e) {
+            id = $(this).attr('id')
+            if ($('.interview_location').length > 1) {
+                $('div#' + id).parent().remove();
+                $('select.interview_city option').removeClass('max_experience')
+                $('select.interview_city').each(function () {
+                    console.log($(this).val());
+                    console.log("hai")
+                    id = $(this).val()
+                    if (id.length > 0) {
+                        $('select.interview_city option[id=' + id + ']').addClass('max_experience')
+                    }
+                })
+            }
+            else {
+              open_dialog('Job Post Should Contain Atleast One Interview Location', 'Error!!')
+            }
+
+        })
+
+        $("select#jobpost").on('change', function (e) {
+            jobpost_id = $(this).val()
+            option_id = $('select#jobpost option:selected').attr('id')
+            $('.jobpost').removeClass('active')
+            $('#' + option_id).addClass('active')
+
+            if (jobpost_id == '') {
+                window.location = '/recruiter/job/new/'
+            } else {
+                job_type = $('#job_type').val()
+                window.location = '/recruiter/job/' + job_type + '/copy?jobpost_id=' + jobpost_id
+            }
+        });
+        $("body").on("change", "select#industry", function (e) {
+            e.preventDefault();
+
+            if (jQuery.inArray("other_industry", $("select#industry").val()) >= 0) {
+                new_data = $.grep($('select#industry').select2('val'), function (val) {
+                    return val != 'other_industry';
+                });
+                $("select#industry").select2('val', new_data);
+                if ($('.other_industry_name').length < 0) {
+                    $("select#industry").siblings('span').after('<div class="extra"><input type="text" class="input has_icon other_industry_name"  placeholder="Other Industry Name" name="other_industry_name_1" id="other_industry_name_1"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>');
+                    $('#other_industry_name_1').focus();
+                    SetCaretAtEnd(document.getElementById('other_industry_name_1'))
+                }
+                else {
+                    industry_count = $('.other_industry_name').length + 1
+                    $("select#industry").siblings('span').after('<div class="extra"><input type="text" class="input has_icon other_industry_name"  placeholder="Other Industry Name" name="other_industry_name_' + industry_count + '" id="other_industry_name_' + industry_count + '"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>')
+                    $("select#industry").focusout();
+                    $('#other_industry_name_' + industry_count).focus();
+                    SetCaretAtEnd(document.getElementById('other_industry_name_' + industry_count))
+                }
+            }
+
+        });
+
+        /*$( "select#location" ).on('change',function(e) {
+         e.preventDefault();
+
+         if (jQuery.inArray( "other_location",  $( "select#location" ).val()) >= 0)
+         {
+         new_data = $.grep($('select#location').select2('val'), function (val) {
+         return val != 'other_location';
+         });
+         $( "select#location" ).select2('val', new_data);
+
+         $( "select#location" ).after('<div class="form-group has-success has-feedback"><input type="text" class="form-control other_location_name"  placeholder="Other location Name" name="other_location_name_1" id="other_location_name_1"><a class="remove_other_field"><span class="form-control-feedback"><i class="fa fa-times"></i></span></a><span id="inputSuccess2Status" class="sr-only">(success)</span></div>')
+         }
+         });
+         */
+      $("select#skills").on("select2:select", function (evt) {
+        var element = evt.params.data.element;
+        var $element = $(element);
+        $element.detach();
+        $(this).append($element);
+        $(this).trigger("change");
+      });
+
+        $("body").on("change", "select#skills", function (e) {
+            e.preventDefault();
+
+            if (jQuery.inArray("other_skills", $("select#skills").val()) >= 0) {
+                new_data = $.grep($('select#skills').select2('val'), function (val) {
+                    return val != 'other_skills';
+                });
+                $("select#skills").select2('val', new_data);
+
+                if ($('.other_skill_name').length < 0) {
+                    $("select#skills").siblings('span').after('<div class="extra"><input type="text" class="input has_icon other_skill_name"  placeholder="Other Skill Name" name="other_skill_name_1" id="other_skill_name_1"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>')
+                }
+                else {
+                    industry_count = $('.other_skill_name').length + 1
+                    $("select#skills").siblings('span').after('<div class="extra"><input type="text" class="input has_icon other_skill_name"  placeholder="Other Skill Name" name="other_skill_name_' + industry_count + '" id="other_skill_name_' + industry_count + '"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>')
+                }
+            }
+        });
+
+        $("select#functional_area").on('change', function (e) {
+            e.preventDefault();
+
+            if (jQuery.inArray("other_functional_area", $("select#functional_area").val()) >= 0) {
+                new_data = $.grep($('select#functional_area').select2('val'), function (val) {
+                    return val != 'other_functional_area';
+                });
+                $("select#functional_area").select2('val', new_data);
+                if ($('.other_functional_area').length < 0) {
+                    $("select#functional_area").siblings('span').after('<div class="extra"><input type="text" class="input has_icon other_functional_area"  placeholder="Other Functional Area Name" name="other_functional_area_1" id="other_functional_area_1"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>')
+                }
+                else {
+                    functional_area_count = $('.other_functional_area').length + 1
+                    $("select#functional_area").siblings('span').after('<div class="extra"><input type="text" class="input has_icon other_functional_area"  placeholder="Other Functional Area Name" name="other_functional_area_' + functional_area_count + '" id="other_functional_area_' + functional_area_count + '"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>')
+                }
+            }
+        });
+
+        $("select#edu_qualification").on('change', function (e) {
+
+            if (jQuery.inArray("other_edu_qualification", $("select#edu_qualification").val()) >= 0) {
+                new_data = $.grep($('select#edu_qualification').select2('val'), function (val) {
+                    return val != 'other_edu_qualification';
+                });
+                $("select#edu_qualification").select2('val', new_data);
+
+                if ($('.other_edu_qualification').length < 0) {
+                    $("select#edu_qualification").siblings('span').after('<div class="extra"><input type="text" class="input has_icon other_edu_qualification"  placeholder="Other Qualification Name" name="other_edu_qualification_1" id="other_edu_qualification_1"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>')
+                }
+                else {
+                    edu_qualification_count = $('.other_edu_qualification').length + 1
+                    $("select#edu_qualification").siblings('span').after('<div class="extra"><input type="text" class="input has_icon other_edu_qualification"  placeholder="Other Qualification Name" name="other_edu_qualification_' + edu_qualification_count + '" id="other_edu_qualification_' + edu_qualification_count + '"><a href="#" class="remove_other_field"><i class="fa fa-times close_icon"></i></a></div>')
+                }
+            }
+
+        });
+
+
+        $("select.select2").select2({placeholder: "Select here"});
+
+        $("select#min_year").on('change', function (e) {
+            $('select#max_year').val('');
+            $('select#max_year option').addClass('max_experience');
+            for (i = $('select#min_year option:selected').attr('id'); i < $('select#min_year option').length; i++) {
+                $('select#max_year option[id=' + i + ']').removeClass('max_experience');
+            }
+        });
+
+        $("select#min_month").on('change', function (e) {
+            $('select#max_month').val('');
+            if ($('select#max_year').val() == $('select#min_year').val()) {
+                $('select#max_month option').addClass('max_experience');
+                for (i = $('select#min_month option:selected').attr('id'); i < $('select#min_month option').length; i++) {
+                    $('select#max_month option[id=' + i + ']').removeClass('max_experience');
+                }
+            }
+            else {
+                $('select#max_month option').removeClass('max_experience');
+            }
+        });
+
+        $("select#max_year").on('change', function (e) {
+            $('select#max_month').val('');
+            if ($('select#max_year').val() == $('select#min_year').val()) {
+                $('select#max_month option').addClass('max_experience');
+                for (i = $('select#min_month option:selected').attr('id'); i < $('select#min_month option').length; i++) {
+                    $('select#max_month option[id=' + i + ']').removeClass('max_experience');
+                }
+            }
+            else {
+                $('select#max_month option').removeClass('max_experience');
+            }
+        });
+
+        $("select#min_salary").on('change', function (e) {
+            $('select#max_salary').val('');
+            $('select#max_salary option').addClass('max_salary');
+            for (i = $('select#min_salary option:selected').attr('id'); i < $('select#min_salary option').length; i++) {
+                $('select#max_salary option[id=' + i + ']').removeClass('max_salary');
+            }
+        });
+
+        $("select#country").change(function (e) {
+            $("select#location").select2("val", "");
+            $("select#location option:selected").each(function () {
+                $(this).removeAttr('selected');
+            });
+
+            $("select#location").select2({placeholder: "Select here"});
+            $('select#location optgroup').find('option').removeAttr('disabled')
+            $('select#location optgroup[id!=' + $(this).val() + ']').children().attr('disabled', 'disabled')
+        });
+
+        $("#demonstrations").select2({
+            placeholder: "Select2 version",
+            minimumResultsForSearch: -1
+        }).on("change", function () {
+            document.location = $(this).find(":selected").val();
+        });
+
+        $("button[data-select2-open]").click(function () {
+            $("#" + $(this).data("select2-open")).select2("open");
+        });
+
+        $('#fb_post').click(function () {
+            if (document.getElementById('fb_post').checked) {
+                $(".social_wrap").show();
+            }
+            else {
+                $(".social_wrap").hide();
+            }
+        });
+
+        $("#last_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2015:2050"
+        })
+
+        $("#govt_from_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2015:2050"
+        })
+
+        $("#govt_to_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2015:2050"
+        })
+
+        $("#govt_exam_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2015:2050"
+        })
+
+        $("#published_date").datetimepicker({
+            format: 'mm/dd/yyyy HH:MM:SS',
+        });
+
+        $('#visa_required').click(function () {
+            if (document.getElementById('visa_required').checked) {
+                $("#visa_country").prop("disabled", false);
+                $("#visa_type").prop("disabled", false);
+            } else {
+                $("select#visa_country").select2("val", "");
+                $("#visa_type").val('');
+
+                $("#visa_country").prop("disabled", true);
+                $("#visa_type").prop("disabled", true);
+            }
+        });
+
+        $(document).ready(function (e) {
+            CKEDITOR.config.allowedContent = true;
+            var editor = CKEDITOR.replace('textareacontents', {});
+            {% if job_post.job_type == 'walk-in' %}
+                var editor = CKEDITOR.replace('ckeditor_walkin_contactinfo', {});
+            {% endif %}
+
+            {% if job_post.job_type == 'government' %}
+
+                var editor = CKEDITOR.replace('ckeditor_selection_process', {});
+                var editor = CKEDITOR.replace('ckeditor_age_relaxation', {});
+                var editor = CKEDITOR.replace('ckeditor_how_to_apply', {});
+                var editor = CKEDITOR.replace('ckeditor_important_dates', {});
+                var editor = CKEDITOR.replace('contents', {});
+            {% endif %}
+        });
+
+
+        $("#save").click(function (e) {
+            e.preventDefault();
+            /*      $('#save').attr("disabled","disabled");*/
+            $('#status').val('Draft');
+            form_data = $('#jobform').serializeArray();
+            other_fields(form_data)
+
+            $("input[name='description']").val(CKEDITOR.instances.textareacontents.getData());
+            {% if job_type == 'walk-in' %}
+                $("input[name='walkin_contactinfo']").val(CKEDITOR.instances.ckeditor_walkin_contactinfo.getData());
+            {% endif %}
+
+            {% if job_post.job_type == 'government' %}
+
+                $("input[name='important_dates']").val(CKEDITOR.instances.ckeditor_important_dates.getData());
+                $("input[name='how_to_apply']").val(CKEDITOR.instances.ckeditor_how_to_apply.getData());
+                $("input[name='selection_process']").val(CKEDITOR.instances.ckeditor_selection_process.getData());
+                $("input[name='age_relaxation']").val(CKEDITOR.instances.ckeditor_age_relaxation.getData());
+                $("input[name='company_description']").val(CKEDITOR.instances.contents.getData());
+            {% endif %}
+
+            $.post('.', $("form#jobform").serialize(), function (data) {
+                if (data.error) {
+                    /*    $('#save').removeAttr("disabled");*/
+                    open_dialog('Some Content Missing', 'Error!!')
+
+                    $('div.error').remove();
+                    for (var key in data.response) {
+                      if($('#' + key).hasClass('select2')){
+                        $('#' + key).parent().after('<div class="error">' + data.response[key] + '</div>');
+                      }else{
+                        $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                      }
+                    }
+                } else {
+                  open_dialog_with_url('New JobPost Drafted Successfully', 'Success!!!', "{% url 'dashboard:job_posts' job_post.job_type %}")
+                }
+            }, 'json');
+        });
+
+        $("#preview").click(function (e) {
+            e.preventDefault();
+            /*      $('#save').attr("disabled","disabled");*/
+            $('#status').val('Draft');
+            form_data = $('#jobform').serializeArray();
+            other_fields(form_data)
+
+            $("input[name='description']").val(CKEDITOR.instances.textareacontents.getData());
+            {% if job_type == 'walk-in' %}
+                $("input[name='walkin_contactinfo']").val(CKEDITOR.instances.ckeditor_walkin_contactinfo.getData());
+            {% endif %}
+
+            {% if job_post.job_type == 'government' %}
+
+                $("input[name='company_description']").val(CKEDITOR.instances.contents.getData());
+                $("input[name='important_dates']").val(CKEDITOR.instances.ckeditor_important_dates.getData());
+                $("input[name='how_to_apply']").val(CKEDITOR.instances.ckeditor_how_to_apply.getData());
+                $("input[name='selection_process']").val(CKEDITOR.instances.ckeditor_selection_process.getData());
+                $("input[name='age_relaxation']").val(CKEDITOR.instances.ckeditor_age_relaxation.getData());
+            {% endif %}
+
+            $.post('.', $("form#jobform").serialize(), function (data) {
+                if (data.error) {
+                    /*    $('#save').removeAttr("disabled");*/
+                    open_dialog('Some Content Missing', 'Error!!')
+                    $('div.error').remove();
+                    for (var key in data.response) {
+                      if($('#' + key).hasClass('select2')){
+                        $('#' + key).parent().after('<div class="error">' + data.response[key] + '</div>');
+                      }else{
+                        $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                      }
+                    }
+                } else {
+                  open_dialog_with_url('New JobPost Drafted Successfully', 'Success!!!', '/dashboard/jobpost/preview/' + data.post + '/')
+                }
+            }, 'json');
+        });
+
+        $("#publish").click(function (e) {
+            e.preventDefault();
+            /*      $('#save').attr("disabled","disabled");*/
+
+            $('#status').val('Pending');
+            form_data = $('#jobform').serializeArray();
+            other_fields(form_data)
+             $('#enter_message').val('')
+            $('#dialog-form').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Please enter your message",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                $(this).dialog("close");
+                if ($('#enter_message').val() == ''){
+            $(this).dialog('close')
+            open_dialog('Message Cannot Be Empty!', 'Info!')
+            return
+          }
+                $('#published_message').val($('#enter_message').val());
+                $("input[name='description']").val(CKEDITOR.instances.textareacontents.getData());
+                {% if job_type == 'walk-in' %}
+                    $("input[name='walkin_contactinfo']").val(CKEDITOR.instances.ckeditor_walkin_contactinfo.getData());
+                {% endif %}
+
+                {% if job_post.job_type == 'government' %}
+                    $("input[name='company_description']").val(CKEDITOR.instances.contents.getData());
+                    $("input[name='important_dates']").val(CKEDITOR.instances.ckeditor_important_dates.getData());
+                    $("input[name='how_to_apply']").val(CKEDITOR.instances.ckeditor_how_to_apply.getData());
+                    $("input[name='selection_process']").val(CKEDITOR.instances.ckeditor_selection_process.getData());
+                    $("input[name='age_relaxation']").val(CKEDITOR.instances.ckeditor_age_relaxation.getData());
+                {% endif %}
+
+                $.post('.', $("form#jobform").serialize(), function (data) {
+                    if (data.error) {
+                        /*    $('#save').removeAttr("disabled");*/
+                        open_dialog('Some Content Missing', 'Error!!')
+                        $('div.error').remove();
+                        for (var key in data.response) {
+                          if($('#' + key).hasClass('select2')){
+                            $('#' + key).parent().after('<div class="error">' + data.response[key] + '</div>');
+                          }else{
+                            $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                          }
+                        }
+                    }
+                    else {
+                      open_dialog_with_url('New JobPost Drafted Successfully', 'Success!!!', "{% url 'dashboard:job_posts' job_post.job_type %}")
+                    }
+                }, 'json');
+                      }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                            return;
+                        }
+                    }
+                ]
+            });
+        });
+        $("#cancel_btn").click(function (e) {
+            e.preventDefault();
+            window.location = "{% url 'dashboard:job_posts' job_post.job_type %}";
+        });
+
+    </script>
+    <script type="text/javascript">
+        $('#walkin_time').timepicker();
+        $("#walkin_from_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2015:2050"
+        })
+
+        $("#walkin_to_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2015:2050"
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% block 'stage' %}
+<!-- content -->
+<div class="content_wrap">
+  <section class="create_company_profile_form">
+    <h3><i class='fa fa-upload'></i><span> Resume </span>Upload</h3>
+    <!-- row one -->
+    <div class="row_one company_profile">
+      <!-- ticket -->
+      <div class="pp_div company_new_form">
+        <div class="category">
+          <div class="content_job_post">
+            <form name="resumeuploadform" id='resumeuploadform' method='post'>
+              <div class="form_div">
+                <div class="input_element area_element"> 
+                  <label>Candidate Name<span class="error">*</span></label>
+                  <input type="text" class="input full_wid" name="candidate_name"
+                    id="candidate_name" value="{{ resume.candidate_name }}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Email ID<span class="error">*</span></label>
+                  <input type="email" class="input full_wid" name="email" id="email" value="{{ resume.email }}">
+                  <input type="hidden" class="input full_wid" name="company_id" id="company_id" value="{{ request.user.company_id }}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Skill<span class="error">*</span></label>
+                  <select class="input select2" multiple name="skill" id="skill">
+                  {% for skill in skills %}
+                  <option value="{{ skill.id }}" {%  if skill in resume.skill.all %} selected {% endif %}>{{ skill.name }}</option>
+                  {% endfor %}
+                  </select>
+                  <span class="skill_err"></span>
+                </div>
+                <div class="input_element area_element">
+                  <label>Resume Upload<span class="error">*</span></label>
+                  {% if resume %}
+                  <input type="file" class="input full_wid" name="resume" id='resume' style="display:none">
+                  <div class="resume_view">{{ resume.resume|get_resume_name }}<span id="update_resume"><button type="button" class="button"> Change </button></span></div>
+                  {% else %}
+                  <input type="file" class="input full_wid" name="resume" id='resume' accept=".docx, .doc, .rtf, .text, .pdf">
+                  {% endif %}
+                </div>
+                <div class="input_element area_element">
+                  <label>Mobile</label>
+                  <input type="text" class="input full_wid" name="mobile" id='mobile' value="{% if resume.mobile %}{{ resume.mobile }}{% endif %}">
+                </div>
+                <div class="input_element area_element">
+                  <label>Experience</label>
+                  <select class="input full_wid" name="experience" id='experience'>
+                  <option value="">Select Experience in Years</option>
+                  <option value=0 >0</option>
+                  <option value=1 >1</option>
+                  <option value=2 >2</option>
+                  <option value=3 >3</option>
+                  <option value=4 >4</option>
+                  <option value=5 >5</option>
+                  <option value=6 >6</option>
+                  <option value=7 >7</option>
+                  <option value=8 >8</option>
+                  <option value=9 >9</option>
+                  <option value=10>10</option>
+                  </select>
+                </div>
+                <div class="input_element area_element">
+                  <label>Job Post</label>
+                  <select class="input full_wid select2" multiple name="job_post" id="job_post">
+                    <option value=''>Select Jobpost</option>
+                    {% for jobpost in agency_jobposts %}
+                    <option value="{{jobpost.id}}" {% if jobpost|is_job_applied:resume %}selected{% endif %}>
+                    {{ jobpost.title }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="input_element area_element">
+                  <label>Status</label>
+                  <select class="input full_wid select2" name="status" id="status">
+                    <option value=''>Select status</option>
+                    {% for each in status %}
+                    <option value="{{each.0}}">{{ each.1 }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="clearfix"></div>
+                <div class="button_row">
+                  <button type="submit" class="button change"><i class='fa fa-check'></i>Submit
+                  </button>
+                  <button type="button" class="button cancel"><i class='fa fa-times'></i>Cancel
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!--/ ticket -->
+      <div class="clearfix"></div>
+    </div>
+    <!--/ row one -->
+  </section>
+</div>
+<!--/ content -->
+{% endblock %}
+{% block 'extra_js' %}
+<script>
+  exp = "{{ resume.experience }}"
+  if(exp>=0){
+    $("#experience").val(exp)
+  }
+  $('form#resumeuploadform').ajaxForm({
+      type: 'POST',
+      dataType: 'json',
+      data: $('#resumeuploadform').serialize(),
+      success: function (data) {
+          $.blockUI({message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+          if (data.error == false) {
+              $.unblockUI()
+              open_dialog_with_url(data.data, 'Success!!', "{% url 'agency:resume_pool' %}")
+          } else {
+              $.unblockUI()
+              open_dialog('Some Content Missing', 'Error!!')
+              $('div.error').remove();
+              if (data.data) {
+                  open_dialog(data.data, 'Info!!')
+              }
+              else {
+                  for (var key in data.response) {
+                      if (key == 'skill'){
+                      $('.skill_err').html('<div class="error">' + data.response[key] + '</div>');
+                      }
+                      else{
+                      $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                      }
+                  }
+              }
+          }
+      }
+  });
+  $('.cancel').click(function (e) {
+      window.location = "{% url 'agency:resume_pool' %}";
+  });
+  $("select#skill").select2({placeholder: "Select A Skill"});
+  $("select#job_post").select2({placeholder: "Select Job Posts"});
+  $("#update_resume").click(function(){
+      $("#resume").click()
+  })
+  $('#resume').change(function(){
+      $(".resume_view").hide()
+      $("#resume").show()
+  })
+</script>
+{% endblock %}

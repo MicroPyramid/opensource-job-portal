@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load searchtags %}
+
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+  <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+
+<div class="content_div">
+  <!-- SEARCH PART -->
+  <section id='content_pages'>
+    <div class="container">
+      <div class="breadcrumb flat">
+         <ul>
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name" itemprop="item" rel="v:url" property="v:title"><span itemprop="name" class="name" >Home</span></a></li>
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="." itemprop="item" rel="v:url" property="v:title"><span itemprop="name" class="name">Feedback</span></a></li>
+          </ul>
+      </div>
+      <div class="row mt content-page">
+        <!-- content starts here -->
+        <h3 class="title">Report A Problem</h3>
+        <div class="content">
+          <div class="report-row">
+            <div class="report-left">
+              Do you see missing or incorrect information?<br>
+              Do you want us to add a new feature or improve the existing one?<br>
+              Tell us about changes in the world around you that aren't reflected in peeljobs.<br>
+              We’ll confirm your report with other users, data providers, or existing jobs information. Due to the volume of reports, we may not be able             to respond to you directly. If approved, your change may take some time to appear on the site.<br>
+              You can report many types of issues with peeljobs, such as problems with job listings and also any queries regarding peeljobs.
+            </div>
+            <div class="report-right"><img src="{{ STATIC_URL }}img/report.png"></div>
+            <br clear="all"> 
+          </div>
+          <div class="report-blur"><img src="{{ STATIC_URL }}img/blur.jpg"></div>
+          <div class="report-desc">A problem statement is a clear concise description of the issue(s) that need(s) to be addressed by a problem solving team. It is used to center and focus the team at the beginning, keep the team on track during the effort, and is used to validate that the effort delivered an outcome that solves the problem statement. 
+          </div>
+        </div>
+        <!-- content ends here -->
+        <!-- Tab panes -->
+      </div>
+    </div>
+  </section>
+  <!-- content of job page -->
+</div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}

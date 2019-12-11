@@ -1,0 +1,73 @@
+{% extends 'dashboard/base.html' %}
+{% load thumbnail %}
+
+{% block stage %}
+  <div class="content_wrapper">
+    <div class="row mt">
+      <!-- CONTENT -->
+      <section id='blog-post-create'>
+        <h4>Company Jobposts & Recruiters Update</h4>
+        <form name="companyform" id="companyform" method="post">
+        <div class="form-horizontal mail_form">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Company - Jobposts - Recruiters</label>
+            <div class="col-sm-8">
+            <select class="input company-select2" name="company" id="company">
+              <option value="">Select A Company</option>
+              {% for all_duplicate_company in all_duplicate_companies %}
+              <option value="{{all_duplicate_company.id}}">{{all_duplicate_company.name}} - {{ all_duplicate_company.get_total_jobposts|length }} - {{ all_duplicate_company.get_company_recruiters|length }} - {{ all_duplicate_company.company_type }} - {% if all_duplicate_company.is_active %}Active{% else %}Inactive{% endif %} - {% if all_duplicate_company.get_company_menu %}Menu{% endif %}</option>
+              {% endfor %}
+            </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Duplicate Companies - Jobposts - Recruiters</label>
+            <div class="col-sm-8">
+            <select class="input select2" multiple name="duplicate_companies" id="duplicate_companies">
+            </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">&nbsp;</label>
+            <div class="col-sm-10">
+              <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
+              <button class="cancelbutton"><i class="fa fa-floppy-o"></i>Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--/ CONTENT -->
+    </div>
+  </div>
+{% endblock stage %}
+
+{% block script%}
+  <script type="text/javascript">
+  $('.select2').select2({'placeholder': 'Select A Duplicate Companies'});
+  $('.company-select2').select2({'placeholder': 'Select A Company'});
+
+  $(".cancelbutton").click(function(e){
+    e.preventDefault();
+    window.location='{% url "dashboard:companies" 'company' %}';
+  });
+
+$(document).ready(function () {
+    $(function(){
+    var $options = $("#company > option").clone();
+    $('#duplicate_companies').append($options);
+  })
+});
+
+  $('form#companyform').ajaxForm({
+    dataType: 'json',
+    success: function(data) {
+      if (data.error) {
+        open_dialog(data.response, 'Error!')
+      } else {
+        open_dialog_with_url(data.response, 'Success!!!', ".")
+      }
+    }
+  });
+</script>
+{% endblock script %}

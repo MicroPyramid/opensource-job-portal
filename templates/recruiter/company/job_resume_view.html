@@ -1,0 +1,238 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% block 'stage' %}
+<div class="content_wrap">
+  <div class="marl row">
+    <div class="col-md-12" id="view_recruiter">
+      <h3 class="main_title">Resume Pool <span class="pull-right"><a
+        href="{% url 'agency:resume_upload' %}"><i class="fa fa-plus" aria-hidden="true"></i> Resume Upload</a></span>
+      </h3>
+      <div class='job_list'>
+        <!-- table -->
+        <div class="table_wraper">
+          <form name="searchform" id="searchform" method='post'>
+            <div class="filters_row row marl_15">
+              <div class="filter_col">
+                <select class="js-example-placeholder-single" multiple name="skills" id="skills">
+                  <option value="">Select A Skill</option>
+                  {% for skill in skills %}
+                  <option value="{{ skill.id }}"
+                  {% if skill.id in request.POST.skills %}selected{% endif %}>{{ skill.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="filter_col">
+                <select class="js-example-placeholder-single1" name="experience" id="experience">
+                  <option></option>
+                  {% for year in years %}
+                  <option value="{{ year.0 }}"
+                  {% if year.0 == request.POST.experience %}selected{% endif %}>{{ year.1 }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% if request.user.is_admin %}
+              <div class="filter_col">
+                <select class="js-example-placeholder-single3" name="recruiters"
+                  id='recruiters'>
+                  <option></option>
+                  {% for recruiter in recruiters %}
+                  <option value="{{ recruiter.id }}"
+                  {% if recruiter.id in request.POST.recruiters %}selected{% endif %}>{{ recruiter.username }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% endif %}
+              <div class="filter_col">
+                <button type="submit">Search</button>
+              </div>
+            </div>
+          </form>
+          {% if agency_resumes %}
+          <table class='job_list_table resume_table' id="mytable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" name="apply_job" id="checkall"></th>
+                <th>Candidate Name</th>
+                <th>Email Id</th>
+                <th>Skill</th>
+                <th>Experience</th>
+                <th>Uploaded By</th>
+                <th>Status</th>
+                <th>Resume Link</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <form name="jobapplyform" id="jobapplyform" method="post">
+                <input type="hidden" name="jobposts_type" id="select_jobposts_type">
+                {% for resume in agency_resumes %}
+                <tr data-href="{% url "agency:resume_view" resume.resume_applicant.id %}"
+                class="resume-detail">
+                <td><span><input type="checkbox" name="apply_job" id="apply_jobs"
+                  value="{{ resume.id }}"></span></td>
+                <td><span>{{ resume.resume_applicant.candidate_name }}</span></td>
+                <td><span>{{ resume.resume_applicant.candidate_name }}</span></td>
+                <td><span>{% for skill in resume.resume_applicant.skill.all %}{{ skill.name }}
+                  {% if forloop.last %}{% else %}, {% endif %}{% endfor %}</span>
+                </td>
+                <td><span>{{ resume.resume_applicant.experience }}</span></td>
+                <td><span>{{ resume.resume_applicant.uploaded_by.email }}</span></td>
+                <td><span>{{ resume.status }}</span></td>
+                <td><a href="#" class="download"
+                  title="{{ resume.resume_applicant.resume|get_resume_name }}"
+                  id="{{ resume.resume_applicant.resume|get_s3_url }}"><i
+                  class="fa fa-download"></i></a></td>
+                <td class="actions"><a href="" class="delete-resume"
+                  data-href="{% url "agency:delete_resume" resume.resume_applicant.id %}"><i
+                    class="fa fa-trash" aria-hidden="true"></i> </a>
+                </td>
+                </tr>
+                {% endfor %}
+              </form>
+            </tbody>
+          </table>
+          <div class="filter_col">
+            <select class="js-example-placeholder-single1" name="jobposts_type" id="jobposts_type">
+              <option></option>
+              {% for status in status %}
+              <option value="{{ status.0 }}"
+              {% if status.0 == request.POST.jobposts_type %}selected{% endif %}>{{ status.1 }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          </form>
+        </div>
+        <!--/ table -->
+        <!-- pagination -->
+        {% get_page current_page last_page as pages %}
+        <!-- pagination -->
+        <div class="pagination">
+          {% get_page current_page last_page as pages %}
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ previous_page }}"
+            title="First"><span class='link_each'><i class="fa fa-angle-double-left"></i></span></a>
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ prev_page }}"
+            title="Prev"><span class='link_each'><i class="fa fa-angle-left"></i></span></a>
+          {% for s in pages %}
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ s }}"><span
+          class='link_each'{% ifequal s current_page %}
+          class="active" {% endifequal %}>{{ s }}</span></a>
+          {% endfor %}
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><span
+            class='link_each'><i class="fa fa-angle-right pagination-next"></i></span></a>
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><span
+            class='link_each'><i class="fa fa-angle-double-right"></i></span></a>
+          </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <!--/ pagination -->
+    {% else %}
+    <div class="alert alert-danger alert-dismissible fade in" role="alert"
+      style="margin-top: 10px;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+        aria-hidden="true"><i class='fa fa-times'></i></span></button>
+      <h4>There are no records in the database</h4>
+      </p>
+    </div>
+    {% endif %}
+    <!--/ pagination -->
+  </div>
+</div>
+</div>
+</div>
+<!--/ content -->
+</div>
+<!--/ container -->
+{% endblock %}
+{% block 'extra_js' %}
+<!-- GLOBAL SCRIPTS -->
+<script type="text/javascript">
+  $(".js-example-placeholder-single").select2({
+      placeholder: "Skill",
+      allowClear: true
+  });
+  $(".js-example-placeholder-single1").select2({
+      placeholder: "Select a Status",
+      allowClear: true
+  });
+  $(".js-example-placeholder-single2").select2({
+      placeholder: "Role",
+      allowClear: true
+  });
+  $(".js-example-placeholder-single3").select2({
+      placeholder: "Uploaded By",
+      allowClear: true
+  });
+  $(".js-example-placeholder-single4").select2({
+      placeholder: "Rating",
+      allowClear: true
+  });
+  $('.download').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      window.location = $(this).attr('id');
+  })
+  $('.delete-resume').click(function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      href = $(this).attr('data-href');
+      $('#block_question').text('Do you want to delete Resume?')
+      $('#block_question').dialog({
+          modal: true,
+          draggable: false,
+          title: "Info!!",
+          buttons: [
+              {
+                  text: "Yes",
+                  click: function () {
+                      $(this).dialog("close");
+                      $.post(href, $("form#jobform").serialize(), function (data) {
+                          if (data.error) {
+                              open_dialog(data.data, 'Error!')
+                          } else {
+                              open_dialog_with_url('Resume Deleted Successfully', 'Success!', '.')
+                          }
+                      }, 'json');
+                  }
+              },
+              {
+                  text: "No",
+                  click: function () {
+                      $(this).dialog("close");
+                  }
+              }
+          ]
+      });
+  });
+
+  $('.resume-detail').click(function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      window.location = $(this).attr('data-href');
+  });
+  $(document).ready(function (e) {
+      $("#mytable #checkall").click(function () {
+          if ($("#mytable #checkall").is(':checked')) {
+              $("#mytable input[type=checkbox]").each(function () {
+                  $(this).prop("checked", true);
+              });
+
+          } else {
+              $("#mytable input[type=checkbox]").each(function () {
+                  $(this).prop("checked", false);
+              });
+          }
+      });
+
+  });
+  $("#jobposts_type").change(function (e) {
+      $('#select_jobposts_type').val($('#jobposts_type').val())
+      $('#jobapplyform').submit();
+  });
+
+</script>
+<!--/ SCRIPTS FOR THE PAGE -->
+{% endblock %}

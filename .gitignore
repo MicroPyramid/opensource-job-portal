@@ -1,0 +1,16 @@
+*.pyc
+*~
+__pycache__
+.coverage
+sample_config.yaml
+fabfile.py
+.sass-cache
+npm-debug.log
+.idea
+django_blog_it
+node_modules/
+django_dev.log
+logs/
+celerybeat-schedule
+celerybeat.pid
+client_secret.json

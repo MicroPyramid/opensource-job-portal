@@ -1,0 +1,107 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load tz %}
+{% load page_tags %}
+{% block stage %}
+    <section id='job_detail'>
+        <div class="job_description_wrap">
+            <div class="posted_by_details">
+                <div class="clearfix"></div>
+            </div>
+            <div class="job_details">
+                <!-- post details -->
+                <div class="ticket">
+                    <div class="title_profile">
+                        <h4><i class="fa fa-list-ul"></i>Edit Ticket</h4>
+                    </div>
+                    <form name="ticketform" id="ticketform" method="post">
+                        <div class='specific_detail'>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Ticket Title" name="title"
+                                       id="title" value="{{ ticket.title }}">
+                            </div>
+                            <div class="form-group">
+              <textarea class="form-control" placeholder="Description" id="description"
+                        name="description">{{ ticket.description }}
+              </textarea>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" name="priority" id="priority">
+                                    <option value="">Select a ticket priority</option>
+                                    {% for priority in priorities %}
+                                        <option value="{{ priority.0 }}"
+                                                {% ifequal priority.0|slugify ticket.priority|slugify %}selected{% endifequal %}>{{ priority.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" name="ticket_type" id="ticket_type">
+                                    <option value="">Select a ticket type</option>
+                                    {% for ticket_type in ticket_types %}
+                                        <option value="{{ ticket_type.0 }}"
+                                                {% ifequal ticket_type.0|slugify ticket.ticket_type|slugify %}selected{% endifequal %}>{{ ticket_type.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group file_attachments">
+                                <input type="file" class="form-control attachments" placeholder="Ticket Title"
+                                       name="attachment_1" id="attachment_1">
+                            </div>
+                            <span class="other_attachment">another attachments</span>
+                            <button type="submit"><i class='fa fa-check'></i>Submit</button>
+                            <button type="button" class="cancel"><i class='fa fa-check'></i>Cancel</button>
+                            <div class="clearfix"></div>
+                    </form>
+                </div>
+                <!--/ post details -->
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+
+        $(".cancel").click(function (e) {
+            window.location = "{% url 'tickets:admin_tickets_list' %}";
+        });
+
+        $('.other_attachment').click(function (e) {
+            attachments_count = $('.attachments').length + 1
+            $('.file_attachments').after('<div class="form-group"><input type="file" class="form-control attachments" placeholder="Ticket Title" name="attachment_' + attachments_count + '" id="attachment_' + attachments_count + '"></div>')
+        });
+
+        $('form#ticketform').ajaxForm({
+            type: 'POST',
+            dataType: 'json',
+            data: $('#ticketform').serialize(),
+            success: function (data) {
+                if (data.error == false) {
+                    {#          alert(data.response);#}
+                    $('#block_question').text(data.response);
+                    $('#block_question').dialog({
+                        modal: true,
+                        dialogClass: "no-close",
+                        draggable: false,
+                        title: "Success!!",
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function () {
+                                    window.location = "{% url 'tickets:admin_tickets_list' %}";
+                                    $(this).dialog("close");
+                                }
+                            }
+                        ]
+                    });
+                } else {
+                    $('div.error').remove();
+                    for (var key in data.response) {
+                        $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load tz %}
+{% block stage %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Email Tempalte Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="tile_each">
+            <label>Title</label>
+            <span class="description">
+            <span>{{ mail_template.title }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Subject</label>
+            <span class="description">
+            <span>{{ mail_template.subject }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Message</label>
+            <span class="description">
+            <span>{{ mail_template.message|safe }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!--/ post details -->
+    </div>
+  </div>
+</section>
+{% endblock %}
+<script type="text/javascript">
+</script>

@@ -1,0 +1,154 @@
+{% extends 'mobile/base.html'%}
+{% load thumbnail %}
+{% load page_tags %}
+{% block stage %}
+<style type="text/css">
+/* Style the buttons that are used to open and close the accordion panel */
+.introjs-tooltiptext{
+  font-size: 9px;
+}
+.content-container{
+  padding: 6px;
+}
+</style>
+<!-- content of job_list -->
+<section id='job_alert_form'>
+<h1>Update Below Details to Continue
+    </h1>
+
+          <form id="SocialRegister" name="SocialRegister" class="form-horizontal ApplicantForm" method="POST" enctype="multipart/form-data">
+
+       <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Mobile<span class="error">*</span></div>
+      <div class='input_wrap'>
+        <input class='input' type='text' placeholder="Should be 10 Digits" id="register_mobile" name="mobile">
+        <input type="hidden" class="form-control" name="email" value="{{request.user.email}}">
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>Location<span class="error">*</span></div>
+      <div class='input_wrap'>
+      {% get_all_cities as cities %}
+        <select class="location input cities" name="current_city" id="register_current_city">
+          <option value="">Enter the location</option>
+          {% for city in cities %}
+          <option value="{{ city.id }}" id="{{ city.state.country.id}}">{{ city.name }}</option>
+          {% endfor %}
+        </select>
+                <span class="city_err"></span>
+      </div>
+      </div>
+      <!--/ input group -->
+       <!--/ input group -->
+      <div class='form_group'>
+      <div class='label'>Skills<span class="error">*</span></div>
+      <div class='input_wrap'>
+      {% get_all_skills as skills %}
+        <select class="location input skills" multiple="multiple" name="technical_skills" id="register_technical_skills">
+          <option value="">Enter the skill</option>
+          {% for skill in skills %}
+          <option value="{{ skill.id }}">{{ skill.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="reg_skill_err"></span>
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='label'>experience</div>
+      <div class='input_wrap'>
+      {% get_years as years %}
+        <select class="input experience" name="year" id="register_year">
+          <option value=''>Year</option>
+        {% for year in years %}
+          <option value="{{ year.0 }}" id="{{ forloop.counter }}">{{ year.1}}</option>
+        {% endfor %}
+        </select>
+      </div>
+      </div>
+      <!--/ input group -->
+      <!-- input group -->
+      <div class='form_group'>
+      <div class='label'></div>
+      <div class='input_wrap'>
+      {% get_months as months %}
+        <select class="input experience" name="month" id="register_month">
+          <option value="" default>Max Year</option>
+          {% for i in months %}
+          <option value="{{ i.0 }}" id="{{ forloop.counter }}">{{ i.1}}</option>
+        {% endfor %}
+        </select>
+      </div>
+      </div>
+      <!--/ input group -->
+    <div class="form-group" style="margin-top:5px">
+      <label for="inputPassword3" class="label">Upload Resume:</label>
+                  <input type="file" name="resume" id="register_resume" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt">
+                  <p class="help_text">doc, docx, pdf - 300kb max</p>
+                     <input type="hidden" name="social" value="social">
+                    </div>
+              <div class="form-group" style="margin-top:10px"> <div class="col-sm-offset-4 col-sm-8"> <button type="submit" class="btn btn-default register_form_button">Submit</button> </div> 
+              </div>
+            </form>
+</section>
+<!--/ content of job_list -->
+{% endblock %}
+{% block 'extra_js' %}
+  <script>
+$(document).ready(function(){
+$("select#register_technical_skills").select2({placeholder: "Choose required skillset", maximumSelectionSize: 6})
+$("select#register_current_city").select2({placeholder: "Choose current location"})
+
+$('form#SocialRegister').submit(function(e){
+        e.preventDefault()
+        var formData = new FormData($(this)[0]);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            url: '.',
+            success: function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url('Profile Updated Successfully', 'Success!', '.')
+                }
+                else if (data.response) {
+                    $('p.hint').remove();
+                    for (var key in data.response) {
+                        if(key == 'technical_skills' ){
+                  $('.reg_skill_err').html('<p class="hint">' + data.response[key] + '</p>');
+                }else if(key == 'current_city'){
+                  $('.city_err').html('<p class="hint">' + data.response[key] + '</p>');
+                }
+                else{
+                    $('#register_' + key).after('<p class="hint">' + data.response[key] + '</p>');
+                }
+                    }
+                }
+                else {
+                    open_dialog(data.response_message, 'ALert');
+                    // $('#userlogin_response_message').after('<p class="hint">' + data.response_message + '</p>');
+                }
+            }
+        });
+
+    });
+  $('a').click(function(event) {
+    event.preventDefault();
+    if (($(this).attr('href') == '/logout/') || ($(this).attr('href') == '/')){
+ window.location = $(this).attr('href')
+    }
+    else{
+    open_dialog("Please update your profile to search relevant jobs for you")
+  }
+});
+  })
+
+</script>
+{% endblock %}

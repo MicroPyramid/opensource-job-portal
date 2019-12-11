@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Peeljobs Job Alert Confirmation</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+  </head>
+  <body style="width:100% !important; margin:0 !important; padding:0 !important; -webkit-text-size-adjust:none; -ms-text-size-adjust:none;font-size:12px; font-family: 'Poppins', sans-serif;color: #45586d; background: #fff; ">
+   <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable" style="height:auto !important; margin:0; padding:0; width:100% !important; font-family: 'Poppins', sans-serif;color: #45586d; background: #fff;">
+      <tr>
+         <td>
+          <table id="contenttable" width="600" align="center" cellpadding="0" cellspacing="0" border="0" style="font-family: 'Poppins', sans-serif;color: #45586d; background: #fff; margin-top:0 !important; margin-right: auto !important; margin-bottom:0 !important; margin-left: auto !important; border:none; width: 100% !important; max-width:600px !important;border: 1px solid #ddd !important;">
+              <tr>
+                <td>
+                  <table style="width:600px;background:#fff;padding:0;" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="background: #0358a6;height:30px;padding: 10px 15px;">
+                        <a href="https://peeljobs.com/" style="text-overflow: ellipsis;overflow: hidden;color: #fff !important;margin-left: 0 !important;display: inline-block;margin: 0; padding:0;font-weight: 600;font-size: 18px;text-decoration:none;"><i class="fa fa-line-chart" aria-hidden="true"></i> Peeljobs</a>
+                        <span style="float:right;color: #fff;letter-spacing: 0.7px;position: relative;top:5px;">
+                        {% if alert %}Job Alert{% elif subscriber %}Subscription Alerts{% else %}PeelJobs Notifications{% endif %}</span>
+                      </td>
+                    </tr>
+                    <tr style="background:#fff;">
+                      <td style="text-align:left;padding:20px 15px;color: #131e26;font-weight: bold;font-size: 17px;">
+                        <strong style="margin-bottom:15px;color:#45586d;font-size: 13px;font-weight:600;display:block;">Welcome to Peeljobs</strong>
+                        <small style="margin-bottom:15px;color:#45586d;font-size: 13px;font-weight:500;display:block;">Dear User,</small>
+                         <p style="color: #4f657d;font-size: 12px;font-weight: 400;line-height:23px;margin-bottom:0px;">
+                         {% if jobposts %} Here are the Jobs posted in peeljobs today That matched your {% if subscriber %} Subscribtion{% elif alert %}
+                         Alert skills with Name {{ alert.name }} 
+                         {% else %}Profile.{% endif %}{% endif %}
+                         {% if new_alert %}
+                         You have created an Alert({{alert.name}}) with the following criteria:
+                         {% endif %}</p>
+                      </td>
+                    </tr>
+                    {% if subscriber %}
+                    <tr>
+                      <td style="padding-left:15px;font-size: 12px;">
+                        <div style="margin-top:10px;width:570px;">
+                          <span style="width:350px;float:left;">Subscribed For : {% if sub_skills|length > 10 %}
+                          All Skills{% else %}{% for skill in sub_skills %}{{ skill }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}</span>
+                        </div>
+                        <br>
+                      </td>
+                    </tr>
+                    {% endif %}
+                      {% if new_alert %}
+                    <tr>
+                      <td style="padding-left:15px;font-size: 12px;">
+                        <ul style="margin:0;padding:0;">
+                         <li style="list-style:none;width:570px;padding:8px 0;display: block;">
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 500;float: left;width:170px;">Name of Alert : </span>
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 400;float: left;width:400px;">{{ alert.name }}</span>
+                          </li>
+                           <li style="list-style:none;width:570px;padding:8px 0;display: block;margin-top:8px;">
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 500;float: left;width:170px;">Skills : </span>
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 400;float: left;width:400px;">{% for i in alert.skill.all %}{{ i }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</span>
+                          </li>
+                          {% if alert.location.all %}
+                          <li style="list-style:none;width:570px;padding:8px 0;display: block;margin-top:8px;">
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 500;float: left;width:170px;">Location : </span>
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 400;float: left;width:400px;">{% for i in alert.location.all %}{{ i }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</span>
+                          </li>
+                          {% endif %}
+                          {% if alert.industry.all %}
+                           <li style="list-style:none;width:570px;padding:8px 0;display: block;margin-top:8px;">
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 500;float: left;width:170px;">Industry : </span>
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 400;float: left;width:400px;">{% for i in alert.industry.all %}{{ i.name }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</span>
+                          </li>
+                          {% endif %}
+                           {% if alert.min_salary or alert.max_salary %}
+                           <li style="list-style:none;width:570px;padding:8px 0;display: block;margin-top:8px;">
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 500;float: left;width:170px;">Salary : </span>
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 400;float: left;width:400px;">{% if alert.min_salary %} {{ alert.min_salary }}{% endif %}{% if alert.max_salary %} - {{ alert.max_salary}}{% endif %}</span>
+                          </li>
+                          {% endif %}
+                          {% if alert.min_year or alert.max_year %}
+                           <li style="list-style:none;width:570px;padding:8px 0;display: block;margin-top:8px;">
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 500;float: left;width:170px;">Experience : </span>
+                            <span style="color: #4f657d;font-size: 12px;font-weight: 400;float: left;width:400px;">{% if alert.min_year %} {{ alert.min_year }}{% endif %}{% if alert.max_year %} - {{ alert.max_year }}{% endif %}</span>
+                          </li>
+                          {% endif %}
+                        </ul>
+                      </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                      <td>
+                         {% if alert %}
+                         <a href="https://peeljobs.com/alert/results/{{alert.id}}/" style="display:inline-block;width:190px;background:#62bb46;margin:10px auto;margin-bottom: 10px;padding:7px 10px;text-align:center;color:#fff;font-size: 12px;font-weight:500;letter-spacing:0.7px;text-decoration:none;display:block;">Click here to View JobAlert</a>
+                         {% endif %}
+                      </td>
+                    </tr>
+                    {% endif %}
+                    {% if user.is_authenticated and new_alert %}
+                    <tr>
+                    <td> 
+                        <p style="margin-top:15px;margin-left:15px;">Update your job alert, to get the best relevant jobs  <a href="https://peeljobs.com/alert/modify/{{ alert.id }}/" style="font-size:12px;font-weight:normal;background:#0358a6;color:#fff;display: inline-block;letter-spacing: 0.6px;text-decoration:none;padding:3px 10px;">Update Now</a></p>
+
+                    </td>
+                    </tr>
+                    {% endif %}
+                    {% if not job_posts %}
+                      <tr>
+                        <td>
+                           <a href="{{redirect_url}}" style="display:inline-block;width:320px;background:#62bb46;margin:37px auto;margin-bottom: 10px;padding:11px 10px;text-align:center;color:#fff;font-size: 12px;font-weight:500;letter-spacing:0.7px;text-decoration:none;display:block; border-radius:4px">Click here to Verify</a>
+                      </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-left: 25%; padding-top: 35px;">
+                         {% if user.is_authenticated and new_alert %}
+                         <a href="https://peeljobs.com/alert/modify/{{ alert.id }}/"  target="_blank" style="font-size:12px;font-weight:normal;background:#0358a6;color:#fff;display: inline-block;letter-spacing: 0.6px;text-decoration:none;padding:3px 10px;">Edit This Job Alert</a>
+                         {% endif %}
+                         {% if new_alert %}
+                        <a href="https://peeljobs.com/alert/create/"  target="_blank" style="font-size:12px;font-weight:normal;background:#62bb46;color:#fff;display: inline-block;letter-spacing: 0.6px;text-decoration:none;padding:3px 10px;">Create Another Job Alert</a>{% endif %}
+                        </td>
+                      </tr>
+                        {% endif %}
+                        {% if jobposts %}
+                        <tr>
+                        <td style="padding:0 15px;">
+                          <p style="color: #4f657d;font-size: 12px;font-weight: 600;">Here are new matching jobs based on your Profile:</p>
+                          {% for job in jobposts %}
+                          <div style="font-size:12px;letter-spacing:0.6px;padding:8px 0;width:570px;border-bottom:1px solid #e0e0e0;">
+                            <div style="width:400px;float:left;">
+                              <a href="https://peeljobs.com{{job.slug}}" style="color:#0358a6;font-weight:500;">{{ job.title }}</a>
+                              <p style="margin:5px 0">{% if job.company.slug and job.company.is_active %}<a href="https://peeljobs.com/{{job.company.slug}}-job-openings/">{{job.company.name|capfirst}}</a>{% else %}{{job.company.name|capfirst}}{% endif %} , [{% if job.min_year == 0 and job.max_year == 0 %}Fresher{% else %}{{ job.min_year }} - {{ job.max_year }}Years Exp{% endif %}]</p>
+                               <p style="margin:5px 0">Keyskills:{% for skill in  job.skills.all %}
+                    <a  href="https://peeljobs.com{{skill.get_job_url}}" target="_blank">{{ skill }}{% if forloop.last %}{% else %}, {% endif %}</a>
+                    {% endfor %} </p>
+                               <p style="margin:5px 0">Industry:  {%for industry in job.industry.all %}<a href="{% url 'job_industries' industry.slug %}">{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}</a>{% endfor %}</p>
+                               <p style="margin:5px 0">Location:  {%for location in job.location.all %}
+                      <a href="https://peeljobs.com{{location.get_job_url}}">{{ location.name }}{% if forloop.last %}{% else %},{% endif%}</a>
+                      {% endfor %}</p>
+                            </div>
+                            <div style="width:170px;float:left;text-align:right;">
+                                 <a href="https://peeljobs.com{{job.slug}}" style="font-size:12px;font-weight:normal;background:#62bb46;color:#fff;display: inline-block;margin-top:7px;padding:5px 10px;letter-spacing:0.6px;text-decoration:none;">Apply Job</a>
+                            </div>
+                            <br clear="all">
+                          </div>
+                          {% endfor %}
+                        </td>
+                      </tr>
+                    {% endif %}
+
+                    <tr>
+                      <td style="padding-left:15px;">
+                        <span style="color:#45586d;font-size: 12px;margin-top:30px;display:block;">Thanks & Regards,</span>
+                        <span style="color:#45586d;font-size: 12px;font-weight: 500;margin-top: 8px;display:block;margin-bottom: 30px;"><div>Peeljobs Team.</div>
+                        <div>support@peeljobs.com</div></span>
+                      </td>
+                    </tr>
+                     <tr>
+                      <td>
+                        <ul style="margin:0;padding:0;padding:0 8px;border-top:1px solid #e0e0e0;text-align:center;">
+                          <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/terms-conditions/" target="_blank" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;">Terms & Conditions</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/privacy-policy/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Privacy Policy</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/about-us/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">About Peeljobs</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/faq/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">FAQ's</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/contact/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Contact Us</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/blog/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Blog</a>
+                          </li>
+                          {% if alert or subscriber or user %}
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/unsubscribe_email/{% if subscriber %}subscriber{% elif alert %}alert{% else %}user{% endif %}/{% if alert %}{{alert.unsubscribe_code}}{% elif subscriber %}{{subscriber.unsubscribe_code}}{% else %}{{user.unsubscribe_code}}{% endif %}/" style="color:#0358a6;font-size: 12px;padding:15px 7px;margin-left:480px;text-decoration:none;display:inline-block;" target="_blank">Unsubscribe</a>
+                          </li>
+                          {% endif %}
+                        </ul>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>    
+         </td>
+      </tr>
+    </table>     
+
+  </body>
+</html>

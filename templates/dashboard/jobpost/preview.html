@@ -1,0 +1,157 @@
+{% extends 'dashboard/base.html' %}
+{% load page_tags %}
+{% load static %}
+{% load compress %}
+{% block stage %}
+{% compress css %}
+<link rel="stylesheet" type="text/less" href="{% sttaic 'r1/css/main.less' %}">
+{% endcompress %}
+    <!-- MODAL FOR LOGIN -->
+    <!--/ MODAL FOR LOGIN -->
+    <!--/ HEADER -->
+    <!-- CONTENT -->
+    <div class="content_div">
+        <div class="content_div">
+      <!-- SEARCH PART -->
+      <!--/ SEARCH PART -->
+      <!-- content of job detail page -->
+      <section id='job_detail'>
+        <div class="container">
+          <div class="row mt">
+            <div class="col-md-offset-1 col-md-10 left_column">
+              <!-- company profile -->
+              <div class="company_profile_wrap">
+                <span class="description_div">
+                <span class="title_div">
+                <span class='title'>{{ job.title }}</span>
+                </span>
+                <span class='details'>
+                <span class='row mt'><label></label></span>
+                <span class='row mt'>
+                <label>Experience</label>
+                <span class='content'>{{ job.min_year }} Year(s) {{ job.min_month }} Month(s) - {{ job.max_year }} Year(s) {{ job.max_month }} Month(s)</span>
+                </span>
+                <span class='row mt'>
+                <label>Location</label>
+                <span class='content'>{%for location in job.location.all %}{{ location.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+                </span>
+                <span class='row mt'>
+                <label>Salary</label>
+                <span class='content'>{% if job.min_salary == 0 and job.max_salary == 0 %}Not Specified{% else %}
+                <i class="fa fa-inr" aria-hidden="true"></i> {{ job.get_job_salary.0 }} - {{ job.get_job_salary.1 }} P.A{% endif %}</span>
+                </span>
+                <span class='row mt'>
+                <label>Job Type</label>
+                <span class='content'>{{ job.job_type|get_string }}</span>
+                </span>
+                <span class='row mt'>
+                <label>Key skills</label>
+                <span class='content'>
+                  {%for skill in job.skills.all %}{{ skill.name }}{% if forloop.last %}{% else %},&nbsp;{% endif%}{% endfor %}</span>
+                </span>
+                {% if job.keywords.all %}
+                <span class='row mt'>
+                <label>Key Words</label>
+                <span class="content">
+                <span class='tags_wrap'>
+                {% for keyword in job.keywords.all %}
+                <span class='tag'>{{ keyword.name }}</span>
+                {% endfor %}
+                </span>
+                </span>
+                </span>
+                {% endif %}
+                </span>
+                </span>
+                <div class="clearfix"></div>
+              </div>
+              <!--/ company profile -->
+              <!-- job description -->
+              <div class="job_description_wrap">
+                <h4>Job Description</h4>
+                <div class="wrap_category">
+                  <p>{{ job.description|safe }}</p>
+                  <div class='category_description'>
+                    <label>Industry</label>
+                    <span class='content'>{%for industry in job.industry.all %}{{ industry.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+                  </div>
+                   <div class='category_description'>
+                    <label>Functional Area</label>
+                    <span class='content'>{%for functional_area in job.functional_area.all %}{{ functional_area.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+                  </div>
+                  <div class='category_description'>
+                    <label>Role Category</label>
+                    <span class='content'>{{ job.job_role }}</span>
+                  </div>
+                  {% if job.visa_required %}
+                  <div class='category_description'>
+                    <label>Visa Country</label>
+                    <span class='content'>{{ job.visa_country.name }}</span>
+                  </div>
+                  <div class='category_description'>
+                    <label>Visa Type</label>
+                    <span class='content'>{{ job.visa_type }}</span>
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="wrap_category">
+                  <div class="sub_heading">Desired Candidate profile</div>
+                  <div class='category_description'>
+                    <label>Education Qualification</label>
+                    <span class='content'>{%for qualification in job.edu_qualification.all %}{{ qualification.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+                  </div>
+                </div>
+                <div class="wrap_category">
+                  <div class="sub_heading">Company profile</div>
+                  <div class='category_description'>
+                    <label>Company Name</label>
+                    <span class='content'>{{ job.company_name }}</span>
+                  </div>
+                  <div class='category_description'>
+                    <p>{{ job.company_description|safe }}</p>
+                  </div>
+                  <div class='category_description'>
+                    <label>Company Location</label>
+                    <span class='content'>{{ job.company_address }}</span>
+                  </div>
+                  <div class='category_description'>
+                    <label>Selection Process</label>
+                    <span class='content'>{{ job.selection_process|safe }}</span>
+                  </div>
+                  <div class='category_description'>
+                    <label>Important Dates to remember</label>
+                    <span class='content'>{{ job.important_dates|safe }}</span>
+                  </div>
+                  <div class='category_description'>
+                    <label>Age Relaxation</label>
+                    <span class='content'>{{ job.age_relaxation|safe }}</span>
+                  </div>
+                  <div class='category_description'>
+                    <label>How To Apply</label>
+                    <span class='content'>{{ job.how_to_apply|safe }}</span>
+                  </div>
+                  <div class='category_description'>
+                    <label>Application Fee</label>
+                    <span class='content'>{{ job.application_fee }}/-</span>
+                  </div>
+                  <div class='category_description'>
+                    <label>Post validity</label>
+                    <span class='content'>{{ job.govt_from_date }} - {{ job.govt_to_date }} </span>
+                  </div>
+                  <div class='category_description'>
+                    <label>Exam Date</label>
+                    <span class='content'>{{ job.govt_exam_date }}</span>
+                  </div>
+                </div>
+              </div>
+              <!--/ job description -->
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- content of job page -->
+    </div>
+    </div>
+    <!--/ CONTENT -->
+    <!-- FOOTER LARGE -->
+{% endblock %}

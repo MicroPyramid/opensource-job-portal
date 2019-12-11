@@ -1,0 +1,161 @@
+[{
+    "model": "peeldb.state",
+    "pk": 1,
+    "fields": {
+        "country": 1,
+        "name": "Andhrapradesh",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 2,
+    "fields": {
+        "country": 1,
+        "name": "Telangana",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 3,
+    "fields": {
+        "country": 1,
+        "name": "Karnataka",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 4,
+    "fields": {
+        "country": 3,
+        "name": "South Australia",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 5,
+    "fields": {
+        "country": 1,
+        "name": "Maharastra",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 6,
+    "fields": {
+        "country": 1,
+        "name": "Arunachal Pradesh",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 7,
+    "fields": {
+        "country": 1,
+        "name": "Assam",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 8,
+    "fields": {
+        "country": 1,
+        "name": "Bihar",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 9,
+    "fields": {
+        "country": 1,
+        "name": "Chandigarh",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 10,
+    "fields": {
+        "country": 1,
+        "name": "Chhattisgarh",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 11,
+    "fields": {
+        "country": 1,
+        "name": "Dadra and Nagar Haveli",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 12,
+    "fields": {
+        "country": 1,
+        "name": "Delhi",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 13,
+    "fields": {
+        "country": 1,
+        "name": "Gujarat",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 14,
+    "fields": {
+        "country": 1,
+        "name": "Madhya Pradesh",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 15,
+    "fields": {
+        "country": 1,
+        "name": "Tamil Nadu",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 16,
+    "fields": {
+        "country": 1,
+        "name": "South india",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 17,
+    "fields": {
+        "country": 1,
+        "name": "Uttarpradesh",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 18,
+    "fields": {
+        "country": 1,
+        "name": "West Bengal",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 19,
+    "fields": {
+        "country": 1,
+        "name": "Haryana",
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.state",
+    "pk": 20,
+    "fields": {
+        "country": 2,
+        "name": "vineesha",
+        "status": "Enabled"
+    }
+}]

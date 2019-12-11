@@ -1,0 +1,52 @@
+{% extends 'dashboard/base.html' %}
+{% load tz %}
+{% block stage %}
+<div class="content_wrapper">
+  <div class="row mt">
+    <!-- CONTENT -->
+    <section id='recruiters'>
+      <div class="list_table">
+      <h4> Ticket List </h4>
+        <table class="table table-hover" id="sample_1">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Ticket Title</th>
+              <th>Priority</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Created_by</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for ticket in tickets %}
+            <tr>
+              <th scope="row">{{ forloop.counter }}</th>
+              <td>{{ ticket.title }}</td>
+              <td>{{ ticket.priority }}</td>
+              <td>{{ ticket.ticket_type }}</td>
+              <td>{{ ticket.status }}</td>
+              <td>{{ ticket.user.email }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <!--/ CONTENT -->
+  </div>
+</div>
+{% endblock %}
+
+{% block script%}
+% block script %}
+<script type="text/javascript">
+$('#sample_1').DataTable({
+      "sPaginationType": "full_numbers",
+      "aaSorting": [],
+      "bSort": true,
+      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+      "pageLength": 20,
+    });
+</script>
+{% endblock script %}

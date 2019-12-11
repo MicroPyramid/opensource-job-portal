@@ -1,0 +1,104 @@
+{% extends 'dashboard/base.html' %}
+{% block stage %}
+    <!-- CONTENT WRAPPER -->
+    <div class="content_wrapper">
+        <div class="row mt">
+            <!-- CONTENT -->
+            <section id='mail_template'>
+                <h4>Edit Mail Template</h4>
+                <form name="emailtemplateform" id="emailtemplateform" method="post">
+                    <div class="form-horizontal mail_form">
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Title</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" placeholder='Title' name="title" id="title"
+                                       value="{{ email_template.title }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Subject</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" placeholder='Subject' name='subject'
+                                       id='subject' value="{{ email_template.subject }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Message</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" name='textareacontents' id='textareacontents'
+                                          placeholder='Message'> {{ email_template.message }}</textarea>
+                                <input type="hidden" name="message" id="message"
+                                       value="{{ email_template.message }}"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Show To Recruiter</label>
+                            <div class="col-sm-10">
+                                <input type="checkbox" name="show_recruiter" id="show_recruiter" value="True"
+                                       {% if email_template.show_recruiter %}checked{% endif %}/>
+                            </div>
+                        </div>
+                        <div class="form-group applicant {% if not email_template.show_recruiter %}hidden{% endif %}">
+                            <label class="col-sm-1 control-label">Applicant Status</label>
+                            <div class="col-sm-10">
+                                <select class="applicant_status form-control" placeholder="Applicant Status"
+                                        name="applicant_status" id="applicant_status">
+                                    {% for status in applicant_status %}
+                                        <option value="{{ status.0 }}" class=""
+                                                {% ifequal status.0 email_template.applicant_status %}selected{% endifequal %}>{{ status.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">&nbsp;</label>
+                            <div class="col-sm-10">
+                                <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
+                                <button class="cancelbutton"><i class="fa fa-floppy-o"></i>Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+        </form>
+        </section>
+        <!--/ CONTENT -->
+    </div>
+    </div>
+    <!--/ CONTENT WRAPPER -->
+{% endblock stage %}
+{% block script %}
+    <script type="text/javascript">
+
+        $(".cancelbutton").click(function (e) {
+            e.preventDefault();
+            window.location = "{% url 'dashboard:emailtemplates' %}";
+        });
+        $(document).ready(function (e) {
+            $("#show_recruiter").click(function (e) {
+                if ($("#show_recruiter").is(':checked')) {
+                    $(".applicant").removeClass('hidden');
+                }
+                else {
+                    $(".applicant").addClass('hidden');
+                }
+            });
+        });
+        $('form#emailtemplateform').ajaxForm({
+            beforeSerialize: function () {
+                $("input[name='message']").val(CKEDITOR.instances.textareacontents.getData());
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.error) {
+                    $('p.hint').remove();
+                    $('p.help-block').remove();
+                    for (var key in data.message) {
+                        $('#' + key).after('<p class="hint">' + data.message[key] + '</p>');
+                    }
+                } else {
+                    open_dialog_with_url(data.message, 'Success!!!', "{% url 'dashboard:emailtemplates' %}")
+                }
+            }
+        });
+    </script>
+{% endblock script %}

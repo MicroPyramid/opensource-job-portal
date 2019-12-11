@@ -1,0 +1,103 @@
+{% extends 'dashboard/base.html' %}
+{% load tz %}
+{% block stage %}
+<section id='recruiters'>
+  <div class="list_table">
+    <h4>{{ company.name }} Recruiters
+      <span>
+        <a class="label label-primary" href="{% url 'dashboard:company_recruiters' company.id "active" %}">Active</a> /
+        <a class="label label-default" href="{% url 'dashboard:company_recruiters' company.id "inactive" %}">Inactive</a>
+      </span>
+    </h4>
+
+    <table class="table table-hover" id="sample_1">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Email</th>
+          <th>Name</th>
+          <th>Job Posts</th>
+          <th>Joined On</th>
+          <th width="110">Mobile Verified</th>
+          <th>Social Links</th>
+          <th width="50">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for recruiter in recruiters %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="{% url 'dashboard:view_recruiter' recruiter.id %}">{{ recruiter.email }}</a></td>
+          <td>{{recruiter.get_full_name}}</td>
+          <td>{{ recruiter.get_active_jobposts_count  }}/{{ recruiter.get_inactive_jobposts_count }}</td>
+          <td>{{ recruiter.date_joined|timezone:'Asia/Calcutta' }}</td>
+          <td align="center">{% if recruiter.mobile_verified %}<span class="verified"><i class="fa fa-mobile"></i></span>{% else %}<span class="not_verified"><i class="fa fa-mobile"></i></span>{% endif %}</td>
+          <td>
+            <ul class="social_integration">
+              <li>
+                {% if recruiter.is_fb_connected %}
+                <i class="fa fa-facebook fb"></i>
+                {% else %}
+                <i class="fa fa-facebook"></i></a>
+                {% endif %}
+              </li>
+              <li>
+                {% if recruiter.is_tw_connected %}
+                <i class="fa fa-twitter twit"></i>
+                {% else %}
+                <i class="fa fa-twitter"></i>
+                {% endif %}
+              </li>
+              <li>
+                {% if recruiter.is_gp_connected %}
+                <i class="fa fa-google-plus plus"></i>
+                {% else %}
+                <i class="fa fa-google-plus"></i>
+                {% endif %}
+              </li>
+              <li>
+                {% if recruiter.is_ln_connected %}
+                <i class="fa fa-linkedin in"></i>
+                {% else %}
+                <i class="fa fa-linkedin"></i>
+                {% endif %}
+              </li>
+            </ul>
+          </td>
+          <td align="center">
+            {% if recruiter.is_active %}
+              <a href="{% url 'dashboard:recruiter_status_change' recruiter.id %}" id="{{ recruiter.id }}" class="disable-recruiter"><i class="fa fa-check edit" title="Disable"></i></a> 
+              <a href="{% url 'recruiter_profile' recruiter.username %}" target="_blank" ><i class="fa fa-eye edit" title="VieW Recruiter"></i></a>
+            {% else %}
+              <a href="{% url 'dashboard:recruiter_status_change' recruiter.id %}" id="{{ recruiter.id }}" class="enable-recruiter"><i class="fa fa-times delete" title="Enable"></i></a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+<!--
+  <div class="pagination">
+  {% if recruiters.has_previous %}
+    <span class='pagintion_btn'><a href="?page={{ recruiters.previous_page_number }}">Previous</a></span>
+  {% endif %}
+  <span class='pagination_text'>Page <b>{{ recruiters.number }}</b> of <b>{{ recruiters.paginator.num_pages }}</b></span>
+  {% if recruiters.has_next %}
+  <span class='pagintion_btn'><a href="?page={{ recruiters.next_page_number }}">Next</a></span>
+  {% endif %}
+  </div>
+  !-->
+  </div>
+</section>
+{% endblock stage %}
+{% block script %}
+<script type="text/javascript">
+$('#sample_1').DataTable({
+      "sPaginationType": "full_numbers",
+      "aaSorting": [],
+      "bSort": true,
+      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+      "pageLength": 20,
+    });
+</script>
+{% endblock script %}

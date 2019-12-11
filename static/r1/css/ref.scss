@@ -1,0 +1,342 @@
+$text_color: #ADAEB0;
+$body_bg:#EBEBEB;
+$logo_text_color:#48494A;
+$stroke_color:#f4f4f4;
+$header_green:#63C076;
+$header_yellow:#F5A134;
+$header_red:#FE7062;
+$header_blue:#0B86C6;
+$menu_bg:#F15857;
+$menu_blue:#2CAAE1;
+$red:#DD1533;
+$shadow:3px 3px 5px #666;
+$fb:#3b5998;
+$gplus:#dc4e41;
+$git:#ff9933;
+$twit:#55acee;
+$in:#0077b5;
+$tab_button_bg:#6F7E8B;
+$td_bg:#fcfcfc;
+$drowsy_green:#00a78e;
+$yellow:#FE0;
+/* $brown:#633329; */
+$brown:#BB7161;
+$grey:#666666;
+$voilet:#5C4C8D;
+$bg:#f5f6f7;
+$dark_bg:#26262f;
+$text: #9e9ea1;
+$green:#62bb46;
+$white_bg_text:#9e96a1;
+$sky_color:#00aeef;
+$border:#ced5df;
+$grey:#45586d;
+$green_sky:#00aeef;
+$theme_blue:#0060b9;
+$blue:#5AA2CE;
+.marl_15{
+	margin-left:-15px;
+	margin-right:-15px;
+}
+
+.marl_5{
+	margin-left:-5px !important;
+	margin-right:-5px !important;
+}
+
+
+/* media values */
+$mob_min:240px;
+$mob_max:852px;
+/* media values */
+
+
+@mixin container{
+	width: 100%;
+	padding: 0px;
+	margin: 0px auto;
+}
+@mixin row{
+	margin: 0px;
+	padding: 0px;
+}
+@mixin brands_bg($color){
+	background: $color!important;
+	@media (min-width: $mob_min) and (max-width: $mob_max){
+		background: #fff!important;
+		color: $color!important;
+	}
+}
+@mixin brand_color($color){
+	color:$color;
+}
+
+@mixin job_status($color){
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	background: $color;
+	font-size: 0.7em;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 800;
+	padding: 2px 6px;
+	padding-right: 5px;
+	z-index: 30;
+}
+
+@mixin category_header($color){
+	//border-top: 1px solid $color;
+	margin-top: 15px;
+	h6{
+		font-size: 14px;
+		font-weight: 600;
+		color: #fff;
+		margin-top: 0px;
+		padding: 6px 15px;
+		margin-bottom: 20px;
+		background: $color;
+		//display: inline-block;
+		clear: both;
+		text-transform: capitalize!important;
+	}
+}
+
+@mixin ticketactions($color){
+	color: $color;
+	border:1px solid darken($color,10%);
+}
+.pagination{
+	text-align: center;
+		display: block;
+		.mob_pagination{
+			display: none;
+			@media (min-width: $mob_min) and (max-width: $mob_max){
+				text-align: right;
+				display: block;
+			}
+			.link_each{
+				border-radius: 0;
+				display: inline-block;
+				padding: 0px 15px;
+				padding-top: 5px;
+				width: auto;
+				height: 30px;
+			}
+		}
+		.pages_count{
+			display: none;
+			float: left;
+			padding-top: 10px;
+			color: darken($text_color,55%);
+			strong{
+				color: $header_blue;
+				font-weight: 700;
+				padding: 0px 5px;
+				font-size: 1.2em;
+			}
+			@media (min-width: $mob_min) and (max-width: $mob_max){
+				display: inline-block!important;
+			}
+		}
+		a{
+			.link_each{
+				margin: 2px;
+				width: 30px;
+				height: 30px;
+				padding-top: 5px;
+				border-radius: 50%;
+				border:1px solid $header_yellow;
+				display: inline-block;
+				background: #fff;
+				/* color: $header_yellow; */
+				color: darken($text_color,55%);
+				font-weight: 600;
+				@media (min-width: $mob_min) and (max-width: $mob_max){
+					display: none;
+					text-align: center;
+				}
+			}
+		}
+}
+.recruiter_table{
+			margin-top:15px;
+			padding:0 5px;
+			font-size: 13px;
+			.table{
+				thead{
+					tr{
+						th{
+							background:#ddd;
+						}
+					}
+				}
+				tbody{
+					tr{
+						td{
+							vertical-align: middle;
+							padding: 2px 5px;
+							&.pic{
+								img{
+									width:40px;
+									height: 40px;
+								}
+							}
+							&.actions{
+								a{
+									color: white;
+							    display: inline-block;
+							    text-align: center;
+							    padding: 4px 8px;
+							    margin: 2px;
+							    &.edit{
+							    	background: $header_green;
+							    }
+							    &.delete{
+							    	background: $header_red;
+							    }
+							    &.active{
+							    	background: $header_blue;
+							    }
+							    i{
+							    	display: inline-block;
+							    	padding-right: 6px;
+							    }
+								}
+							}
+							&.tickets{
+								a{
+									color: white;
+							    display: inline-block;
+							    text-align: center;
+							    padding: 4px 8px;
+							    margin: 2px;
+							    background-color: $header_yellow;
+								}
+							}
+							&.status{
+								span{
+									color: white;
+							    display: inline-block;
+							    text-align: center;
+							    padding: 4px 8px;
+							    margin: 2px;
+							    &.draft-bg{
+							    	background-color: $header_yellow;
+							    }
+							    &.pending-bg{
+							    	background-color: #0c7cd5;
+							    }
+							    &.published-bg{
+							    	background-color: #0a9fe2;
+							    }
+							    &.live-bg{
+							    	background-color: #49a54e;
+							    }
+							    &.deleted-bg{
+							    	background-color: #ea1c0d;
+							    }
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+.job_item{
+	@extend .white_box;
+	padding:15px;
+	.title{
+	    a{
+	    	font-size: 20px;
+	      color:#1b7fdc;
+	      font-weight: 500;
+	      .exp{
+				color: $green_sky;
+				font-size: 15px;
+				font-weight:500;
+	      }
+	    }
+	  }
+	  .apply_btn{
+	    a{
+	      border-radius: 20px;
+	      padding: 3px 12px;
+	      border: none;
+	      font-size: 12px;
+	      font-weight: 400;
+	      color: #fff;
+	      background: $green;
+	    }
+	  }
+	  p{
+	    margin:0;
+	    /*&.location{
+	      font-size: 10px;
+	      margin-top:3px;
+	      color: lighten($grey, 11%);
+	      a{
+		color: lighten($grey, 11%);
+	      }
+	    }*/
+	  }
+	  .job_type{
+	    display: block;
+	    margin:5px 0;
+	    font-size: 12px;
+	    span{
+	      font-size: 12px;
+	      margin-left: 20px;
+	      margin-top:3px;
+	      a{
+	      }
+	    }
+	  }
+	  .company{
+	    i{
+	    display: inline-block;
+	      width: 15px;
+	    }
+	    display: block;
+	    margin-top: 6px;
+	    span{
+	      color: #88898a;
+	    }
+	  }
+	  .description{
+	    display: block;
+	    margin:5px 0;
+	    .head{
+	      width: 17%;
+	      float: left;
+	    }
+	    .content{
+	      width: 81%;
+	      float: left;
+	      line-height: 22px;
+	    }
+	    &.Keyskills{
+	      margin-top: 10px;
+	      .tags{
+				a{
+				  border: 1px solid #e5e8e5;
+				  display: inline-block;
+				  padding: 1px 6px;
+				  padding-bottom: 0;
+				  margin: 0px 2px;
+				  font-size: 11px;
+				}
+	      }
+	    }
+	  }
+      
+      }
+
+    .white_box{
+	background: #fff;
+  padding:15px 0;
+  margin-top: 10px;
+  /*-webkit-box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);
+  -moz-box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);
+  box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);*/
+}

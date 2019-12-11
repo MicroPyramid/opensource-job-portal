@@ -1,0 +1,10 @@
+<p>New Job Post(<a href="https://peeljobs.com/dashboard/jobpost/view/{{ job_post.id }}/">{{ job_post.title }}</a>) hass been created by <a href="https://peeljobs.com/dashboard/recruiter/view/{{ user.id }}/">{{ user.email }}</a></p>
+
+<p>You can now <a href="https://peeljobs.com/dashboard/jobpost/view/{{ job_post.id }}/">View the job post</a> in <a href="https://peeljobs.com/dashboard/">admin dashboard.</a></p>
+
+<p><a href='https://peeljobs.com/dashboard/jobpost/title/edit/{{ job_post.id }}/'>You can change the jobpost title here</a></p>
+
+<p><a href='https://peeljobs.com/dashboard/company/view/{{ job_post.company.id }}/'>You can view the company details here</a></p>
+
+<p style="font-size:14px;"><a href="https://peeljobs.com/dashboard/jobpost/{{ job_post.job_type }}/list/">Click Here</p> to change the jobpost status
+

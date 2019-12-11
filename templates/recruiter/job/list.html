@@ -1,0 +1,245 @@
+{% extends 'recruiter/index_new.html' %}
+{% load page_tags %}
+{% load tz %}
+{% block jobs %}
+<li class="job"><a class="post-new" href="#">Post A new job</a></li>
+<li class="job active"><a href="{% url 'recruiter:list' %}">jobs list</a></li>
+{% endblock %}
+{% block 'stage' %}
+  <div class="inner_container">
+    <div class="tabs">
+      <a href="{% url 'recruiter:list' %}" class="tab {% if not 'inactive' in request.path %}active{% endif %}">Active Jobs</a>
+      <a href="{% url 'recruiter:inactive_jobs' %}" class="tab {% if 'inactive' in request.path %}active{% endif %}">Inactive Jobs</a>
+    </div>
+    <div class="card white_card">
+      {% if not request.user.email_notifications %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+        <h4>Enable Email Notifications in your
+        <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:profile' %}{% else %}{% url 'recruiter:profile' %}{% endif %}">
+          <button type="button" class="btn btn-default"><strong>Profile</strong></button>
+        </a>to receive jobpost updates.</h4>
+        </p>
+      </div>
+      {% endif %}
+      {% if not request.user.is_active %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+        <h4>A confirmation email has been sent to you. Please click on the Activation Link to Activate your account</h4>
+        </p>
+      </div>
+      {% endif %}
+      <div class="card-body">
+        <form name="jobtypeform" id="jobtypeform" method="post">
+        <div class="float-right radio_block">
+          <input type="hidden" name="page" id="page" value="{{ current_page }}"/>
+          <input type="radio" name="search_value" value="all" class="job_type" {% if search_value|slugify == 'all' %}checked{% endif %}>All
+          <input type="radio" name="search_value" value="full-time" class="job_type" {% if search_value|slugify == 'full-time' %}checked{% endif %}>Full Time
+          <input type="radio" name="search_value" value="internship" class="job_type" {% if search_value|slugify == 'internship' %}checked{% endif %}>Internship
+          <input type="radio" name="search_value" value="walk-in" class="job_type" {% if search_value|slugify == 'walk-in' %}checked{% endif %}>Walkin's
+        </div>
+        </form>
+        <br>
+        <div class="table-responsive">
+          {% if not jobs_list %}
+          <div class="alert alert-danger alert-dismissible" role="alert" style="margin-top: 24px;">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+            <h4>
+            {% if not 'inactive' in request.path %}
+              You do not have any active jobs. Post your requirement now!
+               <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:new' 'full-time' %}{% else %}{% url 'recruiter:new' 'full-time' %}{% endif %}">
+                <button type="button" class="btn btn-default"><strong>Create</strong></button>
+              </a>
+              {% else %}
+              You do not have any inactive jobs!!
+              {% endif %}
+            </h4>
+          </div>
+          {% else %}
+          <table class='joblist_table table'>
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Location</th>
+                <th>Expiry</th>
+                {% if 'inactive' in request.path %}
+                  <th>Closed Date</th>
+                {% endif %}
+                <th>Job Type</th>
+                <th>Responses</th>
+                {% if request.user.user_type == 'AA' %}
+                  <th>Assigned Recruiters</th>
+                {% endif %}
+                {% if not 'inactive' in request.path %}
+                  <th>Social</th>
+                {% endif %}
+                <th>Actions</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for post in jobs_list %}
+              <tr class='job_detail {% if post.status == 'Draft' %}drafted{% elif post.status == 'Pending' %}pending{% elif post.status == 'Published' %}published{% elif post.status == 'Disabled' %}disabled{% elif post.status == 'Expired' %}disabled{% else %}live{% endif %}' data-href="{% url 'recruiter:view' post.id %}">
+                <td class="title">
+                  <a href="#">{{ post.title }}</a>
+                  <!--<span class="exp">[0-0 Year(s) Exp]</span> 
+                  <strong class="skill">
+                    <a href="#" class="tag">Java</a> 
+                    <a href="#" class="tag">Python</a> 
+                    <a href="#" class="tag">Django</a>
+                  </strong>-->
+                </td>
+                <td>{%for location in post.location.all %}{{ location.name }} {% if forloop.last %}{% else %},{% endif%}{% empty %} N/A {% endfor %}</td>
+                <td>{{ post.last_date }}</td>
+                {% if 'inactive' in request.path %}
+                  <td>{{ post.closed_date }}</td>
+                {% endif %}
+                <td>{{ post.job_type|get_string }}</td>
+                <td data-href="{% url 'recruiter:view' post.id%}?applicants=True" class="applicants">{{ post.responses }}</td>
+                {% if request.user.user_type == 'AA' %}
+                  <td><span>{% for recruiter in post.agency_recruiters.all %}<a href="{% url 'agency:company_recruiter_profile' recruiter.id %}">{{recruiter.username}}</a>{% if forloop.last %}{% else %}, {% endif %}{% empty %} N/A {% endfor %}</span></td>
+                {% endif %}
+                {% if not 'inactive' in request.path %}
+                <td class="social">
+                  {% if post.status == 'Live' %}
+                    <a href="#" data-href="https://www.facebook.com/sharer/sharer.php?u={{ post.get_job_minified_url }}&t={{ post.title }}" class="facebook social_share share_icon fb" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" data-href="https://www.linkedin.com/cws/share?url={{ post.get_job_minified_url }}&token=&isFramed=true"  class="linkedin social_share share_icon linkedin" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" data-href="https://twitter.com/intent/tweet?text={{ post.title }}&url={{ post.get_job_minified_url }}&via=PeelJobs" class="twitter social_share share_icon twit" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="#" data-href="https://plus.google.com/share?hl=en-US&url={{ post.get_job_minified_url }}" class="gplus social_share share_icon google" target="_blank"><i class="fab fa-google-plus-g"></i></a>
+                  {% else %}
+                    <span class="facebook social_share share_icon fb not_live" target="_blank"><i class="fa fa-facebook"></i></span>
+                    <span class="linkedin social_share share_icon linkedin not_live" target="_blank"><i class="fab fa-linkedin-in"></i></span>
+                    <span class="twitter social_share share_icon twit not_live" target="_blank"><i class="fab fa-twitter"></i></span>
+                    <span class="gplus social_share share_icon google not_live" target="_blank"><i class="fab fa-google-plus-g"></i></span>
+                  {% endif %}
+                </td>
+                {% endif %}
+                <td class="actions" align="left"><a class="edit" href="{% url 'recruiter:edit' post.id%}"><i class='fa fa-edit'></i></a>{% if not 'inactive' in request.path %} <a class="delete delete-job"  id="{{ post.id }}"><i class='fa fa-trash'></i></a>{% endif %}</td>
+
+                <td class="status text-center">
+                  {% if post.status == 'Pending' %}
+                    <i class="fas fa-bell"></i> Pending
+                  {% elif post.status == 'Published' %}
+                    <i class="fas fa-newspaper"></i> Published
+                  {% elif post.status == 'Disabled' %}
+                    <i class='fa fa-exclamation-triangle'></i> Disabled
+                  {% elif post.status == 'Expired' %}
+                    <i class='fas fa-clock'></i> Expired
+                  {% else %}
+                    <i class='fas fa-check'></i> Live
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="pagination_block text-center">
+      <nav aria-label="Page navigation example">
+        {% if jobs_list %}
+        <ul class="pagination">
+          {% get_page current_page last_page as pages %}
+          {% if current_page != 1 %}
+          <li class="page-item">
+            <a class="page-link" page_id="{{previous_page}}" data-href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% endif %}"><<
+            </a>
+          </li>
+          <li class="page-item"><a data-href="{{current_url}}{% if prev_page == 1 %}{% else %}{{prev_page}}/{% endif %}" page_id="{{prev_page}}" class="page-link" title="Prev"><</a></li>
+          {% endif %}
+          {% for s in pages %}
+            <li class="page-item {% ifequal s current_page %} active{% endifequal %}"><a data-href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% endif %}" page_id="{{s}}" class="page-link">{{s}}</a></li>
+          {% endfor %}
+          {% if current_page != last_page %}
+          <li class="page-item"><a data-href="{{current_url}}{{ aft_page }}/" page_id="{{ aft_page }}" class="page-link">></a></li>
+          <li class="page-item">
+            <a class="page-link" page_id="{{ after_page }}" data-href="{{current_url}}{{after_page}}/">>>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+        {% endif %}
+        <div class="mobile">
+          <span class='count page-item'>Pages<strong>{{ current_page }}</strong>of<strong>{{ last_page }}</strong></span>
+          <span class="float-right pages page-item">
+            {% if prev_page < current_page %}
+            <a page_id="{{ prev_page }}" data-href="{{current_url}}{% if prev_page == 1%}{% else %}{{ prev_page }}/{% endif %}">Prev</a>
+            {% endif %}
+            {% if aft_page > current_page %}
+            <a page_id="{{ aft_page }}" data-href="{{current_url}}{{aft_page}}/">Next</a>
+            {% endif %}
+          </span>
+        </div>
+      </nav>
+    </div>
+  </div>
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+$('.social_share').click(function(e){
+  e.stopPropagation();
+  if ($(this).hasClass('not_live')){
+    open_dialog('JobPost cannot be Shared until it goes live!', 'Alert!')
+  }
+  else{
+    window.open($(this).attr('data-href'), '_blank');
+  }
+})
+ $('.delete-job').click(function (e) {
+      e.stopPropagation();
+      url = $(this).attr('id') + '/'
+      $('#block_question').text('Do you want to delete Jobpost?')
+      $('#block_question').dialog({
+          modal: true,
+          draggable: false,
+          title: "Info!!",
+          buttons: [
+              {
+                  text: "Yes",
+                  click: function () {
+                      $(this).dialog("close");
+                      $.post('/recruiter/job/delete/' + url, $("form#jobform").serialize(), function (data) {
+                          if (data.error) {
+                            open_dialog(data.response, 'Error!')
+                          } else {
+                          open_dialog_with_url('Job Post Deleted Successfully', 'Success!', '.')
+                          }
+                      }, 'json');
+                  }
+              },
+              {
+                  text: "No",
+                  click: function () {
+                      $(this).dialog("close");
+                  }
+              }
+          ]
+      });
+  });
+
+  $(".job_detail").click(function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.document.location = $(this).data("href");
+  });
+    $(".job_detail a").click(function(e) {
+      e.stopPropagation();
+  });
+
+$(".job_detail .applicants").click(function(e) {
+      e.stopPropagation();
+      window.location = $(this).attr('data-href')
+  });
+  $('.job_type').click(function(e){
+    $('#jobtypeform').submit();
+  })
+
+  $(".page-item a").click(function(e){
+    e.preventDefault();
+    $('#page').val($(this).attr('page_id'));
+    $('#jobtypeform').submit();
+  });
+</script>
+{% endblock %}

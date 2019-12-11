@@ -1,0 +1,606 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load static %}
+{% load tz %}
+{% block stage %}
+<style>
+#map_wrapper {
+    height: 400px;
+}
+
+#map_canvas {
+    width: 100%;
+    height: 100%;
+}
+</style>
+<section id='job_detail'>
+  <h2>{{ post.job_role }}</h2>
+  <span class='posted'>Posted on: {{ post.created_on }}</span>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="wrap">
+        <span>
+          <span class='name'>{{ post.user.username }}</span>
+          <span class='other_details'>{{ post.user.email }}</span>
+        </span>
+        {% if post.user.profile_pic|length > 0 %}
+          <img src="{{ post.user.profile_pic.url  }}">
+        {% elif post.user.photo %}
+          <img src="{{ post.user.photo }}">
+        {% else %}
+          <img src="{% static 'dummy.jpg' %}" />
+        {% endif %}
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+    <!-- post details -->
+      <div class="title_profile">
+        <h4 class='active tab_button' panel-id='post_view'><i class="fa fa-list-ul"></i>Post Details</h4>
+        <h4 class='tab_button' panel-id='applicants_view'><i class="fa fa-user"></i>Applicants</h4>
+      </div>
+      <div class="tab_content active" id='post_view'>
+      <div class="profile_individual">
+        <div class='specific_detail clearfix'>
+          <div class="left_div clearfix">
+            <div class="tile_each">
+              <label>Job Title</label>
+              <span class="description">
+              <span>{{ post.title }}</span>
+              </span>
+            </div>
+            <div class="tile_each">
+              <label>Job Location</label>
+              <span class="description">
+              <span>{% for location in post.location.all %}{% if forloop.last and not forloop.next_element %}{{ location.name }}{% else %}{{ location.name}},{% endif %}{% endfor %}</span>
+              </span>
+            </div>
+            <div class="tile_each">
+              <label>Status</label>
+              <span class="description">
+              <span>{{ post.status }}</span>
+              </span>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Vacancies</label>
+              <span class="description">
+              <span>{{ post.vacancies }}</span>
+              </span>
+            </div>
+            <div class="tile_each">
+              <label>Job Type</label>
+              <span class="description">
+              <span>{{ post.job_type|get_string }}</span>
+              </span>
+            </div>
+            <div class="tile_each">
+              <label>Key words</label>
+              <span class="description">
+              {%for key in post.keywords.all %}
+              <span class='key_word'>{{ key.name }}</span>
+              {% endfor %}
+              </span>
+            </div>
+        </div>
+            <div class="tile_each">
+              <label>Job Description:</label>
+              <span class="description">
+              <span>{{ post.description|safe }}</span>
+              </span>
+            </div>
+      </div>
+      <!--/ post details -->
+      <!-- Eligibility details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-filter"></i>Eligibility Details</h4>
+        </div>
+        <div class='specific_detail clear_fix'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Educational Qualification</label>
+              <span class="description">
+              <span>{%for qualification in post.edu_qualification.all %}{{ qualification.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}</span>
+              </span>
+            </div>
+            <div class="tile_each">
+              <label>Minimum experience</label>
+              <span class="description">
+              <span>{{ post.min_year }}Years ,{{ post.min_month }} months</span>
+              </span>
+            </div>
+            {% if post.visa_required %}
+            <div class="tile_each">
+              <label>Visa Country</label>
+              <span class="description">
+              <span>{{ post.visa_country }}</span>
+              </span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Maximum experience</label>
+              <span class="description">
+              <span>{{ post.max_year }}Years,{{ post.max_month }} Months</span>
+              </span>
+            </div>
+            {% if post.visa_required %}
+            <div class="tile_each">
+              <label>Required visa type</label>
+              <span class="description">
+              <span>{{ post.visa_type }}</span>
+              </span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="clearfix"></div>
+           <div class="tile_each">
+            <label>Major Skill</label>
+            <span class="description">
+              <span class='key_word'>{{ post.major_skill.name }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Technical Skills</label>
+            <span class="description">
+            {% for skill in post.get_skills %}
+              <span class='key_word'>{{ skill.name }} -- {{ skill.status }}</span>
+            {% endfor %}
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Industry</label>
+            <span class="description">
+            {%for industry in post.industry.all %}
+              <span class='key_word'>{{ industry.name }} -- {{ industry.status }}</span>
+            {% endfor %}
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Functional Area</label>
+            <span class="description">
+            {%for functional_area in post.functional_area.all %}
+              <span class='key_word'>{{ functional_area.name }} -- {{ functional_area.status }}</span>
+            {% endfor %}
+            </span>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-filter"></i>Company Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Company Name</label>
+              <span class="description">
+              <span>{% if post.company %}{{ post.company.name }}{% else %}{{ post.company_name }}{% endif %}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Company Address</label>
+              <span class="description">
+              <span>{% if post.company %}{{ post.company.address }}{% else %}{{ post.company_address }}{% endif %}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="tile_each">
+            <label>Company Description</label>
+            <span class="description">
+            <span>{% if post.company %}{{ post.company.profile }}{% else %}{{ post.company_description }}{% endif %}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Company Emails</label>
+            <span class="description">
+            <span>{% if post.company_emails %}{{ post.company_emails }}{% else %}Not Specified{%  endif%}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Company Links</label>
+            <span class="description">
+            <span>{% if post.company_links %}{{ post.company_links }}{% else %}Not Specified{%  endif%}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          {% if post.selection_process %}
+          <div class="tile_each">
+            <label>Selection Process</label>
+            <span class="description">
+            <span>{{ post.selection_process|safe }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          {% endif %}
+          {% if post.how_to_apply %}
+          <div class="tile_each">
+            <label>How To Apply</label>
+            <span class="description">
+            <span>{{ post.how_to_apply|safe }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          {% endif %}
+          {% if post.age_relaxation %}
+          <div class="tile_each">
+            <label>Age Relaxation</label>
+            <span class="description">
+            <span>{{ post.age_relaxation|safe }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          {% endif %}
+          {% if post.important_dates %}
+          <div class="tile_each">
+            <label>Important Dates To Remember</label>
+            <span class="description">
+            <span>{{ post.important_dates|safe }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          {% endif %}
+          {% if post.application_fee %}
+          <div class="tile_each">
+            <label>Application Fee</label>
+            <span class="description">
+            <span>{{ post.application_fee }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          {% endif %}
+          <div class="tile_each">
+            <label>Application from date</label>
+            <span class="description">
+            <span>{{ post.govt_from_date }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Application to date</label>
+            <span class="description">
+            <span>{{ post.govt_to_date }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Exam Date</label>
+            <span class="description">
+            <span>{{ post.govt_exam_date }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      {% if post.job_interview_location.all %}
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-filter"></i>Interview Location Details</h4>
+        </div>
+      {% for location in post.job_interview_location.all %}
+      {% if location.venue_details %}
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Venue Details - {{ forloop.counter }}</label>
+              <span class="description">
+              <span>{{ location.venue_details }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      {% endif %}
+      {% endfor %}
+      </div>
+      {% endif %}
+      <!--/ eligibility details -->
+      {% if post.job_type == 'walk-in' %}
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-thumbs-up"></i>Walk In Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Contact Info</label>
+              <span class="description">
+              <span>{{ post.walkin_contactinfo }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Show Contact Information</label>
+              <span class="description">
+              <span>{% if post.walkin_show_contact_info %}True{% else %}False{% endif %}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Dates</label>
+              <span class="description">
+              <span>{{ post.walkin_to_date }} - {{ post.walkin_to_date }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Dates</label>
+              <span class="description">
+              <span>{{ post.walkin_time }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      {% endif %}
+      <!--/ offering details -->
+      <!-- offering details -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-thumbs-up"></i>Offering Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Salary</label>
+              <span class="description">
+              <span>
+                 {% if jobpost.min_salary == 0 and jobpost.max_salary == 0 %}Not Specified{% else %}
+                  <i class="fa fa-inr" aria-hidden="true"></i> {{ post.get_job_salary.0 }} - {{ post.get_job_salary.1 }} P.A
+                {% endif %}
+              </span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!--/ offering details -->
+      <!-- deadline -->
+      <div class="profile_individual">
+        <div class="title_profile">
+          <h4><i class="fa fa-power-off"></i>Deadline</h4>
+        </div>
+        <div class='specific_detail'>
+            <div class="tile_each">
+              <label>Application Deadline</label>
+              <span class="description">
+              <span>{{ post.last_date }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Application Published On</label>
+              <span class="description">
+              <span>{{ post.published_date }}</span>
+              <div id="map_data" style="display:none;">{{ locations|safe }}</div>
+              <div id="venue_data" style="display:none;">{{ venue_details|safe }}</div>
+              <div class="clearfix"></div>
+            </div>
+        </div>
+      </div>
+      <!--/ deadline -->
+      </div>
+      </div>
+      <div class="tab_content" id='applicants_view'>
+       <div class="title_profile">
+        <h4 class='tab_button1 active' panel-id='normal_applicants'><i class="fa fa-user"></i>Normal Applicants</h4>
+        <h4 class='tab_button1' panel-id='resume_applicants'><i class="fa fa-user"></i>Resume Applicants</h4>
+        <h4 class='tab_button1' panel-id='manual_applicants'><i class="fa fa-user"></i>Manual Applicants</h4>
+      </div>
+      <div class="tab_content1 active" id='normal_applicants'>
+        {% if applicants %}
+          <table class="table jobposts_table" id="sample_1">
+            <thead>
+              <tr>
+                <th width="8%"></th>
+                <th width="12%">Email</th>
+                <th width="25%">Name</th>
+                <th width="5%">Mobile</th>
+                <th width="5%">Status</th>
+              </tr>
+            </thead>
+            <tbody> 
+              {% for user in applicants %}
+                <tr data-href="" class="job_detail">
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ user.user.email }}</td>
+                  <td>{{ user.user.get_full_name }}</td>
+                  <td>{{ user.user.mobile }}</td>
+                  <td>{{ user.status }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <h4 class='text-center'>No Applied Users</h4>
+          {% endif %}
+        </div>
+      <div class="tab_content1" id='resume_applicants'>
+      {% if resumes %}
+        <table class="table jobposts_table" id="sample_1">
+          <thead>
+            <tr>
+              <th width="8%"></th>
+              <th width="12%">Email</th>
+              <th width="25%">Uploaded_by</th>
+              <th width="5%">Mobile</th>
+              <th width="5%">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for resume in resumes %}
+              <tr data-href="" class="job_detail">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ resume.resume_applicant.email }}</td>
+                <td>{{ resume.resume_applicant.uploaded_by }}</td>
+                <td>{{ resume.resume_applicant.mobile }}</td>
+                <td>{{ resume.status }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+      <h4 class='text-center'>No Resumes Found</h4>
+      {% endif %}
+      </div>
+      <div class="tab_content1" id='manual_applicants'>
+        {% if manual_users %}
+          <table class="table jobposts_table" id="sample_1">
+            <thead>
+              <tr>
+                <th width="8%"></th>
+                <th width="12%">Email</th>
+                <th width="25%">Name</th>
+                <th width="5%">Mobile</th>
+                <th width="5%">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in manual_users %}
+                <tr data-href="" class="job_detail">
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ user.user.email }}</td>
+                  <td>{{ user.user.get_full_name }}</td>
+                  <td>{{ user.user.mobile }}</td>
+                  <td>{{ user.status }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <h4 class='text-center'>No Manual Users</h4>
+          {% endif %}
+        </div>
+      </div>
+      </div>
+
+    </div>
+  </div>
+  <!--{% if is_show_google_map %}
+  <div id="map_wrapper">
+    <div id="map_canvas" class="mapping"></div>
+</div>
+{% endif %}-->
+</section>
+{% endblock %}
+
+{% block script%}
+
+<script>
+$(document).ready(function(e){
+  $('.tab_button').click(function(e){
+    $('.tab_button').removeClass('active')
+    $(this).addClass('active')
+    $('.tab_content').removeClass('active')
+    id = $(this).attr('panel-id')
+    console.log(id)
+    $('#'+id).addClass('active')
+  })
+    $('.tab_button1').click(function(e){
+    $('.tab_button1').removeClass('active')
+    $(this).addClass('active')
+    $('.tab_content1').removeClass('active')
+    id = $(this).attr('panel-id')
+    console.log(id)
+    $('#'+id).addClass('active')
+  })
+})
+// {% if is_show_google_map %}
+// var venue_details = []
+// for (var key in JSON.parse($('#venue_data').html())) {
+//   var msg = []
+//   var message = ''
+//   var temp_message = ''
+//   temp_message = JSON.stringify(JSON.parse($('#venue_data').html())[key]['info'])
+//   temp_message = temp_message.replace(/\\r\\n/g, "<br />")
+//   temp_message = temp_message.replace('"', '').replace('"', '')
+//   message = '<div class="info_content"><h3>' + temp_message + '</h3></div>'
+
+//   msg.push(message)
+//   venue_details.push(msg)
+//           }
+
+// jQuery(function($) {
+//     // Asynchronously Load the map API
+//     var script = document.createElement('script');
+//     script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDa7EJOrUaEl8v6yA71gbSsHximjgMR9TU&sensor=false&callback=initialize";
+//     document.body.appendChild(script);
+// });
+
+// function initialize() {
+//     var map;
+//     var bounds = new google.maps.LatLngBounds();
+//     var mapOptions = {
+//         mapTypeId: 'roadmap'
+//     };
+
+//     // Display a map on the page
+//     map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+//     map.setTilt(45);
+
+//     // Multiple Markers
+//     var markers = JSON.parse($('#map_data').html());
+
+//     var infoWindowContent = venue_details;
+
+//     // Display multiple markers on a map
+//     var infoWindow = new google.maps.InfoWindow(), marker, i;
+//     // Loop through our array of markers & place each one on the map
+//     for( i = 0; i < markers.length; i++ ) {
+//         var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+//         bounds.extend(position);
+//         marker = new google.maps.Marker({
+//             position: position,
+//             map: map,
+//             title: markers[i][0]
+//         });
+
+//         // Allow each marker to have an info window
+//         google.maps.event.addListener(marker, 'click', (function(marker, i) {
+//             return function() {
+//                 infoWindow.setContent(infoWindowContent[i][0]);
+//                 infoWindow.open(map, marker);
+//             }
+//         })(marker, i));
+
+//         // Automatically center the map fitting all markers on the screen
+//         map.fitBounds(bounds);
+//     }
+
+//     // Override our map zoom level once our fitBounds function runs (Make sure it only runs once)
+//     var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+//         this.setZoom(5);
+//         google.maps.event.removeListener(boundsListener);
+//     });
+
+// }
+// {% endif %}
+
+</script>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block block_canonical %}
+    <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+    <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+    <meta name="description"
+          content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+
+    <meta name="Keywords"
+          content="job, jobs, tech jobs, it jobs, job sites, job vacancies, find jobs, search jobs, resume tips, job search engines, careers, technology jobs, career search, job descriptions, employment, work, job listings, peeljobs.com"/>
+{% endblock %}
+
+{% block base %}
+
+    <div class="content_div">
+        <section id='edit_job_post'>
+            <div class="container">
+                <div class="row mt">
+                    <div class="col-md-offset-2 col-md-8 col-sm-12 detail_description_column">
+                        <div class="top_flap">
+                            Unsubscribe
+                        </div>
+                        {% if subscribers %}
+                            <form name="jobalertform" id="jobalertform" method="post">
+                                <div class="tile_deafult">
+                                    <div class="form_div">
+                                        <div class="form-group">
+                                            <label for="inputEmail3" class="control-label"></label>
+                                            <div class="input_wrap">
+                                                <span>Are you really want to unsubscribe for a jobpost?</span>
+                                                <input type="hidden" class="form-control" placeholder="Minimum Salary"
+                                                       name="is_delete" id="is_delete">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="inputEmail3" class="control-label"></label>
+                                            <div class="input_wrap">
+                                                <button type="submit" class='submit'>Okay</button>
+                                                <button type="button" class="cancelbutton">Cancel</button>
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="form_div">
+                                <div class="form-group">
+                                    <label for="inputEmail3" class="control-label"></label>
+                                    <div class="input_wrap">
+                                        <span>You are already unsubscribed for this jobpost</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+        </section>
+    </div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+
+{% block 'extra_js' %}
+    <script type="text/javascript">
+        $(".cancelbutton").click(function (e) {
+            window.location = "/";
+        });
+
+        $("form#jobalertform").submit(function (e) {
+            e.preventDefault();
+            $('#is_delete').val('True');
+            $.post(".", $("form#jobalertform").serialize(), function (data) {
+                if (data.error) {
+                    if (data.response_message) {
+                        open_dialog(data.response_message, 'Error!')
+                    }
+                    $('p.hint').remove();
+                    for (var key in data.message) {
+                        $('#' + key).after('<p class="hint">' + data.message[key] + '</p>');
+                    }
+                } else {
+                    window.location = '/';
+                }
+            }, 'json');
+        });
+
+    </script>
+
+{% endblock %}

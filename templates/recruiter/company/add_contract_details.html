@@ -1,0 +1,25 @@
+<div class="row another_location branch_{{contact_details_id}} contact_details_div">
+  <div class="row">
+    <div class="col-md-6 category_name">
+      <!--input element -->
+      <div class="full_wid">
+        <label>Month</label>
+        <select name="month_{{contact_details_id}}" id="month_{{contact_details_id}}" class="input">
+          <option value="">Select A Month</option>
+          {% for month in months %}
+            <option value="{{ month.0 }}">{{ month.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class=" full_wid">
+        <label>Percantage</label>
+        <input type="text" name="contract_percantage_{{contact_details_id}}" id="contract_percantage_{{contact_details_id}}" class="input" placeholder="Enter Percantage Name"/>
+      </div>
+    </div>
+     <br clear="all">
+  </div>
+   <br clear="all">
+  <span class='delete_branch delete_category' id="category_{{contact_details_id}}"><i class="fa fa-trash delete_client_contact" aria-hidden="true"></i>
+</div>

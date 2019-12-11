@@ -1,0 +1,202 @@
+{% extends 'dashboard/base.html' %}
+{% load page_tags %}
+{% block stage %}
+<section id='tech_skills'>
+    <div class="title" style="padding-bottom: 3px;">
+      <h3>Industry(No Of Job Posts)
+        <span>
+          <a class={% if status == 'active'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:industries' %}?status=active">Active</a> /
+          <a class={% if status == 'inactive'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:industries' %}?status=inactive">Inactive</a>
+        </span>
+      </h3>
+    </div>
+      <div class="title" style="border-bottom:none; padding-bottom: 39px;">
+      <div class="add_div"  style="width:50%;">
+      <form id="addform" method="post" action=".">
+        <input type="text" class="form-control" id="industry_name">
+  
+        <button class="add_new_btn"><i class="fa fa-plus"></i>Add New</button>
+      </form>
+      </div>
+      <div class="add_div" style="width:50%;">
+      <form id="search_form" name="adv-search-form" class="search-form" method="GET">
+            <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.search }}"/>
+            <input type="hidden" name="status" id="status" value="{% if request.GET.status%}{{request.GET.status}}{% endif %}" >
+            <input type="hidden" name="page" id="page" value="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}">
+            <button type="submit" class="add_new_btn submit">Submit</button>
+      </form>
+      </div>
+    </div>
+    <div class="list_row">
+      <ul>
+      {% for industry in industries %}
+        <li>
+          <div class="description">
+            <div class="content">
+            {{industry.name}}( {{ industry.get_no_of_jobposts|length }} )
+            </div>
+            <div class="icon_div">
+            {% ifequal industry.status 'Active' %}
+              <a href="/{{industry.slug}}-industry-jobs/" target="_blank"><i class="fa fa-eye edit"></i></a>
+            {% endifequal %}
+              <a><i class="fa fa-pencil-square-o edit"></i></a>
+              {% ifequal industry.status 'InActive' %}<a href="#" id="{{ industry.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="enable-industry"><i class="fa fa-check edit" title="Activate Industry"></i></a>{% else %}<a href="#" id="{{ industry.id }}" class="deactivate-industry" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}"><i class="fa fa-times delete" title="Deactivate Industry"></i></a>{% endifequal %}
+              <a href="{% url "dashboard:delete_industry" industry_id=industry.id %}"><i class="fa fa-trash-o delete"></i></a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="edit_panel">
+            <form id="editform{{industry.id}}" method="post" action=".">
+              <input type="hidden" name="id" value="{{industry.id}}">
+              <input type="hidden" name="mode" value="edit_industry">
+              <textarea class="form-control" name="name">{{ industry.name }}</textarea>
+              <textarea class="form-control" name="slug">{{ industry.slug }}</textarea>
+              <textarea class="form-control" name='meta_title' id='meta_title' placeholder='Meta Title'>{{ industry.meta_title }}</textarea>
+              <textarea class="form-control" name='meta_description' id='meta_description' placeholder='Meta Description'>{{ industry.meta_description }}</textarea>
+              <textarea class="form-control ckeditor_page_content" name='ckeditor_page_content_{{ industry.id }}' id='ckeditor_page_content_{{industry.id}}' placeholder='Page Content'>{{ industry.page_content }}</textarea>
+              <input type="hidden" class="form-control" name="page_content" id="page_content_{{ industry.id }}">
+              <input type="hidden" class="form-control" name="page" value="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}">
+              <button id="{{industry.id}}" class="update_btn"><i class="fa fa-check"></i>Update</button>
+            </form>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </li>
+       {% endfor %}
+      </ul>
+    </div>
+</section>
+{% if industries %}
+      <div class="pagination_wrap">
+        {% get_page current_page last_page as pages %}
+        <nav>
+            <ul class="pagination">
+            {% if current_page != 1 %}
+              <li class="prev"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+              <li class="prev"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+              <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page=1">first</a></li>
+              {% endif %}
+              {% for s in pages %}
+              <li {% ifequal s current_page %} class="active" {% endifequal %}><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{s}}">{{s}}</a></li>
+              {% endfor %}
+              {% if current_page != last_page %}
+              <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{last_page}}">last</a></li>
+              <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+              <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+              {% endif %}
+            </ul>
+        </nav>
+      </div>
+  {% endif %}
+{% endblock stage %}
+{% block script %}
+    <script type="text/javascript">
+
+        $(document).ready(function (event) {
+            $('#tech_skills .edit').click(function (e) {
+                $(this).parent().parent().next().next('div.edit_panel').slideDown('slow');
+                ckeditor_name = $(this).parent().parent().next().next('div.edit_panel').find('form .ckeditor_page_content').attr('name')
+                CKEDITOR.config.allowedContent = true;
+                var editor = CKEDITOR.replace(ckeditor_name);
+
+            });
+        });
+
+        $("#addform").submit(function (e) {
+            e.preventDefault();
+            $.post('.', {mode: 'add_industry', name: $('#industry_name').val()}, function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url(data.message, 'Success!!!', ".")
+                } else {
+                    open_dialog(data.message, 'Success!')
+                }
+            }, 'json');
+        });
+
+        $(".update_btn").click(function (e) {
+            e.preventDefault();
+            ckeditor_name = 'ckeditor_page_content_' + $(this).attr('id')
+            var get_data = CKEDITOR.instances[ckeditor_name].getData()
+            $('#page_content_' + $(this).attr('id')).val(get_data);
+
+            $.post('.', $("#editform" + $(this).attr('id')).serialize(), function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url(data.message, 'Success!!!', "{% url 'dashboard:industries' %}?page=" + data.page)
+                } else {
+                   for (var key in data.message) {
+                    open_dialog(data.message[key], 'Error!')
+                }
+                }
+            }, 'json');
+        });
+
+        $('.deactivate-industry').click(function (e) {
+            e.preventDefault();
+            url = $(this).attr('id') + '/'
+            page = $(this).attr("rel")
+            $('#block_question').text('Do you want to deactivate Industry?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/dashboard/industry/status/' + url, {"page": page}, function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog_with_url('Industry Disabled Successfully!', 'Success!!!', "{% url 'dashboard:industries' %}?page=" + data.page)
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                            return;
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('.enable-industry').click(function (e) {
+            e.preventDefault();
+            url = $(this).attr('id') + '/'
+            page = $(this).attr("rel")
+            $('#block_question').text('Do you want to activate Industry?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/dashboard/industry/status/' + url, {"page": page}, function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!')
+                                } else {
+                                    open_dialog_with_url('Industry Activated Successfully', 'Success!!!', "{% url 'dashboard:industries' %}?page=" + data.page)
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+    </script>
+{% endblock script %}

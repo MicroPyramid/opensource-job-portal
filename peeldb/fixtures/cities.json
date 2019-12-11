@@ -1,0 +1,313 @@
+[{
+    "model": "peeldb.city",
+    "pk": 1,
+    "fields": {
+        "name": "Hyderabad",
+        "state": 2,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 2,
+    "fields": {
+        "name": "Karimnagar",
+        "state": 2,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 3,
+    "fields": {
+        "name": "Warangal",
+        "state": 2,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 4,
+    "fields": {
+        "name": "Vizag",
+        "state": 1,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 5,
+    "fields": {
+        "name": "Tirupathi",
+        "state": 1,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 6,
+    "fields": {
+        "name": "Limestone Coast",
+        "state": 4,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 7,
+    "fields": {
+        "name": "Clare Valley",
+        "state": 4,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 8,
+    "fields": {
+        "name": "Bangalore",
+        "state": 3,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 9,
+    "fields": {
+        "name": "Chennai",
+        "state": 3,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 10,
+    "fields": {
+        "name": "Pune",
+        "state": 3,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 11,
+    "fields": {
+        "name": "Delhi",
+        "state": 3,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 12,
+    "fields": {
+        "name": "Nellore",
+        "state": 1,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 13,
+    "fields": {
+        "name": "Mumbai",
+        "state": 5,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 14,
+    "fields": {
+        "name": "Alleppey",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 15,
+    "fields": {
+        "name": "Aurangabad",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 16,
+    "fields": {
+        "name": "Bhubaneswar",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 17,
+    "fields": {
+        "name": "Coimbatore",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 18,
+    "fields": {
+        "name": "Goa",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 19,
+    "fields": {
+        "name": "Kanchipuram",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 20,
+    "fields": {
+        "name": "Kanyakumari",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 21,
+    "fields": {
+        "name": "Kerala",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 22,
+    "fields": {
+        "name": "Kochi",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 23,
+    "fields": {
+        "name": "Kodaikanal",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 24,
+    "fields": {
+        "name": "Kovalam",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 25,
+    "fields": {
+        "name": "Kottayam",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 26,
+    "fields": {
+        "name": "Madurai",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 27,
+    "fields": {
+        "name": "Mahabalipuram",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 28,
+    "fields": {
+        "name": "Ooty",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 29,
+    "fields": {
+        "name": "Pondicherry",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 30,
+    "fields": {
+        "name": "Trichy",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 31,
+    "fields": {
+        "name": "Trivandrum",
+        "state": 16,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 32,
+    "fields": {
+        "name": "Gujarat",
+        "state": 13,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 33,
+    "fields": {
+        "name": "Nasik",
+        "state": 5,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 34,
+    "fields": {
+        "name": "Mysore",
+        "state": 3,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 35,
+    "fields": {
+        "name": "vijayawada",
+        "state": 1,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 36,
+    "fields": {
+        "name": "Noida",
+        "state": 17,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 37,
+    "fields": {
+        "name": "Kolkata",
+        "state": 18,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 38,
+    "fields": {
+        "name": "Gurgaon",
+        "state": 19,
+        "status": "Enabled"
+    }
+}, {
+    "model": "peeldb.city",
+    "pk": 40,
+    "fields": {
+        "name": "Ahmedabad",
+        "state": 13,
+        "status": "Enabled"
+    }
+}]

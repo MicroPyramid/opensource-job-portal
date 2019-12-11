@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Peeljobs Jobseeker Account Verification</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+  </head>
+  <body style="width:100% !important; margin:0 !important; padding:0 !important; -webkit-text-size-adjust:none; -ms-text-size-adjust:none;font-size:12px; font-family: 'Poppins', sans-serif;color: #45586d; background: #fff; ">
+   <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable" style="height:auto !important; margin:0; padding:0; width:100% !important; font-family: 'Poppins', sans-serif;color: #45586d; background: #fff;">
+      <tr>
+         <td>
+          <table id="contenttable" width="600" align="center" cellpadding="0" cellspacing="0" border="0" style="font-family: 'Poppins', sans-serif;color: #45586d; background: #fff; margin-top:0 !important; margin-right: auto !important; margin-bottom:0 !important; margin-left: auto !important; border:none; width: 100% !important; max-width:600px !important;border: 1px solid #ddd !important;">
+              <tr>
+                <td>
+                  <table style="width:600px;background:#fff;padding:0;" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="background: #0358a6;height:30px;padding: 10px 15px;">
+                        <a href="https://peeljobs.com/" style="text-overflow: ellipsis;overflow: hidden;color: #fff !important;margin-left: 0 !important;display: inline-block;margin: 0; padding:0;font-weight: 600;font-size: 18px;text-decoration:none;"><i class="fa fa-line-chart" aria-hidden="true"></i> Peeljobs</a>
+                        <a href="https://peeljobs.com/{% if user.usertype == 'AA' %}agency{% elif user.user_type == 'JS' %}user{% else %}recruiter{% endif %}/activation/{{user.activation_code}}/" style="float:right;color: #fff;letter-spacing: 0.7px;position: relative;top:5px;">Activate Your Account </a>
+                      </td>
+                    </tr>
+                    <tr style="background:#fff;">
+                      <td style="text-align:left;padding:20px 15px;color: #131e26;font-weight: bold;font-size: 17px;">
+                        <strong style="margin-bottom:15px;color:#45586d;font-size: 13px;font-weight:600;display:block;">Dear {% if user.get_full_name %}{{ user.get_full_name }},{% else %}User,{% endif %}</strong>
+                        <p style="color: #4f657d;font-size: 12px;font-weight: 400;line-height:23px;margin-bottom:0px;">Welcome to Peeljobs.com, You have created an account in peeljobs on {{ user.date_joined }} and your account is still inactive. Please verify your email id to{% if user.user_type == 'JS' %} receive latest job notifications.{% else %} post unlimited free jobs in peeljobs{% endif %}
+                          </p>
+                      </td>
+                    </tr>
+
+                    {% if user.user_type == 'JS' %}
+                     <tr>
+                      <td style="padding-left:15px;font-size: 12px;">
+                        <strong style="color: #45586d;font-weight:600;font-size:12px;letter-spacing: 0.2px;margin-bottom: 10px;">Benifits of verifying your Email address at PeelJobs</strong>
+                        <ol style="margin:0;padding:0;margin-left:30px;margin-top:10px;">
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">Recruiters can easily Contact and shortlist the verified Contact details</li>
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">Confirms your ownership at Peeljobs.com</li>
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">Based on your profile you will receive job alerts from Peeljobs</li>
+                          <br clear="all">
+                        </ol>
+                      </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                      <td style="padding-left:15px;font-size: 12px;">
+                        <strong style="color: #45586d;font-weight:600;font-size:12px;letter-spacing: 0.2px;margin-bottom: 10px;">Why to verify your email ID?</strong>
+                        <ol style="margin:0;padding:0;margin-left:30px;margin-top:10px;">
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">You can post unlimited jobs for free</li>
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">You will recieve Notification email if any candidate apply for your JobPost</li>
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">You will recieve acknowledgements for your Service requests</li>
+                          <br clear="all">
+                        </ol>
+                      </td>
+                    </tr> 
+                    {% endif %}
+
+                    <tr>
+                      <td style="padding-left:15px;font-size: 12px;">
+                        <strong style="color: #45586d;font-weight:600;font-size:12px;letter-spacing: 0.2px;margin-top:15px;margin-bottom: 10px;">{% if user.user_type == 'JS' %}Recruiters will reach you at:{% else %}Account Details{% endif %}</strong>
+                        <div style="margin-top:4px;width:570px;">
+                          <span >Email Address : {{ user.email }}</span><span style="float:right"><a href="https://peeljobs.com/{% if user.usertype == 'AA' %}agency{% elif user.user_type == 'JS' %}user{% else %}recruiter{% endif %}/activation/{{user.activation_code}}/"><img style="width:13px;height:13px" src="http://www.freeiconspng.com/uploads/close-icon-41.jpg"> Verify now</a></span>
+                        </div>
+                        <div style="margin-top:4px;width:570px;">
+                          <span >Mobile Number : {{ user.mobile|default_if_none:'N/A' }}</span>
+                        </div>
+                        <div style="margin-top:4px;width:570px;">
+                          <span >Last Logged On : {{ user.last_login }}</span>
+                        </div>
+                        <br>
+
+                        <a href="https://peeljobs.com/{% if user.usertype == 'AA' %}agency{% elif user.user_type == 'JS' %}user{% else %}recruiter{% endif %}/activation/{{user.activation_code}}/" style="display:inline-block;width:400px;background:#62bb46;margin:10px auto;margin-bottom: 10px;padding:7px 10px;text-align:center;color:#fff;font-size: 12px;font-weight:500;letter-spacing:0.7px;text-decoration:none;display:block;">Click here to verify your email address</a>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding-left:15px;">
+                        <span style="color:#45586d;font-size: 12px;margin-top:20px;display:block;">Thanks & Regards,</span>
+                        <span style="color:#45586d;font-size: 12px;font-weight: 500;margin-top: 8px;display:block;margin-bottom: 15px;"><div>Peeljobs Team.</div>
+                        <div>support@peeljobs.com</div></span>
+                      </td>
+                    </tr>
+                   <tr>
+                      <td>
+                        <ul style="margin:0;padding:0;padding:0 8px;border-top:1px solid #e0e0e0;text-align:center;">
+                          <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/terms-conditions/" target="_blank" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;">Terms & Conditions</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/privacy-policy/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Privacy Policy</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/about-us/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">About Peeljobs</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/faq/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">FAQ's</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/contact/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Contact Us</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/blog/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Blog</a>
+                          </li>
+                          {% if alert or subscriber or user %}
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/unsubscribe_email/user/{{user.unsubscribe_code}}/" style="color:#0358a6;font-size: 12px;padding:15px 7px;margin-left:480px;text-decoration:none;display:inline-block;" target="_blank">Unsubscribe</a>
+                          </li>
+                          {% endif %}
+                        </ul>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+         </td>
+      </tr>
+    </table>
+
+  </body>
+</html>

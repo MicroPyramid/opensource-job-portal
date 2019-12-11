@@ -1,0 +1,277 @@
+{% load page_tags %}
+<style type="text/css">
+
+.active-user{
+    color: #34c3bb;
+}
+.in_active-user{
+    color: #78909c;
+}
+.table-title{
+    font-size: 16px;
+}
+</style>
+<div class="col-md-offset-1 col-md-10 col-md-offset-1 stats">
+<label style='width:100%;font-weight:600;'>
+  Total Job Seekers: <span style="font-weight:500;"> {{ today_all_applicants_count }} </span>
+</label><br><br>
+<label style='width:100%; font-weight:600;'>
+  Total Recruiter Registrations: <span style="font-weight:500;"> {{today_total_recruiters}} </span>
+</label><br><br>
+<label style='width:100%; font-weight:600;'>
+  Total Agency Registrations: <span style="font-weight:500;"> {{today_agency_recruiters_count}} </span>
+</label><br><br>
+<label style='width:100%; font-weight:600;'>
+  Total Admin JobPosts: <span style="font-weight:500;"> {{today_admin_jobs_count}} </span>
+</label><br><br>
+<label style='width:100%; font-weight:600;'>
+  Total Recruiter JobPosts: <span style="font-weight:500;"> {{today_jobs_count}} </span>
+</label><br><br>
+<label style='width:100%; font-weight:600;'>
+  Total Job Applications: <span style="font-weight:500;">{{today_job_applications}}</span>
+</label><br><br>
+
+
+<label style="width:100%;
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700; margin-top: 20px;"><span class="table-title" style="font-weight: 700;font-size: 16px;">Job Posts</span>
+  <span class="pull-right" style="float: right;">
+    <ul class="list-inline" style="padding-left: 0;
+    margin-left: -5px;
+    list-style: none;">
+      <li class="draft" style="color: #f29000;display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;"><span style="display: inline-block;background: #f29000;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Draft</li>
+      <li class="pending" style="color: #0c7cd5;display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;"><span style="display: inline-block;background: #0c7cd5;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Pending</li>
+      <li class="published" style="color: #0a9fe2;display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;"><span style="display: inline-block;background: #0a9fe2;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Published</li>
+      <li class="live" style="color: #49a54e;display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;"><span style="display: inline-block;background: #49a54e;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Live</li>
+      <li class="deleted" style="color: #ea1c0d;display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;"><span style="display: inline-block;background: #ea1c0d;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Deleted</li>
+    </ul>
+  </span>
+</label>
+  <div class="table-responsive" style="
+    min-height: .01%;
+    overflow-x: auto;">
+    <table class="table table-bordered" style='border: 1px solid #ddd;width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;background-color: transparent;border-spacing: 0;
+    border-collapse: collapse;'>
+      <thead>
+        <tr>
+          <th width="40%" style="background: #EEE;"></th>
+          <th width="30%" style="background: #EEE;">Recruiters</th>
+          <th width="30%" style="background: #EEE;">Peeljobs Admin</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;">
+          <th scope="row">Jobposts</th>
+          <td><span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_jobs_draft_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_jobs_pending_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_jobs_published_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_jobs_live_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_jobs_disabled_count }}</span></td>
+
+          <td><span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_draft_jobs_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_pending_jobs_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_published_jobs_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_live_jobs_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_full_time_disabled_jobs_count }}</span></td>
+        </tr>
+        <tr style="display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;">
+          <th scope="row">Full Time Jobs</th>
+          <td><span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_full_time_draft_jobs_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_full_time_pending_jobs_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_full_time_published_jobs_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_full_time_live_jobs_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_full_time_disabled_jobs_count }}</span></td>
+          <td>
+          <span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_full_time_draft_jobs_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_full_time_pending_jobs_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_full_time_published_jobs_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_full_time_live_jobs_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_full_time_disabled_jobs_count }}</span></td>
+        </tr>
+        <tr style="display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;">
+          <th scope="row">Internship</th>
+          <td><span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_internship_jobs_draft_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_internship_jobs_pending_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_internship_jobs_published_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_internship_jobs_live_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_internship_jobs_disabled_count }}</span></td>
+          <td>
+          <span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_internship_draft_jobs_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_internship_pending_jobs_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_internship_published_jobs_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_internship_live_jobs_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_internship_disabled_jobs_count }}</span></td>
+        </tr>
+        <tr style="display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;">
+          <th scope="row">Walkins</th>
+          <td><span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_walkin_jobs_draft_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_walkin_jobs_pending_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_walkin_jobs_published_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_walkin_jobs_live_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_walkin_jobs_disabled_count }}</span></td>
+
+          <td><span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_walkin_draft_jobs_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_walkin_pending_jobs_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_walkin_published_jobs_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_walkin_live_jobs_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_walkin_disabled_jobs_count }}</span></td>
+        </tr>
+        <tr style="display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;">
+          <th scope="row">Government</th>
+          <td><span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_govt_jobs_draft_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_govt_jobs_pending_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_govt_jobs_published_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_govt_jobs_live_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_govt_jobs_disabled_count }}</span></td>
+
+          <td><span class="draft-bg" style="background-color: #f29000;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_govt_draft_jobs_count }}</span>
+          <span class="pending-bg" style="background-color: #0c7cd5;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_govt_pending_jobs_count }}</span>
+          <span class="published-bg" style="background-color: #0a9fe2;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_govt_published_jobs_count }}</span>
+          <span class="live-bg" style="background-color: #49a54e;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_govt_live_jobs_count }}</span>
+          <span class="deleted-bg" style="background-color: #ea1c0d;color: white;display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;">{{ today_admin_govt_disabled_jobs_count }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="col-md-offset-1 col-md-10 col-md-offset-1 stats users-stats" style="margin-top: 15px;">
+  <label style="width:100%;
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;"><span class="table-title" style="font-weight: 700;font-size: 16px;">Users</span>
+    <span class="pull-right" style="float: right;">
+    <ul class="list-inline" style="padding-left: 0;
+    margin-left: -5px;
+    list-style: none;">
+    <li class="active-user" style="color: #f29000;display: inline-block;
+    padding-right: 5px;margin-bottom: 10px;
+    padding-left: 5px;"><span style="display: inline-block;background: #f29000;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Total</li>
+    <li class="active-user" style="color: #34c3bb;display: inline-block;
+    padding-right: 5px;margin-bottom: 10px;
+    padding-left: 5px;"><span style="display: inline-block;background: #34c3bb;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Active / Open / Resume Uploaded</li>
+      <li class="in_active-user" style="color: #78909c;display: inline-block;
+    padding-right: 5px;margin-bottom: 10px;
+    padding-left: 5px;"><span style="display: inline-block;background: #78909c;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Inactive / Closed / Applied Jobs</li>
+    <li class="in_active-user" style="color: #49a54e;display: inline-block;
+    padding-right: 5px;margin-bottom: 10px;
+    padding-left: 5px;"><span style="display: inline-block;background: #49a54e;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Mobile Verified / Profile Completed</li>
+    <li class="in_active-user" style="color: #ea1c0d;display: inline-block;
+    padding-right: 5px;margin-bottom: 10px;
+    padding-left: 5px;"><span style="display: inline-block;background: #ea1c0d;width: 15px;height: 15px;border-radius: 50%;">&nbsp;</span> Mobile Not Verified / Login Only once</li>
+
+    </ul>
+  </span>
+  </label>
+  <div class="table-responsive" style="
+    min-height: .01%;
+    overflow-x: auto;">
+    <table class="table table-bordered" style='border: 1px solid #ddd;width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;background-color: transparent;border-spacing: 0;
+    border-collapse: collapse;'>
+      <thead>
+        <tr>
+          <th width="40%" style="background: #EEE;"></th>
+          <th width="30%" style="background: #EEE;">Today</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="display: table-row;vertical-align: inherit;border-color: inherit;">
+          <th scope="row">Job Seekers Through Social Logins</th>
+          <td>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ today_applicants_count }}</span>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #34c3bb;color: white;">{{ today_resume_applicants_count }}</span>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #78909c;color: white;">{{ today_applied_applicants_count }}</span>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_profile_applicants_count }}</span>
+            <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_login_only_once_applicants_count }}</span>
+          </td>
+        </tr>
+        <tr style="display: table-row;vertical-align: inherit;border-color: inherit;">
+          <th scope="row">Job Seekers Through Registrations</th>
+          <td><span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ today_register_applicants_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #34c3bb;color: white;">{{ today_register_resume_applicants_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #78909c;color: white;">{{ today_register_applied_applicants_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_register_profile_applicants_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_register_login_only_once_applicants_count }}</span>
+          </td>
+        </tr>
+        <tr style="display: table-row;vertical-align: inherit;border-color: inherit;">
+          <th scope="row">Job Seekers Through Resumes</th>
+          <td><span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ resume_applicants_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #34c3bb;color: white;">{{ resume_uploaded_applicants_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #78909c;color: white;">{{ resume_applied_applicants_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ resume_profile_applicants_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ resume_login_once_applicants_count }}</span>
+          </td>
+        </tr>
+        <tr style="display: table-row;vertical-align: inherit;border-color: inherit;">
+          <th scope="row">Job Seekers Through ResumePool</th>
+          <td><span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ resumepool_applicants }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #34c3bb;color: white;">{{ resumepool_applicants }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #78909c;color: white;">{{ resumepool_applied_applicants }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ resumepool_profile_applicants }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ resumepool_login_once_applicants }}</span>
+          </td>
+        </tr>
+        <tr style="display: table-row;vertical-align: inherit;border-color: inherit;">
+          <th scope="row">Agencies</th>
+          <td><span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ today_agency_recruiters_count }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #34c3bb;color: white;">{{ today_agency_active_recruiters }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #78909c;color: white;">{{ today_agency_inactive_recruiters }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_mobile_verified_agency_recruiters }}</span>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_mobile_not_verified_agency_recruiters }}</span>
+          </td>
+        </tr>
+        <tr style="display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;">
+          <th scope="row">Recruiters</th>
+          <td>
+          <span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ today_recruiters_count }}</span>
+          <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #34c3bb;color: white;">{{ today_active_recruiters }}</span>
+          <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #78909c;color: white;">{{ today_inactive_recruiters }}</span>
+          <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #49a54e;color: white;">{{ today_mobile_verified_recruiters }}</span>
+          <span class="in-active-bg" style="display:inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #ea1c0d;color: white;">{{ today_mobile_not_verified_recruiters }}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <th scope="row">Job Applications</th>
+          <td><span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #f29000;color: white;">{{ today_job_applications }}</span></td>
+        </tr>
+
+        <tr>
+          <th scope="row">Tickets</th>
+          <td><span class="active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #34c3bb;color: white;">{{ today_active_tickets }}</span><span class="in-active-bg" style="display: inline-block;text-align: center;padding: 4px 8px;margin: 2px;background-color: #78909c;color: white;">{{ today_closed_tickets }}</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>

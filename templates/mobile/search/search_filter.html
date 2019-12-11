@@ -1,0 +1,33 @@
+{% load page_tags %}
+<section class='filter_drop_down'>
+  <form autocomplete="off" onsubmit="return validateForm()" name="search-form" class="autocomplete-me" id="elastic-search" method ="POST">
+    <div class="job_type">
+      <h3>Advanced Search</h3>
+      {% for job_type in job_types %}
+      <span class='checkbox_each'><input type='checkbox' name='job_type' class="job_type" value="{{ job_type.0 }}" {% if searched_job_type == job_type.0 %} checked {% endif %}><span class='name'>{{ job_type.1 }}</span></span>
+      {% endfor %}
+      <div class="clearfix"></div>
+    </div>
+    <div class="input_wrap_div">
+
+    <input type="text" class="input_filter search_input" id="filter_skill" name="q" value="{% for skill in searched_skills %}{{ skill }}, {% endfor %}{% for edu in searched_edu %}{{ edu }}, {% endfor %}" placeholder='Enter Any Skills, Qualifications'>
+    <!--<input type="hidden" name="search_slug" id='search_slug' value="{{search_slug|default_if_none:''}}">-->
+
+    <input type="text" class="input_filter search_input" id="filter_location" name="location" value="{% for loc in searched_locations %}{{ loc }}, {% endfor %}" placeholder='Enter Any Locations, States'>
+
+    <input type="text" class="input_filter search_input" name="functional_area" value="{{ searched_functional_area|default_if_none:'' }}" placeholder='Select the functional area where you want to work'>
+
+    <input type="text" class="input_filter search_input" name="industry" value="{{ searched_industry|default_if_none:'' }}" placeholder='Select the industry where you want to work'>
+
+    <select class="input_filter search_input select2" placeholder='Experience' name='experience'>
+      <option value="">Experience(Y)</option>
+      {% for i in "xxxxxxxxxxxxx" %}
+        <option value="{{ forloop.counter0 }}" {% ifequal forloop.counter0|add:"0" searched_experience|add:'0' %}selected{% endifequal %}>{{ forloop.counter0 }}</option>
+      {% endfor %}
+    </select>
+    </div>
+    <div class="button_row">
+      <button type="submit" class='button submit'><span>Submit</span></button>
+    </div>
+    </form>
+</section>

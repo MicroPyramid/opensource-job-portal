@@ -1,0 +1,233 @@
+{% extends 'mobile/base.html'%}
+{% load thumbnail %}
+{% load page_tags %}
+
+{% block block_canonical_tag %}
+  {% if current_page|slugify == '1'|slugify %}
+    {% else %}
+    <link rel="prev" href="https://peeljobs.com{{ current_url }}{% if prev_page != 1 %}{{ prev_page }}/{% endif %}" />
+  {% endif %}
+  {% if current_page <= last_page %}
+    {% if current_page == last_page %}
+    {% else %}
+      <link rel="next" href="https://peeljobs.com{{ current_url }}{{current_page| add:"1"}}/" />
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{% block block_title %}
+ {% include "meta_data/jobs_list_data.html" with meta_data=True%}
+ {% endblock %}
+{% block stage %}
+<style type="text/css">
+body{
+  padding-bottom: 33px;
+}
+/* Style the buttons that are used to open and close the accordion panel */
+.morecontent span.moretext {
+        display: none;
+    }
+.morecontent span.morelink {
+        cursor: pointer;
+        margin-left: -2px;
+    }
+    .morelink {
+      color: white;
+      font-weight: 600;
+    }
+.more{
+  padding-left: 10px;
+    line-height: 23px;
+    font-size: 15px;
+    text-align: justify;
+    padding-right: 19px;
+}
+.internship-text{
+  text-transform: capitalize !important;
+}
+.last-date{
+  font-size: 17px;
+  color: #5aa2ce;
+  display: inline-block;
+  font-weight: 600;
+  margin-left: 10px;
+}
+.job_text{
+  margin-bottom: 10px;
+  color: #5aa2ce;
+}
+
+
+</style>
+<!-- content of job_list -->
+    <section id='job_list' class="jobs_list">
+      <div class="job_text">
+     {% include "meta_data/jobs_list_data.html" with page_h1=True %}
+      <!--<span class="last-date">Jobs Last Update On {{current_date }}</span>-->
+      </div>
+      {% if searched_skills.0.page_content %}
+      <div class="more">
+        {{ searched_skills.0.page_content|safe}}
+      </div>
+      {% elif industry and industry.page_content %}
+      <div class="more">
+        {{ industry.page_content|safe}}
+      </div>
+      {% elif searched_locations.0.page_content %}
+      <div class="more">
+        {{ searched_locations.0.page_content|safe}}
+      </div>
+      {% elif searched_locations.0.internship_content %}
+      <div class="more">
+        {{ searched_locations.0.internship_content|safe}}
+      </div>
+      {% endif %}
+
+   {% include 'mobile/job_list.html' with job_list=job_list %}
+    {% if no_of_jobs < 10 %}
+      {% if fresher or walkin %}
+        {% if searched_locations and searched_skills %}
+          <h4 class='similar-latest text-center'>
+            <a href="/{% for skill in searched_skills %}{{ skill.slug }}-{% endfor %}jobs-in-{% for l in searched_locations %}{{ l.slug }}{% if forloop.last %}/{% else %}-{% endif %}{% endfor %}" target="_blank">
+            Latest {% for skill in searched_skills %}{{ skill.slug }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %} Jobs in {% for l in searched_locations %}{{ l.slug }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}
+            </a>
+          </h4>
+        {% elif searched_locations %}
+          <h4 class="similar-latest text-center"><a href="/jobs-in{% for loc in searched_locations %}-{{ loc.slug }}{% endfor %}/">Latest Jobs in {% for loc in searched_locations %}{{ loc.name }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</a></h4>
+        {% else %}
+          <h4 class="similar-latest text-center"><a href="/{% for skill in searched_skills %}{{ skill.slug }}-{% endfor %}jobs/">Latest {% for skill in searched_skills %}{{ skill }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}Jobs</a></h4>
+        {% endif %}
+        <br clear='all'>
+      {% endif %}
+    {% endif %}
+    <!-- profile alert -->
+  {% if last_page > 1 %}
+ <!-- pagination starts here -->
+    <div class="pagination_row text-center">
+      <ul class="pagination pagination-sm text-center">
+        {% if prev_page < current_page %}
+          <li><a href="{{current_url}}{% if prev_page == 1%}{% else %}{{ prev_page }}/{% endif %}">Previous</a></li>
+        {% endif %}
+        <li {% ifequal s current_page %} class="active" {% endifequal %}>
+          <a href="{{current_url}}{% if current_page == 1%}{% else %}{{ current_page }}{% endif %}">{{current_page}} of {{ last_page }}</a>
+        </li>
+        {% if aft_page > current_page %}
+          <li>
+            <a href="{{current_url}}{{aft_page}}/">Next</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
+    <!-- pagination ends here -->
+   <!-- Similar Links starts -->
+        {% if searched_locations or searched_skills %}
+          <div class="popular_links clearfix">
+            <h2>Most Similar Links</h2>
+            <ul class="clear">
+              {% with state.get_state_cities as state_cities %}
+                {% if fresher %}
+                  {% for loc in searched_locations %}
+                    <li><a href="{% url 'job_locations' loc.slug %}">&raquo; Jobs in {{ loc.name }}</a></li>
+                    <li><a href="{% url 'location_walkin_jobs' loc.slug %}">&raquo; Walkins in {{ loc.name }}</a></li>
+                  {% endfor %}
+                  {% for city in state_cities %}
+                    <li><a href="{% url 'job_locations' city.slug %}">&raquo; Jobs in {{ city.name }}</a></li>
+                    <li><a href="{% url 'location_walkin_jobs' city.slug %}">&raquo; Walkins in {{ city.name }}</a></li>
+                  {% endfor %}
+                  {% for search in searched_skills %}
+                    <li><a href="{% url 'job_skills' search.slug %}">&raquo; {{ search.name }} Jobs</a></li>
+                    <li><a href="{% url 'skill_walkin_jobs' search.slug %}">&raquo; {{ search.name }} Walkins</a></li>
+                  {% endfor %}
+                {% elif walkin %}
+                  {% for loc in searched_locations %}
+                    <li><a href="{% url 'job_locations' loc.slug %}">&raquo; Jobs in {{ loc.name }}</a></li>
+                    <li><a href="{% url 'location_fresher_jobs' loc.slug %}">&raquo; Fresher Jobs in {{ loc.name }}</a></li>
+                  {% endfor %}
+                  {% for city in state_cities %}
+                    <li><a href="{% url 'job_locations' city.slug %}">&raquo; Jobs in {{ city.name }}</a></li>
+                    <li><a href="{% url 'location_fresher_jobs' city.slug %}">&raquo; Fresher Jobs in {{ city.name }}</a></li>
+                  {% endfor %}
+                  {% for search in searched_skills %}
+                    <li><a href="{% url 'job_skills' search.slug %}">&raquo; {{ search.name }} Jobs</a></li>
+                    <li><a href="{% url 'skill_fresher_jobs' search.slug %}">&raquo; {{ search.name }} Fresher Jobs</a></li>
+                  {% endfor %}
+                {% else %}
+                  {% for loc in searched_locations %}
+                    <li><a href="{% url 'location_walkin_jobs' loc.slug %}">&raquo; Walkins in {{ loc.name }}</a></li>
+                    <li><a href="{% url 'location_fresher_jobs' loc.slug %}">&raquo; Fresher Jobs in {{ loc.name }}</a></li>
+                  {% endfor %}
+                  {% for city in state_cities %}
+                    <li><a href="{% url 'location_walkin_jobs' city.slug %}">&raquo; Walkins in {{ city.name }}</a></li>
+                    <li><a href="{% url 'location_fresher_jobs' city.slug %}">&raquo; Fresher Jobs in {{ city.name }}</a></li>
+                  {% endfor %}
+                  {% for search in searched_skills %}
+                    <li><a href="{% url 'skill_walkin_jobs' search.slug %}">&raquo; {{ search.name }} Walkins</a></li>
+                    <li><a href="{% url 'skill_fresher_jobs' search.slug %}">&raquo; {{ search.name }} Fresher Jobs</a></li>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+            </ul>
+          </div>
+        {% endif %}
+        <div>
+          <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- PJ Right Nav -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-5756092160559539"
+                 data-ad-slot="3490610504"
+                 data-ad-format="auto"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <!-- Similar Links ends -->
+    {% if request.user.is_authenticated %}
+      {% if request.user.profile_completion_percentage < 50 %}
+      <a href="{% url 'my:profile' %}">
+        <div class="profile_complete">
+          Complete the profile to apply jobs.<span class='pj-menu close_icon'></span>
+          </div></a>
+      {% endif %}
+    {% endif %}
+    <!--/ profile alert -->
+    </section>
+    <!--/ content of job_list -->
+{% endblock %}
+{% block 'extra_js' %}
+  <script type="text/javascript">
+
+  $(document).ready(function() {
+    // Configure/customize these variables.
+    var showChar = 130;  // How many characters are shown by default
+    var ellipsestext = "...";
+    var moretext = "  more";
+    var lesstext = "      less";
+
+
+    $('.more').each(function() {
+        var content = $(this).children('p').html();
+        if(content.length > showChar) {
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+            var html = c + '<span class="moreellipses">' + ellipsestext+ '&nbsp;</span><span class="morecontent"><span class="moretext">' + h + '</span><span class="morelink">' + moretext + '</span></span>';
+            $(this).children('p').html(html);
+        }
+    });
+     $('body').on("click", ".morelink", function(e){
+      e.preventDefault();
+        if($(this).hasClass("less")) {
+            $(this).removeClass("less");
+            $(this).html(moretext);
+        } else {
+            $(this).addClass("less");
+            $(this).html(lesstext);
+        }
+        $(this).parent().prev().toggle();
+        $(this).prev().toggle();
+        return false;
+    });
+});
+</script>
+{% endblock %}

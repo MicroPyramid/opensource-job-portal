@@ -1,0 +1,150 @@
+{%load page_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Peeljobs Profile Update</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+  </head>
+  <body style="width:100% !important; margin:0 !important; padding:0 !important; -webkit-text-size-adjust:none; -ms-text-size-adjust:none;font-size:12px; font-family: 'Poppins', sans-serif;color: #45586d; background: #fff; ">
+   <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable" style="height:auto !important; margin:0; padding:0; width:100% !important; font-family: 'Poppins', sans-serif;color: #45586d; background: #fff;">
+      <tr>
+         <td>
+          <table id="contenttable" width="600" align="center" cellpadding="0" cellspacing="0" border="0" style="font-family: 'Poppins', sans-serif;color: #45586d; background: #fff; margin-top:0 !important; margin-right: auto !important; margin-bottom:0 !important; margin-left: auto !important; border:none; width: 100% !important; max-width:600px !important;border: 1px solid #ddd !important;">
+              <tr>
+                <td> 
+                  <table style="width:600px;background:#fff;padding:0;" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="background: #0358a6;height:30px;padding: 10px 15px;">
+                        <a href="#" style="text-overflow: ellipsis;overflow: hidden;color: #fff !important;margin-left: 0 !important;display: inline-block;margin: 0; padding:0;font-weight: 600;font-size: 18px;text-decoration:none;"><i class="fa fa-line-chart" aria-hidden="true"></i> Peeljobs</a>
+                        <span style="float:right;color: #fff;letter-spacing: 0.7px;position: relative;top:5px;"><a href="https://peeljobs.com/profile/">Update Profile</a> </span>
+                      </td>
+                    </tr>
+                    <tr style="background:#fff;">
+                      <td style="text-align:left;padding:20px 15px;color: #131e26;font-weight: bold;font-size: 17px;">
+                        <strong style="margin-bottom:15px;color:#45586d;font-size: 13px;font-weight:600;display:block;">Welcome to Peeljobs</strong>
+                        <small style="margin-bottom:15px;color:#45586d;font-size: 13px;font-weight:500;display:block;">Dear {% if user.get_full_name %}{{ user.get_full_name }},{% else%}User,{% endif %}</small>
+                        <p style="color: #4f657d;font-size: 12px;font-weight: 400;line-height:23px;margin-bottom:0px;">
+                          {% if recruiter and not inactive_user%}
+                            We have noticed that you have not updated your profile. Please update your profile to Recieve More response from Job Seekers.
+                          {% elif resume_update %}
+                            We have noticed that you have not Uploaded your Resume. Please update your Resume to get noticed by top recruiters.
+                          {% elif inactive_user %}
+                            We have noticed that you are away from PeelJobs since long time, {% if recruiter %}You are missing Skilled applicants profiles. Do visit Peeljobs regularly for latest updates and Suitable Candidates.{% else %}You are missing latest Job opportunities from leading organizations. Do visit Peeljobs regularly for latest updates and Job opportunities in various categories.{% endif %}
+                          {% else %}
+                            We have noticed that you have not updated your profile. Please update your profile to get noticed by top recruiters.
+                          {% endif %}
+                        </p>
+                      </td>
+                    </tr>
+                     <tr>
+                      <td style="padding:0px 15px;width:100%;">
+                        <div style="width:275px;float: left;"><a href="{% if recruiter %}https://peeljobs.com/recruiter/login/?next=/{% if user.user_type == 'RR' %}recruiter{% else %}agency{% endif %}/profile/{% else %}https://peeljobs.com/?referer=gmail{% endif %}" style="background:#62bb46;margin-bottom: 20px;padding:10px;text-align:center;color:#fff;font-size: 12px;font-weight:500;letter-spacing:0.7px;text-decoration:none;display:block;">Login & Update your profile</a></div>
+                         <div style="background:#ebecea;margin-bottom: 15px;text-align:center;color:#45586d;font-size: 12px;font-weight:500;letter-spacing:0.7px;width:275px;float: left;height:34px;"><span style="position:relative;top:-3px;">Profile Completeness</span><span style="color:#c12c33;font-size: 24px;font-weight: 500;position: relative;top:0px;margin-left:7px;">{{user.profile_completion_percentage }}% </span></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding-left:15px;font-size: 12px;">
+                        <strong style="color: #45586d;font-weight:600;font-size:12px;letter-spacing: 0.2px;margin-bottom: 10px;">Your current profile details on Peeljobs.com:</strong>
+                        <div style="margin-top:10px;width:570px;">
+                          <span style="width:350px;float:left;">Email Address : {{ user.email }}</span>
+                                                </div>
+                        <br>
+                         <div style="margin-top:15px;width:570px;">
+                          <span style="width:350px;float:left;">Mobile Number : {{ user.mobile|default_if_none:'Not Specified' }}</span>
+                        </div>
+                        <br>
+                         <div style="margin-top:15px;width:570px;">
+                          <span style="width:350px;float:left;">Last Logged on: {{user.last_login|date:"m/d/Y"}}</span>
+                        </div>
+                        <br>
+                         <div style="margin-top:15px;width:570px;">
+                          <span style="width:350px;float:left;">Profile Updated on: {{user.profile_updated|date:"m/d/Y"}}</span>
+                          <br clear="all">
+                        </div>
+                        <br>
+                      </td>
+                    </tr>
+                    {% if not resume_update and not inactive_user %}
+                    <tr>
+                      <td style="padding-left:15px;font-size: 12px;">
+                        <strong style="color: #45586d;font-weight:600;font-size:12px;letter-spacing: 0.2px;margin-bottom: 10px;">Benefits of Updating Profile:</strong>
+                        <ol style="margin:0;padding:0;margin-left:30px;margin-top:10px;">
+                        {% if recruiter %}
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">To reach more than 1000+ applicants for your jobposts</li>
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">
+                           To Contact more than 10,000+ applicants</li>
+                        {% else %}
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">To contact more than 1000+ recruiters
+                          </li>
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">
+                            To Access more than 1 lac job openings
+                          </li>
+                          <li style="float:none;color:#45586d;font-size: 12px;letter-spacing:0.5px;margin-bottom:5px;">Increase your profile completion upto 50% to apply for the best jobs</li>
+                        {% endif %}
+                          <br clear="all">
+                        </ol>
+                      </td>
+                    </tr>
+                    {% endif %}
+                    {% if inactive_user %}
+                       <tr>
+                      <td>
+                         <a href="https://peeljobs.com/" style="display:inline-block;width:190px;background:#62bb46;margin:10px auto;margin-bottom: 10px;padding:7px 10px;text-align:center;color:#fff;font-size: 12px;font-weight:500;letter-spacing:0.7px;text-decoration:none;display:block;">Click Here to Visit PeelJobs</a>
+                        </td>
+                      </tr>
+                    {% else %}
+                     <tr>
+                      <td>
+                         <a href=" {% if recruiter %}https://peeljobs.com/recruiter/login/?next=/{% if user.user_type == 'RR' %}recruiter{% else %}agency{% endif %}/profile/{% else %}https://peeljobs.com/?referer=gmail&next=/profile/{% endif %}" style="display:inline-block;width:190px;background:#62bb46;margin:10px auto;margin-bottom: 10px;padding:7px 10px;text-align:center;color:#fff;font-size: 12px;font-weight:500;letter-spacing:0.7px;text-decoration:none;display:block;">{% if resume_update %}Click here to Upload Resume{% else %}Click here to Update Profile{% endif %}</a>
+                        </td>
+                      </tr>
+                    {% endif %}
+                    <tr>
+                       <td style="padding-left:15px;">
+                        <span style="color:#45586d;font-size: 12px;margin-top:30px;display:block;">Thanks & Regards,</span>
+                        <span style="color:#45586d;font-size: 12px;font-weight: 500;margin-top: 8px;display:block;margin-bottom: 30px;"><div>Peeljobs Team.</div>
+                        <div>support@peeljobs.com</div></span>
+                      </td>
+                    </tr>
+                     <tr>
+                      <td>
+                        <ul style="margin:0;padding:0;padding:0 8px;border-top:1px solid #e0e0e0;text-align:center;">
+                          <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/terms-conditions/" target="_blank" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;">Terms & Conditions</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/privacy-policy/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Privacy Policy</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/about-us/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">About Peeljobs</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/page/faq/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">FAQ's</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/contact/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Contact Us</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/blog/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Blog</a>
+                          </li>
+                           <li style="list-style:none;display:inline-block;">
+                            <a href="https://peeljobs.com/unsubscribe_email/user/{{user.unsubscribe_code}}/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;margin-left:480px;" target="_blank">Unsubscribe</a>
+                          </li>
+                        </ul>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+         </td>
+      </tr>
+    </table>     
+
+  </body>
+</html>

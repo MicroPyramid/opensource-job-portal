@@ -1,0 +1,215 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% load thumbnail %}
+{% block jobs %}
+<li class="job active"><a class="post-new" href="#">Post A new job</a></li>
+<li class="job"><a href="{% url 'recruiter:list' %}">jobs list</a></li>
+{% endblock %}
+{% block 'stage' %}
+<!-- content -->
+<style type="text/css">
+  .input_element{
+    width: 32% !important;
+  }
+</style>
+
+<div class="content_wrap">
+<section id='job_post_new'>
+  <h3 class="main_title">Edit Client <span class="pull-right"><a href="{% url "agency:client_list" %}"><i class="fa fa-bars" aria-hidden="true"></i> Client List</a></span></h3>
+  <div class="content_job_post">
+    <!-- category -->
+    <div class="category">
+      <!-- form div -->
+      <form name="clientform" id="clientform" method='post'>
+      <div class="form_div">
+        <div class="panel panel-default job_post_panel">
+          <div class="panel-body">
+            <div class="row  client_create_form">
+              <!--input element -->
+              <div class="input_element col-md-4">
+                <label>Client Name</label>
+                <input type="text" class="input full_wid" placeholder="Client Name" name="name" id='name' value="{{ client.name }}">
+              </div>
+              <!--/input element -->
+              <!--input element -->
+              <div class="input_element  col-md-4">
+                <label>Website</label>
+                <input type="text" class="input full_wid" placeholder="Website" name='website' id='website' value="{{ client.website }}">
+                <input type="hidden" name="no_of_branch" id="no_of_branch" value='{{ client.branch_details.all|length }}'>
+                <input type="hidden" name="no_of_category" id="no_of_category" value='{{client.company_categories.all|length}}'>
+              </div>
+              <!--/input element -->
+              <!--input element -->
+              <div class="input_element  col-md-4">
+                <label>Company Logo</label>
+                <input type="file" class="input full_wid" accept="image/*" name='logo' id='logo'>
+              </div>
+              <!--/input element -->
+              <div class="row">
+                <!--input element -->
+                <div class="input_element area_element">
+                  <textarea class="input" placeholder="Company Description" name='decription' id='decription'>{{ client.decription }}</textarea>
+                </div>
+                <!--/ input element -->
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <label>Branch Details</label>
+            {% for branch in client.branch_details.all %}
+              <div class="branch_divs">
+                <div class="row client_branch another_location">
+                  <div class="col-md-12 form_left branch_{{forloop.counter}} branch_div">
+                    <div class="half_wid_element">
+                      <select class="input" name="location_{{forloop.counter}}" id="location_{{forloop.counter}}">
+                        <option value=''>Select A Branch Location</option>
+                        {% for city in cities %}
+                        <option value='{{ city.id }}' {% ifequal branch.location.id city.id %}selected{% endifequal %}>{{ city.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <!--/ input element -->
+                    <!--/ input element -->
+                    <br clear="all">
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <!--input element -->
+                      <div class=" full_wid">
+                        <label>Branch Address</label>
+                        <textarea class="input" placeholder="Branch Address" rows="3" name="address_{{forloop.counter}}" id="address_{{forloop.counter}}">{{ branch.address }}</textarea>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class=" full_wid">
+                        <label>Contact Details</label>
+                        <textarea class="input" placeholder="Enter Your Branch Contact Details" rows="3" name="contact_details_{{forloop.counter}}" id="contact_details_{{forloop.counter}}">{{ branch.contact_details }}</textarea>
+                      </div>
+                    </div>
+                    <input type="checkbox" name="is_major_{{forloop.counter}}" id="is_major_{{forloop.counter}}" class="is_major" {% if branch.is_major %}checked{% endif %}/>Is Main Branch
+                    <br clear="all">
+                  </div>
+                  <br clear="all">
+                  <span class="delete_branch" id="branch_{{forloop.counter}}"><i class="fa fa-trash delete_client_branch" aria-hidden="true"></i></span>
+                </div>
+              </div>
+            {% endfor %}
+          <span class='add_location add_branch'><i class='fa fa-plus'></i>Another Branch</span>
+          </div>
+          <!--input
+          <div class="panel-body">
+            <label>Category Details</label>
+            <div class="category">
+              {% for category in client.company_categories.all %}
+              <div class="row another_location">
+                <div class="row">
+                  <div class="col-md-6 category_name">
+
+                    <div class="full_wid">
+                      <label>Name</label>
+                      <input type="text" name="name_{{forloop.counter}}" id="name_{{forloop.counter}}" class="input" placeholder="Enter Category Name" value="{{category.name}}"/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class=" full_wid">
+                      <label>Percantage</label>
+                      <input type="text" name="percantage_{{forloop.counter}}" id="percantage_{{forloop.counter}}" class="input" placeholder="Enter Percantage Name" value="{{ category.percantage }}"/>
+                    </div>
+                  </div>
+                   <br clear="all">
+                </div>
+                 <br clear="all">
+                <span class='delete_category' id="category_{{ forloop.counter }}"><i class="fa fa-trash delete_client_category" aria-hidden="true"></i>
+              </div>
+              {% endfor %}
+            </div>
+            <span class='add_location add_category'><i class='fa fa-plus'></i>Another Category</span>
+          </div> element -->
+      </div>
+      <div class="row marl_15 job_post_button_row">
+        <div class="button_left_col col-md-12">
+          <!-- button row -->
+          <div class="button_row wrap">
+            <button type="submit" class='button post'>Submit</button>
+            <button type="button" class='button cancel'>Cancel</button>
+          </div>
+          <!--/ button row -->
+        </div>
+      </div>
+      </form>
+</section>
+</div>
+<!--/ content -->
+</div>
+<!--/ container -->
+{% endblock %}
+{% block 'extra_js' %}
+    <script>
+        $('form#clientform').ajaxForm({
+            type: 'POST',
+            dataType: 'json',
+            data: $('#clientform').serialize(),
+            success: function (data) {
+                $.blockUI({message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+                if (data.error == false) {
+                    $.unblockUI()
+                    open_dialog_with_url(data.response, "Infoo!!", "{% url 'agency:client_list' %}")
+                } else {
+                    $.unblockUI()
+                    open_dialog('Some Content Missing', 'Info!!')
+                    $('div.error').remove();
+                    for (var key in data.response) {
+                        $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                    }
+                }
+            }
+        });
+        $('.cancel').click(function (e) {
+            window.location = "{% url 'agency:client_list' %}";
+        })
+        $('.add_branch').click(function (e) {
+            e.preventDefault();
+            no_of_branches = $('#no_of_branch').val()
+            no_of_location = $('div.branch_divs').length
+            no_of_branch = no_of_location + 1
+            $('#no_of_branch').val(no_of_branch);
+            $.post('/agency/clients/branch/' + no_of_branches + '/', {'selected_locations': ''}, function (data) {
+                $(".add_branch").before(data);
+            });
+        });
+        $('body').on('click', '.delete_client_branch', function (e) {
+            e.preventDefault();
+            if ($('.branch_divs').length == 1) {
+              open_dialog('Client Must have atleast one branch', 'Info!!')
+            }
+            else {
+                $(this).parent().parent().parent().remove();
+            }
+        });
+        $('body').on("click", '.is_major', function (e) {
+            if ($("input:checkbox[class=is_major]:checked").length > 1) {
+              open_dialog('Company must have atleast one major branch', 'Info!!')
+                $(this).prop('checked', false);
+            }
+            else {
+            }
+        });
+        // $('.add_category').click(function (e) {
+        //     e.preventDefault();
+        //     no_of_category = $('div.category_name').length
+        //     no_of_category = no_of_category + 1
+        //     $('#no_of_category').val(no_of_category);
+        //     data = '<div class="row another_location"><div class="row"><div class="col-md-6"><div class=" full_wid"><label>Name</label><input type="text" name="name_' + no_of_category + '" id="name_' + no_of_category + '" class="input" placeholder="Enter Category Name"/></div></div><div class="col-md-6"><div class="full_wid"><label>Percantage</label><input type="text" name="percantage_' + no_of_category + '" id="percantage_' + no_of_category + '" class="input" placeholder="Enter Percantage Name"/></div></div><br clear="all"></div><br clear="all"><span class=" delete_category" id="category_' + no_of_category + '"><i class="fa fa-trash delete_client_category" aria-hidden="true"></i>'
+        //     $(".add_category").before(data);
+        // });
+        // $('body').on('click', '.delete_client_category', function (e) {
+        //     e.preventDefault();
+        //     if ($('.delete_client_category').length == 1) {
+        //       open_dialog('Client Must have atleast one category', 'Info!!')
+        //     }
+        //     else {
+        //         $(this).parent().parent().remove();
+        //     }
+        // });
+    </script>
+{% endblock %}

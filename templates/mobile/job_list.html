@@ -1,0 +1,88 @@
+ {% load page_tags %}
+ {% for job in job_list %}
+    <!-- job_each -->
+  {% with job.get_absolute_url as job_url %}
+    <div class="job_each">
+      <div class='job_title'><a href="{{ job.slug }}">{{ job.title }}</a>
+        {% if job.job_type == 'walk-in' %}
+        {% elif job.user.is_superuser %}
+            {% if job.company_emails %}
+            <div class="apply_block text-right">
+              <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="apply_btn send_mail {% if request.user.is_active %}active{% endif %} {% if request.user.profile_completion_percentage > 50 %}completed{% endif %} {% if request.user.is_authenticated %}logged{% endif %}">Apply</a>
+            </div>
+            {% endif %}
+        {% else %}
+          <div class="apply_block text-right">
+            {% if request.user.is_authenticated %}
+              {% if request.user.id|is_applied_for_job:job.pk %}
+                <a href="{{ job_url }}" class="apply_btn latest_job_type">Applied</a>
+              {% else%}
+                <a href="{% if not request.user.is_authenticated %}#{% endif %}" class='apply_btn latest_job_type job_apply  applicant_apply' id="{{ job.pk }}" data-href="{{ job_url }}?job_apply=applied">Apply</a>
+              {% endif %}
+            {% else %}
+              <a href="#" class='apply_btn latest_job_type job_apply job_apply_login' id="{{ job.pk }}" data-href="{{ job_url }}?job_apply=applied">Apply</a>
+            {% endif %}
+          </div>
+        {% endif %}
+   </div>
+    {% if job.company or job.company_name %}
+    <div class='job_detail'>
+      <span class='heading'><i class='fa fa-building'></i> Company</span>
+      {% if job.company.is_active and job.company.slug %}
+        <span><a href="{% url 'company_jobs' job.company.slug %}">{{job.company.name|capfirst}}</a></span>
+      {% elif job.company %}
+        <span>{{job.company.name|capfirst}}</span>
+      {% elif job.company_name %}
+        <span>{{job.company_name|capfirst}}</span>
+      {% endif %}
+    </div>
+    {% endif %}
+    <div class='job_detail'>
+      <span class='heading'><i class='fa fa-map-marker' style="font-size: 16px;"></i> Location</span>
+      <span>{%for location in job.location.all %}
+      {% if location.status == 'Enabled' %}
+      <a href="{% url 'job_locations' location.slug %}">{{ location.name }}</a>{% else %}{{ location.name }}{% endif %}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+    </div>
+    <div class='job_detail'>
+      <span class='heading'><i class="fa fa-briefcase"></i> Experience (Y)</span>
+      <span>{{ job.min_year }}{% if job.max_year > 0 %}-{{ job.max_year }}{% endif %} Years</span>
+    </div>
+    <div class='job_detail'>
+      <span class='heading'><i class="fa fa-cogs"></i> Skills</span>
+      <span>
+        {% for skill in job.skills.all %}
+          {% if skill.status == 'Active' %}
+            <a class="tag" style="color:#676767;" href="{% url 'job_skills' skill.slug %}">{{ skill.name }}</a>
+          {% else %}
+            <a class="tag" style="color:#676767;">{{ skill.name }}</a>
+          {% endif %}
+        {% empty %}
+         Not Specified
+        {% endfor %}
+      </span>
+    <br clear="all">
+    </div>
+
+    <div class='job_detail'>
+      <span class='heading'><i class="fa fa-briefcase"></i> Job Type</span>
+      <span><a class="tag" href="/{{job.get_job_type}}-jobs/" target="_blank"style="color:#676767;">{{job.job_type}}</a></span>
+    <br clear="all">
+    </div>
+    </div>
+    {% endwith %}
+    <!--/ job each -->
+{% if forloop.counter|divisibleby:6 %}
+      <div style="margin-top:10px;margin-bottom:10px;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- PJ Right Nav -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5756092160559539"
+           data-ad-slot="3490610504"
+           data-ad-format="auto"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+    {% endif %}
+  {% endfor %}

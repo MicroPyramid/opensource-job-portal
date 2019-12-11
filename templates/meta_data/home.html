@@ -1,0 +1,9 @@
+
+  <title>{{ meta_title|safe }}</title>
+  <meta name="description" content="{{ meta_description|safe }}"/>
+  <meta property="og:url"    content="{% if pjurl %}{{pjurl}}{% else %}https://peeljobs.com/{% endif %}" />
+  <meta property="og:title"  content="{{ meta_title|safe }}" />
+  <meta property="og:description" content="{{ meta_description|safe }}" />
+  <meta property="og:image"  content="{{logo}}"/>
+  <meta property="og:image:width" content="200" />
+  <meta property="og:image:height" content="200" />

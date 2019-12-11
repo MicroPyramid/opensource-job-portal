@@ -1,0 +1,230 @@
+{% extends "dashboard/base.html" %}
+{% load thumbnail %}
+{% load page_tags %}
+{% load tz %}
+{% load static %}
+{% block stage %}
+<section id='job_detail'>
+  <div class="job_description_wrap">
+    <div class="posted_by_details">
+      <div class="wrap">
+        <span>
+          <span class='name'>{{ company.get_company_admin.email }}</span>
+          <!--<span class='other_details'>Web Designer</span>-->
+          <span class='other_details'>{{ post.user.email }}</span>
+        </span>
+        <img src="{{ company.get_logo_url }}">
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="job_details">
+      <!-- post details -->
+      <div class="profile_individual company_profile_detail">
+        <div class="title_profile">
+          <h4><i class="fa fa-list-ul"></i>Company Details</h4>
+        </div>
+        <div class='specific_detail'>
+          <div class="left_div">
+            <div class="tile_each">
+              <label>Name</label>
+              <span class="description">
+              <span>{{ company.name }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            <div class="tile_each">
+              <label>Type</label>
+              <span class="description">
+              <span>{{ company.company_type }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div class="right_div">
+            <div class="tile_each">
+              <label>Website</label>
+              <span class="description">
+              <a href="{{ company.website }}" target="_blank"><span>{{ company.website }}</span></a>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            {% if company.level %}
+            <div class="tile_each">
+              <label>Level</label>
+              <span class="description">
+              <span>Level {{ company.level }}</span>
+              </span>
+              <div class="clearfix"></div>
+            </div>
+            {% endif %}
+          </div>
+          <div class="clearfix"></div>
+          <div class="tile_each">
+            <label>Description</label>
+            <span class="description">
+            <span>{{ company.profile|safe }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="tile_each">
+            <label>Address</label>
+            <span class="description">
+            <span>{{ company.address|linebreaks }}</span>
+            </span>
+            <div class="clearfix"></div>
+          </div>
+          <div class="view_recruiters">
+            <a href="{% url 'dashboard:company_recruiters' company.id "active" %}" class="view-recruiters">View Recruiters</a>
+            <a href="{% url 'dashboard:company_jobposts' company.id %}" class="view-jobposts">View Job Posts</a>
+            <a href="{% url 'dashboard:company_tickets' company.id %}" class="view-tickets">View Tickets</a>
+          </div>
+        </div>
+      </div>
+      <!--/ post details -->
+    </div>
+  </div>
+  <div class="profile_individual company_profile_detail">
+    <h4>Menu</h4>
+    {% if company.get_company_menu %}
+    <div class="profile_menu_table">
+      <div class="Table" id="sortable">
+        {% if company.get_company_menu %}
+        <div class="Heading">
+          <div class="Cell">
+            <p>Title</p>
+          </div>
+          <div class="Cell">
+            <p>Url</p>
+          </div>
+          <div class="Cell">
+            <p>Status</p>
+          </div>
+          <div class="Cell">
+            <p>Updated On</p>
+          </div>
+          <div class="Cell">
+            <p>Actions</p>
+          </div>
+        </div>
+        {% endif %}
+        {% for menu in company.get_company_menu %}
+        <div class="Row ui-state-default" id="{{menu.id}}">
+          <div class="Cell">
+            <p>{{menu.title}}</p>
+          </div>
+          <div class="Cell">
+            <p><a href="{{menu.url}}" target="_blank">{{menu.url}}</a></p>
+          </div>
+          <div class="Cell">
+            <p>{% if menu.status %}Active{% else %}In Active{% endif %}</p>
+          </div>
+          <div class="Cell">
+            <p>{{ menu.updated }}</p>
+          </div>
+          <div class="Cell actions">
+            <a href="#" data-toggle="modal" data-target="#myModal_{{menu.id}}" class="edit"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit </a>
+            <a href="#" class="delete" id="{{menu.id}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
+            <a href="{% url 'dashboard:menu_status' company.id menu.id %}" class="status"><i class="fa fa-check" aria-hidden="true"></i>{% if menu.status %}In Active{% else %}Active{% endif %}</a>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-danger alert-dismissible fade in" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+          <h4>There are no records in the database</h4>
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <!--/ category -->
+</section>
+{% endblock %}
+{% block script %}
+    <script>
+        $('.delete').click(function (e) {
+            e.stopPropagation();
+            url = $(this).attr('id') + '/'
+            $('#block_question').text('Do you want to delete Menu?')
+            $('#block_question').dialog({
+                modal: true,
+                dialogClass: "no-close",
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/dashboard/company/' + {{company.id}} +'/delete/' + url, {}, function (data) {
+                                if (data.error) {
+                                } else {
+                                    open_dialog_with_url('Menu Deleted Successfully', 'Success!!!', "{% url 'recruiter:view_company' %}")
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+        var fixHelperModified = function (e, tr) {
+
+                    var $originals = tr.children();
+                    var $helper = tr.clone();
+                    $helper.children().each(function (index) {
+                        $(this).width($originals.eq(index).width())
+                    });
+                    return $helper;
+                },
+                updateIndex = function (e, ui) {
+                    $('td.index', ui.item.parent()).each(function (i) {
+                        $(this).html(i + 1);
+                    });
+                    var prev = ui.item.startPos;
+                    var current = ui.item.index();
+                    $('#block_question').text('prev ' + prev + ' current ' + current)
+                    $('#block_question').dialog({
+                        modal: true,
+                        dialogClass: "no-close",
+                        draggable: false,
+                        title: "Info!!",
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        ]
+                    });
+                    if (prev != current) {
+                        $.get("{% url 'dashboard:menu_order' company.id %}" + "?prev=" + prev + "&current=" + current + "&menu_id=" + ui.item.id, function (data) {
+                            if (data.error) {
+                                open_dialog(data.errors, 'Error!!')
+                            }
+                        });
+                    }
+                }
+
+        $("#sortable").sortable({
+            helper: fixHelperModified,
+            stop: updateIndex,
+            start: function (event, ui) {
+                ui.item.startPos = ui.item.index();
+                ui.item.id = ui.item.id;
+            },
+            update: function (event, ui) {
+                ui.item.id = ui.item.attr("id");
+            }
+        }).disableSelection();
+        /* end sotbales */
+
+    </script>
+{% endblock %}

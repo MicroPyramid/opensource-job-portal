@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load searchtags %}
+{% load cache %}
+
+{% load thumbnail %}
+
+{% block block_canonical %}
+  <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  {% include "meta_data/jobs_by_location.html" %}
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<!-- content of list page -->
+      <section class="content_wrap_list main_container">
+        <div class="container">
+          <div class="breadcrumb_section row mar_lr_0">
+            <nav>
+              <ol class="cd-breadcrumb triangle">
+                <li>
+                  <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
+                    <span class="name" >Home</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/jobs">
+                    <span class="name">Latest Jobs</span>
+                  </a>
+                </li>
+                <li class="current">
+                  <span href="{% url 'jobs_by_location' 'jobs' %}" class="active job_detail">
+                    <span class="name">{% if job_type == 'jobs' %}Jobs{% else %}Walk-in Jobs{% endif %} by location</span>
+                  </span>
+                </li>
+              </ol>
+            </nav>
+          </div>
+
+        <h1 class='internship-text'>{% if job_type == 'jobs' %}Jobs{% else %}Walk-in Jobs{% endif %} In Top Cities</h1>
+
+          <div class="row">
+            <!-- list -->
+            <div class="browse_container col-md-9">
+              <!-- browse_list starts here -->
+              {% cache 604800 browse_jobs_by_locations_menu job_type %}
+                {% get_skills as total_skills %}
+                {% get_industries as total_industries %}
+                {% get_locations as total_locations %}
+                {% get_qualifications as total_degrees %}
+                <div class="browse_list">
+                  <div class="panel-group side_filter_section" id="accordion">
+
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <span class="panel-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="filter_icon"> Browse by Location <i class="more-less glyphicon glyphicon-minus pull-right"></i></a>
+                        </span>
+                      </div>
+                      <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                          <ul>
+                           {% if job_type == 'jobs' %}
+                            {% for location in total_locations|slice:'10' %}
+                              <li class="filter_option"><a href="{{ location.get_job_url }}" >{{ location.name }}</a></li>
+                            {% endfor %}
+                            <li class="filter_option more"><a href="{% url "jobs_by_location" 'jobs' %}">More</a></li>
+                            {% elif job_type == 'walkins' %}
+                            {% for location in total_locations|slice:'10' %}
+                              <li class="filter_option"><a href="{% url 'location_walkin_jobs' location.slug %}" >{{ location.name }}</a></li>
+                            {% endfor %}
+                            <li class="filter_option more"><a href="{% url "jobs_by_location" 'walkins' %}">More</a></li>
+                            {% else %}
+                            {% for location in total_locations|slice:'10' %}
+                              <li class="filter_option"><a href="{% url 'location_fresher_jobs' location.slug %}" >{{ location.name }}</a></li>
+                            {% endfor %}
+                            <li class="filter_option more"><a href=".">More</a></li>
+                            {% endif %}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <span class="panel-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="filter_icon collapsed">Browse by Skills <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
+                        </span>
+                      </div>
+                      <div id="collapseTwo" class="panel-collapse collapse">
+                        <div class="panel-body">
+                          <ul class="list-group">
+                             {% if job_type == 'jobs' %}
+                            {% for skill in total_skills|slice:'10' %}
+                            <li class="filter_option"><a href="{{ skill.get_job_url }}" >{{ skill.name }}</a></li>
+                            {% endfor %}
+                            <li class="filter_option more"><a href="{% url "jobs_by_skill" %}">More</a></li>
+                            {% elif job_type == 'walkins' %}
+                            {% for skill in total_skills %}
+                            <li class="filter_option"><a href="{% url 'skill_walkin_jobs' skill.slug %}" >{{ skill.name }}</a></li>
+                            {% endfor %}
+                            <li class="filter_option more"><a href="{% url 'fresher_jobs_by_skills' 'walkin' %}">More</a></li>
+                            {% else %}
+                             {% for skill in total_skills %}
+                            <li class="filter_option"><a href="{% url 'skill_fresher_jobs' skill.slug %}" >{{ skill.name }}</a></li>
+                            {% endfor %}
+                            <li class="filter_option more"><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">More</a></li>
+                            {% endif %}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <span class="panel-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" class="filter_icon collapsed">Browse by Industries <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
+                        </span>
+                      </div>
+                      <div id="collapseThree" class="panel-collapse collapse">
+                        <div class="panel-body">
+                          <ul class="list-group">
+                            {% for industry in total_industries|slice:'10' %}
+                              <li class="filter_option"><a href="{{ industry.get_job_url }}" >{{ industry.name|get_industry_name }}</a></li>
+                            {% endfor %}
+                            <li class="filter_option more"><a href="{% url "jobs_by_industry" %}">More</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <span class="panel-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseZero" class="filter_icon"> Browse by Degree <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
+                        </span>
+                      </div>
+                      <div id="collapseZero" class="panel-collapse collapse">
+                        <div class="panel-body">
+                          <ul>
+                            {% for degree in total_degrees|slice:'10' %}
+                              <li class="filter_option"><a href="{% url 'job_skills' degree.slug %}" >{{ degree.name }}</a></li>
+                            {% endfor %}
+                            <li class="filter_option more"><a href="{% url "jobs_by_degree" %}">More</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              {% endcache %}
+              <!-- browse_list ends here -->
+              <!-- browse_results starts here -->
+              <div class="browse_results">
+                <div class="browse_heading">Jobs in States / Union Territories and Cities across India</div>
+                <div id="timelines">
+                  {% if job_type == 'jobs' %}
+                    {% for state in states %}
+                      <div class="item browse_col">
+                        <ul {% if not state.is_duplicate %}class="state_url" data-href='{% url 'job_locations' state.slug %}'{% endif %}>
+                          <li>Jobs in {{ state.name }}</li>
+                          {% for city in state.active_cities %}
+                            <li><a href="{{ city.get_job_url }}" >Jobs in {{ city.name }}</a></li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% endfor %}
+                  {% elif job_type == 'walkins' %}
+                    {% for state in states %}
+                      <div class="item browse_col">
+                        <ul {% if not state.is_duplicate %}class="state_url" data-href='{% url 'location_walkin_jobs' state.slug %}'{% endif %}>
+                        <li>Walk-ins in {{ state.name }}</li>
+                          {% for city in state.active_cities %}
+                            <li><a href="{% url 'location_walkin_jobs' city.slug %}" >{{ city.name }}</a></li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% endfor %}
+                  {% else %}
+                    {% for state in states %}
+                      <div class="item browse_col">
+                        <ul {% if not state.is_duplicate %}class="state_url" data-href='{% url 'location_fresher_jobs' state.slug %}'{% endif %}>
+                          <li>Fresher Jobs in {{ state.name }}</li>
+                            {% for city in state.active_cities %}
+                              <li><a href="{% url 'location_fresher_jobs' city.slug %}" >{{ city.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              </div>
+              <!-- browse_results ends here -->
+            </div>
+            <!--/ list -->
+            <!-- refine search -->
+        {% include 'left_menu.html' %}
+            <!--/ refine search -->
+            <!-- register -->
+            <!--<div class="col-md-2 register">
+              <h3>Register free</h3>
+              <div class="register_form">
+                <input type='text' placeholder='Enter email id to register'>
+                <input type="text" placeholder="Create Password">
+                <button>Register Now</button>
+              </div>
+              </div>-->
+            <!--/ register -->
+          </div>
+        </div>
+      </section>
+      <!--/ content of list page -->
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script>
+$(document).ready(function(e){
+  $('#timelines').masonry({
+    // options
+    itemSelector: '.browse_col',
+    columnWidth: 20
+  });
+})
+ $('#job_skills').empty()
+    $('#job_skills').append(new Option('Select a Skill', ''))
+    $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+        $.each(JSON.parse(data.response), function (key, field) {
+           $('#job_skills').append(new Option(field.fields.name, field.pk))
+        })
+    });
+  $(".state_url").click(function(e){
+    window.location = $(this).attr('data-href')
+  })
+
+</script>
+{% endblock %}

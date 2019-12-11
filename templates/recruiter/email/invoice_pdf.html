@@ -1,0 +1,26 @@
+<section id='content_middle_wrap'>
+  <!-- seventy percent -->
+  <div class="col-md-9 col-sm-8 col-xs-12 seventy_percent">
+    <div class="logo" style="margin:10px 10px 30px 15px;padding-bottom:15px;border-bottom:1px solid #000;"><img src="{{media}}/company_media/boughseo/logo.png"></div>
+    <!-- header -->
+    <div class="main_content_wrap" style="padding-left:15px;">
+      <div class="title col-md-12 col-sm-12 col-xs-12  invoice-settle-block">
+        <div class="col-md-6 invoice-block">
+          <h3  style="font-weight:bold;font-size:30px;margin:0px;">Invoice For the Job Post {{ job_post.title }}</h3>
+          <span class="invoice_num" style="display:block;font-size:11px;font-weight:bold;margin-top:10px;">Invoice #{{ non_recurring_invoice.id }}</span>
+        </div>
+        <div class="col-md-6 settlement-block">
+          <h3 style="font-size:30px;display:block;margin:0px;margin-top:25px;font-weight:bold;">total amount: {{ total_amount }}</h3>
+          <h3 style="font-size:30px;display:block;margin:0px;margin-top:25px;font-weight:bold;">service_tax: {{ service_tax }}</h3>
+          <span class="client-email" style="display:block;font-size:11px;font-weight:bold;margin-top:10px;">swatch_barath_cess: {{swatch_barath_cess}}</span>
+          <span class="client-email" style="display:block;font-size:11px;font-weight:bold;margin-top:10px;">krushi_kalyani_cess: {{krushi_kalyani_cess}}</span>
+          <span class="client-email" style="display:block;font-size:11px;font-weight:bold;margin-top:10px;">agreed_percantage_amount: {{ agreed_percantage_amount }}</span>
+          <h3 style="font-size:30px;display:block;margin:0px;margin-top:25px;font-weight:bold;">Agency Amount: {{ deducted_ammount }}</h3>
+          <h3 style="font-size:30px;display:block;margin:0px;margin-top:25px;font-weight:bold;">Total Invoice Amount: {{ total_invoice_amount }}</h3>
+        </div>
+      </div>
+    </div>
+    <!--/ header -->
+  <!--/ seventy percent -->
+  <div class="clearfix"></div>
+</section>

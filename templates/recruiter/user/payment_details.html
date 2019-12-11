@@ -1,0 +1,116 @@
+{% extends 'recruiter/index.html' %}
+
+{% block jobs %}
+    <li class="job"><a class="post-new" href="#">Post A new job</a></li>
+    <li class="job"><a href="{% url 'recruiter:list' %}">jobs list</a></li>
+{% endblock %}
+
+{% block 'stage' %}
+
+    <div class="content_wrap">
+        {% if request.user.get_active_jobposts_count >= 100 %}
+
+            <section class="create_company_profile_form">
+                <h3><i class="fa fa-building"></i> <span>Payment </span> Details</h3>
+                <!-- row one -->
+                <form name="paymentdetailsform" id="paymentdetailsform" method="post">
+                    <div class="row_one company_profile">
+                        <!-- ticket -->
+                        <div class="pp_div company_new_form">
+                            <div class="category">
+                                <div class="content_job_post">
+                                    <div class="form_div">
+                                        <div class="input_element area_element">
+                                            <label>Account Holder Name</label>
+                                            <input type="text" class="input full_wid" id="account_holder_name"
+                                                   name="account_holder_name"
+                                                   value="{{ request.user.account_holder_name }}"
+                                                   placeholder="Enter Account Holder Name">
+                                        </div>
+                                        <div class="input_element area_element">
+                                            <label>Account Number</label>
+                                            <input type="text" class="input full_wid" id="account_number"
+                                                   name="account_number" value="{{ request.user.account_number }}"
+                                                   placeholder="Enter Account Number">
+                                        </div>
+                                        <div class="input_element area_element">
+                                            <label>Bank Name</label>
+                                            <select class="input full_wid" name="bank_name" id="bank_name">
+                                                <option value="">select a Bank</option>
+                                                {% for bank in bank_names %}
+                                                    <option value="{{ bank.0 }}"
+                                                            {% ifequal bank.0 request.user.bank_name %}
+                                                            selected {% endifequal %}>{{ bank.1 }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="input_element area_element">
+                                            <label>Branch Name</label>
+                                            <input type="text" class="input full_wid" name="branch_name"
+                                                   id="branch_name" value="{{ request.user.branch_name }}"
+                                                   placeholder="Enter Branch Name">
+                                        </div>
+
+                                        <div class="clearfix"></div>
+                                        <div class="button_row">
+                                            <button type="submit" class="button change"><i class="fa fa-floppy-o"></i>Save
+                                            </button>
+                                            <button type="button" class="button cancel"><i class="fa fa-times"></i>Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/ ticket -->
+                        <div class="clearfix"></div>
+                    </div>
+                </form>
+                <!--/ row one -->
+            </section>
+        {% else %}
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i
+                        class='fa fa-times'></i></span></button>
+                <h4>You can access this page, when you post 100 live jobs into our site</h4>
+                </p>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+{% block 'extra_js' %}
+    <script>
+        $('form#paymentdetailsform').ajaxForm({
+            type: 'POST',
+            dataType: 'json',
+            data: $('#paymentdetailsform').serialize(),
+            success: function (data) {
+                $.blockUI({message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+                if (data.error == false) {
+                    $.unblockUI()
+                    {% if request.user.is_agency_recruiter %}
+                        var href = "{% url 'agency:list' %}";
+                    {% else %}
+                        var href = "{% url 'recruiter:list' %}";
+                    {% endif %}
+                    open_dialog_with_url(data.response, 'Success!', href)
+                } else {
+                    $.unblockUI();
+                    open_dialog('Some Content Missing', 'Info!!')
+                    $('div.error').remove();
+                    for (var key in data.response) {
+                        $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+                    }
+                }
+            }
+        });
+        $('.cancel').click(function (e) {
+            {% if request.user.is_agency_recruiter %}
+                window.location = "{% url 'agency:list' %}";
+            {% else %}
+                window.location = "{% url 'recruiter:list' %}";
+            {% endif %}
+        })
+    </script>
+{% endblock %}

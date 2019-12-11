@@ -1,0 +1,41 @@
+<style type="text/css">
+  .input_element{
+  width: 32% !important;
+  }
+</style>
+<div class="branch_divs">
+  <div class="row client_branch another_location">
+    <div class="col-md-12 form_left branch branch_{{branch_id}} branch_div">
+      <div class="half_wid_element">
+        <select class="input" name="location_{{branch_id}}" id="location_{{branch_id}}">
+          <option value=''>Select A Branch Location</option>
+          {% for city in cities %}
+          <option value='{{ city.id }}'>{{ city.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <!--/ input element -->
+      <!--/ input element -->
+      <br clear="all">
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <!--input element -->
+        <div class=" full_wid">
+          <label>Branch Address</label>
+          <textarea class="input" placeholder="Branch Address" rows="3" name="address_{{branch_id}}" id="address_{{branch_id}}"></textarea>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class=" full_wid">
+          <label>Contact Details</label>
+          <textarea class="input" placeholder="Enter Your Branch Contact Details" rows="3" name="contact_details_{{branch_id}}" id="contact_details_{{branch_id}}"></textarea>
+        </div>
+      </div>
+      <input type="checkbox" name="is_major_{{branch_id}}" id="is_major_{{branch_id}}" class="is_major"/>Is Main Branch
+      <br clear="all">
+    </div>
+    <br clear="all">
+    <span class='delete_branch' id="branch_{{branch_id}}"><i class="fa fa-trash delete_client_branch" aria-hidden="true"></i></span>
+  </div>
+</div>

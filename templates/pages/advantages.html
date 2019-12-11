@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load searchtags %}
+
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+  <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<div class="content_div">
+  <!-- SEARCH PART -->
+  <section id='content_pages'>
+    <div class="container">
+      <div class="breadcrumb flat">
+         <ul>
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name" itemprop="item" rel="v:url" property="v:title"><span itemprop="name" class="name" >Home</span></a></li>
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="item" class="job_detail" rel="v:url" property="v:title"><span itemprop="name" class="name">Advantages</span></span></li>
+          </ul>
+      </div>
+      <div class="row mt content-page">
+        <!-- content starts here -->
+        <h3 class="title">ADVANTAGES</h3>
+        <div class="content">
+          <p>Searching for a job in the classified ad section of a newspaper is becoming less of a necessity, as employers increasingly list job openings for free on sites and use websites to conduct the application process entirely online.</p>
+          <p><span class="adv-bold">Cost Effective: </span>Costs of posting jobs and/or searching for candidates on job portals can be up to 90% lower than the costs of using traditional search firms and/or advertising methods.The biggest advantage of Peeljobs.com is there is no fee for the job seeker. There are so many websites now a days charges huge amount from candidates. If a person wants to avail of other services like resume services then they have to pay extra amount. Here candidates upload and download their resumes without any cost.
+          </p>
+          <p><span class="adv-bold">Well procedure: </span>Peeljobs.com is Well organized. It has a  basic login procedure WHERE the candidate can upload the resume and fill out all the important details about Educational, their backgrounds, skills and work experience. Everything is done in orderly fashion. Our Candidate can customize the profiles and Site to Meet Their Needs.
+          </p>
+          <p><span class="adv-bold">Peeljobs Recruitment is quick: </span>Recruiters/Employers can post their jobs through various social sites like facebook, twitter, google plus etc. Through social sites it’s easy and fast to search jobs requirement, as people are connected via these networks only.<br>
+            Candidates can directly apply through social networks as well as they upload their resume to Peeljobs.com with other relevant information. No need to consult any recruiter via phone or email. If recruiter finds any candidate information matches to a job requirement, they will contact the candidate through emails for further processes like face to face interview etc.
+          </p>
+          <p><span class="adv-bold"> Peeljobs recruitment gives you a bigger audience
+            : </span>Many people new to online recruitment think that using job sites is only effective if you are looking for young net-savvy Facebook-type people. This simply isn't the case. Research consistently shows that the average age of candidates using job sites is around 35 years old. And the trend is up. Peeljobs.com recruitment is now a standard part of most people's job hunting no matter what level or age.
+          </p>
+          <p><span class="adv-bold">Peeljobs recruitment is easy
+            : </span>It really is. Posting a job on this site is straightforward enough. Peeljobs site and CV databases are very user-friendly and you don't need to have an in-depth knowledge of IT to post a vacancy advertisement. Usually, all you need is your job description, a bit of time, And, if you have any problems the Peeljobs team to help you.
+          </p>
+          <p><span class="adv-bold">2-4-7 access
+            : </span>You have 24 hour access to Peeljobs.com, this means that you still carry on your recruitment exercise anytime that is convenient for you.
+          </p>
+          <p><span class="adv-bold">Sophisticated management tools
+            : </span>The entire recruitment process is managed from one location which allows the employer to post vacancies, receive CVs, screen, prioritize and contact candidates individually or collectively and track all activities from the confines of a private and highly functional employer Workspace, job seekers similarly can track the progress of their application at every stage of the hiring process from their own functional Workspace. This allows for an enhanced user experience for both employer and job seeker.
+          </p>
+          <p><span class="adv-bold"> Allows for confidentiality :</span>Both employers and job seekers can elect to maintain their confidentiality. Employers can elect to search the databases without posting a job if the vacancy is sensitive in nature, or they can post a vacancy while keeping the company name confidential. Similarly, candidates can post their CVs online while keeping their present employer's name confidential.
+          </p>
+          <p><span class="adv-bold">Allows for database build-up
+            : </span>Employers can save high profile or particularly attractive CVs from an existing online search to build a priority database of pre-screened talent for future use.
+          </p>
+          <p><span class="adv-bold"> Allows for proactivity
+            : </span> employer/recruiter is in full control of the hiring process with online recruitment, can contact candidates real-time and directly and does not require a middleman to sift through, filter, assess or select the required candidates. By being in the driving seat the employer gains valuable insight into the nature of the marketplace and the competitive landscape for the position. He is also able to ensure a superior match and a better fit for the long term.
+          </p>
+          <p><span class="adv-bold"> Wider reach for candidates
+            :</span>Candidates benefit immensely from the wider scope they gain through Peeljobs.com site. They are able to access jobs in companies, industries and locations they may not otherwise have learned of and can apply immediately with the click of a mouse. By posting their CVs online they can be contacted by employers/recruiters directly for opportunities that may not even be advertised.
+          </p>
+        </div>
+        <!-- content ends here -->
+        <!-- Tab panes -->
+      </div>
+    </div>
+  </section>
+  <!-- content of job page -->
+</div>
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}

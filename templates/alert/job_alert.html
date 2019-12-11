@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% load searchtags %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+{% block block_title %}
+{% include "meta_data/job_alert.html" %}
+{% endblock %}
+{% block page_search_block %}
+{% show_search_filter %}
+{% endblock %}
+{% block base %}
+<!-- main_container starts here -->
+<style type="text/css">
+  .select2-container--default .select2-selection--multiple {
+    background-color: #fff;
+    border: 1px solid #dee2e5;
+    border-radius: 1px;
+    cursor: text;
+    height: 40px;
+    font-size: 12px;
+    padding: 5px 7px;
+}
+.max_experience{
+  display: none;
+}
+</style>
+  <div class="row mar_lr_0 main_container">
+    <div class="container">
+    <!-- breadcrumb_section starts here -->
+    <div class="breadcrumb_section row mar_lr_0">
+      <nav>
+        <ol class="cd-breadcrumb triangle">
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name"><span class="name" >Home</span></a>
+          </li>
+          <li class="current"><span href="{% url 'my:alerts_list'%}" class='job_detail'><span class="name">Job Alert</span></span></li>
+        </ol>
+      </nav>
+    </div>
+    <!-- breadcrumb_section ends here -->
+      <div class="row mar_lr_0">
+        <div class="col-md-9 left_container">
+          <!-- side_filter_section starts here -->
+          <div class="row">
+            <!-- job_alert_form starts here -->
+            <div class="col-md-12">
+              <div class="job_alert_form">
+               <div class="panel panel-default">
+                <div class="panel-heading text-center text-uppercase">Tell us what kind of jobs you want</div>
+                <div class="panel-body">
+                  <form name="jobalertform" id="jobalertform" method="post" class="form-horizontal">
+                    <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-3 control-label">Name your Job Alert<span class="important">*</span></label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="Enter a name that will help you recognize this Job Alert" name="name" id="name">
+                      </div>
+                    </div>
+
+                    {% if not request.user.is_authenticated %}
+                     <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-3 control-label">Email Address  <span class="important">*</span></label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="Email Address" name="email" id="email">
+                      </div>
+                    </div>
+                    {% else %}
+                      <input type="hidden" class="form-control" placeholder="Email Address" name="email" id="email" value="{{request.user.email}}">
+                    {% endif %}
+
+                    <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-3 control-label">Skills<span class="important">*</span></label>
+                      <div class="col-sm-9">
+                        <select class="location form-control skills" multiple="multiple" name="skill" id="skill">
+                          <option value="">Enter the skill</option>
+                          {% for skill in skills %}
+                          <option value="{{ skill.id }}">{{ skill.name }}</option>
+                          {% endfor %}
+                        </select>
+                        <span class="skill_err"></span>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-3 control-label">Location</label>
+                      <div class="col-sm-9">
+                        <select class="location form-control cities" multiple="multiple" name="location" id="location">
+                          <option value="">Enter the location</option>
+                          {% for city in cities %}
+                          <option value="{{ city.id }}">{{ city.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-3 control-label">Industry</label>
+                      <div class="col-sm-9">
+                        <select class="location form-control industry " multiple="multiple" name="industry" id="industry">
+                          <option value="">Enter the industry</option>
+                          {% for industry in industires %}
+                          <option value="{{ industry.id }}">{{ industry.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-3 control-label">Job Role</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="Specify the desired role where you want to work" id="role" name="role">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-3 control-label">Experience</label>
+                      <div class="col-md-9 mar_lr_0">
+                          <div id="div-min_year" class="col-md-6 pad_lr_0">
+                            <select class="form-control experience" name="min_year" id="min_year" style="width:98%">
+                              <option value="">Min Year</option>
+                              {% for year in years %}
+                              <option value="{{ year.0 }}" id="{{ forloop.counter }}">{{ year.1}}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <div id="div-min_month" class="col-md-6 pad_lr_0">
+                            <select class="form-control experience" name="max_year" id="max_year">
+                              <option value="">Max year</option>
+                              {% for year in years %}
+                              <option value="{{ year.0 }}" class="max_experience" id="{{ forloop.counter }}">{{ year.1}}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-3 control-label">Salary</label>
+                      <div class="col-sm-9  mar_lr_0">
+                      <div class="col-sm-6 pad_lr_0" id='min_salary'>
+                        <input type="text" class="form-control" placeholder="Minimum Salary" name="min_salary" style="width:98%"></div>
+                      <div class="col-sm-6 pad_lr_0" id="max_salary">
+                       <input type="text" class="form-control" placeholder="Maximum Salary" name="max_salary" ></div>
+                      <input type="hidden" class="form-control" placeholder="Email" name="user_authenticated" id="user_authenticated" value="{% if not request.user.is_authenticated %}False{%else%}True{%endif%}">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-offset-3 col-sm-9">
+                        <button type="submit" class="btn btn-default">Create Job Alert</button>
+                        <button type="button" class="btn cancelbutton">Cancel</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              </div>
+            </div>
+            <!-- job_alert_form ends here -->
+          </div>
+        </div>
+        <!-- Left section starts here -->
+        <div class="col-md-3 right_container" style="top:7px;">
+        <div class="similar_job_posts" style="margin-bottom:10px;">
+        <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fpeeljobs%2F&width=300&height=150&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=892560280818752" width="300" height="150" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+      </div>
+
+      <!-- walkin_jobs starts here -->
+          {%get_latest_walkins as walkins%}
+      {% if walkins %}
+      <div class="walkin_jobs">
+        <div class="heading text-uppercase">Walk-in Jobs</div>
+        <ul class="walkin_blocks">
+        {% for walkin in walkins|slice:"3" %}
+          <li class="walkin_block" id="{{ walkin.slug }}">
+            <strong class="title"><a href="{{ walkin.slug }}" target="_blank">{{ walkin.title }}</a></strong>
+            {% if walkin.company %}<p>{{ walkin.company.name }}</p>{% endif %}
+            <p class="location"><i class="fa fa-map-marker"></i>{%for location in walkin.location.all %} <a href="{{location.get_job_url}}" target="_blank">{{ location.name }}{% if forloop.last %}{% else %}, {% endif %}</a>{% endfor %} </p>
+          </li>
+        {% endfor %}
+        <a href="{% url 'walkin_jobs' %}" target="_blank"><span class="view_all">See More</span></a>
+        </ul>
+      </div>
+      {% endif %}
+      <!-- walkin_jobs ends here -->
+        </div>
+        <!-- Left section ends here -->
+      </div>
+    </div>
+  </div>
+<!-- main_container ends here -->
+{% block pj_info %}
+  <div class="col-md-2 col-sm-8 col-xs-8 about">
+  </div>
+{% endblock %}
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+  $(".cancelbutton").click(function (e) {
+      {% if request.user.is_authenticated %}
+        window.location = "{% url "my:alerts_list" %}";
+      {% else %}
+        window.location = "/";
+      {% endif %}
+  });
+
+
+  $("select.location").select2({placeholder: "Select here"});
+
+  $("form#jobalertform").submit(function (e) {
+      e.preventDefault();
+      $.post("/alert/create/", $("form#jobalertform").serialize(), function (data) {
+          $('.hint').remove();
+          if (data.error) {
+              if (data.response_message) {
+                  open_dialog(data.response_message, 'Error!')
+              }
+              $('.hint').remove();
+              for (var key in data.message) {
+                if(key == 'skill' ){
+                  $('.skill_err').html('<span class="hint">' + data.message[key] + '</span>');
+                }
+                else if(key == 'min_salary' || key == 'max_salary'){
+                  $('#' + key).append('<span class="hint">' + data.message[key] + '</span>');
+                }
+                else{
+                  $('#' + key).after('<span class="hint">' + data.message[key] + '</span>');
+                }
+              }
+          } else {
+            open_dialog_with_url("Alert Created Successfully", 'Success', '/alert/results/' + data.alert_id + '/')
+          }
+      }, 'json');
+  });
+  $("select.cities").select2({placeholder: "Select the city", maximumSelectionSize: 100});
+
+  $("select.skills").select2({placeholder: "Select the skill", maximumSelectionSize: 100});
+  $("select.industry").select2({placeholder: "Select the industry", maximumSelectionSize: 100});
+  $("select#job_skills").select2({placeholder: "Select here", maximumSelectionSize: 100});
+  $('#job_skills').empty()
+      $('#job_skills').append(new Option('Select a Skill', ''))
+      $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+          $.each(JSON.parse(data.response), function (key, field) {
+              $('#job_skills').append(new Option(field.fields.name, field.pk))
+          })
+      });
+
+  $( "select#min_year" ).on('change',function(e) {
+    $('select#max_year').val('');
+     $('select#max_year option').addClass('max_experience');
+    for(i=$('select#min_year option:selected').attr('id');i<$('select#min_year option').length;i++)
+      {
+        $('select#max_year option[id='+ i +']').removeClass('max_experience');
+      }
+  });
+</script>
+{% endblock %}

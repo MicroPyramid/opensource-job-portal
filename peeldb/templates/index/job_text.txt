@@ -1,0 +1,19 @@
+{{ object.title }}
+{{ object.designation }}
+{% for l in object.location.all %}
+{{ l }}
+{% endfor %}
+{% for s in object.skills.all %}
+{{ s }}
+{% endfor %}
+{% for s in object.industry.all %}
+{{ s }}
+{% endfor %}
+{% for s in object.functional_area.all %}
+{{ s }}
+{% endfor %}
+{{ object.min_experience }}
+{{ object.max_experience }}
+{{ object.min_salary }}
+{{ object.max_salary }}
+{{ object.company_name }}

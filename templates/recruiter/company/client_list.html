@@ -1,0 +1,153 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% load thumbnail %}
+{% block jobs %}
+<li class="job active"><a class="post-new" href="#">Post A new job</a></li>
+<li class="job"><a href="{% url 'recruiter:list' %}">jobs list</a></li>
+{% endblock %}
+{% block 'stage' %}
+<div class="content_wrap">
+  <section id='view_recruiter'>
+    <h3 class="main_title">Client List <span class="pull-right"><a href="{% url "agency:add_client" %}"><i
+      class="fa fa-plus" aria-hidden="true"></i> Add Client</a></span></h3>
+    <!-- content job post -->
+    <div class="content_job_post recruiter_list_panel">
+      <form name="searchform" id="searchform" method='post'>
+        <div class="search_row row">
+          <div class="col-md-3 col-sm-12 pad_lr_5">
+            <input type="text" class="form-control" name="search_text"
+              id="search_text" value="{{ request.POST.search_text }}"/>
+          </div>
+          <div class="col-md-3 col-sm-12 pad_lr_5">
+            <select class="form-control" name="location" id='location'>
+              <option value="">Select A Location</option>
+              {% for city in cities %}
+              <option value="{{ city.id }}"
+              {% ifequal city.id request.POST.location|add:'0' %}selected{% endifequal %}>{{ city.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-3 col-sm-12 pad_lr_5">
+            <input type="submit" class="form-control active" name="search" id="search"/>
+          </div>
+        </div>
+      </form>
+      <div class="row recruiter_table">
+        <div class="table-responsive">
+          {% if clients %}
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th width="15%">Name</th>
+                <th width="15%">Website</th>
+                <th width="15%">No. of Branches</th>
+                <th width="20%">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for client in clients %}
+              <tr>
+                <td>{{ client.name }}</td>
+                <td>{{ client.website }}</td>
+                <td>{{ client.branch_details.all|length }}</td>
+                <td class="actions">
+                  <a href="{% url 'agency:edit_client' client.id %}" class="edit"><i
+                    class="fa fa-pencil-square" aria-hidden="true"> </i>Edit</a>
+                  <a href="#" class="delete delete-client"
+                  data-href='{% url 'agency:delete_client' client.id %}'><i
+                    class="fa fa-trash" aria-hidden="true"></i> Delete</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="alert alert-danger alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+              aria-hidden="true"><i class='fa fa-times'></i></span></button>
+            <h4>There are no records in the database</h4>
+            </p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <br clear="all">
+    </div>
+    <br>
+    {% if clients %}
+    <div class="pagination">
+      <div class="mob_pagination">
+        {% if prev_page %}
+        <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ prev_page }}"><span
+          class="link_each">
+        previous
+        </span></a>
+        {% endif %}
+        <span class='pages_count'>
+        Page <strong>{{ current_page }}</strong> of <strong>{{ pages|length }}</strong>
+        </span>
+        {% if active_jobs_list.has_next %}
+        <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ current_page| add:"1" }}"><span
+          class='link_each'>
+        next
+        </span></a>
+        {% endif %}
+      </div>
+      {% get_page current_page last_page as pages %}
+      <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ previous_page }}"
+        title="First"><span class='link_each'><i class="fa fa-angle-double-left"></i></span></a>
+      <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ prev_page }}"
+        title="Prev"><span class='link_each'><i class="fa fa-angle-left"></i></span></a>
+      {% for s in pages %}
+      <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ s }}"><span
+      class='link_each'{% ifequal s current_page %}
+      class="active" {% endifequal %}>{{ s }}</span></a>
+      {% endfor %}
+      <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><span
+        class='link_each'><i class="fa fa-angle-right pagination-next"></i></span></a>
+      <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><span
+        class='link_each'><i class="fa fa-angle-double-right"></i></span></a>
+      </ul>
+      </nav>
+    </div>
+    {% endif %}
+    <!--/ content job post -->
+  </section>
+</div>
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+  $('.delete-client').click(function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      href = $(this).attr('data-href');
+      $('#block_question').text('Do you want to delete Client?')
+      $('#block_question').dialog({
+          modal: true,
+          draggable: false,
+          title: "Info!!",
+          buttons: [
+              {
+                  text: "Yes",
+                  click: function () {
+                      $(this).dialog("close");
+                      $.post(href, $("form#jobform").serialize(), function (data) {
+                          if (data.error) {
+                              open_dialog(data.response, 'Error!')
+                          } else {
+                      open_dialog_with_url('Client Deleted Successfully', 'Success!', "{% url 'agency:client_list' %}")
+                          }
+                      }, 'json');
+                  }
+              },
+              {
+                  text: "No",
+                  click: function () {
+                      $(this).dialog("close");
+                  }
+              }
+          ]
+      });
+  });
+</script>
+{% endblock %}

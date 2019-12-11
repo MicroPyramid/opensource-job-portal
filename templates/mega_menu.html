@@ -1,0 +1,35 @@
+{% load page_tags %}
+<ul class="col-md-2 information" style="width:19.99%">
+  <li><a href="{% url "jobs_by_skill" %}">Skills</a></li>
+  {% get_skills as total_skills %}
+  {% for skill in total_skills %}
+    <li><a href="{{ skill.get_job_url }}">{{ skill.name|truncatewords:2 }} Jobs</a></li>
+  {% endfor %}
+</ul>
+<ul class="col-md-2 information industries_parts">
+  <li><a href="{% url "jobs_by_industry" %}">Industry</a></li>
+  {% get_industries as total_industries %}
+  {% for industry in total_industries %}
+    <li><a href="{% url 'job_industries' industry.slug %}">Jobs For {{ industry.name|get_industry_name }}</a></li>
+  {% endfor %}
+</ul>
+<ul class="col-md-2 information location_parts">
+  <li><a href="{% url "jobs_by_location" 'jobs' %}">Location</a></li>
+  {% get_locations as total_locations %}
+  {% for location in total_locations|slice:"17" %}
+    <li><a href="{{ location.get_job_url }}">Jobs in {{ location.name }}</a></li>
+  {% endfor %}
+</ul>
+<ul class="col-md-3 information internship_parts">
+  <li><a href="{% url 'internship_jobs' %}">Internship</a></li>
+    {% get_internships as all_internship_jobs %}
+    {% for city in all_internship_jobs %}
+      <li><a href="{% url 'city_internship_jobs' city.slug %}" title="{{ job.title}}">Internship Jobs in {{ city.name }}</a></li>
+    {% endfor %}
+</ul>
+<ul class="col-md-3 information fresher-jobs-part">
+<li><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher</a></li>
+{% for skill in total_skills %}
+<li><a href="/{{skill.slug}}-fresher-jobs/">{{ skill.name|truncatewords:2 }} Fresher Jobs</a></li>
+{% endfor %}
+</ul>

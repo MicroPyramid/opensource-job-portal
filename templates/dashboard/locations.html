@@ -1,0 +1,183 @@
+{% extends 'dashboard/base.html' %}
+{% load page_tags %}
+{% block stage %}
+    <section id='tech_skills'>
+        <div class="title">
+            <h3>Location(No Of Job Posts)
+              <span>
+                <a class={% if status == 'active'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:locations' 'active' %}">Active</a> /
+                <a class={% if status == 'inactive'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:locations' 'inactive' %}">Inactive</a>
+              </span> 
+            </h3>
+        </div>
+        <div class="search_form clearfix">
+          <form id="search_form" name="adv-search-form" class="search-form" method="POST">
+            <div class="col-md-12 search_form">
+              <div class="col-md-5">
+                <input type="text" name="search" id="search" class="form-control"
+                       placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
+                <input type="hidden" name="page" id="page" value="{{ page }}">
+              </div>
+              <div class="col-md-3">
+                <button type="submit" class="form-control submit">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="list_row">
+            <ul>
+                {% for location in locations %}
+                    <li>
+                        <div class="description">
+                          <div class="content">
+                              {{ location.name }}( {{ location.num_posts }} )
+                          </div>
+                          <div class="icon_div">
+                            {% if location.child_cities.all %}
+                              <a><i class="fa fa-chevron-down other_city" title='View Other Cities'></i></a>
+                            {% endif %}
+                              <a><i class="fa fa-pencil-square-o edit"></i></a>
+                              <a><i class="fa fa fa-trash-o delete" data-id='{{ location.id }}'></i></a>
+                          </div>
+                          <div class="clearfix"></div>
+                          <div class="edit_panel">
+                            <form id="editform{{ location.id }}" method="post" action=".">
+                              <input type="hidden" name="id" value="{{ location.id }}">
+                              <input type="hidden" name="mode" value="edit">
+                              <input type="hidden" name="state" value="{{ location.state.id }}">
+                              <textarea class="form-control" name="name" id='name_{{location.id}}'>{{ location.name }}</textarea>
+                              <input type="text" class="form-control" name="slug" id="slug_{{location.id}}" value="{{ location.slug }}" title="slug">
+                              <textarea class="form-control" name='meta' id='meta_{{location.id}}'
+                                        placeholder='Meta Data in Json Format'>{{ location.get_meta_data }}</textarea>
+                              <textarea class="form-control ckeditor_page_content"
+                                        name='ckeditor_page_content_{{ location.id }}'
+                                        id='ckeditor_page_content_{{ location.id }}'
+                                        placeholder='Page Content'>{{ location.page_content }}</textarea>
+                              <input type="hidden" class="form-control" name="page_content"
+                                     id="page_content_{{ location.id }}">
+                              <button id="{{ location.id }}" class="update_btn"><i class="fa fa-check"></i>Update
+                              </button>
+                            </form>
+                          </div>
+                          <div class="clearfix"></div>
+                          <div class="other_cities">
+                            <h4>Child Cities</h4>
+                            {% for loc in location.child_cities.all %}
+                              <div>
+                                <span class="">Name: {{ loc.name }}</span>
+                                <span class="">Slug: {{ loc.slug }}</span>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+    {% if locations %}
+        <div class="pagination_wrap">
+            {% get_page current_page last_page as pages %}
+            <nav>
+                <ul class="pagination">
+                    {% if current_page != 1 %}
+                        <li class="prev"><a
+                                href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ previous_page }}"><i
+                                class="fa fa-angle-double-left"></i></a></li>
+                        <li class="prev"><a
+                                href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ prev_page }}"><i
+                                class="fa fa-angle-left"></i></a></li>
+                        <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page=1">first</a></li>
+                    {% endif %}
+                    {% for s in pages %}
+                        <li {% ifequal s current_page %} class="active" {% endifequal %}><a
+                                href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ s }}">{{ s }}</a>
+                        </li>
+                    {% endfor %}
+                    {% if current_page != last_page %}
+                        <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ last_page }}">last</a>
+                        </li>
+                        <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><i
+                                class="fa fa-angle-right pagination-next"></i></a></li>
+                        <li>
+                            <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><i
+                                    class="fa fa-angle-double-right"></i></a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
+{% endblock stage %}
+
+{% block script %}
+    <script type="text/javascript">
+
+        $(document).ready(function (event) {
+            $('#tech_skills .other_city').click(function (e) {
+              $(this).first().closest('.description').find('.other_cities').toggle('slow')
+            })
+            $('#tech_skills .edit').click(function (e) {
+                $(this).parent().parent().next().next('div.edit_panel').toggle('slow');
+                ckeditor_name = $(this).parent().parent().next().next('div.edit_panel').find('form .ckeditor_page_content').attr('name')
+                CKEDITOR.config.allowedContent = true;
+                var editor = CKEDITOR.replace(ckeditor_name);
+
+            });
+        });
+
+        $(".update_btn").click(function (e) {
+            e.preventDefault();
+            ckeditor_name = 'ckeditor_page_content_' + $(this).attr('id')
+            var get_data = CKEDITOR.instances[ckeditor_name].getData()
+            $('#page_content_' + $(this).attr('id')).val(get_data);
+
+            $.post('.', $("#editform" + $(this).attr('id')).serialize(), function (data) {
+                if (data.error == false) {
+                    open_dialog_with_url(data.message, 'Success!!!', ".")
+                } else {
+                    $('p.error').remove()
+                for (var key in data.message) {
+                    $('#'+key + '_' + data.id).after("<p class='error'>"+data.message[key]+"</p>")
+                    }
+                open_dialog("Some Content Missing!", "Alert!")
+                }
+            }, 'json');
+        });
+        $('#tech_skills').on('click', '.delete', function (e) {
+            e.preventDefault();
+            var id = $(this).attr('data-id')
+            $('#block_question').text('Do you want to delete this City?')
+             $('#block_question').dialog({
+              modal: true,
+              dialogClass: "no-close",
+              draggable: false,
+              title: "Success!!",
+              buttons: [
+                  {
+                    text: "OK",
+                    click: function () {
+                      $.post('.', {mode: 'remove_city', id: id}, function (data) {
+                        if (data.error == false) {
+                            open_dialog_with_url(data.message, 'Success!', "{{request.get_full_path}}")
+                            element.remove()
+                            }
+                         else{
+                            open_dialog(data.message, 'Error!')
+                            return;
+                            }
+                      }, 'json');
+                      $(this).dialog("close");
+                    }
+                  },
+                  {
+                      text: "Cancel",
+                      click: function () {
+                          $(this).dialog("close");
+                      }
+                  }
+              ]
+            });
+        });
+
+    </script>
+{% endblock script %}

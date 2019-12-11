@@ -1,0 +1,477 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% block 'stage' %}
+<style type="text/css">
+  .tab_content {
+  display: none !important; 
+  }
+  .active_tab_content {
+  display: block !important;
+  }
+</style>
+<div class="content_wrap">
+  <div class="marl row">
+    <div class="col-md-12" id="view_recruiter">
+      <h3 class="main_title">Resume Pool <span class="pull-right">
+        <a id="mass_update" title='Add Selected Resumes to Jobs'><i class="fa fa-plus" aria-hidden="true"></i> Add to Job</a>
+        <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:resume_upload' %}{% else %}{% url 'recruiter:resume_upload' %}{% endif %}"><i class="fa fa-plus" aria-hidden="true"></i> Resume Upload</a></span>
+      </h3>
+      <div class='job_list'>
+        <!-- table -->
+        <div class="table_wraper">
+          <div class="drop_resumes">
+            <form name="resumeupload" id="resumeupload" class="dropzone" method="post" action="{% url 'recruiter:multiple_resume_upload'%}" enctype="multipart/form-data">
+              <div class="dz-message" data-dz-message><span>Drop Resumes Here or Click here to Upload</span></div>
+            <button class="btn btn-default" type='button' id='clear-preview' style='display:none'>Clear and Drop New Resumes</button></div>
+            </form>
+          <form name="searchform" id="searchform" method='post'>
+            <div class="filters_row row">
+              <div class="filter_col">
+                <select class="js-example-placeholder-single" multiple name="skills" id="skills">
+                  <option value="">Select A Skill</option>
+                  {% for skill in skills %}
+                  <option value="{{ skill.id }}"
+                  {% if skill.id|slugify in selected_skills %}selected{% endif %}>{{ skill.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="filter_col">
+                <select class="js-example-placeholder-single1" name="experience" id="experience">
+                  <option value=''>Select A Year</option>
+                  {% for year in years %}
+                  <option value="{{ year.0 }}"
+                  {% if year.0 == request.POST.experience %}selected{% endif %}>{{ year.1 }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% if request.user.is_admin %}
+              <div class="filter_col">
+                <select class="js-example-placeholder-single3" name="recruiters"
+                  id='recruiters'>
+                  <option></option> 
+                  {% for recruiter in recruiters %}
+                  <option value="{{ recruiter.id }}"
+                  {% if recruiter.id|add:0 == request.POST.recruiters|add:0 %}selected{% endif %}>{{ recruiter.username }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% endif %}
+              <div class="filter_col">
+                <button class='btn btn-primary' type="submit">Search</button>
+              </div>
+            </div> 
+          </form>
+          {% if agency_resumes %}
+          <div class='resume_list' id='resume_list'>
+            {% for resume in agency_resumes %}
+              <div class="resume-preview-frame resume-detail" id="{{ resume.id }}" data-url="https://docs.google.com/gview?url=http://peeljobs.s3.amazonaws.com/{{ resume.resume }}&embedded=true" >
+              <div class='overlay'></div>
+                <input type="checkbox" class='check_resume' value='{{ resume.id }}' autocomplete="off" title="Select Resumes and attach to Jobs">
+                <div class="resume-file-content"> 
+                  <div class="resume-preview-data">
+                    <div class="resume-preview-other" style="overflow:hidden">
+                    {% if resume.resume|is_resume_pdf %}
+                      <embed src="https://cdn.peeljobs.com/{{ resume.resume }}#toolbar=0&navpanes=0&scrollbar=0" height="150" width='170'>
+                    {% else %}
+                     <iframe src="https://docs.google.com/gview?url=http://cdn.peeljobs.com/{{ resume.resume }}&embedded=true"  height="150" width='170' sandbox></iframe>
+                    {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="resume-title-middle">
+                  <div class="resume-caption" title="Resumes">{{ resume.resume|get_resume_name }}<br>
+                  </div>
+                </div>
+
+                <div class="resume-actions">
+                  <div class="resume-footer-buttons">
+                    <button type="button" class="kv-file-upload btn btn-xs btn-default download" href="{{ resume.resume|get_s3_url }}" title="Upload file">
+                      <i class="fa fa-download text-primary"></i> 
+                    </button>
+                    <button type="button" class="kv-file-remove btn btn-xs btn-default edit-resume" data-href="{% if request.user.is_agency_recruiter %}{% url 'agency:resume_edit' resume.id %}{% else %}{% url 'recruiter:resume_edit' resume.id %}{% endif %}" title="Edit Resume">
+                    <i class="glyphicon glyphicon-edit text-primary"></i>
+                    </button>
+                    <button type="button" class="kv-file-remove btn btn-xs btn-default delete-resume" data-href="{% url "agency:delete_resume" resume.id %}" title="Remove file">
+                      <i class="glyphicon glyphicon-trash text-danger"></i>
+                    </button>
+                    <button type="button" class="kv-file-zoom btn btn-xs btn-default" title="View Details">
+                      <i class="glyphicon glyphicon-zoom-in"></i>
+                    </button>
+                  </div>
+                  <div class="clearfix"></div>
+                </div>
+
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <!--/ table -->
+        <!-- pagination -->
+        {% get_page current_page last_page as pages %}
+        <!-- pagination -->
+        <div class="pagination">
+          {% get_page current_page last_page as pages %}
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ previous_page }}"
+            title="First"><span class='link_each'><i class="fa fa-angle-double-left"></i></span></a>
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ prev_page }}"
+            title="Prev"><span class='link_each'><i class="fa fa-angle-left"></i></span></a>
+          {% for s in pages %}
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ s }}"><span
+          class='link_each'{% ifequal s current_page %}
+          class="active" {% endifequal %}>{{ s }}</span></a>
+          {% endfor %}
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><span
+            class='link_each'><i class="fa fa-angle-right pagination-next"></i></span></a>
+          <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><span
+            class='link_each'><i class="fa fa-angle-double-right"></i></span></a>
+          </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Add Job Post</h4>
+          </div>
+          <form name="menuform" id="menuform" method="post">
+            <div class="modal-body">
+              <div class="form-group"> 
+                <label for="exampleInputEmail1">Job Post</label>
+                <select class="input select2" name="job_post" id="job_post">
+                  <option value=''>Select Jobpost</option>
+                  {% for jobpost in agency_jobposts %}
+                  <option value="{{jobpost.id}}">{{ jobpost.title }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group" style="display: none;">
+                <label for="exampleInputPassword1">Status</label>
+                <select class="input select2" name="status" id="status">
+                  <option value="Pending">{{ status.1 }}</option>
+                </select>
+                <select style="display:none" id="applicants" name="applicants" multiple></select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default cancel" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!--/model  -->
+    <!--/ pagination -->
+    {% else %}
+    <div class="alert alert-danger alert-dismissible fade in" role="alert"
+      style="margin-top: 10px;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+        aria-hidden="true"><i class='fa fa-times'></i></span></button>
+      <h4>There are no records in the database</h4>
+      </p>
+    </div>
+    {% endif %}
+    <!--/ pagination -->
+  </div>
+</div>
+</div>
+</div>
+<!--/ content -->
+</div>
+<!--/ container -->
+<!-- resume upload starts-->
+  <div class="modal fade resume-display" id="modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="text-center resume-head">
+            <div class="current_title"></div>
+            <div class="resume-count">[<span class="current_num"></span> of <span class="total_num"></span>]</div>
+             <span class='tab_button resume_block' panelid='resume_block'>Resume</span>
+              <span class='tab_button details_block' panelid='details_block' id=''>Profile</span>
+          </div>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i class="fa fa-times-circle-o" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="resume-frame tab_content active_tab_content" id='resume_block'>
+          <iframe id="set_url" src="" height='537px' width="657px"></iframe>
+        </div>
+        <div class="resume-frame tab_content" id='details_block'>
+        </div>
+         <a class="left carousel-control"  data-slide="prev">‹</a>
+         <a class="right carousel-control" data-slide="next">›</a>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- resume upload ends-->
+{% endblock %}
+{% block 'extra_js' %}
+<script type="text/javascript">
+$('.edit-resume').click(function (e) {
+  e.preventDefault()
+  e.stopPropagation()
+  window.location = $(this).attr('data-href');
+})
+$(document).keydown(function(e){
+  if (e.keyCode == 37){
+    if( $('.left').is(':visible') ) {
+    $('.left').click()
+    }
+  }
+  if (e.keyCode == 39){
+    if( $('.right').is(':visible') ) {
+    $('.right').click()
+    }
+  }
+});
+$('.resume-detail').click(function (e) {
+    $('.tab_button').attr('id', $(this).attr('id'))
+    $("#resume_block").addClass('active_tab_content')
+    $(".resume_block").addClass('active')
+    $("#details_block").removeClass('active_tab_content')
+    $(".details_block").removeClass('active')
+    $next = $(this).next()
+    $prev = $(this).prev()
+    $(".current_title").text($(this).find('.resume-caption').text())
+    $('.current_num').text($(this).index()+1)
+    $('.total_num').text($(this).parent().find('.resume-detail').length)
+    if ($prev.length > 0){
+      $('.left').show()
+      $('.left').attr('id', $prev.attr('id'))
+    }else{
+      $('.left').hide()
+    }
+    if ($next.length > 0){
+      $('.right').show()
+    $('.right').attr('id', $next.attr('id'))
+  }else{
+      $('.right').hide()
+    }
+    $("#set_url").attr('src', $(this).attr('data-url'))
+    $("#modal3").modal('show')
+});
+  $('.left, .right').click(function(e){
+    id = $(this).attr('id')
+    $('.resume-detail#'+id).trigger('click')
+  })
+
+
+  $("#skills").select2({
+      placeholder: "Select Skills",
+  });
+  $("#experience").select2({
+      placeholder: "Select Experience",
+  });
+  $("#recruiters").select2({
+      placeholder: "Uploaded By",
+  });
+  $('.download').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation()
+      window.location = $(this).attr('id');
+  })
+  $('.delete-resume').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      href = $(this).attr('data-href');
+      $('#block_question').text('Do you want to delete Resume?')
+      $('#block_question').dialog({
+          modal: true,
+          draggable: false,
+          title: "Info!!",
+          buttons: [
+              {
+                  text: "Yes",
+                  click: function () {
+                      $(this).dialog("close");
+                      $.post(href, $("form#jobform").serialize(), function (data) {
+                          if (data.error) {
+                              open_dialog(data.data, 'Error!')
+                          } else {
+                              open_dialog_with_url('Resume Deleted Successfully', 'Success!', '.')
+                          }
+                      }, 'json');
+                  }
+              },
+              {
+                  text: "No",
+                  click: function () {
+                      $(this).dialog("close");
+                  }
+              }
+          ]
+      });
+  });
+  $('.resume-detail input').click(function(e){
+      e.stopPropagation()
+  })
+  // $("#bulk_select").change(function() {
+  // var $input = $(this);
+  // if ($input.is(":checked")) {
+  // $("#resume_list input[type=checkbox]").prop('checked', true);
+  // } else {
+  // $("#resume_list input[type=checkbox]").prop('checked', false);
+  // }
+  // });
+  function grab_selected() {
+  var applicants = [];
+  $('#resume_list input:checked').each(function() {
+  applicants.push($(this).val());
+  });
+  return applicants;
+  }
+  $("#mass_update").click(function(e) {
+    e.preventDefault()
+    var applicants= grab_selected()
+    if(applicants==0){
+      open_dialog("No Applicant selected", 'Alert')
+    }else{
+      var len = $.map(applicants, function(n, i) { return i; }).length;
+      for (var i = 0; i < len;  i ++){
+        $("#applicants").append('<option selected value="'+applicants[i]+'"></option>')
+    }
+    $("#myModal").modal('show')
+    }
+  });
+  $('#menuform').submit(function(e){
+    e.preventDefault()
+    $.post(".", $(this).serialize(), function(data) {
+      var data = JSON.parse(data);
+      if (data.error == true) {
+        $('.error').remove();
+        for (var key in data.response) {
+            $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
+        }
+    }
+     else {
+      $("#myModal").modal('hide')
+      open_dialog_with_url('Job post added to applicants', 'Success', '.')
+    }
+    })
+  })
+  $("select#job_post").select2({placeholder: "Select A Job Post"});
+  $("select#status").select2({placeholder: "Select A Status"});
+  $("#resume_click").click(function(e){
+    e.preventDefault()
+    $("#modal2").modal('show')
+  })
+
+$( document ).ready(function() {
+  Dropzone.autoDiscover = false;
+  $("#resumeupload").dropzone({
+      url: "{% url 'recruiter:multiple_resume_upload'%}",
+      maxFilesize: 1,
+      addRemoveLinks : true,
+      // autoProcessQueue: false,
+      dictRemoveFileConfirmation: 'Remove this File?',
+      acceptedFiles: ".doc, .docx, .pdf, .rtf",
+      init: function() {
+          this.on("success", function(file, response, data) {
+              $(".dz-message").hide()
+              var obj = jQuery.parseJSON(response)
+              $("button#clear-preview").show()
+                file.previewElement.classList.add("dz-error");
+                console.log(file.previewElement)
+              if(obj.duplicated){
+                $(file.previewElement).find('.dz-image').css({'border': '2px solid #a38000'})
+                $(file.previewElement).find('.dz-error-message').text(obj.data)
+                $(file.previewElement).find('.dz-error-message').css({'background': 'rgb(222, 222, 222)', 'color': '#a38000'})
+                $(file.previewElement).find('.dz-success-mark').css({'opacity': '1'})
+                $(file.previewElement).find('.dz-error-mark').css({'opacity': '0'})
+                file.previewElement.classList.add("dz-success");
+              }
+              else if(obj.error  == true){
+                if(obj.duplicate){
+                  var replace = 'false';
+                  this.confirm = function (accepted, rejected) {
+                    if (window.confirm('Rsume Existed with ' + obj.email + ' for ' + obj.fname + ', Want to replace existed Resume?')) {
+                      return 'true';
+                    } else{
+                      return 'false';
+                    }
+                  };
+                  replace = this.confirm()
+                  file.status = Dropzone.QUEUED;
+                  localStorage.setItem(obj.fname, replace)
+                   this.on("sending", function(file, xhr, data) {
+                  if(localStorage.getItem(file.name) != null){
+                    data.append(file.name, localStorage.getItem(file.name))
+                  }
+                });
+                }
+                $(file.previewElement).find('.dz-image').css({'border': '2px solid #be2626'})
+                $(file.previewElement).find('.dz-error-message').text(obj.data)
+              }else{
+                $(file.previewElement).find('.dz-image').css({'border': '2px solid green'})
+                $(file.previewElement).find('.dz-error-message').text('Resume Uploaded Successfully')
+                $(file.previewElement).find('.dz-error-message').css({'background': 'rgb(222, 222, 222)', 'color': 'green'})
+                $(file.previewElement).find('.dz-success-mark').css({'opacity': '1'})
+                $(file.previewElement).find('.dz-error-mark').css({'opacity': '0'})
+                file.previewElement.classList.add("dz-success");
+              }
+          })
+          this.on('error', function(file, response) {
+            $(".dz-message").hide()
+            $(file.previewElement).find('.dz-image').css({'border': '2px solid #be2626'})
+            $("button#clear-preview").show()
+          });
+          this.on("queuecomplete", function (file) {
+            localStorage.clear();
+          })
+      }
+  });
+$("#clear-preview").click(function(){
+  $(this).hide()
+  $(".dz-file-preview").remove()
+  $(".dz-message").show()
+})
+$('body').on('click', '.remove-preview', function(){
+  $(this).closest(".dz-file-preview").remove()
+  if($('.dz-preview').length == 0){
+  $(".dz-message").show()
+  $("#clear-preview").hide()
+  }
+  })
+});
+$('.download').click(function (e) {
+    e.preventDefault();
+    window.location = $(this).attr('href');
+})
+$('.view_detail').click(function (e) {
+    e.preventDefault();
+    window.location = $(this).attr('data-href');
+})
+ $('body').on('click', '.tab_button', function (e) {
+        e.preventDefault();
+        $(this).addClass('active').siblings().removeClass('active');
+        var panel = $(this).attr('panelid');
+        var id = $(this).attr('id');
+        console.log(id)
+        console.log(panel)
+        console.log(panel == 'details_block')
+        if (panel == 'details_block'){
+          $.post("/recruiter/resume/view/"+ id + '/', {
+            'get_applicant': true,
+        }, function (data) {
+            if (data.error) {
+                open_dialog(data.response, 'Error!')
+            } else {
+              $("#details_block").html(data.profile)
+            }
+        }, 'json');
+        }
+        console.log(panel)
+        $('.tab_content').removeClass('active_tab_content')
+        $('#' + panel).addClass('active_tab_content');
+    })
+
+</script>
+{% endblock %}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+{% load compress %}
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Dashboard - {% block title %}Home{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load staticfiles %}
+    <!-- for online links -->
+    <link rel="shortcut icon" href="{{favicon}}">
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!--select2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+    <!-- // -->
+    <!-- for tags -->
+    <!-- Latest compiled and minified CSS -->
+    {% compress css %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
+      <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css">
+      <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.tagsinput.css' %}" />
+      <!-- // -->
+      {% block extra_css %}
+      {% endblock %}
+    {% endcompress %}
+  </head>
+  <body class="{% block body_block %}{% endblock body_block %}">
+    <div id="wrapper">
+      {% block main_content %}
+        {% if request.user.is_active %}
+        {% block menu_block %}
+          <header class="row no_row_margin">
+            <nav class="navbar navbar-default">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="/blog/dashboard/blog/">Django Blog</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                  <li class="dashboard"><a href="/blog/dashboard/blog/">Dashboard <span class="sr-only">(current)</span></a></li>
+                  <!-- <li class="dropdown">
+                    <a href="{% url 'categories' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Categories <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">Action</a></li>
+                      <li><a href="#">Another action</a></li>
+                      <li><a href="#">Something else here</a></li>
+                      <li><a href="#">One more separated link</a></li>
+                    </ul>
+                  </li> -->
+                  <li class="categories"><a href="{% url 'categories' %}">Categories </a></li>
+                  <!--<li class="menu"><a href="{% url 'menus' %}">Menu </a></li>-->
+              {% with request.user.userrole_set.last as user_role %}
+                {% if request.user.is_superuser or user_role.role == "Admin"%}
+                  <li class="users"><a href="{% url 'users' %}">Users </a></li>
+                {% endif %}
+              {% endwith %}
+                  <!--<li class="pages"><a href="{% url 'pages' %}">Pages </a></li>
+                  <li class="themes"><a href="{% url 'themes' %}">Themes</a></li>-->
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{request.user}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="{% url 'change_password' %}"><i class="fa fa-key" aria-hidden="true"></i> Change Password</a></li>
+                      <li><a href="{% url 'admin_logout' %}"><i class="fa fa-sign-out"></i> Logout</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              <!--   <div class="row menu_items">
+                  <ul class="nav nav-pills pull-left">
+                    <li role="presentation" id="home"><a href="/dashboard/blog">Home</a></li>
+                    <li role="presentation" id="categories"><a href="{% url 'categories' %}">Categories</a></li>
+                    <li role="presentation" id="users"><a href="{% url 'users' %}">Users</a></li>
+                    <li role="presentation" id="menus"><a href="{% url 'menus' %}">Menu</a></li>
+                    <li role="presentation" id="pages"><a href="{% url 'pages' %}">Pages</a></li>
+                  </ul>
+                  <p class="pull-right">
+                    <a href="{% url 'admin_logout' %}">
+                    <button class="btn btn-danger"><i class="fa fa-sign-out"></i> Logout</button>
+                    </a>
+                  </p>
+                </div> -->
+              </div>
+            </nav>
+          </header>
+          {% endblock %}
+          {% endif %}
+            {% if messages %}
+              {% for message in messages %}
+              <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible my_alert" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>{% if message.tags %}{{ message.tags|title }} !{% endif %}</strong> {{ message }}.
+              </div>
+              {% endfor %}
+            {% endif %}
+            <div class="main_container">
+              <div class="row no_row_margin">
+              {% block content %}
+              {% endblock content %}
+              </div>
+            </div>
+            <footer class="my_footer">
+            </footer>
+      {% endblock main_content %}
+    </div>
+    <!-- end div container -->
+    <!-- for online links  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+    <script src="//cdn.ckeditor.com/4.5.4/standard/ckeditor.js"></script>
+    <script src="//malsup.github.com/jquery.form.js"></script>
+    <script src="https://cdn.ckeditor.com/4.5.4/basic/ckeditor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
+
+    {% compress js %}
+    <script src="{{ STATIC_URL }}js/jquery.tagsinput.js"></script>
+    <script type="text/javascript">
+      $('.select2').select2(
+        {
+            tags: "true",
+            placeholder: "Select an option"
+        }
+      );
+      {% block delete_confirmation %}
+        // for delete confirmation
+        $('*[data-confirm="true"]').on('click', function() {
+            return confirm("Are you sure?");
+        });
+      {% endblock delete_confirmation %}
+      // for pagination
+      $('.pagination li a.active').each(function(){
+          $(this).css('background', '#337AB7');
+          $(this).css('color', '#fff');
+      });
+
+      if($('.pagination li:first').find('a span').text() == '<<'){
+          $('.pagination li:first').find('a span').text('First');
+      }
+
+      if($('.pagination li:nth-child(2)').find('a span').text() == '<'){
+          $('.pagination li:nth-child(2)').find('a span').text('Prev');
+      }
+
+      if($('.pagination li:last').find('a span').text() == '>>'){
+          $('.pagination li:last').find('a span').text('Last');
+      }
+      if($('.pagination li:nth-last-child(2)').find('a span').text() == '>'){
+          $('.pagination li:nth-last-child(2)').find('a span').text('Next');
+      }
+
+      $(document).ready(function() {
+        setTimeout(function() {
+          $('.my_alert').fadeOut(2000, function(){});
+        }, 3000);
+      });
+    </script>
+    {% block js_script %}
+    {% endblock %}
+
+    {% endcompress %}
+  </body>
+</html>

@@ -1,0 +1,12 @@
+{% extends 'recruiter/index.html' %}
+{% block 'stage' %}
+<div class="row  mt">
+    <div class="page-404">
+        <h1>{% if message_type %}{{message_type}}{% else %}404{% endif %}<span> {% if message %}{{ message }}{% else %}Sorry, the page you requested can not be found{% endif %}</span></h1>
+        <h4>{% if reason %}{{ reason }}{% else %}The URL may be misspelled or the page you're looking for is no longer available.{% endif %}</h4>
+        <h4>Email: support@peeljobs.com</h4>
+        <h4>Contact Number: 850 009 9499</h4>
+        <a href="{% if request.user.is_agency_recruiter %}{% url "agency:dashboard" %}{% else %}{% url "recruiter:dashboard" %}{% endif %}"><i class="fa fa-home"></i> Back to Home Page</a>
+    </div>
+</div>
+{% endblock %}

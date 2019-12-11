@@ -1,0 +1,445 @@
+{% extends 'recruiter/index.html' %}
+{% load thumbnail %}
+{% load static %}
+{% load tz %}
+{% load page_tags %}
+{% block jobs %}
+<li class="job active"><a class="post-new" href="#">Post A new job</a></li>
+<li class="job"><a href="{% url 'recruiter:list' %}">jobs list</a></li>
+{% endblock %}
+{% block 'stage' %}
+<!-- content -->
+<div class="content_wrap">
+  <section id='view_profile_recruiter'>
+    <h3>Recruiter Profile</h3>
+    <!--<h6 class="sub_heading">Recruiter Profile Information</h6>-->
+    <!-- content job post -->
+    <div class="content_job_post company_view_profile">
+      <div class="edit_button">
+        <span class="a active_recruiter">{% if recruiter.is_active %}<i class="fa fa-check" aria-hidden="true"></i> Active Recruiter{% else %}<i class="fa fa-times" aria-hidden="true"></i> In Active Recruiter{% endif %}</span>
+        {% if request.user.is == recruiter.id or request.user.agency_admin %}
+        <a href="{% if request.user.is_company_recruiter %}{% url 'recruiter:edit_company_recruiter' recruiter.id %}{% else %}{% url 'agency:edit_company_recruiter' recruiter.id %}{% endif %}"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Profile</a>
+        {% endif %}
+      </div>
+      <!-- category -->
+      <div class="col-md-4 col-sm-4 profile_logo_name_url ">
+        <div class="logo_name_url">
+          <div class="logo">
+            <img src="{% if request.user.profile_pic %}{{ request.user.profile_pic.url }}{% else %}{% static 'dummy.jpg' %}{% endif %}" />
+            <!--<span class="new_logo"><a href="#"><i class="fa fa-camera" aria-hidden="true"></i></a></span>-->
+          </div>
+          <div class="name">
+            <strong>Name :</strong>
+            <span>{{ recruiter.username }} </span>
+          </div>
+          <div class="url">
+            <strong>Designation :</strong>
+            <span>{{ recruiter.job_role }}</span>
+          </div>
+          {% if recruiter.profile_description %}
+          <div class="name">
+            <strong>About Recruiter :</strong>
+            <span>
+              <p>{{ recruiter.profile_description }}</p>
+            </span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-8 col-sm-8 ">
+        <div class="row">
+          <div class="col-md-12 col-sm-12   profile_type_level_address">
+            <div class="logo_name_url row">
+              <div class="name col-md-12">
+                <strong>Company Name :</strong>
+                <span>{{ recruiter.company.name }}</span>
+              </div>
+              <div class="url col-md-12">
+                <strong>Email Address :</strong>
+                <span class="in-block">{{ recruiter.email }}</span>{% if recruiter.is_active %}<span class="in-block label label-success"> Verified</span>{% else %}<span class="in-block label label-success"> Not Verified</span>{%endif  %}
+              </div>
+              <div class="url col-md-12">
+                <strong>Mobile Number :</strong>
+                <span class="in-block">{{ recruiter.mobile }} </span>
+              </div>
+              {% if recruiter.dob %}
+              <div class="name col-md-12">
+                <strong>Date Of Birth :</strong>
+                <span>{{ recruiter.dob }}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.marital_status %}
+              <div class="url col-md-12">
+                <strong>Marital Status :</strong>
+                <span>{{ recruiter.marital_status }}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.gender %}
+              <div class="url col-md-12">
+                <strong>Gender :</strong>
+                <span class="in-block">{{ recruiter.gender }}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.technical_skills.all %}
+              <div class="url col-md-12">
+                <strong>Skills :</strong>
+                <span>{% for skill in recruiter.technical_skills.all %}{{ skill.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.industry.all %}
+              <div class="url col-md-12">
+                <strong>Industry :</strong>
+                <span class="in-block">{% for industry in recruiter.industry.all %}{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.functional_area.all %}
+              <div class="name col-md-12">
+                <strong>Fucntional Area :</strong>
+                <span> {% for functional_area in recruiter.functional_area.all %}{{ functional_area.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.job_role %}
+              <div class="url col-md-12">
+                <strong>Current Designation :</strong>
+                <span>{{recruiter.job_role}}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.year and recruiter.month %}
+              <div class="url col-md-12">
+                <strong>Total Experience :</strong>
+                <span class="in-block">{{ recruiter.year }} Year(s) {{ recruiter.month }} Month(s)</span>
+              </div>
+              {% endif %}
+              {% if recruiter.state.name %}
+              <div class="name col-md-12">
+                <strong>State :</strong>
+                <span> {{recruiter.state.name}}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.city.name %}
+              <div class="url col-md-12">
+                <strong>City :</strong>
+                <span>{{recruiter.city.name}}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.company.name %}
+              <div class="url col-md-12">
+                <strong>Company Name :</strong>
+                <span class="in-block"> {{recruiter.company.name}}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.company.website %}
+              <div class="name col-md-12">
+                <strong>Company Website :</strong>
+                <span>{{recruiter.company.website}}</span>
+              </div>
+              {% endif %}
+              {% if recruiter.permanent_address %}
+              <div class="url col-md-12">
+                <strong>Personal Address :</strong>
+                <span>{{ recruiter.permanent_address|linebreaks }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/ category -->
+      <br clear="all">
+    </div>
+    <br>
+  </section>
+  {% if request.user.agency_admin or request.user|check_recruiter_perm:"jobposts_edit" %}
+    <section class="job_list">
+      <!-- tabs -->
+      <div class="tab_row row mt">
+        <a href="{% url 'agency:company_recruiter_profile' recruiter.id %}"><span class="tab_button {% ifequal job_status "active" %}active{% endifequal %}">
+        Active Jobs
+        </span></a>
+        <a href="{% url 'agency:company_recruiter_profile' recruiter.id %}?job_status=inactive"><span class="tab_button {% ifequal job_status "inactive" %}active{% endifequal %}">
+        Inactive Jobs
+        </span></a>
+        <form name="jobtypeform" id="jobtypeform" method="get">
+        <div class="pull-right checkbox_block">
+          <input type="hidden" id="search_value" value="{{search_value}}"/>
+          <input type="radio" name="search_value" value="all" {% if search_value == 'all' %}checked{% endif %}>All<input type="radio" name="search_value" value="full-time" {% if search_value == 'full-time' %}checked{% endif %}>Full Time<input type="radio" name="search_value" value="internship" {% if search_value == 'internship' %}checked{% endif %}>Internship 
+          <input type="radio" name="search_value" value="walk-in" {% if search_value == 'walk-in' %}checked{% endif %}>Walkin's
+        </div>
+        </form>
+      </div>
+      <!--/ tabs -->
+      {% if job_posts %}
+      <!-- table -->
+      <div class="table_wraper">
+        <table class="job_list_table">
+          <thead>
+            <tr>
+              <th>Job Code</th>
+              <th>Job Title</th>
+              <th>Location</th>
+              <th>Job Role</th>
+              <th>Expire Date</th>
+              <th>Job Type</th>
+              <th>Actions</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in job_posts %}
+               <tr class='job_detail {% if post.status == 'Draft' %}drafted{% elif post.status == 'Pending' %}pending{% elif post.status == 'Published' %}published{% else %}live{% endif %}' data-href='{% url 'recruiter:view' post.id%}'>
+                  <td><span>{{ post.code }}</span></td>
+                  <td><span>{{ post.title }}</span></td>
+                  <td><span>{%for location in post.location.all %}{{ location.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}</span></td>
+                  <td><span>{{ post.job_role }}</span></td>
+                  <td><span>{{ post.last_date }}</span></td>
+                  <td><span>{{ post.job_type|get_string }}</span></td>
+                  <td><span class="delete-job" id="{{ post.id }}"><i class='fa fa-trash'></i></span></td>
+                  <td>
+                     <span class='icon_wrap'>
+                     <span class="icon_table">
+                        <span class="icon_table_cell">
+                     {% if post.status == 'Draft' %}
+                        <i class='fa fa-floppy-o'></i>
+                        <span class='tag'>Draft</span>
+                    {% elif post.status == 'Pending' %}
+                        <i class='fa fa-clock-o'></i>
+                        <span class='tag'>Pending</span>
+                    {% elif post.status == 'Published' %}
+                      <i class='fa fa-newspaper-o'></i>
+                      <span class='tag'>Published</span>
+                    {% else %}
+                      <i class='fa fa-check'></i>
+                      <span class='tag'>Live</span>
+                    {% endif %}
+                    </span>
+                    </span>
+                     </span>
+                  </td>
+               </tr>
+               {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!--/ table -->
+      <!-- pagination -->
+       <div class="pagination">
+        {% get_page current_page last_page as pages %}
+              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{previous_page}}" title="First"><span class='link_each'><i class="fa fa-angle-double-left"></i></span></a>
+              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{prev_page}}" title="Prev"><span class='link_each'><i class="fa fa-angle-left"></i></span></a>
+              {% for s in pages %}
+              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{s}}"><span class='link_each'{% ifequal s current_page %} class="active" {% endifequal %}>{{s}}</span></a>
+              {% endfor %}
+              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{last_page}}"><span class='link_each'>last</span></a>
+              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{current_page| add:"1"}}"><span class='link_each'>Next</span></a>
+              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><span class='link_each'><i class="fa fa-angle-right pagination-next"></i></span></a>
+              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><span class='link_each'><i class="fa fa-angle-double-right"></i></span></a>
+            </ul>
+            </nav>
+        </div>
+      </div>
+        <div class="clearfix"></div>
+       </div>
+       {% else %}
+       <div class="alert alert-danger alert-dismissible fade in" role="alert" style="margin-top: 11px;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
+          <h4>There are no records in the database</h4>
+      </div>
+       {% endif %}
+       <!--/ pagination -->
+
+    </section>
+  {% endif %}
+
+  {% if recruiter.get_open_tickets %}
+   <div class="ticket_list">
+      <!-- tabs -->
+      <div class="tab_row">
+        <a href="#" id="ticket_open" class="tickets"><span class="tab_button active">
+        Open Tickets
+        </span></a>
+        <a href="#" id="ticket_closed" class="tickets"><span class="tab_button">
+        Closed Tickets
+        </span></a>
+        <a href="/tickets/ticket/new/"><span class="tab_button raise_ticket_button">
+        <i class="fa fa-ticket"></i>Raise a ticket
+        </span></a>
+      </div>
+      <!--/ tabs -->
+      <div class="display open" id='open_tickets'>
+        <!-- content_tickets -->
+        <div class="content_tickets">
+          {% for ticket in recruiter.get_open_tickets %}
+            <!-- ticket -->
+            <div class="ticket_wrap">
+              <div class="ticket recruiter_ticket">
+                <span class="status">{{ ticket.status }}</span>
+                <div class="ticket_content">
+                  <div class="ticket_title">
+                    <a href="#">{{ ticket.title }}</a>
+                  </div>
+                  <div class="email">{{ ticket.user.email }}</div>
+                  <div class="date">{{ ticket.created_on|timezone:"Asia/Calcutta" }}</div>
+                  <div class="status_type">
+                    <span class="type">{{ ticket.ticket_type }}</span>
+                  </div>
+                  <div class="actions">
+                    <a href="{% url 'tickets:view_ticket' ticket.id %}" class="view"><i class="fa fa-eye"></i> View</a>
+                    <a href="{% url 'tickets:edit_ticket' ticket.id %}" class="edit"><i class="fa fa-pencil-square-o"></i> Edit</a>
+                    <a href="#" class="close_1 ticket-close" id="{{ ticket.id}}" ><span id="Closed"><i class="fa fa-times"></i> close</span></a>
+                    <a href="#" class="delete"id="{{ ticket.id}}"><i class="fa fa-trash"></i> Delete</a>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+            </div>
+           {% endfor %}
+
+          <div class="clearfix"></div>
+        </div>
+        <!--/ content_tickets -->
+      </div>
+      <div class="display open" id='closed_tickets' style="display:none;">
+        <!-- content_tickets -->
+        <div class="content_tickets">
+          {% for ticket in recruiter.get_closed_tickets %}
+            <!-- ticket -->
+            <div class="ticket_wrap">
+              <div class="ticket recruiter_ticket">
+                <span class="status">{{ ticket.status }}</span>
+                <div class="ticket_content">
+                  <div class="ticket_title">
+                    <a href="#">{{ ticket.title }}</a>
+                  </div>
+                  <div class="email">{{ ticket.user.email }}</div>
+                  <div class="date">{{ ticket.created_on|timezone:"Asia/Calcutta" }}</div>
+                  <div class="status_type">
+                    <span class="type">{{ ticket.ticket_type }}</span>
+                  </div>
+                  <div class="actions">
+                    <a href="{% url 'tickets:view_ticket' ticket.id %}" class="view"><i class="fa fa-eye"></i> View</a>
+                    <a href="{% url 'tickets:edit_ticket' ticket.id %}" class="edit"><i class="fa fa-pencil-square-o"></i> Edit</a>
+                    <a href="#" class="close_1 ticket-close" id="{{ ticket.id}}" ><span id="Closed"><i class="fa fa-times"></i> close</span></a>
+                    <a href="#" class="delete"id="{{ ticket.id}}"><i class="fa fa-trash"></i> Delete</a>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+            </div>
+           {% endfor %}
+
+          <div class="clearfix"></div>
+        </div>
+        <!--/ content_tickets -->
+      </div>
+    </div>
+  {% endif %}
+</div>
+<!--/ content -->
+{% endblock %}
+{% block 'extra_js' %}
+    <script type="text/javascript">
+        $('.delete').click(function (e) {
+            e.preventDefault();
+            url = $(this).attr('id') + '/'
+            $('#block_question').text('Do you want to delete Ticket?')
+            $('#block_question').dialog({
+                modal: true,
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post("/tickets/ticket/delete/" + url, {}, function (data) {
+                                console.log(data.error), console.log(data.response)
+                                if (data.error == false) {
+                                  open_dialog_with_url(data.response, 'Error!', '/tickets/')
+                                } else {
+                                    open_dialog(data.response, 'Info!!')
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+
+        $(".ticket-close").click(function (e) {
+            id = $(this).attr('id')
+            value = $(this).children('span').attr('id')
+            $.post('/tickets/status/' + id + '/', {'ticket_status': value, 'mode': 'status'}, function (data) {
+                if (data.error == false) {
+                  open_dialog_with_url(data.response, 'Success!', '/tickets/')
+                } else {
+                    open_dialog(data.response, 'Info!!')
+                }
+            }, 'json');
+        });
+        $('.delete-job').click(function (e) {
+            e.stopPropagation();
+            url = $(this).attr('id') + '/'
+            $('#block_question').text('Do you want to delete Jobpost?')
+            $('#block_question').dialog({
+                modal: true,
+                draggable: false,
+                title: "Info!!",
+                buttons: [
+                    {
+                        text: "Yes",
+                        click: function () {
+                            $(this).dialog("close");
+                            $.post('/recruiter/job/delete/' + url, $("form#jobform").serialize(), function (data) {
+                                if (data.error) {
+                                    open_dialog(data.response, 'Error!!')
+                                } else {
+                                open_dialog_with_url("Job Post Deleted Successfully", 'Success!!', "{% url 'recruiter:list' %}")
+                                }
+                            }, 'json');
+                        }
+                    },
+                    {
+                        text: "No",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+        $(".job_detail").click(function () {
+            window.document.location = $(this).data("href");
+        });
+        $(document).ready(function () {
+            $('input[type=radio][name=search_value]').change(function () {
+                $('#jobtypeform').submit();
+            });
+            var search_value = $('#search_value').val()
+            if (search_value.length > 0) {
+                $(window).scrollTop($('.job_list_table').offset().top - $('.page-top').height() - 400);
+            }
+            else {
+            }
+        });
+        $('#ticket_open').click(function (e) {
+            e.preventDefault();
+            $('#open_tickets').show()
+            $('#closed_tickets').hide()
+            $('.tab_button').removeClass('active');
+            $('#ticket_open').children('span').addClass('active');
+        });
+        $('#ticket_closed').click(function (e) {
+            e.preventDefault();
+            $('#open_tickets').hide()
+            $('#closed_tickets').show()
+            $('.tab_button').removeClass('active');
+            $('#ticket_closed').children('span').addClass('active');
+        });
+    </script>
+{% endblock %}

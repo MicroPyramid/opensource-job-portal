@@ -1,0 +1,36 @@
+{% extends 'recruiter/index.html' %}
+{% load page_tags %}
+{% block 'stage' %}
+
+      <!-- content -->
+      <div class="content_wrap">
+        <div class="marl row dashboard_panel">
+          <div class="col-md-3">
+            <div class="panel panel-default active_jobs">
+            <div class="panel-body">
+              Active Jobs <span class="pull-right">{{ active_jobs|length }}</span>
+            </div>
+          </div>
+          </div>
+          <div class="col-md-9">
+            <div class="job_list">
+            <!-- table -->
+            <div class="table_wraper">
+            <div class="heading">Terms and Conditions</div>
+            <p>
+            This Terms of Use &amp; Subscriber Agreement is a legally binding agreement between Peeljobs.com, Employer (including employers, recruiting firms, staffing agencies, and recruiters) and Job Candidate/User of this web site, including all information, products, services, software, databases, and web site available from Peeljobs.com <br><br>
+            By accessing information on Peeljobs.com, User acknowledges that he/she has read, understood and agrees to comply with the terms of this Agreement. By using Peeljobs.com as a Job Candidate, Employer, and/or submitting any content, User agrees to be bound by and comply with this Agreement. You understand and agree that Peeljobs.com is provided to you on an AS IS and AS AVAILABLE basis. Peeljobs.com reserves the right to modify, suspend or discontinue the System with or without notice at any time and without any liability to you.
+          </p>
+          <p class="sub-head">TERMS APPLICABLE TO EMPLOYERS</p>
+          <p><span class="adv-bold">Eligible Subscribers of Peeljobs.com : </span>Peeljobs.com reserves the right to determine, in its sole discretion, whether a firm meets the eligibility requirements for subscriptions.Peeljobs.com asks for company’s social pages information to display your job posting on your social pages which we think is amazing as it maximises the reach of your jobs post.
+          </p>
+          <p><span class="adv-bold">Subscription Terms : </span>All subscription offers are made to eligible, qualified, Employers. As the expiration date of an Employer’s subscription term approaches, the Employer may be invoiced for a new subscription term. If the invoice is paid, the subscription and its associated benefits will continue; otherwise, the subscription will become inactive on its expiration date. When a subscription becomes inactive, all features, services, and benefits of the subscription cease. These may include but are not limited to: jobs entered in the System, distribution of jobs, web pages maintained by the System, resume-forwarding services.
+            <br>
+          </p>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/ content -->
+{% endblock %}

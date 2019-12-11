@@ -1,0 +1,152 @@
+@blue: #1485C3;
+@green:	#69AF4F;
+@voilet:#5C4C8D;
+@red:#C25555;
+
+/*large screens*/
+@media (min-width: 1200px){
+}
+/*large screens*/
+
+/*lap-tops*/
+@media (max-width: 1199px){
+	
+	.form_change_login_forgot{
+		.form-control{
+			height: 50px;
+		}
+	}
+	#login_wrapper{
+		width: 98%;
+	}
+	#change_password{
+		width: 98%;
+	}
+}
+/*lap-tops*/
+
+/*tabs*/
+@media (max-width: 991px) {
+		#top_bar{
+		z-index: 0;
+		.social_icons{
+			display: none;
+		}
+		.social_integration{
+			float: none;
+			text-align: center;
+		}
+	}
+	#login_wrapper{
+		width: 98%;
+		margin-bottom: 20px;
+		.login_form{
+			border-right: 1px solid #fff;
+		}
+		.sign_up_login{
+			border-top: 1px solid #ddd;
+		}
+	}
+}
+
+/*tabs*/
+
+
+
+/*smart phones*/
+@media (max-width: 767px) {
+	#header{
+		.container{
+			padding: 0px;
+		}
+		.logo{
+			margin-left: 15px;
+		}
+	.menu_toggler{
+			display: inline-block;
+			margin-top: 9px;
+			margin-right: 15px;
+		}
+	#menu{
+		float: left;
+		display: none;
+		width: 100%;
+		ul{
+			margin-top: 13px;
+			border-top: 1px solid #ddd;
+			background: #fff;
+			width: 100%;
+			li{
+				display: block;
+				list-style: none;
+				padding:0px;
+				position: static;
+				cursor: pointer;
+				text-transform: uppercase;
+				border-top:none;
+				padding: 10px 0px;
+				bordder-bottom:1px solid #ddd;
+				label{
+					font-weight: normal;
+					display: inline-block;
+					width: 90%;
+					margin: 0;
+					float: left;
+				}
+				.drop_btn{
+					width: 10%;
+					text-align: center;
+					display: inline-block;
+					border-left:1px solid #ddd;
+				}
+				ul{
+					display: none;
+					position: static;
+					min-width: 100%;
+					box-shadow: none;
+					border-top: none ;
+					background: #fff;
+					margin: 0px;
+					li{
+						display: block;
+						padding: 10px 16px;
+						border-bottom: 1px dotted #ddd;
+						border-top: none;
+						/*font-weight: 500;*/
+					}
+				}
+				ul::before{
+					display: none;
+				}
+				&:hover{
+					cursor: pointer;
+					border-top:none;
+					ul{
+						display: none;
+						animation: fadeIn 5s;
+						&:hover{
+							display: block;
+							li{
+								&:hover{
+									border-top:transparent;
+									background: #ddd;
+									color: #666;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+}
+/*smart phones*/
+
+/*mobile*/
+
+@media (max-width: 480px){
+}
+/*mobile*/
+

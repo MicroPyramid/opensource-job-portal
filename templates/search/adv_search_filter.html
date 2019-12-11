@@ -1,0 +1,76 @@
+
+    <!-- MODAL FOR LOGIN -->
+    <div id="adv_search" >
+      <div class="plainmodal-close"><i class='fa fa-close'></i></div>
+      <span class="text-center"><strong>Advanced Search</strong></span>
+      <form autocomplete="off" id="search_form" name="adv-search-form" class="adv-autocomplete-me search-form" id="elastic-adv-search" method = "POST">
+      <div class="form_div">
+      <!-- input -->
+      <div class="form_input_div">
+        <span class='input_check_box'>
+          <input type="radio" name="job_type" class="adv_job_type" value="Full_Time" {% ifequal 'Full_Time' request.session.formdata.job_type %}checked{% endifequal %}><span class='name'>Full Time</span></span>
+        </span>
+        <span class='input_check_box'>
+          <input type="radio" name="job_type" class="adv_job_type" value="Internship" {% ifequal 'Internship' request.session.formdata.job_type %}checked{% endifequal %}><span class='name'>Internship</span></span>
+        </span>
+        <span class='input_check_box'>
+          <input type="radio" name="job_type" class="adv_job_type" value="Walk-in" {% ifequal 'Walk-in' request.session.formdata.job_type %}checked{% endifequal %}><span class='name'>Walk-in</span></span>
+        </span>
+        <div class="clearfix"></div>
+      </div>
+      <!--/input -->
+      <!-- input-->
+      <div class="form_input_div">
+        <input type="text" class="form-control" id="adv-q" name="{{ search_form.q.html_name }}" value="{{ request.session.formdata.q|default_if_none:"" }}" placeholder='Skills'>
+      </div>
+      <!--/ input -->
+      <!-- input-->
+      <div class="form_input_div">
+        <input type="text" class="form-control" id="adv-location" name="{{ search_form.location.html_name }}"  value="{{ request.session.formdata.location|default_if_none:"" }}" placeholder='Location'>
+      </div>
+      <!--/ input -->
+      <!-- input-->
+      <div class="form_input_div">
+        <input type="text" class="form-control" name="{{ search_form.functional_area.html_name }}" value="{{ request.session.formdata.functional_area|default_if_none:"" }}" placeholder='Select the functional area where you want to work'>
+      </div>
+      <!--/ input -->
+      <!-- input-->
+      <div class="form_input_div">
+        <input type="text" class="form-control" name="{{ search_form.industry.html_name }}" value="{{ request.session.formdata.industry|default_if_none:"" }}" placeholder='Select the industry where you want to work'>
+      </div>
+      <!--/ input -->
+      <!-- input-->
+      <div class="form_input_div">
+        <select class="form-control" placeholder='Experience' name='{{ search_form.experience.html_name }}'>
+          <option value="">Experience(Y)</option>
+          {% for i in "xxxxxxxxxxxxx" %}
+            <option value="{{ forloop.counter0 }}" {% ifequal forloop.counter0|add:"0" request.session.formdata.experience|add:"0" %}selected{% endifequal %}>{{ forloop.counter0 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <!--/ input -->
+      <div class="walkin_div {% if request.session.formdata.job_type == 'Walk-in'%}display_advanced_search{%else%}advanced_search{% endif %}">
+        <div class="form_input_div">
+          <select class="form-control" name='walkin_type' id="walkin_type">
+          <option value="">Walkin Type</option>
+          {% for walkin_type in walkin_types %}
+            <option value="{{ walkin_type.0 }}" {% ifequal walkin_type.0 request.session.formdata.walkin_type %}selected{% endifequal %}>{{ walkin_type.1 }}</option>
+          {% endfor %}
+          </select>
+        </div>
+          <div class="form_input_div custom_range walkin_from_date" style="display:none;">
+            <input type="text" class="form-control" id="walkin_from_date" name="{{ search_form.walkin_from_date.html_name }}" value="{{ request.session.formdata.walkin_from_date }}" placeholder='Select the from date'>
+          </div>
+          <div class="form_element custom_range walkin_to_date" style="display:none;">
+            <input type="text" class="form-control"id="walkin_to_date" name="{{ search_form.walkin_to_date.html_name }}" value="{{ request.session.formdata.walkin_to_date }}" placeholder='Select the end date'>
+          </div>
+        </div>
+      <!-- button row -->
+      <div class="button_row">
+        <button type="submit" class='button'>Submit</button>
+      </div>
+      <!--/ button row -->
+      </div>
+      </form>
+    </div>
+    <!--/ MODAL FOR LOGIN -->

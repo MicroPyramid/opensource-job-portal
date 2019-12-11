@@ -1,0 +1,46 @@
+{% load schedule_tags %}
+
+<table class="cal-table cal-week">
+  <caption class="cal-caption"><a class="month" data="{{ month.id }}" href="{% url 'month_calendar' year month.id %}">{{ month.Name }} {{ year }}</a></caption>
+  <thead>
+  <tr>
+    <th></th>
+      {% for day in day_names %}
+          <th>{{ day }}</th>
+      {% endfor %}
+  </tr>
+  </thead>
+  <tbody class="cal-body">
+      {% for week in year|get_weekdays:month.id %}
+        <tr>
+        <td><a class="week" data="{{ forloop.counter }}" data_month="{{ month.id }}" href="{% url 'week_calendar' year month.id forloop.counter %}">w{{ forloop.counter }}</a></td>
+        {% for date in week %}
+          <td class="cal-check ">
+            {% ifequal date 0 %}
+            {% else %}
+              {% get_per_day_jobposts year month.id date as per_day_projects %}
+              {% get_per_day_events year month.id date as per_day_events %}
+              <a class="project_overview" href="{% if per_day_projects|length > 0 %}{% url 'jobposts_by_date' year month.id date %}{%elif per_day_events|length > 0 %}{% url 'jobposts_by_date' year month.id date %}{% else %}#{%endif%}">
+                {{ date }}
+                <div class="e_jp">
+                 {% if per_day_projects|length > 0%}
+                  <span>
+                      JP-{{per_day_projects|length}}
+                  </span>
+                  {% endif %}
+                   {% if per_day_events|length > 0%}
+                  <span>
+                      E-{{per_day_events|length}}
+                  </span>
+                  {% endif %}
+                </div>  
+              </a>
+            {% endifequal %}
+          </td>
+        {% endfor %}
+        </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
+

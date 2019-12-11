@@ -1,0 +1,57 @@
+{% extends 'dashboard/new_base.html' %}
+{% load staticfiles %}
+    {% block title %}Login{% endblock title %}
+    {% block body_block %}login_body{% endblock body_block %}
+    {% block main_content %}
+
+        <!-- welcome meassge ends here -->
+        <!-- Description starts here -->
+        <div class="row no_row_margin login_block">
+          <div class="col-sm-6 col-md-4 col-md-offset-4">
+            <div class="account-wall">
+              <div id="__all__" class="tab-content">
+                <form class="form-signin" action="" method="post" id="admin_login_form">
+                  {% csrf_token %}
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Username" autofocus>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+                    <input type="submit" class="btn btn-lg btn-default btn-block" value="Sign In" />
+                    <!--<div>
+                      <a href="{% url 'google_login' %}"> sign in with Google </a>
+                    </div>
+                    <div>
+                      <a href="{% url 'facebook_login' %}"> sign in with Facebook </a>
+                    </div>-->
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Description ends here -->
+
+    {% endblock main_content %}
+
+{% block js_script %}
+    <script type="text/javascript">
+      $("#admin_login_form").submit(function(e){
+          e.preventDefault();
+          $.post(".", $("#admin_login_form").serialize(), function(data){
+              if(data.error){
+                  $('p.login_error_required').remove();
+                  if(data.response){
+                    $('#admin_login_form').parent().after("<p class='login_error_required text-center'>&nbsp;&nbsp; * " + data.response + "</p>");
+                  }
+                  for (var key in data.errors) {
+                    if (key == '__all__'){
+                      $('#'+key).after("<p class='login_error_required text-center'>&nbsp;&nbsp; * " + data.errors[key] + "</p>");
+                    }else{
+                      $('#'+key).after("<p class='login_error_required'>&nbsp;&nbsp; * " + data.errors[key] + "</p>");
+                    }
+                  }
+              }else{
+                  //alert(data['response']);
+                  window.location = "{% url 'blog' %}";
+              }
+          }, "json")
+      })
+    </script>
+{% endblock %}

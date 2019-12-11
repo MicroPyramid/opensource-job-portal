@@ -1,0 +1,71 @@
+{% extends 'dashboard/base.html' %}
+{% load tz %}
+{% load page_tags %}
+{% block stage %}
+<section id='recruiters'>
+  <div class="list_table">
+    <div class="title_div">
+               <h4>Search Logs</h4>
+               <div class="records">
+                  <div class="form-inline">
+                  </div>
+               </div>
+               <div class="clearfix"></div>
+            </div>
+    <table class="table table-hover" id="sample_1">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Skills</th>
+          <th>Locations</th>
+          <th>Searched On</th>
+          <th>No of Job posts displayed</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for search_log in search_logs %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="{% url 'dashboard:view_search_log' search_log.id %}">{% if search_log.search_text.skills %}{{ search_log.search_text.skills }}{% else %}-{% endif %}</a></td>
+          <td><a href="{% url 'dashboard:view_search_log' search_log.id %}">{% if search_log.search_text.locations %}{{ search_log.search_text.locations }}{% else %}-{% endif %}</a></td>
+          <td>{{ search_log.search_on }}</td>
+          <td>{{ search_log.job_post }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="pagination_wrap">
+        {% get_page current_page last_page as pages %}
+        <nav>
+            <ul class="pagination">
+            {% if current_page != 1 %}
+              <li class="prev"><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+              <li class="prev"><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+              <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page=1">first</a></li>
+              {% endif %}
+              {% for s in pages %}
+              <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{s}}">{{s}}</a></li>
+              {% endfor %}
+              {% if current_page != last_page %}
+              <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{last_page}}">last</a></li>
+              <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+              <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+              {% endif %}
+            </ul>
+        </nav>
+      </div>
+
+  </div>
+</section>
+{% endblock stage %}
+{% block script %}
+<script type="text/javascript">
+$('#sample_1').DataTable({
+      "sPaginationType": "full_numbers",
+      "aaSorting": [],
+      "bSort": true,
+      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+      "pageLength": 20,
+    });
+</script>
+{% endblock script %}
