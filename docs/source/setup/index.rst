@@ -81,38 +81,73 @@ Configuration of Peeljobs
 
 10. We have to use third party related keys. We have to had those keys in order to run the application.
 
-		**sendgrid details**
+		**Sendgrid details**
 
-		SG_USER=<sendgrid username> SG_PWD=<sendgrid password>
+		SG_USER=<sendgrid username>
 		
-		**google developers account details**
+		SG_PWD=<sendgrid password>
+		
+		**Google developers account details**
 
 		GP_CLIENT_ID=<oauth0 client id>
-		GP_CLIENT_SECRET=<oauth0 client secret>
+
+		GP_CLIENT_SECRET=<oauth0 client secret-key>
+		
 		ENABLE_GOOGLE_LOGIN=<variable to configure google login in application>
 
 		**Facebook details**
 
 		FB_APP_ID = <facebook access key id>
-		FB_SECRET = <facebook access secret key>
+		
+		FB_SECRET = <facebook access secret-key>
 
-		**aws account details**
+		**Aws account details**
 
-		AWSBUCKETNAME=<aws bucket name>
-		AWS_ACCESS_KEY_ID=<aws access key id>
-		AWS_SECRET_ACCESS_KEY=<aws access secret key>
+		AWSBUCKETNAME = <aws bucket name>
+		
+		AWS_ACCESS_KEY_ID = <aws access key id>
+		
+		AWS_SECRET_ACCESS_KEY = <aws access secret-key>
+
+		**Git account details**
+
+		GIT_APP_ID = <git api id>
+		
+		GIT_APP_SECRET = <git secret-key>
+
+		**LinkedIn account details**
+
+		LN_API_KEY = <linkedin api id>
+
+		LN_SECRET_KEY = <linkedin secret-key>
+
+		**Mailgun accout details**
+
+		MGUN_API_URL = <mailgun api url>
+
+		MGUN_API_KEY = <mailgun api secret-key>
+
 
 
 11. Apply migrations to database using the following command
 
-   .. code-block:: python
+    .. code-block:: python
 
 		python manage.py migrate
 
 
 12. Now run application using following command, and visit http://localhost:8000
 
-   .. code-block:: python
+    .. code-block:: python
 
 		python manage.py runserver
 
+
+14. We’re using celery for sending emails, other related tasks in the application. Run celery using
+    the following commands
+
+    .. code-block:: python
+
+      celery -A peeljobs worker -l info
+
+      celery -A peeljobs beat -l info
