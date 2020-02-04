@@ -34,3 +34,4 @@ python-magic==0.4.15
 jsonpickle==1.0
 pymemcache==2.0.0
 lxml==4.2.5
+sphinx_rtd_theme
