@@ -16,3 +16,4 @@ celerybeat.pid
 client_secret.json
 dist/
 opensource_job_portal.egg-info/
+docs/build
