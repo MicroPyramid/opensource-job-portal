@@ -5,6 +5,7 @@ python:
 #Django & Database
 addons:
   postgresql: ""
+  mongodb: ""
 
 sudo: required
 
