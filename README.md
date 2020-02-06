@@ -5,6 +5,7 @@ opensource job portal
 
 [![Build Status](https://travis-ci.org/MicroPyramid/opensource-job-portal.svg?branch=master)](https://travis-ci.org/MicroPyramid/opensource-job-portal)
 
+[![Coverage Status](https://coveralls.io/repos/github/MicroPyramid/opensource-job-portal/badge.svg?branch=master)](https://coveralls.io/github/MicroPyramid/opensource-job-portal?branch=master)
 
 https://opensource-job-portal.readthedocs.io/en/latest/ for latest documentation
 Job Portal with Unlimited free job posting, Social Api's authentication.
