@@ -177,9 +177,10 @@ LOGIN_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     # ... your other backends
-    'social.auth_backend.PasswordlessAuthBackend',
+    # 'social.auth_backend.PasswordlessAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
 
 TEMPLATES = [
     {
@@ -197,6 +198,7 @@ TEMPLATES = [
         },
     },
 ]
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
