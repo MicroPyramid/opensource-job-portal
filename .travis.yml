@@ -29,7 +29,7 @@ before_script:
 
 # command to run tests
 script:
-  - python test_runner.py test
+  - python manage.py test
 
 after_success:
   coveralls
