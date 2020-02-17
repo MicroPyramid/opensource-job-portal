@@ -68,7 +68,7 @@ services:
     image: dpage/pgadmin4:latest
     hostname: dbadmin
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@peelj.co
+      - PGADMIN_DEFAULT_EMAIL=admin@peeljobs.com
       - PGADMIN_DEFAULT_PASSWORD=docker
     volumes:
       - ./pgadmin-data:/var/lib/pgadmin
@@ -131,7 +131,7 @@ services:
       - MONGODB_PORT_NUMBER=27017
       - MONGODB_HOSTNAME=mongodb
       - DJANGO_SETTINGS_MODULE=jobsp.settings_server
-      - VIRTUAL_HOST=peelj.co,www.peelj.co
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
       - VIRTUAL_PORT=80
       - REDIS_HOST=redis
       - C_FORCE_ROOT="true"
@@ -142,12 +142,12 @@ services:
       - RABBITMQ_DEFAULT_PASS=rabbit_test_password
       - RABBITMQ_DEFAULT_VHOST=/
       - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
-      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peelj.co/83
-      - DEFAULTFROMEMAIL=support@peelj.co
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
       - BROKER_API=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
       - MAILSENDER=SENDGRID
       - CONTACT_NUMBER=8500099499
-      - PEEL_URL=https://peelj.co
+      - PEEL_URL=https://peeljobs.com
       - MEMCACED_HOST=memcached
     volumes:
       - ../django_project:/home/web/django_project
@@ -315,7 +315,7 @@ services:
       - MONGODB_PORT_NUMBER=27017
       - MONGODB_HOSTNAME=mongodb
       - DJANGO_SETTINGS_MODULE=jobsp.settings_server
-      - VIRTUAL_HOST=peelj.co,www.peelj.co
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
       - VIRTUAL_PORT=80
       - REDIS_HOST=redis
       - C_FORCE_ROOT="true"
@@ -326,12 +326,12 @@ services:
       - RABBITMQ_DEFAULT_PASS=rabbit_test_password
       - RABBITMQ_DEFAULT_VHOST=/
       - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
-      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peelj.co/83
-      - DEFAULTFROMEMAIL=support@peelj.co
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
       - BROKER_API=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
       - MAILSENDER=SENDGRID
       - CONTACT_NUMBER=8500099499
-      - PEEL_URL=https://peelj.co
+      - PEEL_URL=https://peeljobs.com
       - MEMCACED_HOST=memcached
     volumes:
       - ../django_project:/home/web/django_project
@@ -372,7 +372,7 @@ services:
       - MONGODB_PORT_NUMBER=27017
       - MONGODB_HOSTNAME=mongodb
       - DJANGO_SETTINGS_MODULE=jobsp.settings_server
-      - VIRTUAL_HOST=peelj.co,www.peelj.co
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
       - VIRTUAL_PORT=80
       - REDIS_HOST=redis
       - C_FORCE_ROOT="true"
@@ -383,12 +383,12 @@ services:
       - RABBITMQ_DEFAULT_PASS=rabbit_test_password
       - RABBITMQ_DEFAULT_VHOST=/
       - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
-      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peelj.co/83
-      - DEFAULTFROMEMAIL=support@peelj.co
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
       - BROKER_API=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
       - MAILSENDER=SENDGRID
       - CONTACT_NUMBER=8500099499
-      - PEEL_URL=https://peelj.co
+      - PEEL_URL=https://peeljobs.com
       - MEMCACED_HOST=memcached
     volumes:
       - ../django_project:/home/web/django_project
@@ -427,7 +427,7 @@ services:
       - MONGODB_PORT_NUMBER=27017
       - MONGODB_HOSTNAME=mongodb
       - DJANGO_SETTINGS_MODULE=jobsp.settings_server
-      - VIRTUAL_HOST=peelj.co,www.peelj.co
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
       - VIRTUAL_PORT=80
       - REDIS_HOST=redis
       - C_FORCE_ROOT="true"
@@ -438,12 +438,12 @@ services:
       - RABBITMQ_DEFAULT_PASS=rabbit_test_password
       - RABBITMQ_DEFAULT_VHOST=/
       - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
-      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peelj.co/83
-      - DEFAULTFROMEMAIL=support@peelj.co
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
       - BROKER_API=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
       - MAILSENDER=SENDGRID
       - CONTACT_NUMBER=8500099499
-      - PEEL_URL=https://peelj.co
+      - PEEL_URL=https://peeljobs.com
       - MEMCACED_HOST=memcached
     depends_on:
       - memcached
@@ -481,7 +481,7 @@ services:
       - MONGODB_PORT_NUMBER=27017
       - MONGODB_HOSTNAME=mongodb
       - DJANGO_SETTINGS_MODULE=jobsp.settings_server
-      - VIRTUAL_HOST=peelj.co,www.peelj.co
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
       - VIRTUAL_PORT=80
       - REDIS_HOST=redis
       - C_FORCE_ROOT="true"
@@ -492,11 +492,11 @@ services:
       - RABBITMQ_DEFAULT_PASS=rabbit_test_password
       - RABBITMQ_DEFAULT_VHOST=/
       - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
-      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peelj.co/83
-      - DEFAULTFROMEMAIL=support@peelj.co
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
       - MAILSENDER=SENDGRID
       - CONTACT_NUMBER=8500099499
-      - PEEL_URL=https://peelj.co
+      - PEEL_URL=https://peeljobs.com
       - MEMCACED_HOST=memcached
     depends_on:
       - beat

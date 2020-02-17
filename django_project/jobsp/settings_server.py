@@ -5,8 +5,10 @@ DEBUG = False
 CELERY_IMPORTS = ("social.tasks", "dashboard.tasks")
 
 # Set your DSN value
+RAVEN_DSN = os.environ.get('RAVEN_DSN')
 RAVEN_CONFIG = {
-    'dsn': os.getenv("RAVEN_CONFIG_DSN"),
+        'dsn': RAVEN_DSN,
+    } if RAVEN_DSN else {
 }
 
 # Add raven to the list of installed apps
