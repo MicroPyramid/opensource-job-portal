@@ -946,8 +946,7 @@ def daily_report():
         'today_mobile_not_verified_agency_recruiters': today_mobile_not_verified_agency_recruiters.count(),
     }
     db.statistics.insert(data)
-    users = ['nikhila@micropyramid.com', 'vineesha@micropyramid.com', 'raghubethi@micropyramid.com',
-             'anusha@micropyramid.com', 'kamal.seo@gmail.com', 'ashwin@micropyramid.com']
+    users = settings.DAILY_REPORT_RECIPIENTS
 
     for each in users:
         temp = loader.get_template('email/daily_report.html')

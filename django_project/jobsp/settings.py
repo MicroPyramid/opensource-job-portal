@@ -430,4 +430,10 @@ URLS = ['http://stage.peeljobs.com/',
         'http://stage.peeljobs.com/jobs/',
         'http://stage.peeljobs.com/companies/']
 
-# MIDDLEWARE_CLASSES = MIDDLEWARE
+DAILY_REPORT_RECIPIENTS = \
+['nikhila@micropyramid.com', 
+'vineesha@micropyramid.com', 
+'raghubethi@micropyramid.com',
+'anusha@micropyramid.com', 
+'kamal.seo@gmail.com', 
+'ashwin@micropyramid.com']
