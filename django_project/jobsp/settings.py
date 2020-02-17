@@ -244,9 +244,9 @@ COMPRESS_URL = STATIC_URL
 COMPRESS_ENABLED = True
 
 COMPRESS_PRECOMPILERS = (
-    ('text/less', '/usr/local/bin/lessc {infile} {outfile}'),
-    ('text/x-sass', '/usr/local/bin/sass {infile} {outfile}'),
-    ('text/x-scss', '/usr/local/bin/sass {infile} {outfile}'),
+    ('text/less', 'lessc {infile} {outfile}'),
+    ('text/x-sass', 'sass {infile} {outfile}'),
+    ('text/x-scss', 'sass {infile} {outfile}'),
 )
 
 COMPRESS_OFFLINE_CONTEXT = {

@@ -57,19 +57,25 @@ some knowledge of running a django site.
 
 For local environmet
 ====================
+
 		- cd opensourcr-job-portal/deployment
+
         - docker-compose up --build -d
 
 For production environment
 ==========================
+
 		- Log into your server (ssh) or using any CI/CD tooling in place such as travis/Jenkins etc
+		
 		- cd opensourcr-job-portal/deployment
+        
         - docker-compose up --build -d
 
         To scale worker services to a DESIRED number of instances for example 
         to run 3 instances of events worker (handling all notifications) and 4 transaction workers (handling all machinery processing such as rebuiding elasticsearch index, updatin meta data etc) you would do the following:
 
         - docker-compose up --detach --scale worker-events=3
+        
         - docker-compose up --detach --scale worker-transactions=4
 
 Congratulations, lets do some house chores and jump into coding
@@ -80,6 +86,7 @@ To run database migrations :
 .. code::
 
     $ docker exec -it uwsgi_container_ID bash
+    
     $ python manage.py migrate
 
 To collect static files:
@@ -87,6 +94,7 @@ To collect static files:
 .. code::
 
     $ docker exec -it uwsgi_container_ID bash
+    
     $ python manage.py collectstatic
 
 To load initial data i.e states, countries, skills, categories etc:
@@ -94,6 +102,7 @@ To load initial data i.e states, countries, skills, categories etc:
 .. code::
 
     $ docker exec -it uwsgi_container_ID bash
+    
     $ python manage.py rebuild_index
 
 To create superuser account:
@@ -101,6 +110,7 @@ To create superuser account:
 .. code::
 
     $ docker exec -it uwsgi_container_ID bash
+    
     $ python manage.py createsuperuser
 
 Alt:
@@ -113,6 +123,7 @@ In case your code changes take some seconds to reflect, you can force reload of 
 .. code::
 
     $ docker exec -it uwsgi_container_ID bash
+    
     $ uwsgi --reload /tmp/django.pid
 
 Happy Coding!
