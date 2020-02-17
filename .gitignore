@@ -1,19 +1,152 @@
+venv
+.idea
 *.pyc
-*~
-__pycache__
+*.*~
+vagrant-fabric-lxc
+django_project/media/images
+visual_changelog.db
+.vagrant
+
+node_modules
+id_dsa.pub
+id_rsa.pub
+docs/build
+fabgis_resources
+private.py
 .coverage
 sample_config.yaml
 fabfile.py
 .sass-cache
 npm-debug.log
-.idea
 django_blog_it
-node_modules/
 django_dev.log
 logs/
 celerybeat-schedule
 celerybeat.pid
-client_secret.json
+# client_secret.json
+*.egg-info/
+<<<<<<< HEAD
+
+
+# Vim leftovers
+*.*~
+
+# project specifc
+deployment/.env
+xmlrunner
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
 dist/
-opensource_job_portal.egg-info/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+# Usually these files are written by a python script from a template
+# before PyInstaller builds the exe, so as to inject date/other infos
+# into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+#PyCharm
+.idea
+
+# Virtual env
+venv
+
+# Node
+django_project/static
+node_modules
+
+# Working data not intended to be versioned
+data_for_import
+scrap.html
+.pycharm_helpers
+.sudo_as_admin_successful
+
+# Pg cluster for docker
+deployment/pg/
+deployment/pg/postgres_data/9.3
+deployment/pg/postgres_staging_data/9.3
+deployment/pg/postgres_dev_data/9.3
+deployment/sql/healthyrivers-old.sql
+# Template for apt-cacher
+# static and media dirs
+deployment/logs
+deployment/static
+deployment/media
+deployment/docker/71-apt-cacher-ng
+django_project/static
+django_project/core/settings/secret.py
+
+# local media
+django_project/media
+
+# OSX Crap
+.DS_Store
+
+# Backups
+*.dmp
+deployment/backups
+
+# We should never version the btsync keys
+deployment/btsync-media.env
+deployment/btsync-db.env
+deployment/btsync-db.env.PRODUCTION
+deployment/btsync-media.env.PRODUCTION
+.sync/
+# These don't get versioned since they are generated on the fly 
+deployment/pgadmin-data
+deployment/rabbitmq
+deployment/reports
+deployment/docker/Dockerfile-prod
+deployment/docker/projecta.tar.gz
+celerybeat-schedule
+django_project/node_modules/
+optimized.js
+=======
 docs/build
+>>>>>>> cee7d162bc5ccb91a0eb6a979415f208b65a2e0c
