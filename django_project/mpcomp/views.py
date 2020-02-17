@@ -87,14 +87,17 @@ def Memail(mto, mfrom, msubject, mbody, user_active):
                 'html': mbody,
             })
     elif mail_sender == 'SENDGRID':
-        sg = sendgrid.SendGridClient(settings.SG_USER, settings.SG_PWD)
-        sending_msg = sendgrid.Mail()
-        sending_msg.set_subject(msubject)
-        sending_msg.set_html(mbody)
-        sending_msg.set_text(msubject)
-        sending_msg.set_from(mfrom)
-        sending_msg.add_to(mto)
-        sg.send(sending_msg)
+        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        sending_message = Mail(
+            to_emails=mto,
+            from_email=mfrom,
+            subject=msubject,
+            html_content=mbody)
+        try:
+            sg.send(sending_message)
+            return True
+        except Exception as e:
+            print(f'Error sending mail: ', e)
     else:
         pass
         # msg = EmailMultiAlternatives(msubject, mbody, mfrom, [mto])
