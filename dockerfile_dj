@@ -1,3 +1,0 @@
-from django
-
-copy entrypoint.sh /home/entrypoint.sh

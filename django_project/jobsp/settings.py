@@ -11,10 +11,11 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULTFROMEMAIL")
 
 CONTACT_NUMBER = os.getenv("CONTACTNUMBER")
 
-PEEL_URL = os.getenv("PEELURL")
+PEEL_URL = os.getenv("PEEL_URL")
 
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER_URL = os.environ.get('BROKER_URL', 'amqp://rabbit:rabbit_test_password@rabbitmq:5672//')
+REDIS_HOST = os.environ.get('REDIS_HOST')
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:6379'
 CELERY_IMPORTS = ("social.tasks", "dashboard.tasks", "recruiter.tasks")
 
 # stackoverflow app
@@ -93,11 +94,12 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("POSTGRES_NAME"),
-        'USER': os.getenv("POSTGRES_USER"),
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
-        'HOST': '127.0.0.1',
-        'PORT': '5432'}
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': 5432,
+    }
 }
 
 
@@ -267,6 +269,35 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1
 
 CELERY_TIMEZONE = "Asia/Calcutta"
 
+
+
+
+CELERY_TASK_ROUTES = {
+    'dashboard.tasks.daily_report': {'queue': 'transactions'},
+    'dashboard.tasks.jobpost_published': {'queue': 'transactions'},
+    'dashboard.tasks.rebuilding_index': {'queue': 'transactions'},
+    'dashboard.tasks.sitemap_generation': {'queue': 'transactions'},
+    'dashboard.tasks.handle_sendgrid_bounces': {'queue': 'transactions'},
+
+    'dashboard.tasks.check_meta_data': {'queue': 'events'},
+    'dashboard.tasks.alerting_applicants': {'queue': 'events'},
+
+    'dashboard.tasks.job_alerts_to_users': {'queue': 'events'},
+    'dashboard.tasks.job_alerts_to_alerts': {'queue': 'events'},
+    'dashboard.tasks.job_alerts_to_subscribers': {'queue': 'events'},
+
+    'dashboard.tasks.recruiter_jobpost_applicants': {'queue': 'transactions'},
+    'dashboard.tasks.recruiter_profile_update_notifications': {'queue': 'events'},
+
+    'dashboard.tasks.applicants_notifications': {'queue': 'events'},
+    'dashboard.tasks.applicants_walkin_job_notifications': {'queue': 'events'},
+    'dashboard.tasks.applicants_job_notifications': {'queue': 'events'},
+    'dashboard.tasks.applicants_profile_update_notifications': {'queue': 'events'},
+    'dashboard.tasks.applicants_profile_update_notifications_two_hours': {'queue': 'events'},
+}
+
+CELERY_TASK_QUEUES = []
+
 CELERY_BEAT_SCHEDULE = {
     # Executes every day evening at 5:00 PM GMT +5.30
     'moving-published-jobs-to-live': {
@@ -354,11 +385,12 @@ BULK_SMS_FROM = os.getenv('BULKSMSFROM')
 
 MINIFIED_URL = os.getenv("MINIFIED_URL")
 
-MONGO_HOST = os.getenv("MONGO_HOST")
-MONGO_PORT = int(os.getenv("MONGO_PORT"))
-MONGO_DB = os.getenv("MONGO_DB")
-MONGO_USER = os.getenv("MONGO_USER")
-MONGO_PWD = os.getenv("MONGO_PWD")
+MONGO_HOST = os.getenv("MONGODB_HOSTNAME")
+MONGO_PORT = int(os.getenv("MONGODB_PORT_NUMBER"))
+MONGO_DB = os.getenv("MONGODB_DATABASE")
+MONGO_USER = os.getenv("MONGODB_USERNAME")
+MONGO_PWD = os.getenv("MONGODB_PASSWORD")
+
 
 THUMBNAIL_BACKEND = 'jobsp.thumbnailname.SEOThumbnailBackend'
 THUMBNAIL_DEBUG = True
@@ -373,18 +405,18 @@ SMS_AUTH_KEY = os.getenv("SMSAUTHKEY")
 AWS_ENABLED = False
 DISQUS_SHORTNAME = ''
 
+MEMCACHED_HOST = os.environ.get('MEMCACED_HOST')
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': f'{MEMCACHED_HOST}:11211',
         'TIMEOUT': 48 * 60 * 60,
         'OPTIONS': {
             'server_max_value_length': 1024 * 1024 * 90,
         }
     }
 }
-
-CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 
 FB_ACCESS_TOKEN = os.getenv('FBACCESSTOKEN')
 FB_PAGE_ACCESS_TOKEN = os.getenv('FBPAGEACCESSTOKEN')
