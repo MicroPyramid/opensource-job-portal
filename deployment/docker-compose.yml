@@ -150,7 +150,7 @@ services:
       - PEEL_URL=https://peeljobs.com
       - MEMCACED_HOST=memcached
     volumes:
-      - ../django_project:/home/web/django_project
+      - ..:/home/web/django_project
       - ./static:/home/web/static:rw
       - ./media:/home/web/media:rw
       - ./logs:/var/log/
@@ -334,7 +334,7 @@ services:
       - PEEL_URL=https://peeljobs.com
       - MEMCACED_HOST=memcached
     volumes:
-      - ../django_project:/home/web/django_project
+      - ..:/home/web/django_project
       - ./static:/home/web/static:rw
       - ./media:/home/web/media:rw
       - ./logs:/var/log/
@@ -391,7 +391,7 @@ services:
       - PEEL_URL=https://peeljobs.com
       - MEMCACED_HOST=memcached
     volumes:
-      - ../django_project:/home/web/django_project
+      - ..:/home/web/django_project
       - ./static:/home/web/static:rw
       - ./media:/home/web/media:rw
       - ./logs:/var/log/
@@ -449,7 +449,7 @@ services:
       - memcached
       - rabbitmq
     volumes:
-      - ../django_project:/home/web/django_project
+      - ..:/home/web/django_project
       - ./static:/home/web/static:rw
       - ./media:/home/web/media:rw
       - ./logs:/var/log/
@@ -504,7 +504,7 @@ services:
       - worker-transactions
       - rabbitmq
     volumes:
-      - ../django_project:/home/web/django_project
+      - ..:/home/web/django_project
       - ./static:/home/web/static:rw
       - ./media:/home/web/media:rw
       - ./logs:/var/log/
