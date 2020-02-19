@@ -178,7 +178,7 @@ services:
             - uwsgi
 
   dbbackups:
-    container_name: nchito-db-backups
+    container_name: peelj-db-backups
     image: prodrigestivill/postgres-backup-local
     restart: always
     volumes:
