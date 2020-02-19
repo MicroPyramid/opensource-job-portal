@@ -178,26 +178,26 @@ services:
             - uwsgi
 
   dbbackups:
-    # Note you cannot scale if you use container_name
-    container_name: peelj-db-backups
-    image: kartoza/pg-backup:9.4
-    hostname: pg-backups
+    container_name: nchito-db-backups
+    image: prodrigestivill/postgres-backup-local
+    restart: always
     volumes:
       - ./backups:/backups
     links:
       - db:db
+    depends_on:
+      - db
     environment:
-      # take care to let the project name below match that
-      # declared in the top of the makefile
-      - DUMPPREFIX=PG_peelj
-      # These are all defaults anyway, but setting explicitly in
-      # case we ever want to ever use different credentials
-      - PGUSER=docker
-      - PGPASSWORD=docker
-      - PGPORT=5432
-      - PGHOST=db
-      - PGDATABASE=peelj
-    restart: unless-stopped
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=peelj 
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
+      - SCHEDULE=@every 0h30m00s
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+      - HEALTHCHECK_PORT=81
     sysctls:
       net.core.somaxconn: 228
     networks:
