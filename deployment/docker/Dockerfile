@@ -9,14 +9,14 @@ RUN dpkg-divert --local --rename --add /sbin/initctl
 RUN apt-get install -y --fix-missing && apt-get update -y && apt-get autoremove -y
 
 RUN apt-get install -y python3-pip \
-    python-gdal \
-    python3-dev \
-    python-geoip \
-    rpl \
-    faketime \
-    tzdata \
-    strace \
-    lsof \
+	python-gdal \
+	python3-dev \
+	python-geoip \
+	rpl \
+	faketime \
+	tzdata \
+	strace \
+	lsof \
 	zlib1g-dev \
 	libfreetype6-dev \
 	liblcms2-dev \
@@ -45,8 +45,8 @@ RUN apt-get install -y python3-pip \
 	libharfbuzz-dev \
 	libfribidi-dev \
 	rubygems \
-    rubygems-integration \
-    node-less
+	rubygems-integration \
+	node-less
 
 RUN gem install sass  
 
