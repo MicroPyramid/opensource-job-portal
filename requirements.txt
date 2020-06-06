@@ -1,4 +1,4 @@
-Django==2.2.10
+Django==2.2.13
 arrow==0.12.1
 bpython==0.17.1
 behave-django==1.1.0
