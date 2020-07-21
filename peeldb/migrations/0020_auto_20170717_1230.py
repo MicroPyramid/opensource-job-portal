@@ -8,18 +8,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0019_company_created_from'),
+        ("peeldb", "0019_company_created_from"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='linkedin',
-            name='linkedin_url',
+            model_name="linkedin",
+            name="linkedin_url",
             field=models.CharField(blank=True, max_length=1000, null=True),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='marital_status',
-            field=models.CharField(blank=True, choices=[('Single', 'Single'), ('Married', 'Married')], max_length=50, null=True),
+            model_name="user",
+            name="marital_status",
+            field=models.CharField(
+                blank=True,
+                choices=[("Single", "Single"), ("Married", "Married")],
+                max_length=50,
+                null=True,
+            ),
         ),
     ]

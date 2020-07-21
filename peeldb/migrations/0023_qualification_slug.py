@@ -8,14 +8,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0022_user_referer'),
+        ("peeldb", "0022_user_referer"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='qualification',
-            name='slug',
-            field=models.SlugField(default='', max_length=500),
+            model_name="qualification",
+            name="slug",
+            field=models.SlugField(default="", max_length=500),
             preserve_default=False,
         ),
     ]

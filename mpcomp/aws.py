@@ -6,9 +6,12 @@ import boto
 
 
 class AWS:
-
-    def push_to_s3(self, file_obj, bucket_name=None, folder="", new_name=None, public_read=True):
-        self.conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+    def push_to_s3(
+        self, file_obj, bucket_name=None, folder="", new_name=None, public_read=True
+    ):
+        self.conn = S3Connection(
+            settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
+        )
         filename = new_name
         content = file_obj.read()
 
@@ -28,5 +31,7 @@ class AWS:
         return key_buc
 
     def cloudfront_invalidate(self, paths):
-        c = boto.connect_cloudfront(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+        c = boto.connect_cloudfront(
+            settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
+        )
         c.create_invalidation_request(settings.CLOUDFRONT_ID, paths)

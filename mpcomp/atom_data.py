@@ -18,34 +18,37 @@
 # This module is used for version 2 of the Google Data APIs.
 
 
-__author__ = 'j.s@google.com (Jeff Scudder)'
+__author__ = "j.s@google.com (Jeff Scudder)"
 
 
 from mpcomp import core
 
 
-XML_TEMPLATE = '{http://www.w3.org/XML/1998/namespace}%s'
-ATOM_TEMPLATE = '{http://www.w3.org/2005/Atom}%s'
-APP_TEMPLATE_V1 = '{http://purl.org/atom/app#}%s'
-APP_TEMPLATE_V2 = '{http://www.w3.org/2007/app}%s'
+XML_TEMPLATE = "{http://www.w3.org/XML/1998/namespace}%s"
+ATOM_TEMPLATE = "{http://www.w3.org/2005/Atom}%s"
+APP_TEMPLATE_V1 = "{http://purl.org/atom/app#}%s"
+APP_TEMPLATE_V2 = "{http://www.w3.org/2007/app}%s"
 
 
 class Name(core.XmlElement):
 
     """The atom:name element."""
-    _qname = ATOM_TEMPLATE % 'name'
+
+    _qname = ATOM_TEMPLATE % "name"
 
 
 class Email(core.XmlElement):
 
     """The atom:email element."""
-    _qname = ATOM_TEMPLATE % 'email'
+
+    _qname = ATOM_TEMPLATE % "email"
 
 
 class Uri(core.XmlElement):
 
     """The atom:uri element."""
-    _qname = ATOM_TEMPLATE % 'uri'
+
+    _qname = ATOM_TEMPLATE % "uri"
 
 
 class Person(core.XmlElement):
@@ -55,6 +58,7 @@ class Person(core.XmlElement):
     A person contains information like name, email address, and web page URI for
     an author or contributor to an Atom feed.
     """
+
     name = Name
     email = Email
     uri = Uri
@@ -66,33 +70,37 @@ class Author(Person):
 
     An author is a required element in Feed unless each Entry contains an Author.
     """
-    _qname = ATOM_TEMPLATE % 'author'
+
+    _qname = ATOM_TEMPLATE % "author"
 
 
 class Contributor(Person):
 
     """The atom:contributor element."""
-    _qname = ATOM_TEMPLATE % 'contributor'
+
+    _qname = ATOM_TEMPLATE % "contributor"
 
 
 class Link(core.XmlElement):
 
     """The atom:link element."""
-    _qname = ATOM_TEMPLATE % 'link'
-    href = 'href'
-    rel = 'rel'
-    type = 'type'
-    hreflang = 'hreflang'
-    title = 'title'
-    length = 'length'
+
+    _qname = ATOM_TEMPLATE % "link"
+    href = "href"
+    rel = "rel"
+    type = "type"
+    hreflang = "hreflang"
+    title = "title"
+    length = "length"
 
 
 class Generator(core.XmlElement):
 
     """The atom:generator element."""
-    _qname = ATOM_TEMPLATE % 'generator'
-    uri = 'uri'
-    version = 'version'
+
+    _qname = ATOM_TEMPLATE % "generator"
+    uri = "uri"
+    version = "version"
 
 
 class Text(core.XmlElement):
@@ -101,71 +109,82 @@ class Text(core.XmlElement):
 
     This class should never be instantiated.
     """
-    type = 'type'
+
+    type = "type"
 
 
 class Title(Text):
 
     """The atom:title element."""
-    _qname = ATOM_TEMPLATE % 'title'
+
+    _qname = ATOM_TEMPLATE % "title"
 
 
 class Subtitle(Text):
 
     """The atom:subtitle element."""
-    _qname = ATOM_TEMPLATE % 'subtitle'
+
+    _qname = ATOM_TEMPLATE % "subtitle"
 
 
 class Rights(Text):
 
     """The atom:rights element."""
-    _qname = ATOM_TEMPLATE % 'rights'
+
+    _qname = ATOM_TEMPLATE % "rights"
 
 
 class Summary(Text):
 
     """The atom:summary element."""
-    _qname = ATOM_TEMPLATE % 'summary'
+
+    _qname = ATOM_TEMPLATE % "summary"
 
 
 class Content(Text):
 
     """The atom:content element."""
-    _qname = ATOM_TEMPLATE % 'content'
-    src = 'src'
+
+    _qname = ATOM_TEMPLATE % "content"
+    src = "src"
 
 
 class Category(core.XmlElement):
 
     """The atom:category element."""
-    _qname = ATOM_TEMPLATE % 'category'
-    term = 'term'
-    scheme = 'scheme'
-    label = 'label'
+
+    _qname = ATOM_TEMPLATE % "category"
+    term = "term"
+    scheme = "scheme"
+    label = "label"
 
 
 class Id(core.XmlElement):
 
     """The atom:id element."""
-    _qname = ATOM_TEMPLATE % 'id'
+
+    _qname = ATOM_TEMPLATE % "id"
 
 
 class Icon(core.XmlElement):
 
     """The atom:icon element."""
-    _qname = ATOM_TEMPLATE % 'icon'
+
+    _qname = ATOM_TEMPLATE % "icon"
 
 
 class Logo(core.XmlElement):
 
     """The atom:logo element."""
-    _qname = ATOM_TEMPLATE % 'logo'
+
+    _qname = ATOM_TEMPLATE % "logo"
 
 
 class Draft(core.XmlElement):
 
     """The app:draft element which indicates if this entry should be public."""
-    _qname = (APP_TEMPLATE_V1 % 'draft', APP_TEMPLATE_V2 % 'draft')
+
+    _qname = (APP_TEMPLATE_V1 % "draft", APP_TEMPLATE_V2 % "draft")
 
 
 class Control(core.XmlElement):
@@ -175,7 +194,8 @@ class Control(core.XmlElement):
     The APP control element may contain a draft element indicating whether or
     not this entry should be publicly available.
     """
-    _qname = (APP_TEMPLATE_V1 % 'control', APP_TEMPLATE_V2 % 'control')
+
+    _qname = (APP_TEMPLATE_V1 % "control", APP_TEMPLATE_V2 % "control")
     draft = Draft
 
 
@@ -187,13 +207,15 @@ class Date(core.XmlElement):
 class Updated(Date):
 
     """The atom:updated element."""
-    _qname = ATOM_TEMPLATE % 'updated'
+
+    _qname = ATOM_TEMPLATE % "updated"
 
 
 class Published(Date):
 
     """The atom:published element."""
-    _qname = ATOM_TEMPLATE % 'published'
+
+    _qname = ATOM_TEMPLATE % "published"
 
 
 class LinkFinder(object):
@@ -237,70 +259,70 @@ class LinkFinder(object):
           A str containing the link's href or None if none of the links had rel
           equal to 'self'
         """
-        return self.find_url('self')
+        return self.find_url("self")
 
     FindSelfLink = find_self_link
 
     def get_self_link(self):
-        return self.get_link('self')
+        return self.get_link("self")
 
     GetSelfLink = get_self_link
 
     def find_edit_link(self):
-        return self.find_url('edit')
+        return self.find_url("edit")
 
     FindEditLink = find_edit_link
 
     def get_edit_link(self):
-        return self.get_link('edit')
+        return self.get_link("edit")
 
     GetEditLink = get_edit_link
 
     def find_edit_media_link(self):
-        link = self.find_url('edit-media')
+        link = self.find_url("edit-media")
         # Search for media-edit as well since Picasa API used media-edit
         # instead.
         if link is None:
-            return self.find_url('media-edit')
+            return self.find_url("media-edit")
         return link
 
     FindEditMediaLink = find_edit_media_link
 
     def get_edit_media_link(self):
-        link = self.get_link('edit-media')
+        link = self.get_link("edit-media")
         if link is None:
-            return self.get_link('media-edit')
+            return self.get_link("media-edit")
         return link
 
     GetEditMediaLink = get_edit_media_link
 
     def find_next_link(self):
-        return self.find_url('next')
+        return self.find_url("next")
 
     FindNextLink = find_next_link
 
     def get_next_link(self):
-        return self.get_link('next')
+        return self.get_link("next")
 
     GetNextLink = get_next_link
 
     def find_license_link(self):
-        return self.find_url('license')
+        return self.find_url("license")
 
     FindLicenseLink = find_license_link
 
     def get_license_link(self):
-        return self.get_link('license')
+        return self.get_link("license")
 
     GetLicenseLink = get_license_link
 
     def find_alternate_link(self):
-        return self.find_url('alternate')
+        return self.find_url("alternate")
 
     FindAlternateLink = find_alternate_link
 
     def get_alternate_link(self):
-        return self.get_link('alternate')
+        return self.get_link("alternate")
 
     GetAlternateLink = get_alternate_link
 
@@ -308,6 +330,7 @@ class LinkFinder(object):
 class FeedEntryParent(core.XmlElement, LinkFinder):
 
     """A super class for atom:feed and entry, contains shared attributes"""
+
     author = [Author]
     category = [Category]
     contributor = [Contributor]
@@ -326,7 +349,8 @@ class FeedEntryParent(core.XmlElement, LinkFinder):
 class Source(FeedEntryParent):
 
     """The atom:source element."""
-    _qname = ATOM_TEMPLATE % 'source'
+
+    _qname = ATOM_TEMPLATE % "source"
     generator = Generator
     icon = Icon
     logo = Logo
@@ -336,7 +360,8 @@ class Source(FeedEntryParent):
 class Entry(FeedEntryParent):
 
     """The atom:entry element."""
-    _qname = ATOM_TEMPLATE % 'entry'
+
+    _qname = ATOM_TEMPLATE % "entry"
     content = Content
     published = Published
     source = Source
@@ -347,7 +372,8 @@ class Entry(FeedEntryParent):
 class Feed(Source):
 
     """The atom:feed element which contains entries."""
-    _qname = ATOM_TEMPLATE % 'feed'
+
+    _qname = ATOM_TEMPLATE % "feed"
     entry = [Entry]
 
 
@@ -355,10 +381,18 @@ class ExtensionElement(core.XmlElement):
 
     """Provided for backwards compatibility to the v1 ExtensionElement."""
 
-    def __init__(self, tag=None, namespace=None, attributes=None,
-                 children=None, text=None, *args, **kwargs):
+    def __init__(
+        self,
+        tag=None,
+        namespace=None,
+        attributes=None,
+        children=None,
+        text=None,
+        *args,
+        **kwargs
+    ):
         if namespace:
-            self._qname = '{%s}%s' % (namespace, tag)
+            self._qname = "{%s}%s" % (namespace, tag)
         else:
             self._qname = tag
         self.children = children or []

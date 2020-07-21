@@ -8,15 +8,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0031_auto_20170911_1817'),
+        ("peeldb", "0031_auto_20170911_1817"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skill',
-            name='skill_type',
-            field=models.CharField(choices=[('technical', 'Technical'),
-                                            ('non-technical', 'Non-Technical'),
-                                            ('other', 'Other')], default='technical', max_length=20),
+            model_name="skill",
+            name="skill_type",
+            field=models.CharField(
+                choices=[
+                    ("technical", "Technical"),
+                    ("non-technical", "Non-Technical"),
+                    ("other", "Other"),
+                ],
+                default="technical",
+                max_length=20,
+            ),
         ),
     ]

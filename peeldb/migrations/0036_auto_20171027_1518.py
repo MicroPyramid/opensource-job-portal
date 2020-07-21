@@ -8,17 +8,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0035_user_registered_from'),
+        ("peeldb", "0035_user_registered_from"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='registered_from',
-            field=models.CharField(choices=[('Email', 'Email'),
-                                            ('Social', 'Social'),
-                                            ('ResumePool', 'ResumePool'),
-                                            ('Resume', 'Resume'),
-                                            ('Careers', 'Careers')], default='', max_length=15),
+            model_name="user",
+            name="registered_from",
+            field=models.CharField(
+                choices=[
+                    ("Email", "Email"),
+                    ("Social", "Social"),
+                    ("ResumePool", "ResumePool"),
+                    ("Resume", "Resume"),
+                    ("Careers", "Careers"),
+                ],
+                default="",
+                max_length=15,
+            ),
         ),
     ]

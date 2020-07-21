@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0002_blogattachment'),
+        ("peeldb", "0002_blogattachment"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='agency_admin',
+            model_name="user",
+            name="agency_admin",
             field=models.BooleanField(default=False),
         ),
     ]

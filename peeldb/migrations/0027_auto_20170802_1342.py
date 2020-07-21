@@ -8,13 +8,11 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0026_auto_20170802_1224'),
+        ("peeldb", "0026_auto_20170802_1224"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='jobpost',
-            name='slug',
-            field=models.SlugField(max_length=5000),
+            model_name="jobpost", name="slug", field=models.SlugField(max_length=5000),
         ),
     ]

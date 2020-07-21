@@ -16,1268 +16,2318 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0007_alter_validators_add_error_messages'),
+        ("auth", "0007_alter_validators_add_error_messages"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(
-                    max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(
-                    blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(
-                    default=False, help_text='Designates that this user has all permissions without explicitly assigning them.',
-                    verbose_name='superuser status')),
-                ('username', models.CharField(max_length=100, unique=True)),
-                ('first_name', models.CharField(blank=True, max_length=100)),
-                ('last_name', models.CharField(
-                    blank=True, max_length=100, null=True)),
-                ('email', models.EmailField(
-                    db_index=True, max_length=255, unique=True)),
-                ('profile_pic', models.FileField(
-                    blank=True, max_length=1000, null=True, upload_to=peeldb.models.img_url)),
-                ('user_type', models.CharField(choices=[('JS', 'Job Seeker'), ('RR', 'Recruiter'), (
-                    'RA', 'Recruiter Admin'), ('AA', 'Agency Admin'), ('AR', 'Agency Recruiter')], max_length=10)),
-                ('signature', models.CharField(default='', max_length=2000)),
-                ('is_active', models.BooleanField(default=False)),
-                ('is_staff', models.BooleanField(
-                    default=False, verbose_name='staff status')),
-                ('gender', models.CharField(blank=True, choices=[
-                 ('F', 'Female'), ('M', 'Male')], max_length=10, null=True)),
-                ('address', models.TextField(
-                    blank=True, max_length=1000, null=True)),
-                ('permanent_address', models.TextField(
-                    blank=True, max_length=1000, null=True)),
-                ('nationality', models.TextField(
-                    blank=True, max_length=50, null=True)),
-                ('mobile', models.BigIntegerField(blank=True, null=True)),
-                ('date_joined', models.DateTimeField(
-                    default=django.utils.timezone.now)),
-                ('email_verified', models.BooleanField(default=False)),
-                ('pincode', models.IntegerField(blank=True, null=True)),
-                ('last_password_reset_on',
-                 models.DateTimeField(auto_now_add=True)),
-                ('photo', models.CharField(max_length=500)),
-                ('marital_status', models.CharField(blank=True, choices=[
-                 ('Married', 'Married'), ('Single', 'Single')], max_length=50, null=True)),
-                ('job_role', models.CharField(default='', max_length=500)),
-                ('current_salary', models.CharField(
-                    blank=True, max_length=50, null=True)),
-                ('expected_salary', models.CharField(
-                    blank=True, max_length=500, null=True)),
-                ('dob', models.DateField(blank=True, null=True)),
-                ('profile_description', models.CharField(
-                    default='', max_length=2000)),
-                ('resume', models.CharField(default='', max_length=2000)),
-                ('relocation', models.BooleanField(default=False)),
-                ('notice_period', models.CharField(
-                    blank=True, max_length=50, null=True)),
-                ('year', models.CharField(
-                    blank=True, max_length=50, null=True)),
-                ('month', models.CharField(default='', max_length=50)),
-                ('show_email', models.BooleanField(default=False)),
-                ('resume_title', models.TextField(
-                    blank=True, max_length=2000, null=True)),
-                ('mobile_verification_code',
-                 models.CharField(default='', max_length=50)),
-                ('last_mobile_code_verified_on',
-                 models.DateTimeField(auto_now_add=True)),
-                ('mobile_verified', models.BooleanField(default=False)),
-                ('is_login', models.BooleanField(default=False)),
-                ('email_notifications', models.BooleanField(default=True)),
-                ('profile_updated', models.DateTimeField(auto_now_add=True)),
-                ('is_admin', models.BooleanField(default=False)),
-                ('profile_completeness', models.CharField(
-                    default='', max_length=500)),
-                ('activation_code', models.CharField(
-                    blank=True, max_length=100, null=True)),
-                ('is_register_through_mail',
-                 models.BooleanField(default=False)),
-                ('is_unsubscribe', models.BooleanField(default=False)),
-                ('is_bounce', models.BooleanField(default=False)),
-                ('unsubscribe_code', models.CharField(
-                    blank=True, max_length=100, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                ("username", models.CharField(max_length=100, unique=True)),
+                ("first_name", models.CharField(blank=True, max_length=100)),
+                ("last_name", models.CharField(blank=True, max_length=100, null=True)),
+                (
+                    "email",
+                    models.EmailField(db_index=True, max_length=255, unique=True),
+                ),
+                (
+                    "profile_pic",
+                    models.FileField(
+                        blank=True,
+                        max_length=1000,
+                        null=True,
+                        upload_to=peeldb.models.img_url,
+                    ),
+                ),
+                (
+                    "user_type",
+                    models.CharField(
+                        choices=[
+                            ("JS", "Job Seeker"),
+                            ("RR", "Recruiter"),
+                            ("RA", "Recruiter Admin"),
+                            ("AA", "Agency Admin"),
+                            ("AR", "Agency Recruiter"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("signature", models.CharField(default="", max_length=2000)),
+                ("is_active", models.BooleanField(default=False)),
+                (
+                    "is_staff",
+                    models.BooleanField(default=False, verbose_name="staff status"),
+                ),
+                (
+                    "gender",
+                    models.CharField(
+                        blank=True,
+                        choices=[("F", "Female"), ("M", "Male")],
+                        max_length=10,
+                        null=True,
+                    ),
+                ),
+                ("address", models.TextField(blank=True, max_length=1000, null=True)),
+                (
+                    "permanent_address",
+                    models.TextField(blank=True, max_length=1000, null=True),
+                ),
+                ("nationality", models.TextField(blank=True, max_length=50, null=True)),
+                ("mobile", models.BigIntegerField(blank=True, null=True)),
+                (
+                    "date_joined",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("email_verified", models.BooleanField(default=False)),
+                ("pincode", models.IntegerField(blank=True, null=True)),
+                ("last_password_reset_on", models.DateTimeField(auto_now_add=True)),
+                ("photo", models.CharField(max_length=500)),
+                (
+                    "marital_status",
+                    models.CharField(
+                        blank=True,
+                        choices=[("Married", "Married"), ("Single", "Single")],
+                        max_length=50,
+                        null=True,
+                    ),
+                ),
+                ("job_role", models.CharField(default="", max_length=500)),
+                (
+                    "current_salary",
+                    models.CharField(blank=True, max_length=50, null=True),
+                ),
+                (
+                    "expected_salary",
+                    models.CharField(blank=True, max_length=500, null=True),
+                ),
+                ("dob", models.DateField(blank=True, null=True)),
+                ("profile_description", models.CharField(default="", max_length=2000)),
+                ("resume", models.CharField(default="", max_length=2000)),
+                ("relocation", models.BooleanField(default=False)),
+                (
+                    "notice_period",
+                    models.CharField(blank=True, max_length=50, null=True),
+                ),
+                ("year", models.CharField(blank=True, max_length=50, null=True)),
+                ("month", models.CharField(default="", max_length=50)),
+                ("show_email", models.BooleanField(default=False)),
+                (
+                    "resume_title",
+                    models.TextField(blank=True, max_length=2000, null=True),
+                ),
+                (
+                    "mobile_verification_code",
+                    models.CharField(default="", max_length=50),
+                ),
+                (
+                    "last_mobile_code_verified_on",
+                    models.DateTimeField(auto_now_add=True),
+                ),
+                ("mobile_verified", models.BooleanField(default=False)),
+                ("is_login", models.BooleanField(default=False)),
+                ("email_notifications", models.BooleanField(default=True)),
+                ("profile_updated", models.DateTimeField(auto_now_add=True)),
+                ("is_admin", models.BooleanField(default=False)),
+                ("profile_completeness", models.CharField(default="", max_length=500)),
+                (
+                    "activation_code",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                ("is_register_through_mail", models.BooleanField(default=False)),
+                ("is_unsubscribe", models.BooleanField(default=False)),
+                ("is_bounce", models.BooleanField(default=False)),
+                (
+                    "unsubscribe_code",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
             ],
             options={
-                'permissions': (('blog_view', 'can view blog posts and categories'),
-                                ('blog_edit', 'can edit blog category and post'),
-                                ('support_view', 'can view tickets'),
-                                ('support_edit', 'can edit tickets'),
-                                ('activity_view', 'can view recruiters, applicants, data, posts'),
-                                ('activity_edit', 'can edit data'),
-                                ('jobposts_edit', 'can create/edit/copy/delete jobposts'),
-                                ('jobposts_invoice_access', 'can edit/access the invoice')),
+                "permissions": (
+                    ("blog_view", "can view blog posts and categories"),
+                    ("blog_edit", "can edit blog category and post"),
+                    ("support_view", "can view tickets"),
+                    ("support_edit", "can edit tickets"),
+                    ("activity_view", "can view recruiters, applicants, data, posts"),
+                    ("activity_edit", "can edit data"),
+                    ("jobposts_edit", "can create/edit/copy/delete jobposts"),
+                    ("jobposts_invoice_access", "can edit/access the invoice"),
+                ),
             },
-            managers=[
-                ('objects', django.contrib.auth.models.UserManager()),
+            managers=[("objects", django.contrib.auth.models.UserManager()),],
+        ),
+        migrations.CreateModel(
+            name="AgencyApplicants",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Shortlisted", "Shortlisted"),
+                            ("Hired", "Hired"),
+                            ("Rejected", "Rejected"),
+                        ],
+                        default="Pending",
+                        max_length=20,
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.CreateModel(
-            name='AgencyApplicants',
+            name="AgencyCompany",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('Pending', 'Pending'), ('Shortlisted', 'Shortlisted'), (
-                    'Hired', 'Hired'), ('Rejected', 'Rejected')], default='Pending', max_length=20)),
-                ('created_on', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("website", models.URLField()),
+                ("decription", models.TextField()),
+                (
+                    "logo",
+                    models.FileField(
+                        blank=True, null=True, upload_to=peeldb.models.img_url
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='AgencyCompany',
+            name="AgencyCompanyBranch",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('website', models.URLField()),
-                ('decription', models.TextField()),
-                ('logo', models.FileField(
-                    blank=True, null=True, upload_to=peeldb.models.img_url)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("address", models.TextField()),
+                ("contact_details", models.TextField()),
+                ("is_major", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='AgencyCompanyBranch',
+            name="AgencyCompanyCatogery",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('address', models.TextField()),
-                ('contact_details', models.TextField()),
-                ('is_major', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=1000)),
+                ("percantage", models.CharField(default="", max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='AgencyCompanyCatogery',
+            name="AgencyContractDetails",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=1000)),
-                ('percantage', models.CharField(default='', max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "month",
+                    models.CharField(
+                        choices=[
+                            ("January", "January"),
+                            ("February", "February"),
+                            ("March", "March"),
+                            ("April", "April"),
+                            ("May", "May"),
+                            ("June", "June"),
+                            ("July", "July"),
+                            ("August", "August"),
+                            ("September", "September"),
+                            ("October", "October"),
+                            ("November", "November"),
+                            ("December", "December"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("percantage", models.CharField(default="", max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='AgencyContractDetails',
+            name="AgencyRecruiterJobposts",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('month', models.CharField(choices=[('January', 'January'), ('February', 'February'),
-                    ('March', 'March'), ('April', 'April'), ('May', 'May'), ('June', 'June'), (
-                    'July', 'July'), ('August', 'August'), ('September', 'September'),
-                    ('October', 'October'), ('November', 'November'), ('December', 'December')], max_length=50)),
-                ('percantage', models.CharField(default='', max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Shortlisted", "Shortlisted"),
+                            ("Selected", "Selected"),
+                            ("Rejected", "Rejected"),
+                            ("Hired", "Hired"),
+                        ],
+                        default="Pending",
+                        max_length=20,
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now=True)),
+                ("message", models.TextField(default="")),
             ],
         ),
         migrations.CreateModel(
-            name='AgencyRecruiterJobposts',
+            name="AgencyResume",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('Pending', 'Pending'), ('Shortlisted', 'Shortlisted'), (
-                    'Selected', 'Selected'), ('Rejected', 'Rejected'), ('Hired', 'Hired')], default='Pending', max_length=20)),
-                ('created_on', models.DateTimeField(auto_now=True)),
-                ('message', models.TextField(default='')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("resume", models.CharField(blank=True, max_length=5000)),
+                ("candidate_name", models.CharField(max_length=1000)),
+                ("email", models.EmailField(max_length=254)),
+                ("mobile", models.CharField(max_length=100)),
+                ("experience", models.IntegerField()),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Shortlisted", "Shortlisted"),
+                            ("Hired", "Hired"),
+                            ("Rejected", "Rejected"),
+                        ],
+                        default="Pending",
+                        max_length=20,
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.CreateModel(
-            name='AgencyResume',
+            name="AppliedJobs",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('resume', models.CharField(blank=True, max_length=5000)),
-                ('candidate_name', models.CharField(max_length=1000)),
-                ('email', models.EmailField(max_length=254)),
-                ('mobile', models.CharField(max_length=100)),
-                ('experience', models.IntegerField()),
-                ('status', models.CharField(choices=[('Pending', 'Pending'), ('Shortlisted', 'Shortlisted'), (
-                    'Hired', 'Hired'), ('Rejected', 'Rejected')], default='Pending', max_length=20)),
-                ('created_on', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Posted", "Posted"), ("Deleted", "Deleted")],
+                        max_length=50,
+                    ),
+                ),
+                ("applied_on", models.DateTimeField(auto_now_add=True)),
+                ("remarks", models.CharField(default="", max_length=2000)),
+                ("ip_address", models.CharField(default="", max_length=200)),
+                ("user_agent", models.CharField(default="", max_length=200)),
             ],
         ),
         migrations.CreateModel(
-            name='AppliedJobs',
+            name="Attachment",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(
-                    choices=[('Posted', 'Posted'), ('Deleted', 'Deleted')], max_length=50)),
-                ('applied_on', models.DateTimeField(auto_now_add=True)),
-                ('remarks', models.CharField(default='', max_length=2000)),
-                ('ip_address', models.CharField(default='', max_length=200)),
-                ('user_agent', models.CharField(default='', max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                (
+                    "attached_file",
+                    models.FileField(
+                        blank=True,
+                        max_length=500,
+                        null=True,
+                        upload_to=peeldb.models.img_url,
+                    ),
+                ),
+                (
+                    "uploaded_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Attachment',
+            name="City",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('attached_file', models.FileField(
-                    blank=True, max_length=500, null=True, upload_to=peeldb.models.img_url)),
-                ('uploaded_by', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Enabled", "Enabled"), ("Disabled", "Disabled")],
+                        default="Enabled",
+                        max_length=10,
+                    ),
+                ),
+                ("slug", models.SlugField(max_length=500)),
+                ("internship_text", models.CharField(max_length=1000)),
+                ("meta_title", models.TextField(default="")),
+                ("meta_description", models.TextField(default="")),
+                ("internship_meta_title", models.TextField(default="")),
+                ("internship_meta_description", models.TextField(default="")),
+                ("page_content", models.TextField(default="")),
+                ("internship_content", models.TextField(default="")),
             ],
         ),
         migrations.CreateModel(
-            name='City',
+            name="Comment",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('status', models.CharField(choices=[
-                 ('Enabled', 'Enabled'), ('Disabled', 'Disabled')], default='Enabled',
-                 max_length=10)),
-                ('slug', models.SlugField(max_length=500)),
-                ('internship_text', models.CharField(max_length=1000)),
-                ('meta_title', models.TextField(default='')),
-                ('meta_description', models.TextField(default='')),
-                ('internship_meta_title', models.TextField(default='')),
-                ('internship_meta_description', models.TextField(default='')),
-                ('page_content', models.TextField(default='')),
-                ('internship_content', models.TextField(default='')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("comment", models.TextField(blank=True)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                (
+                    "attachments",
+                    models.ManyToManyField(blank=True, to="peeldb.Attachment"),
+                ),
+                (
+                    "commented_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comments",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Comment',
+            name="Company",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comment', models.TextField(blank=True)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('attachments', models.ManyToManyField(
-                    blank=True, to='peeldb.Attachment')),
-                ('commented_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                                   related_name='comments',
-                                                   to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=5000)),
+                ("website", models.CharField(blank=True, max_length=5000, null=True)),
+                ("address", models.TextField()),
+                (
+                    "profile_pic",
+                    models.FileField(
+                        blank=True,
+                        max_length=1000,
+                        null=True,
+                        upload_to=peeldb.models.img_url,
+                    ),
+                ),
+                (
+                    "size",
+                    models.CharField(
+                        choices=[
+                            ("1-10", "1-10"),
+                            ("11-20", "11-20"),
+                            ("21-50", "21-50"),
+                            ("50-200", "50-200"),
+                            ("200+", "200+"),
+                        ],
+                        default="",
+                        max_length=10,
+                    ),
+                ),
+                ("level", models.IntegerField(blank=True, null=True)),
+                (
+                    "company_type",
+                    models.CharField(
+                        choices=[("Consultant", "consultant"), ("Company", "company")],
+                        default="",
+                        max_length=50,
+                    ),
+                ),
+                ("profile", models.TextField()),
+                ("phone_number", models.CharField(max_length=15)),
+                ("registered_date", models.DateField(auto_now_add=True)),
+                ("email", models.EmailField(max_length=255, null=True)),
+                ("short_code", models.CharField(max_length=50, null=True)),
+                ("is_active", models.BooleanField(default=False)),
+                ("slug", models.SlugField(max_length=5000)),
+                ("meta_title", models.TextField(default="")),
+                ("meta_description", models.TextField(default="")),
             ],
         ),
         migrations.CreateModel(
-            name='Company',
+            name="Country",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=5000)),
-                ('website', models.CharField(
-                    blank=True, max_length=5000, null=True)),
-                ('address', models.TextField()),
-                ('profile_pic', models.FileField(
-                    blank=True, max_length=1000, null=True, upload_to=peeldb.models.img_url)),
-                ('size', models.CharField(choices=[
-                 ('1-10', '1-10'), ('11-20', '11-20'), ('21-50', '21-50'), ('50-200', '50-200'), ('200+', '200+')], default='', max_length=10)),
-                ('level', models.IntegerField(blank=True, null=True)),
-                ('company_type', models.CharField(choices=[
-                 ('Consultant', 'consultant'), ('Company', 'company')], default='', max_length=50)),
-                ('profile', models.TextField()),
-                ('phone_number', models.CharField(max_length=15)),
-                ('registered_date', models.DateField(auto_now_add=True)),
-                ('email', models.EmailField(max_length=255, null=True)),
-                ('short_code', models.CharField(max_length=50, null=True)),
-                ('is_active', models.BooleanField(default=False)),
-                ('slug', models.SlugField(max_length=5000)),
-                ('meta_title', models.TextField(default='')),
-                ('meta_description', models.TextField(default='')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Enabled", "Enabled"), ("Disabled", "Disabled")],
+                        default="Enabled",
+                        max_length=10,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Country',
+            name="DailySearchLog",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('status', models.CharField(choices=[
-                 ('Enabled', 'Enabled'), ('Disabled', 'Disabled')], default='Enabled', max_length=10)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("no_of_job_posts", models.IntegerField(default="0")),
+                ("created_on", models.DateField()),
+                ("no_of_searches", models.IntegerField(default="0")),
             ],
         ),
         migrations.CreateModel(
-            name='DailySearchLog',
+            name="Degree",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('no_of_job_posts', models.IntegerField(default='0')),
-                ('created_on', models.DateField()),
-                ('no_of_searches', models.IntegerField(default='0')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "degree_type",
+                    models.CharField(
+                        choices=[("Permanent", "Permanent"), ("PartTime", "PartTime")],
+                        max_length=50,
+                    ),
+                ),
+                ("specialization", models.CharField(max_length=500)),
             ],
         ),
         migrations.CreateModel(
-            name='Degree',
+            name="EducationDetails",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('degree_type', models.CharField(
-                    choices=[('Permanent', 'Permanent'), ('PartTime', 'PartTime')], max_length=50)),
-                ('specialization', models.CharField(max_length=500)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("from_date", models.DateField()),
+                ("to_date", models.DateField(blank=True, null=True)),
+                ("score", models.CharField(max_length=50)),
+                ("current_education", models.BooleanField(default=False)),
+                (
+                    "degree",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.Degree"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='EducationDetails',
+            name="EducationInstitue",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('from_date', models.DateField()),
-                ('to_date', models.DateField(blank=True, null=True)),
-                ('score', models.CharField(max_length=50)),
-                ('current_education', models.BooleanField(default=False)),
-                ('degree', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.Degree')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                ("address", models.CharField(default="", max_length=2000)),
+                (
+                    "city",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.City"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='EducationInstitue',
+            name="EmploymentHistory",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('address', models.CharField(default='', max_length=2000)),
-                ('city', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.City')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("company", models.CharField(max_length=500)),
+                ("from_date", models.DateField()),
+                ("to_date", models.DateField(blank=True, null=True)),
+                ("designation", models.CharField(max_length=500)),
+                ("salary", models.CharField(max_length=100)),
+                ("current_job", models.BooleanField(default=False)),
+                ("job_profile", models.TextField()),
             ],
         ),
         migrations.CreateModel(
-            name='EmploymentHistory',
+            name="Facebook",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('company', models.CharField(max_length=500)),
-                ('from_date', models.DateField()),
-                ('to_date', models.DateField(blank=True, null=True)),
-                ('designation', models.CharField(max_length=500)),
-                ('salary', models.CharField(max_length=100)),
-                ('current_job', models.BooleanField(default=False)),
-                ('job_profile', models.TextField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("facebook_id", models.CharField(max_length=100)),
+                ("facebook_url", models.CharField(default="", max_length=200)),
+                ("first_name", models.CharField(default="", max_length=200)),
+                ("last_name", models.CharField(default="", max_length=200)),
+                ("verified", models.CharField(default="", max_length=200)),
+                ("name", models.CharField(default="", max_length=200)),
+                ("language", models.CharField(default="", max_length=200)),
+                ("hometown", models.CharField(default="", max_length=200)),
+                ("email", models.CharField(db_index=True, default="", max_length=200)),
+                ("gender", models.CharField(default="", max_length=200)),
+                ("dob", models.DateField(blank=True, null=True)),
+                ("location", models.CharField(default="", max_length=200)),
+                ("timezone", models.CharField(default="", max_length=200)),
+                ("accesstoken", models.CharField(default="", max_length=2000)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="facebook_user",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Facebook',
+            name="FacebookFriend",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('facebook_id', models.CharField(max_length=100)),
-                ('facebook_url', models.CharField(default='', max_length=200)),
-                ('first_name', models.CharField(default='', max_length=200)),
-                ('last_name', models.CharField(default='', max_length=200)),
-                ('verified', models.CharField(default='', max_length=200)),
-                ('name', models.CharField(default='', max_length=200)),
-                ('language', models.CharField(default='', max_length=200)),
-                ('hometown', models.CharField(default='', max_length=200)),
-                ('email', models.CharField(
-                    db_index=True, default='', max_length=200)),
-                ('gender', models.CharField(default='', max_length=200)),
-                ('dob', models.DateField(blank=True, null=True)),
-                ('location', models.CharField(default='', max_length=200)),
-                ('timezone', models.CharField(default='', max_length=200)),
-                ('accesstoken', models.CharField(default='', max_length=2000)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='facebook_user',
-                                           to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("facebook_id", models.CharField(max_length=200)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='FacebookFriend',
+            name="FacebookGroup",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('facebook_id', models.CharField(max_length=200)),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("group_id", models.CharField(max_length=500)),
+                ("name", models.CharField(max_length=500)),
+                ("allow_post", models.BooleanField(default=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='FacebookGroup',
+            name="FacebookPage",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('group_id', models.CharField(max_length=500)),
-                ('name', models.CharField(max_length=500)),
-                ('allow_post', models.BooleanField(default=True)),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("category", models.CharField(max_length=200)),
+                ("name", models.CharField(max_length=200)),
+                ("accesstoken", models.CharField(max_length=2000)),
+                ("page_id", models.CharField(max_length=200)),
+                ("permission", models.TextField(default="")),
+                ("allow_post", models.BooleanField(default=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='FacebookPage',
+            name="FacebookPost",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category', models.CharField(max_length=200)),
-                ('name', models.CharField(max_length=200)),
-                ('accesstoken', models.CharField(max_length=2000)),
-                ('page_id', models.CharField(max_length=200)),
-                ('permission', models.TextField(default='')),
-                ('allow_post', models.BooleanField(default=True)),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "page_or_group",
+                    models.CharField(
+                        choices=[
+                            ("Page", "Page"),
+                            ("Group", "Group"),
+                            ("PeelJobs", "PeelJobs"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("page_or_group_id", models.CharField(max_length=500)),
+                ("post_id", models.CharField(max_length=500)),
+                (
+                    "post_status",
+                    models.CharField(
+                        choices=[("Posted", "Posted"), ("Deleted", "Deleted")],
+                        max_length=50,
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='FacebookPost',
+            name="FunctionalArea",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('page_or_group', models.CharField(choices=[
-                 ('Page', 'Page'), ('Group', 'Group'), ('PeelJobs', 'PeelJobs')], max_length=50)),
-                ('page_or_group_id', models.CharField(max_length=500)),
-                ('post_id', models.CharField(max_length=500)),
-                ('post_status', models.CharField(
-                    choices=[('Posted', 'Posted'), ('Deleted', 'Deleted')], max_length=50)),
-                ('is_active', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500, unique=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Active", "Active"), ("InActive", "InActive")],
+                        max_length=10,
+                    ),
+                ),
+                ("slug", models.SlugField(max_length=500)),
             ],
         ),
         migrations.CreateModel(
-            name='FunctionalArea',
+            name="GitHub",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500, unique=True)),
-                ('status', models.CharField(
-                    choices=[('Active', 'Active'), ('InActive', 'InActive')], max_length=10)),
-                ('slug', models.SlugField(max_length=500)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("git_url", models.URLField()),
+                ("git_id", models.CharField(max_length=50)),
+                ("disk_usage", models.CharField(max_length=200)),
+                ("private_gists", models.IntegerField(default=0)),
+                ("public_gists", models.IntegerField(default=0)),
+                ("public_repos", models.IntegerField(default=0)),
+                ("hireable", models.BooleanField(default=False)),
+                ("total_private_repos", models.IntegerField(default=0)),
+                ("owned_private_repos", models.IntegerField(default=0)),
+                ("following", models.IntegerField(default=0)),
+                ("followers", models.IntegerField(default=0)),
+                ("company", models.CharField(max_length=200)),
+                ("name", models.CharField(max_length=200)),
+                ("user_from", models.DateTimeField()),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="github",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='GitHub',
+            name="Google",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('git_url', models.URLField()),
-                ('git_id', models.CharField(max_length=50)),
-                ('disk_usage', models.CharField(max_length=200)),
-                ('private_gists', models.IntegerField(default=0)),
-                ('public_gists', models.IntegerField(default=0)),
-                ('public_repos', models.IntegerField(default=0)),
-                ('hireable', models.BooleanField(default=False)),
-                ('total_private_repos', models.IntegerField(default=0)),
-                ('owned_private_repos', models.IntegerField(default=0)),
-                ('following', models.IntegerField(default=0)),
-                ('followers', models.IntegerField(default=0)),
-                ('company', models.CharField(max_length=200)),
-                ('name', models.CharField(max_length=200)),
-                ('user_from', models.DateTimeField()),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='github', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("google_id", models.CharField(default="", max_length=200)),
+                ("google_url", models.CharField(default="", max_length=1000)),
+                ("verified_email", models.CharField(default="", max_length=200)),
+                ("family_name", models.CharField(default="", max_length=200)),
+                ("name", models.CharField(default="", max_length=200)),
+                ("picture", models.CharField(default="", max_length=200)),
+                ("gender", models.CharField(default="", max_length=10)),
+                ("dob", models.CharField(default="", max_length=50)),
+                ("given_name", models.CharField(default="", max_length=200)),
+                ("email", models.CharField(db_index=True, default="", max_length=200)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="google_user",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Google',
+            name="GoogleFirend",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('google_id', models.CharField(default='', max_length=200)),
-                ('google_url', models.CharField(default='', max_length=1000)),
-                ('verified_email', models.CharField(
-                    default='', max_length=200)),
-                ('family_name', models.CharField(default='', max_length=200)),
-                ('name', models.CharField(default='', max_length=200)),
-                ('picture', models.CharField(default='', max_length=200)),
-                ('gender', models.CharField(default='', max_length=10)),
-                ('dob', models.CharField(default='', max_length=50)),
-                ('given_name', models.CharField(default='', max_length=200)),
-                ('email', models.CharField(
-                    db_index=True, default='', max_length=200)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='google_user', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("friend_id", models.CharField(default="", max_length=200)),
+                ("fullname", models.CharField(default="", max_length=200)),
+                ("title", models.CharField(default="", max_length=200)),
+                ("email", models.CharField(default="", max_length=200)),
+                ("phone", models.CharField(default="", max_length=200)),
+                ("familyname", models.CharField(default="", max_length=200)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='GoogleFirend',
+            name="Industry",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('friend_id', models.CharField(default='', max_length=200)),
-                ('fullname', models.CharField(default='', max_length=200)),
-                ('title', models.CharField(default='', max_length=200)),
-                ('email', models.CharField(default='', max_length=200)),
-                ('phone', models.CharField(default='', max_length=200)),
-                ('familyname', models.CharField(default='', max_length=200)),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Active", "Active"), ("InActive", "InActive")],
+                        max_length=10,
+                    ),
+                ),
+                ("slug", models.SlugField(max_length=500)),
+                ("meta_title", models.TextField(default="")),
+                ("meta_description", models.TextField(default="")),
+                ("page_content", models.TextField(default="")),
             ],
         ),
         migrations.CreateModel(
-            name='Industry',
+            name="InterviewLocation",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('status', models.CharField(
-                    choices=[('Active', 'Active'), ('InActive', 'InActive')], max_length=10)),
-                ('slug', models.SlugField(max_length=500)),
-                ('meta_title', models.TextField(default='')),
-                ('meta_description', models.TextField(default='')),
-                ('page_content', models.TextField(default='')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("venue_details", models.TextField()),
+                ("show_location", models.BooleanField(default=False)),
+                ("latitude", models.CharField(blank=True, max_length=200, null=True)),
+                ("longitude", models.CharField(blank=True, max_length=200, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='InterviewLocation',
+            name="JobAlert",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('venue_details', models.TextField()),
-                ('show_location', models.BooleanField(default=False)),
-                ('latitude', models.CharField(
-                    blank=True, max_length=200, null=True)),
-                ('longitude', models.CharField(
-                    blank=True, max_length=200, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("min_year", models.IntegerField(blank=True, null=True)),
+                ("max_year", models.IntegerField(blank=True, null=True)),
+                ("max_salary", models.IntegerField(blank=True, null=True)),
+                ("min_salary", models.IntegerField(blank=True, null=True)),
+                ("role", models.CharField(blank=True, max_length=2000, null=True)),
+                ("related_jobs", models.BooleanField(default=False)),
+                ("email", models.EmailField(blank=True, max_length=254, null=True)),
+                ("name", models.CharField(max_length=2000, unique=True)),
+                ("industry", models.ManyToManyField(to="peeldb.Industry")),
+                ("location", models.ManyToManyField(to="peeldb.City")),
             ],
         ),
         migrations.CreateModel(
-            name='JobAlert',
+            name="JobPost",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('min_year', models.IntegerField(blank=True, null=True)),
-                ('max_year', models.IntegerField(blank=True, null=True)),
-                ('max_salary', models.IntegerField(blank=True, null=True)),
-                ('min_salary', models.IntegerField(blank=True, null=True)),
-                ('role', models.CharField(
-                    blank=True, max_length=2000, null=True)),
-                ('related_jobs', models.BooleanField(default=False)),
-                ('email', models.EmailField(
-                    blank=True, max_length=254, null=True)),
-                ('name', models.CharField(max_length=2000, unique=True)),
-                ('industry', models.ManyToManyField(to='peeldb.Industry')),
-                ('location', models.ManyToManyField(to='peeldb.City')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("code", models.CharField(max_length=50, null=True)),
+                ("title", models.CharField(max_length=100)),
+                ("job_role", models.CharField(default="", max_length=50)),
+                ("vacancies", models.IntegerField()),
+                ("description", models.TextField()),
+                ("min_year", models.IntegerField(default=0)),
+                ("min_month", models.IntegerField(default=0)),
+                ("max_year", models.IntegerField(default=0)),
+                ("max_month", models.IntegerField(default=0)),
+                ("fresher", models.BooleanField(default=False)),
+                ("application_fee", models.IntegerField(default=0)),
+                (
+                    "govt_job_type",
+                    models.CharField(
+                        choices=[("Central", "Central"), ("State", "State")],
+                        default="Central",
+                        max_length=50,
+                    ),
+                ),
+                ("selection_process", models.TextField(default="")),
+                ("how_to_apply", models.TextField(default="")),
+                ("important_dates", models.TextField(default="")),
+                ("govt_from_date", models.DateField(blank=True, null=True)),
+                ("govt_to_date", models.DateField(blank=True, null=True)),
+                ("govt_exam_date", models.DateField(blank=True, null=True)),
+                ("age_relaxation", models.TextField(default="")),
+                ("walkin_contactinfo", models.TextField(default="")),
+                ("walkin_show_contact_info", models.BooleanField(default=False)),
+                ("walkin_from_date", models.DateField(blank=True, null=True)),
+                ("walkin_to_date", models.DateField(blank=True, null=True)),
+                ("walkin_time", models.TimeField(blank=True, null=True)),
+                (
+                    "agency_job_type",
+                    models.CharField(
+                        choices=[("Permanent", "Permanent"), ("Contract", "Contract")],
+                        default="Permanent",
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "agency_invoice_type",
+                    models.CharField(
+                        choices=[
+                            ("Recurring", "Recurring"),
+                            ("Non_Recurring", "Non Recurring"),
+                        ],
+                        default="Recurring",
+                        max_length=50,
+                    ),
+                ),
+                ("agency_amount", models.CharField(default="", max_length=1000)),
+                ("send_email_notifications", models.BooleanField(default=False)),
+                ("visa_required", models.BooleanField(default=False)),
+                ("visa_type", models.CharField(default="", max_length=50)),
+                (
+                    "salary_type",
+                    models.CharField(
+                        blank=True,
+                        choices=[("Month", "Month"), ("Year", "Year")],
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                ("min_salary", models.IntegerField(default=0)),
+                ("max_salary", models.IntegerField(default=0)),
+                ("last_date", models.DateField(null=True)),
+                ("published_date", models.DateTimeField(blank=True, null=True)),
+                ("posted_on", models.DateTimeField(auto_now=True)),
+                ("created_on", models.DateField(auto_now_add=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Draft", "Draft"),
+                            ("Exprired", "Expired"),
+                            ("Live", "Live"),
+                            ("Disabled", "Disabled"),
+                            ("Pending", "Pending"),
+                            ("Published", "Published"),
+                            ("Hired", "Hired"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "previous_status",
+                    models.CharField(
+                        choices=[
+                            ("Draft", "Draft"),
+                            ("Exprired", "Expired"),
+                            ("Live", "Live"),
+                            ("Disabled", "Disabled"),
+                            ("Pending", "Pending"),
+                            ("Published", "Published"),
+                            ("Hired", "Hired"),
+                        ],
+                        default="Draft",
+                        max_length=50,
+                    ),
+                ),
+                ("post_on_fb", models.BooleanField(default=False)),
+                ("post_on_tw", models.BooleanField(default=False)),
+                ("post_on_ln", models.BooleanField(default=False)),
+                ("fb_views", models.IntegerField(default=0)),
+                ("tw_views", models.IntegerField(default=0)),
+                ("ln_views", models.IntegerField(default=0)),
+                ("other_views", models.IntegerField(default=0)),
+                (
+                    "job_type",
+                    models.CharField(
+                        choices=[
+                            ("full-time", "Full Time"),
+                            ("internship", "Internship"),
+                            ("walk-in", "Walk-in"),
+                            ("governament", "Government"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("published_message", models.TextField()),
+                ("company_name", models.CharField(default="", max_length=100)),
+                ("company_address", models.TextField()),
+                ("company_description", models.TextField()),
+                ("company_links", models.TextField()),
+                ("company_emails", models.TextField()),
+                ("meta_title", models.TextField()),
+                ("meta_description", models.TextField()),
+                (
+                    "fb_groups",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.CharField(max_length=200),
+                        blank=True,
+                        null=True,
+                        size=None,
+                    ),
+                ),
+                (
+                    "agency_category",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="peeldb.AgencyCompanyCatogery",
+                    ),
+                ),
+                (
+                    "agency_client",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="peeldb.AgencyCompany",
+                    ),
+                ),
+                (
+                    "agency_recruiters",
+                    models.ManyToManyField(
+                        related_name="recruiters", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    "company",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="peeldb.Company",
+                    ),
+                ),
+                (
+                    "country",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="job_country",
+                        to="peeldb.Country",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='JobPost',
+            name="Keyword",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=50, null=True)),
-                ('title', models.CharField(max_length=100)),
-                ('job_role', models.CharField(default='', max_length=50)),
-                ('vacancies', models.IntegerField()),
-                ('description', models.TextField()),
-                ('min_year', models.IntegerField(default=0)),
-                ('min_month', models.IntegerField(default=0)),
-                ('max_year', models.IntegerField(default=0)),
-                ('max_month', models.IntegerField(default=0)),
-                ('fresher', models.BooleanField(default=False)),
-                ('application_fee', models.IntegerField(default=0)),
-                ('govt_job_type', models.CharField(choices=[
-                 ('Central', 'Central'), ('State', 'State')], default='Central', max_length=50)),
-                ('selection_process', models.TextField(default='')),
-                ('how_to_apply', models.TextField(default='')),
-                ('important_dates', models.TextField(default='')),
-                ('govt_from_date', models.DateField(blank=True, null=True)),
-                ('govt_to_date', models.DateField(blank=True, null=True)),
-                ('govt_exam_date', models.DateField(blank=True, null=True)),
-                ('age_relaxation', models.TextField(default='')),
-                ('walkin_contactinfo', models.TextField(default='')),
-                ('walkin_show_contact_info',
-                 models.BooleanField(default=False)),
-                ('walkin_from_date', models.DateField(blank=True, null=True)),
-                ('walkin_to_date', models.DateField(blank=True, null=True)),
-                ('walkin_time', models.TimeField(blank=True, null=True)),
-                ('agency_job_type', models.CharField(choices=[
-                 ('Permanent', 'Permanent'), ('Contract', 'Contract')], default='Permanent', max_length=50)),
-                ('agency_invoice_type', models.CharField(choices=[
-                 ('Recurring', 'Recurring'), ('Non_Recurring', 'Non Recurring')], default='Recurring', max_length=50)),
-                ('agency_amount', models.CharField(
-                    default='', max_length=1000)),
-                ('send_email_notifications',
-                 models.BooleanField(default=False)),
-                ('visa_required', models.BooleanField(default=False)),
-                ('visa_type', models.CharField(default='', max_length=50)),
-                ('salary_type', models.CharField(blank=True, choices=[
-                 ('Month', 'Month'), ('Year', 'Year')], max_length=20, null=True)),
-                ('min_salary', models.IntegerField(default=0)),
-                ('max_salary', models.IntegerField(default=0)),
-                ('last_date', models.DateField(null=True)),
-                ('published_date', models.DateTimeField(
-                    blank=True, null=True)),
-                ('posted_on', models.DateTimeField(auto_now=True)),
-                ('created_on', models.DateField(auto_now_add=True)),
-                ('status', models.CharField(choices=[('Draft', 'Draft'), ('Exprired', 'Expired'), ('Live', 'Live'), (
-                    'Disabled', 'Disabled'), ('Pending', 'Pending'), ('Published', 'Published'), ('Hired', 'Hired')], max_length=50)),
-                ('previous_status', models.CharField(choices=[('Draft', 'Draft'), ('Exprired', 'Expired'), ('Live', 'Live'), (
-                    'Disabled', 'Disabled'), ('Pending', 'Pending'), ('Published', 'Published'), ('Hired', 'Hired')], default='Draft', max_length=50)),
-                ('post_on_fb', models.BooleanField(default=False)),
-                ('post_on_tw', models.BooleanField(default=False)),
-                ('post_on_ln', models.BooleanField(default=False)),
-                ('fb_views', models.IntegerField(default=0)),
-                ('tw_views', models.IntegerField(default=0)),
-                ('ln_views', models.IntegerField(default=0)),
-                ('other_views', models.IntegerField(default=0)),
-                ('job_type', models.CharField(choices=[
-                 ('full-time', 'Full Time'), ('internship', 'Internship'), ('walk-in', 'Walk-in'), ('governament', 'Government')], max_length=50)),
-                ('published_message', models.TextField()),
-                ('company_name', models.CharField(default='', max_length=100)),
-                ('company_address', models.TextField()),
-                ('company_description', models.TextField()),
-                ('company_links', models.TextField()),
-                ('company_emails', models.TextField()),
-                ('meta_title', models.TextField()),
-                ('meta_description', models.TextField()),
-                ('fb_groups', django.contrib.postgres.fields.ArrayField(
-                    base_field=models.CharField(max_length=200), blank=True, null=True, size=None)),
-                ('agency_category', models.ForeignKey(
-                    null=True, on_delete=django.db.models.deletion.CASCADE, to='peeldb.AgencyCompanyCatogery')),
-                ('agency_client', models.ForeignKey(
-                    null=True, on_delete=django.db.models.deletion.CASCADE, to='peeldb.AgencyCompany')),
-                ('agency_recruiters', models.ManyToManyField(
-                    related_name='recruiters', to=settings.AUTH_USER_MODEL)),
-                ('company', models.ForeignKey(
-                    null=True, on_delete=django.db.models.deletion.CASCADE, to='peeldb.Company')),
-                ('country', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
-                                              related_name='job_country', to='peeldb.Country')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=1000)),
             ],
         ),
         migrations.CreateModel(
-            name='Keyword',
+            name="Language",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=1000)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
             ],
         ),
         migrations.CreateModel(
-            name='Language',
+            name="Linkedin",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("linkedin_id", models.CharField(max_length=200)),
+                ("linkedin_url", models.CharField(max_length=1000)),
+                ("first_name", models.CharField(max_length=500)),
+                ("last_name", models.CharField(max_length=500)),
+                ("email", models.CharField(db_index=True, max_length=500)),
+                ("location", models.CharField(max_length=500)),
+                ("education", models.CharField(blank=True, max_length=500, null=True)),
+                ("workhistory", models.TextField()),
+                ("industry", models.CharField(blank=True, max_length=500, null=True)),
+                ("accesstoken", models.TextField(max_length=500)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="linkedin",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Linkedin',
+            name="LinkedinFriend",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('linkedin_id', models.CharField(max_length=200)),
-                ('linkedin_url', models.CharField(max_length=1000)),
-                ('first_name', models.CharField(max_length=500)),
-                ('last_name', models.CharField(max_length=500)),
-                ('email', models.CharField(db_index=True, max_length=500)),
-                ('location', models.CharField(max_length=500)),
-                ('education', models.CharField(
-                    blank=True, max_length=500, null=True)),
-                ('workhistory', models.TextField()),
-                ('industry', models.CharField(
-                    blank=True, max_length=500, null=True)),
-                ('accesstoken', models.TextField(max_length=500)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='linkedin', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("linkedin_id", models.CharField(max_length=200)),
+                ("first_name", models.CharField(max_length=100)),
+                ("last_name", models.CharField(max_length=100)),
+                ("location", models.CharField(max_length=100)),
+                ("workhistory", models.CharField(max_length=100)),
+                ("industry", models.CharField(max_length=100)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LinkedinFriend',
+            name="LinkedinGroup",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('linkedin_id', models.CharField(max_length=200)),
-                ('first_name', models.CharField(max_length=100)),
-                ('last_name', models.CharField(max_length=100)),
-                ('location', models.CharField(max_length=100)),
-                ('workhistory', models.CharField(max_length=100)),
-                ('industry', models.CharField(max_length=100)),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("membership", models.CharField(max_length=200)),
+                ("group_id", models.CharField(max_length=200)),
+                ("group_name", models.CharField(max_length=200)),
+                ("allow_post", models.BooleanField(default=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LinkedinGroup',
+            name="LinkedinPost",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('membership', models.CharField(max_length=200)),
-                ('group_id', models.CharField(max_length=200)),
-                ('group_name', models.CharField(max_length=200)),
-                ('allow_post', models.BooleanField(default=True)),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "profile_or_group",
+                    models.CharField(
+                        choices=[("Group", "Group"), ("Profile", "Profile")],
+                        max_length=50,
+                    ),
+                ),
+                ("post_id", models.CharField(max_length=500)),
+                ("update_url", models.CharField(max_length=1000)),
+                (
+                    "post_status",
+                    models.CharField(
+                        choices=[("Posted", "Posted"), ("Deleted", "Deleted")],
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "job_post",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.JobPost"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LinkedinPost',
+            name="MailTemplate",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('profile_or_group', models.CharField(
-                    choices=[('Group', 'Group'), ('Profile', 'Profile')], max_length=50)),
-                ('post_id', models.CharField(max_length=500)),
-                ('update_url', models.CharField(max_length=1000)),
-                ('post_status', models.CharField(
-                    choices=[('Posted', 'Posted'), ('Deleted', 'Deleted')], max_length=50)),
-                ('job_post', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message", models.TextField()),
+                ("subject", models.TextField()),
+                ("created_on", models.DateTimeField()),
+                ("modified_on", models.DateTimeField()),
+                ("title", models.CharField(max_length=100)),
+                ("show_recruiter", models.BooleanField(default=False)),
+                (
+                    "applicant_status",
+                    models.CharField(
+                        choices=[("Posted", "Posted"), ("Deleted", "Deleted")],
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='MailTemplate',
+            name="Menu",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.TextField()),
-                ('subject', models.TextField()),
-                ('created_on', models.DateTimeField()),
-                ('modified_on', models.DateTimeField()),
-                ('title', models.CharField(max_length=100)),
-                ('show_recruiter', models.BooleanField(default=False)),
-                ('applicant_status', models.CharField(
-                    choices=[('Posted', 'Posted'), ('Deleted', 'Deleted')], max_length=50)),
-                ('created_by', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("url", models.URLField(max_length=255)),
+                ("created", models.DateTimeField(auto_now=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("status", models.BooleanField(default=False)),
+                ("lvl", models.IntegerField()),
+                (
+                    "company",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.Company"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Menu',
+            name="Project",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('url', models.URLField(max_length=255)),
-                ('created', models.DateTimeField(auto_now=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('status', models.BooleanField(default=False)),
-                ('lvl', models.IntegerField()),
-                ('company', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.Company')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                ("from_date", models.DateField(blank=True, null=True)),
+                ("to_date", models.DateField(blank=True, null=True)),
+                ("description", models.TextField(default="", max_length=2000)),
+                ("role", models.CharField(blank=True, max_length=500, null=True)),
+                ("size", models.IntegerField(blank=True, null=True)),
+                (
+                    "location",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="peeldb.City",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Project',
+            name="Qualification",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('from_date', models.DateField(blank=True, null=True)),
-                ('to_date', models.DateField(blank=True, null=True)),
-                ('description', models.TextField(default='', max_length=2000)),
-                ('role', models.CharField(
-                    blank=True, max_length=500, null=True)),
-                ('size', models.IntegerField(blank=True, null=True)),
-                ('location', models.ForeignKey(blank=True, null=True,
-                                               on_delete=django.db.models.deletion.CASCADE, to='peeldb.City')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Active", "Active"), ("InActive", "InActive")],
+                        max_length=10,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Qualification',
+            name="SearchResult",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('status', models.CharField(
-                    choices=[('Active', 'Active'), ('InActive', 'InActive')], max_length=10)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("search_on", models.DateTimeField(auto_now=True)),
+                ("skills", models.CharField(max_length=1000)),
+                ("industry", models.CharField(max_length=1000)),
+                ("functional_area", models.CharField(max_length=1000)),
+                ("location", models.CharField(max_length=1000)),
+                (
+                    "job_type",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("full-time", "Full Time"),
+                            ("internship", "Internship"),
+                            ("walk-in", "Walk-in"),
+                            ("governament", "Government"),
+                        ],
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                ("expierence", models.IntegerField(blank=True, null=True)),
+                ("ip_address", models.CharField(max_length=200)),
+                ("job_post", models.ManyToManyField(to="peeldb.JobPost")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SearchResult',
+            name="SentMail",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('search_on', models.DateTimeField(auto_now=True)),
-                ('skills', models.CharField(max_length=1000)),
-                ('industry', models.CharField(max_length=1000)),
-                ('functional_area', models.CharField(max_length=1000)),
-                ('location', models.CharField(max_length=1000)),
-                ('job_type', models.CharField(blank=True, choices=[
-                 ('full-time', 'Full Time'), ('internship', 'Internship'), ('walk-in', 'Walk-in'), ('governament', 'Government')], max_length=20, null=True)),
-                ('expierence', models.IntegerField(blank=True, null=True)),
-                ('ip_address', models.CharField(max_length=200)),
-                ('job_post', models.ManyToManyField(to='peeldb.JobPost')),
-                ('user', models.ForeignKey(blank=True, null=True,
-                                           on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("send_on", models.DateTimeField(auto_now=True)),
+                (
+                    "job_post",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="peeldb.JobPost",
+                    ),
+                ),
+                ("recruiter", models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
+                (
+                    "template",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="peeldb.MailTemplate",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SentMail',
+            name="simplecontact",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('send_on', models.DateTimeField(auto_now=True)),
-                ('job_post', models.ForeignKey(blank=True, null=True,
-                                               on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost')),
-                ('recruiter', models.ManyToManyField(
-                    to=settings.AUTH_USER_MODEL)),
-                ('template', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.MailTemplate')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("first_name", models.CharField(max_length=100)),
+                ("last_name", models.CharField(blank=True, max_length=100, null=True)),
+                ("comment", models.TextField()),
+                ("email", models.EmailField(max_length=254)),
+                ("phone", models.BigIntegerField(blank=True, null=True)),
+                ("contacted_on", models.DateField(auto_now=True)),
+                ("subject", models.CharField(max_length=500)),
+                (
+                    "enquery_type",
+                    models.CharField(
+                        choices=[
+                            ("Suggestion", "Suggestion"),
+                            ("Technical Issue", "Technical Issue"),
+                            ("Complaint", "Complaint"),
+                            ("others", "Others"),
+                        ],
+                        max_length=100,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='simplecontact',
+            name="Skill",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('first_name', models.CharField(max_length=100)),
-                ('last_name', models.CharField(
-                    blank=True, max_length=100, null=True)),
-                ('comment', models.TextField()),
-                ('email', models.EmailField(max_length=254)),
-                ('phone', models.BigIntegerField(blank=True, null=True)),
-                ('contacted_on', models.DateField(auto_now=True)),
-                ('subject', models.CharField(max_length=500)),
-                ('enquery_type', models.CharField(choices=[('Suggestion', 'Suggestion'), (
-                    'Technical Issue', 'Technical Issue'), ('Complaint', 'Complaint'), ('others', 'Others')], max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Active", "Active"), ("InActive", "InActive")],
+                        max_length=10,
+                    ),
+                ),
+                ("icon", models.CharField(max_length=1000)),
+                ("slug", models.SlugField(max_length=500)),
+                ("meta_title", models.TextField(default="")),
+                ("meta_description", models.TextField(default="")),
+                ("page_content", models.TextField(default="")),
             ],
         ),
         migrations.CreateModel(
-            name='Skill',
+            name="StackOverFlow",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('status', models.CharField(
-                    choices=[('Active', 'Active'), ('InActive', 'InActive')], max_length=10)),
-                ('icon', models.CharField(max_length=1000)),
-                ('slug', models.SlugField(max_length=500)),
-                ('meta_title', models.TextField(default='')),
-                ('meta_description', models.TextField(default='')),
-                ('page_content', models.TextField(default='')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("account_id", models.CharField(default="", max_length=100)),
+                ("stack_user_id", models.CharField(default="", max_length=100)),
+                ("profile_image", models.CharField(default="", max_length=1000)),
+                ("display_name", models.CharField(default="", max_length=200)),
+                ("link", models.CharField(default="", max_length=1000)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="stackoverflow",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='StackOverFlow',
+            name="State",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('account_id', models.CharField(default='', max_length=100)),
-                ('stack_user_id', models.CharField(
-                    default='', max_length=100)),
-                ('profile_image', models.CharField(
-                    default='', max_length=1000)),
-                ('display_name', models.CharField(default='', max_length=200)),
-                ('link', models.CharField(default='', max_length=1000)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='stackoverflow', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Enabled", "Enabled"), ("Disabled", "Disabled")],
+                        default="Enabled",
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "country",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.Country"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='State',
+            name="Subscriber",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('status', models.CharField(choices=[
-                 ('Enabled', 'Enabled'), ('Disabled', 'Disabled')], default='Enabled', max_length=10)),
-                ('country', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.Country')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("is_verified", models.BooleanField(default=False)),
+                (
+                    "job_post",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="peeldb.JobPost",
+                    ),
+                ),
+                (
+                    "skill",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.Skill"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Subscriber',
+            name="TechnicalSkill",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=254)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('is_verified', models.BooleanField(default=False)),
-                ('job_post', models.ForeignKey(blank=True, null=True,
-                                               on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost')),
-                ('skill', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.Skill')),
-                ('user', models.ForeignKey(blank=True, null=True,
-                                           on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("year", models.IntegerField()),
+                ("month", models.IntegerField()),
+                ("last_used", models.DateField(blank=True, null=True)),
+                ("version", models.CharField(blank=True, max_length=100, null=True)),
+                (
+                    "proficiency",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("Poor", "Poor"),
+                            ("Average", "Average"),
+                            ("Good", "Good"),
+                            ("Expert", "Expert"),
+                        ],
+                        max_length=100,
+                        null=True,
+                    ),
+                ),
+                ("is_major", models.BooleanField(default=False)),
+                (
+                    "skill",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.Skill"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TechnicalSkill',
+            name="Ticket",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('year', models.IntegerField()),
-                ('month', models.IntegerField()),
-                ('last_used', models.DateField(blank=True, null=True)),
-                ('version', models.CharField(
-                    blank=True, max_length=100, null=True)),
-                ('proficiency', models.CharField(blank=True, choices=[
-                 ('Poor', 'Poor'), ('Average', 'Average'), ('Good', 'Good'), ('Expert', 'Expert')], max_length=100, null=True)),
-                ('is_major', models.BooleanField(default=False)),
-                ('skill', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.Skill')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=100)),
+                ("description", models.TextField()),
+                (
+                    "priority",
+                    models.CharField(
+                        choices=[
+                            ("Low", "Low"),
+                            ("Normal", "Normal"),
+                            ("High", "High"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "ticket_type",
+                    models.CharField(
+                        choices=[
+                            ("Bug", "Bug"),
+                            ("Feature", "Feature"),
+                            ("Enhancement", "Enhancement"),
+                            ("Performance", "Performance"),
+                            ("Design", "Design"),
+                            ("Other", "Other"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Open", "Open"),
+                            ("Closed", "Closed"),
+                            ("Ongoing", "Ongoing"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("modified_on", models.DateTimeField(auto_now_add=True)),
+                ("order", models.IntegerField(blank=True, default=1)),
+                (
+                    "attachments",
+                    models.ManyToManyField(blank=True, to="peeldb.Attachment"),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ticket",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Ticket',
+            name="Twitter",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('description', models.TextField()),
-                ('priority', models.CharField(choices=[
-                 ('Low', 'Low'), ('Normal', 'Normal'), ('High', 'High')], max_length=20)),
-                ('ticket_type', models.CharField(choices=[('Bug', 'Bug'), ('Feature', 'Feature'), ('Enhancement', 'Enhancement'), (
-                    'Performance', 'Performance'), ('Design', 'Design'), ('Other', 'Other')], max_length=20)),
-                ('status', models.CharField(choices=[
-                 ('Open', 'Open'), ('Closed', 'Closed'), ('Ongoing', 'Ongoing')], max_length=20)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('modified_on', models.DateTimeField(auto_now_add=True)),
-                ('order', models.IntegerField(blank=True, default=1)),
-                ('attachments', models.ManyToManyField(
-                    blank=True, to='peeldb.Attachment')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='ticket', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("twitter_id", models.CharField(default="", max_length=100)),
+                ("screen_name", models.CharField(default="", max_length=100)),
+                ("oauth_token", models.CharField(default="", max_length=200)),
+                ("oauth_secret", models.CharField(default="", max_length=200)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="twitter",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Twitter',
+            name="TwitterFollower",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('twitter_id', models.CharField(default='', max_length=100)),
-                ('screen_name', models.CharField(default='', max_length=100)),
-                ('oauth_token', models.CharField(default='', max_length=200)),
-                ('oauth_secret', models.CharField(default='', max_length=200)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='twitter', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("twitter_id", models.CharField(max_length=100)),
+                ("screen_name", models.CharField(max_length=100)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TwitterFollower',
+            name="TwitterFriend",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('twitter_id', models.CharField(max_length=100)),
-                ('screen_name', models.CharField(max_length=100)),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("twitter_id", models.CharField(max_length=100)),
+                ("screen_name", models.CharField(max_length=100)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TwitterFriend',
+            name="TwitterPost",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('twitter_id', models.CharField(max_length=100)),
-                ('screen_name', models.CharField(max_length=100)),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "page_or_profile",
+                    models.CharField(
+                        choices=[("Page", "Page"), ("Profile", "Profile")],
+                        max_length=50,
+                    ),
+                ),
+                ("post_id", models.CharField(max_length=500)),
+                (
+                    "post_status",
+                    models.CharField(
+                        choices=[("Posted", "Posted"), ("Deleted", "Deleted")],
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "job_post",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.JobPost"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TwitterPost',
+            name="UserEmail",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('page_or_profile', models.CharField(
-                    choices=[('Page', 'Page'), ('Profile', 'Profile')], max_length=50)),
-                ('post_id', models.CharField(max_length=500)),
-                ('post_status', models.CharField(
-                    choices=[('Posted', 'Posted'), ('Deleted', 'Deleted')], max_length=50)),
-                ('job_post', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("email", models.EmailField(max_length=100)),
+                ("is_primary", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_email",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserEmail',
+            name="UserLanguage",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=100)),
-                ('is_primary', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='user_email', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("read", models.BooleanField(default=False)),
+                ("write", models.BooleanField(default=False)),
+                ("speak", models.BooleanField(default=False)),
+                (
+                    "language",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="peeldb.Language",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserLanguage',
+            name="VisitedJobs",
             fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('read', models.BooleanField(default=False)),
-                ('write', models.BooleanField(default=False)),
-                ('speak', models.BooleanField(default=False)),
-                ('language', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.Language')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='VisitedJobs',
-            fields=[
-                ('id', models.AutoField(
-                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('visited_on', models.DateTimeField(auto_now=True)),
-                ('job_post', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost')),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("visited_on", models.DateTimeField(auto_now=True)),
+                (
+                    "job_post",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.JobPost"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='project',
-            name='skills',
-            field=models.ManyToManyField(to='peeldb.Skill'),
+            model_name="project",
+            name="skills",
+            field=models.ManyToManyField(to="peeldb.Skill"),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='edu_qualification',
-            field=models.ManyToManyField(to='peeldb.Qualification'),
+            model_name="jobpost",
+            name="edu_qualification",
+            field=models.ManyToManyField(to="peeldb.Qualification"),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='functional_area',
-            field=models.ManyToManyField(to='peeldb.FunctionalArea'),
+            model_name="jobpost",
+            name="functional_area",
+            field=models.ManyToManyField(to="peeldb.FunctionalArea"),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='industry',
-            field=models.ManyToManyField(to='peeldb.Industry'),
+            model_name="jobpost",
+            name="industry",
+            field=models.ManyToManyField(to="peeldb.Industry"),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='job_interview_location',
-            field=models.ManyToManyField(to='peeldb.InterviewLocation'),
+            model_name="jobpost",
+            name="job_interview_location",
+            field=models.ManyToManyField(to="peeldb.InterviewLocation"),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='keywords',
-            field=models.ManyToManyField(to='peeldb.Keyword'),
+            model_name="jobpost",
+            name="keywords",
+            field=models.ManyToManyField(to="peeldb.Keyword"),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='location',
-            field=models.ManyToManyField(to='peeldb.City'),
+            model_name="jobpost",
+            name="location",
+            field=models.ManyToManyField(to="peeldb.City"),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='major_skill',
+            model_name="jobpost",
+            name="major_skill",
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='major_skill', to='peeldb.Country'),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="major_skill",
+                to="peeldb.Country",
+            ),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='skills',
-            field=models.ManyToManyField(to='peeldb.Skill'),
+            model_name="jobpost",
+            name="skills",
+            field=models.ManyToManyField(to="peeldb.Skill"),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='user',
+            model_name="jobpost",
+            name="user",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='visa_country',
+            model_name="jobpost",
+            name="visa_country",
             field=models.ForeignKey(
-                null=True, on_delete=django.db.models.deletion.CASCADE, related_name='visa_country', to='peeldb.Country'),
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="visa_country",
+                to="peeldb.Country",
+            ),
         ),
         migrations.AddField(
-            model_name='jobalert',
-            name='skill',
-            field=models.ManyToManyField(to='peeldb.Skill'),
+            model_name="jobalert",
+            name="skill",
+            field=models.ManyToManyField(to="peeldb.Skill"),
         ),
         migrations.AddField(
-            model_name='facebookpost',
-            name='job_post',
+            model_name="facebookpost",
+            name="job_post",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.JobPost"
+            ),
         ),
         migrations.AddField(
-            model_name='educationdetails',
-            name='institute',
+            model_name="educationdetails",
+            name="institute",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.EducationInstitue'),
+                on_delete=django.db.models.deletion.CASCADE,
+                to="peeldb.EducationInstitue",
+            ),
         ),
         migrations.AddField(
-            model_name='degree',
-            name='degree_name',
+            model_name="degree",
+            name="degree_name",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.Qualification'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.Qualification"
+            ),
         ),
         migrations.AddField(
-            model_name='dailysearchlog',
-            name='skills',
+            model_name="dailysearchlog",
+            name="skills",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.Skill'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.Skill"
+            ),
         ),
         migrations.AddField(
-            model_name='comment',
-            name='ticket',
+            model_name="comment",
+            name="ticket",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, related_name='ticket', to='peeldb.Ticket'),
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="ticket",
+                to="peeldb.Ticket",
+            ),
         ),
         migrations.AddField(
-            model_name='city',
-            name='state',
+            model_name="city",
+            name="state",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.State'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.State"
+            ),
         ),
         migrations.AddField(
-            model_name='appliedjobs',
-            name='job_post',
+            model_name="appliedjobs",
+            name="job_post",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.JobPost"
+            ),
         ),
         migrations.AddField(
-            model_name='appliedjobs',
-            name='user',
+            model_name="appliedjobs",
+            name="user",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='agencyresume',
-            name='skill',
-            field=models.ManyToManyField(to='peeldb.Skill'),
+            model_name="agencyresume",
+            name="skill",
+            field=models.ManyToManyField(to="peeldb.Skill"),
         ),
         migrations.AddField(
-            model_name='agencyresume',
-            name='uploaded_by',
+            model_name="agencyresume",
+            name="uploaded_by",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='agencyresume',
-            name='user',
+            model_name="agencyresume",
+            name="user",
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='Applicant', to=settings.AUTH_USER_MODEL),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="Applicant",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='agencyrecruiterjobposts',
-            name='job_post',
+            model_name="agencyrecruiterjobposts",
+            name="job_post",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.JobPost"
+            ),
         ),
         migrations.AddField(
-            model_name='agencyrecruiterjobposts',
-            name='user',
+            model_name="agencyrecruiterjobposts",
+            name="user",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='agencycompanybranch',
-            name='location',
+            model_name="agencycompanybranch",
+            name="location",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.City'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.City"
+            ),
         ),
         migrations.AddField(
-            model_name='agencycompany',
-            name='branch_details',
-            field=models.ManyToManyField(to='peeldb.AgencyCompanyBranch'),
+            model_name="agencycompany",
+            name="branch_details",
+            field=models.ManyToManyField(to="peeldb.AgencyCompanyBranch"),
         ),
         migrations.AddField(
-            model_name='agencycompany',
-            name='company',
+            model_name="agencycompany",
+            name="company",
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='peeldb.Company'),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="peeldb.Company",
+            ),
         ),
         migrations.AddField(
-            model_name='agencycompany',
-            name='company_categories',
+            model_name="agencycompany",
+            name="company_categories",
             field=models.ManyToManyField(
-                related_name='categories', to='peeldb.AgencyCompanyCatogery'),
+                related_name="categories", to="peeldb.AgencyCompanyCatogery"
+            ),
         ),
         migrations.AddField(
-            model_name='agencycompany',
-            name='contract_details',
+            model_name="agencycompany",
+            name="contract_details",
             field=models.ManyToManyField(
-                related_name='contract_details', to='peeldb.AgencyContractDetails'),
+                related_name="contract_details", to="peeldb.AgencyContractDetails"
+            ),
         ),
         migrations.AddField(
-            model_name='agencycompany',
-            name='created_by',
+            model_name="agencycompany",
+            name="created_by",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='agencyapplicants',
-            name='applicant',
+            model_name="agencyapplicants",
+            name="applicant",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.AgencyResume'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.AgencyResume"
+            ),
         ),
         migrations.AddField(
-            model_name='agencyapplicants',
-            name='job_post',
+            model_name="agencyapplicants",
+            name="job_post",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost'),
+                on_delete=django.db.models.deletion.CASCADE, to="peeldb.JobPost"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='city',
+            model_name="user",
+            name="city",
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_city', to='peeldb.City'),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="user_city",
+                to="peeldb.City",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='company',
+            model_name="user",
+            name="company",
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='peeldb.Company'),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="peeldb.Company",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='country',
+            model_name="user",
+            name="country",
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='peeldb.Country'),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="peeldb.Country",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='current_city',
+            model_name="user",
+            name="current_city",
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='current_city', to='peeldb.City'),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="current_city",
+                to="peeldb.City",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='education',
-            field=models.ManyToManyField(to='peeldb.EducationDetails'),
+            model_name="user",
+            name="education",
+            field=models.ManyToManyField(to="peeldb.EducationDetails"),
         ),
         migrations.AddField(
-            model_name='user',
-            name='employment_history',
-            field=models.ManyToManyField(to='peeldb.EmploymentHistory'),
+            model_name="user",
+            name="employment_history",
+            field=models.ManyToManyField(to="peeldb.EmploymentHistory"),
         ),
         migrations.AddField(
-            model_name='user',
-            name='functional_area',
-            field=models.ManyToManyField(to='peeldb.FunctionalArea'),
+            model_name="user",
+            name="functional_area",
+            field=models.ManyToManyField(to="peeldb.FunctionalArea"),
         ),
         migrations.AddField(
-            model_name='user',
-            name='groups',
-            field=models.ManyToManyField(blank=True,
-                                         help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
-                                         related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups'),
-        ),
-        migrations.AddField(
-            model_name='user',
-            name='industry',
+            model_name="user",
+            name="groups",
             field=models.ManyToManyField(
-                related_name='recruiter_industries', to='peeldb.Industry'),
+                blank=True,
+                help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                related_name="user_set",
+                related_query_name="user",
+                to="auth.Group",
+                verbose_name="groups",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='language',
-            field=models.ManyToManyField(to='peeldb.UserLanguage'),
-        ),
-        migrations.AddField(
-            model_name='user',
-            name='prefered_industry',
-            field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='peeldb.Industry'),
-        ),
-        migrations.AddField(
-            model_name='user',
-            name='preferred_city',
+            model_name="user",
+            name="industry",
             field=models.ManyToManyField(
-                related_name='preferred_city', to='peeldb.City'),
+                related_name="recruiter_industries", to="peeldb.Industry"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='project',
-            field=models.ManyToManyField(to='peeldb.Project'),
+            model_name="user",
+            name="language",
+            field=models.ManyToManyField(to="peeldb.UserLanguage"),
         ),
         migrations.AddField(
-            model_name='user',
-            name='skills',
-            field=models.ManyToManyField(to='peeldb.TechnicalSkill'),
-        ),
-        migrations.AddField(
-            model_name='user',
-            name='state',
+            model_name="user",
+            name="prefered_industry",
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='peeldb.State'),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="peeldb.Industry",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='technical_skills',
+            model_name="user",
+            name="preferred_city",
             field=models.ManyToManyField(
-                related_name='recruiter_skill', to='peeldb.Skill'),
+                related_name="preferred_city", to="peeldb.City"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='user_permissions',
-            field=models.ManyToManyField(blank=True, help_text='Specific permissions for this user.',
-                                         related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions'),
+            model_name="user",
+            name="project",
+            field=models.ManyToManyField(to="peeldb.Project"),
+        ),
+        migrations.AddField(
+            model_name="user",
+            name="skills",
+            field=models.ManyToManyField(to="peeldb.TechnicalSkill"),
+        ),
+        migrations.AddField(
+            model_name="user",
+            name="state",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="peeldb.State",
+            ),
+        ),
+        migrations.AddField(
+            model_name="user",
+            name="technical_skills",
+            field=models.ManyToManyField(
+                related_name="recruiter_skill", to="peeldb.Skill"
+            ),
+        ),
+        migrations.AddField(
+            model_name="user",
+            name="user_permissions",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Specific permissions for this user.",
+                related_name="user_set",
+                related_query_name="user",
+                to="auth.Permission",
+                verbose_name="user permissions",
+            ),
         ),
     ]

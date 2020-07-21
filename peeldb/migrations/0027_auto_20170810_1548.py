@@ -9,18 +9,18 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0026_auto_20170810_1546'),
+        ("peeldb", "0026_auto_20170810_1546"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='city',
-            name='meta',
+            model_name="city",
+            name="meta",
             field=django.contrib.postgres.fields.jsonb.JSONField(default={}),
         ),
         migrations.AddField(
-            model_name='skill',
-            name='meta',
+            model_name="skill",
+            name="meta",
             field=django.contrib.postgres.fields.jsonb.JSONField(default={}),
         ),
     ]
