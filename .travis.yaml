@@ -1,0 +1,41 @@
+language : python
+python:
+  - "3.6"
+
+#Django & Database
+addons:
+  postgresql: ""
+
+sudo: required
+
+step_before_install:
+
+  - sudo apt install nodejs
+  - npm install -g sass
+  - gem install compass
+  - npm install less
+
+env:
+  -Django==2.2.8 DB=postgresql
+
+install:
+  - pip install -r requirements.txt
+
+#new
+#creating a database
+before_script:
+  - sleep 20
+  - psql -c 'create database peeljobs;' -U postgres
+
+# command to run tests
+script:
+  - python manage.py test
+
+after_success:
+  coveralls
+
+deploy:
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  on:
+    branch: master
