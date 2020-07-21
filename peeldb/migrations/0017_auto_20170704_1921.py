@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0016_jobpost_published_on'),
+        ("peeldb", "0016_jobpost_published_on"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='googlefirend',
-            name='email',
-            field=models.CharField(default='', max_length=2000),
+            model_name="googlefirend",
+            name="email",
+            field=models.CharField(default="", max_length=2000),
         ),
     ]

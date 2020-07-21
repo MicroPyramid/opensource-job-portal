@@ -21,12 +21,12 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def month_table(context, request, month, size="regular"):
     each = {}
-    each['day_names'] = weekday_abbrs
-    each['month'] = month
+    each["day_names"] = weekday_abbrs
+    each["month"] = month
     each["pp_action_points"] = []
-    each['year'] = context['year']
-    each['jobs_list'] = context['jobs_list']
-    each['calendar_events'] = context['calendar_events']
+    each["year"] = context["year"]
+    each["jobs_list"] = context["jobs_list"]
+    each["calendar_events"] = context["calendar_events"]
     # each['week'] = each['week']
     if size == "regular":
         template_name = "calendar/partials/_month_table.html"
@@ -37,7 +37,7 @@ def month_table(context, request, month, size="regular"):
     return message
 
 
-@register.filter(name='get_weekdays')
+@register.filter(name="get_weekdays")
 def get_weekdays(year, month):
     cobj = calendar.Calendar(calendar.SUNDAY)
     return cobj.monthdayscalendar(year, month)
@@ -48,10 +48,12 @@ def week_table(context):
     cobj = calendar.Calendar(calendar.SUNDAY)
     try:
         week_days = cobj.monthdayscalendar(
-            int(context["year"]), int(context["month"]["id"]))[int(context["week"])-1]
+            int(context["year"]), int(context["month"]["id"])
+        )[int(context["week"]) - 1]
     except IndexError:
         week_days = cobj.monthdayscalendar(
-            int(context["year"]), int(context["month"]["id"]))[0]
+            int(context["year"]), int(context["month"]["id"])
+        )[0]
     context["week_days"] = week_days
     template_name = "calendar/partials/_day_cells.html"
     t = loader.get_template(template_name)
@@ -76,6 +78,7 @@ def get_client_first_letter(name):
 @register.simple_tag(takes_context=True)
 def get_per_day_jobposts(context, year, month, date):
     import datetime
+
     if context["jobs_list"]:
         day = datetime.date(int(year), int(month), int(date))
         if context["jobs_list"]:
@@ -89,11 +92,12 @@ def get_per_day_jobposts(context, year, month, date):
 @register.simple_tag(takes_context=True)
 def get_per_day_events(context, year, month, date):
     import datetime
+
     if context["calendar_events"]:
         day = datetime.date(int(year), int(month), int(date))
         date_events = []
-        for i in context['calendar_events']:
-            if str(day) >= str(i['start_date']) and str(day) <= str(i['end_date']):
+        for i in context["calendar_events"]:
+            if str(day) >= str(i["start_date"]) and str(day) <= str(i["end_date"]):
                 date_events.append(i)
         return date_events
     return ""

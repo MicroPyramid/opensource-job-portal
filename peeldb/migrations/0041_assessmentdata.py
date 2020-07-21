@@ -10,21 +10,52 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0040_auto_20171106_1141'),
+        ("peeldb", "0040_auto_20171106_1141"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AssessmentData',
+            name="AssessmentData",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('like', models.BooleanField(default=False)),
-                ('dislike', models.BooleanField(default=False)),
-                ('comment', models.TextField()),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('question', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='question_data', to='peeldb.Question')),
-                ('solution', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='solution_data', to='peeldb.Solution')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_data', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("like", models.BooleanField(default=False)),
+                ("dislike", models.BooleanField(default=False)),
+                ("comment", models.TextField()),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                (
+                    "question",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="question_data",
+                        to="peeldb.Question",
+                    ),
+                ),
+                (
+                    "solution",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="solution_data",
+                        to="peeldb.Solution",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_data",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

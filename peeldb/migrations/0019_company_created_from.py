@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0018_user_alternate_mobile'),
+        ("peeldb", "0018_user_alternate_mobile"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='company',
-            name='created_from',
-            field=models.CharField(default='', max_length=200),
+            model_name="company",
+            name="created_from",
+            field=models.CharField(default="", max_length=200),
         ),
     ]

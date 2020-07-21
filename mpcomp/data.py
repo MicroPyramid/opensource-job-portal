@@ -17,22 +17,22 @@
 """Data model classes for parsing and generating XML for the Contacts API."""
 
 
-__author__ = 'vinces1979@gmail.com (Vince Spicer)'
+__author__ = "vinces1979@gmail.com (Vince Spicer)"
 
 
 from mpcomp import core
 from mpcomp import gdata_data, atom_data
 
 
-PHOTO_LINK_REL = 'http://schemas.google.com/contacts/2008/rel#photo'
-PHOTO_EDIT_LINK_REL = 'http://schemas.google.com/contacts/2008/rel#edit-photo'
+PHOTO_LINK_REL = "http://schemas.google.com/contacts/2008/rel#photo"
+PHOTO_EDIT_LINK_REL = "http://schemas.google.com/contacts/2008/rel#edit-photo"
 
-EXTERNAL_ID_ORGANIZATION = 'organization'
+EXTERNAL_ID_ORGANIZATION = "organization"
 
-RELATION_MANAGER = 'manager'
+RELATION_MANAGER = "manager"
 
-CONTACTS_NAMESPACE = 'http://schemas.google.com/contact/2008'
-CONTACTS_TEMPLATE = '{%s}%%s' % CONTACTS_NAMESPACE
+CONTACTS_NAMESPACE = "http://schemas.google.com/contact/2008"
+CONTACTS_TEMPLATE = "{%s}%%s" % CONTACTS_NAMESPACE
 
 
 class BillingInformation(core.XmlElement):
@@ -42,7 +42,7 @@ class BillingInformation(core.XmlElement):
     Specifies billing information of the entity represented by the contact. The element cannot be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'billingInformation'
+    _qname = CONTACTS_TEMPLATE % "billingInformation"
 
 
 class Birthday(core.XmlElement):
@@ -51,8 +51,8 @@ class Birthday(core.XmlElement):
    Stores birthday date of the person represented by the contact. The element cannot be repeated.
    """
 
-    _qname = CONTACTS_TEMPLATE % 'birthday'
-    when = 'when'
+    _qname = CONTACTS_TEMPLATE % "birthday"
+    when = "when"
 
 
 class ContactLink(atom_data.Link):
@@ -60,7 +60,8 @@ class ContactLink(atom_data.Link):
     """
     Extends atom_data.Link to add gd:etag attribute for photo link.
     """
-    etag = gdata_data.GD_TEMPLATE % 'etag'
+
+    etag = gdata_data.GD_TEMPLATE % "etag"
 
 
 class CalendarLink(core.XmlElement):
@@ -69,11 +70,11 @@ class CalendarLink(core.XmlElement):
     Storage for URL of the contact's calendar. The element can be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'calendarLink'
-    rel = 'rel'
-    label = 'label'
-    primary = 'primary'
-    href = 'href'
+    _qname = CONTACTS_TEMPLATE % "calendarLink"
+    rel = "rel"
+    label = "label"
+    primary = "primary"
+    href = "href"
 
 
 class DirectoryServer(core.XmlElement):
@@ -83,7 +84,7 @@ class DirectoryServer(core.XmlElement):
     May not be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'directoryServer'
+    _qname = CONTACTS_TEMPLATE % "directoryServer"
 
 
 class Event(core.XmlElement):
@@ -93,9 +94,9 @@ class Event(core.XmlElement):
     They may be repeated
     """
 
-    _qname = CONTACTS_TEMPLATE % 'event'
-    label = 'label'
-    rel = 'rel'
+    _qname = CONTACTS_TEMPLATE % "event"
+    label = "label"
+    rel = "rel"
     when = gdata_data.When
 
 
@@ -106,10 +107,10 @@ class ExternalId(core.XmlElement):
     This element may be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'externalId'
-    label = 'label'
-    rel = 'rel'
-    value = 'value'
+    _qname = CONTACTS_TEMPLATE % "externalId"
+    label = "label"
+    rel = "rel"
+    value = "value"
 
 
 def ExternalIdFromString(xml_string):
@@ -123,8 +124,8 @@ class Gender(core.XmlElement):
     The element cannot be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'gender'
-    value = 'value'
+    _qname = CONTACTS_TEMPLATE % "gender"
+    value = "value"
 
 
 class Hobby(core.XmlElement):
@@ -134,7 +135,7 @@ class Hobby(core.XmlElement):
     This element may be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'hobby'
+    _qname = CONTACTS_TEMPLATE % "hobby"
 
 
 class Initials(core.XmlElement):
@@ -142,7 +143,7 @@ class Initials(core.XmlElement):
     """ Specifies the initials of the person represented by the contact. The
     element cannot be repeated. """
 
-    _qname = CONTACTS_TEMPLATE % 'initials'
+    _qname = CONTACTS_TEMPLATE % "initials"
 
 
 class Jot(core.XmlElement):
@@ -153,8 +154,8 @@ class Jot(core.XmlElement):
     The element can be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'jot'
-    rel = 'rel'
+    _qname = CONTACTS_TEMPLATE % "jot"
+    rel = "rel"
 
 
 class Language(core.XmlElement):
@@ -168,9 +169,9 @@ class Language(core.XmlElement):
     must conform to the IETF BCP 47 specification.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'language'
-    code = 'code'
-    label = 'label'
+    _qname = CONTACTS_TEMPLATE % "language"
+    code = "code"
+    label = "label"
 
 
 class MaidenName(core.XmlElement):
@@ -180,7 +181,7 @@ class MaidenName(core.XmlElement):
     The element cannot be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'maidenName'
+    _qname = CONTACTS_TEMPLATE % "maidenName"
 
 
 class Mileage(core.XmlElement):
@@ -191,7 +192,7 @@ class Mileage(core.XmlElement):
     purposes. The value is not interpreted. The element cannot be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'mileage'
+    _qname = CONTACTS_TEMPLATE % "mileage"
 
 
 class NickName(core.XmlElement):
@@ -201,7 +202,7 @@ class NickName(core.XmlElement):
     The element cannot be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'nickname'
+    _qname = CONTACTS_TEMPLATE % "nickname"
 
 
 class Occupation(core.XmlElement):
@@ -211,7 +212,7 @@ class Occupation(core.XmlElement):
     The element cannot be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'occupation'
+    _qname = CONTACTS_TEMPLATE % "occupation"
 
 
 class Priority(core.XmlElement):
@@ -225,7 +226,7 @@ class Priority(core.XmlElement):
     The priority element cannot be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'priority'
+    _qname = CONTACTS_TEMPLATE % "priority"
 
 
 class Relation(core.XmlElement):
@@ -235,9 +236,9 @@ class Relation(core.XmlElement):
     relation of some kind with the contact.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'relation'
-    rel = 'rel'
-    label = 'label'
+    _qname = CONTACTS_TEMPLATE % "relation"
+    rel = "rel"
+    label = "label"
 
 
 class Sensitivity(core.XmlElement):
@@ -252,8 +253,8 @@ class Sensitivity(core.XmlElement):
     The sensitivity element cannot be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'sensitivity'
-    rel = 'rel'
+    _qname = CONTACTS_TEMPLATE % "sensitivity"
+    rel = "rel"
 
 
 class UserDefinedField(core.XmlElement):
@@ -262,9 +263,9 @@ class UserDefinedField(core.XmlElement):
     Represents an arbitrary key-value pair attached to the contact.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'userDefinedField'
-    key = 'key'
-    value = 'value'
+    _qname = CONTACTS_TEMPLATE % "userDefinedField"
+    key = "key"
+    value = "value"
 
 
 def UserDefinedFieldFromString(xml_string):
@@ -278,12 +279,12 @@ class Website(core.XmlElement):
     May be repeated.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'website'
+    _qname = CONTACTS_TEMPLATE % "website"
 
-    href = 'href'
-    label = 'label'
-    primary = 'primary'
-    rel = 'rel'
+    href = "href"
+    label = "label"
+    primary = "primary"
+    rel = "rel"
 
 
 def WebsiteFromString(xml_string):
@@ -297,7 +298,7 @@ class HouseName(core.XmlElement):
     not necessarily numbers), eg. "The Pillars".
     """
 
-    _qname = CONTACTS_TEMPLATE % 'housename'
+    _qname = CONTACTS_TEMPLATE % "housename"
 
 
 class Street(core.XmlElement):
@@ -307,7 +308,7 @@ class Street(core.XmlElement):
     number and room/apartment/flat/floor number.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'street'
+    _qname = CONTACTS_TEMPLATE % "street"
 
 
 class POBox(core.XmlElement):
@@ -317,7 +318,7 @@ class POBox(core.XmlElement):
     always mutually exclusive with street, atom
     """
 
-    _qname = CONTACTS_TEMPLATE % 'pobox'
+    _qname = CONTACTS_TEMPLATE % "pobox"
 
 
 class Neighborhood(core.XmlElement):
@@ -329,7 +330,7 @@ class Neighborhood(core.XmlElement):
     minor city.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'neighborhood'
+    _qname = CONTACTS_TEMPLATE % "neighborhood"
 
 
 class City(core.XmlElement):
@@ -339,7 +340,7 @@ class City(core.XmlElement):
     necessarily the place of residence or place of business.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'city'
+    _qname = CONTACTS_TEMPLATE % "city"
 
 
 class SubRegion(core.XmlElement):
@@ -350,7 +351,7 @@ class SubRegion(core.XmlElement):
      delivery addresses.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'subregion'
+    _qname = CONTACTS_TEMPLATE % "subregion"
 
 
 class Region(core.XmlElement):
@@ -360,7 +361,7 @@ class Region(core.XmlElement):
     departement (in France), etc.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'region'
+    _qname = CONTACTS_TEMPLATE % "region"
 
 
 class PostalCode(core.XmlElement):
@@ -370,22 +371,22 @@ class PostalCode(core.XmlElement):
     city (e.g. "2" in "Dublin 2, Ireland" addresses).
     """
 
-    _qname = CONTACTS_TEMPLATE % 'postcode'
+    _qname = CONTACTS_TEMPLATE % "postcode"
 
 
 class Country(core.XmlElement):
 
     """ The name or code of the country. """
 
-    _qname = CONTACTS_TEMPLATE % 'country'
+    _qname = CONTACTS_TEMPLATE % "country"
 
 
 class Status(core.XmlElement):
 
     """Person's status element."""
 
-    _qname = CONTACTS_TEMPLATE % 'status'
-    indexed = 'indexed'
+    _qname = CONTACTS_TEMPLATE % "status"
+    indexed = "indexed"
 
 
 class PersonEntry(gdata_data.BatchEntry):
@@ -434,10 +435,10 @@ class GroupMembershipInfo(core.XmlElement):
     The group is referenced by its id.
     """
 
-    _qname = CONTACTS_TEMPLATE % 'groupMembershipInfo'
+    _qname = CONTACTS_TEMPLATE % "groupMembershipInfo"
 
-    href = 'href'
-    deleted = 'deleted'
+    href = "href"
+    deleted = "deleted"
 
     def __str__(self):
         return str(self._qname)
@@ -469,6 +470,7 @@ class ContactEntry(PersonEntry):
 class ContactsFeed(gdata_data.BatchFeed):
 
     """A collection of Contacts."""
+
     entry = [ContactEntry]
 
     def __str__(self):
@@ -483,13 +485,14 @@ class SystemGroup(core.XmlElement):
     When used within a contact group entry, indicates that the group in
     question is one of the predefined system groups."""
 
-    _qname = CONTACTS_TEMPLATE % 'systemGroup'
-    id = 'id'
+    _qname = CONTACTS_TEMPLATE % "systemGroup"
+    id = "id"
 
 
 class GroupEntry(gdata_data.BatchEntry):
 
     """Represents a contact group."""
+
     extended_property = [gdata_data.ExtendedProperty]
     system_group = SystemGroup
 
@@ -497,6 +500,7 @@ class GroupEntry(gdata_data.BatchEntry):
 class GroupsFeed(gdata_data.BatchFeed):
 
     """A Google contact groups feed flavor of an Atom Feed."""
+
     entry = [GroupEntry]
 
 
@@ -520,7 +524,8 @@ def ProfileEntryFromString(xml_string):
 class ProfilesFeed(gdata_data.BatchFeed):
 
     """A Google Profiles feed flavor of an Atom Feed."""
-    _qname = atom_data.ATOM_TEMPLATE % 'feed'
+
+    _qname = atom_data.ATOM_TEMPLATE % "feed"
     entry = [ProfileEntry]
 
 

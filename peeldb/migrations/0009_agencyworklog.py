@@ -10,20 +10,39 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0008_company_campaign_icon'),
+        ("peeldb", "0008_company_campaign_icon"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AgencyWorkLog',
+            name="AgencyWorkLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_time', models.DateTimeField()),
-                ('end_time', models.DateTimeField()),
-                ('no_of_profiles', models.IntegerField()),
-                ('summary', models.TextField()),
-                ('job_post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='peeldb.JobPost')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("start_time", models.DateTimeField()),
+                ("end_time", models.DateTimeField()),
+                ("no_of_profiles", models.IntegerField()),
+                ("summary", models.TextField()),
+                (
+                    "job_post",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.JobPost"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

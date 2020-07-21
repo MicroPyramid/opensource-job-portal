@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0043_auto_20180309_1249'),
+        ("peeldb", "0043_auto_20180309_1249"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='jobpost',
-            name='pincode',
+            model_name="jobpost",
+            name="pincode",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
     ]

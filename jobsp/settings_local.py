@@ -3,8 +3,8 @@ from .settings import *
 DEBUG = True
 
 HTML_MINIFY = False
-HTTP_HOST = 'test.peeljobs.com:8000'
-GOOGLE_OAUTH2_REDIRECT = 'http://localhost:8000/oauth2callback/'
+HTTP_HOST = "test.peeljobs.com:8000"
+GOOGLE_OAUTH2_REDIRECT = "http://localhost:8000/oauth2callback/"
 
 # #Set your DSN value
 # RAVEN_CONFIG = {
@@ -19,15 +19,13 @@ GOOGLE_OAUTH2_REDIRECT = 'http://localhost:8000/oauth2callback/'
 INSTALLED_APPS = INSTALLED_APPS + (
     # ...
     # 'raven.contrib.django.raven_compat',
-    'debug_toolbar',
-    'template_timings_panel',
-    'django_web_profiler',
-    'behave_django',
+    "debug_toolbar",
+    "template_timings_panel",
+    "django_web_profiler",
+    "behave_django",
 )
 
-MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-] + MIDDLEWARE
+MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware",] + MIDDLEWARE
 MIDDLEWARE_CLASSES = MIDDLEWARE
 # MIDDLEWARE_CLASSES = (
 #   'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
@@ -42,28 +40,24 @@ MIDDLEWARE_CLASSES = MIDDLEWARE
 # more details on how to customize your logging configuration.
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s '
-                      '%(process)d %(thread)d %(message)s'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(module)s "
+            "%(process)d %(thread)d %(message)s"
         },
-        'standard': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+        "standard": {
+            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
             # 'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
     },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
         },
         # 'file_log': {
         #     'level':'DEBUG',
@@ -75,44 +69,43 @@ LOGGING = {
         #     'backupCount': 5,
         #     'formatter':'standard',
         # }
-
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
         },
         # 'request-logging': {
         #     'level': 'DEBUG',
         #     'handlers': ['file_log'],
         #     'propagate': False,
         # },
-    }
+    },
 }
 
-INTERNAL_IPS = ('127.0.0.1', '183.82.113.154')
+INTERNAL_IPS = ("127.0.0.1", "183.82.113.154")
 
 DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.versions.VersionsPanel',
-    'debug_toolbar.panels.timer.TimerPanel',
-    'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.headers.HeadersPanel',
-    'debug_toolbar.panels.request.RequestPanel',
-    'debug_toolbar.panels.sql.SQLPanel',
-    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-    'debug_toolbar.panels.templates.TemplatesPanel',
-    'debug_toolbar.panels.cache.CachePanel',
-    'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.logging.LoggingPanel',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
-    'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+    "debug_toolbar.panels.versions.VersionsPanel",
+    "debug_toolbar.panels.timer.TimerPanel",
+    "debug_toolbar.panels.settings.SettingsPanel",
+    "debug_toolbar.panels.headers.HeadersPanel",
+    "debug_toolbar.panels.request.RequestPanel",
+    "debug_toolbar.panels.sql.SQLPanel",
+    "debug_toolbar.panels.staticfiles.StaticFilesPanel",
+    "debug_toolbar.panels.templates.TemplatesPanel",
+    "debug_toolbar.panels.cache.CachePanel",
+    "debug_toolbar.panels.signals.SignalsPanel",
+    "debug_toolbar.panels.logging.LoggingPanel",
+    "debug_toolbar.panels.redirects.RedirectsPanel",
+    "template_timings_panel.panels.TemplateTimings.TemplateTimings",
 ]
 
-MAIL_SENDER = ''
-INACTIVE_MAIL_SENDER = ''
+MAIL_SENDER = ""
+INACTIVE_MAIL_SENDER = ""
 
-TEST_RUNNER = 'django_behave.runner.DjangoBehaveTestSuiteRunner'
+TEST_RUNNER = "django_behave.runner.DjangoBehaveTestSuiteRunner"
 
 
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWSSTORAGEBUCKETNAME")

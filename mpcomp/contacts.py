@@ -23,21 +23,21 @@ For documentation on the Contacts API, see:
 http://code.google.com/apis/contatcs/
 """
 
-__author__ = 'vinces1979@gmail.com (Vince Spicer)'
+__author__ = "vinces1979@gmail.com (Vince Spicer)"
 
 
-DEFAULT_BATCH_URL = ('https://www.google.com/m8/feeds/contacts/default/full'
-                     '/batch')
-DEFAULT_PROFILES_BATCH_URL = ('https://www.google.com/m8/feeds/profiles/domain/'
-                              '%s/full/batch')
+DEFAULT_BATCH_URL = "https://www.google.com/m8/feeds/contacts/default/full" "/batch"
+DEFAULT_PROFILES_BATCH_URL = (
+    "https://www.google.com/m8/feeds/profiles/domain/" "%s/full/batch"
+)
 
 
 class ContactsClient(client.GDClient):
-    api_version = '3'
-    auth_service = 'cp'
+    api_version = "3"
+    auth_service = "cp"
     server = "www.google.com"
     contact_list = "default"
-    auth_scopes = gauth.AUTH_SCOPES['cp']
+    auth_scopes = gauth.AUTH_SCOPES["cp"]
     ssl = True
 
     def __init__(self, domain=None, auth_token=None, **kwargs):
@@ -51,8 +51,9 @@ class ContactsClient(client.GDClient):
         client.GDClient.__init__(self, auth_token=auth_token, **kwargs)
         self.domain = domain
 
-    def get_feed_uri(self, kind='contacts', contact_list=None, projection='full',
-                     scheme="https"):
+    def get_feed_uri(
+        self, kind="contacts", contact_list=None, projection="full", scheme="https"
+    ):
         """Builds a feed URI.
 
         Args:
@@ -70,22 +71,25 @@ class ContactsClient(client.GDClient):
           Example: '/m8/feeds/contacts/default/full'.
         """
         contact_list = contact_list or self.contact_list
-        if kind == 'profiles':
-            contact_list = 'domain/%s' % self.domain
-        prefix = scheme and '%s://%s' % (scheme, self.server) or ''
-        return '%s/m8/feeds/%s/%s/%s' % (prefix, kind, contact_list, projection)
+        if kind == "profiles":
+            contact_list = "domain/%s" % self.domain
+        prefix = scheme and "%s://%s" % (scheme, self.server) or ""
+        return "%s/m8/feeds/%s/%s/%s" % (prefix, kind, contact_list, projection)
 
     GetFeedUri = get_feed_uri
 
-    def get_contact(self, uri, desired_class=data.ContactEntry,
-                    auth_token=None, **kwargs):
-        return self.get_entry(uri, auth_token=auth_token,
-                              desired_class=desired_class, **kwargs)
+    def get_contact(
+        self, uri, desired_class=data.ContactEntry, auth_token=None, **kwargs
+    ):
+        return self.get_entry(
+            uri, auth_token=auth_token, desired_class=desired_class, **kwargs
+        )
 
     GetContact = get_contact
 
-    def get_contacts(self, uri=None, desired_class=data.ContactsFeed,
-                     auth_token=None, **kwargs):
+    def get_contacts(
+        self, uri=None, desired_class=data.ContactsFeed, auth_token=None, **kwargs
+    ):
         """Obtains a feed with the contacts belonging to the current user.
 
         Args:
@@ -105,27 +109,37 @@ class ContactsClient(client.GDClient):
                          spreadsheets.data.SpreadsheetsFeed.
         """
         uri = uri or self.GetFeedUri()
-        print(self.get_feed(uri, auth_token=auth_token,
-                            desired_class=desired_class, **kwargs))
-        return self.get_feed(uri, auth_token=auth_token,
-                             desired_class=desired_class, **kwargs)
+        print(
+            self.get_feed(
+                uri, auth_token=auth_token, desired_class=desired_class, **kwargs
+            )
+        )
+        return self.get_feed(
+            uri, auth_token=auth_token, desired_class=desired_class, **kwargs
+        )
 
     GetContacts = get_contacts
 
-    def get_group(self, uri=None, desired_class=data.GroupEntry,
-                  auth_token=None, **kwargs):
+    def get_group(
+        self, uri=None, desired_class=data.GroupEntry, auth_token=None, **kwargs
+    ):
         """ Get a single groups details
         Args:
             uri:  the group uri or id
         """
-        return self.get_entry(uri, desired_class=desired_class, auth_token=auth_token, **kwargs)
+        return self.get_entry(
+            uri, desired_class=desired_class, auth_token=auth_token, **kwargs
+        )
 
     GetGroup = get_group
 
-    def get_groups(self, uri=None, desired_class=data.GroupsFeed,
-                   auth_token=None, **kwargs):
-        uri = uri or self.GetFeedUri('groups')
-        return self.get_feed(uri, desired_class=desired_class, auth_token=auth_token, **kwargs)
+    def get_groups(
+        self, uri=None, desired_class=data.GroupsFeed, auth_token=None, **kwargs
+    ):
+        uri = uri or self.GetFeedUri("groups")
+        return self.get_feed(
+            uri, desired_class=desired_class, auth_token=auth_token, **kwargs
+        )
 
     GetGroups = get_groups
 
@@ -166,9 +180,10 @@ class ContactsClient(client.GDClient):
           On failure, raises a RequestError.
         """
 
-        uri = uri or self.GetFeedUri('profiles')
-        return self.get_feed(uri, auth_token=auth_token,
-                             desired_class=data.ProfilesFeed, **kwargs)
+        uri = uri or self.GetFeedUri("profiles")
+        return self.get_feed(
+            uri, auth_token=auth_token, desired_class=data.ProfilesFeed, **kwargs
+        )
 
     GetProfilesFeed = get_profiles_feed
 
@@ -183,9 +198,9 @@ class ContactsClient(client.GDClient):
           On success, a ProfileEntry containing the profile for the user.
           On failure, raises a RequestError
         """
-        return self.get_entry(uri,
-                              desired_class=data.ProfileEntry,
-                              auth_token=auth_token, **kwargs)
+        return self.get_entry(
+            uri, desired_class=data.ProfileEntry, auth_token=auth_token, **kwargs
+        )
 
     GetProfile = get_profile
 
@@ -218,12 +233,20 @@ class ContactsClient(client.GDClient):
             response to the PUT request.
           On failure, raises a RequestError.
         """
-        return self.Update(updated_profile, auth_token=auth_token, force=force, **kwargs)
+        return self.Update(
+            updated_profile, auth_token=auth_token, force=force, **kwargs
+        )
 
     UpdateProfile = update_profile
 
-    def execute_batch(self, batch_feed, url=DEFAULT_BATCH_URL, desired_class=None,
-                      auth_token=None, **kwargs):
+    def execute_batch(
+        self,
+        batch_feed,
+        url=DEFAULT_BATCH_URL,
+        desired_class=None,
+        auth_token=None,
+        **kwargs
+    ):
         """Sends a batch request feed to the server.
 
         Args:
@@ -240,14 +263,20 @@ class ContactsClient(client.GDClient):
           The results of the batch request's execution on the server. If the
           default converter is used, this is stored in a ContactsFeed.
         """
-        return self.Post(batch_feed, url, desired_class=desired_class,
-                         auth_token=None, **kwargs)
+        return self.Post(
+            batch_feed, url, desired_class=desired_class, auth_token=None, **kwargs
+        )
 
     ExecuteBatch = execute_batch
 
-    def execute_batch_profiles(self, batch_feed, url=None,
-                               desired_class=data.ProfilesFeed,
-                               auth_token=None, **kwargs):
+    def execute_batch_profiles(
+        self,
+        batch_feed,
+        url=None,
+        desired_class=data.ProfilesFeed,
+        auth_token=None,
+        **kwargs
+    ):
         """Sends a batch request feed to the server.
 
         Args:
@@ -266,8 +295,13 @@ class ContactsClient(client.GDClient):
           default converter is used, this is stored in a ProfilesFeed.
         """
         url = url or (DEFAULT_PROFILES_BATCH_URL % self.domain)
-        return self.Post(batch_feed, url, desired_class=desired_class,
-                         auth_token=auth_token, **kwargs)
+        return self.Post(
+            batch_feed,
+            url,
+            desired_class=desired_class,
+            auth_token=auth_token,
+            **kwargs
+        )
 
     ExecuteBatchProfiles = execute_batch_profiles
 
@@ -281,9 +315,9 @@ class ContactsClient(client.GDClient):
           The given URI without its http://server prefix, if any.
           Keeps the leading slash of the URI.
         """
-        url_prefix = 'http://%s' % self.server
+        url_prefix = "http://%s" % self.server
         if uri.startswith(url_prefix):
-            uri = uri[len(url_prefix):]
+            uri = uri[len(url_prefix) :]
         return uri
 
 
@@ -296,8 +330,16 @@ class ContactsQuery(client.Query):
     <http://code.google.com/apis/contacts/docs/3.0/reference.html#Parameters>}
     """
 
-    def __init__(self, feed=None, group=None, orderby=None, showdeleted=None,
-                 sortorder=None, requirealldeleted=None, **kwargs):
+    def __init__(
+        self,
+        feed=None,
+        group=None,
+        orderby=None,
+        showdeleted=None,
+        sortorder=None,
+        requirealldeleted=None,
+        **kwargs
+    ):
         """
         @param max_results: The maximum number of entries to return. If you want
             to receive all of the contacts, rather than only the default maximum, you
@@ -324,16 +366,13 @@ class ContactsQuery(client.Query):
 
     def modify_request(self, http_request):
         if self.group:
-            client._add_query_param('group', self.group, http_request)
+            client._add_query_param("group", self.group, http_request)
         if self.orderby:
-            client._add_query_param(
-                'orderby', self.orderby, http_request)
+            client._add_query_param("orderby", self.orderby, http_request)
         if self.sortorder:
-            client._add_query_param(
-                'sortorder', self.sortorder, http_request)
+            client._add_query_param("sortorder", self.sortorder, http_request)
         if self.showdeleted:
-            client._add_query_param(
-                'showdeleted', self.showdeleted, http_request)
+            client._add_query_param("showdeleted", self.showdeleted, http_request)
         client.Query.modify_request(self, http_request)
 
     ModifyRequest = modify_request

@@ -8,18 +8,24 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0005_auto_20170211_1738'),
+        ("peeldb", "0005_auto_20170211_1738"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
-            options={'permissions': (('blog_view', 'can view blog posts and categories'),
-                                    ('blog_edit', 'can edit blog category and post'),
-                                    ('support_view', 'can view tickets'), ('support_edit', 'can edit tickets'),
-                                    ('activity_view', 'can view recruiters, applicants, data, posts'),
-                                    ('activity_edit', 'can edit data'), ('jobposts_edit', 'can manage jobposts'),
-                                    ('jobposts_invoice_access', 'can manage invoice'),
-                                    ('jobposts_resume_profiles', 'can manage resume profiles'))},
+            name="user",
+            options={
+                "permissions": (
+                    ("blog_view", "can view blog posts and categories"),
+                    ("blog_edit", "can edit blog category and post"),
+                    ("support_view", "can view tickets"),
+                    ("support_edit", "can edit tickets"),
+                    ("activity_view", "can view recruiters, applicants, data, posts"),
+                    ("activity_edit", "can edit data"),
+                    ("jobposts_edit", "can manage jobposts"),
+                    ("jobposts_invoice_access", "can manage invoice"),
+                    ("jobposts_resume_profiles", "can manage resume profiles"),
+                )
+            },
         ),
     ]

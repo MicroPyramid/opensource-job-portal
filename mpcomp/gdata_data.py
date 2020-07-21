@@ -25,7 +25,7 @@ http://code.google.com/apis/gdata/docs/2.0/elements.html
 """
 
 
-__author__ = 'j.s@google.com (Jeff Scudder)'
+__author__ = "j.s@google.com (Jeff Scudder)"
 
 
 import os
@@ -33,124 +33,124 @@ from mpcomp import core
 from mpcomp import atom_data
 
 
-GDATA_TEMPLATE = '{http://schemas.google.com/g/2005}%s'
+GDATA_TEMPLATE = "{http://schemas.google.com/g/2005}%s"
 GD_TEMPLATE = GDATA_TEMPLATE
-OPENSEARCH_TEMPLATE_V1 = '{http://a9.com/-/spec/opensearchrss/1.0/}%s'
-OPENSEARCH_TEMPLATE_V2 = '{http://a9.com/-/spec/opensearch/1.1/}%s'
-BATCH_TEMPLATE = '{http://schemas.google.com/gdata/batch}%s'
+OPENSEARCH_TEMPLATE_V1 = "{http://a9.com/-/spec/opensearchrss/1.0/}%s"
+OPENSEARCH_TEMPLATE_V2 = "{http://a9.com/-/spec/opensearch/1.1/}%s"
+BATCH_TEMPLATE = "{http://schemas.google.com/gdata/batch}%s"
 
 
 # Labels used in batch request entries to specify the desired CRUD operation.
-BATCH_INSERT = 'insert'
-BATCH_UPDATE = 'update'
-BATCH_DELETE = 'delete'
-BATCH_QUERY = 'query'
+BATCH_INSERT = "insert"
+BATCH_UPDATE = "update"
+BATCH_DELETE = "delete"
+BATCH_QUERY = "query"
 
-EVENT_LOCATION = 'http://schemas.google.com/g/2005#event'
-ALTERNATE_LOCATION = 'http://schemas.google.com/g/2005#event.alternate'
-PARKING_LOCATION = 'http://schemas.google.com/g/2005#event.parking'
+EVENT_LOCATION = "http://schemas.google.com/g/2005#event"
+ALTERNATE_LOCATION = "http://schemas.google.com/g/2005#event.alternate"
+PARKING_LOCATION = "http://schemas.google.com/g/2005#event.parking"
 
-CANCELED_EVENT = 'http://schemas.google.com/g/2005#event.canceled'
-CONFIRMED_EVENT = 'http://schemas.google.com/g/2005#event.confirmed'
-TENTATIVE_EVENT = 'http://schemas.google.com/g/2005#event.tentative'
+CANCELED_EVENT = "http://schemas.google.com/g/2005#event.canceled"
+CONFIRMED_EVENT = "http://schemas.google.com/g/2005#event.confirmed"
+TENTATIVE_EVENT = "http://schemas.google.com/g/2005#event.tentative"
 
-CONFIDENTIAL_EVENT = 'http://schemas.google.com/g/2005#event.confidential'
-DEFAULT_EVENT = 'http://schemas.google.com/g/2005#event.default'
-PRIVATE_EVENT = 'http://schemas.google.com/g/2005#event.private'
-PUBLIC_EVENT = 'http://schemas.google.com/g/2005#event.public'
+CONFIDENTIAL_EVENT = "http://schemas.google.com/g/2005#event.confidential"
+DEFAULT_EVENT = "http://schemas.google.com/g/2005#event.default"
+PRIVATE_EVENT = "http://schemas.google.com/g/2005#event.private"
+PUBLIC_EVENT = "http://schemas.google.com/g/2005#event.public"
 
-OPAQUE_EVENT = 'http://schemas.google.com/g/2005#event.opaque'
-TRANSPARENT_EVENT = 'http://schemas.google.com/g/2005#event.transparent'
+OPAQUE_EVENT = "http://schemas.google.com/g/2005#event.opaque"
+TRANSPARENT_EVENT = "http://schemas.google.com/g/2005#event.transparent"
 
-CHAT_MESSAGE = 'http://schemas.google.com/g/2005#message.chat'
-INBOX_MESSAGE = 'http://schemas.google.com/g/2005#message.inbox'
-SENT_MESSAGE = 'http://schemas.google.com/g/2005#message.sent'
-SPAM_MESSAGE = 'http://schemas.google.com/g/2005#message.spam'
-STARRED_MESSAGE = 'http://schemas.google.com/g/2005#message.starred'
-UNREAD_MESSAGE = 'http://schemas.google.com/g/2005#message.unread'
+CHAT_MESSAGE = "http://schemas.google.com/g/2005#message.chat"
+INBOX_MESSAGE = "http://schemas.google.com/g/2005#message.inbox"
+SENT_MESSAGE = "http://schemas.google.com/g/2005#message.sent"
+SPAM_MESSAGE = "http://schemas.google.com/g/2005#message.spam"
+STARRED_MESSAGE = "http://schemas.google.com/g/2005#message.starred"
+UNREAD_MESSAGE = "http://schemas.google.com/g/2005#message.unread"
 
-BCC_RECIPIENT = 'http://schemas.google.com/g/2005#message.bcc'
-CC_RECIPIENT = 'http://schemas.google.com/g/2005#message.cc'
-SENDER = 'http://schemas.google.com/g/2005#message.from'
-REPLY_TO = 'http://schemas.google.com/g/2005#message.reply-to'
-TO_RECIPIENT = 'http://schemas.google.com/g/2005#message.to'
+BCC_RECIPIENT = "http://schemas.google.com/g/2005#message.bcc"
+CC_RECIPIENT = "http://schemas.google.com/g/2005#message.cc"
+SENDER = "http://schemas.google.com/g/2005#message.from"
+REPLY_TO = "http://schemas.google.com/g/2005#message.reply-to"
+TO_RECIPIENT = "http://schemas.google.com/g/2005#message.to"
 
-ASSISTANT_REL = 'http://schemas.google.com/g/2005#assistant'
-CALLBACK_REL = 'http://schemas.google.com/g/2005#callback'
-CAR_REL = 'http://schemas.google.com/g/2005#car'
-COMPANY_MAIN_REL = 'http://schemas.google.com/g/2005#company_main'
-FAX_REL = 'http://schemas.google.com/g/2005#fax'
-HOME_REL = 'http://schemas.google.com/g/2005#home'
-HOME_FAX_REL = 'http://schemas.google.com/g/2005#home_fax'
-ISDN_REL = 'http://schemas.google.com/g/2005#isdn'
-MAIN_REL = 'http://schemas.google.com/g/2005#main'
-MOBILE_REL = 'http://schemas.google.com/g/2005#mobile'
-OTHER_REL = 'http://schemas.google.com/g/2005#other'
-OTHER_FAX_REL = 'http://schemas.google.com/g/2005#other_fax'
-PAGER_REL = 'http://schemas.google.com/g/2005#pager'
-RADIO_REL = 'http://schemas.google.com/g/2005#radio'
-TELEX_REL = 'http://schemas.google.com/g/2005#telex'
-TTL_TDD_REL = 'http://schemas.google.com/g/2005#tty_tdd'
-WORK_REL = 'http://schemas.google.com/g/2005#work'
-WORK_FAX_REL = 'http://schemas.google.com/g/2005#work_fax'
-WORK_MOBILE_REL = 'http://schemas.google.com/g/2005#work_mobile'
-WORK_PAGER_REL = 'http://schemas.google.com/g/2005#work_pager'
-NETMEETING_REL = 'http://schemas.google.com/g/2005#netmeeting'
-OVERALL_REL = 'http://schemas.google.com/g/2005#overall'
-PRICE_REL = 'http://schemas.google.com/g/2005#price'
-QUALITY_REL = 'http://schemas.google.com/g/2005#quality'
-EVENT_REL = 'http://schemas.google.com/g/2005#event'
-EVENT_ALTERNATE_REL = 'http://schemas.google.com/g/2005#event.alternate'
-EVENT_PARKING_REL = 'http://schemas.google.com/g/2005#event.parking'
+ASSISTANT_REL = "http://schemas.google.com/g/2005#assistant"
+CALLBACK_REL = "http://schemas.google.com/g/2005#callback"
+CAR_REL = "http://schemas.google.com/g/2005#car"
+COMPANY_MAIN_REL = "http://schemas.google.com/g/2005#company_main"
+FAX_REL = "http://schemas.google.com/g/2005#fax"
+HOME_REL = "http://schemas.google.com/g/2005#home"
+HOME_FAX_REL = "http://schemas.google.com/g/2005#home_fax"
+ISDN_REL = "http://schemas.google.com/g/2005#isdn"
+MAIN_REL = "http://schemas.google.com/g/2005#main"
+MOBILE_REL = "http://schemas.google.com/g/2005#mobile"
+OTHER_REL = "http://schemas.google.com/g/2005#other"
+OTHER_FAX_REL = "http://schemas.google.com/g/2005#other_fax"
+PAGER_REL = "http://schemas.google.com/g/2005#pager"
+RADIO_REL = "http://schemas.google.com/g/2005#radio"
+TELEX_REL = "http://schemas.google.com/g/2005#telex"
+TTL_TDD_REL = "http://schemas.google.com/g/2005#tty_tdd"
+WORK_REL = "http://schemas.google.com/g/2005#work"
+WORK_FAX_REL = "http://schemas.google.com/g/2005#work_fax"
+WORK_MOBILE_REL = "http://schemas.google.com/g/2005#work_mobile"
+WORK_PAGER_REL = "http://schemas.google.com/g/2005#work_pager"
+NETMEETING_REL = "http://schemas.google.com/g/2005#netmeeting"
+OVERALL_REL = "http://schemas.google.com/g/2005#overall"
+PRICE_REL = "http://schemas.google.com/g/2005#price"
+QUALITY_REL = "http://schemas.google.com/g/2005#quality"
+EVENT_REL = "http://schemas.google.com/g/2005#event"
+EVENT_ALTERNATE_REL = "http://schemas.google.com/g/2005#event.alternate"
+EVENT_PARKING_REL = "http://schemas.google.com/g/2005#event.parking"
 
-AIM_PROTOCOL = 'http://schemas.google.com/g/2005#AIM'
-MSN_PROTOCOL = 'http://schemas.google.com/g/2005#MSN'
-YAHOO_MESSENGER_PROTOCOL = 'http://schemas.google.com/g/2005#YAHOO'
-SKYPE_PROTOCOL = 'http://schemas.google.com/g/2005#SKYPE'
-QQ_PROTOCOL = 'http://schemas.google.com/g/2005#QQ'
-GOOGLE_TALK_PROTOCOL = 'http://schemas.google.com/g/2005#GOOGLE_TALK'
-ICQ_PROTOCOL = 'http://schemas.google.com/g/2005#ICQ'
-JABBER_PROTOCOL = 'http://schemas.google.com/g/2005#JABBER'
+AIM_PROTOCOL = "http://schemas.google.com/g/2005#AIM"
+MSN_PROTOCOL = "http://schemas.google.com/g/2005#MSN"
+YAHOO_MESSENGER_PROTOCOL = "http://schemas.google.com/g/2005#YAHOO"
+SKYPE_PROTOCOL = "http://schemas.google.com/g/2005#SKYPE"
+QQ_PROTOCOL = "http://schemas.google.com/g/2005#QQ"
+GOOGLE_TALK_PROTOCOL = "http://schemas.google.com/g/2005#GOOGLE_TALK"
+ICQ_PROTOCOL = "http://schemas.google.com/g/2005#ICQ"
+JABBER_PROTOCOL = "http://schemas.google.com/g/2005#JABBER"
 
-REGULAR_COMMENTS = 'http://schemas.google.com/g/2005#regular'
-REVIEW_COMMENTS = 'http://schemas.google.com/g/2005#reviews'
+REGULAR_COMMENTS = "http://schemas.google.com/g/2005#regular"
+REVIEW_COMMENTS = "http://schemas.google.com/g/2005#reviews"
 
-MAIL_BOTH = 'http://schemas.google.com/g/2005#both'
-MAIL_LETTERS = 'http://schemas.google.com/g/2005#letters'
-MAIL_PARCELS = 'http://schemas.google.com/g/2005#parcels'
-MAIL_NEITHER = 'http://schemas.google.com/g/2005#neither'
+MAIL_BOTH = "http://schemas.google.com/g/2005#both"
+MAIL_LETTERS = "http://schemas.google.com/g/2005#letters"
+MAIL_PARCELS = "http://schemas.google.com/g/2005#parcels"
+MAIL_NEITHER = "http://schemas.google.com/g/2005#neither"
 
-GENERAL_ADDRESS = 'http://schemas.google.com/g/2005#general'
-LOCAL_ADDRESS = 'http://schemas.google.com/g/2005#local'
+GENERAL_ADDRESS = "http://schemas.google.com/g/2005#general"
+LOCAL_ADDRESS = "http://schemas.google.com/g/2005#local"
 
-OPTIONAL_ATENDEE = 'http://schemas.google.com/g/2005#event.optional'
-REQUIRED_ATENDEE = 'http://schemas.google.com/g/2005#event.required'
+OPTIONAL_ATENDEE = "http://schemas.google.com/g/2005#event.optional"
+REQUIRED_ATENDEE = "http://schemas.google.com/g/2005#event.required"
 
-ATTENDEE_ACCEPTED = 'http://schemas.google.com/g/2005#event.accepted'
-ATTENDEE_DECLINED = 'http://schemas.google.com/g/2005#event.declined'
-ATTENDEE_INVITED = 'http://schemas.google.com/g/2005#event.invited'
-ATTENDEE_TENTATIVE = 'http://schemas.google.com/g/2005#event.tentative'
+ATTENDEE_ACCEPTED = "http://schemas.google.com/g/2005#event.accepted"
+ATTENDEE_DECLINED = "http://schemas.google.com/g/2005#event.declined"
+ATTENDEE_INVITED = "http://schemas.google.com/g/2005#event.invited"
+ATTENDEE_TENTATIVE = "http://schemas.google.com/g/2005#event.tentative"
 
-FULL_PROJECTION = 'full'
-VALUES_PROJECTION = 'values'
-BASIC_PROJECTION = 'basic'
+FULL_PROJECTION = "full"
+VALUES_PROJECTION = "values"
+BASIC_PROJECTION = "basic"
 
-PRIVATE_VISIBILITY = 'private'
-PUBLIC_VISIBILITY = 'public'
+PRIVATE_VISIBILITY = "private"
+PUBLIC_VISIBILITY = "public"
 
-OPAQUE_TRANSPARENCY = 'http://schemas.google.com/g/2005#event.opaque'
-TRANSPARENT_TRANSPARENCY = 'http://schemas.google.com/g/2005#event.transparent'
+OPAQUE_TRANSPARENCY = "http://schemas.google.com/g/2005#event.opaque"
+TRANSPARENT_TRANSPARENCY = "http://schemas.google.com/g/2005#event.transparent"
 
-CONFIDENTIAL_EVENT_VISIBILITY = 'http://schemas.google.com/g/2005#event.confidential'
-DEFAULT_EVENT_VISIBILITY = 'http://schemas.google.com/g/2005#event.default'
-PRIVATE_EVENT_VISIBILITY = 'http://schemas.google.com/g/2005#event.private'
-PUBLIC_EVENT_VISIBILITY = 'http://schemas.google.com/g/2005#event.public'
+CONFIDENTIAL_EVENT_VISIBILITY = "http://schemas.google.com/g/2005#event.confidential"
+DEFAULT_EVENT_VISIBILITY = "http://schemas.google.com/g/2005#event.default"
+PRIVATE_EVENT_VISIBILITY = "http://schemas.google.com/g/2005#event.private"
+PUBLIC_EVENT_VISIBILITY = "http://schemas.google.com/g/2005#event.public"
 
-CANCELED_EVENT_STATUS = 'http://schemas.google.com/g/2005#event.canceled'
-CONFIRMED_EVENT_STATUS = 'http://schemas.google.com/g/2005#event.confirmed'
-TENTATIVE_EVENT_STATUS = 'http://schemas.google.com/g/2005#event.tentative'
+CANCELED_EVENT_STATUS = "http://schemas.google.com/g/2005#event.canceled"
+CONFIRMED_EVENT_STATUS = "http://schemas.google.com/g/2005#event.confirmed"
+TENTATIVE_EVENT_STATUS = "http://schemas.google.com/g/2005#event.tentative"
 
-ACL_REL = 'http://schemas.google.com/acl/2007#accessControlList'
+ACL_REL = "http://schemas.google.com/acl/2007#accessControlList"
 
 
 class Error(Exception):
@@ -172,7 +172,7 @@ class LinkFinder(atom_data.LinkFinder):
     def find_html_link(self):
         """Finds the first link with rel of alternate and type of text/html."""
         for link in self.link:
-            if link.rel == 'alternate' and link.type == 'text/html':
+            if link.rel == "alternate" and link.type == "text/html":
                 return link.href
         return None
 
@@ -180,7 +180,7 @@ class LinkFinder(atom_data.LinkFinder):
 
     def get_html_link(self):
         for a_link in self.link:
-            if a_link.rel == 'alternate' and a_link.type == 'text/html':
+            if a_link.rel == "alternate" and a_link.type == "text/html":
                 return a_link
         return None
 
@@ -194,12 +194,12 @@ class LinkFinder(atom_data.LinkFinder):
         Returns:
           A str for the URL in the link with a rel matching the POST type.
         """
-        return self.find_url('http://schemas.google.com/g/2005#post')
+        return self.find_url("http://schemas.google.com/g/2005#post")
 
     FindPostLink = find_post_link
 
     def get_post_link(self):
-        return self.get_link('http://schemas.google.com/g/2005#post')
+        return self.get_link("http://schemas.google.com/g/2005#post")
 
     GetPostLink = get_post_link
 
@@ -218,7 +218,7 @@ class LinkFinder(atom_data.LinkFinder):
         acl_link = self.get_link(ACL_REL)
         if acl_link:
             return acl_link
-        elif hasattr(self, 'feed_link'):
+        elif hasattr(self, "feed_link"):
             for a_feed_link in self.feed_link:
                 if a_feed_link.rel == ACL_REL:
                     return a_feed_link
@@ -228,22 +228,22 @@ class LinkFinder(atom_data.LinkFinder):
     GetAclLink = get_acl_link
 
     def find_feed_link(self):
-        return self.find_url('http://schemas.google.com/g/2005#feed')
+        return self.find_url("http://schemas.google.com/g/2005#feed")
 
     FindFeedLink = find_feed_link
 
     def get_feed_link(self):
-        return self.get_link('http://schemas.google.com/g/2005#feed')
+        return self.get_link("http://schemas.google.com/g/2005#feed")
 
     GetFeedLink = get_feed_link
 
     def find_previous_link(self):
-        return self.find_url('previous')
+        return self.find_url("previous")
 
     FindPreviousLink = find_previous_link
 
     def get_previous_link(self):
-        return self.get_link('previous')
+        return self.get_link("previous")
 
     GetPreviousLink = get_previous_link
 
@@ -251,22 +251,31 @@ class LinkFinder(atom_data.LinkFinder):
 class TotalResults(core.XmlElement):
 
     """opensearch:TotalResults for a GData feed."""
-    _qname = (OPENSEARCH_TEMPLATE_V1 % 'totalResults',
-              OPENSEARCH_TEMPLATE_V2 % 'totalResults')
+
+    _qname = (
+        OPENSEARCH_TEMPLATE_V1 % "totalResults",
+        OPENSEARCH_TEMPLATE_V2 % "totalResults",
+    )
 
 
 class StartIndex(core.XmlElement):
 
     """The opensearch:startIndex element in GData feed."""
-    _qname = (OPENSEARCH_TEMPLATE_V1 % 'startIndex',
-              OPENSEARCH_TEMPLATE_V2 % 'startIndex')
+
+    _qname = (
+        OPENSEARCH_TEMPLATE_V1 % "startIndex",
+        OPENSEARCH_TEMPLATE_V2 % "startIndex",
+    )
 
 
 class ItemsPerPage(core.XmlElement):
 
     """The opensearch:itemsPerPage element in GData feed."""
-    _qname = (OPENSEARCH_TEMPLATE_V1 % 'itemsPerPage',
-              OPENSEARCH_TEMPLATE_V2 % 'itemsPerPage')
+
+    _qname = (
+        OPENSEARCH_TEMPLATE_V1 % "itemsPerPage",
+        OPENSEARCH_TEMPLATE_V2 % "itemsPerPage",
+    )
 
 
 class ExtendedProperty(core.XmlElement):
@@ -280,9 +289,10 @@ class ExtendedProperty(core.XmlElement):
     This element is used in the Google Calendar data API and the Google
     Contacts data API.
     """
-    _qname = GDATA_TEMPLATE % 'extendedProperty'
-    name = 'name'
-    value = 'value'
+
+    _qname = GDATA_TEMPLATE % "extendedProperty"
+    name = "name"
+    value = "value"
 
     def get_xml_blob(self):
         """Returns the XML blob as an core.XmlElement.
@@ -321,7 +331,8 @@ class ExtendedProperty(core.XmlElement):
 class GDEntry(atom_data.Entry, LinkFinder):
 
     """Extends Atom Entry to provide data processing"""
-    etag = '{http://schemas.google.com/g/2005}etag'
+
+    etag = "{http://schemas.google.com/g/2005}etag"
 
     def get_id(self):
         if self.id is not None and self.id.text is not None:
@@ -351,7 +362,8 @@ class GDEntry(atom_data.Entry, LinkFinder):
 class GDFeed(atom_data.Feed, LinkFinder):
 
     """A Feed from a GData service."""
-    etag = '{http://schemas.google.com/g/2005}etag'
+
+    etag = "{http://schemas.google.com/g/2005}etag"
     total_results = TotalResults
     start_index = StartIndex
     items_per_page = ItemsPerPage
@@ -373,14 +385,16 @@ class GDFeed(atom_data.Feed, LinkFinder):
 class BatchId(core.XmlElement):
 
     """Identifies a single operation in a batch request."""
-    _qname = BATCH_TEMPLATE % 'id'
+
+    _qname = BATCH_TEMPLATE % "id"
 
 
 class BatchOperation(core.XmlElement):
 
     """The CRUD operation which this batch entry represents."""
-    _qname = BATCH_TEMPLATE % 'operation'
-    type = 'type'
+
+    _qname = BATCH_TEMPLATE % "operation"
+    type = "type"
 
 
 class BatchStatus(core.XmlElement):
@@ -395,10 +409,11 @@ class BatchStatus(core.XmlElement):
 
     See http://code.google.com/apis/gdata/batch.html#Handling_Errors
     """
-    _qname = BATCH_TEMPLATE % 'status'
-    code = 'code'
-    reason = 'reason'
-    content_type = 'content-type'
+
+    _qname = BATCH_TEMPLATE % "status"
+    code = "code"
+    reason = "reason"
+    content_type = "content-type"
 
 
 class BatchEntry(GDEntry):
@@ -410,6 +425,7 @@ class BatchEntry(GDEntry):
     individual operations in the response feed. For more information, see:
     http://code.google.com/apis/gdata/batch.html
     """
+
     batch_operation = BatchOperation
     batch_id = BatchId
     batch_status = BatchStatus
@@ -422,21 +438,28 @@ class BatchInterrupted(core.XmlElement):
     Only appears in a feed if some of the batch entries could not be processed.
     See: http://code.google.com/apis/gdata/batch.html#Handling_Errors
     """
-    _qname = BATCH_TEMPLATE % 'interrupted'
-    reason = 'reason'
-    success = 'success'
-    failures = 'failures'
-    parsed = 'parsed'
+
+    _qname = BATCH_TEMPLATE % "interrupted"
+    reason = "reason"
+    success = "success"
+    failures = "failures"
+    parsed = "parsed"
 
 
 class BatchFeed(GDFeed):
 
     """A feed containing a list of batch request entries."""
+
     interrupted = BatchInterrupted
     entry = [BatchEntry]
 
-    def add_batch_entry(self, entry=None, id_url_string=None,
-                        batch_id_string=None, operation_string=None):
+    def add_batch_entry(
+        self,
+        entry=None,
+        id_url_string=None,
+        batch_id_string=None,
+        operation_string=None,
+    ):
         """Logic for populating members of a BatchEntry and adding to the feed.
 
         If the entry is not a BatchEntry, it is converted to a BatchEntry so
@@ -479,8 +502,7 @@ class BatchFeed(GDFeed):
           The added entry.
         """
         if entry is None and id_url_string is None:
-            raise MissingRequiredParameters(
-                'supply either an entry or URL string')
+            raise MissingRequiredParameters("supply either an entry or URL string")
         if entry is None and id_url_string is not None:
             entry = BatchEntry(id=atom_data.Id(text=id_url_string))
         if batch_id_string is not None:
@@ -509,8 +531,9 @@ class BatchFeed(GDFeed):
               count. Note that batch_ids should either always be specified or
               never, mixing could potentially result in duplicate batch ids.
         """
-        self.add_batch_entry(entry=entry, batch_id_string=batch_id_string,
-                             operation_string=BATCH_INSERT)
+        self.add_batch_entry(
+            entry=entry, batch_id_string=batch_id_string, operation_string=BATCH_INSERT
+        )
 
     AddInsert = add_insert
 
@@ -530,8 +553,9 @@ class BatchFeed(GDFeed):
               the current length of the feed's entry array will be used as a
               count. See also comments for AddInsert.
         """
-        self.add_batch_entry(entry=entry, batch_id_string=batch_id_string,
-                             operation_string=BATCH_UPDATE)
+        self.add_batch_entry(
+            entry=entry, batch_id_string=batch_id_string, operation_string=BATCH_UPDATE
+        )
 
     AddUpdate = add_update
 
@@ -552,8 +576,12 @@ class BatchFeed(GDFeed):
           MissingRequiredParameters: Raised if neither a url_string nor an entry
               are provided in the request.
         """
-        self.add_batch_entry(entry=entry, id_url_string=url_string,
-                             batch_id_string=batch_id_string, operation_string=BATCH_DELETE)
+        self.add_batch_entry(
+            entry=entry,
+            id_url_string=url_string,
+            batch_id_string=batch_id_string,
+            operation_string=BATCH_DELETE,
+        )
 
     AddDelete = add_delete
 
@@ -573,13 +601,17 @@ class BatchFeed(GDFeed):
         Raises:
           MissingRequiredParameters
         """
-        self.add_batch_entry(entry=entry, id_url_string=url_string,
-                             batch_id_string=batch_id_string, operation_string=BATCH_QUERY)
+        self.add_batch_entry(
+            entry=entry,
+            id_url_string=url_string,
+            batch_id_string=batch_id_string,
+            operation_string=BATCH_QUERY,
+        )
 
     AddQuery = add_query
 
     def find_batch_link(self):
-        return self.find_url('http://schemas.google.com/g/2005#batch')
+        return self.find_url("http://schemas.google.com/g/2005#batch")
 
     FindBatchLink = find_batch_link
 
@@ -591,11 +623,12 @@ class EntryLink(core.XmlElement):
     Represents a logically nested entry. For example, a <gd:who>
     representing a contact might have a nested entry from a contact feed.
     """
-    _qname = GDATA_TEMPLATE % 'entryLink'
+
+    _qname = GDATA_TEMPLATE % "entryLink"
     entry = GDEntry
-    rel = 'rel'
-    read_only = 'readOnly'
-    href = 'href'
+    rel = "rel"
+    read_only = "readOnly"
+    href = "href"
 
 
 class FeedLink(core.XmlElement):
@@ -605,12 +638,13 @@ class FeedLink(core.XmlElement):
     Represents a logically nested feed. For example, a calendar feed might
     have a nested feed representing all comments on entries.
     """
-    _qname = GDATA_TEMPLATE % 'feedLink'
+
+    _qname = GDATA_TEMPLATE % "feedLink"
     feed = GDFeed
-    rel = 'rel'
-    read_only = 'readOnly'
-    count_hint = 'countHint'
-    href = 'href'
+    rel = "rel"
+    read_only = "readOnly"
+    count_hint = "countHint"
+    href = "href"
 
 
 class AdditionalName(core.XmlElement):
@@ -620,8 +654,9 @@ class AdditionalName(core.XmlElement):
     Specifies additional (eg. middle) name of the person.
     Contains an attribute for the phonetic representaton of the name.
     """
-    _qname = GDATA_TEMPLATE % 'additionalName'
-    yomi = 'yomi'
+
+    _qname = GDATA_TEMPLATE % "additionalName"
+    yomi = "yomi"
 
 
 class Comments(core.XmlElement):
@@ -630,8 +665,9 @@ class Comments(core.XmlElement):
 
     Contains a comments feed for the enclosing entry (such as a calendar event).
     """
-    _qname = GDATA_TEMPLATE % 'comments'
-    rel = 'rel'
+
+    _qname = GDATA_TEMPLATE % "comments"
+    rel = "rel"
     feed_link = FeedLink
 
 
@@ -643,15 +679,16 @@ class Country(core.XmlElement):
     given in accordance with ISO 3166-1 alpha-2:
     http://www.iso.org/iso/iso-3166-1_decoding_table
     """
-    _qname = GDATA_TEMPLATE % 'country'
-    code = 'code'
+
+    _qname = GDATA_TEMPLATE % "country"
+    code = "code"
 
 
 class EmailImParent(core.XmlElement):
-    address = 'address'
-    label = 'label'
-    rel = 'rel'
-    primary = 'primary'
+    address = "address"
+    label = "label"
+    rel = "rel"
+    primary = "primary"
 
 
 class Email(EmailImParent):
@@ -661,8 +698,9 @@ class Email(EmailImParent):
     An email address associated with the containing entity (which is
     usually an entity representing a person or a location).
     """
-    _qname = GDATA_TEMPLATE % 'email'
-    display_name = 'displayName'
+
+    _qname = GDATA_TEMPLATE % "email"
+    display_name = "displayName"
 
     def __str__(self):
         return str(self._qname)
@@ -674,8 +712,9 @@ class FamilyName(core.XmlElement):
 
     Specifies family name of the person, eg. "Smith".
     """
-    _qname = GDATA_TEMPLATE % 'familyName'
-    yomi = 'yomi'
+
+    _qname = GDATA_TEMPLATE % "familyName"
+    yomi = "yomi"
 
     def __str__(self):
         return str(self._qname)
@@ -687,8 +726,9 @@ class Im(EmailImParent):
 
     An instant messaging address associated with the containing entity.
     """
-    _qname = GDATA_TEMPLATE % 'im'
-    protocol = 'protocol'
+
+    _qname = GDATA_TEMPLATE % "im"
+    protocol = "protocol"
 
 
 class GivenName(core.XmlElement):
@@ -697,8 +737,9 @@ class GivenName(core.XmlElement):
 
     Specifies given name of the person, eg. "John".
     """
-    _qname = GDATA_TEMPLATE % 'givenName'
-    yomi = 'yomi'
+
+    _qname = GDATA_TEMPLATE % "givenName"
+    yomi = "yomi"
 
     def __str__(self):
         return str(self._qname)
@@ -710,7 +751,8 @@ class NamePrefix(core.XmlElement):
 
     Honorific prefix, eg. 'Mr' or 'Mrs'.
     """
-    _qname = GDATA_TEMPLATE % 'namePrefix'
+
+    _qname = GDATA_TEMPLATE % "namePrefix"
 
     def __str__(self):
         return str(self._qname)
@@ -722,7 +764,8 @@ class NameSuffix(core.XmlElement):
 
     Honorific suffix, eg. 'san' or 'III'.
     """
-    _qname = GDATA_TEMPLATE % 'nameSuffix'
+
+    _qname = GDATA_TEMPLATE % "nameSuffix"
 
     def __str__(self):
         return str(self._qname)
@@ -734,7 +777,8 @@ class FullName(core.XmlElement):
 
     Unstructured representation of the name.
     """
-    _qname = GDATA_TEMPLATE % 'fullName'
+
+    _qname = GDATA_TEMPLATE % "fullName"
 
     def __str__(self):
         return str(self._qname)
@@ -747,7 +791,8 @@ class Name(core.XmlElement):
     Allows storing person's name in a structured way. Consists of
     given name, additional name, family name, prefix, suffix and full name.
     """
-    _qname = GDATA_TEMPLATE % 'name'
+
+    _qname = GDATA_TEMPLATE % "name"
     given_name = GivenName
     additional_name = AdditionalName
     family_name = FamilyName
@@ -766,7 +811,8 @@ class OrgDepartment(core.XmlElement):
     Describes a department within an organization. Must appear within a
     gd:organization element.
     """
-    _qname = GDATA_TEMPLATE % 'orgDepartment'
+
+    _qname = GDATA_TEMPLATE % "orgDepartment"
 
 
 class OrgJobDescription(core.XmlElement):
@@ -776,7 +822,8 @@ class OrgJobDescription(core.XmlElement):
     Describes a job within an organization. Must appear within a
     gd:organization element.
     """
-    _qname = GDATA_TEMPLATE % 'orgJobDescription'
+
+    _qname = GDATA_TEMPLATE % "orgJobDescription"
 
 
 class OrgName(core.XmlElement):
@@ -789,8 +836,9 @@ class OrgName(core.XmlElement):
     Contains a Yomigana attribute (Japanese reading aid) for the
     organization name.
     """
-    _qname = GDATA_TEMPLATE % 'orgName'
-    yomi = 'yomi'
+
+    _qname = GDATA_TEMPLATE % "orgName"
+    yomi = "yomi"
 
 
 class OrgSymbol(core.XmlElement):
@@ -800,7 +848,8 @@ class OrgSymbol(core.XmlElement):
     Provides a symbol of an organization. Must appear within a
     gd:organization element.
     """
-    _qname = GDATA_TEMPLATE % 'orgSymbol'
+
+    _qname = GDATA_TEMPLATE % "orgSymbol"
 
 
 class OrgTitle(core.XmlElement):
@@ -810,7 +859,8 @@ class OrgTitle(core.XmlElement):
     The title of a person within an organization. Must appear within a
     gd:organization element.
     """
-    _qname = GDATA_TEMPLATE % 'orgTitle'
+
+    _qname = GDATA_TEMPLATE % "orgTitle"
 
 
 class Organization(core.XmlElement):
@@ -819,10 +869,11 @@ class Organization(core.XmlElement):
 
     An organization, typically associated with a contact.
     """
-    _qname = GDATA_TEMPLATE % 'organization'
-    label = 'label'
-    primary = 'primary'
-    rel = 'rel'
+
+    _qname = GDATA_TEMPLATE % "organization"
+    label = "label"
+    primary = "primary"
+    rel = "rel"
     department = OrgDepartment
     job_description = OrgJobDescription
     name = OrgName
@@ -836,10 +887,11 @@ class When(core.XmlElement):
 
     Represents a period of time or an instant.
     """
-    _qname = GDATA_TEMPLATE % 'when'
-    end = 'endTime'
-    start = 'startTime'
-    value = 'valueString'
+
+    _qname = GDATA_TEMPLATE % "when"
+    end = "endTime"
+    start = "startTime"
+    value = "valueString"
 
 
 class OriginalEvent(core.XmlElement):
@@ -853,9 +905,10 @@ class OriginalEvent(core.XmlElement):
     Contains a <gd:when> element specifying the original start time of the
     instance that has become an exception.
     """
-    _qname = GDATA_TEMPLATE % 'originalEvent'
-    id = 'id'
-    href = 'href'
+
+    _qname = GDATA_TEMPLATE % "originalEvent"
+    id = "id"
+    href = "href"
     when = When
 
 
@@ -866,11 +919,12 @@ class PhoneNumber(core.XmlElement):
     A phone number associated with the containing entity (which is usually
     an entity representing a person or a location).
     """
-    _qname = GDATA_TEMPLATE % 'phoneNumber'
-    label = 'label'
-    rel = 'rel'
-    uri = 'uri'
-    primary = 'primary'
+
+    _qname = GDATA_TEMPLATE % "phoneNumber"
+    label = "label"
+    rel = "rel"
+    uri = "uri"
+    primary = "primary"
 
     def __str__(self):
         return str(self.id)
@@ -879,11 +933,12 @@ class PhoneNumber(core.XmlElement):
 class PostalAddress(core.XmlElement):
 
     """The gd:postalAddress element."""
-    _qname = GDATA_TEMPLATE % 'postalAddress'
-    label = 'label'
-    rel = 'rel'
-    uri = 'uri'
-    primary = 'primary'
+
+    _qname = GDATA_TEMPLATE % "postalAddress"
+    label = "label"
+    rel = "rel"
+    uri = "uri"
+    primary = "primary"
 
 
 class Rating(core.XmlElement):
@@ -895,13 +950,14 @@ class Rating(core.XmlElement):
     normalized by a service; for example, some services might convert all
     ratings to a scale from 1 to 5.
     """
-    _qname = GDATA_TEMPLATE % 'rating'
-    average = 'average'
-    max = 'max'
-    min = 'min'
-    num_raters = 'numRaters'
-    rel = 'rel'
-    value = 'value'
+
+    _qname = GDATA_TEMPLATE % "rating"
+    average = "average"
+    max = "max"
+    min = "min"
+    num_raters = "numRaters"
+    rel = "rel"
+    value = "value"
 
 
 class Recurrence(core.XmlElement):
@@ -939,7 +995,8 @@ class Recurrence(core.XmlElement):
     and use their <gd:originalEvent> elements to match them up with
     <gd:recurrence> elements.
     """
-    _qname = GDATA_TEMPLATE % 'recurrence'
+
+    _qname = GDATA_TEMPLATE % "recurrence"
 
 
 class RecurrenceException(core.XmlElement):
@@ -990,8 +1047,9 @@ class RecurrenceException(core.XmlElement):
     "http://schemas.google.com/g/2005#event.canceled". (For more
     information about canceled events, see RFC 2445.)
     """
-    _qname = GDATA_TEMPLATE % 'recurrenceException'
-    specialized = 'specialized'
+
+    _qname = GDATA_TEMPLATE % "recurrenceException"
+    specialized = "specialized"
     entry_link = EntryLink
     original_event = OriginalEvent
 
@@ -1006,12 +1064,13 @@ class Reminder(core.XmlElement):
     specifies a notification method, indicating what medium the system
     should use to remind the user.
     """
-    _qname = GDATA_TEMPLATE % 'reminder'
-    absolute_time = 'absoluteTime'
-    method = 'method'
-    days = 'days'
-    hours = 'hours'
-    minutes = 'minutes'
+
+    _qname = GDATA_TEMPLATE % "reminder"
+    absolute_time = "absoluteTime"
+    method = "method"
+    days = "days"
+    hours = "hours"
+    minutes = "minutes"
 
 
 class Transparency(core.XmlElement):
@@ -1020,8 +1079,9 @@ class Transparency(core.XmlElement):
 
     Extensible enum corresponding to the TRANSP property defined in RFC 244.
     """
-    _qname = GDATA_TEMPLATE % 'transparency'
-    value = 'value'
+
+    _qname = GDATA_TEMPLATE % "transparency"
+    value = "value"
 
 
 class Agent(core.XmlElement):
@@ -1031,7 +1091,8 @@ class Agent(core.XmlElement):
     The agent who actually receives the mail. Used in work addresses.
     Also for 'in care of' or 'c/o'.
     """
-    _qname = GDATA_TEMPLATE % 'agent'
+
+    _qname = GDATA_TEMPLATE % "agent"
 
 
 class HouseName(core.XmlElement):
@@ -1041,7 +1102,8 @@ class HouseName(core.XmlElement):
     Used in places where houses or buildings have names (and not
     necessarily numbers), eg. "The Pillars".
     """
-    _qname = GDATA_TEMPLATE % 'housename'
+
+    _qname = GDATA_TEMPLATE % "housename"
 
 
 class Street(core.XmlElement):
@@ -1051,7 +1113,8 @@ class Street(core.XmlElement):
     Can be street, avenue, road, etc. This element also includes the
     house number and room/apartment/flat/floor number.
     """
-    _qname = GDATA_TEMPLATE % 'street'
+
+    _qname = GDATA_TEMPLATE % "street"
 
 
 class PoBox(core.XmlElement):
@@ -1061,7 +1124,8 @@ class PoBox(core.XmlElement):
     Covers actual P.O. boxes, drawers, locked bags, etc. This is usually
     but not always mutually exclusive with street.
     """
-    _qname = GDATA_TEMPLATE % 'pobox'
+
+    _qname = GDATA_TEMPLATE % "pobox"
 
 
 class Neighborhood(core.XmlElement):
@@ -1073,7 +1137,8 @@ class Neighborhood(core.XmlElement):
     mail is routed through a larger postal town. In China it could be a
     county or a minor city.
     """
-    _qname = GDATA_TEMPLATE % 'neighborhood'
+
+    _qname = GDATA_TEMPLATE % "neighborhood"
 
 
 class City(core.XmlElement):
@@ -1083,7 +1148,8 @@ class City(core.XmlElement):
     Can be city, village, town, borough, etc. This is the postal town and
     not necessarily the place of residence or place of business.
     """
-    _qname = GDATA_TEMPLATE % 'city'
+
+    _qname = GDATA_TEMPLATE % "city"
 
 
 class Subregion(core.XmlElement):
@@ -1094,7 +1160,8 @@ class Subregion(core.XmlElement):
     not used for mail addressing purposes. Subregion is not intended for
     delivery addresses.
     """
-    _qname = GDATA_TEMPLATE % 'subregion'
+
+    _qname = GDATA_TEMPLATE % "subregion"
 
 
 class Region(core.XmlElement):
@@ -1104,7 +1171,8 @@ class Region(core.XmlElement):
     A state, province, county (in Ireland), Land (in Germany),
     departement (in France), etc.
     """
-    _qname = GDATA_TEMPLATE % 'region'
+
+    _qname = GDATA_TEMPLATE % "region"
 
 
 class Postcode(core.XmlElement):
@@ -1114,7 +1182,8 @@ class Postcode(core.XmlElement):
     Postal code. Usually country-wide, but sometimes specific to the
     city (e.g. "2" in "Dublin 2, Ireland" addresses).
     """
-    _qname = GDATA_TEMPLATE % 'postcode'
+
+    _qname = GDATA_TEMPLATE % "postcode"
 
 
 # class Country(core.XmlElement):
@@ -1132,7 +1201,8 @@ class FormattedAddress(core.XmlElement):
 
     The full, unstructured postal address.
     """
-    _qname = GDATA_TEMPLATE % 'formattedAddress'
+
+    _qname = GDATA_TEMPLATE % "formattedAddress"
 
 
 class StructuredPostalAddress(core.XmlElement):
@@ -1148,12 +1218,13 @@ class StructuredPostalAddress(core.XmlElement):
     extended uses of addresses only. In order to store postal address in an
     unstructured form formatted address field is provided.
     """
-    _qname = GDATA_TEMPLATE % 'structuredPostalAddress'
-    rel = 'rel'
-    mail_class = 'mailClass'
-    usage = 'usage'
-    label = 'label'
-    primary = 'primary'
+
+    _qname = GDATA_TEMPLATE % "structuredPostalAddress"
+    rel = "rel"
+    mail_class = "mailClass"
+    usage = "usage"
+    label = "label"
+    primary = "primary"
     agent = Agent
     house_name = HouseName
     street = Street
@@ -1181,39 +1252,44 @@ class Where(core.XmlElement):
     entry, while the latter identifies a place using a specific geographic
     location.
     """
-    _qname = GDATA_TEMPLATE % 'where'
-    label = 'label'
-    rel = 'rel'
-    value = 'valueString'
+
+    _qname = GDATA_TEMPLATE % "where"
+    label = "label"
+    rel = "rel"
+    value = "valueString"
     entry_link = EntryLink
 
 
 class AttendeeType(core.XmlElement):
 
     """The gd:attendeeType element."""
-    _qname = GDATA_TEMPLATE % 'attendeeType'
-    value = 'value'
+
+    _qname = GDATA_TEMPLATE % "attendeeType"
+    value = "value"
 
 
 class AttendeeStatus(core.XmlElement):
 
     """The gd:attendeeStatus element."""
-    _qname = GDATA_TEMPLATE % 'attendeeStatus'
-    value = 'value'
+
+    _qname = GDATA_TEMPLATE % "attendeeStatus"
+    value = "value"
 
 
 class EventStatus(core.XmlElement):
 
     """The gd:eventStatus element."""
-    _qname = GDATA_TEMPLATE % 'eventStatus'
-    value = 'value'
+
+    _qname = GDATA_TEMPLATE % "eventStatus"
+    value = "value"
 
 
 class Visibility(core.XmlElement):
 
     """The gd:visibility element."""
-    _qname = GDATA_TEMPLATE % 'visibility'
-    value = 'value'
+
+    _qname = GDATA_TEMPLATE % "visibility"
+    value = "value"
 
 
 class Who(core.XmlElement):
@@ -1227,10 +1303,11 @@ class Who(core.XmlElement):
     The <gd:who> element can be used to specify email senders and
     recipients, calendar event organizers, and so on.
     """
-    _qname = GDATA_TEMPLATE % 'who'
-    email = 'email'
-    rel = 'rel'
-    value = 'valueString'
+
+    _qname = GDATA_TEMPLATE % "who"
+    email = "email"
+    rel = "rel"
+    value = "valueString"
     attendee_status = AttendeeStatus
     attendee_type = AttendeeType
     entry_link = EntryLink
@@ -1239,15 +1316,17 @@ class Who(core.XmlElement):
 class Deleted(core.XmlElement):
 
     """gd:deleted when present, indicates the containing entry is deleted."""
-    _qname = GD_TEMPLATE % 'deleted'
+
+    _qname = GD_TEMPLATE % "deleted"
 
 
 class Money(core.XmlElement):
 
     """Describes money"""
-    _qname = GD_TEMPLATE % 'money'
-    amount = 'amount'
-    currency_code = 'currencyCode'
+
+    _qname = GD_TEMPLATE % "money"
+    amount = "amount"
+    currency_code = "currencyCode"
 
 
 class MediaSource(object):
@@ -1256,8 +1335,14 @@ class MediaSource(object):
     place to store references to these objects along with some metadata.
     """
 
-    def __init__(self, file_handle=None, content_type=None, content_length=None,
-                 file_path=None, file_name=None):
+    def __init__(
+        self,
+        file_handle=None,
+        content_type=None,
+        content_length=None,
+        file_path=None,
+        file_name=None,
+    ):
         """Creates an object of type MediaSource.
 
         Args:
@@ -1277,8 +1362,7 @@ class MediaSource(object):
         self.content_length = content_length
         self.file_name = file_name
 
-        if (file_handle is None and content_type is not None and
-                file_path is not None):
+        if file_handle is None and content_type is not None and file_path is not None:
             self.set_file_handle(file_path, content_type)
 
     def set_file_handle(self, file_name, content_type):
@@ -1290,7 +1374,7 @@ class MediaSource(object):
           content_type: string A MIME type representing the type of the media
         """
 
-        self.file_handle = open(file_name, 'rb')
+        self.file_handle = open(file_name, "rb")
         self.content_type = content_type
         self.content_length = os.path.getsize(file_name)
         self.file_name = os.path.basename(file_name)
@@ -1298,8 +1382,9 @@ class MediaSource(object):
     SetFileHandle = set_file_handle
 
     def modify_request(self, http_request):
-        http_request.add_body_part(self.file_handle, self.content_type,
-                                   self.content_length)
+        http_request.add_body_part(
+            self.file_handle, self.content_type, self.content_length
+        )
         return http_request
 
     ModifyRequest = modify_request

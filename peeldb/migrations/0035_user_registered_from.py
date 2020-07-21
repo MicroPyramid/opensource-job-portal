@@ -8,13 +8,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0034_credentialsmodel'),
+        ("peeldb", "0034_credentialsmodel"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='registered_from',
-            field=models.CharField(choices=[('Email', 'Email'), ('Social', 'Social'), ('Resume', 'Resume'), ('Bounces', 'Bounces')], default='', max_length=10),
+            model_name="user",
+            name="registered_from",
+            field=models.CharField(
+                choices=[
+                    ("Email", "Email"),
+                    ("Social", "Social"),
+                    ("Resume", "Resume"),
+                    ("Bounces", "Bounces"),
+                ],
+                default="",
+                max_length=10,
+            ),
         ),
     ]

@@ -9,21 +9,23 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0025_auto_20170727_1910'),
+        ("peeldb", "0025_auto_20170727_1910"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='question',
-            options={'ordering': ['-created_on']},
+            name="question", options={"ordering": ["-created_on"]},
         ),
         migrations.AlterField(
-            model_name='question',
-            name='skills',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='skill_questions', to='peeldb.Skill'),
+            model_name="question",
+            name="skills",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="skill_questions",
+                to="peeldb.Skill",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='question',
-            unique_together=set([('title', 'skills')]),
+            name="question", unique_together=set([("title", "skills")]),
         ),
     ]

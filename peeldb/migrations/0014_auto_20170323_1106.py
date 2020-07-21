@@ -8,24 +8,41 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0013_auto_20170321_1431'),
+        ("peeldb", "0013_auto_20170321_1431"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='jobpost',
-            options={'ordering': ['-created_on']},
+            name="jobpost", options={"ordering": ["-created_on"]},
         ),
         migrations.AlterField(
-            model_name='jobpost',
-            name='job_type',
-            field=models.CharField(choices=[('full-time', 'Full Time'), ('internship', 'Internship'), ('walk-in', 'Walk-in'),
-                                            ('governament', 'Government'), ('Fresher', 'Fresher')], max_length=50),
+            model_name="jobpost",
+            name="job_type",
+            field=models.CharField(
+                choices=[
+                    ("full-time", "Full Time"),
+                    ("internship", "Internship"),
+                    ("walk-in", "Walk-in"),
+                    ("governament", "Government"),
+                    ("Fresher", "Fresher"),
+                ],
+                max_length=50,
+            ),
         ),
         migrations.AlterField(
-            model_name='searchresult',
-            name='job_type',
-            field=models.CharField(blank=True, choices=[('full-time', 'Full Time'), ('internship', 'Internship'), ('walk-in', 'Walk-in'),
-                                                        ('governament', 'Government'), ('Fresher', 'Fresher')], max_length=20, null=True),
+            model_name="searchresult",
+            name="job_type",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("full-time", "Full Time"),
+                    ("internship", "Internship"),
+                    ("walk-in", "Walk-in"),
+                    ("governament", "Government"),
+                    ("Fresher", "Fresher"),
+                ],
+                max_length=20,
+                null=True,
+            ),
         ),
     ]

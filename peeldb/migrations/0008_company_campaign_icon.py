@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0007_auto_20170213_1547'),
+        ("peeldb", "0007_auto_20170213_1547"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='company',
-            name='campaign_icon',
+            model_name="company",
+            name="campaign_icon",
             field=models.CharField(max_length=3000, null=True),
         ),
     ]

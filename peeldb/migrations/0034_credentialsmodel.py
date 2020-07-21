@@ -11,15 +11,26 @@ import oauth2client.contrib.django_util.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0033_auto_20171018_1423'),
+        ("peeldb", "0033_auto_20171018_1423"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CredentialsModel',
+            name="CredentialsModel",
             fields=[
-                ('id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('credential', oauth2client.contrib.django_util.models.CredentialsField(null=True)),
+                (
+                    "id",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "credential",
+                    oauth2client.contrib.django_util.models.CredentialsField(null=True),
+                ),
             ],
         ),
     ]

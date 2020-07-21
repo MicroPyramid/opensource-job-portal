@@ -9,13 +9,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0006_auto_20170211_1817'),
+        ("peeldb", "0006_auto_20170211_1817"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='jobpost',
-            name='major_skill',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='major_skill', to='peeldb.Skill'),
+            model_name="jobpost",
+            name="major_skill",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="major_skill",
+                to="peeldb.Skill",
+            ),
         ),
     ]
