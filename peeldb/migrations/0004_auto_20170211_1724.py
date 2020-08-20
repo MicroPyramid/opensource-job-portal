@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("peeldb", "0003_user_agency_admin"),
+        ("peeldb", "0001_initial"),
     ]
 
     operations = [
@@ -16,8 +16,6 @@ class Migration(migrations.Migration):
             name="user",
             options={
                 "permissions": (
-                    ("blog_view", "can view blog posts and categories"),
-                    ("blog_edit", "can edit blog category and post"),
                     ("support_view", "can view tickets"),
                     ("support_edit", "can edit tickets"),
                     ("activity_view", "can view recruiters, applicants, data, posts"),

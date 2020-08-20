@@ -591,6 +591,7 @@ def get_qualifications():
 def get_all_cities():
     latest_cities = cache.get("latest_cities")
     if not latest_cities:
+        print("no cache")
         latest_cities = City.objects.filter(status="Enabled").order_by("name")
         cache.set("latest_cities", latest_cities, 60 * 60 * 48)
     return latest_cities

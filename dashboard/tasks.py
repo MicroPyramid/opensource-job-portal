@@ -12,9 +12,8 @@ from celery.task import task
 from django.conf import settings
 
 # from pytz import timezone
-from django.db.models import Q, F
+from django.db.models import Q
 from django.template import loader, Template, Context
-from django_blog_it.django_blog_it.models import Category, Post, Tags
 from django.db.models import Case, When
 from microurl import google_mini
 from twython.api import Twython
@@ -63,6 +62,7 @@ def updating_jobposts():
     for job in jobposts:
         job_url = get_absolute_url(job)
         job.slug = get_absolute_url(job)
+        # job.minified_url = google_mini('https://peeljobs.com' + job_url, settings.wMINIFIED_URL)
         job.save()
 
 
@@ -196,6 +196,7 @@ def jobpost_published():
         job.published_on = datetime.now()
         job_url = get_absolute_url(job)
         job.slug = job_url
+        # job.minified_url = google_mini('https://peeljobs.com' + job_url, settings.MINIFIED_URL)
         job.save()
         posts = FacebookPost.objects.filter(job_post=job)
         for each in posts:
@@ -726,7 +727,7 @@ def postontwitter(user, job_post, page_or_profile):
                 for name in job_post.location.values_list("name", flat=True)
             ]
         )
-        job_name = job_name + skill_hash + loc_hash + " @Jobs @PeelJobs"
+        job_name = job_name + skill_hash + loc_hash + " #Jobs #PeelJobs"
         twitter_status = (
             job_name + "  http://peeljobs.com" + str(job_post.get_absolute_url())
         )
@@ -1684,7 +1685,7 @@ def sending_mobile_campaign():
         message = """Top companies are looking for Java Developers!
                      Connect with us, to get placed https://peeljobs.com/java-fresher-jobs/
                      or https://goo.gl/SX4qbB"""
-        SMS_AUTH_KEY = "4a905d1566e5e93bfff35aa56a38660"
+        SMS_AUTH_KEY = settings.SMS_AUTH_KEY
         BULK_SMS_FROM = "PEELJB"
         requests.get(
             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
@@ -2081,7 +2082,7 @@ def sitemap_generation():
     )
     no_job_locations_fresher_jobs_xml_file.write(no_job_locations_fresher_jobs_xml_cont)
 
-    states = State.objects.filter(status="Enabled").exclude(state__name__in=F("name"))
+    states = State.objects.filter(status="Enabled")
     states_jobs_xml_count = xml_cont
     states_walkins_xml_count = xml_cont
     states_fresher_jobs_xml_count = xml_cont
@@ -2496,20 +2497,20 @@ def save_search_results(ip_address, data, results, user):
 # logger.debug(request_jsonized)
 
 
-@task()
-def handle_sendgrid_bounces():
-    bounces = requests.get(
-        "https://api.sendgrid.com/api/bounces.get.json?api_user="
-        + settings.SG_USER
-        + "&api_key="
-        + settings.SG_PWD
-    )
-    for each in bounces.json():
-        user = User.objects.filter(email=each["email"]).first()
-        if user:
-            user.is_bounce = True
-            user.save()
-        user = db.users.update({"email": each["email"]}, {"$set": {"is_bounce": True}})
+# @task()
+# def handle_sendgrid_bounces():
+#     bounces = requests.get(
+#         "https://api.sendgrid.com/api/bounces.get.json?api_user="
+#         + settings.SG_USER
+#         + "&api_key="
+#         + settings.SG_PWD
+#     )
+#     for each in bounces.json():
+#         user = User.objects.filter(email=each["email"]).first()
+#         if user:
+#             user.is_bounce = True
+#             user.save()
+#         user = db.users.update({"email": each["email"]}, {"$set": {"is_bounce": True}})
 
 
 def sending_mails_to_applicants_sendgrid():

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load page_tags %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+  <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+
+{% endblock %}
+
+{% block base %}
+  <div class="content_div">
+    <!-- SEARCH PART -->
+    <!--/ SEARCH PART -->
+    <!-- content of job detail page -->
+    <section id='job_detail'>
+      <div class="container">
+        <div class="row mt">
+          <div class="col-md-9 left_column">
+            <!-- blog item  -->
+           {% block blockcontent %}
+           {% endblock %}
+            <!--/ blog item ends here -->
+          </div>
+          <div class="col-md-3 right_column">
+            <!-- posted details -->
+            <!-- blog cat list starts here -->
+            <div class="posted_by_details blog_cat_list">
+              <h4>Category</h4>
+              <ul>
+              {% get_categories as categories %}
+                {% for category in categories %}
+                    <li><a href="/blog/category/{{category.slug}}">{{ category.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+             <!-- blog cat list ends here -->
+             <!-- blog_archive_list starts here -->
+            <div class="posted_by_details blog_archive_list">
+              <h4>Archive</h4>
+              <ul>
+                {% get_archives as archives %}
+              {% for archive in archives %}
+              <li><a href="/blog/{{archive|date:"Y"}}/{{archive|date:"n"}}">{{ archive|date:"F Y" }}</a>
+              </li>
+              {% endfor %}
+              </ul>
+            </div>
+            <!-- blog_archive_list ends here -->
+            <!-- blog_tags_list starts here -->
+            <div class="posted_by_details blog_tags_list">
+              <h4>Tags</h4>
+             <ul style="margin:0px;padding:0px;">
+                 {% get_tags as tags %}
+              {% for tag in tags %}
+              <li><a href="/blog/tag/{{tag.slug}}"><i class="fa fa-tag"></i>{{ tag.name }}</a></li>
+              {% endfor %}
+                 <br clear="all">
+              </ul>
+            </div>
+            <!-- blog_tags_list ends here -->
+            <!--/ posted details -->
+           
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- content of job page -->
+  </div>
+{% endblock %}
+    

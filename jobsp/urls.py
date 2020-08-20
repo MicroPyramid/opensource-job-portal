@@ -68,7 +68,6 @@ from psite.views import (
     custom_404,
     auth_return,
 )
-from django_blog_it import urls as django_blog_it_urls
 from pjob.views import index as job_list
 
 # from django.contrib import admin
@@ -174,7 +173,6 @@ urlpatterns = [
         applicant_unsubscribing,
         name="applicant_unsubscribing",
     ),
-    url(r"^blog/", include(django_blog_it_urls)),
     url(r"^social/", include("social.urls", namespace="social")),
     url(r"^dashboard/", include("dashboard.urls", namespace="dashboard")),
     url(r"^recruiter/", include("recruiter.urls", namespace="recruiter")),
@@ -316,10 +314,7 @@ handler404 = custom_404
 handler500 = custom_500
 
 if settings.DEBUG:
-    url(
-        r"^profiler/",
-        include("django_web_profiler.urls", namespace="django_web_profiler"),
-    ),
+    # url(r'^profiler/', include('django_web_profiler.urls', namespace="django_web_profiler")),
 
     import debug_toolbar
 

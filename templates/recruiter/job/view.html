@@ -1196,20 +1196,13 @@ $('body').on('click', '.delete_chat', function(e){
   }, 'json');
 })
 var search_skills = {{ search_skills|safe }}
-console.log(search_skills)
 $('#download').click(function(e){
   e.preventDefault()
   status = $('.tab_button1.active').attr('panelid')
-  window.location = "/recruiter/download/{{jobpost.id}}/"+ status + "/?search_skills=" + search_skills +"&search_locations=" + search_locations
+  window.location = "/recruiter/download/{{jobpost.id}}/"+ status + "/?search_skills" + search_skills +"&search_locations=" + search_locations
 })
 $(document).ready(function(){
   download_option()
-  if(typeof(search_skills) === "undefined"){
-    search_skills = ""
-  }
-  if(typeof(search_locations) === "undefined"){
-    search_locations = ""
-  }
 })
 function download_option(){
   panel = $('.tab_button1.active').attr('panelid')

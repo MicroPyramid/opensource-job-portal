@@ -1,37 +1,33 @@
 from .settings import *
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 DEBUG = False
 
 CELERY_IMPORTS = ("social.tasks", "dashboard.tasks")
 
-# Set your DSN value
-RAVEN_CONFIG = {
-    "dsn": os.getenv("RAVEN_CONFIG_DSN"),
-}
 
-# Add raven to the list of installed apps
-INSTALLED_APPS = INSTALLED_APPS + (
-    # ...
-    "raven.contrib.django.raven_compat",
-    # 'elasticapm.contrib.django',
-)
 ELASTIC_APM = {
-    "APP_NAME": os.getenv("ELASTIC_APM_APP_NAME"),
+    "SERVICE_NAME": os.getenv("ELASTIC_APM_SERVICE_NAME"),
     "SECRET_TOKEN": os.getenv("ELASTIC_APM_SECRET_TOKEN"),
+    "SERVER_URL": os.getenv("ELASTIC_APM_SERVER_URL"),
 }
 
-MIDDLEWARE = [
-    "raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware",
-    "raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware",
-    # 'elasticapm.contrib.django.middleware.TracingMiddleware',
-] + MIDDLEWARE
+INSTALLED_APPS = INSTALLED_APPS + ("elasticapm.contrib.django",)
+MIDDLEWARE = ["elasticapm.contrib.django.middleware.TracingMiddleware", ] + MIDDLEWARE
 
-MIDDLEWARE_CLASSES = MIDDLEWARE
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[DjangoIntegration()],
+    send_default_pii=True,
+)
+
 
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
-    "root": {"level": "WARNING", "handlers": ["sentry"],},
+    "root": {"level": "WARNING", "handlers": ["sentry"], },
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
@@ -54,7 +50,7 @@ LOGGING = {
             "handlers": ["console"],
             "propagate": False,
         },
-        "raven": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
+        "raven": {"level": "DEBUG", "handlers": ["console"], "propagate": False, },
         "sentry.errors": {
             "level": "DEBUG",
             "handlers": ["console"],
@@ -64,26 +60,24 @@ LOGGING = {
 }
 
 
-INTERNAL_IPS = ("127.0.0.1", "183.82.113.154")
-# DEBUG_TOOLBAR_PATCH_SETTINGS = False
-# DEBUG_TOOLBAR_PANELS = [
-#     'debug_toolbar.panels.versions.VersionsPanel',
-#     'debug_toolbar.panels.timer.TimerPanel',
-#     'debug_toolbar.panels.settings.SettingsPanel',
-#     'debug_toolbar.panels.headers.HeadersPanel',
-#     'debug_toolbar.panels.request.RequestPanel',
-#     'debug_toolbar.panels.sql.SQLPanel',
-#     'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-#     'debug_toolbar.panels.templates.TemplatesPanel',
-#     'debug_toolbar.panels.cache.CachePanel',
-#     'debug_toolbar.panels.signals.SignalsPanel',
-#     'debug_toolbar.panels.logging.LoggingPanel',
-#     'debug_toolbar.panels.redirects.RedirectsPanel',
-# ]
-
-INACTIVE_MAIL_SENDER = os.getenv("INACTIVEMAILSENDER")
-MAIL_SENDER = os.getenv("MAILSENDER")
-
 GIT_BRANCH = "master"
 UWSGI_FILE_NAME = "jobs_uwsgi.ini"
-AWS_S3_CUSTOM_DOMAIN = os.getenv("AWSS3CUSTOMDOMAIN")
+AWS_S3_CUSTOM_DOMAIN = "d2pt99vxm3n8bc.cloudfront.net"
+
+
+INSTALLED_APPS = INSTALLED_APPS + ("anymail",)
+
+ANYMAIL = {
+    "AMAZON_SES_CLIENT_PARAMS": {
+        # example: override normal Boto credentials specifically for Anymail
+        "aws_access_key_id": os.getenv("AWS_ACCESS_KEY_FOR_ANYMAIL_SES"),
+        "aws_secret_access_key": os.getenv("AWS_SECRET_KEY_FOR_ANYMAIL_SES"),
+        "region_name": os.getenv("AWS_LOCATION_FOR_ANYMAIL_SES"),
+        # override other default options
+        "config": {"connect_timeout": 30, "read_timeout": 30,},
+    },
+}
+
+EMAIL_BACKEND = "anymail.backends.amazon_ses.EmailBackend"
+
+MAILGUN_API_KEY = os.getenv("MAILGUN_API_KEY")

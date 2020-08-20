@@ -5,7 +5,7 @@ from splinter.browser import Browser
 from features.helpers import initiate_test_data
 from peeldb.models import User
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jobsp.settings_local")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jobsp.settings_server")
 
 django.setup()
 

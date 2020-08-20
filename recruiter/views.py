@@ -178,7 +178,6 @@ def jobs_list(request):
             "previous_page": previous_page,
             "current_page": page,
             "last_page": no_pages,
-            "current_url": reverse("recruiter:list"),
             "search_value": request.POST["search_value"]
             if "search_value" in request.POST
             else "All",
@@ -226,7 +225,6 @@ def inactive_jobs(request):
             "previous_page": previous_page,
             "current_page": page,
             "last_page": no_pages,
-            "current_url": reverse("recruiter:inactive_jobs"),
             "search_value": request.POST["search_value"]
             if "search_value" in request.POST.keys()
             else "All",
@@ -1647,8 +1645,8 @@ def user_password_reset(request):
                     "email": "User Already registered as a Applicant",
                 }
                 return HttpResponse(json.dumps(data))
-            if user and user[0].is_staff:
-                data = {"error": True, "email": "User Already registered as a Admin"}
+                # if user and user[0].is_staff:
+                #     data = {"error": True, "email": "User Already registered as a Admin"}
                 return HttpResponse(json.dumps(data))
             if user:
                 usr = User.objects.get(email=request.POST.get("email"))
@@ -1709,7 +1707,7 @@ def user_password_reset(request):
 
                 data = {
                     "error": False,
-                    "info": "Sent a link to your email, reset your password by clicking that link"
+                    "info": "Sent a link to your email to reset your password"
                     if usr.is_active
                     else "An email has been sent to your email id, Please activate your account",
                 }
@@ -1864,6 +1862,7 @@ def user_profile(request):
 
 
 def index(request):
+    print(settings.AM_PASS_KEY)
     if request.user.is_authenticated:
         if request.user.is_staff:
             return HttpResponseRedirect("/dashboard/")
@@ -2393,7 +2392,6 @@ def facebook_login(request):
                 fields="id, name, email, birthday, hometown, location, link, locale, gender, timezone",
             )
             # print profile
-
             if profile.get("email"):
                 email = profile.get("email")
                 hometown = (

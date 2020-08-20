@@ -11,7 +11,7 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.db.models import Q, F
+from django.db.models import Q
 from django.urls import reverse
 from django.template import loader, Template, Context
 from django.template.loader import render_to_string
@@ -94,13 +94,17 @@ def index(request):
         )
         cache.set("latest_1hr_jobs_list", latest_jobs_list, 60 * 60)
 
-    # latest_jobs_list = JobPost.objects.filter(status='Live').exclude(
-    #     job_type='walk-in').select_related('company', 'user').prefetch_related('location', 'skills')[:9]
+    latest_jobs_list = (
+        JobPost.objects.filter(status="Live")
+        .exclude(job_type="walk-in")
+        .select_related("company", "user")
+        .prefetch_related("location", "skills")[:9]
+    )
 
     field = get_social_referer(request)
     show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
     meta_title, meta_description, h1_tag = get_meta("home_page", {"page": 1})
-    states = State.objects.filter(status="Enabled").exclude(state__name__in=F("name"))
+    states = State.objects.filter(status="Enabled")
     data = {
         "jobs_list": latest_jobs_list,
         "show_pop_up": show_pop,

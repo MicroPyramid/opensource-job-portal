@@ -21,7 +21,6 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
 from django.template.defaultfilters import slugify
-from django_blog_it.django_blog_it.models import Post
 from django.core.cache import cache
 from microurl import google_mini
 from twython.api import Twython
@@ -39,7 +38,6 @@ from peeldb.models import (
     GOV_JOB_TYPE,
     JOB_TYPE,
     AppliedJobs,
-    BlogAttachment,
     City,
     Comment,
     Company,
@@ -4087,6 +4085,7 @@ def edit_job_title(request, post_id):
                     job_post.major_skill = skill[0]
             job_url = get_absolute_url(job_post)
             job_post.slug = job_url
+            # job_post.minified_url = google_mini('https://peeljobs.com' + job_url, settings.MINIFIED_URL)
             job_post.save()
             if (
                 job_post.major_skill

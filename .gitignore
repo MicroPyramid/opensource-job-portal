@@ -13,7 +13,5 @@ django_dev.log
 logs/
 celerybeat-schedule
 celerybeat.pid
-client_secret.json
-dist/
-opensource_job_portal.egg-info/
-docs/build
+.env
+resume/
