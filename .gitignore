@@ -15,3 +15,5 @@ celerybeat-schedule
 celerybeat.pid
 .env
 resume/
+docs/build
+dist/
