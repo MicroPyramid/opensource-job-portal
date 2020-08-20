@@ -6,7 +6,7 @@ deploy_live:
   environment:
     name: live
   script:
-    - rm -rf /home/peeljobs/peeljobs; cp -r . /home/peeljobs/peeljobs
+    - sudo /bin/rm -rf /home/peeljobs/peeljobs/; cp -r . /home/peeljobs/peeljobs
     - source /home/peeljobs/env/bin/activate
     - pip install -r /home/peeljobs/peeljobs/requirements.txt
     - python /home/peeljobs/peeljobs/manage_server.py migrate --noinput

@@ -7,13 +7,12 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 from oauth2client.contrib.django_util.models import CredentialsField
 
 # from twython.api import Twython
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import Q, Count, F
+from django.db.models import Q, Count, F, JSONField
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django_blog_it.django_blog_it.models import Post
 
 # from microurl import google_mini
 
@@ -234,7 +233,7 @@ class Skill(models.Model):
     meta_title = models.TextField(default="")
     meta_description = models.TextField(default="")
     page_content = models.TextField(default="")
-    meta = JSONField(default=dict)
+    meta = models.JSONField()
     skill_type = models.CharField(choices=SKILL_TYPE, max_length=20, default="it")
 
     def __str__(self):
@@ -304,7 +303,7 @@ class City(models.Model):
     internship_meta_description = models.TextField(default="")
     page_content = models.TextField(default="")
     internship_content = models.TextField(default="")
-    meta = JSONField(default=dict)
+    meta = JSONField()
     parent_city = models.ForeignKey(
         "self",
         related_name="child_cities",
@@ -637,8 +636,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         permissions = (
-            ("blog_view", "can view blog posts and categories"),
-            ("blog_edit", "can edit blog category and post"),
             ("support_view", "can view tickets"),
             ("support_edit", "can edit tickets"),
             ("activity_view", "can view recruiters, applicants, data, posts"),
@@ -1853,7 +1850,7 @@ class SearchResult(models.Model):
     other_skill = models.CharField(max_length=1000)
     locations = models.ManyToManyField(City, related_name="location_search")
     other_location = models.CharField(max_length=1000)
-    search_text = JSONField(default=dict)
+    search_text = JSONField()
     industry = models.CharField(max_length=1000)
     search_on = models.DateTimeField(auto_now=True)
     functional_area = models.CharField(max_length=1000)
@@ -1947,16 +1944,6 @@ class AgencyWorkLog(models.Model):
     no_of_profiles = models.IntegerField()
     summary = models.TextField()
     timegap = models.CharField(max_length=100)
-
-
-class BlogAttachment(models.Model):
-    file_prepend = "blog/attachments/"
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_now_add=True)
-    attached_file = models.FileField(
-        max_length=1000, null=True, blank=True, upload_to=img_url
-    )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
 
 def updating_skills_jobposts(skill, update_skill):

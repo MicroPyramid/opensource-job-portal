@@ -1,0 +1,53 @@
+
+<div class="srow sr-head">jobs</div>
+	{% for job in jobs %}
+	<div class="srow r-box res-box">
+
+		<div class="res-left">
+			<div class="rl-box rl-head">
+				<a href="/jobs/{{ job.title.split|join:'-' }}-{{ job.id }}/">{{ job.title }}</a>
+				<span class="pull-right">
+					<div id="{{ job.id }}">
+									{% if job.id in ajobs %}
+										<a>applied</a>
+									{% else %}
+										<a href="/jobs/{{ job.title.split|join:'-' }}-{{ job.id }}/" class="apply-btn"  style="padding: 3px 7px; font-size: 14px;">Apply</a>
+									{% endif %}
+					</div>
+				</span>
+			</div>
+			<div class="rl-box rl-cname">
+				<b>Company Name :</b>{{ job.com_name }}<span class="pull-right">{{ job.c_on }}</span>
+			</div>
+			<div class="rl-box rl-location">
+				<b>Location</b> : {{ job.loc }}
+			</div>
+			<div class="rl-box rl-job">
+				<b>Job / Skills Profile :</b> {{ job.desc }}
+			</div>
+			<div class="rl-box rl-job">
+				<b>Key Skills :</b> {% for i in job.techs %}{% if forloop.last %}
+												{{i}}
+											{% else %}
+												{{ i }},
+											{% endif %} {% endfor %}
+			</div>
+			<!-- <div class="rl-box rl-list">
+				<ul>
+					<li><a href="/company/1WCL8S/"> view this company jobs</a></li>
+				</ul>
+
+			</div> -->
+		</div>
+
+	</div>
+	{% endfor %} <br clear="all">
+
+
+<div id="jpages">
+	<ul class="pagination">
+		{% for s in pages %}
+		<li {% ifequal s page %} class="active"{% endifequal %} ><a	href="{{s}}">{{s}}</a></li>
+		{% endfor %}
+	</ul>
+</div>

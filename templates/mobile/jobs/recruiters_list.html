@@ -86,6 +86,8 @@
                   {% if recruiter.is_fb_connected %}
                    <a class="facebook" href="{{ recruiter.get_facebook_object.facebook_url }}" target="_blank"> <i class='fa fa-facebook'></i>
                     </a>
+                    {% else %}
+                   <a class="facebook" style="background-color:#676767"><i class='fa fa-facebook'></i></a>
                     {% endif %}
                     </li>
                     <li>
@@ -93,6 +95,8 @@
                     <a class="twitter" href="{{ recruiter.get_twitter_url }}" target="_blank">
                       <i class='fa fa-twitter'></i>
                     </a>
+                    {% else %}
+                      <a class="twitter" style="background-color:#676767"><i class='fa fa-twitter'></i></a>
                     {% endif %}
                     </li>
                     <li>
@@ -100,6 +104,8 @@
                     <a class="linkedin" href="{{ recruiter.get_linkedin_object.linkedin_url }}" target="_blank">
                       <i class='fa fa-linkedin'></i>
                     </a>
+                    {% else %}
+                      <a class="linkedin" style="background-color:#676767"><i class='fa fa-linkedin'></i></a>
                     {% endif %}
                 </span>
               </div>

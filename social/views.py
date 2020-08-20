@@ -39,7 +39,6 @@ from peeldb.models import (
     EmploymentHistory,
 )
 from mpcomp.facebook import GraphAPI, get_access_token_from_code
-from mpcomp.views import mongoconnection
 
 from twython.api import Twython
 from urllib.parse import parse_qsl
@@ -50,9 +49,6 @@ from .tasks import (
     add_google_friends,
     add_twitter_friends_followers,
 )
-
-
-db = mongoconnection()
 
 
 def login_and_apply(request):
@@ -176,7 +172,7 @@ def facebook_login(request):
                         last_name=profile.get("last_name", ""),
                         verified=profile.get("verified", ""),
                         name=profile.get("name", ""),
-                        language=profile.get("locale", ""),
+                        language=profile["locale"] if profile.get("locale") else "",
                         hometown=hometown,
                         email=profile.get("email", ""),
                         gender=profile.get("gender", ""),
@@ -231,18 +227,18 @@ def facebook_login(request):
                 Facebook.objects.create(
                     user=user,
                     facebook_url=profile.get("link", ""),
-                    facebook_id=profile["id"],
+                    facebook_id=profile.get("id"),
                     first_name=profile.get("first_name", ""),
                     last_name=profile.get("last_name", ""),
                     verified=profile.get("verified", ""),
                     name=profile.get("name", ""),
-                    language=profile.get("locale"),
+                    language=profile.get("locale", ""),
                     hometown=hometown,
-                    email=profile.get("email"),
-                    gender=profile.get("gender"),
+                    email=profile.get("email", ""),
+                    gender=profile.get("gender", ""),
                     dob=bday,
                     location=location,
-                    timezone=profile.get("timezone"),
+                    timezone=profile.get("timezone", ""),
                     accesstoken=accesstoken,
                 )
                 UserEmail.objects.create(
@@ -257,13 +253,7 @@ def facebook_login(request):
                 facebook_pages.delay(accesstoken, user.id)
                 facebook_friends.delay(accesstoken, user.id)
                 facebook_groups.delay(accesstoken, user.id)
-                db.users.update(
-                    {"email": email}, {"$set": {"pj_connected": True}}, False, True
-                )
                 return HttpResponseRedirect("/social/user/update/")
-            db.users.update(
-                {"email": email}, {"$set": {"pj_connected": True}}, False, True
-            )
         else:
             return render(
                 request,
@@ -380,7 +370,7 @@ def google_login(request):
                     gender=gender,
                     picture=picture,
                 )
-            user = authenticate(username=user.username)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         else:
             user = User.objects.filter(
                 email__iexact=user_document.get("email", "")
@@ -427,16 +417,11 @@ def google_login(request):
                 user=user, email=user_document.get("email", ""), is_primary=True
             )
 
-            user = authenticate(username=user.username)
+            # login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             user.is_bounce = False
             user.referer = request.session.get("referer", "")
             user.save()
-            db.users.update(
-                {"email": user_document.get("email", "")},
-                {"$set": {"pj_connected": True}},
-                False,
-                True,
-            )
             login(request, user)
             # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
             add_google_friends.delay(request.user.id, info["access_token"])
@@ -444,13 +429,8 @@ def google_login(request):
 
         # user.last_login = datetime.now()
         user.save()
-        db.users.update(
-            {"email": user_document["email"]},
-            {"$set": {"pj_connected": True}},
-            False,
-            True,
-        )
-        login(request, user)
+        # login(request, user)
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
         add_google_friends.delay(request.user.id, info["access_token"])
         if request.session.get("job_event"):
@@ -671,7 +651,7 @@ def linkedin_login(request):
         )
         params["client_id"] = settings.LN_API_KEY
         params["client_secret"] = settings.LN_SECRET_KEY
-        import urllib.request as ur
+        from urllib.request import urlopen
 
         args = {
             "grant_type": "authorization_code",
@@ -700,15 +680,20 @@ def linkedin_login(request):
         accesstoken = response["access_token"]
         required_info = "id,first-name,last-name,email-address,location,positions,educations,industry,summary,public-profile-url,picture-urls::(original)"
         rty = (
-            "https://api.linkedin.com/v1/people/~:("
-            + required_info
-            + ")"
-            + "?format=json&oauth2_access_token="
+            "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))&oauth2_access_token="
+            + accesstoken
         )
-        rty += accesstoken
-        details = ur.urlopen(rty).read().decode("utf8")
+
+        details = urlopen(rty).read().decode("utf-8")
         details = json.loads(details)
-        email_address = details.get("emailAddress", "")
+        email_address = details["elements"][0]["handle~"]["emailAddress"]
+
+        profile_rty = (
+            "https://api.linkedin.com/v2/me?oauth2_access_token=" + accesstoken
+        )
+        profile_rty = urlopen(profile_rty).read().decode("utf-8")
+        profile_rty = json.loads(profile_rty)
+
         if not email_address:
             return render(
                 request,
@@ -737,7 +722,6 @@ def linkedin_login(request):
         if email_matches:
             user = email_matches[0].user
             if user.is_recruiter or user.is_agency_recruiter:
-                user = authenticate(username=user.username)
                 login(request, user)
                 return HttpResponseRedirect(reverse("recruiter:index"))
             # Email associated with the user but Linkedin is not connected
@@ -745,10 +729,10 @@ def linkedin_login(request):
                 # TODO need to add education, industry details of user
                 Linkedin.objects.create(
                     user=user,
-                    linkedin_id=details.get("id", ""),
+                    linkedin_id=profile_rty.get("id", ""),
                     linkedin_url=details.get("publicProfileUrl", ""),
-                    first_name=details.get("firstName", ""),
-                    last_name=details.get("lastName", ""),
+                    first_name=profile_rty["firstName"]["localized"]["en_US"],
+                    last_name=profile_rty["lastName"]["localized"]["en_US"],
                     location=details["location"]["name"],
                     workhistory=positions,
                     email=email_address,
@@ -814,7 +798,7 @@ def linkedin_login(request):
                 linkedin_url=details.get("publicProfileUrl", ""),
                 first_name=details.get("firstName", ""),
                 last_name=details.get("lastName", ""),
-                location=details["location"]["name"],
+                # location=details['location']['name'],
                 workhistory=positions,
                 email=details.get("emailAddress", ""),
                 accesstoken=accesstoken,
@@ -824,14 +808,11 @@ def linkedin_login(request):
                 user=user, email=details.get("emailAddress", ""), is_primary=True
             )
 
-            user = authenticate(username=details.get("emailAddress", ""))
+            login(request, user)
             user.is_bounce = False
             user.last_login = datetime.now()
             user.referer = request.session.get("referer", "")
             user.save()
-            db.users.update(
-                {"email": user.email}, {"$set": {"pj_connected": True}}, False, True
-            )
             login(request, user)
             return HttpResponseRedirect("/social/user/update/")
 
@@ -839,9 +820,6 @@ def linkedin_login(request):
 
         user.last_login = datetime.now()
         user.save()
-        db.users.update(
-            {"email": user.email}, {"$set": {"pj_connected": True}}, False, True
-        )
 
         login(request, user)
 
@@ -868,7 +846,9 @@ def linkedin_login(request):
             "https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id="
             + settings.LN_API_KEY
         )
-        rty += "&scope=r_basicprofile r_emailaddress rw_company_admin w_share&state=8897239179ramya"
+        rty += (
+            "&scope=r_liteprofile r_emailaddress w_member_social&state=8897239179ramya"
+        )
         rty += (
             "&redirect_uri="
             + request.scheme
@@ -1132,7 +1112,7 @@ def linkedin_connect(request):
         info = ur.urlopen("https://www.linkedin.com/uas/oauth2/accessToken", params)
         accesstoken = json.loads(info.readline().decode("utf8"))["access_token"]
 
-        rty = "https://api.linkedin.com/v1/people/~:"
+        rty = "https://api.linkedin.com/v2/me:"
         rty += "(id,first-name,last-name,email-address,location,positions,educations,industry,public-profile-url,picture-urls::(original))"
         rty += "?format=json&oauth2_access_token=" + accesstoken
         details = ur.urlopen(rty).read().decode("utf8")
@@ -1186,7 +1166,7 @@ def linkedin_connect(request):
             "https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id="
             + settings.LN_API_KEY
         )
-        rty += "&scope=r_basicprofile r_emailaddress rw_company_admin w_share&state=8897239179ramya"
+        rty += "&scope=r_liteprofile r_emailaddress rw_company_admin w_member_social&state=8897239179ramya"
         rty += (
             "&redirect_uri="
             + request.scheme

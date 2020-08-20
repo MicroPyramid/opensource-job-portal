@@ -75,39 +75,25 @@ def agency_admin_login_required(view_func):
 
 # mto is list like ['as@sd.xom', 'sf@ogf.com']
 def Memail(mto, mfrom, msubject, mbody, user_active):
+    from django.core.mail import send_mail, get_connection
+
     mfrom = settings.DEFAULT_FROM_EMAIL
+
     if user_active:
-        mail_sender = settings.MAIL_SENDER
+        send_mail(msubject, mbody, mfrom, mto, html_message=mbody, fail_silently=False)
     else:
-        mail_sender = settings.INACTIVE_MAIL_SENDER
-    if mail_sender == "AMAZON":
-        # conn=SESConnection(settings.AM_ACCESS_KEY, settings.AM_PASS_KEY)
-        conn = boto.ses.connect_to_region(
-            "eu-west-1",
-            aws_access_key_id=settings.AM_ACCESS_KEY,
-            aws_secret_access_key=settings.AM_PASS_KEY,
+        mailgun_backend = get_connection(
+            "anymail.backends.mailgun.EmailBackend", api_key=settings.MAILGUN_API_KEY
         )
-        conn.send_email(mfrom, msubject, mbody, mto, format="html")
-    elif mail_sender == "MAILGUN":
-        requests.post(
-            settings.MGUN_API_URL,
-            auth=("api", settings.MGUN_API_KEY),
-            data={"from": mfrom, "to": mto, "subject": msubject, "html": mbody,},
+        send_mail(
+            msubject,
+            mbody,
+            mfrom,
+            mto,
+            html_message=mbody,
+            fail_silently=False,
+            connection=mailgun_backend,
         )
-    elif mail_sender == "SENDGRID":
-        sg = sendgrid.SendGridClient(settings.SG_USER, settings.SG_PWD)
-        sending_msg = sendgrid.Mail()
-        sending_msg.set_subject(msubject)
-        sending_msg.set_html(mbody)
-        sending_msg.set_text(msubject)
-        sending_msg.set_from(mfrom)
-        sending_msg.add_to(mto)
-        sg.send(sending_msg)
-    else:
-        pass
-        # msg = EmailMultiAlternatives(msubject, mbody, mfrom, [mto])
-        # msg.attach_alternative(mbody, "text/html")
-        # msg.send()
 
 
 def get_prev_after_pages_count(page, no_pages):

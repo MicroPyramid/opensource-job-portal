@@ -2,7 +2,7 @@ from haystack.backends.elasticsearch_backend import ElasticsearchSearchEngine
 from haystack.backends.elasticsearch_backend import ElasticsearchSearchQuery
 from haystack.constants import DEFAULT_ALIAS
 from haystack.inputs import Clean, Exact, PythonData, Raw
-from django.utils import six
+import six
 
 
 class CustomElasticsearchSearchQuery(ElasticsearchSearchQuery):

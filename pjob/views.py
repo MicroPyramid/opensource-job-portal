@@ -722,10 +722,16 @@ def list_deserializer(key, value, flags):
 
 
 def job_skills(request, skill, **kwargs):
+
+    # from pymemcache.client.base import Client
+    # from pymemcache import serde
+    # client = Client(('127.0.0.1', 11211),
+    #             serializer=serde.python_memcache_serializer,
+    #             deserializer=serde.python_memcache_deserializer)
+
     from pymemcache.client.base import Client
 
     client = Client(("localhost", 11211), deserializer=list_deserializer)
-
     current_url = reverse("job_skills", kwargs={"skill": skill})
     if kwargs.get("page_num") == "1" or request.GET.get("page") == "1":
         return redirect(current_url, permanent=True)
