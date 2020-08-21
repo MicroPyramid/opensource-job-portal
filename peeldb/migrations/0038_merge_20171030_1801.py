@@ -8,9 +8,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0037_remove_user_is_register_through_mail'),
-        ('peeldb', '0037_auto_20171030_1100'),
+        ("peeldb", "0037_remove_user_is_register_through_mail"),
+        ("peeldb", "0037_auto_20171030_1100"),
     ]
 
-    operations = [
-    ]
+    operations = []

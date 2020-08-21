@@ -119,23 +119,35 @@
                       <span class="pull-right social">
                         <ul>
                     <li>
-                    {% if recruiter.is_fb_connected %}
-                    <a class="facebook" href="{{ recruiter.get_facebook_object.facebook_url }}" target="_blank">
+                    {% if recruiter.facebook_user %}
+                    <a class="facebook" href="{{ recruiter.facebook_user.facebook_url }}" target="_blank">
                       <i class='fa fa-facebook'></i>
                     </a>
+                    {% else %}
+                    <span class='social_each fb'>
+                      <a class="facebook" style="background-color:#676767"><i class='fa fa-facebook'></i></a>
+                    </span>
                     {% endif %}</li>
                     <li>
-                    {% if recruiter.is_tw_connected %}
-                    <a class="twitter" href="http://twitter.com/{{ recruiter.get_twitter_url }}/" target="_blank">
+                    {% if recruiter.twitter %}
+                    <a class="twitter" href="http://twitter.com/{{ recruiter.twitter.screen_name }}/" target="_blank">
                       <i class='fa fa-twitter'></i>
                     </a>
+                    {% else %}
+                    <span class='social_each gplus'>
+                      <a class="twitter" style="background-color:#676767"><i class='fa fa-twitter'></i></a>
+                    </span>
                     {% endif %}
                     </li>
                     <li>
-                    {% if recruiter.is_ln_connected %}
-                    <a class="linkedin" href="{{ recruiter.get_linkedin_object.linkedin_url }}" target="_blank">
+                    {% if recruiter.linkedin %}
+                    <a class="linkedin" href="{{ recruiter.linkedin.linkedin_url }}" target="_blank">
                       <i class='fa fa-linkedin'></i>
                     </a>
+                    {% else %}
+                    <span class='social_each gplus'>
+                      <a class="linkedin" style="background-color:#676767"><i class='fa fa-linkedin'></i></a>
+                    </span>
                     {% endif %}</li>
 
                         </ul>
@@ -256,10 +268,6 @@
         </div>
         {% endif %}
         <!--register_login form ends here -->
-        <div class="strip_box">
-                  <div class="strip">Show Your CODING Skills at <span style="color: #202b2e;">Runcode.io</span> (Launching soon)
-                  </div>
-              </div>
 
         {%get_latest_walkins as walkins%}
         {% if walkins %}

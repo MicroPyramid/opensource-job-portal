@@ -8,12 +8,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0036_auto_20171027_1518'),
+        ("peeldb", "0036_auto_20171027_1518"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='user',
-            name='is_register_through_mail',
-        ),
+        migrations.RemoveField(model_name="user", name="is_register_through_mail",),
     ]

@@ -8,18 +8,29 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0042_city_parent_city'),
+        ("peeldb", "0042_city_parent_city"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='city',
-            name='parent_city',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='child_cities', to='peeldb.City'),
+            model_name="city",
+            name="parent_city",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="child_cities",
+                to="peeldb.City",
+            ),
         ),
         migrations.AlterField(
-            model_name='credentialsmodel',
-            name='id',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL),
+            model_name="credentialsmodel",
+            name="id",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                primary_key=True,
+                serialize=False,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

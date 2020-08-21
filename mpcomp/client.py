@@ -28,7 +28,7 @@ in this module is GDClient.
 """
 
 
-__author__ = 'j.s@google.com (Jeff Scudder)'
+__author__ = "j.s@google.com (Jeff Scudder)"
 
 
 from mpcomp import atom_client
@@ -93,8 +93,7 @@ class NotImplemented(RequestError):
     pass
 
 
-def error_from_response(message, http_response, error_class,
-                        response_body=None):
+def error_from_response(message, http_response, error_class, response_body=None):
     """Creates a new exception and sets the HTTP information in the error.
 
     Args:
@@ -110,7 +109,7 @@ def error_from_response(message, http_response, error_class,
         body = http_response.read()
     else:
         body = response_body
-    error = error_class('%s: %i, %s' % (message, http_response.status, body))
+    error = error_class("%s: %i, %s" % (message, http_response.status, body))
     error.status = http_response.status
     error.reason = http_response.reason
     error.body = body
@@ -128,7 +127,7 @@ def get_xml_version(version):
     """
     if version is None:
         return 1
-    return int(version.split('.')[0])
+    return int(version.split(".")[0])
 
 
 class GDClient(atom_client.AtomPubClient):
@@ -183,9 +182,17 @@ class GDClient(atom_client.AtomPubClient):
     # Name of alternate auth service to use in certain cases
     alt_auth_service = None
 
-    def request(self, method=None, uri=None, auth_token=None,
-                http_request=None, converter=None, desired_class=None,
-                redirects_remaining=4, **kwargs):
+    def request(
+        self,
+        method=None,
+        uri=None,
+        auth_token=None,
+        http_request=None,
+        converter=None,
+        desired_class=None,
+        redirects_remaining=4,
+        **kwargs
+    ):
         """Make an HTTP request to the server.
 
         See also documentation for atom_client.AtomPubClient.request.
@@ -246,24 +253,33 @@ class GDClient(atom_client.AtomPubClient):
         # TODO: If different sessions are using the same client, there will be a
         # multitude of redirects and session ID shuffling.
         # If the gsession ID is in the URL, adopt it as the standard location.
-        if uri is not None and uri.query is not None and 'gsessionid' in uri.query:
-            self.__gsessionid = uri.query['gsessionid']
+        if uri is not None and uri.query is not None and "gsessionid" in uri.query:
+            self.__gsessionid = uri.query["gsessionid"]
         # The gsession ID could also be in the HTTP request.
-        elif (http_request is not None and http_request.uri is not None
-              and http_request.uri.query is not None
-              and 'gsessionid' in http_request.uri.query):
-            self.__gsessionid = http_request.uri.query['gsessionid']
+        elif (
+            http_request is not None
+            and http_request.uri is not None
+            and http_request.uri.query is not None
+            and "gsessionid" in http_request.uri.query
+        ):
+            self.__gsessionid = http_request.uri.query["gsessionid"]
         # If the gsession ID is stored in the client, and was not present in the
         # URI then add it to the URI.
         elif self.__gsessionid is not None:
-            uri.query['gsessionid'] = self.__gsessionid
+            uri.query["gsessionid"] = self.__gsessionid
 
         # The AtomPubClient should call this class' modify_request before
         # performing the HTTP request.
-        #http_request = self.modify_request(http_request)
+        # http_request = self.modify_request(http_request)
 
-        response = atom_client.AtomPubClient.request(self, method=method,
-                                                     uri=uri, auth_token=auth_token, http_request=http_request, **kwargs)
+        response = atom_client.AtomPubClient.request(
+            self,
+            method=method,
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            **kwargs
+        )
         # On success, convert the response body using the desired converter
         # function if present.
         # print (response)
@@ -278,8 +294,11 @@ class GDClient(atom_client.AtomPubClient):
             elif desired_class is not None:
                 # print (self.api_version)
                 if self.api_version is not None:
-                    return core.parse(response.read(), desired_class,
-                                      version=get_xml_version(self.api_version))
+                    return core.parse(
+                        response.read(),
+                        desired_class,
+                        version=get_xml_version(self.api_version),
+                    )
                 # No API version was specified, so allow parse to
                 # use the default version.
                 return core.parse(response.read(), desired_class)
@@ -288,38 +307,48 @@ class GDClient(atom_client.AtomPubClient):
         # exists since the redirects are only used in the calendar API.
         elif response.status == 302:
             if redirects_remaining > 0:
-                location = (response.getheader('Location')
-                            or response.getheader('location'))
+                location = response.getheader("Location") or response.getheader(
+                    "location"
+                )
                 if location is not None:
                     # Make a recursive call with the gsession ID in the URI to follow
                     # the redirect.
-                    return self.request(method=method, uri=location,
-                                        auth_token=auth_token, http_request=http_request,
-                                        converter=converter, desired_class=desired_class,
-                                        redirects_remaining=redirects_remaining -
-                                        1,
-                                        **kwargs)
+                    return self.request(
+                        method=method,
+                        uri=location,
+                        auth_token=auth_token,
+                        http_request=http_request,
+                        converter=converter,
+                        desired_class=desired_class,
+                        redirects_remaining=redirects_remaining - 1,
+                        **kwargs
+                    )
                 else:
-                    raise error_from_response('302 received without Location header',
-                                              response, RedirectError)
+                    raise error_from_response(
+                        "302 received without Location header", response, RedirectError
+                    )
             else:
-                raise error_from_response('Too many redirects from server',
-                                          response, RedirectError)
+                raise error_from_response(
+                    "Too many redirects from server", response, RedirectError
+                )
         elif response.status == 401:
-            raise error_from_response('Unauthorized - Server responded with',
-                                      response, Unauthorized)
+            raise error_from_response(
+                "Unauthorized - Server responded with", response, Unauthorized
+            )
         elif response.status == 304:
-            raise error_from_response('Entry Not Modified - Server responded with',
-                                      response, NotModified)
+            raise error_from_response(
+                "Entry Not Modified - Server responded with", response, NotModified
+            )
         elif response.status == 501:
             raise error_from_response(
-                'This API operation is not implemented. - Server responded with',
-                response, NotImplemented)
+                "This API operation is not implemented. - Server responded with",
+                response,
+                NotImplemented,
+            )
         # If the server's response was not a 200, 201, 302, 304, 401, or 501, raise
         # an exception.
         else:
-            raise error_from_response('Server responded with', response,
-                                      RequestError)
+            raise error_from_response("Server responded with", response, RequestError)
 
     def modify_request(self, http_request):
         """Adds or changes request before making the HTTP request.
@@ -328,40 +357,69 @@ class GDClient(atom_client.AtomPubClient):
         Subclasses may override this method to add their own request
         modifications before the request is made.
         """
-        http_request = atom_client.AtomPubClient.modify_request(self,
-                                                                http_request)
+        http_request = atom_client.AtomPubClient.modify_request(self, http_request)
         if self.api_version is not None:
-            http_request.headers['GData-Version'] = self.api_version
+            http_request.headers["GData-Version"] = self.api_version
         return http_request
 
     ModifyRequest = modify_request
 
-    def get_feed(self, uri, auth_token=None, converter=None,
-                 desired_class=gdata_data.GDFeed, **kwargs):
-        abc = self.request(method='GET', uri=uri, auth_token=auth_token,
-                           converter=converter, desired_class=desired_class,
-                           **kwargs)
+    def get_feed(
+        self,
+        uri,
+        auth_token=None,
+        converter=None,
+        desired_class=gdata_data.GDFeed,
+        **kwargs
+    ):
+        abc = self.request(
+            method="GET",
+            uri=uri,
+            auth_token=auth_token,
+            converter=converter,
+            desired_class=desired_class,
+            **kwargs
+        )
         print(abc)
-        return self.request(method='GET', uri=uri, auth_token=auth_token,
-                            converter=converter, desired_class=desired_class,
-                            **kwargs)
+        return self.request(
+            method="GET",
+            uri=uri,
+            auth_token=auth_token,
+            converter=converter,
+            desired_class=desired_class,
+            **kwargs
+        )
 
     GetFeed = get_feed
 
-    def get_entry(self, uri, auth_token=None, converter=None,
-                  desired_class=gdata_data.GDEntry, etag=None, **kwargs):
+    def get_entry(
+        self,
+        uri,
+        auth_token=None,
+        converter=None,
+        desired_class=gdata_data.GDEntry,
+        etag=None,
+        **kwargs
+    ):
         http_request = http_core.HttpRequest()
         # Conditional retrieval
         if etag is not None:
-            http_request.headers['If-None-Match'] = etag
-        return self.request(method='GET', uri=uri, auth_token=auth_token,
-                            http_request=http_request, converter=converter,
-                            desired_class=desired_class, **kwargs)
+            http_request.headers["If-None-Match"] = etag
+        return self.request(
+            method="GET",
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            converter=converter,
+            desired_class=desired_class,
+            **kwargs
+        )
 
     GetEntry = get_entry
 
-    def get_next(self, feed, auth_token=None, converter=None,
-                 desired_class=None, **kwargs):
+    def get_next(
+        self, feed, auth_token=None, converter=None, desired_class=None, **kwargs
+    ):
         """Fetches the next set of results from the feed.
 
         When requesting a feed, the number of entries returned is capped at a
@@ -375,26 +433,37 @@ class GDClient(atom_client.AtomPubClient):
         """
         if converter is None and desired_class is None:
             desired_class = feed.__class__
-        return self.get_feed(feed.find_next_link(), auth_token=auth_token,
-                             converter=converter, desired_class=desired_class,
-                             **kwargs)
+        return self.get_feed(
+            feed.find_next_link(),
+            auth_token=auth_token,
+            converter=converter,
+            desired_class=desired_class,
+            **kwargs
+        )
 
     GetNext = get_next
 
     # TODO: add a refresh method to re-fetch the entry/feed from the server
     # if it has been updated.
 
-    def post(self, entry, uri, auth_token=None, converter=None,
-             desired_class=None, **kwargs):
+    def post(
+        self, entry, uri, auth_token=None, converter=None, desired_class=None, **kwargs
+    ):
         if converter is None and desired_class is None:
             desired_class = entry.__class__
         http_request = http_core.HttpRequest()
         http_request.add_body_part(
-            entry.to_string(get_xml_version(self.api_version)),
-            'application/atom+xml')
-        return self.request(method='POST', uri=uri, auth_token=auth_token,
-                            http_request=http_request, converter=converter,
-                            desired_class=desired_class, **kwargs)
+            entry.to_string(get_xml_version(self.api_version)), "application/atom+xml"
+        )
+        return self.request(
+            method="POST",
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            converter=converter,
+            desired_class=desired_class,
+            **kwargs
+        )
 
     Post = post
 
@@ -421,20 +490,25 @@ class GDClient(atom_client.AtomPubClient):
         """
         http_request = http_core.HttpRequest()
         http_request.add_body_part(
-            entry.to_string(get_xml_version(self.api_version)),
-            'application/atom+xml')
+            entry.to_string(get_xml_version(self.api_version)), "application/atom+xml"
+        )
         # Include the ETag in the request if present.
         if force:
-            http_request.headers['If-Match'] = '*'
-        elif hasattr(entry, 'etag') and entry.etag:
-            http_request.headers['If-Match'] = entry.etag
+            http_request.headers["If-Match"] = "*"
+        elif hasattr(entry, "etag") and entry.etag:
+            http_request.headers["If-Match"] = entry.etag
 
         if uri is None:
             uri = entry.find_edit_link()
 
-        return self.request(method='PUT', uri=uri, auth_token=auth_token,
-                            http_request=http_request,
-                            desired_class=entry.__class__, **kwargs)
+        return self.request(
+            method="PUT",
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            desired_class=entry.__class__,
+            **kwargs
+        )
 
     Update = update
 
@@ -443,20 +517,28 @@ class GDClient(atom_client.AtomPubClient):
 
         # Include the ETag in the request if present.
         if force:
-            http_request.headers['If-Match'] = '*'
-        elif hasattr(entry_or_uri, 'etag') and entry_or_uri.etag:
-            http_request.headers['If-Match'] = entry_or_uri.etag
+            http_request.headers["If-Match"] = "*"
+        elif hasattr(entry_or_uri, "etag") and entry_or_uri.etag:
+            http_request.headers["If-Match"] = entry_or_uri.etag
 
         # If the user passes in a URL, just delete directly, may not work as
         # the service might require an ETag.
         if isinstance(entry_or_uri, (str, http_core.Uri)):
-            return self.request(method='DELETE', uri=entry_or_uri,
-                                http_request=http_request, auth_token=auth_token,
-                                **kwargs)
+            return self.request(
+                method="DELETE",
+                uri=entry_or_uri,
+                http_request=http_request,
+                auth_token=auth_token,
+                **kwargs
+            )
 
-        return self.request(method='DELETE', uri=entry_or_uri.find_edit_link(),
-                            http_request=http_request, auth_token=auth_token,
-                            **kwargs)
+        return self.request(
+            method="DELETE",
+            uri=entry_or_uri.find_edit_link(),
+            http_request=http_request,
+            auth_token=auth_token,
+            **kwargs
+        )
 
     Delete = delete
 
@@ -479,19 +561,24 @@ class GDClient(atom_client.AtomPubClient):
         """
         http_request = http_core.HttpRequest()
         http_request.add_body_part(
-            feed.to_string(get_xml_version(self.api_version)),
-            'application/atom+xml')
+            feed.to_string(get_xml_version(self.api_version)), "application/atom+xml"
+        )
         if force:
-            http_request.headers['If-Match'] = '*'
-        elif hasattr(feed, 'etag') and feed.etag:
-            http_request.headers['If-Match'] = feed.etag
+            http_request.headers["If-Match"] = "*"
+        elif hasattr(feed, "etag") and feed.etag:
+            http_request.headers["If-Match"] = feed.etag
 
         if uri is None:
             uri = feed.find_edit_link()
 
-        return self.request(method='POST', uri=uri, auth_token=auth_token,
-                            http_request=http_request,
-                            desired_class=feed.__class__, **kwargs)
+        return self.request(
+            method="POST",
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            desired_class=feed.__class__,
+            **kwargs
+        )
 
     Batch = batch
 
@@ -505,11 +592,22 @@ def _add_query_param(param_string, value, http_request):
 
 
 class Query(object):
-
-    def __init__(self, text_query=None, categories=None, author=None, alt=None,
-                 updated_min=None, updated_max=None, pretty_print=False,
-                 published_min=None, published_max=None, start_index=None,
-                 max_results=None, strict=False, **custom_parameters):
+    def __init__(
+        self,
+        text_query=None,
+        categories=None,
+        author=None,
+        alt=None,
+        updated_min=None,
+        updated_max=None,
+        pretty_print=False,
+        published_min=None,
+        published_max=None,
+        start_index=None,
+        max_results=None,
+        strict=False,
+        **custom_parameters
+    ):
         """Constructs a Google Data Query to filter feed contents serverside.
 
         Args:
@@ -577,35 +675,37 @@ class Query(object):
     AddCustomParameter = add_custom_parameter
 
     def modify_request(self, http_request):
-        _add_query_param('q', self.text_query, http_request)
+        _add_query_param("q", self.text_query, http_request)
         if self.categories:
-            http_request.uri.query['category'] = ','.join(self.categories)
-        _add_query_param('author', self.author, http_request)
-        _add_query_param('alt', self.alt, http_request)
-        _add_query_param('updated-min', self.updated_min, http_request)
-        _add_query_param('updated-max', self.updated_max, http_request)
+            http_request.uri.query["category"] = ",".join(self.categories)
+        _add_query_param("author", self.author, http_request)
+        _add_query_param("alt", self.alt, http_request)
+        _add_query_param("updated-min", self.updated_min, http_request)
+        _add_query_param("updated-max", self.updated_max, http_request)
         if self.pretty_print:
-            http_request.uri.query['prettyprint'] = 'true'
-        _add_query_param('published-min', self.published_min, http_request)
-        _add_query_param('published-max', self.published_max, http_request)
+            http_request.uri.query["prettyprint"] = "true"
+        _add_query_param("published-min", self.published_min, http_request)
+        _add_query_param("published-max", self.published_max, http_request)
         if self.start_index is not None:
-            http_request.uri.query['start-index'] = str(self.start_index)
+            http_request.uri.query["start-index"] = str(self.start_index)
         if self.max_results is not None:
-            http_request.uri.query['max-results'] = str(self.max_results)
+            http_request.uri.query["max-results"] = str(self.max_results)
         if self.strict:
-            http_request.uri.query['strict'] = 'true'
+            http_request.uri.query["strict"] = "true"
         http_request.uri.query.update(self.custom_parameters)
 
     ModifyRequest = modify_request
 
 
 class GDQuery(http_core.Uri):
-
     def _get_text_query(self):
-        return self.query['q']
+        return self.query["q"]
 
     def _set_text_query(self, value):
-        self.query['q'] = value
+        self.query["q"] = value
 
-    text_query = property(_get_text_query, _set_text_query,
-                          doc='The q parameter for searching for an exact text match on content')
+    text_query = property(
+        _get_text_query,
+        _set_text_query,
+        doc="The q parameter for searching for an exact text match on content",
+    )

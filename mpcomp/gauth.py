@@ -64,69 +64,69 @@ except ImportError:
         import json as simplejson
 
 
-__author__ = 'j.s@google.com (Jeff Scudder)'
+__author__ = "j.s@google.com (Jeff Scudder)"
 
 
-PROGRAMMATIC_AUTH_LABEL = 'GoogleLogin auth='
-AUTHSUB_AUTH_LABEL = 'AuthSub token='
-OAUTH2_AUTH_LABEL = 'Bearer '
+PROGRAMMATIC_AUTH_LABEL = "GoogleLogin auth="
+AUTHSUB_AUTH_LABEL = "AuthSub token="
+OAUTH2_AUTH_LABEL = "Bearer "
 
 
 # This dict provides the AuthSub and OAuth scopes for all services by service
 # name. The service name (key) is used in ClientLogin requests.
 AUTH_SCOPES = {
-    'cl': (  # Google Calendar API
-        'https://www.google.com/calendar/feeds/',
-        'http://www.google.com/calendar/feeds/'),
-    'gbase': (  # Google Base API
-        'http://base.google.com/base/feeds/',
-        'http://www.google.com/base/feeds/'),
-    'blogger': (  # Blogger API
-        'http://www.blogger.com/feeds/',),
-    'codesearch': (  # Google Code Search API
-        'http://www.google.com/codesearch/feeds/',),
-    'cp': (  # Contacts API
-        'https://www.google.com/m8/feeds/',
-        'http://www.google.com/m8/feeds/'),
-    'finance': (  # Google Finance API
-        'http://finance.google.com/finance/feeds/',),
-    'health': (  # Google Health API
-        'https://www.google.com/health/feeds/',),
-    'writely': (  # Documents List API
-        'https://docs.google.com/feeds/',
-        'https://spreadsheets.google.com/feeds/',
-        'https://docs.googleusercontent.com/'),
-    'lh2': (  # Picasa Web Albums API
-        'http://picasaweb.google.com/data/',),
-    'apps': (  # Google Apps Domain Info & Management APIs
-        'https://apps-apis.google.com/a/feeds/user/',
-        'https://apps-apis.google.com/a/feeds/policies/',
-        'https://apps-apis.google.com/a/feeds/alias/',
-        'https://apps-apis.google.com/a/feeds/groups/',
-        'https://apps-apis.google.com/a/feeds/compliance/audit/',
-        'https://apps-apis.google.com/a/feeds/migration/',
-        'https://apps-apis.google.com/a/feeds/emailsettings/2.0/'),
-    'weaver': (  # Health H9 Sandbox
-        'https://www.google.com/h9/feeds/',),
-    'wise': (  # Spreadsheets Data API
-        'https://spreadsheets.google.com/feeds/',),
-    'sitemaps': (  # Google Webmaster Tools API
-        'https://www.google.com/webmasters/tools/feeds/',),
-    'youtube': (  # YouTube API
-        'http://gdata.youtube.com/feeds/api/',
-        'http://uploads.gdata.youtube.com/feeds/api',
-        'http://gdata.youtube.com/action/GetUploadToken'),
-    'books': (  # Google Books API
-        'http://www.google.com/books/feeds/',),
-    'analytics': (  # Google Analytics API
-        'https://www.google.com/analytics/feeds/',),
-    'jotspot': (  # Google Sites API
-        'http://sites.google.com/feeds/',
-        'https://sites.google.com/feeds/'),
-    'local': (  # Google Maps Data API
-        'http://maps.google.com/maps/feeds/',),
-    'code': (  # Project Hosting Data API
-        'http://code.google.com/feeds/issues',)}
+    "cl": (  # Google Calendar API
+        "https://www.google.com/calendar/feeds/",
+        "http://www.google.com/calendar/feeds/",
+    ),
+    "gbase": (  # Google Base API
+        "http://base.google.com/base/feeds/",
+        "http://www.google.com/base/feeds/",
+    ),
+    "blogger": ("http://www.blogger.com/feeds/",),  # Blogger API
+    "codesearch": (  # Google Code Search API
+        "http://www.google.com/codesearch/feeds/",
+    ),
+    "cp": (  # Contacts API
+        "https://www.google.com/m8/feeds/",
+        "http://www.google.com/m8/feeds/",
+    ),
+    "finance": ("http://finance.google.com/finance/feeds/",),  # Google Finance API
+    "health": ("https://www.google.com/health/feeds/",),  # Google Health API
+    "writely": (  # Documents List API
+        "https://docs.google.com/feeds/",
+        "https://spreadsheets.google.com/feeds/",
+        "https://docs.googleusercontent.com/",
+    ),
+    "lh2": ("http://picasaweb.google.com/data/",),  # Picasa Web Albums API
+    "apps": (  # Google Apps Domain Info & Management APIs
+        "https://apps-apis.google.com/a/feeds/user/",
+        "https://apps-apis.google.com/a/feeds/policies/",
+        "https://apps-apis.google.com/a/feeds/alias/",
+        "https://apps-apis.google.com/a/feeds/groups/",
+        "https://apps-apis.google.com/a/feeds/compliance/audit/",
+        "https://apps-apis.google.com/a/feeds/migration/",
+        "https://apps-apis.google.com/a/feeds/emailsettings/2.0/",
+    ),
+    "weaver": ("https://www.google.com/h9/feeds/",),  # Health H9 Sandbox
+    "wise": ("https://spreadsheets.google.com/feeds/",),  # Spreadsheets Data API
+    "sitemaps": (  # Google Webmaster Tools API
+        "https://www.google.com/webmasters/tools/feeds/",
+    ),
+    "youtube": (  # YouTube API
+        "http://gdata.youtube.com/feeds/api/",
+        "http://uploads.gdata.youtube.com/feeds/api",
+        "http://gdata.youtube.com/action/GetUploadToken",
+    ),
+    "books": ("http://www.google.com/books/feeds/",),  # Google Books API
+    "analytics": ("https://www.google.com/analytics/feeds/",),  # Google Analytics API
+    "jotspot": (  # Google Sites API
+        "http://sites.google.com/feeds/",
+        "https://sites.google.com/feeds/",
+    ),
+    "local": ("http://maps.google.com/maps/feeds/",),  # Google Maps Data API
+    "code": ("http://code.google.com/feeds/issues",),  # Project Hosting Data API
+}
 
 
 class Error(Exception):
@@ -136,6 +136,7 @@ class Error(Exception):
 class UnsupportedTokenType(Error):
 
     """Raised when token to or from blob is unable to convert the token."""
+
     pass
 
 
@@ -166,17 +167,16 @@ class OAuth2RevokeError(Error):
         self.body = body
         self.headers = http_core.get_headers(http_response)
 
-        self.error_msg = 'Invalid response %s.' % self.status
+        self.error_msg = "Invalid response %s." % self.status
         try:
             json_from_body = simplejson.loads(body)
             if isinstance(json_from_body, dict):
-                self.error_msg = json_from_body.get('error', self.error_msg)
+                self.error_msg = json_from_body.get("error", self.error_msg)
         except (ValueError, JSONDecodeError):
             pass
 
     def __str__(self):
-        return 'OAuth2RevokeError(status=%i, error=%s)' % (self.status,
-                                                           self.error_msg)
+        return "OAuth2RevokeError(status=%i, error=%s)" % (self.status, self.error_msg)
 
 
 REQUEST_TOKEN = 1
@@ -202,11 +202,18 @@ class OAuth2Token(object):
         code to your application.
     """
 
-    def __init__(self, client_id, client_secret, scope, user_agent,
-                 auth_uri='https://accounts.google.com/o/oauth2/auth',
-                 token_uri='https://accounts.google.com/o/oauth2/token',
-                 access_token=None, refresh_token=None,
-                 revoke_uri='https://accounts.google.com/o/oauth2/revoke'):
+    def __init__(
+        self,
+        client_id,
+        client_secret,
+        scope,
+        user_agent,
+        auth_uri="https://accounts.google.com/o/oauth2/auth",
+        token_uri="https://accounts.google.com/o/oauth2/token",
+        access_token=None,
+        refresh_token=None,
+        revoke_uri="https://accounts.google.com/o/oauth2/revoke",
+    ):
         """Create an instance of OAuth2Token
 
         Args:
@@ -240,7 +247,7 @@ class OAuth2Token(object):
     @property
     def invalid(self):
         """True if the credentials are invalid, such as being revoked."""
-        return getattr(self, '_invalid', False)
+        return getattr(self, "_invalid", False)
 
     def _refresh(self, request):
         """Refresh the access_token using the refresh_token.
@@ -249,20 +256,22 @@ class OAuth2Token(object):
           request: The atom.http_core.HttpRequest which contains all of the
               information needed to send a request to the remote server.
         """
-        body = urllib.parse.urlencode({
-            'grant_type': 'refresh_token',
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'refresh_token': self.refresh_token
-        })
+        body = urllib.parse.urlencode(
+            {
+                "grant_type": "refresh_token",
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+                "refresh_token": self.refresh_token,
+            }
+        )
         headers = {
-            'user-agent': self.user_agent,
+            "user-agent": self.user_agent,
         }
 
         http_request = http_core.HttpRequest(
-            uri=self.token_uri, method='POST', headers=headers)
-        http_request.add_body_part(
-            body, mime_type='application/x-www-form-urlencoded')
+            uri=self.token_uri, method="POST", headers=headers
+        )
+        http_request.add_body_part(body, mime_type="application/x-www-form-urlencoded")
         response = request(http_request)
         body = response.read()
         if response.status == 200:
@@ -273,11 +282,13 @@ class OAuth2Token(object):
 
     def _extract_tokens(self, body):
         d = simplejson.loads(body)
-        self.access_token = d['access_token']
-        self.refresh_token = d.get('refresh_token', self.refresh_token)
-        if 'expires_in' in d:
-            self.token_expiry = datetime.timedelta(
-                seconds=int(d['expires_in'])) + datetime.datetime.now()
+        self.access_token = d["access_token"]
+        self.refresh_token = d.get("refresh_token", self.refresh_token)
+        if "expires_in" in d:
+            self.token_expiry = (
+                datetime.timedelta(seconds=int(d["expires_in"]))
+                + datetime.datetime.now()
+            )
         else:
             self.token_expiry = None
 
@@ -317,8 +328,10 @@ class OAuth2Token(object):
         Returns:
           The same HTTP request object which was passed in.
         """
-        http_request.headers['Authorization'] = '%s%s' % (OAUTH2_AUTH_LABEL,
-                                                          self.access_token)
+        http_request.headers["Authorization"] = "%s%s" % (
+            OAUTH2_AUTH_LABEL,
+            self.access_token,
+        )
         return http_request
 
     ModifyRequest = modify_request
@@ -344,4 +357,5 @@ def _make_credentials_property(name):
 
     def set_credentials_value(self, value):
         setattr(self.credentials, name, value)
+
     return property(get_credentials_value, set_credentials_value)

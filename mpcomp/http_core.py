@@ -19,13 +19,14 @@
 # TODO: add proxy handling.
 
 
-__author__ = 'j.s@google.com (Jeff Scudder)'
+__author__ = "j.s@google.com (Jeff Scudder)"
 
 
 import os
 import urllib.parse
 import urllib
 import http.client
+
 ssl = None
 try:
     import ssl
@@ -45,7 +46,7 @@ class ProxyError(Error):
     pass
 
 
-MIME_BOUNDARY = 'END_OF_PART'
+MIME_BOUNDARY = "END_OF_PART"
 
 
 def get_headers(http_response):
@@ -56,15 +57,32 @@ def get_headers(http_response):
     method so this function will use getheaders if available, but if not it
     will retrieve a few using getheader.
     """
-    if hasattr(http_response, 'getheaders'):
+    if hasattr(http_response, "getheaders"):
         return http_response.getheaders()
     headers = []
     for header in (
-            'location', 'content-type', 'content-length', 'age', 'allow',
-            'cache-control', 'content-location', 'content-encoding', 'date',
-            'etag', 'expires', 'last-modified', 'pragma', 'server',
-            'set-cookie', 'transfer-encoding', 'vary', 'via', 'warning',
-            'www-authenticate', 'gdata-version'):
+        "location",
+        "content-type",
+        "content-length",
+        "age",
+        "allow",
+        "cache-control",
+        "content-location",
+        "content-encoding",
+        "date",
+        "etag",
+        "expires",
+        "last-modified",
+        "pragma",
+        "server",
+        "set-cookie",
+        "transfer-encoding",
+        "vary",
+        "via",
+        "warning",
+        "www-authenticate",
+        "gdata-version",
+    ):
         value = http_response.getheader(header, None)
         if value is not None:
             headers.append((header, value))
@@ -79,6 +97,7 @@ class HttpRequest(object):
     responsibility of the user to ensure that duplicate field names are combined
     into one header value according to the rules in section 4.2 of RFC 2616.
     """
+
     method = None
     uri = None
 
@@ -117,64 +136,66 @@ class HttpRequest(object):
         if size is None:
             # TODO: support chunked transfer if some of the body is of unknown
             # size.
-            raise UnknownSize('Each part of the body must have a known size.')
-        if 'Content-Length' in self.headers:
-            content_length = int(self.headers['Content-Length'])
+            raise UnknownSize("Each part of the body must have a known size.")
+        if "Content-Length" in self.headers:
+            content_length = int(self.headers["Content-Length"])
         else:
             content_length = 0
         # If this is the first part added to the body, then this is not a multipart
         # request.
         if len(self._body_parts) == 0:
-            self.headers['Content-Type'] = mime_type
+            self.headers["Content-Type"] = mime_type
             content_length = size
             self._body_parts.append(data)
         elif len(self._body_parts) == 1:
             # This is the first member in a mime-multipart request, so change the
             # _body_parts list to indicate a multipart payload.
-            self._body_parts.insert(0, 'Media multipart posting')
-            boundary_string = '\r\n--%s\r\n' % (MIME_BOUNDARY,)
+            self._body_parts.insert(0, "Media multipart posting")
+            boundary_string = "\r\n--%s\r\n" % (MIME_BOUNDARY,)
             content_length += len(boundary_string) + size
             self._body_parts.insert(1, boundary_string)
-            content_length += len('Media multipart posting')
+            content_length += len("Media multipart posting")
             # Put the content type of the first part of the body into the multipart
             # payload.
-            original_type_string = 'Content-Type: %s\r\n\r\n' % (
-                self.headers['Content-Type'],)
+            original_type_string = "Content-Type: %s\r\n\r\n" % (
+                self.headers["Content-Type"],
+            )
             self._body_parts.insert(2, original_type_string)
             content_length += len(original_type_string)
-            boundary_string = '\r\n--%s\r\n' % (MIME_BOUNDARY,)
+            boundary_string = "\r\n--%s\r\n" % (MIME_BOUNDARY,)
             self._body_parts.append(boundary_string)
             content_length += len(boundary_string)
             # Change the headers to indicate this is now a mime multipart
             # request.
-            self.headers['Content-Type'] = 'multipart/related; boundary="%s"' % (
-                MIME_BOUNDARY,)
-            self.headers['MIME-version'] = '1.0'
+            self.headers["Content-Type"] = 'multipart/related; boundary="%s"' % (
+                MIME_BOUNDARY,
+            )
+            self.headers["MIME-version"] = "1.0"
             # Include the mime type of this part.
-            type_string = 'Content-Type: %s\r\n\r\n' % (mime_type)
+            type_string = "Content-Type: %s\r\n\r\n" % (mime_type)
             self._body_parts.append(type_string)
             content_length += len(type_string)
             self._body_parts.append(data)
-            ending_boundary_string = '\r\n--%s--' % (MIME_BOUNDARY,)
+            ending_boundary_string = "\r\n--%s--" % (MIME_BOUNDARY,)
             self._body_parts.append(ending_boundary_string)
             content_length += len(ending_boundary_string)
         else:
             # This is a mime multipart request.
-            boundary_string = '\r\n--%s\r\n' % (MIME_BOUNDARY,)
+            boundary_string = "\r\n--%s\r\n" % (MIME_BOUNDARY,)
             self._body_parts.insert(-1, boundary_string)
             content_length += len(boundary_string) + size
             # Include the mime type of this part.
-            type_string = 'Content-Type: %s\r\n\r\n' % (mime_type)
+            type_string = "Content-Type: %s\r\n\r\n" % (mime_type)
             self._body_parts.insert(-1, type_string)
             content_length += len(type_string)
             self._body_parts.insert(-1, data)
-        self.headers['Content-Length'] = str(content_length)
+        self.headers["Content-Length"] = str(content_length)
+
     # I could add an "append_to_body_part" method as well.
 
     AddBodyPart = add_body_part
 
-    def add_form_inputs(self, form_data,
-                        mime_type='application/x-www-form-urlencoded'):
+    def add_form_inputs(self, form_data, mime_type="application/x-www-form-urlencoded"):
         """Form-encodes and adds data to the request body.
 
         Args:
@@ -190,10 +211,16 @@ class HttpRequest(object):
 
     def _copy(self):
         """Creates a deep copy of this request."""
-        copied_uri = Uri(self.uri.scheme, self.uri.host, self.uri.port,
-                         self.uri.path, self.uri.query.copy())
-        new_request = HttpRequest(uri=copied_uri, method=self.method,
-                                  headers=self.headers.copy())
+        copied_uri = Uri(
+            self.uri.scheme,
+            self.uri.host,
+            self.uri.port,
+            self.uri.path,
+            self.uri.query.copy(),
+        )
+        new_request = HttpRequest(
+            uri=copied_uri, method=self.method, headers=self.headers.copy()
+        )
         new_request._body_parts = self._body_parts[:]
         return new_request
 
@@ -203,17 +230,19 @@ class HttpRequest(object):
         In order to preserve the request, it does not read from file-like objects
         in the body.
         """
-        output = 'HTTP Request\n  method: %s\n  url: %s\n  headers:\n' % (
-            self.method, str(self.uri))
+        output = "HTTP Request\n  method: %s\n  url: %s\n  headers:\n" % (
+            self.method,
+            str(self.uri),
+        )
         for header, value in self.headers.items():
-            output += '    %s: %s\n' % (header, value)
-        output += '  body sections:\n'
+            output += "    %s: %s\n" % (header, value)
+        output += "  body sections:\n"
         i = 0
         for part in self._body_parts:
             if isinstance(part, str):
-                output += '    %s: %s\n' % (i, part)
+                output += "    %s: %s\n" % (i, part)
             else:
-                output += '    %s: <file like object>\n' % i
+                output += "    %s: <file like object>\n" % i
             i += 1
         return output
 
@@ -221,14 +250,15 @@ class HttpRequest(object):
 def _apply_defaults(http_request):
     if http_request.uri.scheme is None:
         if http_request.uri.port == 443:
-            http_request.uri.scheme = 'https'
+            http_request.uri.scheme = "https"
         else:
-            http_request.uri.scheme = 'http'
+            http_request.uri.scheme = "http"
 
 
 class Uri(object):
 
     """A URI as used in HTTP 1.1"""
+
     scheme = None
     host = None
     port = None
@@ -266,31 +296,35 @@ class Uri(object):
                 param_pairs.append(quoted_key)
             else:
                 quoted_value = urllib.parse.quote(str(value))
-                param_pairs.append('%s=%s' % (quoted_key, quoted_value))
-        return '&'.join(param_pairs)
+                param_pairs.append("%s=%s" % (quoted_key, quoted_value))
+        return "&".join(param_pairs)
 
     def _get_relative_path(self):
         """Returns the path with the query parameters escaped and appended."""
         param_string = self._get_query_string()
         if self.path is None:
-            path = '/'
+            path = "/"
         else:
             path = self.path
         if param_string:
-            return '?'.join([path, param_string])
+            return "?".join([path, param_string])
         return path
 
     def _to_string(self):
         if self.scheme is None and self.port == 443:
-            scheme = 'https'
+            scheme = "https"
         elif self.scheme is None:
-            scheme = 'http'
+            scheme = "http"
         else:
             scheme = self.scheme
         if self.port is None:
-            return '%s://%s%s' % (scheme, self.host, self._get_relative_path())
-        return '%s://%s:%s%s' % (scheme, self.host, str(self.port),
-                                 self._get_relative_path())
+            return "%s://%s%s" % (scheme, self.host, self._get_relative_path())
+        return "%s://%s:%s%s" % (
+            scheme,
+            self.host,
+            str(self.port),
+            self._get_relative_path(),
+        )
 
     def __str__(self):
         return self._to_string()
@@ -328,7 +362,7 @@ class Uri(object):
         if parts[0]:
             uri.scheme = parts[0]
         if parts[1]:
-            host_parts = parts[1].split(':')
+            host_parts = parts[1].split(":")
             if host_parts[0]:
                 uri.host = host_parts[0]
             if len(host_parts) > 1:
@@ -336,12 +370,13 @@ class Uri(object):
         if parts[2]:
             uri.path = parts[2]
         if parts[4]:
-            param_pairs = parts[4].split('&')
+            param_pairs = parts[4].split("&")
             for pair in param_pairs:
-                pair_parts = pair.split('=')
+                pair_parts = pair.split("=")
                 if len(pair_parts) > 1:
-                    uri.query[urllib.parse.unquote(pair_parts[0])] = (
-                        urllib.parse.unquote(pair_parts[1]))
+                    uri.query[
+                        urllib.parse.unquote(pair_parts[0])
+                    ] = urllib.parse.unquote(pair_parts[1])
                 elif len(pair_parts) == 1:
                     uri.query[urllib.parse.unquote(pair_parts[0])] = None
         print(uri)
@@ -370,7 +405,7 @@ class HttpResponse(object):
         if reason is not None:
             self.reason = reason
         if body is not None:
-            if hasattr(body, 'read'):
+            if hasattr(body, "read"):
                 self._body = body
             else:
                 self._body = StringIO.StringIO(body)
@@ -396,26 +431,33 @@ def _dump_response(http_response):
 
     Does not read the body since that may consume the content.
     """
-    output = 'HttpResponse\n  status: %s\n  reason: %s\n  headers:' % (
-        http_response.status, http_response.reason)
+    output = "HttpResponse\n  status: %s\n  reason: %s\n  headers:" % (
+        http_response.status,
+        http_response.reason,
+    )
     headers = get_headers(http_response)
     if isinstance(headers, dict):
         for header, value in headers.items():
-            output += '    %s: %s\n' % (header, value)
+            output += "    %s: %s\n" % (header, value)
     else:
         for pair in headers:
-            output += '    %s: %s\n' % (pair[0], pair[1])
+            output += "    %s: %s\n" % (pair[0], pair[1])
     return output
 
 
 class HttpClient(object):
 
     """Performs HTTP requests using httplib."""
+
     debug = None
 
     def request(self, http_request):
-        return self._http_request(http_request.method, http_request.uri,
-                                  http_request.headers, http_request._body_parts)
+        return self._http_request(
+            http_request.method,
+            http_request.uri,
+            http_request.headers,
+            http_request._body_parts,
+        )
 
     Request = request
 
@@ -428,18 +470,16 @@ class HttpClient(object):
               request.
         """
         connection = None
-        if uri.scheme == 'https':
+        if uri.scheme == "https":
             if not uri.port:
                 connection = http.client.HTTPSConnection(uri.host)
             else:
-                connection = http.client.HTTPSConnection(
-                    uri.host, int(uri.port))
+                connection = http.client.HTTPSConnection(uri.host, int(uri.port))
         else:
             if not uri.port:
                 connection = http.client.HTTPConnection(uri.host)
             else:
-                connection = http.client.HTTPConnection(
-                    uri.host, int(uri.port))
+                connection = http.client.HTTPConnection(uri.host, int(uri.port))
         return connection
 
     def _http_request(self, method, uri, headers=None, body_parts=None):
@@ -472,14 +512,18 @@ class HttpClient(object):
         # HTTP request header 'Host: www.google.com:443' instead of
         # 'Host: www.google.com', and thus resulting the error message
         # 'Token invalid - AuthSub token has wrong scope' in the HTTP response.
-        if (uri.scheme == 'https' and int(uri.port or 443) == 443 and
-                hasattr(connection, '_buffer') and
-                isinstance(connection._buffer, list)):
-            header_line = 'Host: %s:443' % uri.host
-            replacement_header_line = 'Host: %s' % uri.host
+        if (
+            uri.scheme == "https"
+            and int(uri.port or 443) == 443
+            and hasattr(connection, "_buffer")
+            and isinstance(connection._buffer, list)
+        ):
+            header_line = "Host: %s:443" % uri.host
+            replacement_header_line = "Host: %s" % uri.host
             try:
-                connection._buffer[connection._buffer.index(header_line)] = (
-                    replacement_header_line)
+                connection._buffer[
+                    connection._buffer.index(header_line)
+                ] = replacement_header_line
             except ValueError:  # header_line missing from connection._buffer
                 pass
 
@@ -489,7 +533,7 @@ class HttpClient(object):
         connection.endheaders()
 
         # If there is data, send it in the request.
-        if body_parts and filter(lambda x: x != '', body_parts):
+        if body_parts and filter(lambda x: x != "", body_parts):
             for part in body_parts:
                 _send_data_part(part, connection)
 
@@ -503,11 +547,11 @@ def _send_data_part(data, connection):
         connection.send(data)
         return
     # Check to see if data is a file-like object that has a read method.
-    elif hasattr(data, 'read'):
+    elif hasattr(data, "read"):
         # Read the file and send it a chunk at a time.
         while 1:
             binarydata = data.read(100000)
-            if binarydata == '':
+            if binarydata == "":
                 break
             connection.send(binarydata)
         return
@@ -518,49 +562,48 @@ def _send_data_part(data, connection):
 
 
 class ProxiedHttpClient(HttpClient):
-
     def _get_connection(self, uri, headers=None):
         # Check to see if there are proxy settings required for this request.
         proxy = None
-        if uri.scheme == 'https':
-            proxy = os.environ.get('https_proxy')
-        elif uri.scheme == 'http':
-            proxy = os.environ.get('http_proxy')
+        if uri.scheme == "https":
+            proxy = os.environ.get("https_proxy")
+        elif uri.scheme == "http":
+            proxy = os.environ.get("http_proxy")
         if not proxy:
             return HttpClient._get_connection(self, uri, headers=headers)
         # Now we have the URL of the appropriate proxy server.
         # Get a username and password for the proxy if required.
         proxy_auth = _get_proxy_auth()
-        if uri.scheme == 'https':
+        if uri.scheme == "https":
             import socket
+
             if proxy_auth:
-                proxy_auth = 'Proxy-authorization: %s' % proxy_auth
+                proxy_auth = "Proxy-authorization: %s" % proxy_auth
             # Construct the proxy connect command.
             port = uri.port
             if not port:
                 port = 443
-            proxy_connect = 'CONNECT %s:%s HTTP/1.0\r\n' % (uri.host, port)
+            proxy_connect = "CONNECT %s:%s HTTP/1.0\r\n" % (uri.host, port)
             # Set the user agent to send to the proxy
-            user_agent = ''
-            if headers and 'User-Agent' in headers:
-                user_agent = 'User-Agent: %s\r\n' % (headers['User-Agent'])
-            proxy_pieces = '%s%s%s\r\n' % (
-                proxy_connect, proxy_auth, user_agent)
+            user_agent = ""
+            if headers and "User-Agent" in headers:
+                user_agent = "User-Agent: %s\r\n" % (headers["User-Agent"])
+            proxy_pieces = "%s%s%s\r\n" % (proxy_connect, proxy_auth, user_agent)
             # Find the proxy host and port.
             proxy_uri = Uri.parse_uri(proxy)
             if not proxy_uri.port:
-                proxy_uri.port = '80'
+                proxy_uri.port = "80"
             # Connect to the proxy server, very simple recv and error checking
             p_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             p_sock.connect((proxy_uri.host, int(proxy_uri.port)))
             p_sock.sendall(proxy_pieces)
-            response = ''
+            response = ""
             # Wait for the full response.
             while response.find("\r\n\r\n") == -1:
                 response += p_sock.recv(8192)
             p_status = response.split()[1]
             if p_status != str(200):
-                raise ProxyError('Error status=%s' % str(p_status))
+                raise ProxyError("Error status=%s" % str(p_status))
             # Trivial setup for ssl socket.
             sslobj = None
             if ssl is not None:
@@ -572,26 +615,26 @@ class ProxiedHttpClient(HttpClient):
             connection = http.client.HTTPConnection(proxy_uri.host)
             connection.sock = sslobj
             return connection
-        elif uri.scheme == 'http':
+        elif uri.scheme == "http":
             proxy_uri = Uri.parse_uri(proxy)
             if not proxy_uri.port:
-                proxy_uri.port = '80'
+                proxy_uri.port = "80"
             if proxy_auth:
-                headers['Proxy-Authorization'] = proxy_auth.strip()
+                headers["Proxy-Authorization"] = proxy_auth.strip()
             return http.client.HTTPConnection(proxy_uri.host, int(proxy_uri.port))
         return None
 
 
 def _get_proxy_auth():
     import base64
-    proxy_username = os.environ.get('proxy-username')
+
+    proxy_username = os.environ.get("proxy-username")
     if not proxy_username:
-        proxy_username = os.environ.get('proxy_username')
-    proxy_password = os.environ.get('proxy-password')
+        proxy_username = os.environ.get("proxy_username")
+    proxy_password = os.environ.get("proxy-password")
     if not proxy_password:
-        proxy_password = os.environ.get('proxy_password')
+        proxy_password = os.environ.get("proxy_password")
     if proxy_username:
-        user_auth = base64.b64encode('%s:%s' % (proxy_username,
-                                                proxy_password))
-        return 'Basic %s\r\n' % (user_auth.strip())
-    return ''
+        user_auth = base64.b64encode("%s:%s" % (proxy_username, proxy_password))
+        return "Basic %s\r\n" % (user_auth.strip())
+    return ""

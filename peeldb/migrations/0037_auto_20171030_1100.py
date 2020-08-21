@@ -8,18 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0036_auto_20171027_1518'),
+        ("peeldb", "0036_auto_20171027_1518"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='country',
-            name='slug',
-            field=models.SlugField(default='', max_length=500),
+            model_name="country",
+            name="slug",
+            field=models.SlugField(default="", max_length=500),
         ),
         migrations.AddField(
-            model_name='state',
-            name='slug',
-            field=models.SlugField(default='', max_length=500),
+            model_name="state",
+            name="slug",
+            field=models.SlugField(default="", max_length=500),
         ),
     ]

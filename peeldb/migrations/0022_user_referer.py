@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0021_user_resume_text'),
+        ("peeldb", "0021_user_resume_text"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='referer',
+            model_name="user",
+            name="referer",
             field=models.TextField(blank=True, null=True),
         ),
     ]

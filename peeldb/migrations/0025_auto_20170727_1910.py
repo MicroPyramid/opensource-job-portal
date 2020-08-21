@@ -10,44 +10,102 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0027_auto_20170802_1342'),
+        ("peeldb", "0027_auto_20170802_1342"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Question',
+            name="Question",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('description', models.TextField()),
-                ('status', models.CharField(choices=[('Pending', 'Pending'), ('Live', 'Live'), ('Closed', 'Closed')], max_length=20)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('modified_on', models.DateTimeField(auto_now=True)),
-                ('slug', models.SlugField(max_length=500)),
-                ('likes', models.IntegerField(default=0)),
-                ('dislikes', models.IntegerField(default=0)),
-                ('attachments', models.ManyToManyField(to='peeldb.Attachment')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='questions', to=settings.AUTH_USER_MODEL)),
-                ('skills', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='peeldb.Skill')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("description", models.TextField()),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Live", "Live"),
+                            ("Closed", "Closed"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("modified_on", models.DateTimeField(auto_now=True)),
+                ("slug", models.SlugField(max_length=500)),
+                ("likes", models.IntegerField(default=0)),
+                ("dislikes", models.IntegerField(default=0)),
+                ("attachments", models.ManyToManyField(to="peeldb.Attachment")),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="questions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "skills",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="peeldb.Skill"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Solution',
+            name="Solution",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.TextField()),
-                ('status', models.CharField(choices=[('Pending', 'Pending'), ('Live', 'Live'), ('Closed', 'Closed')], max_length=20)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('modified_on', models.DateTimeField(auto_now=True)),
-                ('likes', models.IntegerField(default=0)),
-                ('dislikes', models.IntegerField(default=0)),
-                ('attachments', models.ManyToManyField(to='peeldb.Attachment')),
-                ('given_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("description", models.TextField()),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Live", "Live"),
+                            ("Closed", "Closed"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("modified_on", models.DateTimeField(auto_now=True)),
+                ("likes", models.IntegerField(default=0)),
+                ("dislikes", models.IntegerField(default=0)),
+                ("attachments", models.ManyToManyField(to="peeldb.Attachment")),
+                (
+                    "given_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='question',
-            name='solutions',
-            field=models.ManyToManyField(to='peeldb.Solution'),
+            model_name="question",
+            name="solutions",
+            field=models.ManyToManyField(to="peeldb.Solution"),
         ),
     ]

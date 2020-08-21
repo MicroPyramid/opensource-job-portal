@@ -8,14 +8,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0009_agencyworklog'),
+        ("peeldb", "0009_agencyworklog"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='agencyworklog',
-            name='timegap',
-            field=models.CharField(default='', max_length=100),
+            model_name="agencyworklog",
+            name="timegap",
+            field=models.CharField(default="", max_length=100),
             preserve_default=False,
         ),
     ]

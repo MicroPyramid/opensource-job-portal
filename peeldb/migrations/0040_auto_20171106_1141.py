@@ -8,23 +8,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0039_auto_20171031_1528'),
+        ("peeldb", "0039_auto_20171031_1528"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='jobalert',
-            name='unsubscribe_reason',
-            field=models.TextField(default=''),
+            model_name="jobalert",
+            name="unsubscribe_reason",
+            field=models.TextField(default=""),
         ),
         migrations.AddField(
-            model_name='subscriber',
-            name='unsubscribe_reason',
-            field=models.TextField(default=''),
+            model_name="subscriber",
+            name="unsubscribe_reason",
+            field=models.TextField(default=""),
         ),
         migrations.AddField(
-            model_name='user',
-            name='unsubscribe_reason',
-            field=models.TextField(default=''),
+            model_name="user",
+            name="unsubscribe_reason",
+            field=models.TextField(default=""),
         ),
     ]

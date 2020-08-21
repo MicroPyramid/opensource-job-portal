@@ -10,33 +10,41 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0012_auto_20170223_1712'),
+        ("peeldb", "0012_auto_20170223_1712"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='city',
-            name='state',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='state', to='peeldb.State'),
+            model_name="city",
+            name="state",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="state",
+                to="peeldb.State",
+            ),
         ),
         migrations.AlterField(
-            model_name='jobpost',
-            name='location',
-            field=models.ManyToManyField(related_name='locations', to='peeldb.City'),
+            model_name="jobpost",
+            name="location",
+            field=models.ManyToManyField(related_name="locations", to="peeldb.City"),
         ),
         migrations.AlterField(
-            model_name='jobpost',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='jobposts', to=settings.AUTH_USER_MODEL),
+            model_name="jobpost",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="jobposts",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='technicalskill',
-            name='month',
+            model_name="technicalskill",
+            name="month",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='technicalskill',
-            name='year',
+            model_name="technicalskill",
+            name="year",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

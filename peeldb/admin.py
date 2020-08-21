@@ -1,6 +1,23 @@
 from django.contrib import admin
-from peeldb.models import User, Google, Facebook, Country, State, City, Skill, Industry, UserEmail, FacebookFriend, GitHub, \
-    Twitter, TwitterFollower, TwitterFriend, Language, Qualification, FunctionalArea
+from peeldb.models import (
+    User,
+    Google,
+    Facebook,
+    Country,
+    State,
+    City,
+    Skill,
+    Industry,
+    UserEmail,
+    FacebookFriend,
+    GitHub,
+    Twitter,
+    TwitterFollower,
+    TwitterFriend,
+    Language,
+    Qualification,
+    FunctionalArea,
+)
 
 admin.site.register(Country)
 admin.site.register(State)

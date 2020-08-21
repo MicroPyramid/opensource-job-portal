@@ -1,0 +1,68 @@
+{% extends "blog/base.html" %}
+{% block block_canonical %}
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
+
+{% block block_title %}
+  <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
+
+  <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
+
+{% endblock %}
+
+{% block blockcontent %}
+<div id="blog_detail">
+<div class="company_profile_wrap" >
+  <span class="description_div" >
+    <span class="title_div">
+    <span class="title">{{ post.title }}</span>
+    <span class="posted">
+    Posted on {{ post.updated_on }}
+    </span>
+    </span>
+    <span class="details">
+      <span class="row mt description">
+        <p>{{ post.content|safe }}</p>
+      </span>
+      <span class="row mt">
+        <span class="tags">
+          <ul>
+            {% for tag in post.tags.all %}
+            <li><a href="/blog/tag/{{tag.slug}}/"><i class="fa fa-tag"></i><span itemprop="keywords">{{tag.name}}</span></a></li>
+            {% endfor %}
+          </ul>
+        </span>
+      </span>
+      <span class="row mt blog-content-social">
+        <ul>
+          <li><a class="social-share facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://peeljobs.com/blog/{{post.slug}}/&t={{ post.title }}"><i class="fa fa-facebook"></i></a><span class="count">{{ fbshare_count }}</span></li>
+          <li><a class="social-share linkedin" href="https://plus.google.com/share?hl=en-US&url=http://peeljobs.com/blog/{{post.slug}}/"><i class="fa fa-linkedin"></i></a><span class="count">12</span></li>
+          <li><a class="social-share google" href="https://twitter.com/intent/tweet?text={{ post.title }}&url=http://peeljobs.com/blog/{{post.slug}}/&via=MicroPyramid"><i class="fa fa-google-plus"></i></a><span class="count">{{ twshare_count }}</span></li>
+          <li><a class="social-share twitter" href="https://www.linkedin.com/cws/share?url=http://peeljobs.com/blog/{{post.slug}}/&token=&isFramed=true"><i class="fa fa-twitter"></i></a><span class="count">{{ lnshare_count }}</span></li>
+        </ul>
+      </span>
+      <!-- COMMENTS -->
+      <div class="col-xs-12" id="comments">
+        <h5 class="comments-title">Latest Comments</h5>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+          var disqus_shortname = 'peeljobs'; // required: replace example with your forum shortname
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    </span>
+  </span>
+  <div class="clearfix"></div>
+</div>
+</div>
+{% endblock %}

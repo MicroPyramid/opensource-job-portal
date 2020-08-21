@@ -8,23 +8,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0038_merge_20171030_1801'),
+        ("peeldb", "0038_merge_20171030_1801"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='jobalert',
-            name='is_verified',
+            model_name="jobalert",
+            name="is_verified",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='jobalert',
-            name='subscribe_code',
+            model_name="jobalert",
+            name="subscribe_code",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
         migrations.AddField(
-            model_name='subscriber',
-            name='subscribe_code',
+            model_name="subscriber",
+            name="subscribe_code",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
     ]

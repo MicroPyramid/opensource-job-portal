@@ -8,18 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0023_qualification_slug'),
+        ("peeldb", "0023_qualification_slug"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='appliedjobs',
-            name='ip_address',
-            field=models.CharField(default='', max_length=2000),
+            model_name="appliedjobs",
+            name="ip_address",
+            field=models.CharField(default="", max_length=2000),
         ),
         migrations.AlterField(
-            model_name='appliedjobs',
-            name='user_agent',
-            field=models.CharField(default='', max_length=2000),
+            model_name="appliedjobs",
+            name="user_agent",
+            field=models.CharField(default="", max_length=2000),
         ),
     ]

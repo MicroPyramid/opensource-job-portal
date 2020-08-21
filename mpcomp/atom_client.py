@@ -19,7 +19,7 @@
 
 """
 
-__author__ = 'j.s@google.com (Jeff Scudder)'
+__author__ = "j.s@google.com (Jeff Scudder)"
 
 
 from mpcomp import http_core
@@ -39,8 +39,15 @@ class AtomPubClient(object):
     ssl = False  # Whether to force all requests over https
     xoauth_requestor_id = None
 
-    def __init__(self, http_client=None, host=None, auth_token=None, source=None,
-                 xoauth_requestor_id=None, **kwargs):
+    def __init__(
+        self,
+        http_client=None,
+        host=None,
+        auth_token=None,
+        source=None,
+        xoauth_requestor_id=None,
+        **kwargs
+    ):
         """Creates a new AtomPubClient instance.
 
         Args:
@@ -64,8 +71,9 @@ class AtomPubClient(object):
         self.xoauth_requestor_id = xoauth_requestor_id
         self.source = source
 
-    def request(self, method=None, uri=None, auth_token=None,
-                http_request=None, **kwargs):
+    def request(
+        self, method=None, uri=None, auth_token=None, http_request=None, **kwargs
+    ):
         """Performs an HTTP request to the server indicated.
 
         Uses the http_client instance to make the request.
@@ -95,18 +103,18 @@ class AtomPubClient(object):
         # HTTP request.
         for name, value in kwargs.items():
             if value is not None:
-                if hasattr(value, 'modify_request'):
+                if hasattr(value, "modify_request"):
                     value.modify_request(http_request)
                 else:
                     http_request.uri.query[name] = str(value)
         # Default to an http request if the protocol scheme is not set.
         if http_request.uri.scheme is None:
-            http_request.uri.scheme = 'http'
+            http_request.uri.scheme = "http"
         # Override scheme. Force requests over https.
         if self.ssl:
-            http_request.uri.scheme = 'https'
+            http_request.uri.scheme = "https"
         if http_request.uri.path is None:
-            http_request.uri.path = '/'
+            http_request.uri.path = "/"
         # Add the Authorization header at the very end. The Authorization header
         # value may need to be calculated using information in the request.
         if auth_token:
@@ -115,8 +123,10 @@ class AtomPubClient(object):
             self.auth_token.modify_request(http_request)
         # Check to make sure there is a host in the http_request.
         if http_request.uri.host is None:
-            raise MissingHost('No host provided in request %s %s' % (
-                http_request.method, str(http_request.uri)))
+            raise MissingHost(
+                "No host provided in request %s %s"
+                % (http_request.method, str(http_request.uri))
+            )
         # Perform the fully specified request using the http_client instance.
         # Sends the request to the server and returns the server's response.
         print(self.http_client.request(http_request))
@@ -126,31 +136,51 @@ class AtomPubClient(object):
 
     def get(self, uri=None, auth_token=None, http_request=None, **kwargs):
         """Performs a request using the GET method, returns an HTTP response."""
-        return self.request(method='GET', uri=uri, auth_token=auth_token,
-                            http_request=http_request, **kwargs)
+        return self.request(
+            method="GET",
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            **kwargs
+        )
 
     Get = get
 
-    def post(self, uri=None, data=None, auth_token=None, http_request=None,
-             **kwargs):
+    def post(self, uri=None, data=None, auth_token=None, http_request=None, **kwargs):
         """Sends data using the POST method, returns an HTTP response."""
-        return self.request(method='POST', uri=uri, auth_token=auth_token,
-                            http_request=http_request, data=data, **kwargs)
+        return self.request(
+            method="POST",
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            data=data,
+            **kwargs
+        )
 
     Post = post
 
-    def put(self, uri=None, data=None, auth_token=None, http_request=None,
-            **kwargs):
+    def put(self, uri=None, data=None, auth_token=None, http_request=None, **kwargs):
         """Sends data using the PUT method, returns an HTTP response."""
-        return self.request(method='PUT', uri=uri, auth_token=auth_token,
-                            http_request=http_request, data=data, **kwargs)
+        return self.request(
+            method="PUT",
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            data=data,
+            **kwargs
+        )
 
     Put = put
 
     def delete(self, uri=None, auth_token=None, http_request=None, **kwargs):
         """Performs a request using the DELETE method, returns an HTTP response."""
-        return self.request(method='DELETE', uri=uri, auth_token=auth_token,
-                            http_request=http_request, **kwargs)
+        return self.request(
+            method="DELETE",
+            uri=uri,
+            auth_token=auth_token,
+            http_request=http_request,
+            **kwargs
+        )
 
     Delete = delete
 
@@ -178,15 +208,13 @@ class AtomPubClient(object):
             http_request.uri.host = self.host
 
         if self.xoauth_requestor_id is not None:
-            http_request.uri.query[
-                'xoauth_requestor_id'] = self.xoauth_requestor_id
+            http_request.uri.query["xoauth_requestor_id"] = self.xoauth_requestor_id
 
         # Set the user agent header for logging purposes.
         if self.source:
-            http_request.headers[
-                'User-Agent'] = '%s gdata-py/2.0.18' % self.source
+            http_request.headers["User-Agent"] = "%s gdata-py/2.0.18" % self.source
         else:
-            http_request.headers['User-Agent'] = 'gdata-py/2.0.17'
+            http_request.headers["User-Agent"] = "gdata-py/2.0.17"
 
         return http_request
 
