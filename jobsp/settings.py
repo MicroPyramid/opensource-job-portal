@@ -251,6 +251,35 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1
 
 CELERY_TIMEZONE = "Asia/Calcutta"
 
+
+
+
+CELERY_TASK_ROUTES = {
+    'dashboard.tasks.daily_report': {'queue': 'transactions'},
+    'dashboard.tasks.jobpost_published': {'queue': 'transactions'},
+    'dashboard.tasks.rebuilding_index': {'queue': 'transactions'},
+    'dashboard.tasks.sitemap_generation': {'queue': 'transactions'},
+    'dashboard.tasks.handle_sendgrid_bounces': {'queue': 'transactions'},
+
+    'dashboard.tasks.check_meta_data': {'queue': 'events'},
+    'dashboard.tasks.alerting_applicants': {'queue': 'events'},
+
+    'dashboard.tasks.job_alerts_to_users': {'queue': 'events'},
+    'dashboard.tasks.job_alerts_to_alerts': {'queue': 'events'},
+    'dashboard.tasks.job_alerts_to_subscribers': {'queue': 'events'},
+
+    'dashboard.tasks.recruiter_jobpost_applicants': {'queue': 'transactions'},
+    'dashboard.tasks.recruiter_profile_update_notifications': {'queue': 'events'},
+
+    'dashboard.tasks.applicants_notifications': {'queue': 'events'},
+    'dashboard.tasks.applicants_walkin_job_notifications': {'queue': 'events'},
+    'dashboard.tasks.applicants_job_notifications': {'queue': 'events'},
+    'dashboard.tasks.applicants_profile_update_notifications': {'queue': 'events'},
+    'dashboard.tasks.applicants_profile_update_notifications_two_hours': {'queue': 'events'},
+}
+
+CELERY_TASK_QUEUES = []
+
 CELERY_BEAT_SCHEDULE = {
     # Executes every day evening at 5:00 PM GMT +5.30
     "moving-published-jobs-to-live": {
@@ -380,6 +409,8 @@ SMS_AUTH_KEY = os.getenv("SMSAUTHKEY")
 
 AWS_ENABLED = os.getenv("AWSENABLED")
 DISQUS_SHORTNAME = ""
+
+MEMCACHED_HOST = os.environ.get('MEMCACED_HOST')
 
 CACHES = {
     "default": {

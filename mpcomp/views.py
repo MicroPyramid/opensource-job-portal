@@ -94,7 +94,35 @@ def Memail(mto, mfrom, msubject, mbody, user_active):
             fail_silently=False,
             connection=mailgun_backend,
         )
-
+<<<<<<< HEAD
+        conn.send_email(mfrom, msubject, mbody, mto, format='html')
+    elif mail_sender == 'MAILGUN':
+        requests.post(
+            settings.MGUN_API_URL,
+            auth=('api', settings.MGUN_API_KEY),
+            data={
+                'from': mfrom,
+                'to': mto,
+                'subject': msubject,
+                'html': mbody,
+            })
+    elif mail_sender == 'SENDGRID':
+        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        sending_message = Mail(
+            to_emails=mto,
+            from_email=mfrom,
+            subject=msubject,
+            html_content=mbody)
+        try:
+            sg.send(sending_message)
+            return True
+        except Exception as e:
+            print(f'Error sending mail: ', e)
+    else:
+        pass
+        # msg = EmailMultiAlternatives(msubject, mbody, mfrom, [mto])
+        # msg.attach_alternative(mbody, "text/html")
+        # msg.send()
 
 def get_prev_after_pages_count(page, no_pages):
     prev_page = page - 1

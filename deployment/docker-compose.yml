@@ -1,0 +1,537 @@
+#
+# Production server with UWSGI configured to run on port 8080
+# and web configured to run directly on port 80
+#
+# docker-compose build
+# docker-compose up -d web
+#
+# See accompanying Make commands for easy collectstatic etc.
+
+version: '2.4'
+
+services:
+  #
+  # Production server with UWSGI configured to run on port 8080
+  # and web configured to run directly on port 80
+  #
+  # docker-compose build
+  # docker-compose up -d web
+  #
+  # See accompanying Make commands for easy collectstatic etc.
+
+  smtp:
+    # Note you cannot scale if you use container_name
+    container_name: peelj-smtp
+    image: catatnight/postfix
+    hostname: postfix
+    environment:
+      # You could change this to something more suitable
+      - maildomain=devsbranch.com
+      - smtp_user=noreply:docker
+    restart: unless-stopped
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - smtp
+
+  db:
+    container_name: peelj-db
+    image: kartoza/postgis
+    hostname: db
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASS=docker
+      - POSTGRES_DBNAME=peelj
+      - POSTGRES_MULTIPLE_EXTENSIONS=postgis,hstore,postgis_topology,
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docker"]
+      interval: 10s
+      timeout: 15s
+      retries: 5
+    volumes:
+      - ./pg/postgres_data:/var/lib/postgresql
+      - ./backups:/backups
+    restart: always
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - db
+
+  dbadmin:
+    container_name: peelj-pgadmin4
+    image: dpage/pgadmin4:latest
+    hostname: dbadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@peeljobs.com
+      - PGADMIN_DEFAULT_PASSWORD=docker
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "8088:80"
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - dbadmin
+
+  mongodb:
+    image: 'bitnami/mongodb:latest'
+    hostname: mongodb
+    environment:
+      - MONGODB_USERNAME=my_user
+      - MONGODB_PASSWORD=password123
+      - MONGODB_DATABASE=my_database
+      - MONGODB_SYSTEM_LOG_VERBOSITY=3
+      - MONGODB_PORT_NUMBER=27017
+    ports:
+      - "27017:27017"
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - mongodb
+
+  graphql:
+    image: hasura/graphql-engine:v1.0.0-beta.10
+    hostname: graphql
+    environment:
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://docker:docker@db:5432/peelj
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+      - HASURA_GRAPHQL_ADMIN_SECRET=docker
+    restart: always
+    ports:
+      - "8089:8080"
+    networks:
+      backend:
+        aliases:
+            - graphql
+  uwsgi:
+    # Note you cannot scale if you use container_name
+    container_name: peelj-uwsgi
+    build:
+      context: ./docker
+    hostname: uwsgi
+    environment:
+      - DATABASE_NAME=peelj
+      - DATABASE_USERNAME=docker
+      - DATABASE_PASSWORD=docker
+      - DATABASE_HOST=db
+      - MONGODB_USERNAME=my_user
+      - MONGODB_PASSWORD=password123
+      - MONGODB_DATABASE=my_database
+      - MONGODB_SYSTEM_LOG_VERBOSITY=3
+      - MONGODB_PORT_NUMBER=27017
+      - MONGODB_HOSTNAME=mongodb
+      - DJANGO_SETTINGS_MODULE=jobsp.settings_server
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
+      - VIRTUAL_PORT=80
+      - REDIS_HOST=redis
+      - C_FORCE_ROOT="true"
+      - RABBITMQ_NODENAME=rabbit
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit_test_password
+      - RABBITMQ_DEFAULT_VHOST=/
+      - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
+      - BROKER_API=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
+      - MAILSENDER=SENDGRID
+      - CONTACT_NUMBER=8500099499
+      - PEEL_URL=https://peeljobs.com
+      - MEMCACED_HOST=memcached
+    volumes:
+      - ..:/home/web/django_project
+      - ./static:/home/web/static:rw
+      - ./media:/home/web/media:rw
+      - ./logs:/var/log/
+    links:
+      - smtp:smtp
+      - db:db
+      - redis:redis
+      - mongodb:mongodb
+      - flower:flower
+      - beat:beat
+      - worker-transactions:worker-transactions
+      - worker-events:worker-events
+      - rabbitmq:rabbitmq
+      - memcached:memcached
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    sysctls:
+      net.core.somaxconn: 10240
+    user: root
+    networks:
+      backend:
+        aliases:
+            - uwsgi
+
+  dbbackups:
+    container_name: peelj-db-backups
+    image: prodrigestivill/postgres-backup-local
+    restart: always
+    volumes:
+      - ./backups:/backups
+    links:
+      - db:db
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=peelj 
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
+      - SCHEDULE=@every 0h30m00s
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+      - HEALTHCHECK_PORT=81
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - dbbackups
+
+  # This is normally the main entry point for a production server
+  web:
+    # Note you cannot scale if you use container_name
+    container_name: peelj-web
+    image: nginx
+    hostname: nginx
+    volumes:
+      - ./sites-enabled:/etc/nginx/conf.d
+      ###################################
+      # Load your ssl certificates here #
+      ###################################
+      # - ./certs/ssl-bundle.crt:/etc/nginx/ssl-bundle.crt
+      # - ./certs/peelj_co.key:/etc/nginx/peelj_co.key
+
+      # - ./sites-enabled:/etc/nginx/conf.d:ro
+      # I dont use volumes_from as I want to use the ro modifier
+      - ./static:/home/web/static:ro
+      - ./media:/home/web/media:ro
+      - ./logs:/var/log/nginx
+    depends_on:
+      - uwsgi
+    links:
+      - memcached:memcached
+    ports:
+      - "80:8080"
+      # Enable this port once ssl certificates are loaded
+      # - "443:443"
+    restart: unless-stopped
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - web
+
+  elasticsearch:
+    # Note you cannot scale if you use conteiner_name
+    container_name: elasticsearch
+    hostname: elasticsearch
+    restart: on-failure:5
+    #  read_only: true
+    image: elasticsearch:2.4.2
+    hostname: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - elasticsearch
+
+  redis:
+    container_name: redis
+    image: bitnami/redis
+    hostname: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=1
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - redis
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8.1-beta.1-management
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_NODENAME=rabbit
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit_test_password
+      - RABBITMQ_DEFAULT_VHOST=/
+      - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    ports:
+    - "5672:5672"
+    - "15672:15672"
+    restart: always
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - rabbitmq
+
+  worker-transactions:
+    build:
+      context: docker
+    command: celery worker -A jobsp.celery -l info -Q transactions -n transactions@%h
+    hostname: worker-transactions
+    environment:
+      - CELERYD_USER="celery"
+      - CELERYD_GROUP="celery"
+      - DATABASE_NAME=peelj
+      - DATABASE_USERNAME=docker
+      - DATABASE_PASSWORD=docker
+      - DATABASE_HOST=db
+      - MONGODB_USERNAME=my_user
+      - MONGODB_PASSWORD=password123
+      - MONGODB_DATABASE=my_database
+      - MONGODB_SYSTEM_LOG_VERBOSITY=3
+      - MONGODB_PORT_NUMBER=27017
+      - MONGODB_HOSTNAME=mongodb
+      - DJANGO_SETTINGS_MODULE=jobsp.settings_server
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
+      - VIRTUAL_PORT=80
+      - REDIS_HOST=redis
+      - C_FORCE_ROOT="true"
+      - RABBITMQ_NODENAME=rabbit
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit_test_password
+      - RABBITMQ_DEFAULT_VHOST=/
+      - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
+      - BROKER_API=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
+      - MAILSENDER=SENDGRID
+      - CONTACT_NUMBER=8500099499
+      - PEEL_URL=https://peeljobs.com
+      - MEMCACED_HOST=memcached
+    volumes:
+      - ..:/home/web/django_project
+      - ./static:/home/web/static:rw
+      - ./media:/home/web/media:rw
+      - ./logs:/var/log/
+    links:
+      - smtp:smtp
+      - db:db
+      - mongodb:mongodb
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    sysctls:
+      net.core.somaxconn: 10240
+    networks:
+      backend:
+        aliases:
+            - worker-transactions
+
+  worker-events:
+    build:
+      context: docker
+    command: celery worker -A jobsp.celery -l info -Q events -n events@%h
+    hostname: worker-events
+    environment:
+      - CELERYD_USER="celery"
+      - CELERYD_GROUP="celery"
+      - DATABASE_NAME=peelj
+      - DATABASE_USERNAME=docker
+      - DATABASE_PASSWORD=docker
+      - DATABASE_HOST=db
+      - MONGODB_USERNAME=my_user
+      - MONGODB_PASSWORD=password123
+      - MONGODB_DATABASE=my_database
+      - MONGODB_SYSTEM_LOG_VERBOSITY=3
+      - MONGODB_PORT_NUMBER=27017
+      - MONGODB_HOSTNAME=mongodb
+      - DJANGO_SETTINGS_MODULE=jobsp.settings_server
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
+      - VIRTUAL_PORT=80
+      - REDIS_HOST=redis
+      - C_FORCE_ROOT="true"
+      - RABBITMQ_NODENAME=rabbit
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit_test_password
+      - RABBITMQ_DEFAULT_VHOST=/
+      - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
+      - BROKER_API=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
+      - MAILSENDER=SENDGRID
+      - CONTACT_NUMBER=8500099499
+      - PEEL_URL=https://peeljobs.com
+      - MEMCACED_HOST=memcached
+    volumes:
+      - ..:/home/web/django_project
+      - ./static:/home/web/static:rw
+      - ./media:/home/web/media:rw
+      - ./logs:/var/log/
+    links:
+      - smtp:smtp
+      - db:db
+      - mongodb:mongodb
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    sysctls:
+      net.core.somaxconn: 10240
+    networks:
+      backend:
+        aliases:
+            - worker-events
+
+  beat:
+    build:
+      context: docker
+    command: ['celery', '-A', 'jobsp', 'beat','-l', 'info', '--pidfile', '/tmp/celeryd.pid']
+    hostname: beat
+    environment:
+      - DATABASE_NAME=peelj
+      - DATABASE_USERNAME=docker
+      - DATABASE_PASSWORD=docker
+      - DATABASE_HOST=db
+      - MONGODB_USERNAME=my_user
+      - MONGODB_PASSWORD=password123
+      - MONGODB_DATABASE=my_database
+      - MONGODB_SYSTEM_LOG_VERBOSITY=3
+      - MONGODB_PORT_NUMBER=27017
+      - MONGODB_HOSTNAME=mongodb
+      - DJANGO_SETTINGS_MODULE=jobsp.settings_server
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
+      - VIRTUAL_PORT=80
+      - REDIS_HOST=redis
+      - C_FORCE_ROOT="true"
+      - RABBITMQ_NODENAME=rabbit
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit_test_password
+      - RABBITMQ_DEFAULT_VHOST=/
+      - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
+      - BROKER_API=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
+      - MAILSENDER=SENDGRID
+      - CONTACT_NUMBER=8500099499
+      - PEEL_URL=https://peeljobs.com
+      - MEMCACED_HOST=memcached
+    depends_on:
+      - memcached
+      - rabbitmq
+    volumes:
+      - ..:/home/web/django_project
+      - ./static:/home/web/static:rw
+      - ./media:/home/web/media:rw
+      - ./logs:/var/log/
+    restart: always
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - beat
+
+  flower:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    hostname: flower
+    command: celery flower -A jobsp.celery --url-prefix=flower -l info --broker=amqp://rabbit:rabbit_test_password@rabbitmq:5672// --broker-api=http://rabbit:rabbit_test_password@rabbitmq:5672/api/
+    ports:
+      - "5555:5555"
+    environment:
+      - DATABASE_NAME=peelj
+      - DATABASE_USERNAME=docker
+      - DATABASE_PASSWORD=docker
+      - DATABASE_HOST=db
+      - MONGODB_USERNAME=my_user
+      - MONGODB_PASSWORD=password123
+      - MONGODB_DATABASE=my_database
+      - MONGODB_SYSTEM_LOG_VERBOSITY=3
+      - MONGODB_PORT_NUMBER=27017
+      - MONGODB_HOSTNAME=mongodb
+      - DJANGO_SETTINGS_MODULE=jobsp.settings_server
+      - VIRTUAL_HOST=peeljobs.com,www.peeljobs.com
+      - VIRTUAL_PORT=80
+      - REDIS_HOST=redis
+      - C_FORCE_ROOT="true"
+      - RABBITMQ_NODENAME=rabbit
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit_test_password
+      - RABBITMQ_DEFAULT_VHOST=/
+      - BROKER_URL=amqp://rabbit:rabbit_test_password@rabbitmq:5672//
+      - RAVEN_DSN=http://idontexist:acdda60387a743d9af2ef1b1884f306e@sentry.peeljobs.com/83
+      - DEFAULTFROMEMAIL=support@peeljobs.com
+      - MAILSENDER=SENDGRID
+      - CONTACT_NUMBER=8500099499
+      - PEEL_URL=https://peeljobs.com
+      - MEMCACED_HOST=memcached
+    depends_on:
+      - beat
+      - worker-events
+      - worker-transactions
+      - rabbitmq
+    volumes:
+      - ..:/home/web/django_project
+      - ./static:/home/web/static:rw
+      - ./media:/home/web/media:rw
+      - ./logs:/var/log/
+    restart: always
+    sysctls:
+      net.core.somaxconn: 228
+    networks:
+      backend:
+        aliases:
+            - flower
+
+  memcached:
+    container_name: memcached
+    hostname: memcached
+    image: memcached
+    entrypoint:
+     - memcached
+     - -m 64
+    ports:
+     - "11211:11211"
+    expose:
+     - "11211"
+    sysctls:
+      net.core.somaxconn: 10240
+    networks:
+      backend:
+        aliases:
+            - memcached
+networks:
+  backend:
