@@ -120,7 +120,7 @@
                         <ul>
                     <li>
                     {% if recruiter.facebook_user %}
-                    <a class="facebook" href="{{ recruiter.facebook_user.facebook_url }}" target="_blank">
+                    <a class="facebook" href="https://facebook.com/{{ recruiter.facebook_user.facebook_url }}" target="_blank">
                       <i class='fa fa-facebook'></i>
                     </a>
                     {% else %}
@@ -130,7 +130,7 @@
                     {% endif %}</li>
                     <li>
                     {% if recruiter.twitter %}
-                    <a class="twitter" href="http://twitter.com/{{ recruiter.twitter.screen_name }}/" target="_blank">
+                    <a class="twitter" href="https://twitter.com/{{ recruiter.twitter.screen_name }}" target="_blank">
                       <i class='fa fa-twitter'></i>
                     </a>
                     {% else %}
@@ -141,7 +141,7 @@
                     </li>
                     <li>
                     {% if recruiter.linkedin %}
-                    <a class="linkedin" href="{{ recruiter.linkedin.linkedin_url }}" target="_blank">
+                    <a class="linkedin" href="https://linkedin.com/{{ recruiter.linkedin.linkedin_url }}" target="_blank">
                       <i class='fa fa-linkedin'></i>
                     </a>
                     {% else %}
@@ -149,7 +149,6 @@
                       <a class="linkedin" style="background-color:#676767"><i class='fa fa-linkedin'></i></a>
                     </span>
                     {% endif %}</li>
-
                         </ul>
                       </span>
                     </div>

@@ -76,24 +76,33 @@ def agency_admin_login_required(view_func):
 # mto is list like ['as@sd.xom', 'sf@ogf.com']
 def Memail(mto, mfrom, msubject, mbody, user_active):
     from django.core.mail import send_mail, get_connection
-
+    if type(mto)!="list":
+        mto = [mto]
+    mfrom = settings.DEFAULT_FROM_EMAIL
+    print(mto)
     mfrom = settings.DEFAULT_FROM_EMAIL
 
-    if user_active:
+    if os.getenv("ENV_TYPE") == "DEV":
         send_mail(msubject, mbody, mfrom, mto, html_message=mbody, fail_silently=False)
+
     else:
-        mailgun_backend = get_connection(
-            "anymail.backends.mailgun.EmailBackend", api_key=settings.MAILGUN_API_KEY
-        )
-        send_mail(
-            msubject,
-            mbody,
-            mfrom,
-            mto,
-            html_message=mbody,
-            fail_silently=False,
-            connection=mailgun_backend,
-        )
+
+        if user_active:
+            send_mail(msubject, mbody, mfrom, mto, html_message=mbody, fail_silently=False)
+        else:
+            mailgun_backend = get_connection(
+                "anymail.backends.mailgun.EmailBackend", api_key=settings.MAILGUN_API_KEY
+            )
+            send_mail(
+                msubject,
+                mbody,
+                mfrom,
+                mto,
+                html_message=mbody,
+                fail_silently=False,
+                connection=mailgun_backend,
+            )
+
 
 
 def get_prev_after_pages_count(page, no_pages):
@@ -266,6 +275,9 @@ def get_resume_data(file):
     elif file_format == "doc":
         text = document_to_text(file_name, settings.BASE_DIR + "/resume/" + file_name)
         email, mobile = get_email_resume(text)
+    elif file_format == "odt":
+        text = document_to_text(file_name, settings.BASE_DIR + "/resume/" + file_name)
+        email, mobile = get_email_resume(text)
     elif file_format == "docx":
         document = opendocx(settings.BASE_DIR + "/resume/" + file_name)
         paratextlist = getdocumenttext(document)
@@ -279,9 +291,6 @@ def get_resume_data(file):
             if m:
                 email = m.group(0)
         text = "\n\n".join(text)
-    elif file_format == "odt":
-        text = document_to_text(file_name, settings.BASE_DIR + "/resume/" + file_name)
-        email, mobile = get_email_resume(text)
     remove_file(settings.BASE_DIR + "/resume/" + f_name + ".txt")
     remove_file(settings.BASE_DIR + "/resume/" + file_name)
     return email, mobile, text

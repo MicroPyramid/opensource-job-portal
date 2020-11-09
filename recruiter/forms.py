@@ -2,7 +2,7 @@ import re
 
 from django import forms
 from django.forms.models import ModelForm
-from datetime import datetime
+from datetime import datetime, date
 
 from peeldb.models import (
     Company,
@@ -17,6 +17,7 @@ from peeldb.models import (
 )
 from django.contrib.auth.hashers import check_password
 from mpcomp.views import get_asia_time, custom_password_check
+from django.contrib.auth import authenticate
 
 
 class Company_Form(forms.ModelForm):
@@ -924,3 +925,33 @@ class UserStatus(forms.Form):
         self.fields["status"].widget.attrs.update(
             {"id": "user_status_" + str(user_id), "class": "user_status"}
         )
+
+
+class LoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request", None)
+        super(LoginForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        email = self.cleaned_data.get("email")
+        password = self.cleaned_data.get("password")
+        if email and password:
+            self.user = authenticate(email=email, password=password)
+            if self.user:
+                if not self.user.is_active:
+                    if not self.user.is_active:
+                        raise forms.ValidationError("Your Account is inactive please contact admin.")
+                    else:
+                        today_date = date.today()
+                        user_created_date = self.user.created_on
+                        difference = today_date - user_created_date
+                        if difference.days > 7:
+                            raise forms.ValidationError("Please activate your account by verifying your email.")
+                if not self.user.user_type == 'RR':
+                    raise forms.ValidationError("You are not recuiter")
+            else:
+                raise forms.ValidationError("Invalid email and password")
+        return self.cleaned_data
