@@ -456,7 +456,7 @@ def google_login(request):
         rty += (
             "&scope=https://www.googleapis.com/auth/userinfo.profile"
             + " https://www.googleapis.com/auth/userinfo.email"
-            + " https://www.googleapis.com/auth/contacts.readonly&redirect_uri="
+            + " &redirect_uri="
             + request.scheme
             + "://"
             + request.META["HTTP_HOST"]

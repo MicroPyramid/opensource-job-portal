@@ -305,6 +305,8 @@ $(".login_modal").click(function(e){
         $('p.hint').remove();
         $('#login_div').hide()
         $('#register_div').show()
+        $('#ApplicantFormRegister').get(0).reset()
+
       });
       $('.new_user_login').click(function(e){
         e.preventDefault();

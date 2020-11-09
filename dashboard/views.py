@@ -1087,6 +1087,7 @@ def new_admin_user(request):
     permissions = (
         Permission.objects.filter(content_type_id=contenttype)
         .exclude(codename__icontains="jobposts")
+        .exclude(codename__icontains="blog")
         .order_by("id")[3:]
     )
     return render(
@@ -4702,8 +4703,8 @@ def google_login(request):
                     picture=picture,
                 )
             if user.is_superuser:
-                user = authenticate(username=user.username)
-                login(request, user)
+                # user = authenticate(username=user.username)
+                login(request, user, backend="django.contrib.auth.backends.ModelBackend")
                 return HttpResponseRedirect("/dashboard/")
         return HttpResponseRedirect("/")
     else:

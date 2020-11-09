@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.conf.urls import include, url
+from django.urls import path
 from pjob.views import (
     skill_location_wise_fresher_jobs,
     skill_fresher_jobs,
@@ -155,7 +156,7 @@ urlpatterns = [
     url(r"^skill-auto/$", skill_auto_search),
     url(r"^city-auto/$", city_auto_search),
     url(r"^get/search-slugs/$", search_slugs, name="get_search_slugs"),
-    # url(r'^admin/', include(admin.site.urls)),  # Here's the typo
+    # url(r'^admin/', admin.site.urls),# Here's the typo
     url(r"^search/", include("search.urls", namespace="search")),
     url(
         r"^applicant-unsubscribe/(?P<email>[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4})/$",
@@ -308,6 +309,8 @@ urlpatterns = [
         name="alert_subscribe_verification",
     ),
     url(r"^process-email/$", process_email, name="process_email"),
+    # url(r'^dj-rest-auth/', include('dj_rest_auth.urls')),
+    url(r'^api-recruiter/', include('recruiter.api_urls', namespace="api_recruiter")),
 ]
 
 handler404 = custom_404

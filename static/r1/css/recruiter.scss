@@ -75,6 +75,9 @@ button{
 	}
 }
 /* header */
+img {
+  border-radius: 50%;
+}
 #header_top{
 	background: #fff;
 	position: fixed;
@@ -155,8 +158,9 @@ button{
 				padding: 0px !important;
 				position: relative;
 				&:hover{
-					background: $stroke_color!important;
-					cursor: pointer;
+					background: #fff;
+    				cursor: pointer;
+    				color: #000;
 				}
 				&.active-page{
 					background:#2795E9;

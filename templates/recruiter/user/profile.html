@@ -8,42 +8,7 @@
     <h3>Profile</h3>
     <!-- row one -->
     <div class="row_one">
-      <!-- ticket -->
-      <div class="pp_div">
-        <div class="ticket_each img_div">
-          <div class="img">
-            <img src="{% if request.user.profile_pic %}{{request.user.profile_pic.url}}{% else %}{% static 'dummy.jpg' %}{% endif %}">
-            <span class="new_logo file_upload"><a href="#"><i class="fa fa-camera" aria-hidden="true"></i></a></span>
-            <form name="profilepicform" id="profilepicform">
-              <input type="file" id='file_input' name="profile_pic" id="profile_pic" accept="image/*" style="display: none;" onchange="javascript: submitform()">
-              <input type="submit" id='submit' name="submit" style="display: none;">
-            </form>
-          </div>
-          <div class="name_div_wrap">
-            <span class='name'>{{ user.username }}</span>
-            <span class='email'>{{ user.email }}</span>
-            <span class='button'><a href="{% url 'recruiter:edit_profile' %}">Edit profile</a></span>
-          </div>
-          <div class="jobs_posted">
-            <i class='fa fa-graduation-cap'></i>
-            <span class='heading'>Jobs Posted</span>
-            <span class='count'>{{ user.get_active_jobposts_count }}</span>
-          </div>
-          <div class="replies_received">
-            <i class='fa fa-comments'></i>
-            <span class='heading'>No of Applicants</span>
-            <span class='count'>{{ user.get_applied_users|length }}</span>
-          </div>
-          <div class="clicks">
-            <i class='fa fa-hand-o-up'></i>
-            <span class='heading'>Clicks Registered</span>
-            <span class='count'>{{ user.get_total_job_post_views_count }}</span>
-          </div>
-        </div>
-      </div>
-      <!--/ ticket -->
-      <!-- ticket -->
-      <div class="personal_info_div">
+       <div class="personal_info_div">
         <div class="ticket_each">
           <h5>Personal Details</h5>
           <!-- detail each -->
@@ -60,7 +25,6 @@
             <label>Last Name</label>
             <span class='value'>{% if user.last_name %}{{ user.last_name }}{% else %}Not Specified{% endif %}</span>
           </div>
-
           <!--/ detail each -->
           <!-- detail each -->
           {% if user.dob %}
@@ -170,11 +134,9 @@
           {% if user.address %}
           <div class="detail_each">
             <label>Present Address</label>
-            <div class='value'>
             <address>
-              {{ user.address|linebreaks }}
-            </address>
-            </div>
+          <span class="value">{{ user.address|linebreaks }}</span>
+          </address> 
           </div>
           {% endif %}
           <!--/ detail each -->
@@ -184,7 +146,7 @@
             <label>Permanent Address</label>
             <div class='value'>
             <address>
-              {{ user.permanent_address|linebreaks }}
+          <span class="value">{{ user.permanent_address|linebreaks }}</span>
             </address>
             </div>
           </div>
@@ -204,6 +166,37 @@
           <div class="clearfix"></div>
         </div>
       </div>
+      <!-- ticket -->
+      <div class="pp_div">
+        <div class="ticket_each img_div">
+          
+          <div class="name_div_wrap">
+            <span class='name'>{{ user.username }}</span>
+            <span class='email'>{{ user.email }}</span>
+            <span class='button'><a href="{% url 'recruiter:edit_profile' %}">Edit profile</a></span>
+          </div>
+          <div class="jobs_posted">
+            <a href="{% url 'recruiter:list' %}">
+            <i class='fa fa-briefcase'></i>
+            <span class='heading'>Jobs Posted</span>
+            <span class='count'>{{ user.get_active_jobposts_count|length }}</span></a>
+          </div>
+          <div class="replies_received">
+            <a href="{% url 'recruiter:messages' %}">
+            <i class='fa fa-comments'></i>
+            <span class='heading'>No of Applicants</span>
+            <span class='count'>{{ user.get_applied_users|length }}</span></a>
+          </div>
+          <div class="clicks">
+            <i class='fa fa-hand-o-up'></i>
+            <span class='heading'>Clicks Registered</span>
+            <span class='count'>{{ user.get_total_job_post_views_count|length }}</span>
+          </div>
+        </div>
+      </div>
+      <!--/ ticket -->
+      <!-- ticket -->
+     
       <!--/ ticket -->
       <div class="clearfix"></div>
     </div>

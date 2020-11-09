@@ -77,7 +77,7 @@
           <div class="form-group">
               <label class="col-sm-2 control-label">User Role</label>
               <div class="col-sm-10">
-              <select class="form-control user_type" name="user_type" id="user_type" multiple>
+              <select class="form-control user_type" name="user_type" style='height:100px'id="user_type" multiple>
                 <option value="">Select A Permission</option>
                 {% for permission in permissions %}
                 <option value="{{ permission.id }}" id="{{ permission.id }}">{{ permission.codename }}</option>

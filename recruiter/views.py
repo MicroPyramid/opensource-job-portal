@@ -29,6 +29,7 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import Permission, ContentType
 from django.db.models import Case, When
 from boto.s3.connection import S3Connection
+from django.contrib.auth import load_backend
 
 
 from peeldb.models import (
@@ -1578,18 +1579,21 @@ def new_user(request):  # pragma: no mccabe
                     UserEmail.objects.create(
                         user=user_obj, email=request.POST["email"], is_primary=True
                     )
-                    #                     user = authenticate(
-                    #                         username=request.POST['email'], password=request.POST['password'])
-                    #                     if not request.user.is_authenticated:
-                    #                         if not hasattr(user_obj, 'backend'):
-                    #                             for backend in settings.AUTHENTICATION_BACKENDS:
-                    #                                 if user_obj == load_backend(backend).get_user(user_obj.id):
-                    #                                     user_obj.backend = backend
-                    #                                     break
-                    #                         if hasattr(user_obj, 'backend'):
-                    #                             login(request, user_obj)
-                    user = authenticate(username=request.POST["username"])
-                    login(request, user)
+
+                    user = authenticate(
+                        username=request.POST['email'], password=request.POST['password'])
+                    if not request.user.is_authenticated:
+                        if not hasattr(user_obj, 'backend'):
+                            for backend in settings.AUTHENTICATION_BACKENDS:
+                                if user_obj == load_backend(backend).get_user(user_obj.id):
+                                    user_obj.backend = backend
+                                    break
+                        if hasattr(user_obj, 'backend'):
+                            login(request, user_obj)
+
+                    # user = authenticate(username=request.POST["email"])
+                    # print (user, request.POST["email"])
+                    # login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     data = {
                         "error": False,
                         "message": "An email has been sent to your email id, Please activate your account",
@@ -1618,8 +1622,18 @@ def account_activation(request, user_id):
         user.last_login = datetime.now()
         user.activation_code = ""
         user.save()
-        registered_user = authenticate(username=user.username)
-        login(request, registered_user)
+
+        user_obj = authenticate(username=user.email)
+        if not request.user.is_authenticated:
+            if not hasattr(user, 'backend'):
+                for backend in settings.AUTHENTICATION_BACKENDS:
+                    if user == load_backend(backend).get_user(user.id):
+                        user.backend = backend
+                        break
+            if hasattr(user, 'backend'):
+                login(request, user)
+
+
         if user.mobile_verified:
             if user.is_agency_recruiter:
                 return HttpResponseRedirect(reverse("agency:index"))

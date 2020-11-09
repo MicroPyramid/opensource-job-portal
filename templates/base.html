@@ -768,6 +768,7 @@
     $('#login_register').modal('show');
     $("#login_div").hide()
     $("#register_div").show()
+    $('#ApplicantFormRegister').trigger("reset");
     $("#modal_head").show()
   {% endif %}
   {% if request.GET.verification == 'success' %}

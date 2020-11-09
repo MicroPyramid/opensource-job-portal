@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from celery.schedules import crontab
+from corsheaders.defaults import default_headers, default_methods
 
 load_dotenv()
 
@@ -141,9 +142,14 @@ INSTALLED_APPS = (
     "tellme",
     "django_celery_beat",
     "pymongo",
+    "corsheaders",
+    'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
 )
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -154,6 +160,17 @@ MIDDLEWARE = [
     "jobsp.middlewares.DetectMobileBrowser",
     "jobsp.middlewares.LowerCased",
 ]
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+    "http://127.0.0.1:4200"
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.peeljobs\.com$",
+]
+CORS_ALLOW_METHODS = list(default_methods)
+CORS_ALLOW_HEADERS = list(default_headers)
 
 
 AUTH_USER_MODEL = "peeldb.User"
@@ -488,3 +505,12 @@ if os.getenv("ENV_TYPE") == "DEV":
             # },
         },
     }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+REST_USE_JWT = True
