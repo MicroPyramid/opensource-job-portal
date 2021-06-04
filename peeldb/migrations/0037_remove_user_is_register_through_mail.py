@@ -12,5 +12,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="user", name="is_register_through_mail",),
+        migrations.RemoveField(
+            model_name="user",
+            name="is_register_through_mail",
+        ),
     ]

@@ -104,7 +104,13 @@ def custom_500(request):
                 status=404,
             )
     return render(
-        request, "404.html", {"message": message, "reason": reason,}, status=404
+        request,
+        "404.html",
+        {
+            "message": message,
+            "reason": reason,
+        },
+        status=404,
     )
 
 

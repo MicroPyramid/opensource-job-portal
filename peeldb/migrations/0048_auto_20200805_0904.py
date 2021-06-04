@@ -11,12 +11,18 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name="city", name="meta", field=models.JSONField(),
+            model_name="city",
+            name="meta",
+            field=models.JSONField(),
         ),
         migrations.AlterField(
-            model_name="searchresult", name="search_text", field=models.JSONField(),
+            model_name="searchresult",
+            name="search_text",
+            field=models.JSONField(),
         ),
         migrations.AlterField(
-            model_name="skill", name="meta", field=models.JSONField(),
+            model_name="skill",
+            name="meta",
+            field=models.JSONField(),
         ),
     ]

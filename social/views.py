@@ -54,10 +54,10 @@ from .tasks import (
 def login_and_apply(request):
 
     """
-        1. Check for jobpost id present in user session exists or not
-        2. Checking for if user already applies to a job
-        3. if user uploads a resume or profile completion percantage > 55 then user can applies to job
-        4. Sending a notification to recruiter if user applies to job, also sending a resume if user uploads resume
+    1. Check for jobpost id present in user session exists or not
+    2. Checking for if user already applies to a job
+    3. if user uploads a resume or profile completion percantage > 55 then user can applies to job
+    4. Sending a notification to recruiter if user applies to job, also sending a resume if user uploads resume
     """
     job_post = JobPost.objects.filter(
         id=request.session["job_id"], status="Live"

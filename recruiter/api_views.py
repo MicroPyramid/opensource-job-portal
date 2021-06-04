@@ -11,9 +11,20 @@ from django.template import loader, Template, Context
 
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
-from peeldb.models import (User, JobPost, Company, JOB_TYPE, Country, City,
-                           AGENCY_INVOICE_TYPE, AGENCY_JOB_TYPE, AgencyResume,
-                           AgencyRecruiterJobposts, AppliedJobs, MARTIAL_STATUS)
+from peeldb.models import (
+    User,
+    JobPost,
+    Company,
+    JOB_TYPE,
+    Country,
+    City,
+    AGENCY_INVOICE_TYPE,
+    AGENCY_JOB_TYPE,
+    AgencyResume,
+    AgencyRecruiterJobposts,
+    AppliedJobs,
+    MARTIAL_STATUS,
+)
 from recruiter.permissions import RecruiterRequiredPermission
 from recruiter import status
 from mpcomp.views import (
@@ -35,8 +46,7 @@ def get_token(user):
 
 @api_view(["POST"])
 def login_view(request):
-    form_data = request.query_params if len(
-        request.data) == 0 else request.data
+    form_data = request.query_params if len(request.data) == 0 else request.data
 
     form = LoginSerializer(data=form_data)
     if form.is_valid():
@@ -103,7 +113,7 @@ def jobs_list(request):
 
     no_pages = int(math.ceil(float(active_jobs_list.count()) / items_per_page))
     active_jobs_list = active_jobs_list[
-        (page - 1) * items_per_page: page * items_per_page
+        (page - 1) * items_per_page : page * items_per_page
     ]
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
         page, no_pages
@@ -118,7 +128,8 @@ def jobs_list(request):
         "last_page": no_pages,
         "search_value": request.POST["search_value"]
         if "search_value" in request.POST
-        else "All", }
+        else "All",
+    }
     return JsonResponse(response_data, status=status.HTTP_200_OK)
 
 
@@ -144,10 +155,9 @@ def inactive_jobs(request):
     else:
         page = 1
 
-    no_pages = int(
-        math.ceil(float(inactive_jobs_list.count()) / items_per_page))
+    no_pages = int(math.ceil(float(inactive_jobs_list.count()) / items_per_page))
     inactive_jobs_list = inactive_jobs_list[
-        (page - 1) * items_per_page: page * items_per_page
+        (page - 1) * items_per_page : page * items_per_page
     ]
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
         page, no_pages
@@ -211,8 +221,7 @@ def add_other_qualifications(job_post, data, user):
             other_skills = value.replace(" ", "").split(",")
             for value in other_skills:
                 if value != "":
-                    qualification = Qualification.objects.filter(
-                        name__iexact=value)
+                    qualification = Qualification.objects.filter(name__iexact=value)
                     if qualification:
                         job_post.edu_qualification.add(qualification[0])
                     else:
@@ -272,8 +281,7 @@ def add_other_functional_area(job_post, data, user):
             other_areas = value.replace(" ", "").split(",")
             for value in other_areas:
                 if value != "":
-                    functional_area = FunctionalArea.objects.filter(
-                        name__iexact=value)
+                    functional_area = FunctionalArea.objects.filter(name__iexact=value)
                     if functional_area:
                         job_post.functional_area.add(functional_area[0])
                     else:
@@ -405,8 +413,7 @@ def set_other_fields(post, data, user):
         walkin_from_date = datetime.strptime(
             data.get("walkin_from_date"), "%m/%d/%Y"
         ).strftime("%Y-%m-%d")
-        post.walkin_show_contact_info = data.get(
-            "walkin_show_contact_info") == "on"
+        post.walkin_show_contact_info = data.get("walkin_show_contact_info") == "on"
         post.walkin_from_date = walkin_from_date
         walkin_to_date = datetime.strptime(
             data.get("walkin_to_date"), "%m/%d/%Y"
@@ -431,13 +438,11 @@ def set_other_fields(post, data, user):
         #     post.agency_category = agency_category
         post.save()
 
-        agency_resumes = AgencyResume.objects.filter(
-            uploaded_by__company=user.company)
+        agency_resumes = AgencyResume.objects.filter(uploaded_by__company=user.company)
         agency_resumes = agency_resumes.filter(skill__in=post.skills.all())
 
         for each_resume in agency_resumes:
-            AgencyApplicants.objects.create(
-                applicant=each_resume, job_post=post)
+            AgencyApplicants.objects.create(applicant=each_resume, job_post=post)
         # post.agency_recruiters.clear()
         # post.agency_recruiters.add(*data.getlist('agency_recruiters'))
         for each_recruiter in data.getlist("agency_recruiters"):
@@ -455,8 +460,7 @@ def adding_other_fields_data(data, post, user):
     if "final_industry" in data.keys():
         add_other_industry(post, json.loads(data["final_industry"]), user)
     if "final_functional_area" in data.keys():
-        add_other_functional_area(post, json.loads(
-            data["final_functional_area"]), user)
+        add_other_functional_area(post, json.loads(data["final_functional_area"]), user)
     if "other_location" in data.keys():
         add_other_locations(post, data, user)
 
@@ -464,8 +468,7 @@ def adding_other_fields_data(data, post, user):
     add_interview_location(data, post, no_of_locations)
 
     adding_keywords(data.getlist("keywords"), post)
-    post.send_email_notifications = data.get(
-        "send_email_notifications") == "True"
+    post.send_email_notifications = data.get("send_email_notifications") == "True"
 
     post.status = data.get("status")
     post.published_message = data.get("published_message")
@@ -549,12 +552,10 @@ def retreving_form_errors(request, post):
         errors = checking_error_value(errors, request.POST["final_industry"])
 
     if "final_functional_area" in request.POST.keys():
-        errors = checking_error_value(
-            errors, request.POST["final_functional_area"])
+        errors = checking_error_value(errors, request.POST["final_functional_area"])
 
     if "final_edu_qualification" in request.POST.keys():
-        errors = checking_error_value(
-            errors, request.POST["final_edu_qualification"])
+        errors = checking_error_value(errors, request.POST["final_edu_qualification"])
 
     if "final_skills" in request.POST.keys():
         errors = checking_error_value(errors, request.POST["final_skills"])
@@ -570,7 +571,7 @@ def new_job(request, job_type):
             companies = Company.objects.filter(
                 name__icontains=request.GET.get("q"), is_active=True
             ).distinct()[:10]
-            companies_names = companies.values_list('name', flat=True)
+            companies_names = companies.values_list("name", flat=True)
             if request.GET.get("register_name"):
                 company = Company.objects.filter(
                     name=request.GET.get("register_name")
@@ -610,11 +611,9 @@ def new_job(request, job_type):
                     job_type=job_type, user__company=request.user.company
                 )
             else:
-                jobposts = JobPost.objects.filter(
-                    job_type=job_type, user=request.user)
+                jobposts = JobPost.objects.filter(job_type=job_type, user=request.user)
 
-            clients = AgencyCompany.objects.filter(
-                company=request.user.company)
+            clients = AgencyCompany.objects.filter(company=request.user.company)
             show_clients = True
             show_recruiters = True
             if request.user.is_agency_recruiter:
@@ -623,8 +622,12 @@ def new_job(request, job_type):
             return JsonResponse(
                 {
                     "job_types": JOB_TYPE,
-                    "functional_area": FunctionalAreaSerializer(functional_area, many=True).data,
-                    "qualifications": QualificationSerializer(qualifications, many=True).data,
+                    "functional_area": FunctionalAreaSerializer(
+                        functional_area, many=True
+                    ).data,
+                    "qualifications": QualificationSerializer(
+                        qualifications, many=True
+                    ).data,
                     "years": YEARS,
                     "months": MONTHS,
                     "industries": IndustrySerializer(industries, many=True).data,
@@ -639,8 +642,9 @@ def new_job(request, job_type):
                     "clients": AgencyCompanySerializer(clients, many=True).data,
                     "show_clients": show_clients,
                     "show_recruiters": show_recruiters,
-                    "user_details": UserSerializer(request.user).data
-                }, status=status.HTTP_200_OK
+                    "user_details": UserSerializer(request.user).data,
+                },
+                status=status.HTTP_200_OK,
             )
         else:
             message = "Sorry, Your account is not verified"
@@ -677,7 +681,7 @@ def new_job(request, job_type):
 @permission_classes((RecruiterRequiredPermission,))
 def getout(request):
     request.user.auth_token.delete()
-    return JsonResponse({'error': False}, status=status.HTTP_200_OK)
+    return JsonResponse({"error": False}, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -688,8 +692,7 @@ def edit_job(request, job_post_id):
             id=job_post_id, user__company=request.user.company
         ).first()
     else:
-        job_post = JobPost.objects.filter(
-            id=job_post_id, user=request.user).first()
+        job_post = JobPost.objects.filter(id=job_post_id, user=request.user).first()
 
     if request.method == "GET":
         if request.user.mobile_verified:
@@ -703,25 +706,21 @@ def edit_job(request, job_post_id):
                 )
                 industries.extend(job_post.industry.filter(status="InActive"))
 
-                cities = list(City.objects.filter(
-                    status="Enabled").order_by("name"))
+                cities = list(City.objects.filter(status="Enabled").order_by("name"))
                 cities.extend(job_post.location.filter(status="Disabled"))
 
                 qualifications = list(
-                    Qualification.objects.filter(
-                        status="Active").order_by("name")
+                    Qualification.objects.filter(status="Active").order_by("name")
                 )
                 qualifications.extend(
                     job_post.edu_qualification.filter(status="InActive")
                 )
 
                 recruiters = User.objects.filter(company=request.user.company)
-                clients = AgencyCompany.objects.filter(
-                    company=request.user.company)
+                clients = AgencyCompany.objects.filter(company=request.user.company)
 
                 functional_area = list(
-                    FunctionalArea.objects.filter(
-                        status="Active").order_by("name")
+                    FunctionalArea.objects.filter(status="Active").order_by("name")
                 )
                 functional_area.extend(
                     job_post.functional_area.filter(status="InActive")
@@ -729,8 +728,12 @@ def edit_job(request, job_post_id):
                 return JsonResponse(
                     {
                         "job_types": JOB_TYPE,
-                        "functional_area": FunctionalAreaSerializer(functional_area, many=True).data,
-                        "qualifications": QualificationSerializer(qualifications, many=True).data,
+                        "functional_area": FunctionalAreaSerializer(
+                            functional_area, many=True
+                        ).data,
+                        "qualifications": QualificationSerializer(
+                            qualifications, many=True
+                        ).data,
                         "years": YEARS,
                         "months": MONTHS,
                         "industries": IndustrySerializer(industries, many=True).data,
@@ -741,7 +744,8 @@ def edit_job(request, job_post_id):
                         "agency_invoice_types": AGENCY_INVOICE_TYPE,
                         "agency_job_types": AGENCY_JOB_TYPE,
                         "recruiters": UserSerializer(recruiters, many=True).data,
-                        "clients": AgencyCompanySerializer(clients, many=True).data, },
+                        "clients": AgencyCompanySerializer(clients, many=True).data,
+                    },
                 )
             else:
                 message = "Sorry, No Job Posts Found"
@@ -749,7 +753,9 @@ def edit_job(request, job_post_id):
         else:
             message = "Sorry, Your mobile number is not verified"
             reason = "Please verify your mobile number"
-        return JsonResponse({'error': True, 'message': message}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse(
+            {"error": True, "message": message}, status=status.HTTP_404_NOT_FOUND
+        )
 
     validate_form = JobPostForm(
         request.POST, request.FILES, instance=job_post, user=request.user
@@ -786,19 +792,26 @@ def delete_job(request, job_post_id):
 @permission_classes((RecruiterRequiredPermission,))
 def change_password(request):
     validate_changepassword = ChangePasswordSerializer(
-        data=request.data, user=request.user)
+        data=request.data, user=request.user
+    )
     if validate_changepassword.is_valid():
         user = request.user
         user.set_password(request.POST["newpassword"])
         user.save()
         request.user.auth_token.delete()
         token = get_token(user)
-        return JsonResponse({"error": False,
-                             "message": "Password changed successfully",
-                             "token": token.key}, status=status.HTTP_200_OK)
-    return JsonResponse({"error": True,
-                         "response": validate_changepassword.errors},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {
+                "error": False,
+                "message": "Password changed successfully",
+                "token": token.key,
+            },
+            status=status.HTTP_200_OK,
+        )
+    return JsonResponse(
+        {"error": True, "response": validate_changepassword.errors},
+        status=status.HTTP_400_BAD_REQUEST,
+    )
 
 
 @api_view(["GET", "POST"])
@@ -806,99 +819,101 @@ def change_password(request):
 def edit_profile(request):
     if request.method == "GET":
         functional_areas = FunctionalArea.objects.all()
-        user = User.objects.filter(id=request.user.id).prefetch_related(
-            "technical_skills", "industry", "functional_area"
-        ).first()
+        user = (
+            User.objects.filter(id=request.user.id)
+            .prefetch_related("technical_skills", "industry", "functional_area")
+            .first()
+        )
         return JsonResponse(
             {
-                "skills": SkillSerializer(
-                    Skill.objects.all(), many=True).data,
+                "skills": SkillSerializer(Skill.objects.all(), many=True).data,
                 "industries": IndustrySerializer(
-                    Industry.objects.all(), many=True).data,
+                    Industry.objects.all(), many=True
+                ).data,
                 "functional_areas": FunctionalAreaSerializer(
-                    functional_areas, many=True).data,
+                    functional_areas, many=True
+                ).data,
                 "martial_status": MARTIAL_STATUS,
-                "countries": CountrySerializer(
-                    Country.objects.all(), many=True).data,
+                "countries": CountrySerializer(Country.objects.all(), many=True).data,
                 "cities": CitySerializer(
-                    City.objects.all().select_related(
-                        "state", "state__country"), many=True).data,
+                    City.objects.all().select_related("state", "state__country"),
+                    many=True,
+                ).data,
                 "states": StateSerializer(
-                    State.objects.all().select_related(
-                        "country"), many=True).data,
+                    State.objects.all().select_related("country"), many=True
+                ).data,
                 "user": UserSerializer(user).data,
             },
         )
-    validate_user = UserUpdateSerializer(
-        data=request.data, instance=request.user)
+    validate_user = UserUpdateSerializer(data=request.data, instance=request.user)
     user_mobile = request.user.mobile
     if validate_user.is_valid():
-        city = City.objects.get(id=request.data.get('city'))
-        state = State.objects.get(id=request.data.get('state'))
+        city = City.objects.get(id=request.data.get("city"))
+        state = State.objects.get(id=request.data.get("state"))
         user = validate_user.save(city=city, state=state)
         if request.FILES.get("profile_pic"):
             user.profile_pic = request.FILES.get("profile_pic")
         if request.POST.get("gender"):
             user.gender = request.data.get("gender")
         if request.POST.get("dob"):
-            dob = datetime.strptime(
-                request.data.get("dob"), "%m/%d/%Y").strftime("%Y-%m-%d")
+            dob = datetime.strptime(request.data.get("dob"), "%m/%d/%Y").strftime(
+                "%Y-%m-%d"
+            )
             user.dob = dob
         else:
             user.dob = None
         user.show_email = request.data.get("show_email") == "on"
-        user.email_notifications = request.data.get(
-            "email_notifications") == "on"
+        user.email_notifications = request.data.get("email_notifications") == "on"
 
         user_login = False
         password_reset_diff = int(
             (datetime.now() - user.last_mobile_code_verified_on).seconds
         )
-        if not user.mobile_verified:
-            if password_reset_diff > 600:
-                random_code = rand_string(size=6)
-                message = (
-                    "Hello "
-                    + request.user.username
-                    + ", An OTP "
-                    + random_code
-                    + " for your Peeljobs recruiter account, Please Confirm and Proceed"
-                )
-                data = {
-                    "username": settings.BULK_SMS_USERNAME,
-                    "password": settings.BULK_SMS_PASSWORD,
-                    "from": settings.BULK_SMS_FROM,
-                    "to": request.POST.get("mobile"),
-                    "message": message,
-                }
-                # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
-                requests.get(
-                    "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
-                    + str(settings.SMS_AUTH_KEY)
-                    + "&message="
-                    + str(message)
-                    + "&senderId="
-                    + str(settings.BULK_SMS_FROM)
-                    + "&routeId=1&mobileNos="
-                    + str(request.POST.get("mobile"))
-                    + "&smsContentType=english"
-                )
+        # if not user.mobile_verified:
+        #     if password_reset_diff > 600:
+        #         random_code = rand_string(size=6)
+        #         message = (
+        #             "Hello "
+        #             + request.user.username
+        #             + ", An OTP "
+        #             + random_code
+        #             + " for your Peeljobs recruiter account, Please Confirm and Proceed"
+        #         )
+        #         data = {
+        #             "username": settings.BULK_SMS_USERNAME,
+        #             "password": settings.BULK_SMS_PASSWORD,
+        #             "from": settings.BULK_SMS_FROM,
+        #             "to": request.POST.get("mobile"),
+        #             "message": message,
+        #         }
+        #         # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
+        #         requests.get(
+        #             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
+        #             + str(settings.SMS_AUTH_KEY)
+        #             + "&message="
+        #             + str(message)
+        #             + "&senderId="
+        #             + str(settings.BULK_SMS_FROM)
+        #             + "&routeId=1&mobileNos="
+        #             + str(request.POST.get("mobile"))
+        #             + "&smsContentType=english"
+        #         )
 
-                user.mobile_verification_code = random_code
-                user.mobile_verified = False
-                user_login = True
-                user.mobile = request.data.get["mobile"]
-                user.last_mobile_code_verified_on = datetime.now(timezone.utc)
-                message = "Your Details Updated Successfully"
-            else:
-                user.mobile = user_mobile
-                message = "An otp has been sent to you in the past 1 week, Please Verify Your Mobile Number"
-        else:
-            if user.mobile == user_mobile:
-                user.mobile = user_mobile
-                message = "Your Details Updated Successfully"
-            else:
-                message = "Mobile num can't be change within a week"
+        #         user.mobile_verification_code = random_code
+        #         user.mobile_verified = False
+        #         user_login = True
+        #         user.mobile = request.data.get["mobile"]
+        #         user.last_mobile_code_verified_on = datetime.now(timezone.utc)
+        #         message = "Your Details Updated Successfully"
+        #     else:
+        #         user.mobile = user_mobile
+        #         message = "An otp has been sent to you in the past 1 week, Please Verify Your Mobile Number"
+        # else:
+        #     if user.mobile == user_mobile:
+        #         user.mobile = user_mobile
+        #         message = "Your Details Updated Successfully"
+        #     else:
+        #         message = "Mobile num can't be change within a week"
         user.marital_status = request.data.get("marital_status", "")
         user.first_name = request.data.get("first_name")
         user.last_name = request.data.get("last_name", "")
@@ -931,8 +946,7 @@ def user_profile(request):
             if str(ftype) in sup_formates:
                 user.profile_pic = logo
                 user.save()
-                data = {"error": False,
-                        "data": "Profile Pic Uploaded Successfully"}
+                data = {"error": False, "data": "Profile Pic Uploaded Successfully"}
                 return HttpResponse(json.dumps(data))
             data = {
                 "error": True,
@@ -941,9 +955,91 @@ def user_profile(request):
             return JsonResponse(data)
         data = {"error": True, "data": "Please Upload Profile Pic"}
         return JsonResponse(data)
-    user = User.objects.filter(id=request.user.id).prefetch_related(
-        "technical_skills", "industry", "functional_area"
-    ).first()
+    user = (
+        User.objects.filter(id=request.user.id)
+        .prefetch_related("technical_skills", "industry", "functional_area")
+        .first()
+    )
     return JsonResponse(
         {"error": False, "user": UserSerializer(user).data},
+    )
+
+
+@api_view(["GET"])
+@permission_classes((RecruiterRequiredPermission,))
+def skill_list(request):
+    skills = Skill.objects.exclude(status="InActive").order_by("name")
+    return JsonResponse(
+        {"error": False, "skills": SkillSerializer(skills, many=True).data},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@permission_classes((RecruiterRequiredPermission,))
+def industry_list(request):
+    industries = Industry.objects.exclude(status="InActive").order_by("name")
+    return JsonResponse(
+        {"error": False, "industries": IndustrySerializer(industries, many=True).data},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@permission_classes((RecruiterRequiredPermission,))
+def city_list(request):
+    cities = City.objects.exclude(status="Disabled")
+    return JsonResponse(
+        {"error": False, "cities": CitySerializer(cities, many=True).data},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@permission_classes((RecruiterRequiredPermission,))
+def state_list(request):
+    states = State.objects.exclude(status="Disabled")
+    return JsonResponse(
+        {"error": False, "states": StateSerializer(states, many=True).data},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@permission_classes((RecruiterRequiredPermission,))
+def functional_area_list(request):
+    functional_areas = FunctionalArea.objects.exclude(status="InActive").order_by(
+        "name"
+    )
+    return JsonResponse(
+        {
+            "error": False,
+            "functional_areas": FunctionalAreaSerializer(
+                functional_areas, many=True
+            ).data,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@permission_classes((RecruiterRequiredPermission,))
+def company_list(request):
+    companies = Company.objects.all()
+    return JsonResponse(
+        {"error": False, "companies": CompanySerializer(companies, many=True).data},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@permission_classes((RecruiterRequiredPermission,))
+def view_company(request):
+    menu = Menu.objects.filter(company=request.user.company).order_by("lvl")
+    return JsonResponse(
+        {
+            "error": False,
+            "company": CompanySerializer(request.user.company).data,
+            "menu": MenuSerailizer(menu, many=True).data,
+        }
     )

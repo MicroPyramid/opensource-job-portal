@@ -14,7 +14,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name="question", options={"ordering": ["-created_on"]},
+            name="question",
+            options={"ordering": ["-created_on"]},
         ),
         migrations.AlterField(
             model_name="question",
@@ -26,6 +27,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterUniqueTogether(
-            name="question", unique_together=set([("title", "skills")]),
+            name="question",
+            unique_together=set([("title", "skills")]),
         ),
     ]

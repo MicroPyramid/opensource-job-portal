@@ -13,7 +13,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name="jobpost", options={"ordering": ["-created_on"]},
+            name="jobpost",
+            options={"ordering": ["-created_on"]},
         ),
         migrations.AlterField(
             model_name="jobpost",

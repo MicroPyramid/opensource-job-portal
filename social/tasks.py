@@ -19,9 +19,9 @@ from mpcomp import gauth, contacts
 def add_twitter_friends_followers(user_id, friends, followers):
 
     """
-        getting the user object
-        Removing twitter followers, friends if the user previously connected to twitter
-        Creating followers, friends from followers, friends list
+    getting the user object
+    Removing twitter followers, friends if the user previously connected to twitter
+    Creating followers, friends from followers, friends list
     """
     user = User.objects.filter(id=user_id).first()
     TwitterFollower.objects.filter(user=user).delete()
@@ -131,11 +131,11 @@ def facebook_groups(accesstoken, user):
 @celery.task()
 def add_google_friends(user_id, accesstoken):
     """
-        1. Getting the user object
-        2. Getting the gdata autok token by sending google app id, secret id
-        3. Retrieving the accesstoken
-        4. Getting the conacts object which returns 3000 objects maximum
-        4. Creating google friends list with the xml page response
+    1. Getting the user object
+    2. Getting the gdata autok token by sending google app id, secret id
+    3. Retrieving the accesstoken
+    4. Getting the conacts object which returns 3000 objects maximum
+    4. Creating google friends list with the xml page response
     """
 
     user = User.objects.filter(id=user_id).first()

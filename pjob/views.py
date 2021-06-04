@@ -1406,10 +1406,18 @@ def job_add_event(request):
             "summary": str(jobpost.title),
             "location": str(msg),
             "description": str(jobpost.title),
-            "start": {"date": str(jobpost.last_date), "timeZone": "Asia/Calcutta",},
-            "end": {"date": str(jobpost.last_date), "timeZone": "Asia/Calcutta",},
+            "start": {
+                "date": str(jobpost.last_date),
+                "timeZone": "Asia/Calcutta",
+            },
+            "end": {
+                "date": str(jobpost.last_date),
+                "timeZone": "Asia/Calcutta",
+            },
             "recurrence": ["RRULE:FREQ=DAILY;COUNT=2"],
-            "attendees": [{"email": str(request.user.email)},],
+            "attendees": [
+                {"email": str(request.user.email)},
+            ],
             "reminders": {
                 "useDefault": False,
                 "overrides": [
@@ -1446,10 +1454,18 @@ def calendar_add_event(request):
         "summary": request.POST.get("title"),
         "location": request.POST.get("location"),
         "description": request.POST.get("description"),
-        "start": {"date": str(start_date), "timeZone": "Asia/Calcutta",},
-        "end": {"date": str(last_date), "timeZone": "Asia/Calcutta",},
+        "start": {
+            "date": str(start_date),
+            "timeZone": "Asia/Calcutta",
+        },
+        "end": {
+            "date": str(last_date),
+            "timeZone": "Asia/Calcutta",
+        },
         "recurrence": ["RRULE:FREQ=DAILY;COUNT=2"],
-        "attendees": [{"email": str(request.user.email)},],
+        "attendees": [
+            {"email": str(request.user.email)},
+        ],
         "reminders": {
             "useDefault": False,
             "overrides": [
@@ -2969,7 +2985,7 @@ def set_password(request, user_id, passwd):
                 json.dumps({"error": True, "response": validate_changepassword.errors})
             )
     if user:
-        usr = authenticate(username=user[0].username, password=passwd)
+        usr = authenticate(username=user[0], password=passwd)
         if usr:
             return render(request, "set_password.html")
     template = "mobile/404.html" if request.is_mobile else "404.html"

@@ -20,7 +20,6 @@ django-pymemcache==0.1.0
 django-ses-gateway==0.1.1
 django-tellme==0.6.5
 django-web-profiler==0.1.4
-elastic-apm==5.8.1
 elasticsearch==2.3.0
 ephem==3.7.6.0
 flake8-polyfill==1.0.2
@@ -38,7 +37,7 @@ pymongo==3.6.1
 python-dotenv==0.14.0
 python-magic==0.4.15
 python-memcached==1.58
-raven==6.6.0
+raven==6.10.0
 redis==3.5.3
 sendgrid==5.3.0
 simplejson==3.13.2
@@ -53,3 +52,4 @@ django-cors-headers==3.5.0
 pyjwt==1.7.1
 djangorestframework==3.11.1
 djangorestframework-simplejwt==4.4.0
+sentry-sdk==0.19.5

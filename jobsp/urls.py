@@ -310,7 +310,7 @@ urlpatterns = [
     ),
     url(r"^process-email/$", process_email, name="process_email"),
     # url(r'^dj-rest-auth/', include('dj_rest_auth.urls')),
-    url(r'^api-recruiter/', include('recruiter.api_urls', namespace="api_recruiter")),
+    url(r"^api-recruiter/", include("recruiter.api_urls", namespace="api_recruiter")),
 ]
 
 handler404 = custom_404

@@ -34,11 +34,11 @@ logging = "DEBUG"
 GIT_APP_ID = os.getenv("GITAPPID")
 GIT_APP_SECRET = os.getenv("GITAPPSECRET")
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["peeljobs.com", "test.peeljobs.com", "localhost", "127.0.0.1"]
 
 # tw app
 tw_oauth_token_secret = os.getenv("twoauthtokensecret")
-tw_oauth_token = os.getenv("twoauthtoken")
+tw_oauth_token = os.getenv("twoauthtokensecret")
 
 TW_APP_KEY = os.getenv("TWAPPKEY")
 TW_APP_SECRET = os.getenv("TWAPPSECRET")
@@ -143,9 +143,9 @@ INSTALLED_APPS = (
     "django_celery_beat",
     "pymongo",
     "corsheaders",
-    'rest_framework',
-    'rest_framework.authtoken',
-    'dj_rest_auth',
+    "rest_framework",
+    "rest_framework.authtoken",
+    "dj_rest_auth",
 )
 
 MIDDLEWARE = [
@@ -162,10 +162,7 @@ MIDDLEWARE = [
 ]
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
-    "http://127.0.0.1:4200"
-]
+CORS_ALLOWED_ORIGINS = ["http://localhost:4200", "http://127.0.0.1:4200"]
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.peeljobs\.com$",
 ]
@@ -374,9 +371,9 @@ THUMBNAIL_CACHE_TIMEOUT = 3600 * 24 * 365 * 10
 TIMEZONE = "Asia/Calcutta"
 LOGO = "https://%s/logo.png" % (CLOUDFRONT_DOMAIN)
 
-BULK_SMS_USERNAME = os.getenv("BULKSMSUSERNAME")
-BULK_SMS_PASSWORD = os.getenv("BULKSMSPASSWORD")
-BULK_SMS_FROM = os.getenv("BULKSMSFROM")
+# BULK_SMS_USERNAME = os.getenv("BULKSMSUSERNAME")
+# BULK_SMS_PASSWORD = os.getenv("BULKSMSPASSWORD")
+# BULK_SMS_FROM = os.getenv("BULKSMSFROM")
 
 MINIFIED_URL = os.getenv("MINIFIED_URL")
 
@@ -392,7 +389,7 @@ THUMBNAIL_DEBUG = True
 
 THUMBNAIL_FORCE_OVERWRITE = True
 
-SMS_AUTH_KEY = os.getenv("SMSAUTHKEY")
+# SMS_AUTH_KEY = os.getenv("SMSAUTHKEY")
 
 
 AWS_ENABLED = os.getenv("AWSENABLED")
@@ -403,7 +400,9 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
         "LOCATION": "127.0.0.1:11211",
         "TIMEOUT": 48 * 60 * 60,
-        "OPTIONS": {"server_max_value_length": 1024 * 1024 * 2,},
+        "OPTIONS": {
+            "server_max_value_length": 1024 * 1024 * 2,
+        },
     }
 }
 
@@ -432,7 +431,9 @@ if os.getenv("ENV_TYPE") == "DEV":
         "behave_django",
     )
 
-    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware",] + MIDDLEWARE
+    MIDDLEWARE = [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ] + MIDDLEWARE
 
     INTERNAL_IPS = ("127.0.0.1",)
 
@@ -507,10 +508,12 @@ if os.getenv("ENV_TYPE") == "DEV":
     }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework.authentication.SessionAuthentication',
     ]
 }
 
 REST_USE_JWT = True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

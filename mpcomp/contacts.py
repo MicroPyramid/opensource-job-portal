@@ -123,7 +123,7 @@ class ContactsClient(client.GDClient):
     def get_group(
         self, uri=None, desired_class=data.GroupEntry, auth_token=None, **kwargs
     ):
-        """ Get a single groups details
+        """Get a single groups details
         Args:
             uri:  the group uri or id
         """
