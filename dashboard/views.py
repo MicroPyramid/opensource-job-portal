@@ -479,18 +479,18 @@ def index(request):
                 status="Disabled"
             ).count()
 
-            today_admin_internship_pending_jobs = today_admin_internship_jobs_count.filter(
-                status="Pending"
-            ).count()
-            today_admin_internship_published_jobs = today_admin_internship_jobs_count.filter(
-                status="Published"
-            ).count()
+            today_admin_internship_pending_jobs = (
+                today_admin_internship_jobs_count.filter(status="Pending").count()
+            )
+            today_admin_internship_published_jobs = (
+                today_admin_internship_jobs_count.filter(status="Published").count()
+            )
             today_admin_internship_live_jobs = today_admin_internship_jobs_count.filter(
                 status="Live"
             ).count()
-            today_admin_internship_disabled_jobs = today_admin_internship_jobs_count.filter(
-                status="Disabled"
-            ).count()
+            today_admin_internship_disabled_jobs = (
+                today_admin_internship_jobs_count.filter(status="Disabled").count()
+            )
 
             today_walkin_pending_jobs = today_walkin_jobs_count.filter(
                 status="Pending"
@@ -558,18 +558,18 @@ def index(request):
                 status="Disabled"
             ).count()
 
-            today_admin_full_time_pending_jobs = today_admin_full_time_jobs_count.filter(
-                status="Pending"
-            ).count()
-            today_admin_full_time_published_jobs = today_admin_full_time_jobs_count.filter(
-                status="Published"
-            ).count()
+            today_admin_full_time_pending_jobs = (
+                today_admin_full_time_jobs_count.filter(status="Pending").count()
+            )
+            today_admin_full_time_published_jobs = (
+                today_admin_full_time_jobs_count.filter(status="Published").count()
+            )
             today_admin_full_time_live_jobs = today_admin_full_time_jobs_count.filter(
                 status="Live"
             ).count()
-            today_admin_full_time_disabled_jobs = today_admin_full_time_jobs_count.filter(
-                status="Disabled"
-            ).count()
+            today_admin_full_time_disabled_jobs = (
+                today_admin_full_time_jobs_count.filter(status="Disabled").count()
+            )
 
             total_skills = Skill.objects.filter()
             total_active_skills = total_skills.filter(status="Active").count()
@@ -1515,7 +1515,7 @@ def country(request):
                     cities.update(status="Disabled")
 
                 if not State.objects.filter(country=state.country, status="Enabled"):
-                    if state.country.status is not "Disabled":
+                    if state.country.status != "Disabled":
                         state.country.status = "Disabled"
                         country_status = True
                         state.country.save()
@@ -1563,7 +1563,7 @@ def country(request):
                 city.save()
 
                 if not City.objects.filter(state=city.state, status="Enabled"):
-                    if city.state.status is not "Disabled":
+                    if city.state.status != "Disabled":
                         city.state.status = "Disabled"
                         state_status = True
                         city.state.save()
@@ -1571,7 +1571,7 @@ def country(request):
                     if not State.objects.filter(
                         country=city.state.country, status="Enabled"
                     ):
-                        if city.state.country.status is not "Disabled":
+                        if city.state.country.status != "Disabled":
                             city.state.country.status = "Disabled"
                             country_status = True
                             city.state.country.save()
@@ -4704,7 +4704,9 @@ def google_login(request):
                 )
             if user.is_superuser:
                 # user = authenticate(username=user.username)
-                login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+                login(
+                    request, user, backend="django.contrib.auth.backends.ModelBackend"
+                )
                 return HttpResponseRedirect("/dashboard/")
         return HttpResponseRedirect("/")
     else:

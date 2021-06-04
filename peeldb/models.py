@@ -645,6 +645,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("jobposts_resume_profiles", "can manage resume profiles"),
         )
 
+    def __str__(self):
+        return self.email
+
     def get_full_name(self):
         full_name = "%s %s" % (
             self.first_name,

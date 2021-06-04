@@ -1,9 +1,20 @@
 import re
 from datetime import datetime, date
 from rest_framework import serializers
-from peeldb.models import (JobPost, Company, Country, Skill, FunctionalArea,
-                           Industry, Qualification, City, User, AgencyCompany,
-                           State)
+from peeldb.models import (
+    JobPost,
+    Company,
+    Country,
+    Skill,
+    FunctionalArea,
+    Industry,
+    Qualification,
+    City,
+    User,
+    AgencyCompany,
+    State,
+    Menu,
+)
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate
 from mpcomp.views import get_asia_time, custom_password_check
@@ -24,7 +35,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CompanySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Company
         fields = "__all__"
@@ -46,13 +56,17 @@ class LoginSerializer(serializers.Serializer):
             if self.user:
                 if not self.user.is_active:
                     if not self.user.is_active:
-                        raise serializers.ValidationError("Your Account is inactive please contact admin.")
+                        raise serializers.ValidationError(
+                            "Your Account is inactive please contact admin."
+                        )
                     else:
                         today_date = date.today()
                         user_created_date = self.user.created_on
                         difference = today_date - user_created_date
                         if difference.days > 7:
-                            raise serializers.ValidationError("Please activate your account by verifying your email.")
+                            raise serializers.ValidationError(
+                                "Please activate your account by verifying your email."
+                            )
                 if not (self.user.is_agency_recruiter or self.user.is_recruiter):
                     raise serializers.ValidationError("You are not recuiter")
             else:
@@ -80,63 +94,54 @@ class JobPostSerializer(serializers.ModelSerializer):
 
 
 class CountrySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Country
         fields = "__all__"
 
 
 class StateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = State
         fields = "__all__"
 
 
 class SkillSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Skill
         fields = "__all__"
 
 
 class FunctionalAreaSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = FunctionalArea
         fields = "__all__"
 
 
 class IndustrySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Industry
         fields = "__all__"
 
 
 class QualificationSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Qualification
         fields = "__all__"
 
 
 class CitySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = City
         fields = "__all__"
 
 
 class AgencyCompanySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = AgencyCompany
         fields = "__all__"
 
 
 class CreateJobPostSerailizer(serializers.ModelSerializer):
-
     class Meta:
         model = JobPost
         exclude = [
@@ -187,58 +192,58 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
         # if "vacancies" in self.data.keys() and self.data["vacancies"]:
         #     self.fields["vacancies"].required = True
 
-        if "salary_type" in kwargs['data'].keys() and kwargs['data']["salary_type"]:
+        if "salary_type" in kwargs["data"].keys() and kwargs["data"]["salary_type"]:
             self.fields["max_salary"].required = True
             self.fields["min_salary"].required = True
 
         if (
-            "min_salary" in kwargs['data'].keys()
-            and kwargs['data']["min_salary"]
-            or "max_salary" in kwargs['data'].keys()
-            and kwargs['data']["max_salary"]
+            "min_salary" in kwargs["data"].keys()
+            and kwargs["data"]["min_salary"]
+            or "max_salary" in kwargs["data"].keys()
+            and kwargs["data"]["max_salary"]
         ):
             self.fields["salary_type"].required = True
 
-        if "min_salary" in kwargs['data'].keys() and kwargs['data']["min_salary"]:
+        if "min_salary" in kwargs["data"].keys() and kwargs["data"]["min_salary"]:
             self.fields["salary_type"].required = True
             self.fields["min_salary"].required = True
-        if "max_salary" in kwargs['data'].keys() and kwargs['data']["max_salary"]:
+        if "max_salary" in kwargs["data"].keys() and kwargs["data"]["max_salary"]:
 
             self.fields["max_salary"].required = True
             self.fields["salary_type"].required = True
 
-        if "final_industry" in kwargs['data'].keys():
-            if len(kwargs['data']["final_industry"]) > 2:
+        if "final_industry" in kwargs["data"].keys():
+            if len(kwargs["data"]["final_industry"]) > 2:
                 self.fields["industry"].required = False
             else:
                 self.fields["industry"].required = True
-        if "final_skills" in kwargs['data'].keys():
-            if len(kwargs['data']["final_skills"]) > 2:
+        if "final_skills" in kwargs["data"].keys():
+            if len(kwargs["data"]["final_skills"]) > 2:
                 self.fields["skills"].required = False
             else:
                 self.fields["skills"].required = True
-        if "final_edu_qualification" in kwargs['data'].keys():
-            if len(kwargs['data']["final_edu_qualification"]) > 2:
+        if "final_edu_qualification" in kwargs["data"].keys():
+            if len(kwargs["data"]["final_edu_qualification"]) > 2:
                 self.fields["edu_qualification"].required = False
             else:
                 self.fields["edu_qualification"].required = True
-        if "final_functional_area" in kwargs['data'].keys():
-            if len(kwargs['data']["final_functional_area"]) > 2:
+        if "final_functional_area" in kwargs["data"].keys():
+            if len(kwargs["data"]["final_functional_area"]) > 2:
                 self.fields["functional_area"].required = False
             else:
                 self.fields["functional_area"].required = True
-        if "other_location" in kwargs['data'].keys():
-            if len(kwargs['data']["other_location"]) != 0:
+        if "other_location" in kwargs["data"].keys():
+            if len(kwargs["data"]["other_location"]) != 0:
                 self.fields["location"].required = False
 
-        if "visa_required" in kwargs['data'].keys() and kwargs['data']["visa_required"]:
+        if "visa_required" in kwargs["data"].keys() and kwargs["data"]["visa_required"]:
             self.fields["visa_country"].required = True
             self.fields["visa_type"].required = True
         else:
             self.fields["visa_country"].required = False
             self.fields["visa_type"].required = False
 
-        if str(kwargs['data']["job_type"]) == "walk-in":
+        if str(kwargs["data"]["job_type"]) == "walk-in":
             self.fields["walkin_contactinfo"].required = True
             self.fields["walkin_from_date"].required = True
             self.fields["walkin_to_date"].required = True
@@ -255,7 +260,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             self.fields["walkin_time"].required = False
             self.fields["edu_qualification"].required = False
 
-        if str(kwargs['data']["job_type"]) == "government":
+        if str(kwargs["data"]["job_type"]) == "government":
 
             self.fields["min_year"].required = False
             self.fields["max_year"].required = False
@@ -279,7 +284,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             self.fields["job_role"].required = False
             self.fields["company_description"].required = False
 
-        if str(kwargs['data']["job_type"]) in  ["internship", "full-time"]:
+        if str(kwargs["data"]["job_type"]) in ["internship", "full-time"]:
             self.fields["last_date"].required = False
             self.fields["edu_qualification"].required = False
 
@@ -297,8 +302,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
     def validate_vacancies(self, vacancies):
         if "vacancies" in self.data.keys() and self.data["vacancies"]:
             if int(vacancies) <= 0:
-                raise serializers.ValidationError(
-                    "Vacancies must be greater than zero")
+                raise serializers.ValidationError("Vacancies must be greater than zero")
             else:
                 return self.cleaned_data.get("vacancies")
         return self.cleaned_data.get("vacancies")
@@ -306,8 +310,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
     def validate_last_date(self):
         date = self.cleaned_data["last_date"]
         if str(date) < str(datetime.now().date()):
-            raise serializers.ValidationError(
-                "The date cannot be in the past!")
+            raise serializers.ValidationError("The date cannot be in the past!")
         return date
 
     def validate_govt_exam_date(self):
@@ -324,8 +327,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
                 )
 
                 if str(date) < str(datetime.now().date()):
-                    raise serializers.ValidationError(
-                        "The date cannot be in the past!")
+                    raise serializers.ValidationError("The date cannot be in the past!")
                 if str(from_date) > str(date) or str(to_date) > str(date):
                     raise serializers.ValidationError(
                         "Exam Date must be in between from and to date"
@@ -336,23 +338,22 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
         if "govt_from_date" in self.data.keys():
             date = self.cleaned_data["govt_from_date"]
             if str(date) < str(datetime.now().date()):
-                raise serializers.ValidationError(
-                    "The date cannot be in the past!")
+                raise serializers.ValidationError("The date cannot be in the past!")
             return date
 
     def validate_govt_to_date(self):
         if "govt_to_date" in self.data.keys():
             date = self.cleaned_data["govt_to_date"]
             if str(date) < str(datetime.now().date()):
-                raise serializers.ValidationError(
-                    "The date cannot be in the past!")
+                raise serializers.ValidationError("The date cannot be in the past!")
             from_date = self.data["govt_from_date"]
             from_date = datetime.strptime(str(from_date), "%m/%d/%Y").strftime(
                 "%Y-%m-%d"
             )
             if str(from_date) > str(date):
                 raise serializers.ValidationError(
-                    "To Date must be greater than From Date")
+                    "To Date must be greater than From Date"
+                )
             return date
 
     def validate_published_date(self):
@@ -360,8 +361,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
         asia_time = get_asia_time()
         if date_time:
             if str(date_time) < str(asia_time):
-                raise serializers.ValidationError(
-                    "The date cannot be in the past!")
+                raise serializers.ValidationError("The date cannot be in the past!")
             if str(self.data["job_type"]) == "walk-in":
                 if (
                     "walkin_to_date" in self.cleaned_data.keys()
@@ -380,8 +380,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
                 min_sal = int(self.cleaned_data["min_salary"])
                 return min_sal
             except:
-                raise serializers.ValidationError(
-                    "Minimum salary must be an Integer")
+                raise serializers.ValidationError("Minimum salary must be an Integer")
         else:
             return 0
 
@@ -411,8 +410,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
 
                 company = ""
                 if "company_id" in self.data.keys() and self.data["company_id"]:
-                    company = Company.objects.filter(
-                        id=self.data["company_id"])
+                    company = Company.objects.filter(id=self.data["company_id"])
                 if company:
                     companies = Company.objects.filter(
                         website__iexact=self.data["company_website"]
@@ -444,8 +442,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
         if pincode:
             match = re.findall(r"\d{6}", pincode)
             if not match or len(pincode) != 6:
-                raise serializers.ValidationError(
-                    "Please Enter 6 digit valid Pincode")
+                raise serializers.ValidationError("Please Enter 6 digit valid Pincode")
         return pincode
 
 
@@ -475,9 +472,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             "profile_description",
             "job_role",
             "state",
-            'city',
+            "city",
             "dob",
-            'job_role'
+            "job_role",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -500,7 +497,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             else:
                 return mobile
         else:
-            raise serializers.ValidationError("User with this mobile number already exists")
+            raise serializers.ValidationError(
+                "User with this mobile number already exists"
+            )
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -532,8 +531,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     def validate_oldpassword(self, oldpassword):
         if not check_password(oldpassword, self.user.password):
-            raise serializers.ValidationError(
-                "The current password is not correct")
+            raise serializers.ValidationError("The current password is not correct")
         return oldpassword
 
     def validate(self, data):
@@ -543,3 +541,9 @@ class ChangePasswordSerializer(serializers.Serializer):
             )
         else:
             return data["newpassword"]
+
+
+class MenuSerailizer(serializers.ModelSerializer):
+    class Meta:
+        model = Menu
+        fields = "__all__"

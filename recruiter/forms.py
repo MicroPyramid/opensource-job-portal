@@ -943,14 +943,18 @@ class LoginForm(forms.Form):
             if self.user:
                 if not self.user.is_active:
                     if not self.user.is_active:
-                        raise forms.ValidationError("Your Account is inactive please contact admin.")
+                        raise forms.ValidationError(
+                            "Your Account is inactive please contact admin."
+                        )
                     else:
                         today_date = date.today()
                         user_created_date = self.user.created_on
                         difference = today_date - user_created_date
                         if difference.days > 7:
-                            raise forms.ValidationError("Please activate your account by verifying your email.")
-                if not self.user.user_type == 'RR':
+                            raise forms.ValidationError(
+                                "Please activate your account by verifying your email."
+                            )
+                if not self.user.user_type == "RR":
                     raise forms.ValidationError("You are not recuiter")
             else:
                 raise forms.ValidationError("Invalid email and password")

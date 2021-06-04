@@ -7,19 +7,10 @@ DEBUG = False
 CELERY_IMPORTS = ("social.tasks", "dashboard.tasks")
 
 
-ELASTIC_APM = {
-    "SERVICE_NAME": os.getenv("ELASTIC_APM_SERVICE_NAME"),
-    "SECRET_TOKEN": os.getenv("ELASTIC_APM_SECRET_TOKEN"),
-    "SERVER_URL": os.getenv("ELASTIC_APM_SERVER_URL"),
-}
-
-INSTALLED_APPS = INSTALLED_APPS + ("elasticapm.contrib.django",)
-MIDDLEWARE = ["elasticapm.contrib.django.middleware.TracingMiddleware", ] + MIDDLEWARE
-
-
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,
     send_default_pii=True,
 )
 
@@ -27,7 +18,10 @@ sentry_sdk.init(
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
-    "root": {"level": "WARNING", "handlers": ["sentry"], },
+    "root": {
+        "level": "WARNING",
+        "handlers": ["sentry"],
+    },
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
@@ -50,7 +44,11 @@ LOGGING = {
             "handlers": ["console"],
             "propagate": False,
         },
-        "raven": {"level": "DEBUG", "handlers": ["console"], "propagate": False, },
+        "raven": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": False,
+        },
         "sentry.errors": {
             "level": "DEBUG",
             "handlers": ["console"],
@@ -74,7 +72,10 @@ ANYMAIL = {
         "aws_secret_access_key": os.getenv("AWS_SECRET_KEY_FOR_ANYMAIL_SES"),
         "region_name": os.getenv("AWS_LOCATION_FOR_ANYMAIL_SES"),
         # override other default options
-        "config": {"connect_timeout": 30, "read_timeout": 30,},
+        "config": {
+            "connect_timeout": 30,
+            "read_timeout": 30,
+        },
     },
 }
 

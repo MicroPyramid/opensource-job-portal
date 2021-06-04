@@ -14,7 +14,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameField(
-            model_name="searchresult", old_name="location", new_name="other_location",
+            model_name="searchresult",
+            old_name="location",
+            new_name="other_location",
         ),
         migrations.AddField(
             model_name="searchresult",
@@ -34,13 +36,19 @@ class Migration(migrations.Migration):
             name="search_text",
             field=django.contrib.postgres.fields.jsonb.JSONField(default={}),
         ),
-        migrations.RemoveField(model_name="searchresult", name="job_post",),
+        migrations.RemoveField(
+            model_name="searchresult",
+            name="job_post",
+        ),
         migrations.AddField(
             model_name="searchresult",
             name="job_post",
             field=models.CharField(default=0, max_length=1000),
         ),
-        migrations.RemoveField(model_name="searchresult", name="skills",),
+        migrations.RemoveField(
+            model_name="searchresult",
+            name="skills",
+        ),
         migrations.AddField(
             model_name="searchresult",
             name="skills",

@@ -1581,14 +1581,18 @@ def new_user(request):  # pragma: no mccabe
                     )
 
                     user = authenticate(
-                        username=request.POST['email'], password=request.POST['password'])
+                        username=request.POST["email"],
+                        password=request.POST["password"],
+                    )
                     if not request.user.is_authenticated:
-                        if not hasattr(user_obj, 'backend'):
+                        if not hasattr(user_obj, "backend"):
                             for backend in settings.AUTHENTICATION_BACKENDS:
-                                if user_obj == load_backend(backend).get_user(user_obj.id):
+                                if user_obj == load_backend(backend).get_user(
+                                    user_obj.id
+                                ):
                                     user_obj.backend = backend
                                     break
-                        if hasattr(user_obj, 'backend'):
+                        if hasattr(user_obj, "backend"):
                             login(request, user_obj)
 
                     # user = authenticate(username=request.POST["email"])
@@ -1625,14 +1629,13 @@ def account_activation(request, user_id):
 
         user_obj = authenticate(username=user.email)
         if not request.user.is_authenticated:
-            if not hasattr(user, 'backend'):
+            if not hasattr(user, "backend"):
                 for backend in settings.AUTHENTICATION_BACKENDS:
                     if user == load_backend(backend).get_user(user.id):
                         user.backend = backend
                         break
-            if hasattr(user, 'backend'):
+            if hasattr(user, "backend"):
                 login(request, user)
-
 
         if user.mobile_verified:
             if user.is_agency_recruiter:
@@ -1903,47 +1906,47 @@ def index(request):
 
             if user.is_active:
                 user_login = False
-                if not user.mobile_verified:
-                    password_reset_diff = int(
-                        (datetime.now() - user.last_mobile_code_verified_on).seconds
-                    )
-                    if password_reset_diff > 600:
-                        random_code = rand_string(size=6)
-                        message = (
-                            "Hello "
-                            + user.username
-                            + ", An OTP "
-                            + random_code
-                            + " for your Peeljobs recruiter account, Please Confirm and Proceed"
-                        )
+                # if not user.mobile_verified:
+                #     password_reset_diff = int(
+                #         (datetime.now() - user.last_mobile_code_verified_on).seconds
+                #     )
+                #     if password_reset_diff > 600:
+                #         random_code = rand_string(size=6)
+                #         message = (
+                #             "Hello "
+                #             + user.username
+                #             + ", An OTP "
+                #             + random_code
+                #             + " for your Peeljobs recruiter account, Please Confirm and Proceed"
+                #         )
 
-                        data = {
-                            "username": settings.BULK_SMS_USERNAME,
-                            "password": settings.BULK_SMS_PASSWORD,
-                            "from": settings.BULK_SMS_FROM,
-                            "to": user.mobile,
-                            "message": message,
-                        }
-                        # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
-                        requests.get(
-                            "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
-                            + str(settings.SMS_AUTH_KEY)
-                            + "&message="
-                            + str(message)
-                            + "&senderId="
-                            + str(settings.BULK_SMS_FROM)
-                            + "&routeId=1&mobileNos="
-                            + str(user.mobile)
-                            + "&smsContentType=english"
-                        )
+                #         data = {
+                #             "username": settings.BULK_SMS_USERNAME,
+                #             "password": settings.BULK_SMS_PASSWORD,
+                #             "from": settings.BULK_SMS_FROM,
+                #             "to": user.mobile,
+                #             "message": message,
+                #         }
+                #         # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
+                #         requests.get(
+                #             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
+                #             + str(settings.SMS_AUTH_KEY)
+                #             + "&message="
+                #             + str(message)
+                #             + "&senderId="
+                #             + str(settings.BULK_SMS_FROM)
+                #             + "&routeId=1&mobileNos="
+                #             + str(user.mobile)
+                #             + "&smsContentType=english"
+                #         )
 
-                        user.mobile_verification_code = random_code
-                        user.mobile_verified = False
-                        user.save()
-                    user.is_login = True
-                    user_login = True
-                    user.profile_completeness = user.profile_completion_percentage
-                    user.save()
+                #         user.mobile_verification_code = random_code
+                #         user.mobile_verified = False
+                #         user.save()
+                #     user.is_login = True
+                #     user_login = True
+                #     user.profile_completeness = user.profile_completion_percentage
+                #     user.save()
                 login(request, user)
                 data = {"error": False, "is_login": user_login}
                 if user.is_company_recruiter:
@@ -2064,51 +2067,51 @@ def edit_profile(request):
         password_reset_diff = int(
             (datetime.now() - user.last_mobile_code_verified_on).seconds
         )
-        if not user.mobile_verified:
-            if password_reset_diff > 600:
-                random_code = rand_string(size=6)
-                message = (
-                    "Hello "
-                    + request.user.username
-                    + ", An OTP "
-                    + random_code
-                    + " for your Peeljobs recruiter account, Please Confirm and Proceed"
-                )
-                data = {
-                    "username": settings.BULK_SMS_USERNAME,
-                    "password": settings.BULK_SMS_PASSWORD,
-                    "from": settings.BULK_SMS_FROM,
-                    "to": request.POST.get("mobile"),
-                    "message": message,
-                }
-                # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
-                requests.get(
-                    "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
-                    + str(settings.SMS_AUTH_KEY)
-                    + "&message="
-                    + str(message)
-                    + "&senderId="
-                    + str(settings.BULK_SMS_FROM)
-                    + "&routeId=1&mobileNos="
-                    + str(request.POST.get("mobile"))
-                    + "&smsContentType=english"
-                )
+        # if not user.mobile_verified:
+        #     if password_reset_diff > 600:
+        #         random_code = rand_string(size=6)
+        #         message = (
+        #             "Hello "
+        #             + request.user.username
+        #             + ", An OTP "
+        #             + random_code
+        #             + " for your Peeljobs recruiter account, Please Confirm and Proceed"
+        #         )
+        #         data = {
+        #             "username": settings.BULK_SMS_USERNAME,
+        #             "password": settings.BULK_SMS_PASSWORD,
+        #             "from": settings.BULK_SMS_FROM,
+        #             "to": request.POST.get("mobile"),
+        #             "message": message,
+        #         }
+        #         # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
+        #         requests.get(
+        #             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
+        #             + str(settings.SMS_AUTH_KEY)
+        #             + "&message="
+        #             + str(message)
+        #             + "&senderId="
+        #             + str(settings.BULK_SMS_FROM)
+        #             + "&routeId=1&mobileNos="
+        #             + str(request.POST.get("mobile"))
+        #             + "&smsContentType=english"
+        #         )
 
-                user.mobile_verification_code = random_code
-                user.mobile_verified = False
-                user_login = True
-                user.mobile = request.POST["mobile"]
-                user.last_mobile_code_verified_on = datetime.now(timezone.utc)
-                message = "Your Details Updated Successfully"
-            else:
-                user.mobile = user_mobile
-                message = "An otp has been sent to you in the past 1 week, Please Verify Your Mobile Number"
-        else:
-            if user.mobile == user_mobile:
-                user.mobile = user_mobile
-                message = "Your Details Updated Successfully"
-            else:
-                message = "Mobile num can't be change within a week"
+        #         user.mobile_verification_code = random_code
+        #         user.mobile_verified = False
+        #         user_login = True
+        #         user.mobile = request.POST["mobile"]
+        #         user.last_mobile_code_verified_on = datetime.now(timezone.utc)
+        #         message = "Your Details Updated Successfully"
+        #     else:
+        #         user.mobile = user_mobile
+        #         message = "An otp has been sent to you in the past 1 week, Please Verify Your Mobile Number"
+        # else:
+        #     if user.mobile == user_mobile:
+        #         user.mobile = user_mobile
+        #         message = "Your Details Updated Successfully"
+        #     else:
+        #         message = "Mobile num can't be change within a week"
         user.marital_status = request.POST.get("marital_status", "")
         user.first_name = request.POST.get("first_name")
         user.last_name = request.POST.get("last_name", "")

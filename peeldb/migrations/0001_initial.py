@@ -175,7 +175,9 @@ class Migration(migrations.Migration):
                     ("jobposts_invoice_access", "can edit/access the invoice"),
                 ),
             },
-            managers=[("objects", django.contrib.auth.models.UserManager()),],
+            managers=[
+                ("objects", django.contrib.auth.models.UserManager()),
+            ],
         ),
         migrations.CreateModel(
             name="AgencyApplicants",

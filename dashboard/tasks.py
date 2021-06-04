@@ -644,7 +644,9 @@ def postonlinkedin(user, job_post):
         locations = job_post.location.values_list("name", flat=True)
         job_name += ", ".join(locations)
         post = {
-            "visibility": {"code": "anyone",},
+            "visibility": {
+                "code": "anyone",
+            },
             "comment": job_post.published_message,
             "content": {
                 "title": job_name,
@@ -1090,12 +1092,12 @@ def daily_report():
     today_active_recruiters = today_recruiters_count.filter(is_active=True)
     today_inactive_recruiters = today_recruiters_count.filter(is_active=False)
 
-    today_mobile_verified_recruiters = today_recruiters_count.filter(
-        mobile_verified=True
-    )
-    today_mobile_not_verified_recruiters = today_recruiters_count.filter(
-        mobile_verified=False
-    )
+    # today_mobile_verified_recruiters = today_recruiters_count.filter(
+    #     mobile_verified=True
+    # )
+    # today_mobile_not_verified_recruiters = today_recruiters_count.filter(
+    #     mobile_verified=False
+    # )
 
     today_agency_recruiters_count = User.objects.filter(
         date_joined__contains=current_date, user_type="AA"
@@ -1108,12 +1110,12 @@ def daily_report():
         is_active=False
     )
 
-    today_mobile_verified_agency_recruiters = today_agency_recruiters_count.filter(
-        mobile_verified=True
-    )
-    today_mobile_not_verified_agency_recruiters = today_agency_recruiters_count.filter(
-        mobile_verified=False
-    )
+    # today_mobile_verified_agency_recruiters = today_agency_recruiters_count.filter(
+    #     mobile_verified=True
+    # )
+    # today_mobile_not_verified_agency_recruiters = today_agency_recruiters_count.filter(
+    #     mobile_verified=False
+    # )
 
     today_job_applications = AppliedJobs.objects.filter(
         applied_on__contains=current_date
@@ -1341,13 +1343,13 @@ def daily_report():
         "today_recruiters_count": today_recruiters_count.count(),
         "today_active_recruiters": today_active_recruiters.count(),
         "today_inactive_recruiters": today_inactive_recruiters.count(),
-        "today_mobile_verified_recruiters": today_mobile_verified_recruiters.count(),
-        "today_mobile_not_verified_recruiters": today_mobile_not_verified_recruiters.count(),
+        # "today_mobile_verified_recruiters": today_mobile_verified_recruiters.count(),
+        # "today_mobile_not_verified_recruiters": today_mobile_not_verified_recruiters.count(),
         "today_agency_recruiters_count": today_agency_recruiters_count.count(),
         "today_agency_active_recruiters": today_agency_active_recruiters.count(),
         "today_agency_inactive_recruiters": today_agency_inactive_recruiters.count(),
-        "today_mobile_verified_agency_recruiters": today_mobile_verified_agency_recruiters.count(),
-        "today_mobile_not_verified_agency_recruiters": today_mobile_not_verified_agency_recruiters.count(),
+        # "today_mobile_verified_agency_recruiters": today_mobile_verified_agency_recruiters.count(),
+        # "today_mobile_not_verified_agency_recruiters": today_mobile_not_verified_agency_recruiters.count(),
     }
     db.statistics.insert(data)
     users = [
@@ -1660,51 +1662,51 @@ def send_weekly_login_notifications():
 #     print (count)
 
 
-@task()
-def sending_mobile_campaign():
-    users = list(
-        db.users.find(
-            {
-                "$and": [
-                    {"mobile": {"$ne": ""}},
-                    {"location": "Hyderabad"},
-                    {"sms_campaign_sent": {"$exists": False}},
-                ]
-            }
-        )
-    )
-    count = 0
-    current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime(
-        "%Y-%m-%d"
-    )
+# @task()
+# def sending_mobile_campaign():
+#     users = list(
+#         db.users.find(
+#             {
+#                 "$and": [
+#                     {"mobile": {"$ne": ""}},
+#                     {"location": "Hyderabad"},
+#                     {"sms_campaign_sent": {"$exists": False}},
+#                 ]
+#             }
+#         )
+#     )
+#     count = 0
+#     current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime(
+#         "%Y-%m-%d"
+#     )
 
-    for user in users:
-        if count == 3001:
-            break
-        mobile = user["mobile"]
-        message = """Top companies are looking for Java Developers!
-                     Connect with us, to get placed https://peeljobs.com/java-fresher-jobs/
-                     or https://goo.gl/SX4qbB"""
-        SMS_AUTH_KEY = settings.SMS_AUTH_KEY
-        BULK_SMS_FROM = "PEELJB"
-        requests.get(
-            "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
-            + str(SMS_AUTH_KEY)
-            + "&message="
-            + str(message)
-            + "&senderId="
-            + str(BULK_SMS_FROM)
-            + "&routeId=3&mobileNos="
-            + str(mobile)
-            + "&smsContentType=english"
-        )
-        db.users.update(
-            {"mobile": mobile},
-            {"$set": {"sms_campaign_sent": True, "sms_date": current_date}},
-            False,
-            True,
-        )
-        count = count + 1
+#     for user in users:
+#         if count == 3001:
+#             break
+#         mobile = user["mobile"]
+#         message = """Top companies are looking for Java Developers!
+#                      Connect with us, to get placed https://peeljobs.com/java-fresher-jobs/
+#                      or https://goo.gl/SX4qbB"""
+#         SMS_AUTH_KEY = "4a905d1566e5e93bfff35aa56a38660"
+#         BULK_SMS_FROM = "PEELJB"
+#         requests.get(
+#             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
+#             + str(SMS_AUTH_KEY)
+#             + "&message="
+#             + str(message)
+#             + "&senderId="
+#             + str(BULK_SMS_FROM)
+#             + "&routeId=3&mobileNos="
+#             + str(mobile)
+#             + "&smsContentType=english"
+#         )
+#         db.users.update(
+#             {"mobile": mobile},
+#             {"$set": {"sms_campaign_sent": True, "sms_date": current_date}},
+#             False,
+#             True,
+#         )
+#         count = count + 1
 
 
 @task()

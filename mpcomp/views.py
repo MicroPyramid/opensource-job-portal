@@ -76,7 +76,8 @@ def agency_admin_login_required(view_func):
 # mto is list like ['as@sd.xom', 'sf@ogf.com']
 def Memail(mto, mfrom, msubject, mbody, user_active):
     from django.core.mail import send_mail, get_connection
-    if type(mto)!="list":
+
+    if type(mto) != "list":
         mto = [mto]
     mfrom = settings.DEFAULT_FROM_EMAIL
     print(mto)
@@ -86,12 +87,14 @@ def Memail(mto, mfrom, msubject, mbody, user_active):
         send_mail(msubject, mbody, mfrom, mto, html_message=mbody, fail_silently=False)
 
     else:
-
         if user_active:
-            send_mail(msubject, mbody, mfrom, mto, html_message=mbody, fail_silently=False)
+            send_mail(
+                msubject, mbody, mfrom, mto, html_message=mbody, fail_silently=False
+            )
         else:
             mailgun_backend = get_connection(
-                "anymail.backends.mailgun.EmailBackend", api_key=settings.MAILGUN_API_KEY
+                "anymail.backends.mailgun.EmailBackend",
+                api_key=settings.MAILGUN_API_KEY,
             )
             send_mail(
                 msubject,
@@ -102,7 +105,6 @@ def Memail(mto, mfrom, msubject, mbody, user_active):
                 fail_silently=False,
                 connection=mailgun_backend,
             )
-
 
 
 def get_prev_after_pages_count(page, no_pages):

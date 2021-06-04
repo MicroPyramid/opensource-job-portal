@@ -48,8 +48,8 @@ class BillingInformation(core.XmlElement):
 class Birthday(core.XmlElement):
 
     """
-   Stores birthday date of the person represented by the contact. The element cannot be repeated.
-   """
+    Stores birthday date of the person represented by the contact. The element cannot be repeated.
+    """
 
     _qname = CONTACTS_TEMPLATE % "birthday"
     when = "when"
@@ -140,8 +140,8 @@ class Hobby(core.XmlElement):
 
 class Initials(core.XmlElement):
 
-    """ Specifies the initials of the person represented by the contact. The
-    element cannot be repeated. """
+    """Specifies the initials of the person represented by the contact. The
+    element cannot be repeated."""
 
     _qname = CONTACTS_TEMPLATE % "initials"
 
@@ -161,12 +161,12 @@ class Jot(core.XmlElement):
 class Language(core.XmlElement):
 
     """
-   Specifies the preferred languages of the contact.
-   The element can be repeated.
+    Specifies the preferred languages of the contact.
+    The element can be repeated.
 
-    The language must be specified using one of two mutually exclusive methods:
-    using the freeform @label attribute, or using the @code attribute, whose value
-    must conform to the IETF BCP 47 specification.
+     The language must be specified using one of two mutually exclusive methods:
+     using the freeform @label attribute, or using the @code attribute, whose value
+     must conform to the IETF BCP 47 specification.
     """
 
     _qname = CONTACTS_TEMPLATE % "language"

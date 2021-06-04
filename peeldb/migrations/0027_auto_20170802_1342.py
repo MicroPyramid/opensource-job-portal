@@ -13,6 +13,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name="jobpost", name="slug", field=models.SlugField(max_length=5000),
+            model_name="jobpost",
+            name="slug",
+            field=models.SlugField(max_length=5000),
         ),
     ]

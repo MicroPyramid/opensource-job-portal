@@ -54,7 +54,6 @@ class ReturnList(list):
 
 
 class ExtBaseSerializer(BaseSerializer):
-
     def serialize_property(self, obj):
         model = type(obj)
         for field in self.selected_fields:
@@ -78,7 +77,6 @@ class ExtPythonSerializer(ExtBaseSerializer, PythonSerializer):
 
 
 class Skinner(ExtPythonSerializer, JsonSerializer):
-
     def parse(self, queryset=[], fields=[], query=None):
         if isinstance(queryset, Iterable):
             serialized_data = json.loads(self.serialize(queryset, fields=fields))

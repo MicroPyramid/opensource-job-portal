@@ -26,15 +26,15 @@ from .forms import TicketForm, CommentForm
 def index(request):
 
     """
-        Method: GET
-            1. Recruiter: Will display the recent tickets created by loggedin user
-            and sending the priority types, ticket types to the page
-            2. Admin: Sending the priority types, ticket types to the page
-            3. For other users, displaying 404 page
-        Method: POST
-            1. Validates a post data along with ticket attachments, sends errors as json to browser
-            2. Creating a ticket with its attachments in open state
-            3. Sending the email to the created user with respected ticket message
+    Method: GET
+        1. Recruiter: Will display the recent tickets created by loggedin user
+        and sending the priority types, ticket types to the page
+        2. Admin: Sending the priority types, ticket types to the page
+        3. For other users, displaying 404 page
+    Method: POST
+        1. Validates a post data along with ticket attachments, sends errors as json to browser
+        2. Creating a ticket with its attachments in open state
+        3. Sending the email to the created user with respected ticket message
     """
 
     if request.method == "GET":
@@ -88,13 +88,13 @@ def index(request):
 def new_ticket(request):
 
     """
-        Method: GET
-            1. Recruiter: Will display create ticket page and sending the priority types,
-               ticket types to the page
-        Method: POST
-            1. Validates a post data along with ticket attachments, sends errors as json to browser
-            2. Creating a ticket with its attachments in open state
-            3. Sending the email to the created user with respected ticket message
+    Method: GET
+        1. Recruiter: Will display create ticket page and sending the priority types,
+           ticket types to the page
+    Method: POST
+        1. Validates a post data along with ticket attachments, sends errors as json to browser
+        2. Creating a ticket with its attachments in open state
+        3. Sending the email to the created user with respected ticket message
 
     """
     if request.method == "GET":
@@ -130,16 +130,16 @@ def new_ticket(request):
 @login_required
 def edit_ticket(request, ticket_id):
     """
-        Method: GET
-            1. Check for a ticket with the id mentioned in the url
-            2. Recruiter: Will display edit ticket page and sending the priority types,
-               ticket types to the page
-            2. Dashboard: Will display edit ticket page and sending the priority types,
-               ticket types to the page
+    Method: GET
+        1. Check for a ticket with the id mentioned in the url
+        2. Recruiter: Will display edit ticket page and sending the priority types,
+           ticket types to the page
+        2. Dashboard: Will display edit ticket page and sending the priority types,
+           ticket types to the page
 
-        Method: POST
-            1. Validates a post data along with ticket attachments, sends errors as json to browser
-            2. Updates a ticket with its attachments in open state
+    Method: POST
+        1. Validates a post data along with ticket attachments, sends errors as json to browser
+        2. Updates a ticket with its attachments in open state
 
     """
     ticket = Ticket.objects.filter(id=ticket_id, user=request.user).first()
@@ -190,10 +190,10 @@ def edit_ticket(request, ticket_id):
 def delete_ticket(request, ticket_id):
 
     """
-        Method: GET
-            1. Check for a ticket existed or not with the id mentioned in the url
-            2. if the ticket created user, loggedin user or wheather the user is admin,
-               then deleting the ticket
+    Method: GET
+        1. Check for a ticket existed or not with the id mentioned in the url
+        2. if the ticket created user, loggedin user or wheather the user is admin,
+           then deleting the ticket
 
     """
     tickets = Ticket.objects.filter(id=ticket_id)
@@ -213,10 +213,10 @@ def delete_ticket(request, ticket_id):
 @login_required
 def delete_attachment(request, attachment_id):
     """
-        Method: GET
-            1. Check for a attachment existed or not with the id mentioned in the url
-            2. if the ticket attachment created user, loggedin user or wheather the user is admin,
-               then deleting the ticket attachment
+    Method: GET
+        1. Check for a attachment existed or not with the id mentioned in the url
+        2. if the ticket attachment created user, loggedin user or wheather the user is admin,
+           then deleting the ticket attachment
 
     """
     attachments = Attachment.objects.filter(id=attachment_id)
@@ -237,10 +237,10 @@ def delete_attachment(request, attachment_id):
 def delete_comment(request, comment_id):
 
     """
-        Method: GET
-            1. Check for a comment existed or not with the id mentioned in the url
-            2. if the ticket comment created user, loggedin user or wheather the user is admin,
-               then deleting the ticket comment
+    Method: GET
+        1. Check for a comment existed or not with the id mentioned in the url
+        2. if the ticket comment created user, loggedin user or wheather the user is admin,
+           then deleting the ticket comment
 
     """
     comments = Comment.objects.filter(id=comment_id)
@@ -267,9 +267,9 @@ TICKET_STATUS = (
 def view_ticket(request, ticket_id):
 
     """
-        Method: GET
-            1. Check for a ticket existed or not with the id mentioned in the url
-            2. check the loogedin is ticket_created user or admin, If not returns a 404 page
+    Method: GET
+        1. Check for a ticket existed or not with the id mentioned in the url
+        2. check the loogedin is ticket_created user or admin, If not returns a 404 page
 
     """
 
@@ -306,9 +306,9 @@ def view_ticket(request, ticket_id):
 @login_required
 def ticket_status(request, ticket_id):
     """
-        1. Check for a ticket existed or not with the id mentioned in the url
-        2. check the loogedin is ticket_created user or admin, If not returns a 404 page
-        3. If successfull, then changing the ticket status
+    1. Check for a ticket existed or not with the id mentioned in the url
+    2. check the loogedin is ticket_created user or admin, If not returns a 404 page
+    3. If successfull, then changing the ticket status
 
     """
     tickets = Ticket.objects.filter(id=ticket_id)
@@ -344,11 +344,11 @@ def ticket_status(request, ticket_id):
 @login_required
 def ticket_comment(request, ticket_id):
     """
-        1. Check for a ticket existed or not with the id mentioned in the url
-        2. check the loogedin is ticket_created user or admin, If not returns a 404 page
-        3. Then checking for form validations along with comment attachments
-        4. If successfull, then comment will be created for a ticket
-        5. A Notification email has been sent to the ticket_created user with the comment message
+    1. Check for a ticket existed or not with the id mentioned in the url
+    2. check the loogedin is ticket_created user or admin, If not returns a 404 page
+    3. Then checking for form validations along with comment attachments
+    4. If successfull, then comment will be created for a ticket
+    5. A Notification email has been sent to the ticket_created user with the comment message
 
     """
     ticket = Ticket.objects.filter(id=ticket_id).first()
@@ -395,10 +395,10 @@ def ticket_comment(request, ticket_id):
 @login_required
 def edit_comment(request):
     """
-        1. Check for a ticket existed or not with the id mentioned in the url
-        2. check the loogedin user is comment_created user or admin, If not returns a 404 page
-        3. Then checking for form validations along with comment attachments
-        4. If successfull, then comment details will be updated for a ticket
+    1. Check for a ticket existed or not with the id mentioned in the url
+    2. check the loogedin user is comment_created user or admin, If not returns a 404 page
+    3. Then checking for form validations along with comment attachments
+    4. If successfull, then comment details will be updated for a ticket
 
     """
 
@@ -436,10 +436,10 @@ def edit_comment(request):
 @login_required
 def admin_tickets_list(request):
     """
-        Method: GET
-            1. check the loogedin user is admin or not, If not returns a 404 page
-            2. If user is amdin, then display a recent tickets to admin
-            3. If successfull, then comment details will be updated for a ticket
+    Method: GET
+        1. check the loogedin user is admin or not, If not returns a 404 page
+        2. If user is amdin, then display a recent tickets to admin
+        3. If successfull, then comment details will be updated for a ticket
 
     """
 
@@ -468,10 +468,10 @@ TICKET_STATUS = (
 @login_required
 def admin_ticket_view(request, ticket_id):
     """
-        Method: GET
-            1. check the loogedin user is admin or not, If not returns a 404 page
-            2. check ticket is existing or not with the id given in url
-            3. If successfull, then display the ticket details to admin user
+    Method: GET
+        1. check the loogedin user is admin or not, If not returns a 404 page
+        2. check ticket is existing or not with the id given in url
+        3. If successfull, then display the ticket details to admin user
 
     """
 

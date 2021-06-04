@@ -1,14 +1,15 @@
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 from django.conf import settings
+
 # from administration.models import Company, Profile
 from rest_framework.authtoken.models import Token
+
 # from recruiter import status
 from django.http.response import JsonResponse
+
 # from microtrack.authentication import TokenAuthentication
-from rest_framework.authentication import (
-    BaseAuthentication, get_authorization_header
-)
+from rest_framework.authentication import BaseAuthentication, get_authorization_header
 
 from recruiter import exceptions, status
 from django.http import HttpResponseRedirect
@@ -22,13 +23,14 @@ class TokenAuthentication(BaseAuthentication):
         Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
     """
 
-    keyword = 'Token'
+    keyword = "Token"
     model = None
 
     def get_model(self):
         if self.model is not None:
             return self.model
         from rest_framework.authtoken.models import Token
+
         return Token
 
     """
@@ -45,33 +47,36 @@ class TokenAuthentication(BaseAuthentication):
 
         if len(auth) == 1:
             raise exceptions.AuthenticationFailed(
-                'Invalid token header. No credentials provided.')
+                "Invalid token header. No credentials provided."
+            )
         elif len(auth) > 2:
             raise exceptions.AuthenticationFailed(
-                'Invalid token header. Token string should not contain spaces.')
+                "Invalid token header. Token string should not contain spaces."
+            )
 
         try:
             token = auth[1].decode()
         except UnicodeError:
             raise exceptions.AuthenticationFailed(
-                'Invalid token header. Token string should not contain invalid characters.')
+                "Invalid token header. Token string should not contain invalid characters."
+            )
 
         return self.authenticate_credentials(token)
 
     def authenticate_credentials(self, key):
         model = self.get_model()
         try:
-            token = model.objects.select_related('user').get(key=key)
+            token = model.objects.select_related("user").get(key=key)
         except model.DoesNotExist:
-            return JsonResponse({
-                "error": True, "message": "Invalid Token"},
-                status=status.HTTP_401_UNAUTHORIZED
+            return JsonResponse(
+                {"error": True, "message": "Invalid Token"},
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         if not token.user.is_active:
-            return JsonResponse({
-                "error": True, "message": "User inactive or deleted"},
-                status=status.HTTP_401_UNAUTHORIZED
+            return JsonResponse(
+                {"error": True, "message": "User inactive or deleted"},
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         return (token.user, token)
@@ -81,8 +86,7 @@ class TokenAuthentication(BaseAuthentication):
 
 
 class TokenAuthMiddleware(object):
-    """adding profile and company to request object
-    """
+    """adding profile and company to request object"""
 
     def __init__(self, get_response):
         self.get_response = get_response
