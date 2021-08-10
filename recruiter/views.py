@@ -2,10 +2,8 @@ import json
 import urllib
 import requests
 import math
-import os
 import random
 import time
-from bson import ObjectId
 import tinys3
 import csv
 from collections import OrderedDict
@@ -16,7 +14,6 @@ from django.conf import settings
 from twython.api import Twython
 from django.urls import reverse
 from django.template import loader, Template, Context
-
 from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
@@ -32,9 +29,16 @@ from boto.s3.connection import S3Connection
 from django.contrib.auth import load_backend
 
 
+from mpcomp.aws import AWS
+from dashboard.tasks import sending_mail, send_email
+from django.utils.crypto import get_random_string
+from mpcomp.facebook import GraphAPI, get_access_token_from_code
+from mpcomp.views import get_absolute_url
+from pjob.views import save_codes_and_send_mail
 from peeldb.models import (
     Country,
     JobPost,
+    MetaData,
     State,
     City,
     Skill,
@@ -68,6 +72,7 @@ from peeldb.models import (
     AgencyApplicants,
     AgencyResume,
     POST,
+    UserMessage,
 )
 from .forms import (
     JobPostForm,
@@ -93,25 +98,16 @@ from .tasks import (
     add_google_friends,
     add_facebook_friends_pages_groups,
 )
-from dashboard.tasks import sending_mail
 from mpcomp.views import (
     rand_string,
-    Memail,
     recruiter_login_required,
     get_prev_after_pages_count,
     agency_admin_login_required,
     get_next_month,
     get_aws_file_path,
-    mongoconnection,
     get_resume_data,
     handle_uploaded_file,
 )
-from mpcomp.facebook import GraphAPI, get_access_token_from_code
-from mpcomp.aws import AWS
-from django.utils.crypto import get_random_string
-from mpcomp.views import get_absolute_url, save_codes_and_send_mail
-
-db = mongoconnection()
 
 
 @recruiter_login_required
@@ -237,7 +233,6 @@ def add_other_skills(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
     for skill in data:
         for value in skill.values():
             other_skills = value.replace(" ", "").split(",")
@@ -261,7 +256,7 @@ def add_other_skills(job_post, data, user):
                             "value": skill.name,
                         }
                         rendered = temp.render(c)
-                        Memail(mto, mfrom, subject, rendered, True)
+                        send_email.delay(mto, subject, rendered)
                         job_post.skills.add(skill)
 
 
@@ -269,7 +264,6 @@ def add_other_qualifications(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
     for qualification in data:
         for value in qualification.values():
             other_skills = value.replace(" ", "").split(",")
@@ -291,14 +285,13 @@ def add_other_qualifications(job_post, data, user):
                             "value": qualification.name,
                         }
                         rendered = temp.render(c)
-                        Memail(mto, mfrom, subject, rendered, True)
+                        send_email.delay(mto, subject, rendered)
 
 
 def add_other_industry(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
 
     for industry in data:
         for value in industry.values():
@@ -321,14 +314,13 @@ def add_other_industry(job_post, data, user):
                             "value": industry.name,
                         }
                         rendered = temp.render(c)
-                        Memail(mto, mfrom, subject, rendered, True)
+                        send_email.delay(mto, subject, rendered)
 
 
 def add_other_functional_area(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
 
     for functional_area in data:
         for value in functional_area.values():
@@ -351,7 +343,7 @@ def add_other_functional_area(job_post, data, user):
                             "value": functional_area.name,
                         }
                         rendered = temp.render(c)
-                        Memail(mto, mfrom, subject, rendered, True)
+                        send_email.delay(mto, subject, rendered)
 
 
 def adding_keywords(keywords, post):
@@ -439,7 +431,6 @@ def add_other_locations(post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
     for location in data.getlist("other_location"):
         locations = [loc.strip() for loc in location.split(",") if loc.strip()]
         for location in locations:
@@ -462,7 +453,7 @@ def add_other_locations(post, data, user):
                     "value": location.name,
                 }
                 rendered = temp.render(c)
-                Memail(mto, mfrom, subject, rendered, True)
+                send_email.delay(mto, subject, rendered)
 
 
 def set_other_fields(post, data, user):
@@ -614,6 +605,7 @@ def save_job_post(validate_post, request):
             job_post_company.profile_pic = file_path
         job_post_company.save()
     validate_post.company = job_post_company
+    validate_post.save()
     validate_post.slug = get_absolute_url(validate_post)
     validate_post.save()
 
@@ -624,9 +616,9 @@ def save_job_post(validate_post, request):
             t = loader.get_template("email/assign_jobpost.html")
             subject = "PeelJobs New JobPost"
             rendered = t.render(c)
-            mfrom = settings.DEFAULT_FROM_EMAIL
             user_active = True if user.is_active else False
-            Memail([user.email], mfrom, subject, rendered, user_active)
+            mto = [user.email]
+            send_email.delay(mto, subject, rendered)
 
 
 @recruiter_login_required
@@ -739,9 +731,8 @@ def new_job(request, status):
         t = loader.get_template("email/jobpost_notification.html")
         subject = "PeelJobs New JobPost"
         rendered = t.render(c)
-        mto = ["anusha@micropyramid.com"]
-        mfrom = settings.DEFAULT_FROM_EMAIL
-        Memail(mto, mfrom, subject, rendered, True)
+        mto = settings.SUPPORT_EMAILS
+        send_email.delay(mto, subject, rendered)
         data = {
             "error": False,
             "response": "New Post created",
@@ -948,9 +939,8 @@ def copy_job(request, status):
         t = loader.get_template("email/jobpost_notification.html")
         subject = "PeelJobs New JobPost"
         rendered = t.render(c)
-        mto = ["anusha@micropyramid.com"]
-        mfrom = settings.DEFAULT_FROM_EMAIL
-        Memail(mto, mfrom, subject, rendered, True)
+        mto = settings.SUPPORT_EMAILS
+        send_email.delay(mto, subject, rendered)
         data = {
             "error": False,
             "response": "Job Post Created Successfully",
@@ -963,22 +953,20 @@ def copy_job(request, status):
 @recruiter_login_required
 def view_job(request, job_post_id):
     if request.POST.get("post_message"):
-        data = {
-            "message": request.POST.get("message"),
-            "message_from": request.user.id,
-            "message_to": int(request.POST.get("message_to")),
-            "created_on": datetime.now(),
-            "job_id": int(request.POST.get("job_id")),
-            "is_read": False,
-        }
-        msg_id = db.messages.insert(data)
+        msg = UserMessage.objects.create(
+            message=request.POST.get("message"),
+            message_from=request.user,
+            message_to=User.objects.get(id=int(request.POST.get("message_to"))),
+            job=int(request.POST.get("job_id")),
+        )
+
         time = datetime.now().strftime("%b. %d, %Y, %l:%M %p")
         return HttpResponse(
             json.dumps(
                 {
                     "error": False,
                     "message": request.POST.get("message"),
-                    "msg_id": str(msg_id),
+                    "msg_id": msg.id,
                     "time": time,
                 }
             )
@@ -991,37 +979,19 @@ def view_job(request, job_post_id):
             )
         else:
             user = User.objects.filter(id=request.POST.get("user_id")).first()
-            db.messages.update(
-                {
-                    "$and": [
-                        {"message_to": request.user.id},
-                        {"message_from": user.id},
-                        {"job_id": int(job_post_id)},
-                    ]
-                },
-                {"$set": {"is_read": True}},
-                multi=True,
+            UserMessage.objects.filter(
+                message_to=request.user.id, message_from=user.id, job=int(job_post_id),
+            ).update(is_read=True)
+
+            m1 = UserMessage.objects.filter(
+                message_from=user.id, message_to=request.user.id, job=int(job_post_id),
             )
-            messages = db.messages.find(
-                {
-                    "$or": [
-                        {
-                            "$and": [
-                                {"message_from": user.id},
-                                {"message_to": request.user.id},
-                                {"job_id": int(job_post_id)},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"message_to": user.id},
-                                {"message_from": request.user.id},
-                                {"job_id": int(job_post_id)},
-                            ]
-                        },
-                    ]
-                }
+
+            m2 = UserMessage.objects.filter(
+                message_to=user.id, message_from=request.user.id, job=int(job_post_id),
             )
+
+            messages = list(m1) + list(m2)
             try:
                 user_pic = user.profile_pic.url
             except:
@@ -1152,12 +1122,10 @@ def view_job(request, job_post_id):
             data = {"error": True, "response": validate_resume_applicant.errors}
             return HttpResponse(json.dumps(data))
         meta_title = meta_description = ""
-        meta = db.meta_data.find_one({"name": "job_detail_page"})
+        meta = MetaData.objects.filter(name="job_detail_page")
         if meta:
-            meta_title = Template(meta.get("meta_title")).render(
-                Context({"job": jobpost})
-            )
-            meta_description = Template(meta.get("meta_description")).render(
+            meta_title = Template(meta[0].meta_title).render(Context({"job": jobpost}))
+            meta_description = Template(meta[0].meta_description).render(
                 Context({"job": jobpost})
             )
         return render(
@@ -1320,7 +1288,7 @@ def applicants(request, job_post_id):
                 "name": user.user.get_full_name(),
             }
         rendered = temp.render(names_dict)
-        Memail(mto, settings.DEFAULT_FROM_EMAIL, subject, rendered, False)
+        send_email.delay(mto, subject, rendered)
         data = {
             "error": False,
             "response": "Applicant Status changed to " + user.status,
@@ -1427,13 +1395,13 @@ def new_user(request):  # pragma: no mccabe
                 elif request.user.is_agency_recruiter:
                     return HttpResponseRedirect(reverse("agency:list"))
             meta_title = meta_description = h1_tag = ""
-            meta = list(db.meta_data.find({"name": "recruiter_login"}))
+            meta = MetaData.objects.filter(name="recruiter_login")
             if meta:
-                meta_title = Template(meta[0]["meta_title"]).render(Context({}))
-                meta_description = Template(meta[0]["meta_description"]).render(
+                meta_title = Template(meta[0].meta_title).render(Context({}))
+                meta_description = Template(meta[0].meta_description).render(
                     Context({})
                 )
-                h1_tag = Template(meta[0]["h1_tag"]).render(Context({}))
+                h1_tag = Template(meta[0].h1_tag).render(Context({}))
             return render(
                 request,
                 "recruiter/register.html",
@@ -1545,8 +1513,7 @@ def new_user(request):  # pragma: no mccabe
 
                     temp = loader.get_template("recruiter/email/recruiter_account.html")
                     subject = "PeelJobs Recruiter Account Activation"
-                    mto = [request.POST.get("email")]
-                    mfrom = settings.DEFAULT_FROM_EMAIL
+                    mto = request.POST.get("email")
                     if (
                         "client_type" in request.POST
                         and request.POST["client_type"] == "company"
@@ -1574,7 +1541,7 @@ def new_user(request):  # pragma: no mccabe
                         "user_password": request.POST["password"],
                     }
                     rendered = temp.render(c)
-                    Memail(mto, mfrom, subject, rendered, False)
+                    send_email.delay(mto, subject, rendered)
 
                     UserEmail.objects.create(
                         user=user_obj, email=request.POST["email"], is_primary=True
@@ -1676,7 +1643,6 @@ def user_password_reset(request):
                     temp = loader.get_template("recruiter/email/activate.html")
                 subject = "Password Reset - PeelJobs"
                 mto = [request.POST.get("email")]
-                mfrom = settings.DEFAULT_FROM_EMAIL
                 try:
                     url = (
                         request.scheme
@@ -1717,7 +1683,7 @@ def user_password_reset(request):
                 }
                 rendered = temp.render(c)
                 user_active = True if usr.is_active else False
-                Memail(mto, mfrom, subject, rendered, user_active)
+                send_email.delay(mto, subject, rendered)
 
                 usr.last_password_reset_on = datetime.now(timezone.utc)
                 usr.save()
@@ -1879,7 +1845,6 @@ def user_profile(request):
 
 
 def index(request):
-    print(settings.AM_PASS_KEY)
     if request.user.is_authenticated:
         if request.user.is_staff:
             return HttpResponseRedirect("/dashboard/")
@@ -1978,13 +1943,9 @@ def index(request):
                     )
                 c = {"activate_url": url, "user": user}
                 rendered = temp.render(c)
-                Memail(
-                    [request.POST.get("email")],
-                    settings.DEFAULT_FROM_EMAIL,
-                    "PeelJobs Recruiter Account Activation",
-                    rendered,
-                    False,
-                )
+                mto = [request.POST.get("email")]
+                subject = "PeelJobs Recruiter Account Activation"
+                send_email.delay(mto, subject, rendered)
                 data = {
                     "error": True,
                     "is_login": True,
@@ -1998,11 +1959,11 @@ def index(request):
             }
         return HttpResponse(json.dumps(data))
     meta_title = meta_description = h1_tag = ""
-    meta = list(db.meta_data.find({"name": "post_job"}))
+    meta = MetaData.objects.filter(name="post_job")
     if meta:
-        meta_title = Template(meta[0]["meta_title"]).render(Context({}))
-        meta_description = Template(meta[0]["meta_description"]).render(Context({}))
-        h1_tag = Template(meta[0]["h1_tag"]).render(Context({}))
+        meta_title = Template(meta[0].meta_title).render(Context({}))
+        meta_description = Template(meta[0].meta_description).render(Context({}))
+        h1_tag = Template(meta[0].h1_tag).render(Context({}))
     return render(
         request,
         "recruiter/login.html",
@@ -2208,8 +2169,8 @@ def google_login(request):
             + "://"
             + request.META["HTTP_HOST"]
             + reverse("recruiter:google_login"),
-            "client_id": settings.GP_CLIENT_ID,
-            "client_secret": settings.GP_CLIENT_SECRET,
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
         }
         info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
         info = info.json()
@@ -2268,7 +2229,9 @@ def google_login(request):
                 user = authenticate(username=user.username)
                 user.is_active = True
                 user.save()
-                login(request, user)
+                login(
+                    request, user, backend="django.contrib.auth.backends.ModelBackend"
+                )
                 return HttpResponseRedirect(reverse("recruiter:index"))
             else:
                 return HttpResponseRedirect(
@@ -2283,12 +2246,12 @@ def google_login(request):
     else:
         rty = (
             "https://accounts.google.com/o/oauth2/auth?client_id="
-            + settings.GP_CLIENT_ID
+            + settings.GOOGLE_CLIENT_ID
             + "&response_type=code&scope="
         )
         rty += (
-            "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email "
-            + "https://www.googleapis.com/auth/contacts.readonly"
+            "https://www.googleapis.com/auth/userinfo.profile"
+            + " https://www.googleapis.com/auth/userinfo.email"
         )
         rty += (
             "&redirect_uri="
@@ -2312,8 +2275,8 @@ def google_connect(request):
             + "://"
             + request.META["HTTP_HOST"]
             + reverse("recruiter:google_connect"),
-            "client_id": settings.GP_CLIENT_ID,
-            "client_secret": settings.GP_CLIENT_SECRET,
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
         }
         info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
         info = info.json()
@@ -2369,7 +2332,7 @@ def google_connect(request):
     else:
         rty = (
             "https://accounts.google.com/o/oauth2/auth?client_id="
-            + settings.GP_CLIENT_ID
+            + settings.GOOGLE_CLIENT_ID
             + "&response_type=code&scope="
         )
         rty += (
@@ -2771,13 +2734,8 @@ def send_mail(request, template_id, jobpost_id):
                 for recruiter in request.POST.getlist("recruiters"):
                     recruiter = User.objects.get(id=recruiter)
                     sent_mail.recruiter.add(recruiter)
-                Memail(
-                    mto,
-                    settings.DEFAULT_FROM_EMAIL,
-                    emailtemplate.subject,
-                    rendered,
-                    False,
-                )
+                subject = emailtemplate.subject
+                send_email.delay(mto, subject, rendered)
                 sending_mail.delay(emailtemplate, request.POST.getlist("recruiters"))
                 data = {"error": False, "response": "Email Sent Successfully"}
                 return HttpResponse(json.dumps(data))
@@ -3147,14 +3105,10 @@ def company_recruiter_create(request):
                 "user_password": request.POST["password"],
             }
             rendered = temp.render(c)
+            mto = [user.email]
+            subject = "PeelJobs Recruiter Account Activation"
             # user_active = True if request.user.is_active else False
-            Memail(
-                [user.email],
-                settings.DEFAULT_FROM_EMAIL,
-                "PeelJobs Recruiter Account Activation",
-                rendered,
-                False,
-            )
+            send_email.delay(mto, subject, rendered)
             data = {"error": False, "response": "Recruiter Created Successfully"}
             return HttpResponse(json.dumps(data))
         else:
@@ -3443,37 +3397,26 @@ def messages(request):
             )
         )
     if request.POST.get("mode") == "get_messages":
-        db.messages.update(
-            {
-                "$and": [
-                    {"message_to": request.user.id},
-                    {"message_from": int(request.POST.get("r_id"))},
-                    {"job_id": None},
-                ]
-            },
-            {"$set": {"is_read": True}},
-            multi=True,
+        UserMessage.objects.filter(
+            message_to=request.user.id,
+            message_from=int(request.POST.get("r_id")),
+            job=None,
+        ).update(is_read=True)
+
+        m1 = UserMessage.objects.filter(
+            message_from=request.user.id,
+            message_to=int(request.POST.get("r_id")),
+            job=None,
         )
-        messages = db.messages.find(
-            {
-                "$or": [
-                    {
-                        "$and": [
-                            {"message_from": request.user.id},
-                            {"message_to": int(request.POST.get("r_id"))},
-                            {"job_id": None},
-                        ]
-                    },
-                    {
-                        "$and": [
-                            {"message_to": request.user.id},
-                            {"message_from": int(request.POST.get("r_id"))},
-                            {"job_id": None},
-                        ]
-                    },
-                ]
-            }
+
+        m2 = UserMessage.objects.filter(
+            message_to=request.user.id,
+            message_from=int(request.POST.get("r_id")),
+            job=None,
         )
+
+        messages = list(m1) + list(m2)
+
         user = User.objects.filter(id=request.POST.get("r_id")).first()
         if user:
             try:
@@ -3504,107 +3447,79 @@ def messages(request):
                 json.dumps({"error": True, "response": "User Not Found!"})
             )
     if request.POST.get("post_message"):
-        data = {
-            "message": request.POST.get("message"),
-            "message_from": request.user.id,
-            "message_to": int(request.POST.get("message_to")),
-            "created_on": datetime.now(),
-            "is_read": False,
-        }
+        msg = UserMessage.objects.create(
+            message=request.POST.get("message"),
+            message_from=request.user,
+            message_to=User.objects.get(id=int(request.POST.get("message_to"))),
+        )
+
         if request.POST.get("job_id"):
-            data["job_id"] = int(request.POST.get("job_id"))
-        msg_id = db.messages.insert(data)
+            msg.job__id = int(request.POST.get("job_id"))
+            msg.save()
+
         time = datetime.now().strftime("%b. %d, %Y, %l:%M %p")
         return HttpResponse(
             json.dumps(
                 {
                     "error": False,
                     "message": request.POST.get("message"),
-                    "msg_id": str(msg_id),
+                    "msg_id": msg.id,
                     "time": time,
                 }
             )
         )
     if request.POST.get("mode") == "delete_message":
-        msg = db.messages.find_one({"_id": ObjectId(request.POST.get("id"))})
-        if (
-            msg.get("message_from") == request.user.id
-            or msg.get("message_to") == request.user.id
-        ):
-            db.messages.remove({"_id": ObjectId(request.POST.get("id"))})
+        msg = UserMessage.objects.get(id=request.POST.get("id"))
+        if msg.message_from == request.user or msg.message_to == request.user:
+            UserMessage.objects.get(id=request.POST.get("id")).delete()
             data = {"error": False, "message": request.POST.get("message")}
         else:
             data = {"error": True, "message": "You Cannot delete!"}
         return HttpResponse(json.dumps(data))
     if request.POST.get("mode") == "delete_chat":
         if request.POST.get("job"):
-            messages = db.messages.remove(
-                {
-                    "$or": [
-                        {
-                            "$and": [
-                                {"message_from": request.user.id},
-                                {"message_to": int(request.POST.get("user"))},
-                                {"job_id": int(request.POST.get("job"))},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"message_to": request.user.id},
-                                {"message_from": int(request.POST.get("user"))},
-                                {"job_id": int(request.POST.get("job"))},
-                            ]
-                        },
-                    ]
-                }
-            )
+            UserMessage.objects.filter(
+                message_from=request.user.id,
+                message_to=int(request.POST.get("user")),
+                job=int(request.POST.get("job")),
+            ).delete()
+
+            UserMessage.objects.filter(
+                message_to=request.user.id,
+                message_from=int(request.POST.get("user")),
+                job=int(request.POST.get("job")),
+            ).delete()
+
         else:
-            messages = db.messages.remove(
-                {
-                    "$or": [
-                        {
-                            "$and": [
-                                {"message_from": request.user.id},
-                                {"message_to": int(request.POST.get("user"))},
-                                {"job_id": None},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"message_to": request.user.id},
-                                {"message_from": int(request.POST.get("user"))},
-                                {"job_id": None},
-                            ]
-                        },
-                    ]
-                }
-            )
+            UserMessage.objects.filter(
+                message_from=request.user.id,
+                message_to=int(request.POST.get("user")),
+                job=None,
+            ).delete()
+
+            UserMessage.objects.filter(
+                message_to=request.user.id,
+                message_from=int(request.POST.get("user")),
+                job=None,
+            ).delete()
+
         return HttpResponse(
             json.dumps({"error": False, "message": request.POST.get("message")})
         )
     if request.user.is_authenticated:
-        messages = list(
-            db.messages.find(
-                {
-                    "$or": [
-                        {"message_from": request.user.id},
-                        {"message_to": request.user.id},
-                    ]
-                },
-                {"message_from": 1, "message_to": 1, "_id": 0},
-            ).sort([("created_on", -1)])
+        messages = UserMessage.objects.filter(
+            Q(message_from=request.user.id) | Q(message_to=request.user.id)
         )
+
         user_ids = AppliedJobs.objects.filter(
             job_post__user__id=request.user.id
         ).values_list("user", flat=True)
         users = User.objects.filter(id__in=user_ids)
         if messages:
-            recruiter_ids = map(
-                lambda d: d.get("message_from")
-                if d.get("message_to") == request.user.id
-                else d.get("message_to"),
-                messages,
-            )
+            recruiter_ids = list(
+                messages.values_list("message_from", flat=True).distinct()
+            ) + list(messages.values_list("message_to", flat=True).distinct())
+
             preserved = Case(
                 *[When(pk=pk, then=pos) for pos, pk in enumerate(recruiter_ids)]
             )

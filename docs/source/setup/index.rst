@@ -89,9 +89,9 @@ Configuration of Peeljobs
 		
 		**Google developers account details**
 
-		GP_CLIENT_ID=<oauth0 client id>
+		GOOGLE_CLIENT_ID=<oauth0 client id>
 
-		GP_CLIENT_SECRET=<oauth0 client secret-key>
+		GOOGLE_CLIENT_SECRET=<oauth0 client secret-key>
 		
 		ENABLE_GOOGLE_LOGIN=<variable to configure google login in application>
 
@@ -120,13 +120,6 @@ Configuration of Peeljobs
 		LN_API_KEY = <linkedin api id>
 
 		LN_SECRET_KEY = <linkedin secret-key>
-
-		**Mailgun accout details**
-
-		MGUN_API_URL = <mailgun api url>
-
-		MGUN_API_KEY = <mailgun api secret-key>
-
 
 
 11. Apply migrations to database using the following command

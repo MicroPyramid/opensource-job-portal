@@ -131,19 +131,6 @@
       <!-- Left menu starts here-->
       <!-- walkin_jobs starts here -->
       <div class="col-md-3 right_container">
-        <!-- blog_search starts here -->
-        <div class="blog_search">
-          <p class="head text-capitalize">Search Questions</p>
-          <form name="searchform" id="searchfrom" method="GET"  action="{{ current_url }}">
-          <div class="input-group">
-            <input type="text" class="form-control" name="search" id="search" value="{{ search }}">
-            <span class="input-group-btn">
-              <button class="btn btn-secondary" type="submit">Go!</button>
-            </span>
-          </div>
-          </form>
-        </div>
-        <!-- blog_search ends here -->
         <!-- upload_btn_block starts here -->
         {% if request.user.is_authenticated %}
           {% if request.user.is_jobseeker and not request.user.resume %}

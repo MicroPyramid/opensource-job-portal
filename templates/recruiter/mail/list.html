@@ -74,6 +74,7 @@
                     "pageLength": 20,
                 });
         $('.delete-mailtemplate').click(function (e) {
+            var myPos = [ $(window).width() / 2, 50 ];
             e.preventDefault();
             url = $(this).attr('id') + '/'
             $('#block_question').text('Do you want to delete Template?')
@@ -81,6 +82,7 @@
                 modal: true,
                 draggable: false,
                 title: "Info!!",
+                position: myPos,
                 buttons: [
                     {
                         text: "Yes",

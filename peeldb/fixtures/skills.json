@@ -244,7 +244,7 @@
     "fields": {
         "name": "Adobe Photoshop",
         "status": "Active",
-        "icon": "http://d2pt99vxm3n8bc.cloudfront.net/technology/icons/PSicon.png"
+        "icon": "http://peeljobs.s3.amazonaws.com/technology/icons/PSicon.png"
     }
 }, {
     "model": "peeldb.skill",
@@ -292,7 +292,7 @@
     "fields": {
         "name": "Fresher, Telemarketing",
         "status": "Active",
-        "icon": "http://d2pt99vxm3n8bc.cloudfront.net/technology/icons/250*250.png"
+        "icon": "http://peeljobs.s3.amazonaws.com/technology/icons/250*250.png"
     }
 }, {
     "model": "peeldb.skill",

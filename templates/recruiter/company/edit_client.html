@@ -150,7 +150,7 @@
             dataType: 'json',
             data: $('#clientform').serialize(),
             success: function (data) {
-                $.blockUI({message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+                $.blockUI({message: '<img src="http://peeljobs.s3.amazonaws.com/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
                 if (data.error == false) {
                     $.unblockUI()
                     open_dialog_with_url(data.response, "Infoo!!", "{% url 'agency:client_list' %}")

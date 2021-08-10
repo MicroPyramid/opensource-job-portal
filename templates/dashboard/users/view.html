@@ -11,7 +11,7 @@
           <!--<span class='other_details'>Web Designer</span>-->
           <span class='other_details'>{{ user.email }}</span>
         </span>
-        <img src="{% if user.profile_pic %}//d2pt99vxm3n8bc.cloudfront.net/{{ user.profile_pic }}{% else %}{% static 'dummy.jpg' %}{% endif %}">
+        <img src="{% if user.profile_pic %}//peeljobs.s3.amazonaws.com/{{ user.profile_pic }}{% else %}{% static 'dummy.jpg' %}{% endif %}">
       </div>
       <div class="clearfix"></div>
     </div>

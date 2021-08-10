@@ -176,6 +176,7 @@
       window.location = $(this).attr('id');
   })
   $('.delete-resume').click(function (e) {
+      var myPos = [ $(window).width() / 2, 50 ];
       e.stopPropagation();
       e.preventDefault();
       href = $(this).attr('data-href');
@@ -184,6 +185,7 @@
           modal: true,
           draggable: false,
           title: "Info!!",
+          position: myPos,
           buttons: [
               {
                   text: "Yes",

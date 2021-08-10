@@ -18,7 +18,7 @@ from peeldb.models import (
     Attachment,
     Comment,
 )
-from mpcomp.views import Memail
+from dashboard.tasks import send_email
 from .forms import TicketForm, CommentForm
 
 
@@ -71,9 +71,9 @@ def index(request):
         temp = loader.get_template("email/new_ticket.html")
         subject = "Service Request | Peeljobs"
         rendered = temp.render({"ticket": ticket})
-        mfrom = settings.DEFAULT_FROM_EMAIL
         user_active = True if ticket.user.is_active else False
-        Memail([ticket.user.email], mfrom, subject, rendered, user_active)
+        mto = [ticket.user.email]
+        send_email.delay(mto, subject, rendered)
         data = {"error": False, "response": "New Ticket Created Successfully"}
     else:
         errors = validate_ticket.errors
@@ -117,9 +117,9 @@ def new_ticket(request):
         temp = loader.get_template("email/new_ticket.html")
         subject = "Service Request | Peeljobs"
         rendered = temp.render({"ticket": ticket})
-        mfrom = settings.DEFAULT_FROM_EMAIL
         user_active = True if ticket.user.is_active else False
-        Memail(ticket.user.email, mfrom, subject, rendered, user_active)
+        mto = ticket.user.email
+        send_email.delay(mto, subject, rendered)
         data = {"error": False, "response": "New Ticket Created Successfully"}
     else:
         errors = validate_ticket.errors
@@ -280,7 +280,6 @@ def view_ticket(request, ticket_id):
                 ticket = tickets[0]
                 if request.user.is_staff or request.user == ticket.user:
                     template_name = "recruiter/tickets/view_ticket.html"
-                    cloudfront_url = settings.CLOUDFRONT_DOMAIN
                     return render(
                         request,
                         template_name,
@@ -289,7 +288,6 @@ def view_ticket(request, ticket_id):
                             "ticket_types": TICKET_TYPES,
                             "ticket": tickets[0],
                             "status": STATUS,
-                            "cloudfront_url": cloudfront_url,
                         },
                     )
 
@@ -321,9 +319,9 @@ def ticket_status(request, ticket_id):
                 temp = loader.get_template("email/new_ticket.html")
                 subject = "Your Ticket Status | Peeljobs"
                 rendered = temp.render({"ticket": ticket, "status": True})
-                mfrom = settings.DEFAULT_FROM_EMAIL
+                mto = ticket.user.email
                 user_active = True if ticket.user.is_active else False
-                Memail(ticket.user.email, mfrom, subject, rendered, user_active)
+                send_email.delay(mto, subject, rendered)
                 data = {
                     "error": False,
                     "response": "Ticket status changed Successfully",
@@ -371,9 +369,9 @@ def ticket_comment(request, ticket_id):
                     temp = loader.get_template("email/new_ticket.html")
                     subject = "Acknowledgement For Your Request | Peeljobs"
                     rendered = temp.render({"ticket": ticket, "comment": comment})
-                    mfrom = settings.DEFAULT_FROM_EMAIL
+                    mto = ticket.user.email
                     user_active = True if ticket.user.is_active else False
-                    Memail(ticket.user.email, mfrom, subject, rendered, user_active)
+                    send_email.delay(mto, subject, rendered)
                 return HttpResponse(
                     json.dumps(
                         {"error": False, "response": "Comment added Successfully"}

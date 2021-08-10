@@ -657,26 +657,19 @@
     <div class="col-md-4 right_list_container">
           <!-- right div starts here-->
              <nav class="bs-docs-sidebar hidden-print hidden-sm hidden-xs affix" style="top:190px;">
-              <div class="social_links1">
+              
               <div class="panel panel-default content_fixed_block">
+
                 <div class="panel-content">
-                <p>Connect with social Networking sites to post jobs on your timeline</p>
-              <ul>
-               {% if fb_connected %}
-              <li class="facebook"><a href="{{ request.user.get_facebook_url }}" target="_blank"><i class="fa fa-facebook"></i><span>Connected</span> </a></li>
-              {% else %}
-               <li class="facebook"><a href="{% url 'recruiter:facebook_login' %}" target="_blank"><i class="fa fa-facebook"></i><span>Connect with facebook</span> </a></li>
-              {% endif %}
-              {% if tw_connected %}
-               <li class="twitter"><a href="{{ request.user.get_twitter_url }}" target="_blank"><i class="fa fa-twitter"></i> <span>Connected</span> </a></li>
-              {% else %}
-                <li class="twitter"><a href="{% url 'recruiter:twitter_login' %}" target="_blank"><i class="fa fa-twitter"></i> <span>Connect with twitter</span> </a></li>
-              {% endif %}
-                <br clear="all">
-              </ul>
+                  <strong>Company Profile</strong>
+                  <p>Update your company profile page to get the best job seeker profiles into your dashboard</p>
+                  <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}"  target="_blank">
+                    <span class="button">Update Company Profile</span>
+                  </a>
+
               </div>
             </div>
-            </div>
+            
             <div class="panel panel-default content_fixed_block">
               <div class="panel-content">
                  <strong>Profile Update</strong>
@@ -686,24 +679,35 @@
                 </a>
               </div>
             </div>
+            <!-- <div class="social_links1">
             <div class="panel panel-default content_fixed_block">
               <div class="panel-content">
-                 <strong>Company Profile</strong>
-                <p>Update your company profile page to get the best job seeker profiles into your dashboard</p>
-                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}"  target="_blank">
-                  <span class="button">Update Company Profile</span>
-                </a>
+                <p>Connect with social Networking sites to post jobs on your timeline</p>
+              <ul>
+               {% if fb_connected %}
+              <li class="facebook"><a href="{{ request.user.get_facebook_url }}" target="_blank"><i class="fa fa-facebook"></i><span>Connected</span> </a></li>
+              {% else %}
+               <li class="facebook"><a href="{% url 'recruiter:facebook_login' %}" target="_blank"><i class="fa fa-facebook"></i><span>Connect with facebookkkkkk</span> </a></li>
+              {% endif %}
+              {% if tw_connected %}
+               <li class="twitter"><a href="{{ request.user.get_twitter_url }}" target="_blank"><i class="fa fa-twitter"></i> <span>Connected</span> </a></li>
+              {% else %}
+                <li class="twitter"><a href="{% url 'recruiter:twitter_login' %}" target="_blank"><i class="fa fa-twitter"></i> <span>Connect with twitterrrrrrrrrr</span> </a></li>
+              {% endif %}
+                <br clear="all">
+              </ul>
               </div>
             </div>
+          </div> -->
             <br clear="all">
             </nav>
             <br clear="all">
           <!--right div ends here-->
     </div></div>
-  <div class="bottom_connect_fixed text-capitalize">
-       Connect and post your job on your timeline
+  <!-- <div class="bottom_connect_fixed text-capitalize">
+       Connect and post your job on your timeline -->
         <!-- post on row -->
-                        <div class="post_details">
+                        <!-- <div class="post_details">
                           <span class='button fb' onclick="location.href='{% url 'recruiter:facebook_login' %}'">
                           {% if fb_connected %}
                           <span class='name'><input type="checkbox" name="fb_post" id="fb_post" checked> facebook</span>
@@ -717,9 +721,9 @@
                         {% else %}
                           <span class='name'><i class="fa fa-twitter"></i> Twitter</span>
                           {% endif %}
-                          </span>
+                          </span> -->
                              <!-- fb groups -->
-                          {% if fb_connected  and request.user.get_user_facebook_groups %}
+                          <!-- {% if fb_connected  and request.user.get_user_facebook_groups %}
                           <div class='social_wrap'>
                             <ul>
                               {% for group in request.user.get_user_facebook_groups %}
@@ -733,9 +737,9 @@
                             <div class="clearfix"></div>
                           </ul>
                         </div>
-                        {% endif %}
+                        {% endif %} -->
                       <!--/ fb groups -->
-                        </div>
+                        <!-- </div> -->
                     <!--/ post on row -->
       {% endwith %}
       {% endwith %}
@@ -1380,7 +1384,7 @@ $( "select#agency_recruiters" ).select2( { placeholder: "Select A Recruiter" } )
             contentType: false,
             url: '.',
             success: function (data) {
-            $.blockUI({ message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+            $.blockUI({ message: '<img src="http://peeljobs.s3.amazonaws.com/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
 
             if (data.error) {
                 $.unblockUI();
@@ -1449,7 +1453,7 @@ $( "select#agency_recruiters" ).select2( { placeholder: "Select A Recruiter" } )
 
             url: '.',
             success: function (data) {
-            $.blockUI({ message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
+            $.blockUI({ message: '<img src="http://peeljobs.s3.amazonaws.com/static/img/loader-gif.gif" height="90px" width="90px"><h1>Please Wait...</h1>'});
 
             if (data.error) {
           /*    $('#save').removeAttr("disabled");*/
@@ -1520,7 +1524,7 @@ $( "select#agency_recruiters" ).select2( { placeholder: "Select A Recruiter" } )
             url: '.',
             success: function (data) {
 
-            $.blockUI({ message: '<img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="150px" width="150px"><h1>Please Wait...</h1>'});
+            $.blockUI({ message: '<img src="http://peeljobs.s3.amazonaws.com/static/img/loader-gif.gif" height="150px" width="150px"><h1>Please Wait...</h1>'});
 
           if (data.error) {
           /*    $('#save').removeAttr("disabled");*/

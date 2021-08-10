@@ -29,11 +29,11 @@ from recruiter.permissions import RecruiterRequiredPermission
 from recruiter import status
 from mpcomp.views import (
     rand_string,
-    Memail,
     get_prev_after_pages_count,
     get_next_month,
     get_aws_file_path,
 )
+from dashboard.tasks import send_email
 from mpcomp.views import get_absolute_url
 from recruiter.forms import JobPostForm, YEARS, MONTHS
 from recruiter.serializers import *
@@ -183,7 +183,7 @@ def add_other_skills(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
+
     for skill in data:
         for value in skill.values():
             other_skills = value.replace(" ", "").split(",")
@@ -207,7 +207,7 @@ def add_other_skills(job_post, data, user):
                             "value": skill.name,
                         }
                         rendered = temp.render(c)
-                        Memail(mto, mfrom, subject, rendered, True)
+                        send_email.delay(mto, subject, rendered)
                         job_post.skills.add(skill)
 
 
@@ -215,7 +215,6 @@ def add_other_qualifications(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
     for qualification in data:
         for value in qualification.values():
             other_skills = value.replace(" ", "").split(",")
@@ -237,14 +236,13 @@ def add_other_qualifications(job_post, data, user):
                             "value": qualification.name,
                         }
                         rendered = temp.render(c)
-                        Memail(mto, mfrom, subject, rendered, True)
+                        send_email.delay(mto, subject, rendered)
 
 
 def add_other_industry(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
 
     for industry in data:
         for value in industry.values():
@@ -267,14 +265,13 @@ def add_other_industry(job_post, data, user):
                             "value": industry.name,
                         }
                         rendered = temp.render(c)
-                        Memail(mto, mfrom, subject, rendered, True)
+                        send_email.delay(mto, subject, rendered)
 
 
 def add_other_functional_area(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
 
     for functional_area in data:
         for value in functional_area.values():
@@ -297,14 +294,13 @@ def add_other_functional_area(job_post, data, user):
                             "value": functional_area.name,
                         }
                         rendered = temp.render(c)
-                        Memail(mto, mfrom, subject, rendered, True)
+                        send_email.delay(mto, subject, rendered)
 
 
 def add_other_locations(post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-    mfrom = settings.DEFAULT_FROM_EMAIL
     for location in data.getlist("other_location"):
         locations = [loc.strip() for loc in location.split(",") if loc.strip()]
         for location in locations:
@@ -327,7 +323,7 @@ def add_other_locations(post, data, user):
                     "value": location.name,
                 }
                 rendered = temp.render(c)
-                Memail(mto, mfrom, subject, rendered, True)
+                send_email.delay(mto, subject, rendered)
 
 
 def add_interview_location(data, job_post, no_of_locations):
@@ -523,6 +519,7 @@ def save_job_post(validate_post, request):
             job_post_company.profile_pic = file_path
         job_post_company.save()
     validate_post.company = job_post_company
+    validate_post.save()
     validate_post.slug = get_absolute_url(validate_post)
     validate_post.save()
 
@@ -533,9 +530,9 @@ def save_job_post(validate_post, request):
             t = loader.get_template("email/assign_jobpost.html")
             subject = "PeelJobs New JobPost"
             rendered = t.render(c)
-            mfrom = settings.DEFAULT_FROM_EMAIL
             user_active = True if user.is_active else False
-            Memail([user.email], mfrom, subject, rendered, user_active)
+            mto = [user.email]
+            send_email.delay(mto, subject, rendered)
 
 
 def checking_error_value(errors, key_item):
@@ -664,9 +661,9 @@ def new_job(request, job_type):
         t = loader.get_template("email/jobpost_notification.html")
         subject = "PeelJobs New JobPost"
         rendered = t.render(c)
-        mto = ["anusha@micropyramid.com"]
-        mfrom = settings.DEFAULT_FROM_EMAIL
-        Memail(mto, mfrom, subject, rendered, True)
+        mto = settings.SUPPORT_EMAILS
+
+        send_email.delay(mto, subject, rendered)
         data = {
             "error": False,
             "response": "New Post created",

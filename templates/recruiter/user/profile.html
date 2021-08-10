@@ -179,7 +179,7 @@
             <a href="{% url 'recruiter:list' %}">
             <i class='fa fa-briefcase'></i>
             <span class='heading'>Jobs Posted</span>
-            <span class='count'>{{ user.get_active_jobposts_count|length }}</span></a>
+            <span class='count'>{{ user.get_active_jobposts_count }}</span></a>
           </div>
           <div class="replies_received">
             <a href="{% url 'recruiter:messages' %}">
@@ -210,7 +210,7 @@
         $('.file_upload').click(function (e) {
             $('#file_input').click();
         });
-        $('body').append('<div id="ajaxBusy"><p><img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="100px" width="100px"></p></div>');
+        $('body').append('<div id="ajaxBusy"><p><img src="http://peeljobs.s3.amazonaws.com/static/img/loader-gif.gif" height="100px" width="100px"></p></div>');
         $('#ajaxBusy').css({
             display: "none",
             margin: "0px",

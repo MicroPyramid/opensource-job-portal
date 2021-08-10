@@ -83,7 +83,7 @@
           {% if request.user.profile_pic|length > 0 %}
             <img src='{{ request.user.profile_pic }}'>
           {% else %}
-      <img src="//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg">
+      <img src="//peeljobs.s3.amazonaws.com/static/dummy.jpg">
       {% endif %}
              <span>{{request.user.get_email_name}}  </span><span style="margin-left:45px">My Profile</span></a>
              <span class="log_out pull-right"><a href="/logout/?next={{ request.path }}"><i class="pj-logout i"></i>Sign Out</a></span>
@@ -120,7 +120,7 @@
         <ul>
           <li><a class="btn btn-primary fb_footer social" target="_blank" href="https://facebook.com/peeljobs/"><i class='fa fa-facebook'></i></a></li>
          <li><a class="btn btn-primary git_footer social" target="_blank" href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home"><i class='fa fa-linkedin'></i></a></li>
-          <li><a class="btn btn-danger gplus_footer social" target="_blank" href="https://plus.google.com/b/105171863747311260917/105171863747311260917"><i class='fa fa-google-plus'></i></a></li>
+          <li><a href="{% url 'social:google_login' %}"><strong>G</strong></a></li>
           <li><a class="btn btn-info twit_footer social" target="_blank" href="https://twitter.com/PeelJobs"><i class='fa fa-twitter'></i></a></li>
         </ul>
 
@@ -134,7 +134,6 @@
         <li><a href="{% url 'pages' 'terms-conditions' %}">Terms & Conditions</a></li>
         <li><a href="{% url 'pages' 'about-us' %}">About Peeljobs</a></li>
         <li><a href="{% url 'contact' %}">Contact Us</a></li>
-        <li><a href="/blog/">Blog</a></li>
         <!--<li><a href="#">FAQ</a></li>
         <li><a href="#">Recruiter FAQ</a></li>--> 
         </ul>

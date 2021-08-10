@@ -16,7 +16,7 @@ a{
   }
 }
 .container{
-  width: 1220px;
+  width: 1380px;
   @media(min-width: $mob_min) and (max-width: $med_max){
     width: 100%;
   }
@@ -208,6 +208,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0060b9', end
     padding-top: 100px;
     .search_login_blocks{
       .search_block{
+         margin-top: 50px;
          padding-right:100px;
           @media(min-width: $tab_min) and (max-width: $tab_max){
             padding-right:0;
@@ -314,7 +315,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0060b9', end
       .login_block{
         padding:0 30px;
         padding-right: 0;
-        margin-top: 0px;
+        margin-top: 20px;
          @media(min-width: $tab_min) and (max-width: $tab_max){
            padding:10px;
           }
@@ -502,6 +503,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0060b9', end
   .breadcrumb_section{
     margin-top: 14rem;
     padding-left: 15px;
+    margin-bottom: 20px;
   }
   /* breadcrumb_section ends here */
 .header_panel{
@@ -3276,7 +3278,6 @@ a:hover {
     button{
       height: 35px;
       background: #62bb46;
-      text-transform: uppercase;
       font-weight: 600;
       font-size: 13px;
       width: 100%;
@@ -5593,7 +5594,7 @@ display:none;
     height:     100%;
     width:      100%;
     background: rgba( 255, 255, 255, 0.2  ) 
-                url('https://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif"') 
+                url('https://peeljobs.s3.amazonaws.com/static/img/loader-gif.gif"') 
                 50% 50% 
                 no-repeat;
     background-size: 60px 60px;

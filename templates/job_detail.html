@@ -2,14 +2,6 @@
 {% load thumbnail %}
 {% load tz %}
 {% load thumbnail %}
-<style type="text/css">
-  .blog_title{
-    font-size: 16px;
-    color: #00aeef;
-    display:inline;
-  }
-</style>
-
 {% if recruiter %}
 <div class="job_detail_section">
   <!-- job_item starts here -->
@@ -274,7 +266,6 @@
         </span>
       {% endif %}
     </div>
-    <strong class="title"><h1 class="blog_title">{{ job.title }}</h1> <span class="exp">[{{ job.min_year }}-{{ job.max_year }} Year(s) Exp]</span> </strong>
     <span class="company" itemprop="experienceRequirements">
     {% if job.company or job.company_name %}
     {% if job.company.is_active and job.company.slug %}

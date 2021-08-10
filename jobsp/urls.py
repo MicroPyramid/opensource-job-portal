@@ -24,15 +24,15 @@ from pjob.views import (
     job_industries,
     companies,
     jobposts_by_date,
-    week_calendar,
+    # week_calendar,
     job_locations,
     set_password,
     job_skills,
     job_detail,
-    year_calendar,
-    calendar_add_event,
-    calendar_event_list,
-    month_calendar,
+    # year_calendar,
+    # calendar_add_event,
+    # calendar_event_list,
+    # month_calendar,
     recruiters,
     user_subscribe,
     unsubscribe,
@@ -48,7 +48,6 @@ from search.views import (
     search_slugs,
 )
 from candidate.views import (
-    applicant_unsubscribe,
     bounces,
     assessment_changes,
     applicant_unsubscribing,
@@ -158,11 +157,6 @@ urlpatterns = [
     url(r"^get/search-slugs/$", search_slugs, name="get_search_slugs"),
     # url(r'^admin/', admin.site.urls),# Here's the typo
     url(r"^search/", include("search.urls", namespace="search")),
-    url(
-        r"^applicant-unsubscribe/(?P<email>[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4})/$",
-        applicant_unsubscribe,
-        name="applicant_unsubscribe",
-    ),
     url(r"^skill-auto/$", skill_auto_search),
     url(
         r"^unsubscribe_email/(?P<email_type>([a-z0-9-])+)/(?P<message_id>[a-zA-Z0-9_-]+.*?)/$",
@@ -281,23 +275,23 @@ urlpatterns = [
         r"jobposts/year/(?P<year>\w{0,})/month/(?P<month>\w{0,})/date/(?P<date>\w{0,})/(?P<page_num>[0-9]+)/$",
         jobposts_by_date,
     ),
-    url(
-        r"calendar/(?P<year>\w{0,})/month/(?P<month>\w{0,})/week/(?P<week>\w{0,})/$",
-        week_calendar,
-        name="week_calendar",
-    ),
+    # url(
+    #     r"calendar/(?P<year>\w{0,})/month/(?P<month>\w{0,})/week/(?P<week>\w{0,})/$",
+    #     week_calendar,
+    #     name="week_calendar",
+    # ),
     url(r"tickets/", include("tickets.urls", namespace="tickets")),
     url(r"^jobs-in-(?P<location>[-\w]+)/$", job_locations, name="job_locations"),
     url(r"^jobs-in-(?P<location>[-\w]+)/(?P<page_num>[0-9]+)/$", job_locations),
     url(r"^jobs-for-(?P<skill>[-\w]+)/$", job_skills),
-    url(r"calendar/(?P<year>\w{0,})/$", year_calendar, name="year_calendar"),
-    url(r"calendar/add/event/$", calendar_add_event, name="calendar_add_event"),
-    url(r"calendar/event/list/$", calendar_event_list, name="calendar_event_list"),
-    url(
-        r"calendar/(?P<year>\w{0,})/month/(?P<month>\w{0,})/$",
-        month_calendar,
-        name="month_calendar",
-    ),
+    # url(r"calendar/(?P<year>\w{0,})/$", year_calendar, name="year_calendar"),
+    # url(r"calendar/add/event/$", calendar_add_event, name="calendar_add_event"),
+    # url(r"calendar/event/list/$", calendar_event_list, name="calendar_event_list"),
+    # url(
+    #     r"calendar/(?P<year>\w{0,})/month/(?P<month>\w{0,})/$",
+    #     month_calendar,
+    #     name="month_calendar",
+    # ),
     url(r"^oauth2callback/$", auth_return, name="auth_return"),
     url(r"recruiters/$", recruiters, name="recruiters"),
     url(r"^jobs/$", job_list, name="job_list"),
@@ -316,12 +310,12 @@ urlpatterns = [
 handler404 = custom_404
 handler500 = custom_500
 
-if settings.DEBUG:
-    # url(r'^profiler/', include('django_web_profiler.urls', namespace="django_web_profiler")),
+# if settings.DEBUG:
+#     # url(r'^profiler/', include('django_web_profiler.urls', namespace="django_web_profiler")),
 
-    import debug_toolbar
+#     import debug_toolbar
 
-    urlpatterns.append(url(r"^__debug__/", include(debug_toolbar.urls)))
+#     urlpatterns.append(url(r"^__debug__/", include(debug_toolbar.urls)))
 
 # urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
 

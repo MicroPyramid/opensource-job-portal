@@ -21,8 +21,8 @@ from peeldb.models import (
     Qualification,
     AssessmentData,
     DEGREE_TYPES,
+    UserMessage,
 )
-from mpcomp.views import str_to_list, mongoconnection
 from candidate.forms import YEARS, MONTHS
 from recruiter.forms import UserStatus
 from pjob.calendar_events import get_calendar_events_list
@@ -95,10 +95,10 @@ def get_resume_name(value):
 @register.filter
 def get_s3_url(key):
     s3 = S3Connection(
-        settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, is_secure=False
+        settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, is_secure=True
     )
     stored_url = s3.generate_url(
-        600, "GET", bucket=settings.AWS_STORAGE_BUCKET_NAME, key=key, force_http=True
+        600, "GET", bucket=settings.AWS_STORAGE_BUCKET_NAME, key=key, force_http=False
     )
     return stored_url
 
@@ -418,12 +418,12 @@ def change_to_int(value):
 
 @register.filter()
 def filter_jobposts(value, status):
-    return value.filter(status=status).count()
+    return "todo def filter_jobposts"  # value.filter(status=status).count()
 
 
 @register.filter()
 def filter_users(value, status):
-    return value.filter(is_active=status).count()
+    return "todo def filter_users"  # value.filter(is_active=status).count()
 
 
 @register.simple_tag
@@ -475,7 +475,9 @@ def get_current_date():
 
 @register.filter
 def filter_mobile_users(value, status):
-    return value.filter(mobile_verified=status).count()
+    return (
+        "todo def filter_mobile_users"  # value.filter(mobile_verified=status).count()
+    )
 
 
 @register.simple_tag
@@ -617,32 +619,30 @@ def get_months():
 
 @register.simple_tag
 def get_unread_messages(message_to, message_from, job_id):
-    db = mongoconnection()
-    messages = db.messages.count({"message_to": message_to.id, "is_read": False})
+    messages = UserMessage.objects.filter(
+        message_to=message_to.id, is_read=False
+    ).count()
+
     if message_from:
-        messages = db.messages.count(
-            {
-                "message_to": message_to.id,
-                "is_read": False,
-                "message_from": message_from.id,
-                "job_id": None,
-            }
-        )
+        messages = UserMessage.objects.filter(
+            message_to=message_to.id,
+            is_read=False,
+            message_from=message_from.id,
+            job=None,
+        ).count()
     if job_id:
-        messages = db.messages.count(
-            {
-                "message_to": message_to.id,
-                "is_read": False,
-                "message_from": message_from.id,
-                "job_id": job_id,
-            }
-        )
+        messages = UserMessage.objects.filter(
+            message_to=message_to.id,
+            is_read=False,
+            message_from=message_from.id,
+            job__id=job_id,
+        ).count()
     return messages
 
 
 @register.filter()
 def get_obj_id(obj):
-    return obj.get("_id")
+    return obj.id
 
 
 @register.filter()

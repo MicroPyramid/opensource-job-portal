@@ -22,10 +22,10 @@
 
 ## Google authentication keys
 
-> GPCLIENTID=""
-> GPCLIENTSECRET=""
+> GOOGLE_CLIENT_ID=""
+> GOOGLE_CLIENT_SECRET=""
 > GOOGLE_OAUTH2_REDIRECT='http://localhost:8000/oauth2callback/'
-
+> GOOGLE_MAPS_API_KEY=""
 ## Elasticsearch keys
 
 > HAYSTACKURL='http://127.0.0.1:9200/'
@@ -62,8 +62,8 @@
 
 ## Facebook Integration keys
 
-> FBAPPID=""
-> FBSECRET=""
+> FACEBOOK_APP_ID=""
+> FACEBOOK_APP_SECRET=""
 > FBPEELJOBSPAGEID=""
 
 ## Linkedin Integration keys
@@ -92,17 +92,16 @@
 > SETTINGSFILE=''
 > SMSAUTHKEY=''
 
-## Mailgun keys
 
-> MAILGUN_API_KEY=''
-
-## AWS File storage keys
+## AWS keys
 
 > AWS_STORAGE_BUCKET_NAME=""
 > AWS_ACCESS_KEY=''
 > AWS_SECRET_KEY=''
 > CLOUDFRONT_DOMAIN = ""
 > CLOUDFRONT_ID=''
+> AWS_SES_REGION_NAME = 'eu-west-1'
+> AWS_SES_REGION_ENDPOINT = 'email.eu-west-1.amazonaws.com'
 
 ## Sentry keys
 

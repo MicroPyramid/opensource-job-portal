@@ -154,20 +154,20 @@
         <!-- social_icons ends here -->
         {% block social_links %}
         <!-- social links starts here -->
-        <div class="social_links">
+        <!-- <div class="social_links">
             <ul>
                 <li class="facebook">{% if not request.user.is_fb_connected %}
-                    <a href="{% url 'recruiter:facebook_login' %}"><i class="fa fa-facebook"></i><span>Connect Now</span>
+                    <a href="{% url 'recruiter:facebook_login' %}"><i class="fa fa-facebook"></i><span>Facebook</span>
                     </a>{% else %}<a href="{{ request.user.get_facebook_url }}" target="_blank"><i
                             class="fa fa-facebook"></i><span>Connected</span> </a>{% endif %}</li>
 
                 <li class="twitter">{% if not request.user.is_tw_connected %}
-                    <a href="{% url 'recruiter:twitter_login' %}"><i class="fa fa-twitter"></i> <span>Connect Now </span>
+                    <a href="{% url 'recruiter:twitter_login' %}"><i class="fa fa-twitter"></i> <span>Twitter</span>
                     </a>{% else %}
                     <a href="{{ request.user.get_twitter_url }}" target="_blank"><i class="fa fa-twitter"></i> <span>Connected</span>
                     </a>{% endif %}</li>
 
-                <!--<li class="google">{% if not request.user.is_gp_connected %}<a href="
+                <li class="google">{% if not request.user.is_gp_connected %}<a href="
                     {% url 'recruiter:google_login' %}
                     "><i class="fa fa-google"></i> <span>Connect With Google</span> </a>{% else %}<a href="
                     {{ request.user.get_google_object.google_url }}
@@ -176,9 +176,9 @@
               <li class="linkedin">{% if not request.user.is_ln_connected %}<a href="
                     "><i class="fa fa-linkedin"></i> <span>Connect With linkedin</span> </a>{% else %}<a href="
                     {{ request.user.get_linkedin_object.linkedin_url }}
-                    " target="_blank"><i class="fa fa-linkedin"></i> <span>Connected</span> </a>{% endif %}</li>-->
+                    " target="_blank"><i class="fa fa-linkedin"></i> <span>Connected</span> </a>{% endif %}</li>
             </ul>
-        </div>
+        </div> -->
         <!-- social links ends here -->
         {% endblock social_links %}
         <section id='menu'>
@@ -195,7 +195,7 @@
                 <li><a class="menu_item post-new" href="#"><i class='fa fa-briefcase'></i><span>Post A Job</span></a></li>
                 {% endif %}
                 <li>
-                    <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}" style="padding-bottom: 15px;"><i class="fa fa-user" aria-hidden="true"></i><span>Company Profile</span></a>
+                    <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}" ><i class="fa fa-user" aria-hidden="true"></i><span>Company Profile</span></a>
                 </li>
                 {% if request.user.is_agency_recruiter %}
                     <li>

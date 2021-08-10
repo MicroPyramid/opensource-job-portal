@@ -1,6 +1,6 @@
 import requests
 
-from celery.task import task
+from jobsp.celery import app
 from django.conf import settings
 from twython.api import Twython
 
@@ -21,7 +21,7 @@ from peeldb.models import (
 )
 
 
-@task()
+@app.task()
 def add_twitter_friends_followers(user_id, friends, followers):
 
     user = User.objects.filter(id=user_id).first()
@@ -38,12 +38,12 @@ def add_twitter_friends_followers(user_id, friends, followers):
         )
 
 
-@task()
+@app.task()
 def add_google_friends(user_id, accesstoken):
     user = User.objects.filter(id=user_id).first()
     auth_token = gauth.OAuth2Token(
-        client_id=settings.GP_CLIENT_ID,
-        client_secret=settings.GP_CLIENT_SECRET,
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
         scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email "
         + "https://www.googleapis.com/auth/contacts.readonly",
         user_agent="dummy-sample",
@@ -84,7 +84,7 @@ def add_google_friends(user_id, accesstoken):
         )
 
 
-@task()
+@app.task()
 def add_facebook_friends_pages_groups(accesstoken, fid, user):
     graph = GraphAPI(accesstoken)
     friends = graph.get_object("me/friends")
@@ -134,7 +134,7 @@ def add_facebook_friends_pages_groups(accesstoken, fid, user):
         )
 
 
-@task()
+@app.task()
 def del_jobpost_tw(user, post):
     user = User.objects.filter(id=user).first()
     if user:
@@ -155,7 +155,7 @@ def del_jobpost_tw(user, post):
         return "connect to twitter"
 
 
-@task()
+@app.task()
 def del_jobpost_peel_fb(user, post):
     user = User.objects.filter(id=user).first()
     if user:
@@ -171,7 +171,7 @@ def del_jobpost_peel_fb(user, post):
     return "connect to fb"
 
 
-@task()
+@app.task()
 def del_jobpost_fb(user, post):
     user = User.objects.filter(id=user).first()
     if user:

@@ -4,7 +4,6 @@ import tinys3
 import random
 import math
 import re
-from bson import ObjectId
 
 from django.shortcuts import render
 from django.http.response import HttpResponse, HttpResponseRedirect
@@ -23,9 +22,7 @@ from django.core.cache import cache
 from mpcomp.views import (
     jobseeker_login_required,
     get_prev_after_pages_count,
-    mongoconnection,
     get_social_referer,
-    Memail,
     get_resume_data,
     handle_uploaded_file,
     get_meta,
@@ -46,6 +43,7 @@ from candidate.forms import (
     JobAlertForm,
 )
 from peeldb.models import (
+    MetaData,
     User,
     City,
     Country,
@@ -71,15 +69,13 @@ from peeldb.models import (
     AssessmentData,
     Solution,
     State,
+    UserMessage,
 )
-
-# from recruiter.forms import MobileVerifyForm
+from dashboard.tasks import send_email
 from psite.forms import UserPassChangeForm
 from django.contrib.auth import authenticate, login
 from peeldb.models import JOB_TYPE
 from pjob.views import add_other_location_to_user
-
-db = mongoconnection()
 
 
 def index(request):
@@ -119,13 +115,7 @@ def index(request):
     return render(request, template, data)
 
 
-def applicant_unsubscribe(request, email):
-    db.users.update({"email": email}, {"$set": {"unsubscribe": True}})
-    return HttpResponseRedirect("/")
-
-
 def applicant_unsubscribing(request, message_id):
-    db.users.update({"hash_code": message_id}, {"$set": {"unsubscribe": True}})
     users = User.objects.filter(unsubscribe_code=message_id)
     if users:
         user = users[0]
@@ -186,14 +176,6 @@ def bounces(request):
                 job_alerts.delete()
                 subscribers = Subscriber.objects.filter(email=each["emailAddress"])
                 subscribers.delete()
-        content = ""
-        if "content" in arg_info.keys():
-            content = arg_info["content"]
-            text = content.replace("\r\n", "")
-            html_content = text.partition("Final-Recipient: ")[2]
-            html_content = html_content.partition("Action: ")[0]
-            bounced_email = html_content.replace("\n", "").replace("rfc822;", "")
-            db.users.update({"email": bounced_email}, {"$set": {"is_bounce": True}})
 
     return HttpResponse("Bounced Email has been updated Sucessfully.")
 
@@ -257,7 +239,10 @@ def upload_resume(request):
                     "upload_resume": True,
                     "email": email,
                     "resume_name": request.FILES["resume"].name,
-                    "resume_path": "https://" + settings.CLOUDFRONT_DOMAIN + "/" + path,
+                    "resume_path": "https://"
+                    + settings.AWS_STORAGE_BUCKET_NAME
+                    + ".s3.amazonaws.com/"
+                    + path,
                 }
             else:
                 data = {"error": True, "data": "File Size must be less than 300 kb"}
@@ -308,7 +293,7 @@ def upload_profilepic(request):
 def profile(request):
     """ need to check user login or not"""
     if request.user.is_authenticated:
-        messages = db.messages.find({"message_to": request.user.id, "is_read": False})
+        messages = UserMessage.objects.filter(message_to=request.user.id, is_read=False)
         user = request.user
         user.profile_completeness = user.profile_completion_percentage
         user.save()
@@ -639,14 +624,14 @@ def edit_language(request, language_id):
         }
         return HttpResponse(json.dumps(data))
     if request.POST.get("edit_lang") and request.POST.get("language"):
-        if request.user.language.filter(
-            language_id=request.POST.get("language")
-        ).exclude(id=language_id):
-            data = {
-                "error": True,
-                "response": "You have already created this langugae in your profile",
-            }
-            return HttpResponse(json.dumps(data))
+        # if request.user.language.filter(
+        #     language_id=request.POST.get("language")
+        # ).exclude(id=language_id):
+        #     data = {
+        #         "error": True,
+        #         "response": "You have already created this langugae in your profile",
+        #     }
+        #     return HttpResponse(json.dumps(data))
         read = request.POST.get("read") == "on"
         write = request.POST.get("write") == "on"
         speak = request.POST.get("speak") == "on"
@@ -661,7 +646,7 @@ def edit_language(request, language_id):
             user = request.user
             user.profile_updated = datetime.datetime.now(timezone.utc)
             user.save()
-            data = {"error": False, "response": "language added"}
+            data = {"error": False, "response": "language updated"}
         else:
             data = {
                 "error": True,
@@ -1272,11 +1257,11 @@ def edit_email(request):
 def job_alert(request):
     if request.method == "GET":
         meta_title = meta_description = h1_tag = ""
-        meta = list(db.meta_data.find({"name": "alerts_list"}))
+        meta = MetaData.objects.filter(name="alerts_list")
         if meta:
-            meta_title = Template(meta[0]["meta_title"]).render(Context({}))
-            meta_description = Template(meta[0]["meta_description"]).render(Context({}))
-            h1_tag = Template(meta[0]["h1_tag"]).render(Context({}))
+            meta_title = Template(meta[0].meta_title).render(Context({}))
+            meta_description = Template(meta[0].meta_description).render(Context({}))
+            h1_tag = Template(meta[0].h1_tag).render(Context({}))
         template = (
             "mobile/alert/job_alert.html"
             if request.is_mobile
@@ -1328,7 +1313,6 @@ def job_alert(request):
         job_alert.skill.add(*request.POST.getlist("skill"))
         temp = loader.get_template("email/job_alert.html")
         subject = "Job Alert Confirmation"
-        mfrom = settings.DEFAULT_FROM_EMAIL
         url = (
             request.scheme
             + "://"
@@ -1348,7 +1332,8 @@ def job_alert(request):
         user_active = (
             True if request.user.is_authenticated and request.user.is_active else False
         )
-        Memail(request.POST.get("email"), mfrom, subject, rendered, user_active)
+        mto = request.POST.get("email")
+        send_email.delay(mto, subject, rendered)
         return HttpResponse(
             json.dumps(
                 {
@@ -1519,11 +1504,11 @@ def modify_job_alert(request, job_alert_id):
 
 def alerts_list(request, **kwargs):
     meta_title = meta_description = h1_tag = ""
-    meta = list(db.meta_data.find({"name": "alerts_list"}))
+    meta = MetaData.objects.filter(name="alerts_list")
     if meta:
-        meta_title = Template(meta[0]["meta_title"]).render(Context({}))
-        meta_description = Template(meta[0]["meta_description"]).render(Context({}))
-        h1_tag = Template(meta[0]["h1_tag"]).render(Context({}))
+        meta_title = Template(meta[0].meta_title).render(Context({}))
+        meta_description = Template(meta[0].meta_description).render(Context({}))
+        h1_tag = Template(meta[0].h1_tag).render(Context({}))
     if request.user.is_authenticated:
         job_alerts = JobAlert.objects.filter(email=request.user.email)
 
@@ -1569,11 +1554,6 @@ def alerts_list(request, **kwargs):
             },
         )
     else:
-        meta = list(db.meta_data.find({"name": "alerts_list"}))
-        if meta:
-            meta_title = Template(meta[0]["meta_title"]).render(Context({}))
-            meta_description = Template(meta[0]["meta_description"]).render(Context({}))
-            h1_tag = Template(meta[0]["h1_tag"]).render(Context({}))
         template = (
             "mobile/alert/job_alert.html"
             if request.is_mobile
@@ -1668,11 +1648,11 @@ def question_view(request, que_id):
     latest_questions = Question.objects.filter(status="Live").order_by("-modified_on")
     meta_title = meta_description = h1_tag = ""
     if question:
-        meta = db.meta_data.find_one({"name": "question_view"})
+        meta = MetaData.objects.filter(name="question_view")
         if meta:
-            meta_title = Template(meta["meta_title"]).render(Context({}))
-            meta_description = Template(meta["meta_description"]).render(Context({}))
-            h1_tag = Template(meta["h1_tag"]).render(Context({}))
+            meta_title = Template(meta[0].meta_title).render(Context({}))
+            meta_description = Template(meta[0].meta_description).render(Context({}))
+            h1_tag = Template(meta[0].h1_tag).render(Context({}))
         return render(
             request,
             "assessments/question_view.html",
@@ -1720,11 +1700,11 @@ def assessments_questions(request, **kwargs):
         page, no_pages
     )
     meta_title = meta_description = h1_tag = ""
-    meta = db.meta_data.find_one({"name": "question_view"})
+    meta = MetaData.objects.filter(name="question_view")
     if meta:
-        meta_title = Template(meta["meta_title"]).render(Context({}))
-        meta_description = Template(meta["meta_description"]).render(Context({}))
-        h1_tag = Template(meta["h1_tag"]).render(Context({}))
+        meta_title = Template(meta[0].meta_title).render(Context({}))
+        meta_description = Template(meta[0].meta_description).render(Context({}))
+        h1_tag = Template(meta[0].h1_tag).render(Context({}))
     return render(
         request,
         "assessments/questions_list.html",
@@ -1837,60 +1817,33 @@ def assessment_changes(request):
 
 def get_messages(request):
     if request.POST.get("job_id"):
-        db.messages.update(
-            {
-                "$and": [
-                    {"message_to": request.user.id},
-                    {"job_id": int(request.POST.get("job_id"))},
-                ]
-            },
-            {"$set": {"is_read": True}},
-            multi=True,
+        UserMessage.objects.filter(
+            message_to=request.user.id, job=int(request.POST.get("job_id"))
+        ).update(is_read=True)
+
+        messages = UserMessage.objects.filter(
+            job__id=int(request.POST.get("job_id"))
+            & (Q(message_from=request.user.id) | Q(message_to=request.user.id))
         )
-        messages = db.messages.find(
-            {
-                "$and": [
-                    {
-                        "$or": [
-                            {"message_from": request.user.id},
-                            {"message_to": request.user.id},
-                        ]
-                    },
-                    {"job_id": int(request.POST.get("job_id"))},
-                ]
-            }
-        )
+
     else:
-        db.messages.update(
-            {
-                "$and": [
-                    {"message_to": request.user.id},
-                    {"message_from": int(request.POST.get("r_id"))},
-                ]
-            },
-            {"$set": {"is_read": True}},
-            multi=True,
+        UserMessage.objects.filter(
+            message_to=request.user.id, message_from=int(request.POST.get("r_id"))
+        ).update(is_read=True)
+
+        messages = UserMessage.objects.filter(
+            Q(
+                message_from=request.user.id,
+                message_to=int(request.POST.get("r_id")),
+                job__id=None,
+            )
+            | Q(
+                message_from=int(request.POST.get("r_id")),
+                message_to=request.user.id,
+                job__id=None,
+            )
         )
-        messages = db.messages.find(
-            {
-                "$or": [
-                    {
-                        "$and": [
-                            {"message_from": request.user.id},
-                            {"message_to": int(request.POST.get("r_id"))},
-                            {"job_id": None},
-                        ]
-                    },
-                    {
-                        "$and": [
-                            {"message_to": request.user.id},
-                            {"message_from": int(request.POST.get("r_id"))},
-                            {"job_id": None},
-                        ]
-                    },
-                ]
-            }
-        )
+
     user = User.objects.filter(id=request.POST.get("r_id")).first()
     job = JobPost.objects.filter(id=request.POST.get("job_id")).first()
     try:
@@ -1909,7 +1862,7 @@ def get_messages(request):
         messages = render_to_string(
             "candidate/messages.html",
             {
-                "messages": list(messages),
+                "messages": messages,
                 "user": user,
                 "job": job,
                 "user_pic": user_pic,
@@ -1930,16 +1883,16 @@ def messages(request):
         data = get_messages(request)
         return HttpResponse(json.dumps(data))
     if request.POST.get("post_message"):
-        data = {
-            "message": request.POST.get("message"),
-            "message_from": request.user.id,
-            "message_to": int(request.POST.get("message_to")),
-            "created_on": datetime.datetime.now(),
-            "is_read": False,
-        }
+
+        msg = UserMessage.objects.create(
+            message=request.POST.get("message"),
+            message_from=request.user,
+            message_to=User.objects.get(id=int(request.POST.get("message_to"))),
+        )
+
         if request.POST.get("job_id"):
-            data["job_id"] = int(request.POST.get("job_id"))
-        msg = db.messages.insert(data)
+            msg.job = int(request.POST.get("job_id"))
+
         time = datetime.datetime.now().strftime("%b. %d, %Y, %l:%M %p")
         return HttpResponse(
             json.dumps(
@@ -1947,77 +1900,51 @@ def messages(request):
                     "error": False,
                     "message": request.POST.get("message"),
                     "job_post": request.POST.get("job_id"),
-                    "msg_id": str(msg),
+                    "msg_id": str(msg.id),
                     "time": time,
                 }
             )
         )
     if request.POST.get("mode") == "delete_message":
-        msg = db.messages.find_one({"_id": ObjectId(request.POST.get("id"))})
-        if (
-            msg.get("message_from") == request.user.id
-            or msg.get("message_to") == request.user.id
-        ):
-            db.messages.remove({"_id": ObjectId(request.POST.get("id"))})
+        msg = UserMessage.objects.get(id=request.POST.get("id"))
+        if msg.message_from == request.user or msg.message_to == request.user:
+            msg.delete()
             data = {"error": False, "message": request.POST.get("message")}
         else:
             data = {"error": True, "message": "You cannot delete!"}
         return HttpResponse(json.dumps(data))
     if request.POST.get("mode") == "delete_chat":
         if request.POST.get("job"):
-            messages = db.messages.remove(
-                {
-                    "$or": [
-                        {
-                            "$and": [
-                                {"message_from": request.user.id},
-                                {"message_to": int(request.POST.get("user"))},
-                                {"job_id": int(request.POST.get("job"))},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"message_to": request.user.id},
-                                {"message_from": int(request.POST.get("user"))},
-                                {"job_id": int(request.POST.get("job"))},
-                            ]
-                        },
-                    ]
-                }
-            )
+            UserMessage.objects.filter(
+                message_from=request.user.id,
+                message_to=int(request.POST.get("user")),
+                job=int(request.POST.get("job")),
+            ).delete()
+            UserMessage.objects.filter(
+                message_from=int(request.POST.get("user"), message_to=request.user.id),
+                job=int(request.POST.get("job")),
+            ).delete()
+
         else:
-            messages = db.messages.remove(
-                {
-                    "$or": [
-                        {
-                            "$and": [
-                                {"message_from": request.user.id},
-                                {"message_to": int(request.POST.get("user"))},
-                                {"job_id": None},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"message_to": request.user.id},
-                                {"message_from": int(request.POST.get("user"))},
-                                {"job_id": None},
-                            ]
-                        },
-                    ]
-                }
-            )
+            UserMessage.objects.filter(
+                message_from=request.user.id,
+                message_to=int(request.POST.get("user")),
+                job=None,
+            ).delete()
+            UserMessage.objects.filter(
+                message_from=int(request.POST.get("user")),
+                message_to=request.user.id,
+                job=None,
+            ).delete()
+
         return HttpResponse(
             json.dumps({"error": False, "message": request.POST.get("message")})
         )
     if request.user.is_authenticated:
-        messages = list(
-            db.messages.find(
-                {"message_to": request.user.id},
-                {"job_id": 1, "message_from": 1, "_id": 0},
-            ).sort([("created_on", -1)])
-        )
-        job_ids = list(map(lambda d: d.get("job_id"), messages))
-        recruiter_ids = list(map(lambda d: d.get("message_from"), messages))
+        messages = UserMessage.objects.filter(message_to=request.user.id)
+
+        job_ids = messages.values_list("job__id", flat=True).distinct()
+        recruiter_ids = messages.values_list("message_from__id", flat=True).distinct()
         jobs = JobPost.objects.filter(id__in=job_ids)
         users = User.objects.filter(id__in=recruiter_ids)
         if jobs.exists():

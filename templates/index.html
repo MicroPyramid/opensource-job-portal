@@ -84,23 +84,23 @@
                 <input type="password" class="form-control form-control_opt" id="user_login_password" placeholder="Enter Password" name="password">
               </div>
               <div class="forgot_right">
-                <button type="submit" class="btn btn-default login_form_button" >Sign In</button>
+                <button type="submit"  class="btn btn-default login_form_button" >Sign In</button>
                 <a href="#" class="forgot_password pull-right">Forgot Password?</a>
                  <a href="#" class="new_user_login pull-right" style="display:none;">Already a Member? Login</a>
               </div>
 
               <div class="forgot_create-new">
                  <a href="#" class="upload_btn_resume up_res">Upload Resume</a>
-                 <a href="#" class="new_account">Create New Account?</a>
+                 <a href="#" class="new_account"> New Account?</a>
               </div>
             </form>
             <div class="social_links">
               <ul>
-                <li class="text-capitalize">login with social networks</li>
+                <li class="text-capitalize">login with social networks</li><br>
                 <li ><a href="{% url 'social:facebook_login' %}" target="_blank"><i class='fa fa-facebook fb'></i></a></li>
                 <li ><a href="{% url 'social:linkedin_login' %}"  target="_blank"><i class='fa fa-linkedin in'></i></a></li>
                 <li ><a href="{% url 'social:github_login' %}"  target="_blank"><i class='fa fa-github git'></i></a></li>
-                <li ><a href="{% url 'social:google_login' %}"  target="_blank"><i class='fa fa-google-plus gplus'></i></a></li>
+                <li ><a href="{% url 'social:google_login' %}"><strong>G</strong></a></li>
 
               </ul>
             </div>
@@ -120,22 +120,16 @@
         <div class="col-md-9 left_container">
           <!-- register_block starts here -->
           <div class="row mar_lr_0 register_block">
-            <div class="col-md-4 col-sm-4 register_point border {% if not request.user.is_authenticated %}new_account{% endif %}">
+            <div class="col-md-6 col-sm-6 register_point border {% if not request.user.is_authenticated %}new_account{% endif %}">
               <div class="text-center register_col">
                 <a><strong>Sign Up For Today</strong></a>
                 <p>Get started with Peeljobs and find your dream job today!</p>
               </div>
             </div>
-            <div class="col-md-4 col-sm-4 register_point border redirect_link" data-href="{% url 'my:alerts_list'%}">
+            <div class="col-md-6 col-sm-6 register_point border redirect_link" data-href="{% url 'my:alerts_list'%}">
               <div class="text-center register_col">
                 <strong>Get Jobs Into your inbox</strong>
                 <p>Create Job Alert in your desired areas and get best-matched jobs into your inbox.</p>
-              </div>
-            </div>
-            <div class="col-md-4 col-sm-4 register_point redirect_link" data-href="/blog/" >
-              <div class="text-center register_col">
-                <strong>Blog</strong>
-                <p>Want to place in a better position? Learn few tips from our blog..!</p>
               </div>
             </div>
           </div>
@@ -189,7 +183,7 @@
                     <a href="/readmind-info-services-job-openings/" class='company_logo'><img src="https://cdn.peeljobs.com/companies1/rmis.png" alt="ReadMind Info Services"/></a>
                     </div>
                     <div class="col-md-2 col-sm-3 col-xs-3 image_col">
-                    <a href="/grape-services-pvt-ltd-job-openings/" class='company_logo'><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/5930cf748cb53e748decf649c5e59bbd/grape-services-pvt-ltd" alt="Grape Services Pvt. Ltd"/></a>
+                    <a href="/grape-services-pvt-ltd-job-openings/" class='company_logo'><img src="https://peeljobs.s3.amazonaws.com/company/logo/5930cf748cb53e748decf649c5e59bbd/grape-services-pvt-ltd" alt="Grape Services Pvt. Ltd"/></a>
                     </div>
                     <div class="col-md-2 col-sm-3 col-xs-3 image_col">
                     <a href="/haileo-technologies-pvt-ltd-job-openings/" class='company_logo'><img src="https://cdn.peeljobs.com/companies1/haileo.png" alt="Haileo Technologies Pvt Ltd"/></a>
@@ -201,7 +195,7 @@
                     <a href="/cms-computers-limited-job-openings/" class='company_logo'><img src="https://cdn.peeljobs.com/companies/cms.png" alt="CMS Computers Limited"/></a>
                     </div>
                     <div class="col-md-2 col-sm-3 col-xs-3 image_col">
-                      <a href="/capgemini-india-pvt-ltd-job-openings/" class='company_logo'><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/636f389e7ba1383d54b27186f1f9dda0/capgemini-india-pvt-ltd" alt="CAPGEMINI INDIA PVT LTD"/></a>
+                      <a href="/capgemini-india-pvt-ltd-job-openings/" class='company_logo'><img src="https://peeljobs.s3.amazonaws.com/company/logo/636f389e7ba1383d54b27186f1f9dda0/capgemini-india-pvt-ltd" alt="CAPGEMINI INDIA PVT LTD"/></a>
                     </div>
                    
                     <div class="col-md-2 col-sm-3 col-xs-3 image_col">

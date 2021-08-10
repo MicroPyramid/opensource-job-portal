@@ -143,10 +143,9 @@
                             <a href="{% url 'recruiters' %}">Recruiters</a>
                           </li>
                           <li><a href="{% url 'my:alerts_list'%}">Job Alerts</a></li>
-                          <li {% if request.path == "/calendar/2017/" %}class="active"{% endif %}>
+                          <!-- <li {% if request.path == "/calendar/2017/" %}class="active"{% endif %}>
                             <a href="/calendar/{% now "Y" %}/">Calendar</a>
-                          </li>
-                          <li><a href="/blog/">Blog</a></li>
+                          </li> -->
                           {% if request.user.user_type == 'JS' %}
                             {% get_unread_messages request.user '' '' as unread_messages %}
                             <li {% if request.path == '/profile/' %}class="active"{% endif %} {% if unread_messages %} title="{{ unread_messages }} Messages From recruiters"{% endif %}>
@@ -287,7 +286,6 @@
                 <ul class="footer_links">
                   <li class="text-uppercase">About Us</li>
                   <li><a href="{% url 'pages' 'about-us' %}" target="_blank">About Peeljobs</a></li>
-                  <li><a href="/blog/" target="_blank">Blog</a></li>
                   <li><a href="{% url "sitemap" %}" target="_blank">Sitemap</a></li>
                   <li><a href="{% url 'pages' 'terms-conditions' %}" target="_blank">Terms &amp; Conditions</a></li>
                   <li><a href="{% url 'pages' 'privacy-policy' %}" target="_blank">Privacy Policy</a></li>
@@ -301,7 +299,11 @@
                 </ul>
                 <ul class="footer_links">
                   <li class="text-uppercase">Job Seekers</li>
+                  {% if request.user.is_authenticated %}                  
+                  <li style="display: none;"><a href="#" data-toggle="modal" data-target="#login_register">Login / Connect</a></li>
+                  {%else%}
                   <li><a href="#" data-toggle="modal" data-target="#login_register">Login / Connect</a></li>
+                  {%endif%}
                   <li><a href="/" target="_blank">Search Jobs</a></li>
                   <li><a href="{% url 'jobs:index' %}" target="_blank">View All Jobs</a></li>
                   <li><a href="{% url 'pages' 'faq' %}" target="_blank">FAQs</a></li>
@@ -328,7 +330,7 @@
                   <ul>
                     <li><a target="_blank" href="https://facebook.com/peeljobs/"><i class="fa fa-facebook"></i></a></li>
                     <li><a target="_blank" href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home"><i class="fa fa-linkedin"></i></a></li>
-                    <li><a target="_blank" href="https://plus.google.com/b/105171863747311260917/105171863747311260917"><i class="fa fa-google-plus"></i></a></li>
+                    <li ><a href="{% url 'social:google_login' %}"><strong>G</strong></a></li>
                     <li><a target="_blank" href="https://twitter.com/PeelJobs"><i class="fa fa-twitter"></i></a></li>
                   </ul>
                 </div>
@@ -365,11 +367,11 @@
                 </ul>
                 <div class="or"><span>Or</span></div>
                 <ul>
-                  <li class="facebook_li"><a href="{% url 'social:facebook_login' %}" target="_blank"><i class='fa fa-facebook fb'></i><span>Sign in with <span>FaceBook</span></span></a></li>
-                  <li class="linkedin_li"><a href="{% url 'social:linkedin_login' %}" target="_blank"><i class='fa fa-linkedin in'></i><span>Sign in with <span>LinkedIn</span></span></a></li>
-                  <li class="github_li"><a href="{% url 'social:github_login' %}" target="_blank"><i class='fa fa-github git'></i><span>Sign in with <span>GitHub</span></span></a></li>
+                  <li class="facebook_li" style="padding-left: 5px;"><a href="{% url 'social:facebook_login' %}" target="_blank"><i class='fa fa-facebook fb'></i><span>Sign in with <span>FaceBook</span></span></a></li>
+                  <li class="linkedin_li" style="padding-left: 5px;"><a href="{% url 'social:linkedin_login' %}" target="_blank"><i class='fa fa-linkedin in'></i><span>Sign in with <span>LinkedIn</span></span></a></li>
+                  <li class="github_li" style="padding-left: 5px;"><a href="{% url 'social:github_login' %}" target="_blank"><i class='fa fa-github git'></i><span>Sign in with <span>GitHub</span></span></a></li>
                 </ul>
-                <div class="customGPlusSignIn" data-href='{% url 'social:google_login' %}'>
+                <div class="customGPlusSignIn" data-href="{% url 'social:google_login' %}">
                   <span class="icon"></span>
                   <span class="buttonText">Sign in With Google</span>
                 </div>
@@ -490,7 +492,7 @@
                         </span>
                         <span class='register_click'>Create Account</span>
                       </button>
-                      <a id="login_but">Already a Member? Login</a>
+                      <p><a id="login_but">Already a Member? Login</a></p>
                     </div>
                   </div>
                 </form>
@@ -503,10 +505,10 @@
                   </span>
                   <div class="social_reg_logins">
                     <ul>
-                      <li><a href="{% url 'social:facebook_login' %}" class="facebook"><i class="fa fa-facebook"></i></a></li>
-                      <li><a href="{% url 'social:linkedin_login' %}" class="linkedin"><i class="fa fa-linkedin"></i></a></li>
-                      <li><a href="{% url 'social:github_login' %}" class="github"><i class="fa fa-github"></i></a></li>
-                      <li><a href="{% url 'social:google_login' %}" class="gplus"><i class="fa fa-google-plus"></i></a></li>
+                      <li><a href="{% url 'social:facebook_login' %}" class="facebook" style="line-height: 32px; padding: 0; padding-left: 7px;"><i class="fa fa-facebook"></i></a></li>
+                      <li><a href="{% url 'social:linkedin_login' %}" class="linkedin" style="line-height: 32px; padding: 0; padding-left: 7px;"><i class="fa fa-linkedin"></i></a></li>
+                      <li><a href="{% url 'social:github_login' %}" class="github" style="line-height: 32px; padding: 0; padding-left: 7px;"><i class="fa fa-github"></i></a></li>
+                      <li><a href="{% url 'social:google_login' %}" class="gplus" style="line-height: 32px; padding: 0; padding-left: 7px;"><i style="color: white; font-style: normal; font-size: larger;"><strong>G</strong></i></a></li>
                     </ul>
                   </div>
                 </div>
@@ -752,6 +754,7 @@
     <script type="text/javascript" src="{% static 'js/highlight.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/base.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/userinfo.js' %}"></script>
     {% block jquery %}
     {% endblock %}
 
@@ -876,8 +879,18 @@
               }
           }
       });
-      skills = $('#q').val().trim().split(',')
-      locations = $('#location').val().trim().split(',')
+      if($('#q').val()!=undefined){
+        skills = $('#q').val().trim().split(',');
+      }
+      else{
+        skills = [];
+      }
+      if($('#location').val()!=undefined){
+        locations = $('#location').val().trim().split(',');
+      }
+      else{
+        locations = [];
+      }
       for (each in skills){
         if (skills[each] != ''){
           $('.jobs_list').highlight(skills[each].trim())

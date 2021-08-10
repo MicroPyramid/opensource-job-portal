@@ -287,45 +287,29 @@
             {% include 'job_list.html' with job_list=job_list %}
           {% endif %}
           <!-- job_list_section ends here -->
-          {% if last_page > 1 %}
-          <div class="pagination_wrap text-center">
-            {% get_page current_page last_page as pages %}
-            <nav>
-              <ul class="pagination">
-                {% if current_page != 1 %}
-                  <li class="prev">
-                    <a class="{{previous_page}}" data-href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}{% endif %}"><i class="fa fa-angle-double-left"></i>
-                    </a>
-                  </li>
-                  <li class="prev">
-                    <a class="{{prev_page}}" data-href="{{current_url}}{% if prev_page == 1 %}{% else %}{{prev_page}}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}{% endif %}">
-                      <i class="fa fa-angle-left"></i>
-                    </a>
-                  </li>
-                  <li><a class="1" data-href="{{current_url}}{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}">first</a></li>
-                {% endif %}
-                {% for s in pages %}
-                  <li {% ifequal s current_page %} class="active" {% endifequal %}>
-                    <a  class="{{ s }}" data-href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}{% endif %}">{{s}}</a>
-                  </li>
-                {% endfor %}
-                {% if current_page != last_page %}
-                  <li><a class="{{ last_page }}" data-href="{{current_url}}{{ last_page }}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}">last</a></li>
-                  <li>
-                    <a class="{{ aft_page }}" data-href="{{current_url}}{{ aft_page }}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}">
-                      <i class="fa fa-angle-right pagination-next"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="{{ after_page }}" data-href="{{current_url}}{{after_page}}/{% if searched_job_type %}?job_type={{searched_job_type}}{% endif %}">
-                      <i class="fa fa-angle-double-right"></i>
-                    </a>
-                  </li>
-                {% endif %}
-              </ul>
-            </nav>
-          </div>
-          {% endif %}
+          {% if job_list%}
+          <div class="text-center">
+            <div class="pagination_wrap">
+          {% get_page current_page last_page as pages %}
+          <nav>
+            <ul class="pagination">
+              {% if current_page != 1 %}
+              <li class="prev"><a class="{{previous_page}}" href="{{current_url}}{{previous_page}}/"><i class="fa fa-angle-double-left"></i></a></li>
+              <li class="prev"><a class="{{prev_page}}" href="{{current_url}}{{prev_page}}/"><i class="fa fa-angle-left"></i></a></li>
+              <li><a class="1" href="{{current_url}}1/">first</a></li>
+              {% endif %}
+              {% for s in pages %}
+              <li {% ifequal s current_page %} class="active" {% endifequal %}><a  class="{{ s }}" href="{{current_url}}{{s}}/">{{s}}</a></li>
+              {% endfor %}
+              {% if current_page != last_page %}
+              <li><a class="{{ last_page }}" href="{{current_url}}{{last_page}}/">last</a></li>
+              <li><a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/"><i class="fa fa-angle-right pagination-next"></i></a></li>
+              <li><a class="{{ after_page }}" href="{{current_url}}{{ after_page }}/"><i class="fa fa-angle-double-right"></i></a></li>
+           {% endif %}
+    </ul>
+  </nav>
+</div>
+          </div>{% endif %}
           <!-- jobs_tabs starts here -->
           <!-- Similar Links starts -->
           {% if searched_locations or searched_skills %}

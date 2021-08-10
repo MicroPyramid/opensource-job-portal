@@ -13,7 +13,7 @@
             <div class="col-sm-10">
               <input type="file" class="form-control" placeholder='Company Name' name="profile_pic" id="profile_pic" value="{{ company.profile_pic }}" accept="image/*">
               {% if company.profile_pic %}
-                <img src="{% if 'http' in company.profile_pic|slugify %}{{company.profile_pic}}{% else %}https://d2pt99vxm3n8bc.cloudfront.net/{{company.profile_pic}}{% endif %}" width="60" height="60">
+                <img src="{% if 'http' in company.profile_pic|slugify %}{{company.profile_pic}}{% else %}https://peeljobs.s3.amazonaws.com/{{company.profile_pic}}{% endif %}" width="60" height="60">
               {% endif %}
             </div>
           </div>

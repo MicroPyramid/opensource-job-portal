@@ -8,7 +8,7 @@ $('.search-form').submit(function(e){
       var job_type = $('#job_type').val()
       var location = form.find('[name="location"]').val().trim();
       if ((skill == '' || skill == null) & (location == '' || location == null)) {
-        open_dialog('Please select atleast one location or skill', 'Info!!!')
+        setTimeout(open_dialog('Please select atleast one location or skill', 'Info!!!'), 12000);
       return false;
       }
       else{

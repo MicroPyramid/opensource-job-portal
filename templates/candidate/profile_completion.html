@@ -16,6 +16,7 @@
         </div>
       </div>
       <ul class="profile_links" id="profile_span">
+        <li id="suggested_jobs"><a href="#">Suggested Jobs <span class="pull-right">{{ request.user.related_jobs|length }}</span></a></li>
         <li id="applied_jobs"><a href="#">Applied Jobs <span class="pull-right">{{ request.user.get_applied_jobs|length }}</span></a></li>
         <li id="profile"><a href="#">Profile <span class="pull-right" id="user_profile">{% if not request.user.mobile %}20%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
         <li id="resume_upload"><a href="#">Resume Upload <span class="pull-right" id="resume_upload_icon">{% if not request.user.resume %}15%{% else %}<i class='fa fa-check-circle'></i>{% endif %}</span></a></li>
@@ -40,45 +41,45 @@
       <div class="job_alert_block">
          <a class="create_job_alert" href="{% url 'my:job_alert' %}" target="_blank">Create Job alert</a>
       </div>
-       <h5 class="heading">Connect with Social networks</h5>
+       <!-- <h5 class="heading">Connect with Social networks</h5>
        <ul class="profile_social_connections">
 
         <li>
           {% if request.user.is_fb_connected %}
           <a href="{{ request.user.get_facebook_url }}" class="facebook"  target="_blank"><i class="fa fa-facebook"></i>Connected</a>
           {% else %}
-            <a href="{% url 'social:facebook_connect' %}" class="facebook"><i class='fa fa-facebook'></i>Connect with <b>FaceBook</b></a>
+            <a href="{% url 'social:facebook_connect' %}" class="facebook"><i class='fa fa-facebook'></i><b>FaceBook</b></a>
           {% endif %}
         </li>
          <li>
             {% if request.user.is_tw_connected %}
               <a href="{{ request.user.get_twitter_url }}" class="twitter" target="_blank"><span class='twit'><i class='fa fa-twitter'></i>Connected</span></a>
             {% else %}
-                <a href="{% url 'social:twitter_login' %}" class="twitter"><span class='twit'><i class='fa fa-twitter'></i>Connect with <b>Twitter</b></span></a>
+                <a href="{% url 'social:twitter_login' %}" class="twitter"><span class='twit'><i class='fa fa-twitter'></i><b>Twitter</b></span></a>
             {% endif %}
           </li>
         <li>
           {% if request.user.is_ln_connected %}
             <a href="{{ request.user.get_linkedin_object.linkedin_url }}" class="linkedin"><i class="fa fa-linkedin"></i> Connected</a>
           {% else %}
-            <a href="{% url 'social:linkedin_connect' %}" class="linkedin" target="_blank"><span class='in'><i class='fa fa-linkedin'></i>Connect with <b>LinkedIn</b></span></a>
+            <a href="{% url 'social:linkedin_connect' %}" class="linkedin" target="_blank"><span class='in'><i class='fa fa-linkedin'></i><b>LinkedIn</b></span></a>
           {% endif %}
         </li>
         <li>
           {% if request.user.is_gp_connected %}
             <a href="{{ request.user.get_google_url }}" class="google" target="_blank"><span class='gplus'><i class='fa fa-google-plus'></i> Connected</a>
           {% else %}
-            <a href="{% url 'social:google_connect' %}" class="google"><i class="fa fa-google-plus"></i>Connect With Google Plus</a>
+            <a href="{% url 'social:google_connect' %}" class="google"><i class="fa fa-google-plus"></i>Google Plus</a>
           {% endif %}
         </li>
         <li>
           {% if request.user.is_so_connected %}
             <a href="{{ request.user.get_stack_overflow_object.link }}" class="stack" target="_blank"><span class='stack'><i class='fa fa-stack-overflow'></i> Connected</a>
           {% else %}
-          <a href="{% url 'social:sofconnect' %}" class="stack"><i class="fa fa-stack-overflow"></i>Connect With Stack Over Flow</a>
+          <a href="{% url 'social:sofconnect' %}" class="stack"><i class="fa fa-stack-overflow"></i>Stack Over Flow</a>
           {% endif %}
         </li>
-       </ul>
+       </ul> -->
     </div>
   </div>
 <!-- profile_left_container ends here -->

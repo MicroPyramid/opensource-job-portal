@@ -45,9 +45,11 @@
           </div>
           <div class="top_menu">
           <ul>
-            <li><a href="{% url "dashboard:clear_cache" %}" class="settings">Clear Cache</a>
+            <li><a href="{% url 'dashboard:clear_cache' %}" class="settings">Clear Cache</a>
             </li>
-            <li><a href="{% url "dashboard:admin_user_list" %}" class="admin"><i class='fa fa-user-plus'></i>Admin</a>
+            <li><a href="{% url 'dashboard:admin_user_list' %}" class="settings">Admin</a>
+            </li>
+            <li><a href="{% url 'dashboard:new_admin_user' %}" class="settings"><i class='fa fa-user-plus'></i>Add User</a>
             </li>
             <!--<li><a class="requiter"><i class='fa fa-user'></i>Recruiters</a></li>-->
             <li><a class="settings"><i class='fa fa-cogs'></i>Settings</a>
@@ -84,7 +86,6 @@
                             class='fa fa-caret-right'></i>Functional Areas</a></li>
                     <li><a href="{% url "dashboard:locations" 'active' %}" class="menu_item"><i class='fa fa-caret-right'></i>Locations</a>
                     <li><a href="{% url "dashboard:save_meta_data" %}" class="menu_item"><i class='fa fa-caret-right'></i>Meta Data</a>
-                    <li><a href="{% url "dashboard:redirect_data" %}" class="menu_item"><i class='fa fa-caret-right'></i>Redirect Data</a>
                     </li>
                 </ul>
             </li>
@@ -121,7 +122,6 @@
             <a><i class="fa fa-share"></i><span>Sent Mails</span></a>
             <ul class="sub_list">
               <li><a href="{% url "dashboard:applicants_mail" %}" class="menu_item"><i class='fa fa-caret-right'></i>Today's Mails</a></li>
-              <li><a href="{% url "dashboard:mobile_campaign" %}" class="menu_item"><i class='fa fa-caret-right'></i>Mobile Campaign</a></li>
             </ul>
           </li>
           <li><a><i class="fa fa-medkit"></i><span>Duplicates</span></a>
@@ -193,7 +193,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.0.0/js/bootstrap-datetimepicker.min.js"
         type="text/javascript"></script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDa7EJOrUaEl8v6yA71gbSsHximjgMR9TU&libraries=places&sensor=false"
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&sensor=false"
         type="text/javascript"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 

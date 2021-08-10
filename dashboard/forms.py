@@ -3,6 +3,7 @@ from django import forms
 from django.forms import ModelForm
 from peeldb.models import (
     Country,
+    MetaData,
     State,
     City,
     Skill,
@@ -16,10 +17,6 @@ from peeldb.models import (
     JobPost,
     Question,
 )
-from mpcomp.views import mongoconnection
-from bson import ObjectId
-
-db = mongoconnection()
 
 
 def validation_name(self, model):
@@ -443,13 +440,7 @@ class SolutionForm(ModelForm):
         fields = ["status"]
 
 
-class MetaForm(forms.Form):
-    name = forms.CharField(required=True)
-    meta_title = forms.CharField(required=True)
-    meta_description = forms.CharField(required=True)
-    h1_tag = forms.CharField(required=True)
-
-    def clean_name(self):
-        meta = db.meta_data.find_one({"name": self.cleaned_data.get("name")})
-        if meta and meta.get("_id") != ObjectId(self.data.get("meta_id")):
-            raise forms.ValidationError("Meta data with this name already exists.")
+class MetaForm(ModelForm):
+    class Meta:
+        model = MetaData
+        fields = ["name", "meta_title", "meta_description", "h1_tag"]

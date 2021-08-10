@@ -7,16 +7,16 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-DEBUG = os.getenv("DEBUG")
+DEBUG = os.getenv("DEBUG", True)
 TEMPLATE_DEBUG = DEBUG
 
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "support@peeljobs.com")
 
-CONTACT_NUMBER = os.getenv("CONTACT_NUMBER")
+CONTACT_NUMBER = os.getenv("CONTACT_NUMBER", "850 009 9499")
 
-PEEL_URL = os.getenv("PEEL_URL")
+PEEL_URL = os.getenv("PEEL_URL", "http://peeljobs.com/")
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 CELERY_IMPORTS = ("social.tasks", "dashboard.tasks", "recruiter.tasks")
 
@@ -25,7 +25,7 @@ SOF_APP_ID = os.getenv("SOFAPPID")
 SOF_APP_SECRET = os.getenv("SOFAPPSECRET")
 SOF_APP_KEY = os.getenv("SOFAPPKEY")
 
-broker_api = os.getenv("BROKER_API")
+broker_api = os.getenv("BROKER_API", "http://guest:guest@localhost:15672/api/")
 
 # Enable debug logging
 
@@ -49,16 +49,14 @@ PJ_TW_APP_KEY = os.getenv("PJTWAPPKEY")
 PJ_TW_APP_SECRET = os.getenv("PJTWAPPSECRET")
 
 # fb app
-FB_APP_ID = os.getenv("FBAPPID")
-FB_SECRET = os.getenv("FBSECRET")
+FB_APP_ID = os.getenv("FACEBOOK_APP_ID")
+FB_SECRET = os.getenv("FACEBOOK_APP_SECRET")
 FB_PEELJOBS_PAGEID = os.getenv("FBPEELJOBSPAGEID")
 
 # google app
-GP_CLIENT_ID = GOOGLE_OAUTH2_CLIENT_ID = os.getenv("GPCLIENTID")
-GP_CLIENT_SECRET = GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv("GPCLIENTSECRET")
+GOOGLE_CLIENT_ID = GOOGLE_OAUTH2_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_OAUTH2_REDIRECT = os.getenv("GOOGLE_OAUTH2_REDIRECT")
-
-GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = "client_secret.json"
 
 # ln app
 LN_API_KEY = os.getenv("LNAPIKEY")
@@ -105,7 +103,6 @@ USE_L10N = True
 
 USE_TZ = False
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 # List of finder classes that know how to find static files in various locations.
 STATICFILES_FINDERS = (
@@ -114,7 +111,7 @@ STATICFILES_FINDERS = (
     "compressor.finders.CompressorFinder",
 )
 
-HTML_MINIFY = os.getenv("HTML_MINIFY")
+HTML_MINIFY = os.getenv("HTML_MINIFY", False)
 
 ROOT_URLCONF = "jobsp.urls"
 
@@ -141,11 +138,11 @@ INSTALLED_APPS = (
     "simple_pagination",
     "tellme",
     "django_celery_beat",
-    "pymongo",
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
+    "django_ses",
 )
 
 MIDDLEWARE = [
@@ -191,6 +188,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "jobsp.context_processors.export_vars",
                 "peeldb.context_processors.get_pj_icons",
             ],
         },
@@ -199,20 +197,19 @@ TEMPLATES = [
 SESSION_ENGINE = "django.contrib.sessions.backends.file"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_STORAGE_BUCKET_NAME = AWS_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AM_ACCESS_KEY = AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY")
 AM_PASS_KEY = AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_KEY")
-CLOUDFRONT_DOMAIN = os.getenv("CLOUDFRONT_DOMAIN")
-AWS_S3_CUSTOM_DOMAIN = "d2pt99vxm3n8bc.cloudfront.net"
-# CLOUDFRONT_DOMAIN = "cdn.peeljobs.com"
-CLOUDFRONT_ID = os.getenv("CLOUDFRONT_ID")
+AWS_SES_REGION_NAME = os.getenv("AWS_SES_REGION_NAME")
+AWS_SES_REGION_ENDPOINT = os.getenv("AWS_SES_REGION_ENDPOINT")
+AWS_DEFAULT_ACL = "public-read"
+S3_DOMAIN = AWS_S3_CUSTOM_DOMAIN = str(AWS_BUCKET_NAME) + ".s3.amazonaws.com"
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 DEFAULT_S3_PATH = "media"
 STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 STATIC_S3_PATH = "static"
 COMPRESS_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
 COMPRESS_CSS_FILTERS = [
     "compressor.filters.css_default.CssAbsoluteFilter",
     "compressor.filters.cssmin.CSSMinFilter",
@@ -229,14 +226,11 @@ AWS_HEADERS = {
 AWS_IS_GZIPPED = True
 AWS_ENABLED = True
 AWS_S3_SECURE_URLS = True
-
 MEDIA_ROOT = "/%s/" % DEFAULT_S3_PATH
-MEDIA_URL = "//%s/%s/" % (CLOUDFRONT_DOMAIN, DEFAULT_S3_PATH)
+MEDIA_URL = "//%s/%s/" % (S3_DOMAIN, DEFAULT_S3_PATH)
 STATIC_ROOT = "/%s/" % STATIC_S3_PATH
-STATIC_URL = "https://%s/" % (CLOUDFRONT_DOMAIN)
+STATIC_URL = "https://%s/" % (S3_DOMAIN)
 ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
-
-
 COMPRESS_OUTPUT_DIR = "CACHE"
 COMPRESS_URL = STATIC_URL
 COMPRESS_ENABLED = True
@@ -249,6 +243,15 @@ COMPRESS_PRECOMPILERS = (
 COMPRESS_OFFLINE_CONTEXT = {
     "STATIC_URL": "STATIC_URL",
 }
+# else :
+#     MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+#     MEDIA_URL = "/media/"
+#     # STATIC_ROOT = os.path.join(BASE_DIR, "static")
+#     STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+#     STATIC_URL = "/static/"
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+
 
 # Haystack settings for Elasticsearch
 HAYSTACK_CONNECTIONS = {
@@ -345,12 +348,6 @@ CELERY_BEAT_SCHEDULE = {
             hour="18", minute="00", day_of_week="mon,tue,wed,thu,fri,sat,sun"
         ),
     },
-    "checking-meta-data": {
-        "task": "dashboard.tasks.check_meta_data",
-        "schedule": crontab(
-            hour="*/6", minute="00", day_of_week="mon,tue,wed,thu,fri,sat,sun"
-        ),
-    },
     "recruiter-profile-update-notifications": {
         "task": "dashboard.tasks.recruiter_profile_update_notifications",
         "schedule": crontab(hour="09", minute="30", day_of_week="mon"),
@@ -362,6 +359,10 @@ CELERY_BEAT_SCHEDULE = {
         ),
     },
 }
+SUPPORT_EMAILS = [
+    "ashwin@micropyramid.com",
+]
+
 
 THUMBNAIL_COLORSPACE = None
 THUMBNAIL_PRESERVE_FORMAT = False
@@ -369,19 +370,13 @@ THUMBNAIL_FORMAT = "PNG"
 THUMBNAIL_CACHE_TIMEOUT = 3600 * 24 * 365 * 10
 
 TIMEZONE = "Asia/Calcutta"
-LOGO = "https://%s/logo.png" % (CLOUDFRONT_DOMAIN)
+LOGO = "https://%s/logo.png" % (S3_DOMAIN)
 
 # BULK_SMS_USERNAME = os.getenv("BULKSMSUSERNAME")
 # BULK_SMS_PASSWORD = os.getenv("BULKSMSPASSWORD")
 # BULK_SMS_FROM = os.getenv("BULKSMSFROM")
 
 MINIFIED_URL = os.getenv("MINIFIED_URL")
-
-MONGO_HOST = "localhost"
-MONGO_PORT = 27017
-MONGO_DB = "peeljobs"
-MONGO_USER = "peeluser"
-MONGO_PWD = "f^t678bvgf788"
 
 
 THUMBNAIL_BACKEND = "jobsp.thumbnailname.SEOThumbnailBackend"
@@ -400,13 +395,11 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
         "LOCATION": "127.0.0.1:11211",
         "TIMEOUT": 48 * 60 * 60,
-        "OPTIONS": {
-            "server_max_value_length": 1024 * 1024 * 2,
-        },
+        "OPTIONS": {"server_max_value_length": 1024 * 1024 * 2,},
     }
 }
 
-CACHE_BACKEND = os.getenv("CACHE_BACKEND")
+CACHE_BACKEND = os.getenv("CACHE_BACKEND", "memcached://127.0.0.1:11211/")
 
 FB_ACCESS_TOKEN = os.getenv("FBACCESSTOKEN")
 FB_PAGE_ACCESS_TOKEN = os.getenv("FBPAGEACCESSTOKEN")
@@ -422,18 +415,23 @@ URLS = [
     "http://stage.peeljobs.com/companies/",
 ]
 
+DAILY_REPORT_USERS = [
+    "anusha@micropyramid.com",
+    "kamal.seo@gmail.com",
+    "ashwin@micropyramid.com",
+]
 # MIDDLEWARE_CLASSES = MIDDLEWARE
 
 if os.getenv("ENV_TYPE") == "DEV":
     INSTALLED_APPS = INSTALLED_APPS + (
-        "debug_toolbar",
-        "template_profiler_panel",
+        # "debug_toolbar",
+        # "template_profiler_panel",
         "behave_django",
     )
 
-    MIDDLEWARE = [
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-    ] + MIDDLEWARE
+    # MIDDLEWARE = [
+    #     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # ] + MIDDLEWARE
 
     INTERNAL_IPS = ("127.0.0.1",)
 
@@ -456,7 +454,7 @@ if os.getenv("ENV_TYPE") == "DEV":
 
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-    AWS_STORAGE_BUCKET_NAME = "peeljobs"
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 
     TEST_RUNNER = "django_behave.runner.DjangoBehaveTestSuiteRunner"
 
@@ -516,4 +514,7 @@ REST_FRAMEWORK = {
 
 REST_USE_JWT = True
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+EMAIL_BACKEND = "django_ses.SESBackend"
+

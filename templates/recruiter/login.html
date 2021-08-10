@@ -124,8 +124,7 @@
                            <li><a href="{% url 'companies' %}">Companies</a></li>
                           <li><a href="{% url 'recruiters' %}">Recruiters</a></li>
                           <li><a href="{% url 'my:alerts_list'%}">Job Alerts</a></li>
-                          <li><a href="/calendar/{% now "Y" %}/">Calendar</a></li>
-                          <li><a href="/blog/">Blog</a></li>
+                          <!-- <li><a href="/calendar/{% now "Y" %}/">Calendar</a></li> -->
                           <li class="visible-xs"><a href="/?referer=gmail">Login/Register</a></li>
                           <li class="visible-xs"><a href="{% url 'post_job' %}">Recruiter Login</a></li>
                         </ul>
@@ -134,7 +133,7 @@
                             <span class="title">Job Seeker</span>
                             <div class="items"><a href="#" class="login_modal">Login</a> <a href="#" class="new_account">Register</a></div>
                           </li>
-                          <li><a href="{% url 'post_job' %}">Recruiter Login</a></li>
+                          <li><a href="/recruiter/login/">Recruiter Login</a></li>
                         </ul>
                         </div>
                         <!-- /.navbar-collapse -->
@@ -209,13 +208,13 @@
               <div class="panel-content">
                 <h4 class="sub_heading">Companies Hiring Through us</h4>
                 <ul class="logo_list">
-                  <li><a href="/ibm-india-pvt-limited-job-openings/" target="_blank"><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/76911fad9bcee03a5e0b5ec2906077bf/ibm-india-pvt-limited" alt="ibm-india-pvt-limited" /></a></li>
-                  <li><a href="/infosys-multinational-private-limited-job-openings/" target="_blank"><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/fc8c15f8fb5f213c8de5efeb06f3e415/infosys-multinational-private-limited" alt="infosys-multinational-private-limited"/></a></li>
-                  <li><a href="/tcs-pvt-ltd-job-openings/" target="_blank"><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/8e2f704ea031ed8598f76c83bcfd30d8/tcs-pvt-ltd" alt="tcs-pvt-ltd"/></a></li>
-                  <li><a href="/accenture-job-openings/" target="_blank"><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/244348b91bdf2204f68b23c5f3d57847/accenture" alt="accenture"/></a></li>
-                  <li><a href="/tech-mahindra-private-limited-job-openings/" target="_blank"><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/0d468c133458c052822139573dc149e4/tech-mahindra-private-limited" alt="tech-mahindra-private-limited"/></a></li>
-                  <li><a href="/cognizant-technology-solutions-india-ltd-job-openings/" target="_blank"><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/01859d2fd7dc39960bfc8e5eac6d5647/cognizant-technology-solutions-india-ltd" alt="cognizant-technology-solutions-india-ltd" /></a></li>
-                  <li><a href="/dell-private-limited-job-openings/" target="_blank"><img src="https://d2pt99vxm3n8bc.cloudfront.net/company/logo/c08568f1d9941ca6c11d0cae504ba059/dell-private-limited" alt="dell-private-limited"/></a></li>
+                  <li><a href="/ibm-india-pvt-limited-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/76911fad9bcee03a5e0b5ec2906077bf/ibm-india-pvt-limited" alt="ibm-india-pvt-limited" /></a></li>
+                  <li><a href="/infosys-multinational-private-limited-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/fc8c15f8fb5f213c8de5efeb06f3e415/infosys-multinational-private-limited" alt="infosys-multinational-private-limited"/></a></li>
+                  <li><a href="/tcs-pvt-ltd-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/8e2f704ea031ed8598f76c83bcfd30d8/tcs-pvt-ltd" alt="tcs-pvt-ltd"/></a></li>
+                  <li><a href="/accenture-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/244348b91bdf2204f68b23c5f3d57847/accenture" alt="accenture"/></a></li>
+                  <li><a href="/tech-mahindra-private-limited-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/0d468c133458c052822139573dc149e4/tech-mahindra-private-limited" alt="tech-mahindra-private-limited"/></a></li>
+                  <li><a href="/cognizant-technology-solutions-india-ltd-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/01859d2fd7dc39960bfc8e5eac6d5647/cognizant-technology-solutions-india-ltd" alt="cognizant-technology-solutions-india-ltd" /></a></li>
+                  <li><a href="/dell-private-limited-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/c08568f1d9941ca6c11d0cae504ba059/dell-private-limited" alt="dell-private-limited"/></a></li>
                   <br clear="all">
                 </ul>
               </div>
@@ -432,7 +431,7 @@
                   <li><a href="{% url 'social:facebook_login' %}" class="facebook"><i class="fa fa-facebook"></i></a></li>
                   <li><a href="{% url 'social:linkedin_login' %}" class="linkedin"><i class="fa fa-linkedin"></i></a></li>
                   <li><a href="{% url 'social:github_login' %}" class="github"><i class="fa fa-github"></i></a></li>
-                  <li><a href="{% url 'social:google_connect' %}" class="gplus"><i class="fa fa-google-plus"></i></a></li>
+                  <!-- <li><a href="{% url 'social:google_connect' %}" class="gplus"><i class="fa fa-google-plus"></i></a></li> -->
                 </ul>
               </div>
 
@@ -454,7 +453,7 @@
             <li><a class="btn btn-primary fb_footer social" target="_blank" href="https://facebook.com/peeljobs/"><i class="fa fa-facebook"></i></a></li>
             <li><a href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home" class="btn btn-primary fb_footer social" target="_blank"><i class="fa fa-linkedin"></i></a></li>
 
-            <li><a class="btn btn-danger gplus_footer social" target="_blank" href="https://plus.google.com/b/105171863747311260917/105171863747311260917"><i class="fa fa-google-plus"></i></a></li>
+            <!-- <li><a class="btn btn-danger gplus_footer social" target="_blank" href="https://plus.google.com/b/105171863747311260917/105171863747311260917"><i class="fa fa-google-plus"></i></a></li> -->
             <li><a class="btn btn-info twit_footer social" target="_blank" href="https://twitter.com/PeelJobs"><i class="fa fa-twitter"></i></a></li>
           </ul>
         </div>
@@ -476,7 +475,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https:////code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src='https://www.google.com/recaptcha/api.js'></script>
-<script type="text/javascript" src="https://d2pt99vxm3n8bc.cloudfront.net/static/tellme_js/feedback.min.js"></script>
+<script type="text/javascript" src="https://peeljobs.s3.amazonaws.com/static/tellme_js/feedback.min.js"></script>
 
 {% compress js %}
     <script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
