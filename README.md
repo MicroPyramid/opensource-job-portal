@@ -79,7 +79,7 @@ For env variables, refer to env.md in source directory and you need to create a 
 ##### Run elasticsearch docker
 
 ```bash
-docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:2.4
+docker run -d --name elasticsearch --net=host -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:2.4
 ```
 
 ##### Create index
@@ -89,4 +89,8 @@ Finally `update_index` command will freshen all of the content in your index. It
 ```bash
 python manage.py update_index
 ```
-##### Install MongoDB
+
+ ##### Load data to postgres Database
+ Load data to cities, companies and etc using json files in "peeldb/fixtures" folder. please check below command for reference.
+
+ `python manage.py loaddata cities`

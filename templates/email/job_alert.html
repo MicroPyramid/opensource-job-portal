@@ -172,9 +172,6 @@
                            <li style="list-style:none;display:inline-block;">
                             <a href="https://peeljobs.com/contact/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Contact Us</a>
                           </li>
-                           <li style="list-style:none;display:inline-block;">
-                            <a href="https://peeljobs.com/blog/" style="color:#0358a6;font-size: 12px;padding:15px 7px;text-decoration:none;display:inline-block;" target="_blank">Blog</a>
-                          </li>
                           {% if alert or subscriber or user %}
                            <li style="list-style:none;display:inline-block;">
                             <a href="https://peeljobs.com/unsubscribe_email/{% if subscriber %}subscriber{% elif alert %}alert{% else %}user{% endif %}/{% if alert %}{{alert.unsubscribe_code}}{% elif subscriber %}{{subscriber.unsubscribe_code}}{% else %}{{user.unsubscribe_code}}{% endif %}/" style="color:#0358a6;font-size: 12px;padding:15px 7px;margin-left:480px;text-decoration:none;display:inline-block;" target="_blank">Unsubscribe</a>

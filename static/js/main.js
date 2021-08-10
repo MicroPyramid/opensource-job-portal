@@ -102,11 +102,13 @@ $(".filter_icon").click(function(e){
     });
 
 function open_dialog(text, title){
+    var myPos = [ $(window).width() / 2, 50 ];
     $('#block_question').text(text);
     $('#block_question').dialog({
         modal: true,
         title: title,
         draggable: false,
+        position: myPos,
         buttons: [
             {
                 text: "OK",
@@ -123,12 +125,14 @@ function open_dialog(text, title){
 
 
 function open_dialog_with_url(text, title, url){
+    var myPos = [ $(window).width() / 2, 50 ];
     $('#block_question').text(text);
     // $('.ui-dialog-titlebar-close').empty()
     $('#block_question').dialog({
         modal: true,
         title: title,
         draggable: false,
+        position: myPos,
         buttons: [
             {
                 text: "OK",

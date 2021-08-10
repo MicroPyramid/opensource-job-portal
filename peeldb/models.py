@@ -2052,3 +2052,24 @@ class AssessmentData(models.Model):
 class CredentialsModel(models.Model):
     id = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     credential = CredentialsField()
+
+
+class MetaData(models.Model):
+    name = models.CharField(max_length=2000)
+    meta_title = models.CharField(max_length=2000)
+    meta_description = models.CharField(max_length=2000)
+    h1_tag = models.CharField(max_length=2000)
+
+
+class UserMessage(models.Model):
+    message = models.CharField(max_length=2000)
+    message_from = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_messaged_from"
+    )
+    message_to = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_message_to"
+    )
+    created_on = models.DateTimeField(auto_now_add=True)
+    job = models.ForeignKey(JobPost, null=True, on_delete=models.SET_NULL)
+    is_read = models.BooleanField(default=False)
+

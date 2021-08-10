@@ -6,20 +6,22 @@ from datetime import datetime, timedelta
 from functools import reduce
 from itertools import chain
 from operator import __or__ as OR
-from bs4 import BeautifulSoup
 
-from celery.task import task
+# from jobsp.celery import app
+from jobsp.celery import app
 from django.conf import settings
 
 # from pytz import timezone
 from django.db.models import Q
-from django.template import loader, Template, Context
+from django.template import loader
 from django.db.models import Case, When
 from microurl import google_mini
 from twython.api import Twython
+from django.core.mail import EmailMessage
+
 
 from mpcomp.facebook import GraphAPI, get_app_access_token
-from mpcomp.views import Memail, get_absolute_url, mongoconnection
+from mpcomp.views import get_absolute_url
 from peeldb.models import (
     AppliedJobs,
     City,
@@ -39,24 +41,30 @@ from peeldb.models import (
     SentMail,
     Skill,
     Subscriber,
-    TechnicalSkill,
     Ticket,
     Twitter,
     TwitterPost,
     State,
 )
 
-db = mongoconnection()
+
+@app.task
+def send_email(mto, msubject, mbody):
+    if not isinstance(mto, list):
+        mto = [mto]
+    msg = EmailMessage(msubject, mbody, settings.DEFAULT_FROM_EMAIL, mto)
+    msg.content_subtype = "html"
+    msg.send()
 
 
-@task
+@app.task
 def rebuilding_index():
     from haystack.management.commands import rebuild_index
 
     rebuild_index.Command().handle(interactive=False)
 
 
-@task
+@app.task
 def updating_jobposts():
     jobposts = JobPost.objects.filter(status="Live")
     for job in jobposts:
@@ -66,7 +74,7 @@ def updating_jobposts():
         job.save()
 
 
-@task
+@app.task
 def job_alerts_to_users():
     from_date = datetime.now() - timedelta(days=1)
     job_posts = JobPost.objects.filter(
@@ -98,12 +106,11 @@ def job_alerts_to_users():
             subject = "Top Matching Jobs for your Profile - PeelJobs"
             rendered = t.render(c)
             mto = [user.email]
-            mfrom = settings.DEFAULT_FROM_EMAIL
             user_active = True if user.is_active else False
-            Memail(mto, mfrom, subject, rendered, user_active)
+            send_email.delay(mto, subject, rendered)
 
 
-@task
+@app.task
 def job_alerts_to_subscribers():
     from_date = datetime.now() - timedelta(days=1)
     to_date = datetime.now()
@@ -135,12 +142,11 @@ def job_alerts_to_subscribers():
             subject = "Top Matching jobs for your subscription - PeelJobs"
             rendered = t.render(c)
             mto = [sub.email]
-            mfrom = settings.DEFAULT_FROM_EMAIL
             user_active = False
-            Memail(mto, mfrom, subject, rendered, user_active)
+            send_email.delay(mto, subject, rendered)
 
 
-@task
+@app.task
 def job_alerts_to_alerts():
     from_date = datetime.now() - timedelta(days=1)
     to_date = datetime.now()
@@ -174,12 +180,11 @@ def job_alerts_to_alerts():
             subject = "Top Matching Jobs For your alert " + alert.name
             rendered = t.render(c)
             mto = [alert.email]
-            mfrom = settings.DEFAULT_FROM_EMAIL
             user_active = False
-            Memail(mto, mfrom, subject, rendered, user_active)
+            send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def jobpost_published():
     jobposts = JobPost.objects.filter(status="Published")
     for job in jobposts:
@@ -233,22 +238,8 @@ def jobpost_published():
         t = loader.get_template("email/jobpost.html")
         subject = "PeelJobs JobPost Status"
         mto = [settings.DEFAULT_FROM_EMAIL, job.user.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
-        Memail(mto, mfrom, subject, t.render(c), True if job.user.is_active else False)
-
-        user_technical_skills = TechnicalSkill.objects.filter(
-            skill__in=job.skills.all().values_list("id", flat=True)
-        )
-        users = User.objects.filter(user_type="JS", skills__in=user_technical_skills)
-        for user in users:
-            if not AppliedJobs.objects.filter(user=user, job_post=job):
-                AppliedJobs.objects.create(
-                    user=user,
-                    job_post=job,
-                    status="Pending",
-                    ip_address="",
-                    user_agent="",
-                )
+        rendered = t.render(c)
+        send_email.delay(mto, subject, rendered)
 
 
 def del_jobpost_fb(user, post):
@@ -266,7 +257,7 @@ def del_jobpost_fb(user, post):
         return "connect to fb"
 
 
-@task()
+@app.task()
 def fbpost(user, job_post):
     user = User.objects.filter(id=user).first()
     if user.is_fb_connected:
@@ -322,7 +313,6 @@ def fbpost(user, job_post):
                     post_id=response["id"],
                     post_status="Posted",
                 )
-                # db.Jobpost.update({'id':jid},{'$set':{'pfb':{'status':True,'post_id':response['id']}}})
                 return "posted successfully"
             return "error occured in posting"
         else:
@@ -401,14 +391,13 @@ def postonpeel_fb(job_post):
                 post_id=response["id"],
                 post_status="Posted",
             )
-            # db.Jobpost.update({'id':jid},{'$set':{'peelfbpost':response['id']}})
             return "posted successfully"
         return "job not posted on page"
     else:
         return "jobpost not exists"
 
 
-@task()
+@app.task()
 def postonpage(user, job_post):
     user = User.objects.filter(id=user).first()
     if user.is_fb_connected:
@@ -456,7 +445,6 @@ def postonpage(user, job_post):
                     # if response['error']['code'] == 190 and response['error']['error_subcode'] == 460:
                     # need to evaluate this condition
                     # pass
-                    # db.Employer.update({'email':user['email']},{'$unset':{'facebook':1,'fb':1,'fb_url':1}})
                     if "id" in response.keys():
                         FacebookPost.objects.create(
                             job_post=job_post,
@@ -466,7 +454,6 @@ def postonpage(user, job_post):
                             post_status="Posted",
                         )
 
-                        # db.Jobpost.update({'id':jid},{'$push':{'pfb.pages':{'status':True,'post_id':response['id'],'pageid':page['id']}}})
             data = "posted successfully"
         else:
             data = "page not exists"
@@ -475,7 +462,7 @@ def postonpage(user, job_post):
     return data
 
 
-@task()
+@app.task()
 def postongroup(job_post, group_id):
     job_post = JobPost.objects.filter(id=job_post).first()
     if job_post:
@@ -524,13 +511,12 @@ def postongroup(job_post, group_id):
         #     FacebookPost.objects.create(job_post=job_post, page_or_group='group', page_or_group_id=group.group_id, post_id=response[
         #                                 'id'], post_status='Posted', is_active=is_active)
 
-        # db.Jobpost.update({'id':jid},{'$push':{'pfb.groups':{'status':True,'post_id':response['id'],'groupid':group['id']}}})
         return "posted successfully"
     else:
         return "jobpost not exists"
 
 
-@task
+@app.task
 def poston_allfb_groups(job_post):
     job_post = JobPost.objects.filter(id=job_post).first()
     with open("mpcomp/fb_groups.json") as data_file:
@@ -582,8 +568,6 @@ def poston_allfb_groups(job_post):
             #     FacebookPost.objects.create(job_post=job_post, page_or_group='group', page_or_group_id=group.group_id, post_id=response[
             #                                 'id'], post_status='Posted', is_active=is_active)
 
-            # db.Jobpost.update({'id':jid},{'$push':{'pfb.groups':{'status':True,'post_id':response['id'],'groupid':group['id']}}})
-
 
 def del_jobpost_tw(user, post):
     if user:
@@ -610,7 +594,7 @@ def del_jobpost_tw(user, post):
         return "connect to twitter"
 
 
-@task()
+@app.task()
 def del_jobpost_peel_fb(user, post):
     if user:
         try:
@@ -626,7 +610,7 @@ def del_jobpost_peel_fb(user, post):
     return "connect to fb"
 
 
-@task()
+@app.task()
 def postonlinkedin(user, job_post):
     user = User.objects.get(id=user)
     job_post = Jobpost.objects.get(id=job_post)
@@ -644,9 +628,7 @@ def postonlinkedin(user, job_post):
         locations = job_post.location.values_list("name", flat=True)
         job_name += ", ".join(locations)
         post = {
-            "visibility": {
-                "code": "anyone",
-            },
+            "visibility": {"code": "anyone",},
             "comment": job_post.published_message,
             "content": {
                 "title": job_name,
@@ -690,12 +672,11 @@ def postonlinkedin(user, job_post):
                     update_url=response["update_url"],
                 )
         return "posted successfully"
-        # db.Jobpost.update({'id':jid},{'$set':{'pln':{'status':False}}})
     else:
         return "jobpost not exists"
 
 
-@task()
+@app.task()
 def postontwitter(user, job_post, page_or_profile):
     job_post = JobPost.objects.filter(id=job_post).first()
     if job_post:
@@ -753,20 +734,18 @@ def postontwitter(user, job_post, page_or_profile):
                     post_status="Posted",
                 )
 
-            # db.Jobpost.update({'id':jid},{'$set':{'ptw':{'status':True,'post_id':response['id']}}})
             return "posted successfully"
         return "not posted in twitter"
     else:
         return "jobpost not exists"
 
 
-@task()
+@app.task()
 def sending_mail(emailtemplate, recruiters):
     t = loader.get_template("email/email_template.html")
     c = {"text": emailtemplate.message}
     subject = emailtemplate.subject
     rendered = t.render(c)
-    mfrom = settings.DEFAULT_FROM_EMAIL
     sent_mail = SentMail.objects.create(template=emailtemplate)
     recruiters = User.objects.filter(id__in=recruiters)
     for recruiter in recruiters:
@@ -774,7 +753,7 @@ def sending_mail(emailtemplate, recruiters):
         sent_mail.recruiter.add(recruiter)
         mto = recruiter.email
         user_active = True if recruiter.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
     return ""
 
 
@@ -815,7 +794,7 @@ def get_conditions(user):
     return conditions
 
 
-@task()
+@app.task()
 def applicants_notifications():
 
     current_date = datetime.strptime(
@@ -845,13 +824,12 @@ def applicants_notifications():
         subject = "Update Your Profile To Get Top Matching Jobs - PeelJobs"
         rendered = t.render(c)
         mto = [user.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         user_active = True if user.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
 
 
 # sending mail to recruiters about applicants
-@task()
+@app.task()
 def recruiter_jobpost_applicants():
     recruiters = User.objects.filter(
         user_type="RR", is_bounce=False, is_unsubscribe=False, email_notifications=True
@@ -874,142 +852,11 @@ def recruiter_jobpost_applicants():
                     subject = "No. Of Applicants Applied For Your Job"
                     rendered = t.render(c)
                     mto = [each.email]
-                    mfrom = settings.DEFAULT_FROM_EMAIL
                     user_active = True if each.is_active else False
-                    Memail(mto, mfrom, subject, rendered, user_active)
+                    send_email.delay(mto, subject, rendered)
 
 
-@task()
-def send_dailyapplicantnotifications():
-    import datetime as dt
-
-    current_hour = dt.datetime.now().hour
-    current_date = dt.datetime.strptime(
-        str(dt.datetime.now().date()), "%Y-%m-%d"
-    ).strftime("%Y-%m-%d")
-    daily_emails_count = db.users.find(
-        {"date": current_date, "mail_sent": True}
-    ).count()
-    users = list(
-        db.users.find(
-            {
-                "$and": [
-                    {"email": {"$ne": ""}},
-                    {"location": {"$ne": ""}},
-                    {"hash_code": {"$exists": True}},
-                    {"mail_sent": False},
-                    {"unsubscribe": {"$exists": False}},
-                ]
-            }
-        )
-    )
-    if current_hour >= 9 and current_hour <= 18:
-        if daily_emails_count <= 100000:
-            # skill = Skill.objects.get(slug='java')
-            # job_posts = JobPost.objects.filter(
-            #     status='Live', skills__in=[skill])[:10]
-            count = 0
-            import smtplib
-            import email.utils
-            from email.mime.text import MIMEText
-            from email.mime.multipart import MIMEMultipart
-
-            servername = "192.99.18.119"
-            username = "admin"
-            password = "peel123"
-            server = smtplib.SMTP(servername, 2525)
-            server.ehlo()
-
-            try:
-                # server.set_debuglevel(True)
-                # identify ourselves, prompting server for supported features
-                # If we can encrypt this SESSION_ENGINE = '', do it
-                if server.has_extn("STARTTLS"):
-                    server.starttls()
-                    server.ehlo()  # re-identify ourselves over TLS connection
-                server.login(username, password)
-                for user in users:
-                    count = count + 1
-                    if count == 2273:
-                        break
-                    each_email = user["email"]
-                    c = {
-                        "name": "",
-                        "email": each_email,
-                        "message_id": user["hash_code"],
-                    }
-                    t = loader.get_template("email/applicant_mail_connect.html")
-                    subject = "Peeljobs  - The Best Job Portal"
-                    rendered = t.render(c)
-                    # Create the message
-                    msg = MIMEMultipart("alternative")
-                    msg["To"] = email.utils.formataddr((each_email, each_email))
-                    msg["From"] = email.utils.formataddr(
-                        ("Peeljobs Support", "info@peelster.in")
-                    )
-                    msg["Subject"] = subject
-                    msg["Return-Path"] = email.utils.formataddr(
-                        ("Peeljobs Support", "bounce@bounce.peeljobs.com")
-                    )
-                    msg["Errors-To"] = email.utils.formataddr(
-                        ("Peeljobs Support", "bounce@bounce.peeljobs.com")
-                    )
-                    msg["reply-to"] = email.utils.formataddr(
-                        ("Peeljobs Support", "support@peeljobs.com")
-                    )
-                    import arrow
-                    import time
-
-                    today = (
-                        arrow.utcnow().to("Asia/Calcutta").format("DD.MM.YYYY HH:mm:ss")
-                    )
-                    pattern = "%d.%m.%Y %H:%M:%S"
-                    epoch = int(time.mktime(time.strptime(today, pattern)))
-                    message_id = (
-                        "<" + str(user["hash_code"]) + str(epoch) + "@peeljobs.com>"
-                    )
-                    msg["Message-ID"] = message_id
-                    msg["Date"] = email.utils.formatdate(localtime=True)
-                    msg.add_header(
-                        "List-Unsubscribe",
-                        "<mailto:support@peeljobs.com>, <https://peeljobs.com/unsubscribe/nikhila@micropyramid.com/>",
-                    )
-                    text = """IF THE FIRST STEP OF YOUR CAREER GOES RIGHT,
-                            THEN REST OF YOUR CAREER WILL BE BRIGHT
-                            CONNECT WITH ANY OF YOUR SOCIAL NETWORKING SITES TO GET HIRED
-                            Peeljobs-twitter
-                            CONNECT HERE
-                            Dear Member,
-                            Greetings from Peeljobs!
-                            Peeljobs is one of the best job portal website. Where you can search jobs by skill, location, industry, functional area etc.
-                            You no need to register into our website.
-                            You can log in with your existing social networking sites like Facebook, Google+, Linkedin, Github with one click.
-                            Here are few techniques to get into a challenging career.
-                            Get job alerts
-                            Create job alerts to get opportunities that interest you.
-                            So, that you are always first to hear about the jobs that you really care/want about.
-                            If you have any further queries, please mail to support@peeljobs.com
-                            We are happy to help you.
-                            Login/Connect Internship jobs View All Jobs Job Alert FAQs
-                            Developed by Micropyramid.comUnsubscribe"""
-                    part1 = MIMEText(text, "plain")
-                    part2 = MIMEText(rendered, "html")
-                    msg.attach(part1)
-                    msg.attach(part2)
-                    server.sendmail(
-                        "bounce@bounce.peeljobs.com", [each_email], msg.as_string()
-                    )
-                    db.users.update(
-                        {"email": each_email},
-                        {"$set": {"mail_sent": True, "date": current_date}},
-                        False,
-                        True,
-                    )
-            finally:
-                server.quit()
-
-
-@task()
+@app.task()
 def daily_report():
     current_date = datetime.strptime(
         str(datetime.now().date() - timedelta(days=1)), "%Y-%m-%d"
@@ -1351,26 +1198,17 @@ def daily_report():
         # "today_mobile_verified_agency_recruiters": today_mobile_verified_agency_recruiters.count(),
         # "today_mobile_not_verified_agency_recruiters": today_mobile_not_verified_agency_recruiters.count(),
     }
-    db.statistics.insert(data)
-    users = [
-        "nikhila@micropyramid.com",
-        "vineesha@micropyramid.com",
-        "raghubethi@micropyramid.com",
-        "anusha@micropyramid.com",
-        "kamal.seo@gmail.com",
-        "ashwin@micropyramid.com",
-    ]
+    users = settings.DAILY_REPORT_USERS
 
     for each in users:
         temp = loader.get_template("email/daily_report.html")
         subject = "Peeljobs Daily Report For " + formatted_date
         mto = [each]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render(data)
-        Memail(mto, mfrom, subject, rendered, True)
+        send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def applicants_profile_update_notifications_two_hours():
     today_applicants = User.objects.filter(
         user_type="JS",
@@ -1386,13 +1224,12 @@ def applicants_profile_update_notifications_two_hours():
             temp = loader.get_template("email/user_profile_alert.html")
             subject = "Update Your Profile To Get Top Matching Jobs - Peeljobs"
             mto = [user.email]
-            mfrom = settings.DEFAULT_FROM_EMAIL
             rendered = temp.render({"user": user})
             user_active = True if user.is_active else False
-            Memail(mto, mfrom, subject, rendered, user_active)
+            send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def applicants_profile_update_notifications():
     today_applicants = User.objects.filter(
         user_type="JS",
@@ -1422,10 +1259,10 @@ def applicants_profile_update_notifications():
                 )
             else:
                 subject = "Update Your Profile To Get Top Matching Jobs - Peeljobs"
-            mfrom = settings.DEFAULT_FROM_EMAIL
             rendered = temp.render({"user": each, "job_posts": job_posts})
             user_active = True if each.is_active else False
-            Memail([each.email], mfrom, subject, rendered, user_active)
+            mto = [each.email]
+            send_email.delay(mto, subject, rendered)
     recruiters = User.objects.filter(
         Q(Q(user_type="RR") | Q(user_type="AA"))
         & Q(
@@ -1440,9 +1277,9 @@ def applicants_profile_update_notifications():
         if days == 2 or days % 10 == 0:
             temp = loader.get_template("email/account_inactive.html")
             subject = "Update Your Profile - Peeljobs"
-            mfrom = settings.DEFAULT_FROM_EMAIL
             rendered = temp.render({"user": user})
-            Memail([user.email], mfrom, subject, rendered, False)
+            mto = [user.email]
+            send_email.delay(mto, subject, rendered)
     inactive_users = User.objects.filter(
         is_unsubscribe=False,
         email_notifications=True,
@@ -1455,9 +1292,9 @@ def applicants_profile_update_notifications():
         if days % 7 == 0:
             temp = loader.get_template("email/account_inactive.html")
             subject = "Verify your Email Address - Peeljobs"
-            mfrom = settings.DEFAULT_FROM_EMAIL
             rendered = temp.render({"user": user})
-            Memail([user.email], mfrom, subject, rendered, False)
+            mto = [user.email]
+            send_email.delay(mto, subject, rendered)
     day = datetime.today() - timedelta(days=2)
     users = User.objects.filter(
         user_type="JS",
@@ -1470,13 +1307,13 @@ def applicants_profile_update_notifications():
     for user in users:
         temp = loader.get_template("email/user_profile_alert.html")
         subject = "Upload your Resume/cv - Peeljobs"
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render({"user": user, "resume_update": True})
         user_active = True if user.is_active else False
-        Memail([user.email], mfrom, subject, rendered, user_active)
+        mto = [user.email]
+        send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def applicants_walkin_job_notifications():
 
     today_applicants = User.objects.filter(
@@ -1487,14 +1324,13 @@ def applicants_walkin_job_notifications():
         temp = loader.get_template("email/applicant.html")
         subject = "Latest Walkin Jobs - Peeljobs"
         mto = [each.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         c = {"job_posts": job_posts[:10], "user": each, "walk_in": True}
         rendered = temp.render(c)
         user_active = True if each.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def recruiter_profile_update_notifications():
     recruiters = User.objects.filter(
         Q(Q(user_type="RR") | Q(user_type="AA"))
@@ -1509,13 +1345,12 @@ def recruiter_profile_update_notifications():
         temp = loader.get_template("email/user_profile_alert.html")
         subject = "Update Your Profile To Get More Applicants - Peeljobs"
         mto = [recruiter.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render({"user": recruiter, "recruiter": True})
         user_active = True if recruiter.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def applicants_all_job_notifications():
 
     today_applicants = User.objects.filter(
@@ -1527,13 +1362,12 @@ def applicants_all_job_notifications():
         temp = loader.get_template("email/applicant.html")
         subject = "Top matching jobs for you - Peeljobs"
         mto = [each.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render({"job_posts": job_posts[:10], "user": each})
         user_active = True if each.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def applicants_job_notifications():
     users = User.objects.filter(
         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
@@ -1554,10 +1388,9 @@ def applicants_job_notifications():
         temp = loader.get_template("email/applicant.html")
         subject = "Top matching jobs for you - Peeljobs"
         mto = [user.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render({"jobposts": job_posts[:10], "user": user})
         user_active = True if user.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
     users = User.objects.filter(
         user_type="JS", email_notifications=True, is_unsubscribe=False, is_bounce=False
     )
@@ -1571,13 +1404,12 @@ def applicants_job_notifications():
         temp = loader.get_template("email/social_connect.html")
         subject = "Social Connect - Peeljobs"
         mto = [user.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render({"user": user})
         user_active = True if user.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def alerting_applicants():
     date = (datetime.today() - timedelta(days=7)).date()
     users = User.objects.filter(
@@ -1591,10 +1423,9 @@ def alerting_applicants():
         temp = loader.get_template("email/user_profile_alert.html")
         subject = "Update Your Profile To Get Top Matching Jobs - PeelJobs"
         mto = [user.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render({"user": user, "inactive_user": True})
         user_active = True if user.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
     recruiters = User.objects.filter(
         Q(Q(user_type="RR") | Q(user_type="AA"))
         & Q(
@@ -1608,12 +1439,11 @@ def alerting_applicants():
         temp = loader.get_template("email/user_profile_alert.html")
         subject = "Update Your Profile To Post Unlimited Jobs - PeelJobs"
         mto = [recruiter.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render(
             {"user": recruiter, "recruiter": True, "inactive_user": True}
         )
         user_active = True if recruiter.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
     # Sending Birthday Wishes
     current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime(
         "%m-%d"
@@ -1626,13 +1456,13 @@ def alerting_applicants():
             + " Birthday Wishes - Peeljobs "
             + "=?UTF-8?Q?=F0=9F=8E=82?="
         )
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render({"user": user})
         user_active = True if user.is_active else False
-        Memail(user.email, mfrom, subject, rendered, user_active)
+        mto = user.email
+        send_email.delay(mto, subject, rendered)
 
 
-@task()
+@app.task()
 def send_weekly_login_notifications():
     today_applicants = User.objects.filter(
         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
@@ -1643,77 +1473,20 @@ def send_weekly_login_notifications():
         temp = loader.get_template("email/applicant.html")
         subject = "Latest Walkin Jobs - Peeljobs"
         mto = [each.email]
-        mfrom = settings.DEFAULT_FROM_EMAIL
         rendered = temp.render({"user": each, "job_posts": job_posts[:10]})
         user_active = True if each.is_active else False
-        Memail(mto, mfrom, subject, rendered, user_active)
+        send_email.delay(mto, subject, rendered)
 
 
-# def know_organic_status():
-#     db = mongoconnection()
-#     users = User.objects.filter(user_type='JS')
-#     count = 0
-#     for user in users:
-#         check_users = list(db.users.find({'email': user.email}))
-#         if len(check_users) > 0:
-#             count = count + 1
-#             db.users.update({'email': user.email}, {'$set': {'pj_connected': True}}, False, True)
-
-#     print (count)
-
-
-# @task()
-# def sending_mobile_campaign():
-#     users = list(
-#         db.users.find(
-#             {
-#                 "$and": [
-#                     {"mobile": {"$ne": ""}},
-#                     {"location": "Hyderabad"},
-#                     {"sms_campaign_sent": {"$exists": False}},
-#                 ]
-#             }
-#         )
-#     )
-#     count = 0
-#     current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime(
-#         "%Y-%m-%d"
-#     )
-
-#     for user in users:
-#         if count == 3001:
-#             break
-#         mobile = user["mobile"]
-#         message = """Top companies are looking for Java Developers!
-#                      Connect with us, to get placed https://peeljobs.com/java-fresher-jobs/
-#                      or https://goo.gl/SX4qbB"""
-#         SMS_AUTH_KEY = "4a905d1566e5e93bfff35aa56a38660"
-#         BULK_SMS_FROM = "PEELJB"
-#         requests.get(
-#             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
-#             + str(SMS_AUTH_KEY)
-#             + "&message="
-#             + str(message)
-#             + "&senderId="
-#             + str(BULK_SMS_FROM)
-#             + "&routeId=3&mobileNos="
-#             + str(mobile)
-#             + "&smsContentType=english"
-#         )
-#         db.users.update(
-#             {"mobile": mobile},
-#             {"$set": {"sms_campaign_sent": True, "sms_date": current_date}},
-#             False,
-#             True,
-#         )
-#         count = count + 1
-
-
-@task()
+@app.task()
 def sitemap_generation():
+    print("Sitemap Generation started")
     import os
 
-    os.system("rm ../sitemap/*")
+    try:
+        os.system("rm sitemap/*")
+    except:
+        pass
     xml_cont = """<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
 
@@ -1735,7 +1508,11 @@ def sitemap_generation():
 
     jobs_xml_cont = jobs_xml_cont + "</urlset>"
 
-    jobs_xml_file = open("../sitemap/sitemap-jobs.xml", "w")
+    try:
+        open("sitemap/")
+    except:
+        os.makedirs("sitemap", exist_ok=True)
+    jobs_xml_file = open("sitemap/sitemap-jobs.xml", "w")
     jobs_xml_file.write(jobs_xml_cont.encode("ascii", "ignore").decode("ascii"))
 
     # skills
@@ -1761,11 +1538,11 @@ def sitemap_generation():
             )
     skills_xml_cont = skills_xml_cont + "</urlset>"
 
-    skills_xml_file = open("../sitemap/sitemap-skills.xml", "w")
+    skills_xml_file = open("sitemap/sitemap-skills.xml", "w")
     skills_xml_file.write(skills_xml_cont)
     if no_job_skills_xml_cont != xml_cont:
         no_job_skills_xml_cont = no_job_skills_xml_cont + "</urlset>"
-        no_job_skills_xml_file = open("../sitemap/sitemap-skills-without-jobs.xml", "w")
+        no_job_skills_xml_file = open("sitemap/sitemap-skills-without-jobs.xml", "w")
         no_job_skills_xml_file.write(no_job_skills_xml_cont)
 
     # locations
@@ -1791,12 +1568,12 @@ def sitemap_generation():
             )
     locations_xml_cont = locations_xml_cont + "</urlset>"
 
-    locations_xml_file = open("../sitemap/sitemap-locations.xml", "w")
+    locations_xml_file = open("sitemap/sitemap-locations.xml", "w")
     locations_xml_file.write(locations_xml_cont)
     if no_job_locations_xml_cont != xml_cont:
         no_job_locations_xml_cont = no_job_locations_xml_cont + "</urlset>"
         no_job_locations_xml_file = open(
-            "../sitemap/sitemap-locations-without-jobs.xml", "w"
+            "sitemap/sitemap-locations-without-jobs.xml", "w"
         )
         no_job_locations_xml_file.write(no_job_locations_xml_cont)
 
@@ -1813,7 +1590,7 @@ def sitemap_generation():
         )
     industries_xml_cont = industries_xml_cont + "</urlset>"
 
-    indsutries_xml_file = open("../sitemap/sitemap-industries.xml", "w")
+    indsutries_xml_file = open("sitemap/sitemap-industries.xml", "w")
     indsutries_xml_file.write(industries_xml_cont)
 
     # internship locations
@@ -1836,7 +1613,7 @@ def sitemap_generation():
         )
     internship_xml_cont = internship_xml_cont + "</urlset>"
 
-    internship_xml_file = open("../sitemap/sitemap-internships.xml", "w")
+    internship_xml_file = open("sitemap/sitemap-internships.xml", "w")
     internship_xml_file.write(internship_xml_cont)
 
     # skill walkins
@@ -1866,10 +1643,10 @@ def sitemap_generation():
     skills_walkin_xml_cont = skills_walkin_xml_cont + "</urlset>"
     no_job_skills_walkin_xml_cont = no_job_skills_walkin_xml_cont + "</urlset>"
 
-    skills_walkin_xml_file = open("../sitemap/sitemap-skill-walkins.xml", "w")
+    skills_walkin_xml_file = open("sitemap/sitemap-skill-walkins.xml", "w")
     skills_walkin_xml_file.write(skills_walkin_xml_cont)
     no_job_skills_walkin_xml_file = open(
-        "../sitemap/sitemap-skill-without-walkins.xml", "w"
+        "sitemap/sitemap-skill-without-walkins.xml", "w"
     )
     no_job_skills_walkin_xml_file.write(no_job_skills_walkin_xml_cont)
 
@@ -1935,11 +1712,11 @@ def sitemap_generation():
         )
 
         skills_location_xml_file = open(
-            "../sitemap/sitemap-skill-locations-" + str(index) + ".xml", "w"
+            "sitemap/sitemap-skill-locations-" + str(index) + ".xml", "w"
         )
         skills_location_xml_file.write(skills_locations_xml_cont)
         no_job_skills_location_xml_file = open(
-            "../sitemap/sitemap-skill-locations-without-jobs-" + str(index) + ".xml",
+            "sitemap/sitemap-skill-locations-without-jobs-" + str(index) + ".xml",
             "w",
         )
         no_job_skills_location_xml_file.write(no_job_skills_locations_xml_cont)
@@ -1952,11 +1729,11 @@ def sitemap_generation():
         )
 
         skills_location_walkins_xml_file = open(
-            "../sitemap/sitemap-skill-location-walkins-" + str(index) + ".xml", "w"
+            "sitemap/sitemap-skill-location-walkins-" + str(index) + ".xml", "w"
         )
         skills_location_walkins_xml_file.write(skills_locations_walkins_xml_cont)
         no_job_skills_location_walkins_xml_file = open(
-            "../sitemap/sitemap-skill-location-without-walkins-" + str(index) + ".xml",
+            "sitemap/sitemap-skill-location-without-walkins-" + str(index) + ".xml",
             "w",
         )
         no_job_skills_location_walkins_xml_file.write(
@@ -1999,12 +1776,12 @@ def sitemap_generation():
         )
 
         skills_location_fresher_xml_file = open(
-            "../sitemap/sitemap-skill-location-fresher-jobs-" + str(index) + ".xml", "w"
+            "sitemap/sitemap-skill-location-fresher-jobs-" + str(index) + ".xml", "w"
         )
         skills_location_fresher_xml_file.write(skills_location_fresher_xml_cont)
 
         no_job_skills_location_fresher_xml_file = open(
-            "../sitemap/sitemap-skill-location-without-fresher-jobs-"
+            "sitemap/sitemap-skill-location-without-fresher-jobs-"
             + str(index)
             + ".xml",
             "w",
@@ -2062,25 +1839,25 @@ def sitemap_generation():
                 + end_url
             )
     locations_walkin_xml_cont = locations_walkin_xml_cont + "</urlset>"
-    locations_walkin_xml_file = open("../sitemap/sitemap-location-walkins.xml", "w")
+    locations_walkin_xml_file = open("sitemap/sitemap-location-walkins.xml", "w")
     locations_walkin_xml_file.write(locations_walkin_xml_cont)
 
     no_job_locations_walkin_xml_cont = no_job_locations_walkin_xml_cont + "</urlset>"
     no_job_locations_walkin_xml_file = open(
-        "../sitemap/sitemap-location-without-walkins.xml", "w"
+        "sitemap/sitemap-location-without-walkins.xml", "w"
     )
     no_job_locations_walkin_xml_file.write(no_job_locations_walkin_xml_cont)
 
     locations_fresher_jobs_xml_cont = locations_fresher_jobs_xml_cont + "</urlset>"
     locations_fresher_jobs_xml_file = open(
-        "../sitemap/sitemap-location-fresher-jobs.xml", "w"
+        "sitemap/sitemap-location-fresher-jobs.xml", "w"
     )
     locations_fresher_jobs_xml_file.write(locations_fresher_jobs_xml_cont)
     no_job_locations_fresher_jobs_xml_cont = (
         no_job_locations_fresher_jobs_xml_cont + "</urlset>"
     )
     no_job_locations_fresher_jobs_xml_file = open(
-        "../sitemap/sitemap-location-without-fresher-jobs.xml", "w"
+        "sitemap/sitemap-location-without-fresher-jobs.xml", "w"
     )
     no_job_locations_fresher_jobs_xml_file.write(no_job_locations_fresher_jobs_xml_cont)
 
@@ -2114,14 +1891,14 @@ def sitemap_generation():
             + end_url
         )
     states_jobs_xml_count = states_jobs_xml_count + "</urlset>"
-    states_jobs_xml_file = open("../sitemap/sitemap-state-jobs.xml", "w")
+    states_jobs_xml_file = open("sitemap/sitemap-state-jobs.xml", "w")
     states_jobs_xml_file.write(states_jobs_xml_count)
     states_walkins_xml_count = states_walkins_xml_count + "</urlset>"
-    states_walkins_xml_file = open("../sitemap/sitemap-state-walkins.xml", "w")
+    states_walkins_xml_file = open("sitemap/sitemap-state-walkins.xml", "w")
     states_walkins_xml_file.write(states_walkins_xml_count)
     states_fresher_jobs_xml_count = states_fresher_jobs_xml_count + "</urlset>"
     states_fresher_jobs_xml_file = open(
-        "../sitemap/sitemap-state-fresher-jobs.xml", "w"
+        "sitemap/sitemap-state-fresher-jobs.xml", "w"
     )
     states_fresher_jobs_xml_file.write(states_fresher_jobs_xml_count)
 
@@ -2150,10 +1927,10 @@ def sitemap_generation():
     skills_fresher_xml_cont = skills_fresher_xml_cont + "</urlset>"
     no_job_skills_fresher_xml_cont = no_job_skills_fresher_xml_cont + "</urlset>"
 
-    skills_fresher_xml_file = open("../sitemap/sitemap-skill-fresher-jobs.xml", "w")
+    skills_fresher_xml_file = open("sitemap/sitemap-skill-fresher-jobs.xml", "w")
     skills_fresher_xml_file.write(skills_fresher_xml_cont)
     no_job_skills_fresher_xml_file = open(
-        "../sitemap/sitemap-skill-without-fresher-jobs.xml", "w"
+        "sitemap/sitemap-skill-without-fresher-jobs.xml", "w"
     )
     no_job_skills_fresher_xml_file.write(no_job_skills_fresher_xml_cont)
 
@@ -2171,7 +1948,7 @@ def sitemap_generation():
         )
     educations_xml_cont = educations_xml_cont + "</urlset>"
 
-    educations_xml_file = open("../sitemap/sitemap-education-jobs.xml", "w")
+    educations_xml_file = open("sitemap/sitemap-education-jobs.xml", "w")
     educations_xml_file.write(educations_xml_cont)
 
     # recruiters
@@ -2191,7 +1968,7 @@ def sitemap_generation():
 
     recruiters_xml_cont = recruiters_xml_cont + "</urlset>"
 
-    recruiter_xml_file = open("../sitemap/sitemap-recruiters.xml", "w")
+    recruiter_xml_file = open("sitemap/sitemap-recruiters.xml", "w")
     recruiter_xml_file.write(
         recruiters_xml_cont.encode("ascii", "ignore").decode("ascii")
     )
@@ -2210,7 +1987,7 @@ def sitemap_generation():
         )
     companies_xml_cont = companies_xml_cont + "</urlset>"
 
-    companies_xml_file = open("../sitemap/sitemap-companies.xml", "w")
+    companies_xml_file = open("sitemap/sitemap-companies.xml", "w")
     companies_xml_file.write(companies_xml_cont)
 
     # pages
@@ -2310,7 +2087,6 @@ def sitemap_generation():
     pages_xml_cont = (
         pages_xml_cont + "<url><loc>https://peeljobs.com/companies/" + end_url
     )
-    pages_xml_cont = pages_xml_cont + "<url><loc>https://peeljobs.com/blog/" + end_url
     pages_xml_cont = pages_xml_cont + "<url><loc>https://peeljobs.com/jobs/" + end_url
     pages_xml_cont = (
         pages_xml_cont
@@ -2336,78 +2112,10 @@ def sitemap_generation():
 
     pages_xml_cont = pages_xml_cont + "</urlset>"
 
-    pages_xml_file = open("../sitemap/sitemap-pages.xml", "w")
+    pages_xml_file = open("sitemap/sitemap-pages.xml", "w")
     pages_xml_file.write(pages_xml_cont)
 
-    # blog categories
-    blog_categories_xml_cont = xml_cont
-
-    categories = Category.objects.filter(is_active=True)
-    for category in categories:
-        if Post.objects.filter(status="Published"):
-            blog_categories_xml_cont = (
-                blog_categories_xml_cont
-                + "<url><loc>https://peeljobs.com/blog/category/"
-                + category.slug
-                + "/"
-            )
-            blog_categories_xml_cont = blog_categories_xml_cont + end_url
-
-    tags = Tags.objects.filter()
-    for tag in tags:
-        if Post.objects.filter(tags__in=[tag], status="Published"):
-            blog_categories_xml_cont = (
-                blog_categories_xml_cont
-                + "<url><loc>https://peeljobs.com/blog/tags/"
-                + tag.slug
-                + "/"
-            )
-            blog_categories_xml_cont = blog_categories_xml_cont + end_url
-
-    dates = []
-    for each_object in (
-        Post.objects.filter(category__is_active=True, status="Published")
-        .order_by("created_on")
-        .values("created_on")
-    ):
-        for date in each_object.values():
-            dates.append((date.year, date.month, 1))
-    dates = list(set(dates))
-
-    for each in dates:
-        blog_categories_xml_cont = (
-            blog_categories_xml_cont
-            + "<url><loc>https://peeljobs.com/blog/"
-            + str(each[0])
-            + "/"
-            + str(each[1])
-            + "/"
-        )
-        blog_categories_xml_cont = blog_categories_xml_cont + end_url
-
-    blog_categories_xml_cont = blog_categories_xml_cont + "</urlset>"
-
-    blog_categories_xml_file = open("../sitemap/sitemap-blog-categories.xml", "w")
-    blog_categories_xml_file.write(blog_categories_xml_cont)
-
-    # blog categories
-    blog_posts_xml_cont = xml_cont
-
-    posts = Post.objects.filter(status="Published").order_by("-created_on")
-    for post in posts:
-        blog_posts_xml_cont = (
-            blog_posts_xml_cont
-            + "<url><loc>https://peeljobs.com/blog/"
-            + post.slug
-            + "/"
-            + end_url
-        )
-
-    blog_posts_xml_cont = blog_posts_xml_cont + "</urlset>"
-
-    blog_posts_xml_file = open("../sitemap/sitemap-blog-posts.xml", "w")
-    blog_posts_xml_file.write(blog_posts_xml_cont)
-    directory = settings.BASE_DIR + "/../sitemap/"
+    directory = settings.BASE_DIR + "/sitemap/"
     # pages, blog categories, blog posts, resources.
 
     xml_cont = """<?xml version="1.0" encoding="UTF-8"?>
@@ -2427,11 +2135,12 @@ def sitemap_generation():
             )
 
     xml_cont = xml_cont + "</urlset>"
-    sitemap_xml_file = open("../sitemap/sitemap.xml", "w")
+    sitemap_xml_file = open("sitemap/sitemap.xml", "w")
     sitemap_xml_file.write(xml_cont)
+    print("Sitemap Generation ended")
 
 
-@task()
+@app.task()
 def save_search_results(ip_address, data, results, user):
     user = User.objects.filter(id=user).first()
     search_result = SearchResult.objects.create(ip_address=ip_address)
@@ -2463,254 +2172,3 @@ def save_search_results(ip_address, data, results, user):
     search_result.job_post = results
     search_result.save()
 
-
-# @task()
-# def request_logging(path, is_authenticated, view_func, view_args, view_kwargs, device, ip_address, stats):
-#     import logging
-#     logger = logging.getLogger("request-logging")
-
-#     request_details = {}
-#     try:
-#         request_details['function_name'] = view_func.__module__ + "." + view_func.__name__
-#     except:
-#         pass
-#     request_details['path'] = path
-#     request_details['user_logged_in'] = is_authenticated
-#     request_details['view_data'] = view_args
-#     request_details['view_data_kwargs'] = view_kwargs
-#     request_details['device'] = device
-#     if 'Bot' in device:
-#         request_details['bot'] = True
-#     request_details['ip_address'] = ip_address
-#     try:
-#         request_details['total_time'] = ("%(total_time)0.3f") % stats
-#     except:
-#         request_details['total_time'] = 0
-#     try:
-#         request_details['user_cpu_time'] = ("%(utime)0.3f") % stats
-#     except:
-#         request_details['user_cpu_time'] = 0
-#     try:
-#         request_details['system_cpu_time'] = ("%(stime)0.3f") % stats
-#     except:
-#         request_details['system_cpu_time'] = 0
-
-#     request_jsonized = json.dumps(request_details)
-# logger.debug(request_jsonized)
-
-
-# @task()
-# def handle_sendgrid_bounces():
-#     bounces = requests.get(
-#         "https://api.sendgrid.com/api/bounces.get.json?api_user="
-#         + settings.SG_USER
-#         + "&api_key="
-#         + settings.SG_PWD
-#     )
-#     for each in bounces.json():
-#         user = User.objects.filter(email=each["email"]).first()
-#         if user:
-#             user.is_bounce = True
-#             user.save()
-#         user = db.users.update({"email": each["email"]}, {"$set": {"is_bounce": True}})
-
-
-def sending_mails_to_applicants_sendgrid():
-    users = list(
-        db.users.find(
-            {
-                "$and": [
-                    {"email": {"$ne": ""}},
-                    {"is_bounce": {"$exists": False}},
-                    {"unsubscribe": {"$exists": False}},
-                ]
-            }
-        )
-    )
-    i = 0
-    for user in users:
-        if i <= 10000:
-            if user and "email" in user.keys():
-                pj_user = User.objects.filter(email=user["email"])
-                if not pj_user:
-                    i = i + 1
-                    temp = loader.get_template("email/register_invite.html")
-                    subject = "Register With Us - Peeljobs"
-                    mfrom = settings.DEFAULT_FROM_EMAIL
-                    rendered = temp.render({"user": user})
-                    Memail(user["email"], mfrom, subject, rendered, False)
-
-
-@task()
-def check_meta_data():
-    host_name = "https://peeljobs.com"
-
-    urls = [
-        {"url": host_name + "/", "name": "home_page"},
-        {"url": host_name + "/java-jobs/", "name": "skill_jobs"},
-        {"url": host_name + "/bcom-jobs/", "name": "education_jobs"},
-        {"url": host_name + "/java-bcom-jobs/", "name": "skill_education_jobs"},
-        {"url": host_name + "/java-walkins/", "name": "skill_walkin_jobs"},
-        {"url": host_name + "/jobs-in-bangalore/", "name": "location_jobs"},
-        {"url": host_name + "/walkins-in-bangalore/", "name": "location_walkin_jobs"},
-        {"url": host_name + "/java-jobs-in-bangalore/", "name": "skill_location_jobs"},
-        {
-            "url": host_name + "/java-walkins-in-bangalore/",
-            "name": "skill_location_walkin_jobs",
-        },
-        {"url": host_name + "/java-fresher-jobs/", "name": "skill_fresher_jobs"},
-        {
-            "url": host_name + "/bangalore-fresher-jobs/",
-            "name": "location_fresher_jobs",
-        },
-        {
-            "url": host_name + "/java-fresher-jobs-in-bangalore/",
-            "name": "skill_location_fresher_jobs",
-        },
-        {"url": host_name + "/bpo-industry-jobs/", "name": "industry_jobs"},
-        {
-            "url": host_name + "/internship-in-bangalore/",
-            "name": "location_internship_jobs",
-        },
-        {"url": host_name + "/walkin-jobs/", "name": "walkin_jobs"},
-        {"url": host_name + "/full-time-jobs/", "name": "full_time_jobs"},
-        {"url": host_name + "/government-jobs/", "name": "government_jobs"},
-        {"url": host_name + "/internship-jobs/", "name": "internship_jobs"},
-        {"url": host_name + "/alert/list/", "name": "alerts_list"},
-        {"url": host_name + "/recruiters/", "name": "recruiters_list"},
-        {"url": host_name + "/recruiters/smitra/", "name": "recruiter_profile"},
-        {"url": host_name + "/jobs/", "name": "jobs_list_page"},
-        {"url": host_name + "/jobs-by-skill/", "name": "jobs_by_skills"},
-        {"url": host_name + "/jobs-by-industry/", "name": "jobs_by_industry"},
-        {
-            "url": host_name + "/jobs-by-location/",
-            "name": "jobs_by_location",
-            "job_type": "jobs",
-        },
-        {"url": host_name + "/calendar/2017/", "name": "year_calendar"},
-        {"url": host_name + "/companies/", "name": "companies_list"},
-        {"url": host_name + "/integraph-job-openings/", "name": "company_jobs"},
-        {"url": host_name + "/blog/", "name": "blog_list"},
-        {
-            "url": host_name + "/blog/how-to-develop-a-successful-career-plan/",
-            "name": "blog_view",
-        },
-        {"url": host_name + "/blog/2017/1/", "name": "blog_archieve"},
-        {"url": host_name + "/blog/category/job-search/", "name": "categories_list"},
-        {"url": host_name + "/blog/tags/seo/", "name": "blog_tags"},
-        {"url": host_name + "/calendar/2017/month/1/", "name": "month_calendar"},
-        {"url": host_name + "/calendar/2017/month/1/week/1/", "name": "week_calendar"},
-        {
-            "url": host_name + "/jobposts/year/2017/month/1/date/1/",
-            "name": "day_calendar",
-        },
-        {"url": host_name + "/jobs-by-degree/", "name": "jobs_by_degree"},
-        {
-            "url": host_name + "/junior-python-developer-0-to-2-years-1046/",
-            "name": "job_detail_page",
-        },
-        {"url": host_name + "/post-job/", "name": "post_job"},
-        {"url": host_name + "/recruiter/login/", "name": "recruiter_login"},
-        {
-            "url": host_name + "/walkin-jobs-by-skills/",
-            "name": "fresher_jobs_by_skills",
-            "job_type": "walkin",
-        },
-        {
-            "url": host_name + "/fresher-jobs-by-skills/",
-            "name": "fresher_jobs_by_skills",
-            "job_type": "fresher",
-        },
-        # {'url': host_name + '/page/about-us/', 'name': ''},
-        # {'url': host_name + '/page/terms-conditions/', 'name': ''},
-        # {'url': host_name + '/page/privacy-policy/', 'name': ''},
-        # {'url': host_name + '/page/recruiter-faq/', 'name': ''},
-        # {'url': host_name + '/page/faq/', 'name': ''},
-    ]
-
-    test_data = {
-        "skill": "Java",
-        "city": "Bangalore",
-        "current_page": "1",
-        "industry": "BPO / Call Centre / ITES",
-        "company": {"name": "Integraph"},
-        "tag": {"name": "SEO"},
-        "user": {"username": "smitra"},
-        "blog_name": {"title": "How to develop a successful career plan?"},
-        "category": {"name": "Job Search"},
-        "degree": "B.Com",
-        "month": "January 2017",
-        "searched_month": "January",
-        "date": 1,
-        "year": 2017,
-        "job": {
-            "title": "Junior Python Developer",
-            "job_role": "Software Developer",
-            "min_year": 0,
-            "max_year": 2,
-            "location": {"all": [{"name": "Hyderabad"}]},
-        },
-        "search": "Java, B.Com",
-    }
-    for each in urls:
-        is_meta_title_correct = is_meta_description_correct = is_h1_tag_correct = False
-        # url = each['url']
-        page_meta_data = db.meta_data.find_one({"name": each["name"]})
-        test_data.update(each)
-        meta_title = Template(page_meta_data.get("meta_title")).render(
-            Context(test_data)
-        )
-        meta_description = Template(page_meta_data.get("meta_description")).render(
-            Context(test_data)
-        )
-        h1_tag = Template(page_meta_data.get("h1_tag")).render(Context(test_data))
-        soup = BeautifulSoup(requests.get(each["url"]).text)
-        metas = soup.find_all("meta")
-        url_meta_description = [
-            meta.attrs["content"]
-            for meta in metas
-            if "name" in meta.attrs and meta.attrs["name"] == "description"
-        ]
-        url_meta_title = [
-            meta.attrs["content"]
-            for meta in metas
-            if "property" in meta.attrs and meta.attrs["property"] == "og:title"
-        ]
-        metas = soup.find_all("h1")
-        url_h1_tag = [
-            meta.text
-            for meta in metas
-            if "class" in meta.attrs and meta.attrs["class"] == "internship-text"
-        ]
-        if url_h1_tag:
-            if url_h1_tag[0] == h1_tag:
-                is_h1_tag_correct = True
-        else:
-            is_h1_tag_correct = True
-        if url_meta_title and url_meta_title[0] == meta_title:
-            is_meta_title_correct = True
-        if url_meta_description and url_meta_description[0] == meta_description:
-            is_meta_description_correct = True
-        each.update(
-            {
-                "is_h1_tag_correct": is_h1_tag_correct,
-                "is_meta_description_correct": is_meta_description_correct,
-                "is_meta_title_correct": is_meta_title_correct,
-                "url_meta_title[0]": url_meta_title,
-                "url_meta_description[0]": url_meta_description,
-                "url_h1_tag[0]": url_h1_tag,
-                "meta_title": meta_title,
-                "meta_description": meta_description,
-                "h1_tag": h1_tag,
-            }
-        )
-        db.meta_data.update(
-            {"name": each["name"]},
-            {
-                "$set": {
-                    "is_h1_tag_correct": is_h1_tag_correct,
-                    "is_meta_description_correct": is_meta_description_correct,
-                    "is_meta_title_correct": is_meta_title_correct,
-                }
-            },
-        )

@@ -138,21 +138,9 @@ def facebook_login(request):
         accesstoken = graph.extend_access_token(settings.FB_APP_ID, settings.FB_SECRET)[
             "accesstoken"
         ]
-        profile = graph.get_object(
-            "me",
-            fields="id, name, email, birthday, hometown, location, link, locale, gender, timezone",
-        )
+        profile = graph.get_object("me", fields="id, name, email",)
         email = profile.get("email", "")
-        hometown = profile["hometown"]["name"] if "hometown" in profile.keys() else ""
-        location = profile["location"]["name"] if "location" in profile.keys() else ""
-        bday = (
-            datetime.strptime(profile["birthday"], "%m/%d/%Y").strftime("%Y-%m-%d")
-            if profile.get("birthday")
-            else "1970-09-09"
-        )
-        profile_pic = (
-            "https://graph.facebook.com/" + profile["id"] + "/picture?type=large"
-        )
+
         if "email" in profile.keys():
             email_matches = UserEmail.objects.filter(email__iexact=email).first()
             if email_matches:
@@ -166,22 +154,9 @@ def facebook_login(request):
                 if not user.is_fb_connected:
                     Facebook.objects.create(
                         user=user,
-                        facebook_url=profile.get("link", ""),
-                        facebook_id=profile.get("id"),
-                        first_name=profile.get("first_name", ""),
-                        last_name=profile.get("last_name", ""),
-                        verified=profile.get("verified", ""),
                         name=profile.get("name", ""),
-                        language=profile["locale"] if profile.get("locale") else "",
-                        hometown=hometown,
                         email=profile.get("email", ""),
-                        gender=profile.get("gender", ""),
-                        dob=bday,
-                        location=location,
-                        timezone=profile.get("timezone", ""),
-                        accesstoken=accesstoken,
                     )
-                    user.photo = profile_pic
                     user.save()
                 user = authenticate(username=user.email)
             else:
@@ -190,9 +165,6 @@ def facebook_login(request):
                 ).first()
                 if user:
                     user.first_name = profile.get("name", "")
-                    user.last_name = profile.get("last_name", "")
-                    user.photo = profile_pic
-                    user.profile_pic = profile_pic
                     user.profile_updated = datetime.now(timezone.utc)
                     user.is_active = True
                     user.save()
@@ -200,46 +172,19 @@ def facebook_login(request):
                     user = User.objects.create(
                         username=profile.get("email", ""),
                         email=profile.get("email", ""),
-                        profile_pic=profile_pic,
-                        photo=profile_pic,
-                        first_name=profile.get("first_name", ""),
-                        last_name=profile.get("last_name", ""),
+                        first_name=profile.get("name", ""),
+                        last_name=profile.get("name", ""),
                         user_type="JS",
                         profile_updated=datetime.now(timezone.utc),
                         is_active=True,
                         registered_from="Social",
                     )
-                if profile.get("gender"):
-                    user.gender = profile.get("gender")
-                if profile.get("location"):
-                    city = City.objects.filter(name__iexact=location.strip())
-                    if city:
-                        user.current_city = city[0]
-                    else:
-                        city = City.objects.create(
-                            name=location,
-                            status="Disabled",
-                            slug=slugify(location),
-                            state=State.objects.get(id=16),
-                        )
-                        user.current_city = city
 
                 Facebook.objects.create(
                     user=user,
-                    facebook_url=profile.get("link", ""),
                     facebook_id=profile.get("id"),
-                    first_name=profile.get("first_name", ""),
-                    last_name=profile.get("last_name", ""),
-                    verified=profile.get("verified", ""),
                     name=profile.get("name", ""),
-                    language=profile.get("locale", ""),
-                    hometown=hometown,
                     email=profile.get("email", ""),
-                    gender=profile.get("gender", ""),
-                    dob=bday,
-                    location=location,
-                    timezone=profile.get("timezone", ""),
-                    accesstoken=accesstoken,
                 )
                 UserEmail.objects.create(
                     user=user, email=profile.get("email"), is_primary=True
@@ -250,9 +195,6 @@ def facebook_login(request):
                 user.referer = request.session.get("referer", "")
                 user.save()
                 login(request, user)
-                facebook_pages.delay(accesstoken, user.id)
-                facebook_friends.delay(accesstoken, user.id)
-                facebook_groups.delay(accesstoken, user.id)
                 return HttpResponseRedirect("/social/user/update/")
         else:
             return render(
@@ -268,9 +210,6 @@ def facebook_login(request):
             )
 
         login(request, user)
-        facebook_pages.delay(accesstoken, user.id)
-        facebook_friends.delay(accesstoken, user.id)
-        facebook_groups.delay(accesstoken, user.id)
         if "design" in request.session.keys() and request.is_mobile == "mobile":
             if request.session.get("job_id"):
                 post = JobPost.objects.filter(
@@ -293,9 +232,8 @@ def facebook_login(request):
         # TODO : llog the error and transfer to error page
         return HttpResponseRedirect("/jobs/")
     else:
-        # publish_stream, friends_groups
-        # the above are depricated as part of graphapi 2.3 we need to update
-        # our code to fix it
+        print(settings.FB_APP_ID)
+
         rty = (
             "https://graph.facebook.com/oauth/authorize?client_id="
             + settings.FB_APP_ID
@@ -304,8 +242,7 @@ def facebook_login(request):
             + "://"
             + request.META["HTTP_HOST"]
             + reverse("social:facebook_login")
-            + "&scope=manage_pages, user_birthday, user_location, user_hometown"
-            + ", email, user_likes"
+            + "&scope=email"
         )
         return HttpResponseRedirect(rty)
 
@@ -319,8 +256,8 @@ def google_login(request):
             + "://"
             + request.META["HTTP_HOST"]
             + reverse("social:google_login"),
-            "client_id": settings.GP_CLIENT_ID,
-            "client_secret": settings.GP_CLIENT_SECRET,
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
         }
 
         info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
@@ -351,9 +288,10 @@ def google_login(request):
         if email_matches:
             user = email_matches[0].user
             if user.is_recruiter or user.is_agency_recruiter:
-                user = authenticate(username=user.username)
-                login(request, user)
-                return HttpResponseRedirect(reverse("recruiter:index"))
+                return HttpResponseRedirect(
+                    reverse("recruiter:new_user")
+                    + "?invalid=Recruiters and Agencies can login in this page"
+                )
 
             # Email associated with the user but Google is not connected
             if not user.is_gp_connected:
@@ -422,7 +360,7 @@ def google_login(request):
             user.is_bounce = False
             user.referer = request.session.get("referer", "")
             user.save()
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
             add_google_friends.delay(request.user.id, info["access_token"])
             return HttpResponseRedirect("/social/user/update/")
@@ -448,9 +386,10 @@ def google_login(request):
             return HttpResponseRedirect(reverse("my:profile"))
         return HttpResponseRedirect("/")
     else:
+        print(settings.GOOGLE_CLIENT_ID)
         rty = (
             "https://accounts.google.com/o/oauth2/auth?client_id="
-            + settings.GP_CLIENT_ID
+            + settings.GOOGLE_CLIENT_ID
             + "&response_type=code"
         )
         rty += (
@@ -472,7 +411,6 @@ def google_login(request):
 def github_login(request):
     if "code" in request.GET:
         params = {
-            "grant_type": "authorization_code",
             "client_id": settings.GIT_APP_ID,
             "redirect_uri": request.scheme
             + "://"
@@ -496,11 +434,18 @@ def github_login(request):
                 status=404,
             )
         params = {"access_token": ac["access_token"]}
-        kw = dict(params=params)
+        headers = {
+            "X-GitHub-Media-Type": "application/vnd.github.v3",
+            "Authorization": "token %s" % ac["access_token"],
+        }
+        kw = dict(params=params, headers=headers, timeout=60)
         info = requests.request("GET", "https://api.github.com/user", **kw)
         details = info.json()
         params = {"access_token": ac["access_token"]}
-        headers = {"X-GitHub-Media-Type": "application/vnd.github.v3"}
+        headers = {
+            "X-GitHub-Media-Type": "application/vnd.github.v3",
+            "Authorization": "token %s" % ac["access_token"],
+        }
         kw = dict(params=params, headers=headers, timeout=60)
         response = requests.request("GET", "https://api.github.com/user/emails", **kw)
         picture = details["avatar_url"] if "avatar_url" in details.keys() else ""
@@ -626,7 +571,7 @@ def github_login(request):
             + "://"
             + request.META["HTTP_HOST"]
             + reverse("social:github_login")
-            + "&scope=user,user:email&state=dia123456789ramya"
+            + "&scope=read:user user:email&state=dia123456789ramya"
         )
         return HttpResponseRedirect(rty)
 
@@ -693,7 +638,6 @@ def linkedin_login(request):
         )
         profile_rty = urlopen(profile_rty).read().decode("utf-8")
         profile_rty = json.loads(profile_rty)
-
         if not email_address:
             return render(
                 request,
@@ -733,7 +677,6 @@ def linkedin_login(request):
                     linkedin_url=details.get("publicProfileUrl", ""),
                     first_name=profile_rty["firstName"]["localized"]["en_US"],
                     last_name=profile_rty["lastName"]["localized"]["en_US"],
-                    location=details["location"]["name"],
                     workhistory=positions,
                     email=email_address,
                     accesstoken=accesstoken,
@@ -798,7 +741,6 @@ def linkedin_login(request):
                 linkedin_url=details.get("publicProfileUrl", ""),
                 first_name=details.get("firstName", ""),
                 last_name=details.get("lastName", ""),
-                # location=details['location']['name'],
                 workhistory=positions,
                 email=details.get("emailAddress", ""),
                 accesstoken=accesstoken,
@@ -949,10 +891,7 @@ def facebook_connect(request):
             "accesstoken"
         ]
 
-        profile = graph.get_object(
-            "me",
-            fields="id, name, email, birthday, hometown, location, link, locale, gender, timezone",
-        )
+        profile = graph.get_object("me", fields="id, name, email",)
         # email = profile['email'] if 'email' in profile.keys() else ''
         if "email" not in profile.keys():
             message = "Sorry, We didnt find your email id through facebook"
@@ -961,30 +900,12 @@ def facebook_connect(request):
                 request, "404.html", {"message": message, "reason": reason}, status=404
             )
 
-        hometown = profile["hometown"]["name"] if profile.get("hometown") else ""
-        location = profile["location"]["name"] if profile.get("location") else ""
-        bday = (
-            datetime.strptime(profile["birthday"], "%m/%d/%Y").strftime("%Y-%m-%d")
-            if "birthday" in profile.keys()
-            else None
-        )
         if request.user.is_authenticated:
             Facebook.objects.create(
                 user=request.user,
-                facebook_url=profile.get("link", ""),
                 facebook_id=profile.get("id", ""),
-                first_name=profile.get("first_name", ""),
-                last_name=profile.get("last_name", ""),
-                verified=profile.get("verified", ""),
                 name=profile.get("name", ""),
-                language=profile.get("locale", ""),
-                hometown=hometown,
                 email=profile["email"],
-                gender=profile.get("gender", ""),
-                dob=bday,
-                location=location,
-                timezone=profile.get("timezone", ""),
-                accesstoken=accesstoken,
             )
             email_matches = UserEmail.objects.filter(
                 user=request.user, email=profile["email"]
@@ -992,17 +913,11 @@ def facebook_connect(request):
             if not email_matches:
                 UserEmail.objects.create(user=request.user, email=profile["email"])
 
-        facebook_pages.delay(accesstoken, request.user.id)
-        facebook_friends.delay(accesstoken, request.user.id)
-        facebook_groups.delay(accesstoken, request.user.id)
-
         return HttpResponseRedirect(reverse("my:profile"))
 
     elif "error" in request.GET:
         return HttpResponseRedirect(reverse("my:profile"))
     else:
-        # publish_stream, friends_groups
-        # the above are depricated as part of graphapi 2.3 we need to update
         # our code to fix it
         rty = (
             "https://graph.facebook.com/oauth/authorize?client_id="
@@ -1012,7 +927,7 @@ def facebook_connect(request):
             + "://"
             + request.META["HTTP_HOST"]
             + reverse("social:facebook_connect")
-            + "&scope="
+            + "&scope=email"
         )
         return HttpResponseRedirect(rty)
 
@@ -1027,8 +942,8 @@ def google_connect(request):
             + "://"
             + request.META["HTTP_HOST"]
             + reverse("social:google_connect"),
-            "client_id": settings.GP_CLIENT_ID,
-            "client_secret": settings.GP_CLIENT_SECRET,
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
         }
 
         info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
@@ -1071,7 +986,7 @@ def google_connect(request):
     else:
         rty = (
             "https://accounts.google.com/o/oauth2/auth?client_id="
-            + settings.GP_CLIENT_ID
+            + settings.GOOGLE_CLIENT_ID
             + "&response_type=code"
         )
         rty += (

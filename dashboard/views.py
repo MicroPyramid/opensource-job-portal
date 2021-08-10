@@ -5,12 +5,10 @@ import re
 import urllib
 from calendar import monthrange
 from datetime import datetime
-from bson import ObjectId
 
 import requests
-from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import ContentType, Permission
@@ -26,11 +24,9 @@ from microurl import google_mini
 from twython.api import Twython
 
 from mpcomp.views import (
-    Memail,
     get_absolute_url,
     get_aws_file_path,
     get_prev_after_pages_count,
-    mongoconnection,
     permission_required,
 )
 from mpcomp.aws import AWS
@@ -39,7 +35,6 @@ from peeldb.models import (
     JOB_TYPE,
     AppliedJobs,
     City,
-    Comment,
     Company,
     Country,
     FacebookGroup,
@@ -53,6 +48,7 @@ from peeldb.models import (
     Language,
     MailTemplate,
     Menu,
+    MetaData,
     Qualification,
     Question,
     SearchResult,
@@ -74,7 +70,6 @@ from peeldb.models import (
     SKILL_TYPE,
 )
 from pjob.views import months
-
 # from .tasks import post_on_all_fb_groups
 from recruiter.forms import MONTHS, YEARS, JobPostForm, MenuForm
 from recruiter.views import (
@@ -114,9 +109,8 @@ from .tasks import (
     postonpeel_fb,
     postontwitter,
     sending_mail,
+    send_email,
 )
-
-db = mongoconnection()
 
 
 def index(request):
@@ -126,6 +120,19 @@ def index(request):
             and not request.user.is_recruiter
             and not request.user.is_agency_recruiter
         ):
+            current_date = datetime.strptime(
+                    str(datetime.now().date()), "%Y-%m-%d"
+                ).strftime("%Y-%m-%d")
+            today_admin_walkin_jobs_count = JobPost.objects.filter(
+                    job_type="walk-in",
+                    user__is_superuser=True,
+                )
+            today_tickets_open = Ticket.objects.filter(
+                created_on__contains=current_date, status="Open"
+            ).count()
+            today_tickets_closed = Ticket.objects.filter(
+                created_on__contains=current_date, status="Closed"
+            ).count()
             if request.POST.get("timestamp", ""):
                 date = request.POST.get("timestamp").split(" - ")
                 start_date = datetime.strptime(date[0], "%b %d, %Y %H:%M")
@@ -155,11 +162,18 @@ def index(request):
                 ).values_list("current_city", flat=True)
                 today_locations = City.objects.filter(id__in=job_loc)
                 today_user_locations = City.objects.filter(id__in=user_loc)
-                today_companies = Company.objects.filter(
+                today_companies_active = Company.objects.filter(
                     id__in=JobPost.objects.filter(
                         published_on__range=(start_date, end_date)
-                    ).values_list("company", flat=True)
-                )
+                    ).values_list("company", flat=True),
+                    is_active=True,
+                ).count()
+                today_companies_not_active = Company.objects.filter(
+                    id__in=JobPost.objects.filter(
+                        published_on__range=(start_date, end_date)
+                    ).values_list("company", flat=True),
+                    is_active=False,
+                ).count()
 
                 today_admin_jobs_count = JobPost.objects.filter(
                     published_on__range=(start_date, end_date), user__is_superuser=True
@@ -167,15 +181,15 @@ def index(request):
                 today_admin_full_time_jobs_count = today_admin_jobs_count.filter(
                     job_type="full-time"
                 )
-                today_admin_govt_jobs_count = today_admin_jobs_count.filter(
-                    job_type="government"
-                )
+                # today_admin_govt_jobs_count = today_admin_jobs_count.filter(
+                #     job_type="government"
+                # )
                 today_admin_internship_jobs_count = today_admin_jobs_count.filter(
                     job_type="internship"
                 )
-                today_admin_walkin_jobs_count = today_admin_jobs_count.filter(
-                    job_type="walk-in"
-                )
+                # today_admin_walkin_jobs_count = today_admin_jobs_count.filter(
+                #     job_type="walk-in"
+                # )
 
                 today_job_applications = AppliedJobs.objects.filter(
                     applied_on__range=(start_date, end_date)
@@ -199,34 +213,30 @@ def index(request):
                     registered_from="Resume",
                 )
 
-                today_recruiters_count = User.objects.filter(
+                today_recruiters = User.objects.filter(
                     date_joined__range=(start_date, end_date), user_type="RR"
                 )
 
-                today_tickets = Ticket.objects.filter(
-                    created_on__range=(start_date, end_date)
-                )
+                # today_tickets = Ticket.objects.filter(
+                #     created_on__range=(start_date, end_date)
+                # )
 
-                today_agency_recruiters_count = User.objects.filter(
+                today_agency_recruiters = User.objects.filter(
                     date_joined__range=(start_date, end_date), user_type="AA"
                 )
 
-                today_agencies = Company.objects.filter(
-                    id__in=User.objects.filter(is_admin=True).values_list(
-                        "company", flat=True
-                    ),
-                    registered_date__range=(start_date, end_date),
-                    company_type="Consultant",
-                )
-                comments = Comment.objects.filter(
-                    created_on__range=(start_date, end_date),
-                    commented_by__user_type="RR",
-                )
+                # today_agencies = Company.objects.filter(
+                #     id__in=User.objects.filter(is_admin=True).values_list(
+                #         "company", flat=True
+                #     ),
+                #     registered_date__range=(start_date, end_date),
+                #     company_type="Consultant",
+                # )
+                # comments = Comment.objects.filter(
+                #     created_on__range=(start_date, end_date),
+                #     commented_by__user_type="RR",
+                # )
             else:
-                current_date = datetime.strptime(
-                    str(datetime.now().date()), "%Y-%m-%d"
-                ).strftime("%Y-%m-%d")
-
                 today_jobs_count = JobPost.objects.filter(
                     published_on__icontains=current_date
                 ).exclude(user__is_superuser=True)
@@ -253,20 +263,18 @@ def index(request):
                     published_on__icontains=current_date,
                     user__is_superuser=True,
                 )
-                today_admin_govt_jobs_count = JobPost.objects.filter(
-                    job_type="government",
-                    published_on__icontains=current_date,
-                    user__is_superuser=True,
-                )
+                # today_admin_govt_jobs_count = JobPost.objects.filter(
+                #     job_type="government",
+                #     published_on__icontains=current_date,
+                #     user__is_superuser=True,
+                # )
                 today_admin_internship_jobs_count = JobPost.objects.filter(
                     job_type="internship",
                     published_on__icontains=current_date,
                     user__is_superuser=True,
                 )
-                today_admin_walkin_jobs_count = JobPost.objects.filter(
-                    job_type="walk-in",
+                today_admin_walkin_jobs_count = today_admin_walkin_jobs_count.filter(
                     published_on__icontains=current_date,
-                    user__is_superuser=True,
                 )
 
                 today_job_applications = AppliedJobs.objects.filter(
@@ -290,28 +298,25 @@ def index(request):
                     user_type="JS",
                     registered_from="Resume",
                 )
-
-                today_recruiters_count = User.objects.filter(
+                today_recruiters = User.objects.filter(
                     date_joined__contains=current_date, user_type="RR"
                 )
 
-                today_agency_recruiters_count = User.objects.filter(
+                today_agency_recruiters = User.objects.filter(
                     date_joined__contains=current_date, user_type="AA"
                 )
 
-                today_tickets = Ticket.objects.filter(created_on__contains=current_date)
+                # today_agencies = Company.objects.filter(
+                #     registered_date=current_date,
+                #     company_type="Consultant",
+                #     id__in=User.objects.filter(is_admin=True).values_list(
+                #         "company", flat=True
+                #     ),
+                # )
 
-                today_agencies = Company.objects.filter(
-                    registered_date=current_date,
-                    company_type="Consultant",
-                    id__in=User.objects.filter(is_admin=True).values_list(
-                        "company", flat=True
-                    ),
-                )
-
-                comments = Comment.objects.filter(
-                    created_on__contains=current_date, commented_by__user_type="RR"
-                )
+                # comments = Comment.objects.filter(
+                #     created_on__contains=current_date, commented_by__user_type="RR"
+                # )
 
                 today_skills = Skill.objects.filter(
                     id__in=JobPost.objects.filter(
@@ -326,17 +331,26 @@ def index(request):
                 ).values_list("current_city", flat=True)
                 today_locations = City.objects.filter(id__in=job_loc)
                 today_user_locations = City.objects.filter(id__in=user_loc)
-                today_companies = Company.objects.filter(
+
+                today_companies_active = Company.objects.filter(
                     id__in=JobPost.objects.filter(
                         published_on__icontains=current_date
-                    ).values_list("company", flat=True)
-                )
+                    ).values_list("company", flat=True),
+                    is_active=True,
+                ).count()
+                today_companies_not_active = Company.objects.filter(
+                    id__in=JobPost.objects.filter(
+                        published_on__icontains=current_date
+                    ).values_list("company", flat=True),
+                    is_active=False,
+                ).count()
+
             total_jobs_list = JobPost.objects.all()
             total_pending_jobs = total_jobs_list.filter(status="Pending").count()
             total_published_jobs = total_jobs_list.filter(status="Published").count()
             total_live_jobs = total_jobs_list.filter(status="Live").count()
             total_disabled_jobs = total_jobs_list.filter(status="Disabled").count()
-            open_tickets = Ticket.objects.filter()
+            # open_tickets = Ticket.objects.filter()
 
             total_full_time_jobs = JobPost.objects.filter(job_type="full-time")
             total_fulltime_pending_jobs = total_full_time_jobs.filter(
@@ -351,6 +365,7 @@ def index(request):
             total_fulltime_disabled_jobs = total_full_time_jobs.filter(
                 status="Disabled"
             ).count()
+
             total_internship_jobs = JobPost.objects.filter(job_type="internship")
             total_internship_pending_jobs = total_internship_jobs.filter(
                 status="Pending"
@@ -364,6 +379,7 @@ def index(request):
             total_internship_disabled_jobs = total_internship_jobs.filter(
                 status="Disabled"
             ).count()
+
             total_walkin_jobs = JobPost.objects.filter(job_type="walk-in")
             total_walkin_pending_jobs = total_walkin_jobs.filter(
                 status="Pending"
@@ -479,18 +495,18 @@ def index(request):
                 status="Disabled"
             ).count()
 
-            today_admin_internship_pending_jobs = (
-                today_admin_internship_jobs_count.filter(status="Pending").count()
-            )
-            today_admin_internship_published_jobs = (
-                today_admin_internship_jobs_count.filter(status="Published").count()
-            )
+            today_admin_internship_pending_jobs = today_admin_internship_jobs_count.filter(
+                status="Pending"
+            ).count()
+            today_admin_internship_published_jobs = today_admin_internship_jobs_count.filter(
+                status="Published"
+            ).count()
             today_admin_internship_live_jobs = today_admin_internship_jobs_count.filter(
                 status="Live"
             ).count()
-            today_admin_internship_disabled_jobs = (
-                today_admin_internship_jobs_count.filter(status="Disabled").count()
-            )
+            today_admin_internship_disabled_jobs = today_admin_internship_jobs_count.filter(
+                status="Disabled"
+            ).count()
 
             today_walkin_pending_jobs = today_walkin_jobs_count.filter(
                 status="Pending"
@@ -558,18 +574,18 @@ def index(request):
                 status="Disabled"
             ).count()
 
-            today_admin_full_time_pending_jobs = (
-                today_admin_full_time_jobs_count.filter(status="Pending").count()
-            )
-            today_admin_full_time_published_jobs = (
-                today_admin_full_time_jobs_count.filter(status="Published").count()
-            )
+            today_admin_full_time_pending_jobs = today_admin_full_time_jobs_count.filter(
+                status="Pending"
+            ).count()
+            today_admin_full_time_published_jobs = today_admin_full_time_jobs_count.filter(
+                status="Published"
+            ).count()
             today_admin_full_time_live_jobs = today_admin_full_time_jobs_count.filter(
                 status="Live"
             ).count()
-            today_admin_full_time_disabled_jobs = (
-                today_admin_full_time_jobs_count.filter(status="Disabled").count()
-            )
+            today_admin_full_time_disabled_jobs = today_admin_full_time_jobs_count.filter(
+                status="Disabled"
+            ).count()
 
             total_skills = Skill.objects.filter()
             total_active_skills = total_skills.filter(status="Active").count()
@@ -590,252 +606,260 @@ def index(request):
             total_inactive_locations = total_locations.filter(status="Disabled").count()
 
             total_companies = Company.objects.filter(company_type="Company")
-            total_active_companies = total_companies.filter(is_active=True)
-            total_inactive_companies = total_companies.filter(is_active=False)
+            total_active_companies = total_companies.filter(is_active=True).count()
+            total_inactive_companies = total_companies.filter(is_active=False).count()
+            total_companies = total_companies.count()
 
             total_recruiters = User.objects.filter(user_type="RR")
             total_agency_recruiters = User.objects.filter(user_type="AA")
 
-            total_tickets = Ticket.objects.filter()
-            all_active_recruiters = []
-            all_inactive_recruiters = []
+            total_tickets_open = Ticket.objects.filter(status="Open").count()
+            total_tickets_closed = Ticket.objects.filter(status="Closed").count()
+            # all_active_recruiters = []
+            # all_inactive_recruiters = []
 
-            all_agency_active_recruiters = []
-            all_agency_inactive_recruiters = []
+            # all_agency_active_recruiters = []
+            # all_agency_inactive_recruiters = []
 
-            all_active_applicants = []
-            social_active_applicants = []
-            all_register_active_applicants = []
+            # all_active_applicants = []
+            # social_active_applicants = []
+            # all_register_active_applicants = []
 
-            all_resume_upload_candidates = []
-            all_profile_completed_candidates = []
-            all_appliedto_job_candidates = []
-            all_login_once_candidates = []
+            # all_resume_upload_candidates = []
+            # all_profile_completed_candidates = []
+            # all_appliedto_job_candidates = []
+            # all_login_once_candidates = []
 
-            social_resume_upload_candidates = []
-            social_profile_completed_candidates = []
-            social_appliedto_job_candidates = []
-            social_login_once_candidates = []
+            # social_resume_upload_candidates = []
+            # social_profile_completed_candidates = []
+            # social_appliedto_job_candidates = []
+            # social_login_once_candidates = []
 
-            all_register_resume_upload_candidates = []
-            all_register_profile_completed_candidates = []
-            all_register_appliedto_job_candidates = []
-            all_register_login_once_candidates = []
+            # all_register_resume_upload_candidates = []
+            # all_register_profile_completed_candidates = []
+            # all_register_appliedto_job_candidates = []
+            # all_register_login_once_candidates = []
 
-            all_full_time = []
-            all_internship = []
-            all_walkin = []
-            all_govt = []
-            all_bounce = []
-            all_emails = []
+            # all_full_time = []
+            # all_internship = []
+            # all_walkin = []
+            # all_govt = []
+            # all_bounce = []
+            # all_emails = []
 
-            current_date = datetime.strptime(
-                str(datetime.now().date()), "%Y-%m-%d"
-            ).strftime("%Y-%m-%d")
-            next_current_date = str(datetime.now().date() + relativedelta(days=1))
+            # current_date = datetime.strptime(
+            #     str(datetime.now().date()), "%Y-%m-%d"
+            # ).strftime("%Y-%m-%d")
+            # next_current_date = str(datetime.now().date() + relativedelta(days=1))
 
-            from datetime import date
+            # from datetime import date
 
-            dates = []
-            all_dates = []
-            if request.POST.get("year") and request.POST.get("month"):
-                no_of_days = monthrange(
-                    int(request.POST.get("year")), int(request.POST.get("month"))
-                )[1]
-            else:
-                no_of_days = 31
-            for i in range(1, no_of_days):
-                if request.POST.get("year") and request.POST.get("month"):
-                    next_day = date(
-                        int(request.POST.get("year")), int(request.POST.get("month")), 1
-                    ) + relativedelta(day=i)
-                else:
-                    next_day = date(
-                        datetime.now().year, datetime.now().month, 1
-                    ) + relativedelta(day=i)
-                if next_current_date == next_day.strftime("%Y-%m-%d"):
-                    break
-                else:
-                    each_date = {}
-                    each_date["label"] = next_day.strftime("%B %d")
-                    dates.append(each_date)
-                    all_dates.append(next_day.strftime("%B %d"))
-                    next_day = next_day.strftime("%Y-%m-%d")
-                    recruiters = total_recruiters.filter(
-                        date_joined__icontains=next_day
-                    )
-                    total_applicants = User.objects.filter(user_type="JS")
-                    agency_recruiters = total_agency_recruiters.filter(
-                        date_joined__icontains=next_day
-                    )
-                    active_recruiter = {}
-                    active_recruiter["value"] = recruiters.filter(
-                        is_active=True
-                    ).count()
-                    inactive_recruiter = {}
-                    inactive_recruiter["value"] = recruiters.filter(
-                        is_active=False
-                    ).count()
+            # dates = []
+            # all_dates = []
+            # if request.POST.get("year") and request.POST.get("month"):
+            #     no_of_days = monthrange(
+            #         int(request.POST.get("year")), int(request.POST.get("month"))
+            #     )[1]
+            # else:
+            #     no_of_days = 31
+            # for i in range(1, no_of_days):
+            #     if request.POST.get("year") and request.POST.get("month"):
+            #         next_day = date(
+            #             int(request.POST.get("year")), int(request.POST.get("month")), 1
+            #         ) + relativedelta(day=i)
+            #     else:
+            #         next_day = date(
+            #             datetime.now().year, datetime.now().month, 1
+            #         ) + relativedelta(day=i)
+            #     if next_current_date == next_day.strftime("%Y-%m-%d"):
+            #         break
+            #     else:
+            #         each_date = {}
+            #         each_date["label"] = next_day.strftime("%B %d")
+            #         dates.append(each_date)
+            #         all_dates.append(next_day.strftime("%B %d"))
+            #         next_day = next_day.strftime("%Y-%m-%d")
+            #         recruiters = total_recruiters.filter(
+            #             date_joined__icontains=next_day
+            #         )
+            #         total_applicants = User.objects.filter(user_type="JS")
+            #         agency_recruiters = total_agency_recruiters.filter(
+            #             date_joined__icontains=next_day
+            #         )
+            #         active_recruiter = {}
+            #         active_recruiter["value"] = recruiters.filter(
+            #             is_active=True
+            #         ).count()
+            #         inactive_recruiter = {}
+            #         inactive_recruiter["value"] = recruiters.filter(
+            #             is_active=False
+            #         ).count()
 
-                    all_active_recruiters.append(
-                        recruiters.filter(is_active=True).count()
-                    )
-                    all_inactive_recruiters.append(
-                        recruiters.filter(is_active=False).count()
-                    )
+            #         all_active_recruiters.append(
+            #             recruiters.filter(is_active=True).count()
+            #         )
+            #         all_inactive_recruiters.append(
+            #             recruiters.filter(is_active=False).count()
+            #         )
 
-                    all_agency_active_recruiters.append(
-                        agency_recruiters.filter(is_active=True).count()
-                    )
-                    all_agency_inactive_recruiters.append(
-                        agency_recruiters.filter(is_active=False).count()
-                    )
-                    all_applicants = total_applicants.filter(
-                        date_joined__icontains=next_day
-                    )
-                    social_applicants = total_applicants.filter(
-                        date_joined__icontains=next_day, registered_from="Social"
-                    )
-                    register_applicants = total_applicants.filter(
-                        date_joined__icontains=next_day, registered_from="Email"
-                    )
+            #         all_agency_active_recruiters.append(
+            #             agency_recruiters.filter(is_active=True).count()
+            #         )
+            #         all_agency_inactive_recruiters.append(
+            #             agency_recruiters.filter(is_active=False).count()
+            #         )
+            #         all_applicants = total_applicants.filter(
+            #             date_joined__icontains=next_day
+            #         )
+            #         social_applicants = total_applicants.filter(
+            #             date_joined__icontains=next_day, registered_from="Social"
+            #         )
+            #         register_applicants = total_applicants.filter(
+            #             date_joined__icontains=next_day, registered_from="Email"
+            #         )
 
-                    full_time_jobs = total_full_time_jobs.filter(
-                        published_on__icontains=next_day
-                    )
-                    internship_jobs = total_internship_jobs.filter(
-                        published_on__icontains=next_day
-                    )
-                    walkin_jobs = total_walkin_jobs.filter(
-                        published_on__icontains=next_day
-                    )
-                    govt_jobs = today_govt_jobs_count.filter(
-                        published_on__icontains=next_day
-                    )
+            #         full_time_jobs = total_full_time_jobs.filter(
+            #             published_on__icontains=next_day
+            #         )
+            #         internship_jobs = total_internship_jobs.filter(
+            #             published_on__icontains=next_day
+            #         )
+            #         walkin_jobs = total_walkin_jobs.filter(
+            #             published_on__icontains=next_day
+            #         )
+            #         govt_jobs = today_govt_jobs_count.filter(
+            #             published_on__icontains=next_day
+            #         )
 
-                    all_full_time.append(full_time_jobs.count())
+            #         all_full_time.append(full_time_jobs.count())
 
-                    all_internship.append(internship_jobs.count())
+            #         all_internship.append(internship_jobs.count())
 
-                    all_walkin.append(walkin_jobs.count())
+            #         all_walkin.append(walkin_jobs.count())
 
-                    all_govt.append(govt_jobs.count())
+            #         all_govt.append(govt_jobs.count())
 
-                    all_bounce.append(
-                        db.users.find({"is_bounce": True, "date": next_day}).count()
-                    )
+            #         all_emails.append(db.users.find({"date": next_day}).count())
+            #         applied_applicants = AppliedJobs.objects.filter().values_list(
+            #             "user", flat=True
+            #         )
 
-                    all_emails.append(db.users.find({"date": next_day}).count())
-                    applied_applicants = AppliedJobs.objects.filter().values_list(
-                        "user", flat=True
-                    )
+            #         all_active_applicants.append(all_applicants.filter().count())
+            #         all_resume_upload_candidates.append(
+            #             all_applicants.filter().exclude(resume="").count()
+            #         )
+            #         all_profile_completed_candidates.append(
+            #             all_applicants.filter(profile_completeness__gte=50).count()
+            #         )
+            #         all_appliedto_job_candidates.append(
+            #             all_applicants.filter(id__in=applied_applicants).count()
+            #         )
+            #         all_login_once_candidates.append(
+            #             all_applicants.filter(is_login=False).count()
+            #         )
 
-                    all_active_applicants.append(all_applicants.filter().count())
-                    all_resume_upload_candidates.append(
-                        all_applicants.filter().exclude(resume="").count()
-                    )
-                    all_profile_completed_candidates.append(
-                        all_applicants.filter(profile_completeness__gte=50).count()
-                    )
-                    all_appliedto_job_candidates.append(
-                        all_applicants.filter(id__in=applied_applicants).count()
-                    )
-                    all_login_once_candidates.append(
-                        all_applicants.filter(is_login=False).count()
-                    )
+            #         social_active_applicants.append(social_applicants.filter().count())
+            #         social_resume_upload_candidates.append(
+            #             social_applicants.filter().exclude(resume="").count()
+            #         )
+            #         social_profile_completed_candidates.append(
+            #             social_applicants.filter(profile_completeness__gte=50).count()
+            #         )
+            #         social_appliedto_job_candidates.append(
+            #             social_applicants.filter(id__in=applied_applicants).count()
+            #         )
+            #         social_login_once_candidates.append(
+            #             social_applicants.filter(is_login=False).count()
+            #         )
 
-                    social_active_applicants.append(social_applicants.filter().count())
-                    social_resume_upload_candidates.append(
-                        social_applicants.filter().exclude(resume="").count()
-                    )
-                    social_profile_completed_candidates.append(
-                        social_applicants.filter(profile_completeness__gte=50).count()
-                    )
-                    social_appliedto_job_candidates.append(
-                        social_applicants.filter(id__in=applied_applicants).count()
-                    )
-                    social_login_once_candidates.append(
-                        social_applicants.filter(is_login=False).count()
-                    )
+            #         all_register_active_applicants.append(
+            #             register_applicants.filter().count()
+            #         )
+            #         all_register_resume_upload_candidates.append(
+            #             register_applicants.filter().exclude(resume="").count()
+            #         )
+            #         all_register_profile_completed_candidates.append(
+            #             register_applicants.filter(profile_completeness__gte=50).count()
+            #         )
+            #         all_register_appliedto_job_candidates.append(
+            #             register_applicants.filter(id__in=applied_applicants).count()
+            #         )
+            #         all_register_login_once_candidates.append(
+            #             register_applicants.filter(is_login=False).count()
+            #         )
 
-                    all_register_active_applicants.append(
-                        register_applicants.filter().count()
-                    )
-                    all_register_resume_upload_candidates.append(
-                        register_applicants.filter().exclude(resume="").count()
-                    )
-                    all_register_profile_completed_candidates.append(
-                        register_applicants.filter(profile_completeness__gte=50).count()
-                    )
-                    all_register_appliedto_job_candidates.append(
-                        register_applicants.filter(id__in=applied_applicants).count()
-                    )
-                    all_register_login_once_candidates.append(
-                        register_applicants.filter(is_login=False).count()
-                    )
-
-            total_agencies = Company.objects.filter(
-                id__in=User.objects.filter(is_admin=True).values_list(
-                    "company", flat=True
-                ),
-                company_type="Consultant",
-            )
-
-            today_mail_applicants = db.users.find(
-                {"date": current_date, "mail_sent": True}
-            ).count()
-            all_mail_applicants = db.users.find().count()
-            total_bounces = db.users.find({"is_bounce": True}).count()
-            today_bounces = db.users.find(
-                {"is_bounce": True, "date": current_date}
-            ).count()
-            total_users_connected_emails = db.users.find({"pj_connected": True}).count()
-            today_users_connected_emails = db.users.find(
-                {"pj_connected": True, "date": current_date}
-            ).count()
-            return render(
-                request,
-                "dashboard/index.html",
-                {
-                    "today_tickets": today_tickets,
-                    "comments": comments,
-                    "today_full_time_jobs_count": today_full_time_jobs_count,
+            # total_agencies = Company.objects.filter(
+            #     id__in=User.objects.filter(is_admin=True).values_list(
+            #         "company", flat=True
+            #     ),
+            #     company_type="Consultant",
+            # )
+            context = {
+                    "today_tickets_open": today_tickets_open,
+                    "today_tickets_closed": today_tickets_closed,
+                    # "comments": comments,
+                    # "today_full_time_jobs_count": today_full_time_jobs_count,
                     "today_fulltime_pending_jobs": today_fulltime_pending_jobs,
                     "today_fulltime_published_jobs": today_fulltime_published_jobs,
                     "today_fulltime_live_jobs": today_fulltime_live_jobs,
                     "today_fulltime_disabled_jobs": today_fulltime_disabled_jobs,
-                    "all_resume_upload_candidates": all_resume_upload_candidates,
-                    "all_appliedto_job_candidates": all_appliedto_job_candidates,
-                    "all_profile_completed_candidates": all_profile_completed_candidates,
-                    "all_login_once_candidates": all_login_once_candidates,
-                    "social_resume_upload_candidates": social_resume_upload_candidates,
-                    "social_appliedto_job_candidates": social_appliedto_job_candidates,
-                    "social_profile_completed_candidates": social_profile_completed_candidates,
-                    "social_login_once_candidates": social_login_once_candidates,
+                    # "all_resume_upload_candidates": all_resume_upload_candidates,
+                    # "all_appliedto_job_candidates": all_appliedto_job_candidates,
+                    # "all_profile_completed_candidates": all_profile_completed_candidates,
+                    # "all_login_once_candidates": all_login_once_candidates,
+                    # "social_resume_upload_candidates": social_resume_upload_candidates,
+                    # "social_appliedto_job_candidates": social_appliedto_job_candidates,
+                    # "social_profile_completed_candidates": social_profile_completed_candidates,
+                    # "social_login_once_candidates": social_login_once_candidates,
                     "today_social_login_once_applicants": today_social_login_once_applicants,
-                    "today_job_applications": today_job_applications,
+                    "today_job_applications": today_job_applications.count(),
+                    "total_job_applications": total_job_applications.count(),
                     "today_social_resume_applicants": today_social_resume_applicants,
                     "today_social_applied_applicants": today_social_applied_applicants,
                     "today_social_profile_applicants": today_social_profile_applicants,
-                    "total_job_applications": total_job_applications,
-                    "total_social_applicants": total_social_applicants,
+                    "total_social_applicants": total_social_applicants.count(),
                     "social_login_once_applicants": social_login_once_applicants,
                     "social_resume_applicants": social_resume_applicants,
                     "social_applied_applicants": social_applied_applicants,
                     "social_profile_applicants": social_profile_applicants,
-                    "total_users_connected_emails": total_users_connected_emails,
-                    "today_users_connected_emails": today_users_connected_emails,
-                    "today_agency_recruiters_count": today_agency_recruiters_count,
-                    "total_agency_recruiters": total_agency_recruiters,
-                    "today_admin_full_time_jobs_count": today_admin_full_time_jobs_count,
+                    # "total_users_connected_emails": total_users_connected_emails,
+                    # "today_users_connected_emails": today_users_connected_emails,
+                    "today_agency_recruiters_count": today_agency_recruiters.count(),
+                    "today_agency_active_recruiters_count": today_agency_recruiters.filter(
+                        is_active=True
+                    ).count(),
+                    "today_agency_inactive_recruiters_count": today_agency_recruiters.filter(
+                        is_active=False
+                    ).count(),
+                    "today_agency_mobile_verified_recruiters_count": today_agency_recruiters.filter(
+                        mobile_verified=True
+                    ).count(),
+                    "today_agency_mobile_not_verified_recruiters_count": today_agency_recruiters.filter(
+                        mobile_verified=False
+                    ).count(),
+                    "total_agency_recruiters_count": total_agency_recruiters.count(),
+                    "total_agency_active_recruiters_count": total_agency_recruiters.filter(
+                        is_active=True
+                    ).count(),
+                    "total_agency_inactive_recruiters_count": total_agency_recruiters.filter(
+                        is_active=False
+                    ).count(),
+                    "total_agency_mobile_verified_recruiters_count": total_agency_recruiters.filter(
+                        mobile_verified=True
+                    ).count(),
+                    "total_agency_mobile_not_verified_recruiters_count": total_agency_recruiters.filter(
+                        mobile_verified=False
+                    ).count(),
+                    # "today_admin_full_time_jobs_count": today_admin_full_time_jobs_count,
                     "today_admin_full_time_pending_jobs": today_admin_full_time_pending_jobs,
                     "today_admin_full_time_published_jobs": today_admin_full_time_published_jobs,
                     "today_admin_full_time_live_jobs": today_admin_full_time_live_jobs,
                     "today_admin_full_time_disabled_jobs": today_admin_full_time_disabled_jobs,
-                    "open_tickets": open_tickets,
-                    "total_tickets": total_tickets,
-                    "today_jobs_count": today_jobs_count,
-                    "today_admin_jobs_count": today_admin_jobs_count,
+                    # "open_tickets": open_tickets,
+                    "total_tickets_open": total_tickets_open,
+                    "total_tickets_closed": total_tickets_closed,
+                    # "today_jobs_count": today_jobs_count,
+                    # "today_admin_jobs_count": today_admin_jobs_count,
                     "today_pending_jobs": today_pending_jobs,
                     "today_published_jobs": today_published_jobs,
                     "today_live_jobs": today_live_jobs,
@@ -844,81 +868,107 @@ def index(request):
                     "today_admin_published_jobs": today_admin_published_jobs,
                     "today_admin_live_jobs": today_admin_live_jobs,
                     "today_admin_disabled_jobs": today_admin_disabled_jobs,
-                    "today_social_applicants": today_social_applicants,
-                    "today_recruiters_count": today_recruiters_count,
-                    "total_jobs_list": total_jobs_list,
+                    "today_social_applicants": today_social_applicants.count(),
+                    "today_recruiters_count": today_recruiters.count(),
+                    "today_active_recruiters_count": today_recruiters.filter(
+                        is_active=True
+                    ).count(),
+                    "today_inactive_recruiters_count": today_recruiters.filter(
+                        is_active=False
+                    ).count(),
+                    "today_recruiters_mobile_verified_count": today_recruiters.filter(
+                        mobile_verified=True
+                    ).count(),
+                    "today_recruiters_mobile_not_verified_count": today_recruiters.filter(
+                        mobile_verified=False
+                    ).count(),
+                    # "total_jobs_list": total_jobs_list,
                     "total_pending_jobs": total_pending_jobs,
                     "total_published_jobs": total_published_jobs,
                     "total_live_jobs": total_live_jobs,
                     "total_disabled_jobs": total_disabled_jobs,
-                    "total_applicants": total_applicants,
-                    "total_recruiters": total_recruiters,
-                    "total_walkin_jobs": total_walkin_jobs,
+                    # "total_applicants": total_applicants,
+                    "total_recruiters": total_recruiters.count(),
+                    "total_active_recruiters_count": total_recruiters.filter(
+                        is_active=True
+                    ).count(),
+                    "total_inactive_recruiters_count": total_recruiters.filter(
+                        is_active=False
+                    ).count(),
+                    "total_recruiters_mobile_verified_count": total_recruiters.filter(
+                        mobile_verified=True
+                    ).count(),
+                    "total_recruiters_mobile_not_verified_count": total_recruiters.filter(
+                        mobile_verified=False
+                    ).count(),
+                    # "total_walkin_jobs": total_walkin_jobs,
                     "total_walkin_pending_jobs": total_walkin_pending_jobs,
                     "total_walkin_published_jobs": total_walkin_published_jobs,
                     "total_walkin_live_jobs": total_walkin_live_jobs,
                     "total_walkin_disabled_jobs": total_walkin_disabled_jobs,
-                    "total_full_time_jobs": total_full_time_jobs,
+                    # "total_full_time_jobs": total_full_time_jobs,
                     "total_fulltime_pending_jobs": total_fulltime_pending_jobs,
                     "total_fulltime_published_jobs": total_fulltime_published_jobs,
                     "total_fulltime_live_jobs": total_fulltime_live_jobs,
                     "total_fulltime_disabled_jobs": total_fulltime_disabled_jobs,
-                    "total_internship_jobs": total_internship_jobs,
+                    # "total_internship_jobs": total_internship_jobs,
                     "total_internship_pending_jobs": total_internship_pending_jobs,
                     "total_internship_published_jobs": total_internship_published_jobs,
                     "total_internship_live_jobs": total_internship_live_jobs,
                     "total_internship_disabled_jobs": total_internship_disabled_jobs,
-                    "today_internship_jobs_count": today_internship_jobs_count,
+                    # "today_internship_jobs_count": today_internship_jobs_count,
                     "today_internship_pending_jobs": today_internship_pending_jobs,
                     "today_internship_published_jobs": today_internship_published_jobs,
                     "today_internship_live_jobs": today_internship_live_jobs,
                     "today_internship_disabled_jobs": today_internship_disabled_jobs,
-                    "today_walkin_jobs_count": today_walkin_jobs_count,
+                    # "today_walkin_jobs_count": today_walkin_jobs_count,
                     "today_walkin_pending_jobs": today_walkin_pending_jobs,
                     "today_walkin_published_jobs": today_walkin_published_jobs,
                     "today_walkin_live_jobs": today_walkin_live_jobs,
                     "today_walkin_disabled_jobs": today_walkin_disabled_jobs,
-                    "today_govt_jobs_count": today_govt_jobs_count,
+                    # "today_govt_jobs_count": today_govt_jobs_count,
                     "today_govt_pending_jobs": today_govt_pending_jobs,
                     "today_govt_published_jobs": today_govt_published_jobs,
                     "today_govt_live_jobs": today_govt_live_jobs,
                     "today_govt_disabled_jobs": today_govt_disabled_jobs,
-                    "today_admin_internship_jobs_count": today_admin_internship_jobs_count,
+                    # "today_admin_internship_jobs_count": today_admin_internship_jobs_count,
                     "today_admin_internship_pending_jobs": today_admin_internship_pending_jobs,
                     "today_admin_internship_published_jobs": today_admin_internship_published_jobs,
                     "today_admin_internship_live_jobs": today_admin_internship_live_jobs,
                     "today_admin_internship_disabled_jobs": today_admin_internship_disabled_jobs,
-                    "today_admin_walkin_jobs_count": today_admin_walkin_jobs_count,
+                    # "today_admin_walkin_jobs_count": today_admin_walkin_jobs_count,
                     "today_admin_walkin_pending_jobs": today_admin_walkin_pending_jobs,
                     "today_admin_walkin_published_jobs": today_admin_walkin_published_jobs,
                     "today_admin_walkin_live_jobs": today_admin_walkin_live_jobs,
                     "today_admin_walkin_disabled_jobs": today_admin_walkin_disabled_jobs,
-                    "today_admin_govt_jobs_count": today_admin_govt_jobs_count,
-                    "total_govt_jobs": total_govt_jobs,
+                    # "today_admin_govt_jobs_count": today_admin_govt_jobs_count,
+                    # "total_govt_jobs": total_govt_jobs,
                     "total_skills": total_skills.count(),
                     "total_active_skills": total_active_skills,
                     "total_inactive_skills": total_inactive_skills,
                     "total_locations": total_locations.count(),
                     "total_active_locations": total_active_locations,
+                    "total_inactive_locations": total_inactive_locations,
                     "total_user_locations": total_user_locations.count(),
                     "total_active_user_locations": total_active_user_locations,
                     "total_inactive_user_locations": total_inactive_user_locations,
                     "today_active_user_locations": today_user_locations.filter(
                         status="Enabled"
-                    ),
+                    ).count(),
                     "today_inactive_user_locations": today_user_locations.filter(
                         status="Disabled"
-                    ),
-                    "total_inactive_locations": total_inactive_locations,
+                    ).count(),
                     "total_companies": total_companies,
                     "total_active_companies": total_active_companies,
                     "total_inactive_companies": total_inactive_companies,
+                    # "total_active_companies": total_active_companies,
+                    # "total_inactive_companies": total_inactive_companies,
                     "total_govt_pending_jobs": total_govt_pending_jobs,
                     "total_govt_published_jobs": total_govt_published_jobs,
                     "total_govt_live_jobs": total_govt_live_jobs,
                     "total_govt_disabled_jobs": total_govt_disabled_jobs,
-                    "total_agencies": total_agencies,
-                    "today_agencies": today_agencies,
+                    # "total_agencies": total_agencies,
+                    # "today_agencies": today_agencies,
                     "today_active_skills": today_skills.filter(status="Active").count(),
                     "today_inactive_skills": today_skills.filter(
                         status="InActive"
@@ -929,64 +979,55 @@ def index(request):
                     "today_inactive_locations": today_locations.filter(
                         status="Disabled"
                     ).count(),
-                    "today_companies": today_companies,
-                    "all_active_recruiters": json.dumps(all_active_recruiters),
-                    "all_inactive_recruiters": json.dumps(all_inactive_recruiters),
-                    "all_active_applicants": json.dumps(all_active_applicants),
-                    "social_active_applicants": json.dumps(social_active_applicants),
-                    "all_govt": json.dumps(all_govt),
-                    "all_bounce": json.dumps(all_bounce),
-                    "all_emails": json.dumps(all_emails),
-                    "all_full_time": json.dumps(all_full_time),
-                    "all_internship": json.dumps(all_internship),
-                    "all_walkin": json.dumps(all_walkin),
-                    "dates": json.dumps(dates),
-                    "total_bounces": total_bounces,
-                    "today_bounces": today_bounces,
-                    "all_dates": json.dumps(all_dates),
-                    "all_agency_inactive_recruiters": json.dumps(
-                        all_agency_active_recruiters
-                    ),
-                    "all_agency_active_recruiters": json.dumps(
-                        all_agency_inactive_recruiters
-                    ),
-                    "months": months,
-                    "today_mail_applicants": today_mail_applicants,
-                    "all_mail_applicants": all_mail_applicants,
-                    "today_register_applicants": today_register_applicants,
+                    "today_companies_active": today_companies_active,
+                    "today_companies_not_active": today_companies_not_active,
+                    # "all_active_recruiters": json.dumps(all_active_recruiters),
+                    # "all_inactive_recruiters": json.dumps(all_inactive_recruiters),
+                    # "all_active_applicants": json.dumps(all_active_applicants),
+                    # "social_active_applicants": json.dumps(social_active_applicants),
+                    # "all_govt": json.dumps(all_govt),
+                    # "all_bounce": json.dumps(all_bounce),
+                    # "all_emails": json.dumps(all_emails),
+                    # "all_full_time": json.dumps(all_full_time),
+                    # "all_internship": json.dumps(all_internship),
+                    # "all_walkin": json.dumps(all_walkin),
+                    # "dates": json.dumps(dates),
+                    # "total_bounces": total_bounces,
+                    # "today_bounces": today_bounces,
+                    # "all_dates": json.dumps(all_dates),
+                    # "all_agency_inactive_recruiters": json.dumps(all_agency_active_recruiters),
+                    # "all_agency_active_recruiters": json.dumps(all_agency_inactive_recruiters),
+                    # "months": months,
+                    # "today_mail_applicants": today_mail_applicants,
+                    # "all_mail_applicants": all_mail_applicants,
+                    "today_register_applicants": today_register_applicants.count(),
                     "today_register_login_once_applicants": today_register_login_once_applicants,
                     "today_register_resume_applicants": today_register_resume_applicants,
                     "today_register_profile_applicants": today_register_profile_applicants,
                     "today_register_applied_applicants": today_register_applied_applicants,
-                    "total_register_applicants": total_register_applicants,
+                    "total_register_applicants": total_register_applicants.count(),
                     "register_login_once_applicants": register_login_once_applicants,
                     "register_resume_applicants": register_resume_applicants,
                     "register_applied_applicants": register_applied_applicants,
                     "register_profile_applicants": register_profile_applicants,
-                    "resume_applicants": resume_applicants,
+                    "resume_applicants": resume_applicants.count(),
                     "resume_login_once_applicants": resume_login_once_applicants,
                     "resume_applied_applicants": resume_applied_applicants,
                     "resume_profile_applicants": resume_profile_applicants,
-                    "today_resume_applicants": today_resume_applicants,
+                    "today_resume_applicants": today_resume_applicants.count(),
                     "today_resume_login_once_applicants": today_resume_login_once_applicants,
                     "today_resume_applied_applicants": today_resume_applied_applicants,
                     "today_resume_profile_applicants": today_resume_profile_applicants,
-                    "all_register_active_applicants": json.dumps(
-                        all_register_active_applicants
-                    ),
-                    "all_register_resume_upload_candidates": json.dumps(
-                        all_register_resume_upload_candidates
-                    ),
-                    "all_register_appliedto_job_candidates": json.dumps(
-                        all_register_appliedto_job_candidates
-                    ),
-                    "all_register_profile_completed_candidates": json.dumps(
-                        all_register_profile_completed_candidates
-                    ),
-                    "all_register_login_once_candidates": json.dumps(
-                        all_register_login_once_candidates
-                    ),
-                },
+                    # "all_register_active_applicants": json.dumps(all_register_active_applicants),
+                    # "all_register_resume_upload_candidates": json.dumps(all_register_resume_upload_candidates),
+                    # "all_register_appliedto_job_candidates": json.dumps(all_register_appliedto_job_candidates),
+                    # "all_register_profile_completed_candidates": json.dumps(all_register_profile_completed_candidates),
+                    # "all_register_login_once_candidates": json.dumps(all_register_login_once_candidates),
+                }
+            return render(
+                request,
+                "dashboard/index.html",
+                context,
             )
         else:
             return HttpResponseRedirect("/")
@@ -1052,9 +1093,13 @@ def admin_user_list(request):
 @permission_required("")
 def new_admin_user(request):
     if request.method == "POST":
-        validate_user = UserForm(request.POST, request.FILES)
+        if User.objects.filter(email=request.POST["email"]).exists():
+            user = User.objects.get(email=request.POST["email"])
+            validate_user = UserForm(request.POST, request.FILES, instance=user)
+        else:
+            validate_user = UserForm(request.POST, request.FILES)
         if validate_user.is_valid():
-            user = User.objects.create(
+            user,created = User.objects.get_or_create(
                 username=request.POST["email"],
                 email=request.POST["email"],
                 first_name=request.POST["first_name"],
@@ -1076,10 +1121,11 @@ def new_admin_user(request):
             for perm in request.POST.getlist("user_type"):
                 permission = Permission.objects.get(id=perm)
                 user.user_permissions.add(permission)
-            UserEmail.objects.create(
-                user=user, email=request.POST["email"], is_primary=True
-            )
-            data = {"error": False, "response": "Blog category created"}
+            if created:
+                UserEmail.objects.create(
+                    user=user, email=request.POST["email"], is_primary=True
+                    )
+            data = {"error": False, "response": "New user created"}
         else:
             data = {"error": True, "response": validate_user.errors}
         return HttpResponse(json.dumps(data))
@@ -1103,10 +1149,9 @@ def view_user(request, user_id):
 
 @permission_required("")
 def edit_user(request, user_id):
-    user = User.objects.filter(id=user_id).exclude(id=request.user.id)
+    user = User.objects.get(id=user_id)
     if not user:
         return render(request, "dashboard/404.html", status=404)
-    user = user[0]
     if request.method == "POST":
         validate_user = UserForm(request.POST, request.FILES, instance=user)
         if validate_user.is_valid():
@@ -1128,7 +1173,7 @@ def edit_user(request, user_id):
         else:
             data = {"error": True, "response": validate_user.errors}
         return HttpResponse(json.dumps(data))
-    contenttype = ContentType.objects.get(id=24, model="user")
+    contenttype = ContentType.objects.get(model="user")
     permissions = (
         Permission.objects.filter(content_type_id=contenttype)
         .exclude(codename__icontains="jobposts")
@@ -1143,9 +1188,17 @@ def edit_user(request, user_id):
 
 @permission_required("")
 def delete_user(request, user_id):
-    user = User.objects.filter(id=user_id).exclude(id=request.user.id)
-    if user.exists():
-        user.delete()
+    user = User.objects.get(id=user_id)
+    if user:
+        permissions=Permission.objects.filter(user=user)
+        permission_list=["activity_edit","activity_view","add_user","change_user","delete_user","support_edit","support_view"]
+        for permission in permissions:
+            if permission.codename in permission_list:
+                user.user_permissions.remove(permission)
+        user.is_staff=False
+        user.is_superuser=False
+        user.save()
+        #user.delete()
         data = {"error": False, "response": "User Deleted"}
     else:
         data = {"error": True, "response": "Unabe to delete user"}
@@ -2329,9 +2382,8 @@ def status_change(request, post_id):
     subject = "PeelJobs JobPost Status"
     rendered = t.render(c)
     mto = post.user.email
-    mfrom = settings.DEFAULT_FROM_EMAIL
     user_active = True if post.user.is_active else False
-    Memail(mto, mfrom, subject, rendered, user_active)
+    send_email.delay(mto, subject, rendered)
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
@@ -2802,13 +2854,12 @@ def send_mail(request, template_id):
                 for recruiter in request.POST.getlist("recruiters"):
                     recruiter = User.objects.get(id=recruiter)
                     mto.append(recruiter.email)
-                mfrom = settings.DEFAULT_FROM_EMAIL
                 sent_mail = SentMail.objects.create(template=emailtemplate)
 
                 for recruiter in request.POST.getlist("recruiters"):
                     recruiter = User.objects.get(id=recruiter)
                     sent_mail.recruiter.add(recruiter)
-                Memail(mto, mfrom, subject, rendered, False)
+                send_email.delay(mto, subject, rendered)
                 sending_mail.delay(mailtemplate, request.POST.getlist("recruiters"))
                 return HttpResponse(
                     json.dumps({"error": False, "response": "Email Sent Successfully"})
@@ -3355,8 +3406,7 @@ def edit_govt_job(request, post_id):
             subject = "PeelJobs New JobPost"
             rendered = t.render(c)
             mto = [settings.DEFAULT_FROM_EMAIL]
-            mfrom = settings.DEFAULT_FROM_EMAIL
-            Memail(mto, mfrom, subject, rendered, True)
+            send_email.delay(mto, subject, rendered)
             post.save()
 
         post.location.clear()
@@ -3388,7 +3438,6 @@ def edit_govt_job(request, post_id):
             temp = loader.get_template("recruiter/email/add_other_fields.html")
             subject = "PeelJobs New JobPost"
             mto = [settings.DEFAULT_FROM_EMAIL]
-            mfrom = settings.DEFAULT_FROM_EMAIL
 
             c = {
                 "job_post": post,
@@ -3397,7 +3446,7 @@ def edit_govt_job(request, post_id):
                 "type": "Location",
             }
             rendered = temp.render(c)
-            Memail(mto, mfrom, subject, rendered, True)
+            send_email.delay(mto, subject, rendered)
 
         post.job_interview_location.clear()
 
@@ -4105,9 +4154,8 @@ def edit_job_title(request, post_id):
                 subject = "PeelJobs JobPost Status"
                 rendered = t.render(c)
                 mto = [job_post.user.email]
-                mfrom = settings.DEFAULT_FROM_EMAIL
                 user_active = True if job_post.user.is_active else False
-                Memail(mto, mfrom, subject, rendered, user_active)
+                send_email.delay(mto, subject, rendered)
             data = {"error": False, "response": "Company Updated successfully"}
             return HttpResponse(json.dumps(data))
         else:
@@ -4219,69 +4267,6 @@ def locations(request, status):
 
 
 @permission_required("activity_edit", "activity_view")
-def mobile_campaign(request):
-    locations = (
-        ("Hyderabad", "Hyderabad"),
-        ("Chennai", "Chennai"),
-        ("Delhi", "Delhi"),
-        ("Pune", "Pune"),
-    )
-    if request.method == "POST":
-        # db.users.find({'$and': [{'mobile': {'$n820e': ''}},
-        #                         {'location': request.POST['location']},
-        #                         {'pj_connected': False}]},
-        #                         {'name': 1, 'mobile': 1, 'email': 1})
-        data = db.users.find(
-            {
-                "$and": [
-                    {"mobile": {"$ne": ""}},
-                    {"location": request.POST["location"]},
-                    {"pj_connected": False},
-                ]
-            }
-        ).count()
-        if (request.POST["sets_value"]) == "true":
-            no_of_sets = data / int(request.POST["no_of_records"])
-            no_of_sets = math.ceil(no_of_sets)
-            data = {"no_of_sets": no_of_sets}
-            return HttpResponse(json.dumps(data))
-    return render(request, "dashboard/mobile_campaign.html", {"locations": locations})
-
-
-@permission_required("activity_edit", "activity_view")
-def csv_download(request):
-    records = db.users.find(
-        {
-            "$and": [
-                {"mobile": {"$ne": ""}},
-                {"location": request.GET["location"]},
-                {"pj_connected": False},
-            ]
-        },
-        {"name": 1, "mobile": 1, "email": 1},
-    )
-    set_num = int(request.GET["sets"])
-    no_of_records = int(request.GET["no_of_records"])
-    a = (set_num - 1) * no_of_records
-    last = int(a) + no_of_records
-    records = list(records)[a:last]
-    headings = ["Name", "Email", "Phone"]
-    response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = (
-        'attachment; filename="'
-        + str(request.GET["location"])
-        + " Campaign Set "
-        + str(set_num)
-        + '.csv"'
-    )
-    writer = csv.writer(response)
-    writer.writerow(headings)
-    for record in records:
-        writer.writerow([record["name"], record["email"], record["mobile"]])
-    return response
-
-
-@permission_required("activity_edit", "activity_view")
 def reports(request):
     cities = City.objects.filter()
     skills = [
@@ -4381,33 +4366,6 @@ def get_csv_reader(file_path):
     csv_reader.fieldnames = [header.strip() for header in csv_reader.fieldnames]
     csv_reader = list(csv_reader)
     return csv_reader
-
-
-def updating_whatsapp_campaign(request):
-    csv_file = request.FILES.get("csv_file")
-    city = request.POST["location"]
-    errors = {}
-    if csv_file and not csv_file.endswith(".csv"):
-        errors.update({"csv_file": "Please Upload Csv file"})
-    if not city:
-        errors.update({"location": "Please Select A Location"})
-    if not errors:
-        from io import StringIO
-
-        csvf = StringIO(csv_file.read().decode())
-        reader = csv.DictReader(csvf, delimiter=",")
-        for each in list(reader)[1:]:
-            mobile_num = each["phone"]
-            status = str(each["status"]) == "Sent"
-            sent_at = each["sentat"]
-            db.users.update(
-                {"location": city, "mobile": mobile_num},
-                {"$set": {"whatsapp_campign": status, "whatsapp_sent_at": sent_at}},
-            )
-        return HttpResponse(
-            json.dumps({"errors": False, "response": "Details Updated Successfully"})
-        )
-    return HttpResponse(json.dumps({"errors": True, "response": errors}))
 
 
 def post_on_all_fb_groups(request, post_id):
@@ -4590,74 +4548,74 @@ def removing_duplicate_companies(request):
     )
 
 
-def blogpost_on_peelfb(blog_post):
-    if blog_post:
-        params = {}
-        params["message"] = blog_post.meta_description
-        params["blog_post"] = blog_post.title
-        params["picture"] = "https://cdn.peeljobs.com/logo.png"
-        params["link"] = settings.PEEL_URL + "/blog/" + (blog_post.slug) + "/"
+# def blogpost_on_peelfb(blog_post):
+#     if blog_post:
+#         params = {}
+#         params["message"] = blog_post.meta_description
+#         params["blog_post"] = blog_post.title
+#         params["picture"] = "https://cdn.peeljobs.com/logo.png"
+#         params["link"] = settings.PEEL_URL + "/blog/" + (blog_post.slug) + "/"
 
-        job_name = blog_post.title
+#         job_name = blog_post.title
 
-        params["description"] = blog_post.category.name
-        params["access_token"] = settings.FB_PAGE_ACCESS_TOKEN
-        params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
+#         params["description"] = blog_post.category.name
+#         params["access_token"] = settings.FB_PAGE_ACCESS_TOKEN
+#         params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
 
-        params["name"] = job_name
-        params["caption"] = "http://peeljobs.com/blog/"
-        params["actions"] = [{"name": "get peeljobs", "link": "http://peeljobs.com/"}]
-        params = urllib.parse.urlencode(params)
-        u = requests.post(
-            "https://graph.facebook.com/" + settings.FB_PEELJOBS_PAGEID + "/feed",
-            params=params,
-        )
-        response = u.json()
-        if "error" in response.keys():
-            pass
-        if "id" in response.keys():
-            return "posted successfully"
-        return "blog post not posted on page"
-    else:
-        return "blogpost not exists"
-
-
-def blog_post_on_twitter(blog_post):
-    if blog_post:
-        twitter = Twython(
-            settings.TW_APP_KEY,
-            settings.TW_APP_SECRET,
-            settings.OAUTH_TOKEN,
-            settings.OAUTH_SECRET,
-        )
-
-        twitter_status = settings.PEEL_URL + "/blog/" + (blog_post.slug) + "/"
-        try:
-            response = twitter.update_status(status=twitter_status)
-        except:
-            response = {"empty": ""}
-        if "id" in response.keys():
-            return "posted successfully"
-        return "not posted in twitter"
-    else:
-        return "jobpost not exists"
+#         params["name"] = job_name
+#         params["caption"] = "http://peeljobs.com/blog/"
+#         params["actions"] = [{"name": "get peeljobs", "link": "http://peeljobs.com/"}]
+#         params = urllib.parse.urlencode(params)
+#         u = requests.post(
+#             "https://graph.facebook.com/" + settings.FB_PEELJOBS_PAGEID + "/feed",
+#             params=params,
+#         )
+#         response = u.json()
+#         if "error" in response.keys():
+#             pass
+#         if "id" in response.keys():
+#             return "posted successfully"
+#         return "blog post not posted on page"
+#     else:
+#         return "blogpost not exists"
 
 
-# @permission_required("activity_edit")
-def publish_blog_posts_on_social(blog_post_id):
-    blog_post = Post.objects.filter(id=blog_post_id)
-    if blog_post:
-        blog_post = blog_post[0]
-        blogpost_on_peelfb(blog_post)
-        blog_post_on_twitter(blog_post)
-        return HttpResponse(
-            json.dumps({"error": False, "response": "Blogposts published successfully"})
-        )
-    return HttpResponse(
-        json.dumps(
-            {"error": True, "response": "Blog post is not available with this id"}
-        )
-    )
+# def blog_post_on_twitter(blog_post):
+#     if blog_post:
+#         twitter = Twython(
+#             settings.TW_APP_KEY,
+#             settings.TW_APP_SECRET,
+#             settings.OAUTH_TOKEN,
+#             settings.OAUTH_SECRET,
+#         )
+
+#         twitter_status = settings.PEEL_URL + "/blog/" + (blog_post.slug) + "/"
+#         try:
+#             response = twitter.update_status(status=twitter_status)
+#         except:
+#             response = {"empty": ""}
+#         if "id" in response.keys():
+#             return "posted successfully"
+#         return "not posted in twitter"
+#     else:
+#         return "jobpost not exists"
+
+
+# # @permission_required("activity_edit")
+# def publish_blog_posts_on_social(blog_post_id):
+#     blog_post = Post.objects.filter(id=blog_post_id)
+#     if blog_post:
+#         blog_post = blog_post[0]
+#         blogpost_on_peelfb(blog_post)
+#         blog_post_on_twitter(blog_post)
+#         return HttpResponse(
+#             json.dumps({"error": False, "response": "Blogposts published successfully"})
+#         )
+#     return HttpResponse(
+#         json.dumps(
+#             {"error": True, "response": "Blog post is not available with this id"}
+#         )
+#     )
 
 
 def google_login(request):
@@ -4669,8 +4627,8 @@ def google_login(request):
             + "://"
             + request.META["HTTP_HOST"]
             + reverse("dashboard:google_login"),
-            "client_id": settings.GP_CLIENT_ID,
-            "client_secret": settings.GP_CLIENT_SECRET,
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
         }
 
         info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
@@ -4703,7 +4661,7 @@ def google_login(request):
                     picture=picture,
                 )
             if user.is_superuser:
-                # user = authenticate(username=user.username)
+                #user = authenticate(username=user.username)
                 login(
                     request, user, backend="django.contrib.auth.backends.ModelBackend"
                 )
@@ -4712,7 +4670,7 @@ def google_login(request):
     else:
         rty = (
             "https://accounts.google.com/o/oauth2/auth?client_id="
-            + settings.GP_CLIENT_ID
+            + settings.GOOGLE_CLIENT_ID
             + "&response_type=code"
         )
         rty += (
@@ -4990,41 +4948,30 @@ def save_meta_data(request):
         if request.POST.get("mode") == "add_data":
             mform = MetaForm(request.POST)
             if mform.is_valid():
-                data = {
-                    "name": request.POST.get("name"),
-                    "meta_title": request.POST.get("meta_title"),
-                    "meta_description": request.POST.get("meta_description"),
-                    "h1_tag": request.POST.get("h1_tag"),
-                }
-                db.meta_data.insert([data])
+                mform.save()
                 return HttpResponse(
                     json.dumps({"error": False, "response": "Data Added Successfuly"})
                 )
             return HttpResponse(json.dumps({"error": True, "response": mform.errors}))
         if request.POST.get("mode") == "edit_data":
-            mform = MetaForm(request.POST)
-            if mform.is_valid():
-                data = {
-                    "name": request.POST.get("name"),
-                    "meta_title": request.POST.get("meta_title"),
-                    "meta_description": request.POST.get("meta_description"),
-                    "h1_tag": request.POST.get("h1_tag"),
-                }
-                db.meta_data.update(
-                    {"_id": ObjectId(request.POST.get("meta_id"))}, data
-                )
+            instance = get_object_or_404(MetaData, id=request.POST.get("meta_id"))
+            form = MetaForm(request.POST or None, instance=instance)
+            if form.is_valid():
+                form.save()
+
                 return HttpResponse(
                     json.dumps({"error": False, "response": "Updated Successfully"})
                 )
-            return HttpResponse(json.dumps({"error": True, "response": mform.errors}))
+            return HttpResponse(json.dumps({"error": True, "response": form.errors}))
         if request.POST.get("mode") == "delete_data":
-            db.meta_data.remove({"_id": ObjectId(request.POST.get("meta_id"))})
+            if MetaData.objects.get(pk=request.POST.get("meta_id")):
+                MetaData.objects.get(pk=request.POST.get("meta_id")).delete()
             return HttpResponse(
                 json.dumps({"error": False, "response": "Removed Successfully!"})
             )
-    data = list(db.meta_data.find())
+    meta_data = MetaData.objects.all()
     return render(
-        request, "dashboard/base_data/save_meta_data.html", {"meta_data": data}
+        request, "dashboard/base_data/save_meta_data.html", {"meta_data": meta_data}
     )
 
 
@@ -5176,42 +5123,3 @@ def clear_cache(request):
     cache._cache.flush_all()
     return HttpResponseRedirect("/dashboard/")
 
-
-@permission_required("activity_edit")
-def redirect_data(request):
-    if request.POST:
-        if request.POST.get("mode") == "add_data":
-            name = request.POST.get("name")
-            slug = request.POST.get("slug")
-            if name and slug:
-                data = {"name": name, "slug": slug}
-                db.redirect_data.insert([data])
-                return HttpResponse(
-                    json.dumps({"error": False, "response": "Data Added Successfuly"})
-                )
-            return HttpResponse(
-                json.dumps({"error": True, "response": "Both are required Fields"})
-            )
-        if request.POST.get("mode") == "edit_data":
-            name = request.POST.get("name")
-            slug = request.POST.get("slug")
-            if name and slug:
-                data = {"name": name, "slug": slug}
-                db.redirect_data.update(
-                    {"_id": ObjectId(request.POST.get("meta_id"))}, data
-                )
-                return HttpResponse(
-                    json.dumps({"error": False, "response": "Updated Successfully"})
-                )
-            return HttpResponse(
-                json.dumps({"error": True, "response": "Both are required Fields"})
-            )
-        if request.POST.get("mode") == "delete_data":
-            db.redirect_data.remove({"_id": ObjectId(request.POST.get("meta_id"))})
-            return HttpResponse(
-                json.dumps({"error": False, "response": "Removed Successfully!"})
-            )
-    data = list(db.redirect_data.find())
-    return render(
-        request, "dashboard/base_data/redirect_data.html", {"redirect_data": data}
-    )

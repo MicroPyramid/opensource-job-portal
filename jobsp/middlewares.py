@@ -1,6 +1,5 @@
 import re
 from django.shortcuts import redirect
-from mpcomp.views import mongoconnection
 from django.core.cache import cache
 
 try:
@@ -235,26 +234,4 @@ class LowerCased(MiddlewareMixin):
                 return redirect("/social/user/update/", permanent=False)
         if request.path == "/recruiter/":
             return redirect("/post-job/", permanent=False)
-        detail_page = re.match(
-            "^/(?P<job_title_slug>[a-z0-9-.,*?]+)-(?P<job_id>([0-9])+)/$", request.path
-        )
-        blog_page = re.match("^/blog/(?P<blog_slug>[-\w]+)/$", request.path)
-        if not detail_page and not blog_page:
-            redirect_data = cache.get("redirect_data")
-            if not redirect_data:
-                db = mongoconnection()
-                redirect_data = list(db.redirect_data.find())
-                cache.set("redirect_data", redirect_data, 60 * 60 * 24)
-            keys = [data["name"] for data in redirect_data]
-            if any(match in request.path for match in keys):
-                rep = {}
-                for data in redirect_data:
-                    rep[data["name"]] = data["slug"]
-                url = request.path
-                rep = dict((re.escape(k), v) for k, v in rep.items())
-                pattern = re.compile("|".join(rep.keys()))
-                url = pattern.sub(lambda m: rep[re.escape(m.group(0))], url)
-                return redirect(url, permanent=True)
-        if request.path == request.path.lower():
-            return None
-        return redirect(request.path.lower(), permanent=True)
+

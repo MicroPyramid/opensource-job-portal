@@ -13,11 +13,12 @@ from django.urls import reverse
 
 from peeldb.models import JobPost, ENQUERY_TYPES, Skill, City, Qualification, State
 from .forms import SimpleContactForm
-from mpcomp.views import Memail, get_prev_after_pages_count
+from mpcomp.views import get_prev_after_pages_count
 from django.db.models import Count, F
 from pjob.calendar_events import FLOW
 from oauth2client.contrib.django_util.storage import DjangoORMStorage
 from peeldb.models import CredentialsModel
+from dashboard.tasks import send_email
 
 
 def pages(request, page_name):
@@ -104,18 +105,13 @@ def custom_500(request):
                 status=404,
             )
     return render(
-        request,
-        "404.html",
-        {
-            "message": message,
-            "reason": reason,
-        },
-        status=404,
+        request, "404.html", {"message": message, "reason": reason,}, status=404,
     )
 
 
 def sitemap_xml(request):
-    xml_cont = ""
+    with open("sitemap/sitemap.xml") as file:
+        xml_cont = file.read()
     return HttpResponse(xml_cont, content_type="text/xml")
 
 
@@ -134,7 +130,6 @@ def contact(request):
             if json.loads(r.text)["success"]:
                 validate_simplecontactform.save()
 
-                t = loader.get_template("email/contactus_email.html")
                 c = {
                     "email": request.POST.get("email"),
                     "subject": request.POST.get("subject"),
@@ -143,12 +138,17 @@ def contact(request):
                     "enquiry_type": request.POST.get("enquery_type"),
                     "comment": request.POST.get("comment"),
                 }
-                subject = "Thanks for contacting us | PeelJobs"
+                subject = "New Request ContactUs | PeelJobs"
+                mto = settings.SUPPORT_EMAILS
+                t = loader.get_template("email/contactus_email.html")
                 rendered = t.render(c)
-                mfrom = settings.DEFAULT_FROM_EMAIL
+                send_email.delay(mto, subject, rendered)
+
+                subject = "Thanks for contacting us | PeelJobs"
+                mto = settings.SUPPORT_EMAILS
                 t = loader.get_template("email/user_contactus.html")
                 rendered = t.render(c)
-                Memail(request.POST.get("email"), mfrom, subject, rendered, False)
+                send_email.delay(mto, subject, rendered)
 
                 data = {
                     "error": False,

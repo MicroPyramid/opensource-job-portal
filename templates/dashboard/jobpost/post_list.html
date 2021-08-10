@@ -51,7 +51,11 @@
             </thead>
             <tbody>
             {% for post in posts %}
-                <tr data-href='/dashboard/jobpost/view/{{ post.id }}/' class='job_detail'>
+                <tr data-href='/dashboard/jobpost/view/{{ post.id }}/' class='job_detail 
+                {% if post.status == "Pending" %}warning{% endif %}
+                {% if post.status == "Disabled" %}active{% endif %}
+                {% if post.status == "Live" %}success{% endif %}
+                '>
                     <td>{{ post.title }}</td>
                     <td>{% for location in post.location.all %}{% if forloop.last and not forloop.next_element %}
                         {{ location.name }}{% else %}{{ location.name }},<br> {% endif %}{% endfor %}

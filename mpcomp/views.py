@@ -1,16 +1,11 @@
-from django.conf import settings
 import string
 import random
-import boto.ses
 import urllib
-import sendgrid
 import requests
 from math import floor
 import arrow
 import datetime
 import operator
-
-# from django.core.mail import EmailMultiAlternatives
 from dateutil.relativedelta import relativedelta
 from pytz import timezone
 import re
@@ -24,7 +19,9 @@ from subprocess import Popen, PIPE
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.template import Template, Context, loader
 from django.utils.crypto import get_random_string
-from peeldb.models import Skill, City, Qualification, User, TechnicalSkill
+from peeldb.models import MetaData, Skill, City, Qualification, User, TechnicalSkill
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 
 def permission_required(*perms):
@@ -75,36 +72,12 @@ def agency_admin_login_required(view_func):
 
 # mto is list like ['as@sd.xom', 'sf@ogf.com']
 def Memail(mto, mfrom, msubject, mbody, user_active):
-    from django.core.mail import send_mail, get_connection
-
     if type(mto) != "list":
         mto = [mto]
-    mfrom = settings.DEFAULT_FROM_EMAIL
-    print(mto)
-    mfrom = settings.DEFAULT_FROM_EMAIL
 
-    if os.getenv("ENV_TYPE") == "DEV":
-        send_mail(msubject, mbody, mfrom, mto, html_message=mbody, fail_silently=False)
-
-    else:
-        if user_active:
-            send_mail(
-                msubject, mbody, mfrom, mto, html_message=mbody, fail_silently=False
-            )
-        else:
-            mailgun_backend = get_connection(
-                "anymail.backends.mailgun.EmailBackend",
-                api_key=settings.MAILGUN_API_KEY,
-            )
-            send_mail(
-                msubject,
-                mbody,
-                mfrom,
-                mto,
-                html_message=mbody,
-                fail_silently=False,
-                connection=mailgun_backend,
-            )
+    msg = EmailMessage(msubject, mbody, settings.DEFAULT_FROM_EMAIL, mto)
+    msg.content_subtype = "html"
+    msg.send()
 
 
 def get_prev_after_pages_count(page, no_pages):
@@ -127,15 +100,6 @@ def get_prev_after_pages_count(page, no_pages):
         else:
             after_page = aft_page + 1
     return prev_page, previous_page, aft_page, after_page
-
-
-def mongoconnection():
-    from pymongo import MongoClient
-
-    client = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
-    db = client[settings.MONGO_DB]
-    # db.authenticate(settings.MONGO_USER, settings.MONGO_PWD)
-    return db
 
 
 def opendocx(file):
@@ -564,7 +528,9 @@ def get_aws_file_path(input_file, folder_path, company_name):
         folder=folder_path,
         new_name=company_name + "." + img_format,
     )
-    file_path = "https://" + settings.CLOUDFRONT_DOMAIN + "/" + s3_url[0]
+    file_path = (
+        "http://" + settings.AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com/" + s3_url[0]
+    )
     if os.path.exists(image_path):
         os.remove(image_path)
     return file_path
@@ -596,32 +562,29 @@ def get_absolute_url(job):
     return qs
 
 
-db = mongoconnection()
-
-
 def get_404_meta(name, data):
     data["skill"] = ", ".join(data.get("skill")) if data.get("skill") else ""
     data["city"] = ", ".join(data.get("city")) if data.get("city") else ""
     meta_title = meta_description = ""
-    meta = db.meta_data.find_one({"name": name})
+    meta = MetaData.objects.filter(name=name)
     if meta:
-        meta_title = Template(meta.get("meta_title")).render(Context(data))
-        meta_description = Template(meta.get("meta_description")).render(Context(data))
+        meta_title = Template(meta[0].meta_title).render(Context(data))
+        meta_description = Template(meta[0].meta_description).render(Context(data))
     return meta_title, meta_description
 
 
 def get_meta(name, data):
     page = data.get("page")
     meta_title = meta_description = h1_tag = ""
-    meta = db.meta_data.find_one({"name": name})
+    meta = MetaData.objects.filter(name=name)
     if meta:
-        meta_title = Template(meta.get("meta_title")).render(
+        meta_title = Template(meta[0].meta_title).render(
             Context({"current_page": page})
         )
-        meta_description = Template(meta.get("meta_description")).render(
+        meta_description = Template(meta[0].meta_description).render(
             Context({"current_page": page})
         )
-        h1_tag = Template(meta.get("h1_tag")).render(Context({"current_page": page}))
+        h1_tag = Template(meta[0].h1_tag).render(Context({"current_page": page}))
     return meta_title, meta_description, h1_tag
 
 
@@ -667,355 +630,24 @@ def get_meta_data(name, data):
         value = skills[0]
     if value:
         meta_title, meta_description, h1_tag = get_given_meta(value, data)
-    meta = db.meta_data.find_one({"name": name})
+    meta = MetaData.objects.filter(name=name)
     if not meta_title and meta:
-        meta_title = Template(meta.get("meta_title")).render(
+        meta_title = Template(meta[0].meta_title).render(
             Context(
                 {"city": final_location, "skill": final_skill, "current_page": page}
             )
         )
     if not meta_description and meta:
-        meta_description = Template(meta.get("meta_description")).render(
+        meta_description = Template(meta[0].meta_description).render(
             Context(
                 {"city": final_location, "skill": final_skill, "current_page": page}
             )
         )
     if not h1_tag and meta:
-        h1_tag = Template(meta.get("h1_tag")).render(
+        h1_tag = Template(meta[0].h1_tag).render(
             Context(
                 {"city": final_location, "skill": final_skill, "current_page": page}
             )
         )
     return meta_title, meta_description, h1_tag
 
-
-def save_codes_and_send_mail(user, request, passwd):
-    while True:
-        random_code = get_random_string(length=15)
-        if not User.objects.filter(activation_code__iexact=random_code):
-            break
-    while True:
-        unsubscribe_code = get_random_string(length=15)
-        if not User.objects.filter(unsubscribe_code__iexact=unsubscribe_code):
-            break
-    user.activation_code = random_code
-    user.unsubscribe_code = unsubscribe_code
-    user.save()
-    skills = request.POST.getlist("technical_skills") or request.POST.getlist("skill")
-    for s in skills:
-        skill = Skill.objects.filter(id=s)
-        if skill:
-            tech_skill = TechnicalSkill.objects.create(skill=skill[0])
-            user.skills.add(tech_skill)
-    temp = loader.get_template("email/jobseeker_account.html")
-    subject = "PeelJobs User Account Activation"
-    url = (
-        request.scheme
-        + "://"
-        + request.META["HTTP_HOST"]
-        + "/user/activation/"
-        + str(user.activation_code)
-        + "/"
-    )
-    rendered = temp.render(
-        {
-            "activate_url": url,
-            "user_email": user.email,
-            "user_mobile": user.mobile,
-            "user": user,
-            "user_password": passwd,
-            "user_profile": user.profile_completion_percentage,
-        }
-    )
-    Memail(user.email, settings.DEFAULT_FROM_EMAIL, subject, rendered, False)
-
-
-# def profile_completion(userid):
-#     db=mongoconnection()
-#     usr = db.PUser.find_one({'id':userid})
-#     complete = 0
-#     message = ''
-
-#     sconnected =0
-#     if 'gp_url' in usr.keys():
-#         if usr['gp_url'] != '':
-
-#             complete +=10
-#             sconnected += 1
-#         else:
-#             message ="connect google account to increase chance of getting better job"
-#     else:
-#         message ="connect google account to increase chance of getting better job"
-
-#     if 'fb_url' in usr.keys():
-#         if usr['fb_url'] != '':
-#             sconnected += 1
-
-#     if 'tw_url' in usr.keys():
-#         if usr['tw_url'] != '':
-#             sconnected += 1
-
-#     if 'ln' in usr.keys():
-#         if usr['ln'] != '':
-#             sconnected += 1
-
-#     if 'git_url' in usr.keys():
-#         if usr['git_url'] != '':
-#             sconnected += 1
-
-#     if 'sof_url' in usr.keys():
-#         if usr['sof_url'] != '':
-#             sconnected += 1
-
-
-#     if 'res_key' in usr.keys():
-#         if usr['res_key'] !='' :
-#             complete += 10
-#         else:
-#             message = "Update resume to give recruiters better way of seeing your profile"
-
-#     else:
-#         message = "Update resume to give recruiters better way of seeing your profile"
-
-
-#     # write for education and give 10
-#     if 'ed_det' in usr.keys():
-#         e=0
-#         for i in usr['ed_det']:
-#             e+=1
-#         print e
-#         if e > 0:
-#             complete +=10
-#         else:
-#             message = "add education details to increase chance of getting better job"
-#     else:
-#         message = "add education details to increase chance of getting better job"
-
-#     # write for skills and give 10
-#     if 'skill' in usr.keys():
-#         s=0
-#         for i in usr['skill']:
-#             s+=1
-#         if s > 1:
-#             complete +=10
-#         else:
-#             message = "add atleast two skills to increase chance of getting better job"
-#     else:
-#         message = "add atleast two skills to increase chance of getting better job"
-
-
-#     # write for languages and give 10
-#     if 'lang' in usr.keys():
-#         l=0
-#         for i in usr['lang']:
-#             l+=1
-#         if l > 0:
-#             complete +=10
-#         else:
-#             message = "add language info to increase chance of getting better job"
-#     else:
-#         message = "add language info to increase chance of getting better job"
-
-
-#     # write for Projects and give 10
-#     if 'wrk_his' in usr.keys():
-
-#         wp=0
-#         for wrk in usr['wrk_his']:
-#             if 'proj' in wrk:
-#                 for i in wrk['proj']:
-#                     wp+=1
-
-#         if wp > 0:
-#             print "ok"
-#             complete +=10
-
-#         else:
-
-#             message ="add projects to increase chance of getting better job"
-
-
-#     else:
-#         print "second"
-#         message ="add projects to increase chance of getting better job"
-
-
-#     # write personal info and give 10
-#     if 'fname' in usr.keys() and 'lname' in usr.keys() and 'cur_loc' in usr.keys() and 'pre_loc' in usr.keys():
-#         complete +=10
-#     else:
-#         message ="add personal details to increase chance of getting better job"
-
-#     # write for professional info and give 10
-#     if 'rloc' in usr.keys() and 'role' in usr.keys():
-#         complete +=10
-#     else:
-#         message ="add relocation and role to increase chance of getting better job"
-
-#     # profile header 5
-#     if 'header' in usr.keys():
-#         complete +=5
-#     else:
-#         message ="add profile description to increase chance of getting better job"
-
-#     # total experience 5
-#     if 'tot_exp' in usr.keys():
-#         complete +=5
-#     else:
-#         message ="add total experience to increase chance of getting better job"
-
-#     if sconnected >= 2:
-
-#         complete += 10
-
-#     else:
-#         message = "connect to 2 or more social networks to increase chance of getting better job"
-
-
-#     #db.PUser.update profile completion percentage
-#     db.PUser.update({'id':userid},{'$set':{'prof_per':complete}})
-
-
-#     data = {'complete':complete, 'message':message}
-#     return data
-
-# # v = MCValidate()
-# # v.validate(request, Key, ValueType, **{'Required':'', 'ErrorText':'', 'MinLen':'', 'MaxLen':'', 'RegEx':''})
-
-# class MCValidate():
-
-#     def __init__(self):
-#         self.err = {}
-
-#     def validate(self, request, Key, ValueType, Required=True, ErrorText='', MinLen=0, MaxLen=0, RegEx=''):
-#     #def validate(self, request, **kwargs):
-
-#         # check according to MaxLen value if its not 0.
-
-
-#         # check according to MinLen value if its not 0.
-#         if MaxLen > 0:
-#                 if len(request.get(Key)) > MaxLen:
-#                     if ErrorText == "":
-#                         self.err[Key]= 'Too long to process'
-#                     else:
-#                         self.err[Key]= ErrorText
-#                     return
-
-#         if MinLen > 0:
-#             if len(request.get(Key)) < MinLen:
-#                     if ErrorText == "":
-#                         self.err[Key]= 'Too short to process'
-#                     else:
-#                         self.err[Key]= ErrorText
-#                     return
-
-#         if ValueType == "Email":
-#             # https://pypi.python.org/pypi/validate_email/1.0
-#             from validate_email import validate_email
-
-#             if not validate_email(request.get(Key)):
-#                 if ErrorText == "":
-#                     self.err[Key]= 'Invalid Email Address'
-#                 else:
-#                     self.err[Key]= ErrorText
-
-#                 return
-
-#         elif ValueType == "Number":
-#             try:
-
-#                 int(request.get(Key))
-
-#                 return
-#             except:
-#                 if ErrorText == "":
-#                     self.err[Key]= 'Not a integer value'
-#                 else:
-#                     self.err[Key]= ErrorText
-#                 return
-
-#         elif ValueType == "Decimal":
-#             try:
-#                 float(request.get(Key))
-#                 return
-
-#             except:
-#                 if ErrorText == "":
-#                     self.err[Key]= 'Not a Decimal value'
-#                 else:
-#                     self.err[Key]= ErrorText
-#                 return
-
-
-#         elif ValueType == "String":
-#             try:
-#                 str(request.get(Key))
-#                 return
-#             except:
-#                 if ErrorText == "":
-#                     self.err[Key]= 'Not a string value'
-#                 else:
-#                     self.err[Key]= ErrorText
-#                 return
-
-
-#         elif ValueType == "RegEx":
-#             import re
-#             if RegEx != "":
-#                 regexp=re.compile(r'%s'% re.escape(RegEx))
-#                 if regexp.search(request.get(Key)) is None:
-#                     if ErrorText == "":
-#                         self.err[Key]= 'Not in given format'
-#                     else:
-#                         self.err[Key]= ErrorText
-#             return
-
-
-#         elif ValueType == "Url":
-
-#             from django.core.validators import URLValidator
-
-
-#             validate = URLValidator()
-#             try:
-#                 validate(request.get(Key))
-#             except:
-#                 if ErrorText == "":
-#                         self.err[Key]= 'enter valid url'
-#                 else:
-#                         self.err[Key]= ErrorText
-#                 return
-
-
-#         elif ValueType == "Date":
-
-#             try:
-#                 time.strptime(request.get(Key), '%m/%d/%Y')
-#                 return
-#             except:
-#                 if ErrorText == "":
-#                         self.err[Key]= 'not in mm/dd/yyyy format'
-#                 else:
-#                         self.err[Key]= ErrorText
-#                 return
-
-
-#         elif ValueType == "DateTime":
-
-#             try:
-#                 time.strptime(request.get(Key), '%m/%d/%Y:%H:%M:%S')
-#                 return
-#             except:
-#                 if ErrorText == "":
-#                         self.err[Key]= 'not in correct format'
-#                 else:
-#                         self.err[Key]= ErrorText
-#                 return
-
-
-#     def eval(self):
-#         return self.err
-
-
-#

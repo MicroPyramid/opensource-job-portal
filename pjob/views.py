@@ -24,14 +24,13 @@ from django.contrib.auth import authenticate, login
 from django.utils.crypto import get_random_string
 from django.template.defaultfilters import slugify
 from django.http import QueryDict
+from django.contrib.auth import load_backend
 
 
 from mpcomp.views import (
     jobseeker_login_required,
-    Memail,
     get_prev_after_pages_count,
     get_valid_skills_list,
-    mongoconnection,
     get_meta_data,
     get_valid_locations_list,
     get_social_referer,
@@ -39,14 +38,13 @@ from mpcomp.views import (
     handle_uploaded_file,
     get_valid_qualifications,
     get_meta,
-    save_codes_and_send_mail,
     get_ordered_skill_degrees,
     get_404_meta,
-    rand_string,
 )
 from peeldb.models import (
     JobPost,
     AppliedJobs,
+    MetaData,
     User,
     City,
     Industry,
@@ -75,9 +73,8 @@ from psite.forms import (
 from .refine_search import refined_search
 from django.db.models import Prefetch
 from django.core.cache import cache
-from dashboard.tasks import save_search_results
+from dashboard.tasks import save_search_results, send_email
 
-db = mongoconnection()
 
 
 months = [
@@ -306,10 +303,10 @@ def job_detail(request, job_title_slug, job_id):
             )
         show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
         meta_title = meta_description = ""
-        meta = db.meta_data.find_one({"name": "job_detail_page"})
+        meta = MetaData.objects.filter(name="job_detail_page")
         if meta:
-            meta_title = Template(meta.get("meta_title")).render(Context({"job": job}))
-            meta_description = Template(meta.get("meta_description")).render(
+            meta_title = Template(meta[0].meta_title).render(Context({"job": job}))
+            meta_description = Template(meta[0].meta_description).render(
                 Context({"job": job})
             )
         template = (
@@ -379,15 +376,15 @@ def recruiter_profile(request, recruiter_name, **kwargs):
         )
         job_list = job_list[(page - 1) * items_per_page : page * items_per_page]
         meta_title = meta_description = h1_tag = ""
-        meta = db.meta_data.find_one({"name": "recruiter_profile"})
+        meta = MetaData.objects.filter(name="recruiter_profile")
         if meta:
-            meta_title = Template(meta.get("meta_title")).render(
+            meta_title = Template(meta[0].meta_title).render(
                 Context({"current_page": page, "user": user[0]})
             )
-            meta_description = Template(meta.get("meta_description")).render(
+            meta_description = Template(meta[0].meta_description).render(
                 Context({"current_page": page, "user": user[0]})
             )
-            h1_tag = Template(meta.get("h1_tag")).render(
+            h1_tag = Template(meta[0].h1_tag).render(
                 Context({"current_page": page, "user": user[0]})
             )
         template = (
@@ -815,28 +812,28 @@ def job_skills(request, skill, **kwargs):
         meta_title = meta_description = h1_tag = ""
         final_edu = ", ".join(final_edu)
         if searched_edu and not searched_skills:
-            meta = db.meta_data.find_one({"name": "education_jobs"})
+            meta = MetaData.objects.filter(name="education_jobs")
             if meta:
-                meta_title = Template(meta.get("meta_title")).render(
+                meta_title = Template(meta[0].meta_title).render(
                     Context({"current_page": page, "degree": final_edu})
                 )
-                meta_description = Template(meta.get("meta_description")).render(
+                meta_description = Template(meta[0].meta_description).render(
                     Context({"current_page": page, "degree": final_edu})
                 )
-                h1_tag = Template(meta.get("h1_tag")).render(
+                h1_tag = Template(meta[0].h1_tag).render(
                     Context({"current_page": page, "degree": final_edu})
                 )
         elif searched_edu and searched_skills:
-            meta = db.meta_data.find_one({"name": "skill_education_jobs"})
+            meta = MetaData.objects.filter(name="skill_education_jobs")
             if meta:
                 search = ", ".join(searched_text)
-                meta_title = Template(meta.get("meta_title")).render(
+                meta_title = Template(meta[0].meta_title).render(
                     Context({"current_page": page, "search": search})
                 )
-                meta_description = Template(meta.get("meta_description")).render(
+                meta_description = Template(meta[0].meta_description).render(
                     Context({"current_page": page, "search": search})
                 )
-                h1_tag = Template(meta.get("h1_tag")).render(
+                h1_tag = Template(meta[0].h1_tag).render(
                     Context({"current_page": page, "search": search})
                 )
         elif searched_skills:
@@ -960,15 +957,15 @@ def job_industries(request, industry, **kwargs):
         field = get_social_referer(request)
         show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
         meta_title = meta_description = h1_tag = ""
-        meta = db.meta_data.find_one({"name": "industry_jobs"})
+        meta = MetaData.objects.filter(name="industry_jobs")
         if meta:
-            meta_title = Template(meta.get("meta_title")).render(
+            meta_title = Template(meta[0].meta_title).render(
                 Context({"current_page": page, "industry": searched_industry[0].name})
             )
-            meta_description = Template(meta.get("meta_description")).render(
+            meta_description = Template(meta[0].meta_description).render(
                 Context({"current_page": page, "industry": searched_industry[0].name})
             )
-            h1_tag = Template(meta.get("h1_tag")).render(
+            h1_tag = Template(meta[0].h1_tag).render(
                 Context({"current_page": page, "industry": searched_industry[0].name})
             )
         data = {
@@ -1179,130 +1176,130 @@ def unsubscribe(request, email, job_post_id):
         )
 
 
-def year_calendar(request, year):
-    if request.POST.get("year"):
-        year = int(request.POST.get("year"))
-    jobs_list = JobPost.objects.filter(status="Live")
+# def year_calendar(request, year):
+#     if request.POST.get("year"):
+#         year = int(request.POST.get("year"))
+#     jobs_list = JobPost.objects.filter(status="Live")
 
-    month = {"Name": "Jan", "id": 1}
-    year = int(year)
-    calendar_events = []
-    # if request.user.is_authenticated:
-    #     calendar_events = get_calendar_events_list()
-    meta_title, meta_description, h1_tag = get_meta("year_calendar", {"page": 1})
-    return render(
-        request,
-        "calendar/year_calendar.html",
-        {
-            "months": months,
-            "year": year,
-            "prev_year": get_prev_year(year, year),
-            "next_year": get_next_year(year, year),
-            "post_data": "true" if request.POST else "false",
-            "jobs_list": jobs_list,
-            "calendar_type": "year",
-            "month": month,
-            "calendar_events": calendar_events,
-            "meta_title": meta_title,
-            "h1_tag": h1_tag,
-            "meta_description": meta_description,
-        },
-    )
-
-
-def month_calendar(request, year, month):
-    current_year = datetime.now().year
-    year = current_year
-    month = next((item for item in months if item["id"] == int(month)), None)
-    calendar_events = []
-    if request.user.is_authenticated:
-        calendar_events = get_calendar_events_list(request)
-
-    if request.method == "POST":
-        if request.POST.get("year"):
-            year = int(request.POST.get("year"))
-        if request.POST.get("month"):
-            month = next(
-                (
-                    item
-                    for item in months
-                    if item["id"] == int(request.POST.get("month"))
-                ),
-                None,
-            )
-            # return HttpResponseRedirect(reverse('week_calendar',
-            # kwargs={'year': year, 'month': month['id'], 'week':
-            # request.POST.get('week')}))
-
-    post_data = False
-    if "status" in request.POST.keys():
-        post_data = True
-    meta_title, meta_description, h1_tag = get_meta("month_calendar", {"page": 1})
-    jobs_list = JobPost.objects.filter(status="Live")
-    return render(
-        request,
-        "calendar/year_calendar.html",
-        {
-            "requested_month": request.POST.get("month")
-            if request.POST.get("month")
-            else None,
-            "months": months,
-            "year": year,
-            "month": month,
-            "prev_year": get_prev_year(year, current_year),
-            "next_year": get_next_year(year, current_year),
-            "prev_month": get_prev_month(month, year, current_year),
-            "next_month": get_next_month(month, year, current_year),
-            "jobs_list": jobs_list,
-            "calendar_type": "month",
-            "post_data": post_data,
-            "calendar_events": calendar_events,
-            "meta_title": meta_title,
-            "h1_tag": h1_tag,
-            "meta_description": meta_description,
-        },
-    )
+#     month = {"Name": "Jan", "id": 1}
+#     year = int(year)
+#     calendar_events = []
+#     # if request.user.is_authenticated:
+#     #     calendar_events = get_calendar_events_list()
+#     meta_title, meta_description, h1_tag = get_meta("year_calendar", {"page": 1})
+#     return render(
+#         request,
+#         "calendar/year_calendar.html",
+#         {
+#             "months": months,
+#             "year": year,
+#             "prev_year": get_prev_year(year, year),
+#             "next_year": get_next_year(year, year),
+#             "post_data": "true" if request.POST else "false",
+#             "jobs_list": jobs_list,
+#             "calendar_type": "year",
+#             "month": month,
+#             "calendar_events": calendar_events,
+#             "meta_title": meta_title,
+#             "h1_tag": h1_tag,
+#             "meta_description": meta_description,
+#         },
+#     )
 
 
-def week_calendar(request, year, month, week):
-    current_year = datetime.now().year
-    year = current_year
-    month = {"Name": "Jan", "id": 1}
-    calendar_events = []
-    if request.user.is_authenticated:
-        calendar_events = get_calendar_events_list(request)
+# def month_calendar(request, year, month):
+#     current_year = datetime.now().year
+#     year = current_year
+#     month = next((item for item in months if item["id"] == int(month)), None)
+#     calendar_events = []
+#     if request.user.is_authenticated:
+#         calendar_events = get_calendar_events_list(request)
 
-    if request.POST.get("year"):
-        year = int(request.POST.get("year"))
-    if request.POST.get("month"):
-        month = next(
-            (item for item in months if item["id"] == int(request.POST.get("month"))),
-            None,
-        )
-    if request.POST.get("week"):
-        week = int(request.POST.get("week"))
-    jobs_list = JobPost.objects.filter(status="Live")
-    meta_title, meta_description, h1_tag = get_meta("week_calendar", {"page": 1})
-    return render(
-        request,
-        "calendar/year_calendar.html",
-        {
-            "months": months,
-            "year": year,
-            "prev_year": get_prev_year(year, year),
-            "next_year": get_next_year(year, year),
-            "post_data": "true" if request.POST else "false",
-            "calendar_type": "week",
-            "week": week,
-            "month": month,
-            "requested_month": month,
-            "jobs_list": jobs_list,
-            "calendar_events": calendar_events,
-            "meta_title": meta_title,
-            "h1_tag": h1_tag,
-            "meta_description": meta_description,
-        },
-    )
+#     if request.method == "POST":
+#         if request.POST.get("year"):
+#             year = int(request.POST.get("year"))
+#         if request.POST.get("month"):
+#             month = next(
+#                 (
+#                     item
+#                     for item in months
+#                     if item["id"] == int(request.POST.get("month"))
+#                 ),
+#                 None,
+#             )
+#             # return HttpResponseRedirect(reverse('week_calendar',
+#             # kwargs={'year': year, 'month': month['id'], 'week':
+#             # request.POST.get('week')}))
+
+#     post_data = False
+#     if "status" in request.POST.keys():
+#         post_data = True
+#     meta_title, meta_description, h1_tag = get_meta("month_calendar", {"page": 1})
+#     jobs_list = JobPost.objects.filter(status="Live")
+#     return render(
+#         request,
+#         "calendar/year_calendar.html",
+#         {
+#             "requested_month": request.POST.get("month")
+#             if request.POST.get("month")
+#             else None,
+#             "months": months,
+#             "year": year,
+#             "month": month,
+#             "prev_year": get_prev_year(year, current_year),
+#             "next_year": get_next_year(year, current_year),
+#             "prev_month": get_prev_month(month, year, current_year),
+#             "next_month": get_next_month(month, year, current_year),
+#             "jobs_list": jobs_list,
+#             "calendar_type": "month",
+#             "post_data": post_data,
+#             "calendar_events": calendar_events,
+#             "meta_title": meta_title,
+#             "h1_tag": h1_tag,
+#             "meta_description": meta_description,
+#         },
+#     )
+
+
+# def week_calendar(request, year, month, week):
+#     current_year = datetime.now().year
+#     year = current_year
+#     month = {"Name": "Jan", "id": 1}
+#     calendar_events = []
+#     if request.user.is_authenticated:
+#         calendar_events = get_calendar_events_list(request)
+
+#     if request.POST.get("year"):
+#         year = int(request.POST.get("year"))
+#     if request.POST.get("month"):
+#         month = next(
+#             (item for item in months if item["id"] == int(request.POST.get("month"))),
+#             None,
+#         )
+#     if request.POST.get("week"):
+#         week = int(request.POST.get("week"))
+#     jobs_list = JobPost.objects.filter(status="Live")
+#     meta_title, meta_description, h1_tag = get_meta("week_calendar", {"page": 1})
+#     return render(
+#         request,
+#         "calendar/year_calendar.html",
+#         {
+#             "months": months,
+#             "year": year,
+#             "prev_year": get_prev_year(year, year),
+#             "next_year": get_next_year(year, year),
+#             "post_data": "true" if request.POST else "false",
+#             "calendar_type": "week",
+#             "week": week,
+#             "month": month,
+#             "requested_month": month,
+#             "jobs_list": jobs_list,
+#             "calendar_events": calendar_events,
+#             "meta_title": meta_title,
+#             "h1_tag": h1_tag,
+#             "meta_description": meta_description,
+#         },
+#     )
 
 
 def jobposts_by_date(request, year, month, date, **kwargs):
@@ -1350,15 +1347,15 @@ def jobposts_by_date(request, year, month, date, **kwargs):
         page, no_pages
     )
     meta_title = meta_description = h1_tag = ""
-    meta = db.meta_data.find_one({"name": "day_calendar"})
+    meta = MetaData.objects.filter(name="day_calendar")
     if meta:
-        meta_title = Template(meta.get("meta_title")).render(
+        meta_title = Template(meta[0].meta_title).render(
             Context({"date": date, "searched_month": day.strftime("%B"), "year": year})
         )
-        meta_description = Template(meta.get("meta_description")).render(
+        meta_description = Template(meta[0].meta_description).render(
             Context({"date": date, "searched_month": day.strftime("%B"), "year": year})
         )
-        h1_tag = Template(meta.get("h1_tag")).render(
+        h1_tag = Template(meta[0].h1_tag).render(
             Context({"date": date, "month": day.strftime("%B"), "year": year})
         )
     return render(
@@ -1406,18 +1403,10 @@ def job_add_event(request):
             "summary": str(jobpost.title),
             "location": str(msg),
             "description": str(jobpost.title),
-            "start": {
-                "date": str(jobpost.last_date),
-                "timeZone": "Asia/Calcutta",
-            },
-            "end": {
-                "date": str(jobpost.last_date),
-                "timeZone": "Asia/Calcutta",
-            },
+            "start": {"date": str(jobpost.last_date), "timeZone": "Asia/Calcutta",},
+            "end": {"date": str(jobpost.last_date), "timeZone": "Asia/Calcutta",},
             "recurrence": ["RRULE:FREQ=DAILY;COUNT=2"],
-            "attendees": [
-                {"email": str(request.user.email)},
-            ],
+            "attendees": [{"email": str(request.user.email)},],
             "reminders": {
                 "useDefault": False,
                 "overrides": [
@@ -1440,59 +1429,51 @@ def job_add_event(request):
             )
 
 
-def calendar_add_event(request):
-    if request.method == "GET":
-        return render(request, "calendar/add_calendar_event.html", {})
-    start_date = datetime.strptime(
-        str(request.POST.get("start_date")), "%m/%d/%Y"
-    ).strftime("%Y-%m-%d")
-    last_date = datetime.strptime(
-        str(request.POST.get("to_date")), "%m/%d/%Y"
-    ).strftime("%Y-%m-%d")
+# def calendar_add_event(request):
+#     if request.method == "GET":
+#         return render(request, "calendar/add_calendar_event.html", {})
+#     start_date = datetime.strptime(
+#         str(request.POST.get("start_date")), "%m/%d/%Y"
+#     ).strftime("%Y-%m-%d")
+#     last_date = datetime.strptime(
+#         str(request.POST.get("to_date")), "%m/%d/%Y"
+#     ).strftime("%Y-%m-%d")
 
-    event = {
-        "summary": request.POST.get("title"),
-        "location": request.POST.get("location"),
-        "description": request.POST.get("description"),
-        "start": {
-            "date": str(start_date),
-            "timeZone": "Asia/Calcutta",
-        },
-        "end": {
-            "date": str(last_date),
-            "timeZone": "Asia/Calcutta",
-        },
-        "recurrence": ["RRULE:FREQ=DAILY;COUNT=2"],
-        "attendees": [
-            {"email": str(request.user.email)},
-        ],
-        "reminders": {
-            "useDefault": False,
-            "overrides": [
-                {"method": "email", "minutes": 24 * 60},
-                {"method": "popup", "minutes": 10},
-            ],
-        },
-    }
-    response = create_google_calendar_event(request.user, event)
-    if response:
-        data = {"error": False, "response": "Event successfully added"}
-    else:
-        data = {"error": True, "response": "Please Try again after some time"}
-    return HttpResponse(json.dumps(data))
+#     event = {
+#         "summary": request.POST.get("title"),
+#         "location": request.POST.get("location"),
+#         "description": request.POST.get("description"),
+#         "start": {"date": str(start_date), "timeZone": "Asia/Calcutta",},
+#         "end": {"date": str(last_date), "timeZone": "Asia/Calcutta",},
+#         "recurrence": ["RRULE:FREQ=DAILY;COUNT=2"],
+#         "attendees": [{"email": str(request.user.email)},],
+#         "reminders": {
+#             "useDefault": False,
+#             "overrides": [
+#                 {"method": "email", "minutes": 24 * 60},
+#                 {"method": "popup", "minutes": 10},
+#             ],
+#         },
+#     }
+#     response = create_google_calendar_event(request.user, event)
+#     if response:
+#         data = {"error": False, "response": "Event successfully added"}
+#     else:
+#         data = {"error": True, "response": "Please Try again after some time"}
+#     return HttpResponse(json.dumps(data))
 
 
-def calendar_event_list(request):
-    if request.method == "POST":
-        event_id = request.POST.get("event_id")
-        response = delete_google_calendar_event(event_id)
-        if response:
-            data = {"error": False, "response": "Event successfully Deleted"}
-        else:
-            data = {"error": True, "response": "Please Try again after some time"}
-        return HttpResponse(json.dumps(data))
-    events = get_calendar_events_list(request)
-    return render(request, "calendar/calendar_event_list.html", {"events": events})
+# def calendar_event_list(request):
+#     if request.method == "POST":
+#         event_id = request.POST.get("event_id")
+#         response = delete_google_calendar_event(event_id)
+#         if response:
+#             data = {"error": False, "response": "Event successfully Deleted"}
+#         else:
+#             data = {"error": True, "response": "Please Try again after some time"}
+#         return HttpResponse(json.dumps(data))
+#     events = get_calendar_events_list(request)
+#     return render(request, "calendar/calendar_event_list.html", {"events": events})
 
 
 def jobs_by_location(request, job_type):
@@ -1514,15 +1495,15 @@ def jobs_by_location(request, job_type):
     if request.method == "POST":
         states = states.filter(name__icontains=request.POST.get("location"))
     meta_title = meta_description = h1_tag = ""
-    meta = db.meta_data.find_one({"name": "jobs_by_location"})
+    meta = MetaData.objects.filter(name="jobs_by_location")
     if meta:
-        meta_title = Template(meta.get("meta_title")).render(
+        meta_title = Template(meta[0].meta_title).render(
             Context({"job_type": job_type})
         )
-        meta_description = Template(meta.get("meta_description")).render(
+        meta_description = Template(meta[0].meta_description).render(
             Context({"job_type": job_type})
         )
-        h1_tag = Template(meta.get("h1_tag")).render(Context({"job_type": job_type}))
+        h1_tag = Template(meta[0].h1_tag).render(Context({"job_type": job_type}))
     data = {
         "states": states,
         "job_type": job_type,
@@ -1582,15 +1563,15 @@ def fresher_jobs_by_skills(request, job_type):
         else:
             all_skills = all_skills.order_by("name")
     meta_title = meta_description = h1_tag = ""
-    meta = db.meta_data.find_one({"name": "fresher_jobs_by_skills"})
+    meta = MetaData.objects.filter(name="fresher_jobs_by_skills")
     if meta:
-        meta_title = Template(meta.get("meta_title")).render(
+        meta_title = Template(meta[0].meta_title).render(
             Context({"job_type": job_type})
         )
-        meta_description = Template(meta.get("meta_description")).render(
+        meta_description = Template(meta[0].meta_description).render(
             Context({"job_type": job_type})
         )
-        h1_tag = Template(meta.get("h1_tag")).render(Context({"job_type": job_type}))
+        h1_tag = Template(meta[0].h1_tag).render(Context({"job_type": job_type}))
     data = {
         "all_skills": all_skills,
         "job_type": job_type,
@@ -2059,15 +2040,15 @@ def each_company_jobs(request, company_name, **kwargs):
         field = get_social_referer(request)
         show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
         meta_title = meta_description = h1_tag = ""
-        meta = list(db.meta_data.find({"name": "company_jobs"}))
+        meta = MetaData.objects.filter(name="company_jobs")
         if meta:
-            meta_title = Template(meta[0]["meta_title"]).render(
+            meta_title = Template(meta[0].meta_title).render(
                 Context({"current_page": page, "company": company})
             )
-            meta_description = Template(meta[0]["meta_description"]).render(
+            meta_description = Template(meta[0].meta_description).render(
                 Context({"current_page": page, "company": company})
             )
-            h1_tag = Template(meta[0]["h1_tag"]).render(
+            h1_tag = Template(meta[0].h1_tag).render(
                 Context({"current_page": page, "company": company})
             )
         data = {
@@ -2778,6 +2759,48 @@ def add_other_location_to_user(user, request):
     user.save()
 
 
+def save_codes_and_send_mail(user, request, passwd):
+    while True:
+        random_code = get_random_string(length=15)
+        if not User.objects.filter(activation_code__iexact=random_code):
+            break
+    while True:
+        unsubscribe_code = get_random_string(length=15)
+        if not User.objects.filter(unsubscribe_code__iexact=unsubscribe_code):
+            break
+    user.activation_code = random_code
+    user.unsubscribe_code = unsubscribe_code
+    user.save()
+    skills = request.POST.getlist("technical_skills") or request.POST.getlist("skill")
+    for s in skills:
+        skill = Skill.objects.filter(id=s)
+        if skill:
+            tech_skill = TechnicalSkill.objects.create(skill=skill[0])
+            user.skills.add(tech_skill)
+    temp = loader.get_template("email/jobseeker_account.html")
+    subject = "PeelJobs User Account Activation"
+    url = (
+        request.scheme
+        + "://"
+        + request.META["HTTP_HOST"]
+        + "/user/activation/"
+        + str(user.activation_code)
+        + "/"
+    )
+    rendered = temp.render(
+        {
+            "activate_url": url,
+            "user_email": user.email,
+            "user_mobile": user.mobile,
+            "user": user,
+            "user_password": passwd,
+            "user_profile": user.profile_completion_percentage,
+        }
+    )
+    mto = user.email
+    send_email.delay(mto, subject, rendered)
+
+
 def register_using_email(request):
     if request.method == "POST":
         if request.FILES.get("get_resume"):
@@ -2871,17 +2894,25 @@ def register_using_email(request):
 
 
 def user_activation(request, user_id):
-    user = User.objects.filter(activation_code__iexact=str(user_id))
+    user = User.objects.filter(activation_code__iexact=str(user_id)).first()
     if user:
-        usr = user[0]
-        registered_user = authenticate(username=usr.username)
-        if registered_user:
-            login(request, registered_user)
-            url = "/profile/" if usr.is_active else "/profile/?verify=true"
-            usr.is_active = True
-            usr.email_verified = True
-            usr.save()
-            return HttpResponseRedirect(url)
+        registered_user = authenticate(username=user.username)
+        if not request.user.is_authenticated:
+            if not hasattr(user, "backend"):
+                for backend in settings.AUTHENTICATION_BACKENDS:
+                    if user == load_backend(backend).get_user(user.id):
+                        user.backend = backend
+                        break
+            if hasattr(user, "backend"):
+                login(request, user)
+
+        url = "/profile/" if user.is_active else "/profile/?verify=true"
+        user.is_active = True
+        user.email_verified = True
+        user.last_login = datetime.now()
+        user.activation_code = ""
+        user.save()
+        return HttpResponseRedirect(url)
     else:
         message = "Looks like Activation Url Expired"
         reason = "The URL may be misspelled or the user you're looking for is no longer available."
@@ -2953,24 +2984,24 @@ def set_password(request, user_id, passwd):
                     json.dumps(
                         {
                             "error": True,
-                            "response_message": "Password and ConfirmPasswords did not match",
+                            "response_message": "Password and Confirm Password did not match",
                         }
                     )
                 )
             user = user[0]
             user.set_password(request.POST["new_password"])
             user.save()
-            usr = authenticate(
-                username=user.email, password=request.POST["new_password"]
-            )
-            if usr:
-                usr.last_login = datetime.now()
-                usr.save()
-                login(request, usr)
+            # usr = authenticate(
+            #     username=user.email, password=request.POST["new_password"]
+            # )
+            # if usr:
+            #     usr.last_login = datetime.now()
+            #     usr.save()
+            #     login(request, usr)
             if user.user_type == "JS":
-                url = "/profile/"
+                url = "/"
             else:
-                url = reverse("recruiter:list")
+                url = reverse("recruiter:new_user")
             return HttpResponse(
                 json.dumps(
                     {
@@ -3001,6 +3032,12 @@ def forgot_password(request):
     form_valid = ForgotPassForm(request.POST)
     if form_valid.is_valid():
         user = User.objects.filter(email=request.POST.get("email")).first()
+        if user and (user.is_recruiter or user.is_agency_admin):
+            data = {
+                "error": True,
+                "response_message": "User Already registered as a Recruiter",
+                }
+            return HttpResponse(json.dumps(data))
         if user:
             new_pass = get_random_string(length=10).lower()
             user.set_password(new_pass)
@@ -3008,7 +3045,6 @@ def forgot_password(request):
             temp = loader.get_template("email/subscription_success.html")
             subject = "Password Reset - PeelJobs"
             mto = request.POST.get("email")
-            mfrom = settings.DEFAULT_FROM_EMAIL
             url = (
                 request.scheme
                 + "://"
@@ -3022,7 +3058,7 @@ def forgot_password(request):
             c = {"randpwd": new_pass, "user": user, "redirect_url": url}
             rendered = temp.render(c)
             user_active = True if user.is_active else False
-            Memail(mto, mfrom, subject, rendered, user_active)
+            send_email.delay(mto, subject, rendered)
             data = {"error": False, "response": "Success", "redirect_url": "/"}
         else:
             data = {
@@ -3182,8 +3218,8 @@ def user_subscribe(request):
                 c = {"user_email": email, "skills": skills, "redirect_url": url}
                 subject = "PeelJobs New Subscription"
                 rendered = t.render(c)
-                mfrom = settings.DEFAULT_FROM_EMAIL
-                Memail([email], mfrom, subject, rendered, False)
+                mto = [email]
+                send_email.delay(mto, subject, rendered)
             return HttpResponse(json.dumps(data))
         else:
             data = {"error": True, "response": validate_subscribe.errors}

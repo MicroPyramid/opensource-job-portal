@@ -30,15 +30,12 @@
         <li>
           <div class="description">
             <div class="content">
-            Name:{{ meta.name }}
+            Name: {{ meta.name }}
             </div>
             <div class="icon_div">
               <a><i class="fa fa-pencil-square-o edit"></i></a>
-              <a><i class="fa fa-pencil-square-o {% if meta.is_meta_title_correct %}{% else %}error{% endif %}">Title</i></a>
-              <a><i class="fa fa-pencil-square-o {% if meta.is_meta_description_correct %}{% else %}error{% endif %}">Description</i></a>
-              <a><i class="fa fa-pencil-square-o {% if meta.is_h1_tag_correct %}{% else %}error{% endif %}">H1 Tag</i></a>
 
-              <a data-href="{{ meta|get_obj_id }}" class="delete_data" ><i class="fa fa-trash-o delete"></i></a>
+              <a data-href="{{ meta.id }}" class="delete_data" ><i class="fa fa-trash-o delete"></i></a>
             </div>
             <div class="clearfix"></div>
             <div class="edit_panel">
@@ -48,7 +45,7 @@
               <textarea class="form-control" name='meta_description' id='' placeholder='Meta Description'>{{ meta.meta_description }}</textarea>
               <textarea class="form-control" name='h1_tag' id='h1_tag' placeholder='H1 Tag Description'>{{ meta.h1_tag }}</textarea>
               <input type="hidden" name="mode" value="edit_data">
-              <input type="hidden" name="meta_id" value="{{ meta|get_obj_id }}">
+              <input type="hidden" name="meta_id" value="{{ meta.id }}">
               <button id="" class="update_btn" type="submit"><i class="fa fa-check"></i>Update</button>
             </form>
             </div>

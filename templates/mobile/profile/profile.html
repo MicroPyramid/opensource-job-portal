@@ -24,7 +24,7 @@
             <span class='image'>
             {% if request.user.profile_pic|length > 0 %}
             <img src="{{ request.user.profile_pic.url }}">{% else %}
-            <img src="//d2pt99vxm3n8bc.cloudfront.net/static/dummy.jpg">
+            <img src="//peeljobs.s3.amazonaws.com/static/dummy.jpg">
             {% endif %}
             <form name="profilepicform" id="profilepicform"><input type="file" id='file_input' name="profile_pic" id="profile_pic" style="display: none;" onchange="javascript: submitform()"><input type="submit" id='submit' name="submit" style="display: none;">
             </form>
@@ -462,7 +462,7 @@
 
         $(document).ready(function () {
             // Setup the ajax indicator
-            $('body').append('<div id="ajaxBusy"><p><img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="60px" width="60px"></p></div>');
+            $('body').append('<div id="ajaxBusy"><p><img src="http://peeljobs.s3.amazonaws.com/static/img/loader-gif.gif" height="60px" width="60px"></p></div>');
             $('#ajaxBusy').css({
                 display: "none",
                 margin: "0px",
@@ -669,6 +669,7 @@
         $('.ui-dialog-titlebar-close').html('<span>X</span>')
         });
          $('.delete-resume').click(function (e) {
+            var myPos = [ $(window).width() / 2, 50 ];
             e.preventDefault();
             e.stopPropagation();
             $('#block_question').text('Do you want to delete Resume?')
@@ -677,6 +678,7 @@
                 modal: true,
                 draggable: false,
                 title: "Info!!",
+                position: myPos,
                 buttons: [
                     {
                         text: "Yes",

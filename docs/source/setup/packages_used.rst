@@ -49,8 +49,6 @@ Django Packages Used
 	
 	python-memcached==1.59
 	
-	pymongo==3.7.2
-	
 	raven==6.9.0
 	
 	redis==2.10.6

@@ -1,4 +1,4 @@
-from celery.task import task
+from jobsp.celery import app
 from mpcomp.facebook import GraphAPI
 import celery
 import requests
@@ -15,7 +15,7 @@ from peeldb.models import (
 from mpcomp import gauth, contacts
 
 
-@task()
+@app.task()
 def add_twitter_friends_followers(user_id, friends, followers):
 
     """
@@ -37,7 +37,7 @@ def add_twitter_friends_followers(user_id, friends, followers):
         )
 
 
-# @celery.task()
+# @app.task()
 # def facebook_information(accesstoken, profile, hometown, bday, location, user):
 #     '''
 #         creating a facebook object with all facebook profile information
@@ -62,7 +62,7 @@ def add_twitter_friends_followers(user_id, friends, followers):
 #     )
 
 
-@celery.task()
+@app.task()
 def facebook_friends(accesstoken, user):
     user = User.objects.filter(id=user).first()
     """
@@ -81,7 +81,7 @@ def facebook_friends(accesstoken, user):
         )
 
 
-@celery.task()
+@app.task()
 def facebook_pages(accesstoken, user):
     user = User.objects.filter(id=user).first()
     """
@@ -107,7 +107,7 @@ def facebook_pages(accesstoken, user):
         )
 
 
-@celery.task()
+@app.task()
 def facebook_groups(accesstoken, user):
     user = User.objects.filter(id=user).first()
     """
@@ -128,7 +128,7 @@ def facebook_groups(accesstoken, user):
         )
 
 
-@celery.task()
+@app.task()
 def add_google_friends(user_id, accesstoken):
     """
     1. Getting the user object
@@ -140,8 +140,8 @@ def add_google_friends(user_id, accesstoken):
 
     user = User.objects.filter(id=user_id).first()
     auth_token = gauth.OAuth2Token(
-        client_id=settings.GP_CLIENT_ID,
-        client_secret=settings.GP_CLIENT_SECRET,
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
         scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email "
         + "https://www.googleapis.com/auth/contacts.readonly ",
         user_agent="dummy-sample",

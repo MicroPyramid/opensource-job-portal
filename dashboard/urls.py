@@ -63,10 +63,7 @@ from .views import (
     search_summary,
     applicants_mail,
     removing_duplicate_companies,
-    mobile_campaign,
-    csv_download,
     reports,
-    updating_whatsapp_campaign,
     new_company,
     edit_company,
     companies,
@@ -89,7 +86,6 @@ from .views import (
     view_question,
     save_meta_data,
     clear_cache,
-    redirect_data,
 )
 
 app_name = "dashboard"
@@ -287,14 +283,7 @@ urlpatterns = [
         removing_duplicate_companies,
         name="removing_duplicate_companies",
     ),
-    url(r"^mobile-campaign/", mobile_campaign, name="mobile_campaign"),
-    url(r"^csv/download", csv_download, name="csv_download"),
     url(r"^reports/", reports, name="reports"),
-    url(
-        r"^whatsapp-campaign/update/",
-        updating_whatsapp_campaign,
-        name="updating_whatsapp_campaign",
-    ),
     # companies
     url(r"^companies/new/", new_company, name="new_company"),
     url(r"^companies/edit/(?P<company_id>[-\w]+)/", edit_company, name="edit_company"),
@@ -361,7 +350,6 @@ urlpatterns = [
         name="view_question",
     ),
     url(r"^save/meta-data/", save_meta_data, name="save_meta_data"),
-    url(r"^redirect-data/", redirect_data, name="redirect_data"),
     url(
         r"^moving/duplicate/(?P<value>[-\w]+)/",
         moving_duplicates,

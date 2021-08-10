@@ -13,7 +13,9 @@ django_dev.log
 logs/
 celerybeat-schedule
 celerybeat.pid
-.env
 resume/
 docs/build
 dist/
+env
+env/
+.env

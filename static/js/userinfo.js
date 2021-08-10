@@ -33,7 +33,7 @@
             }
 
             // Setup the ajax indicator
-            // $('body').append('<div id="ajaxBusy"><p><img src="http://d2pt99vxm3n8bc.cloudfront.net/static/img/loader-gif.gif" height="60px" width="60px"></p></div>');
+            // $('body').append('<div id="ajaxBusy"><p><img src="http://peeljobs.s3.amazonaws.com/static/img/loader-gif.gif" height="60px" width="60px"></p></div>');
             // $('#ajaxBusy').css({
             //     display: "block",
             //     margin: "0px",
@@ -72,6 +72,7 @@
         });
 
         $('.delete-resume').click(function (e) {
+            var myPos = [ $(window).width() / 2, 50 ];
             e.preventDefault();
             e.stopPropagation();
             $('#block_question').text('Do you want to delete Resume?')
@@ -79,6 +80,7 @@
                 modal: true,
                 draggable: false,
                 title: "Info!!",
+                position: myPos,
                 buttons: [
                     {
                         text: "Yes",
@@ -109,10 +111,12 @@
             e.stopPropagation();
             url = $(this).attr('href')
             data = $(this).attr('id')
+            var myPos = [ $(window).width() / 2, 50 ];
             $('#block_question').text('Do you want to delete language?')
             $('#block_question').dialog({
                 modal: true,
                 draggable: false,
+                position: myPos,
                 title: "Info!!",
                 buttons: [
                     {
@@ -141,6 +145,7 @@
         });
 
   $("a.employment-delete").click(function (e) {
+            var myPos = [ $(window).width() / 2, 50 ];
             e.preventDefault();
             e.stopPropagation();
             data = $(this).attr('id')
@@ -150,6 +155,7 @@
                 modal: true,
                 draggable: false,
                 title: "Info!!",
+                position: myPos,
                 buttons: [
                     {
                         text: "Yes",
@@ -177,6 +183,7 @@
         });
 
         $("a.education-delete").click(function (e) {
+            var myPos = [ $(window).width() / 2, 50 ];
             e.preventDefault();
             e.stopPropagation();
             url = $(this).attr('href')
@@ -188,6 +195,7 @@
                 modal: true,
                 draggable: false,
                 title: "Info!!",
+                position: myPos,
                 buttons: [
                     {
                         text: "Yes",
@@ -250,6 +258,7 @@
 
         });
         $("a.project-delete").click(function (e) {
+            var myPos = [ $(window).width() / 2, 50 ];
             e.preventDefault();
             e.stopPropagation();
             url = $(this).attr('href')
@@ -259,6 +268,7 @@
                 modal: true,
                 draggable: false,
                 title: "Info!!",
+                position: myPos,
                 buttons: [
                     {
                         text: "Yes",
@@ -419,13 +429,13 @@ $("#email_notifications").click(function(e){
                   $("#on_note").addClass('btn btn-xs btn-success')
                   $("#off_note").removeClass()
                   $("#off_note").addClass('btn btn-xs btn-default')
-                    open_dialog('Email Notifications are Enabled', 'Success!!!')
+                    open_dialog_with_url('Email Notifications are Enabled', 'Success!!!', "/profile/")
                 } else {
                  $("#on_note").removeClass()
                   $("#on_note").addClass('btn btn-xs btn-default')
                   $("#off_note").removeClass()
                   $("#off_note").addClass('btn btn-xs btn-danger')
-                    open_dialog('Email Notifications are Disabled', 'Success!!!')
+                    open_dialog_with_url('Email Notifications are Disabled', 'Success!!!', "/profile/")
                 }
               }
             }, 'json');

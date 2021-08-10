@@ -34,4 +34,4 @@ class AWS:
         c = boto.connect_cloudfront(
             settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
         )
-        c.create_invalidation_request(settings.CLOUDFRONT_ID, paths)
+        c.create_invalidation_request(settings.S3_DOMAIN, paths)

@@ -16,8 +16,8 @@ from oauth2client.contrib.django_util.storage import DjangoORMStorage
 from peeldb.models import CredentialsModel
 
 
-client_id = settings.GP_CLIENT_ID
-client_secret = settings.GP_CLIENT_SECRET
+client_id = settings.GOOGLE_CLIENT_ID
+client_secret = settings.GOOGLE_CLIENT_SECRET
 
 # The scope URL for read/write access to a user's calendar data
 scope = "https://www.googleapis.com/auth/calendar"
