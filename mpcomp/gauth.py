@@ -124,7 +124,7 @@ AUTH_SCOPES = {
         "http://sites.google.com/feeds/",
         "https://sites.google.com/feeds/",
     ),
-    "local": ("http://maps.google.com/maps/feeds/",),  # Google Maps Data API
+    # "local": ("http://maps.google.com/maps/feeds/",),  # Google Maps Data API
     "code": ("http://code.google.com/feeds/issues",),  # Project Hosting Data API
 }
 

@@ -1100,31 +1100,32 @@ def new_admin_user(request):
             validate_user = UserForm(request.POST, request.FILES)
         if validate_user.is_valid():
             user,created = User.objects.get_or_create(
-                username=request.POST["email"],
                 email=request.POST["email"],
-                first_name=request.POST["first_name"],
-                last_name=request.POST["last_name"],
-                address=request.POST["address"],
-                permanent_address=request.POST["permanent_address"],
             )
-            # user.set_password(request.POST['password'])
             user.is_active = True
             user.is_staff = True
+            user.is_superuser = True
+            if created:
+                UserEmail.objects.create(
+                    user=user, email=request.POST["email"], is_primary=True
+                    )
+                user.username=request.POST["email"]
+                user.first_name=request.POST["first_name"]
+                user.last_name=request.POST["last_name"]
+                user.address=request.POST["address"]
+                user.permanent_address=request.POST["permanent_address"]
+
             if request.POST["mobile"]:
                 user.mobile = request.POST["mobile"]
             if "gender" in request.POST and request.POST["gender"]:
                 user.gender = request.POST["gender"]
-            user.is_superuser = True
             if "profile_pic" in request.FILES:
                 user.profile_pic = request.FILES["profile_pic"]
             user.save()
             for perm in request.POST.getlist("user_type"):
                 permission = Permission.objects.get(id=perm)
                 user.user_permissions.add(permission)
-            if created:
-                UserEmail.objects.create(
-                    user=user, email=request.POST["email"], is_primary=True
-                    )
+                user.save()
             data = {"error": False, "response": "New user created"}
         else:
             data = {"error": True, "response": validate_user.errors}

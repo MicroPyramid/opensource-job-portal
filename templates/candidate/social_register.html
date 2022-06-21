@@ -191,14 +191,14 @@ $('form#SocialRegister').submit(function(e){
 $('body').on('click', '.ui-dialog-titlebar-close', function (e) {
   window.location =  '/profile/';
  })
-$('a').click(function(event) {
-    event.preventDefault();
-    if (($(this).attr('href') == '/logout/') || ($(this).attr('href') == '/')){
- window.location = $(this).attr('href')
-    }
-    else{
-    open_dialog("Please update your profile to search relevant jobs for you")
-  }
-});
+// $('a').click(function(event) {
+//     event.preventDefault();
+//     if (($(this).attr('href') == '/logout/') || ($(this).attr('href') == '/')){
+//  window.location = $(this).attr('href')
+//     }
+//     else{
+//     open_dialog("Please update your profile to search relevant jobs for you")
+//   }
+// });
 </script>
 {% endblock %}

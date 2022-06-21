@@ -188,7 +188,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "jobsp.context_processors.export_vars",
+                # "jobsp.context_processors.export_vars",
                 "peeldb.context_processors.get_pj_icons",
             ],
         },
@@ -314,10 +314,10 @@ CELERY_BEAT_SCHEDULE = {
             hour="*/2", minute="00", day_of_week="mon,tue,wed,thu,fri,sat,sun"
         ),
     },
-    "walkin-notifications-to-applicants": {
-        "task": "dashboard.tasks.applicants_walkin_job_notifications",
-        "schedule": crontab(hour="09", minute="00", day_of_week="thu"),
-    },
+    # "walkin-notifications-to-applicants": {
+    #     "task": "dashboard.tasks.applicants_walkin_job_notifications",
+    #     "schedule": crontab(hour="09", minute="00", day_of_week="thu"),
+    # },
     # "handling-sendgrid-bounces": {
     #     "task": "dashboard.tasks.handle_sendgrid_bounces",
     #     "schedule": crontab(

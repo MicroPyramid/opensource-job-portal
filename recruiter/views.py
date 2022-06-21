@@ -2310,7 +2310,7 @@ def google_connect(request):
                     picture=picture,
                 )
 
-            add_google_friends.delay(request.user.id, info["access_token"])
+            # add_google_friends.delay(request.user.id, info["access_token"])
             return HttpResponseRedirect(reverse("recruiter:index"))
         message_type = "Sorry,"
         message = "We didnt find your Account"

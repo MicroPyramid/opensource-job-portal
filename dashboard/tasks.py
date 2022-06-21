@@ -1280,21 +1280,21 @@ def applicants_profile_update_notifications():
             rendered = temp.render({"user": user})
             mto = [user.email]
             send_email.delay(mto, subject, rendered)
-    inactive_users = User.objects.filter(
-        is_unsubscribe=False,
-        email_notifications=True,
-        is_bounce=False,
-        is_active=False,
-        user_type="JS",
-    )
-    for user in inactive_users:
-        days = (datetime.today() - user.date_joined).days
-        if days % 7 == 0:
-            temp = loader.get_template("email/account_inactive.html")
-            subject = "Verify your Email Address - Peeljobs"
-            rendered = temp.render({"user": user})
-            mto = [user.email]
-            send_email.delay(mto, subject, rendered)
+    # inactive_users = User.objects.filter(
+    #     is_unsubscribe=False,
+    #     email_notifications=True,
+    #     is_bounce=False,
+    #     is_active=False,
+    #     user_type="JS",
+    # )
+    # for user in inactive_users:
+    #     days = (datetime.today() - user.date_joined).days
+    #     if days % 7 == 0:
+    #         temp = loader.get_template("email/account_inactive.html")
+    #         subject = "Verify your Email Address - Peeljobs"
+    #         rendered = temp.render({"user": user})
+    #         mto = [user.email]
+    #         send_email.delay(mto, subject, rendered)
     day = datetime.today() - timedelta(days=2)
     users = User.objects.filter(
         user_type="JS",
@@ -1313,21 +1313,21 @@ def applicants_profile_update_notifications():
         send_email.delay(mto, subject, rendered)
 
 
-@app.task()
-def applicants_walkin_job_notifications():
+# @app.task()
+# def applicants_walkin_job_notifications():
 
-    today_applicants = User.objects.filter(
-        user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
-    )
-    for each in today_applicants:
-        job_posts = each.related_walkin_jobs()
-        temp = loader.get_template("email/applicant.html")
-        subject = "Latest Walkin Jobs - Peeljobs"
-        mto = [each.email]
-        c = {"job_posts": job_posts[:10], "user": each, "walk_in": True}
-        rendered = temp.render(c)
-        user_active = True if each.is_active else False
-        send_email.delay(mto, subject, rendered)
+#     today_applicants = User.objects.filter(
+#         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
+#     )
+#     for each in today_applicants:
+#         job_posts = each.related_walkin_jobs()
+#         temp = loader.get_template("email/applicant.html")
+#         subject = "Latest Walkin Jobs - Peeljobs"
+#         mto = [each.email]
+#         c = {"job_posts": job_posts[:10], "user": each, "walk_in": True}
+#         rendered = temp.render(c)
+#         user_active = True if each.is_active else False
+#         send_email.delay(mto, subject, rendered)
 
 
 @app.task()
@@ -1391,22 +1391,22 @@ def applicants_job_notifications():
         rendered = temp.render({"jobposts": job_posts[:10], "user": user})
         user_active = True if user.is_active else False
         send_email.delay(mto, subject, rendered)
-    users = User.objects.filter(
-        user_type="JS", email_notifications=True, is_unsubscribe=False, is_bounce=False
-    )
-    users = users.filter(
-        Q(facebook_user__isnull=True)
-        | Q(google_user__isnull=True)
-        | Q(linkedin__isnull=True)
-        | Q(twitter__isnull=True)
-    )
-    for user in users:
-        temp = loader.get_template("email/social_connect.html")
-        subject = "Social Connect - Peeljobs"
-        mto = [user.email]
-        rendered = temp.render({"user": user})
-        user_active = True if user.is_active else False
-        send_email.delay(mto, subject, rendered)
+    # users = User.objects.filter(
+    #     user_type="JS", email_notifications=True, is_unsubscribe=False, is_bounce=False
+    # )
+    # users = users.filter(
+    #     Q(facebook_user__isnull=True)
+    #     | Q(google_user__isnull=True)
+    #     | Q(linkedin__isnull=True)
+    #     | Q(twitter__isnull=True)
+    # )
+    # for user in users:
+    #     temp = loader.get_template("email/social_connect.html")
+    #     subject = "Social Connect - Peeljobs"
+    #     mto = [user.email]
+    #     rendered = temp.render({"user": user})
+    #     user_active = True if user.is_active else False
+    #     send_email.delay(mto, subject, rendered)
 
 
 @app.task()
@@ -1462,20 +1462,20 @@ def alerting_applicants():
         send_email.delay(mto, subject, rendered)
 
 
-@app.task()
-def send_weekly_login_notifications():
-    today_applicants = User.objects.filter(
-        user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
-    )
-    for each in today_applicants:
-        job_posts = each.related_jobs()
+# @app.task()
+# def send_weekly_login_notifications():
+#     today_applicants = User.objects.filter(
+#         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
+#     )
+#     for each in today_applicants:
+#         job_posts = each.related_jobs()
 
-        temp = loader.get_template("email/applicant.html")
-        subject = "Latest Walkin Jobs - Peeljobs"
-        mto = [each.email]
-        rendered = temp.render({"user": each, "job_posts": job_posts[:10]})
-        user_active = True if each.is_active else False
-        send_email.delay(mto, subject, rendered)
+#         temp = loader.get_template("email/applicant.html")
+#         subject = "Latest Walkin Jobs - Peeljobs"
+#         mto = [each.email]
+#         rendered = temp.render({"user": each, "job_posts": job_posts[:10]})
+#         user_active = True if each.is_active else False
+#         send_email.delay(mto, subject, rendered)
 
 
 @app.task()

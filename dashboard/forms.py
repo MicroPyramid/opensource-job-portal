@@ -222,12 +222,6 @@ class UserForm(ModelForm):
             "gender",
         ]
 
-    def clean_mobile(self):
-        if self.data["mobile"]:
-            if len(self.data["mobile"]) < 10 or len(self.data["mobile"]) > 12:
-                raise forms.ValidationError("Please Enter Valid phone number")
-            else:
-                return self.data["mobile"]
 
     # def clean_password(self):
     #     if self.instance.id:

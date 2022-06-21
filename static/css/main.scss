@@ -4577,7 +4577,7 @@ Triangle breadcrumb
   }
   .user_option{
     padding:15px;
-    width: 33.3%;
+    width: 50%;
     float: left;
     cursor: pointer;
     .well{
@@ -4606,11 +4606,13 @@ Triangle breadcrumb
         background: #5db3a2 !important;
         position: relative;
         padding:10px;
+        padding-top: 25px;
       }
       &.user_alerts{
         background: #a4c75d;
         position: relative;
         padding:10px;
+        padding-top: 25px;
       }
       &.user_calendar{
         background: #b3b0f7;
