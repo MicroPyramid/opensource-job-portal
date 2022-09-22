@@ -16,7 +16,7 @@ Recruiter can register using email or google login to post job.
 - Walk-in's
 - Copy An Existing Job Post, Deactivate.
 - Add localtion in Google Maps
-- Post their job to social networking sites.
+- Post their job to sociasudo usermod -aG docker $USERl networking sites.
 
 ## Portal
 
@@ -33,12 +33,12 @@ pip-check -H  # to see upgradable packages
 ```
 ## Setup
 
-Following are the setup instruction for ubuntu 18.04.
+Following are the setup instruction for ubuntu 20.04.
 
 ```bash
-sudo apt install git postgresql python3 python3-dev python3-venv libpq-dev build-essential ruby ruby-dev gem redis-server memcached redis-tools -y
-curl -sL https://deb.nodesource.com/setup_12.x -o nodesource_setup.sh
-sudo bash nodesource_setup.sh
+sudo apt install git postgresql python3 python3-dev python3-virtualenv build-essential ruby ruby-dev gem redis-server memcached redis-tools -y
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
 sudo apt-get install node-less
 ```
 
@@ -56,17 +56,13 @@ you can find yours with this command `which lessc`
 sudo ln -s /usr/bin/lessc /usr/local/bin/lessc
 ```
 
-##### Then setup env using the following command
+##### Install virtualenvwrapper
+pip install virtualenvwrapper
+add the following to your path
 
-```bash
-python3 -m venv peeljobs-env
-```
+```export PATH="$PATH:/home/ubuntu/.local/bin"```
+```source /home/ubuntu/.local/bin/virtualenvwrapper.sh```
 
-##### Activate env with the following command
-
-```bash
-activate peeljobs-env/bin/activate
-```
 
 ##### Install requirements
 
@@ -76,12 +72,24 @@ pip install -r requirements.txt
 
 For env variables, refer to env.md in source directory and you need to create a .env file to keep all env variables with their respective values.
 
-##### Run elasticsearch docker
+##### Create db and import basic data to postgresql
+sudo -u postgres psql
+
+###### to change postgres password 
+ALTER USER postgres PASSWORD 'myPassword';
+
+create database peeljobs
+sudo -u postgres -i psql peeljobs < init_db/db_init.sql
+
+##### Install docker and Run elasticsearch
+to add user to docker group
+
+```sudo usermod -aG docker $USER```
+restart to apply changes.
 
 ```bash
-docker run -d --name elasticsearch --net=host -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:2.4
+docker run -d --name elasticsearch -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.3
 ```
-
 ##### Create index
 
 Finally `update_index` command will freshen all of the content in your index. It iterates through all indexed models and updates the records in the index.

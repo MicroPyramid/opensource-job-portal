@@ -15,12 +15,12 @@
 {% endblock %}
 {% block base %}
 <!-- main_container starts here -->
-<div class="row mar_lr_0 main_container">
+<div class="main_container">
 <div class="container">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+    <div class="breadcrumb_section row">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li><a href="/">Home</a></li>
           <li><a href="/profile/">Profile</a></li>
           <li class="current"><a>Project</a></li>
@@ -29,47 +29,48 @@
     </div>
   <div class="row mar_lr_0">
     <div class="profile_container">
-      <!-- profile_left_container starts here -->
+        <div class="row">
+                <!-- profile_left_container starts here -->
       {% include 'candidate/profile_completion.html' %}
       <!-- profile_left_container ends here -->
       <!-- profile_right_container starts here -->
       <div class="col-md-9 col-sm-9 detail_description_column">
-        <div class="panel">
-          <div class="panel-heading text-center text-uppercase">EDIT Project details</div>
-          <div class="panel-body">
+        <div class="card">
+          <div class="card-header text-center text-uppercase">EDIT Project details</div>
+          <div class="card-body">
             <form name="projectform" id="projectform" method="post">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Project Title<span class="important">*</span></label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Project Title<span class="important">*</span></label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" placeholder="Project Title"
                     name="name" id="name" value="{{ project.name }}">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Project Description<span
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Project Description<span
                   class="important">*</span></label>
                 <div class="col-sm-9">
                   <textarea class="form-control" placeholder="Project Description" name="description" id="description" style="height:156px;">{{ project.description }}</textarea>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">From<span class="important">*</span></label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">From<span class="important">*</span></label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" placeholder="From Date"
                   name="from_date" id="from_date"
                   value="{{ project.from_date|date:"m/d/Y" }}">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">To<span
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">To<span
                   class="important">*</span></label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" placeholder="To Date" name="to_date"
                   id="to_date" value="{{ project.to_date|date:"m/d/Y" }}">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Skills<span
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Skills<span
                   class="important">*</span></label>
                 <div class="col-sm-9">
                   <select class="form-control" name="skills" id="skills" multiple="multiple">
@@ -81,8 +82,8 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Project Location</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Project Location</label>
                 <div class="col-sm-9">
                   <select class="form-control" name="location" id="location">
                     <option value="">Select A Location</option>
@@ -94,23 +95,23 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Role</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Role</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" placeholder="Role" name="role"
                     id="role" value="{% if project.role %}{{ project.role }}{% endif %}">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Team Size</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Team Size</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" placeholder="Team Size" id="size"
                     name="size"
                     value="{% if project.size %}{{ project.size }}{% endif %}">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label"></label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label"></label>
                 <div class="col-sm-9">
                   <button type="submit" class='submit'>Save</button>
                   <button type="button" class='add_another'>Save & Add Other</button>
@@ -122,6 +123,7 @@
           </div>
         </div>
       </div>
+        </div>
     </div>
   </div>
 </div>

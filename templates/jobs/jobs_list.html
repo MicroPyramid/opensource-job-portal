@@ -30,8 +30,8 @@
   <div class="container">
     <!-- breadcrumb_section starts here -->
     <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li>
             <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
               <span class="name" >Home</span>
@@ -122,22 +122,24 @@
       <div class="col-md-9 left_container">
         <!-- side_filter_section starts here -->
         <div class="row ">
-          <div class="col-sm-3 col-md-3"   >
-            <div class="panel-group side_filter_section" id="accordion">
+          <div class="col-sm-3 col-md-3">
+           <div class="side_filter_section">
+            <div class="accordion" id="accordion">
               <h4 class="refine_head">Refine Filters</h4>
               <form name="refine-search" id="refine-search" method="POST" class='refine-autocomplete-me' action=".">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Location</a>
+                <div class="accordion-item">
+                  
+                    <h4 class="accordion-header" id="headingOne">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="filter_icon">Location <i class="fa-solid fa-plus"></i></button>
                     </h4>
-                  </div>
-                  <div id="collapseOne" class="panel-collapse collapse in">
-                    <div class="panel-body">
-                      <div class="search_input">
+                    
+
+                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                      
                         <input class="form-control" placeholder="Enter Any Location" name="location" id="refine_location" autocomplete="off">
                         <input type="hidden" class="form-control" name="refine_search" id="refine_search" value="">
-                      </div>
+                      
                       {% if state %}
                         {% get_refine_locations searched_location as total_refine_locations %}
                       {% else %}
@@ -151,14 +153,17 @@
                     </div>
                   </div>
                 </div>
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> States</a>
-                    </h4>
-                  </div>
-                  <div id="collapseSix" class="panel-collapse collapse in">
-                    <div class="panel-body">
+                <div class="accordion-item">
+                
+                  <h4 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      States <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </h4>
+              
+                  
+                  <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
                       <div class="search_input">
                         <input class="form-control" placeholder="Enter Any State" name="state" id="refine_state" autocomplete="off">
                       </div>
@@ -171,14 +176,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Skills</a>
+                <div class="accordion-item">
+                  
+                    <h4 class="accordion-header" id="headingThree">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree" class="filter_icon">Skills <i class="fa-solid fa-plus"></i></button>
                     </h4>
-                  </div>
-                  <div id="collapseTwo" class="panel-collapse collapse in">
-                    <div class="panel-body">
+                  
+                  <div id="collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
                       <div class="search_input">
                         <input class="form-control" placeholder="Enter Any Skill" name="q" autocomplete="off">
                         <input type="hidden" class="form-control" name="page" id="page" value="1">
@@ -197,14 +202,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseInd" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Industry</a>
-                    </h4>
-                  </div>
-                  <div id="collapseInd" class="panel-collapse collapse in">
-                    <div class="panel-body">
+                <div class="accordion-item">
+
+                  <h4 class="accordion-header" id="headingFour">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour" class="filter_icon">Industry <i class="fa-solid fa-plus"></i></button>
+                  </h4>
+
+                  <div id="collapseFour" class="accordion-collapse collapse show" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
                       <div class="search_input">
                         <input class="form-control" placeholder="Enter Any Industry" name="industry" autocomplete="off">
                       </div>
@@ -217,14 +222,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i>Degrees</a>
-                    </h4>
-                  </div>
-                  <div id="collapseFive" class="panel-collapse collapse in">
-                    <div class="panel-body">
+                <div class="accordion-item">
+                  <h4 class="accordion-header" id="headingFive">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive" class="filter_icon">Degrees <i class="fa-solid fa-plus"></i></button>
+                  </h4>
+
+
+                  <div id="collapseFive" class="accordion-collapse collapse show" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
                       <div class="search_input">
                         <input class="form-control" placeholder="Enter Any Degree" name="education" autocomplete="off">
                       </div>
@@ -238,14 +243,14 @@
                     </div>
                   </div>
                 </div> 
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Job Type</a>
-                    </h4>
-                  </div>
-                  <div id="collapseThree" class="panel-collapse collapse in">
-                    <div class="panel-body">
+                <div class="accordion-item">
+                  <h4 class="accordion-header" id="headingSix">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="true" aria-controls="collapsesix" class="filter_icon"> Job Type <i class="fa-solid fa-plus"></i></button>
+                  </h4>
+
+
+                  <div id="collapseSix" class="accordion-collapse collapse show" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
                       <ul class="list-group">
                         <li class="list-group-item"><input type="checkbox" class="refine_search refine-functional-area" name="job_type" value="full-time" {% if searched_job_type == 'full-time' %}checked{% endif %}{% if job_type == 'full-time' %}checked{% endif %}>Full-Time</li>
                         <li class="list-group-item"><input type="checkbox" class="refine_search refine-functional-area" name="job_type" value="internship" {% if searched_job_type == 'internship' %}checked{% endif %}{% if job_type == 'internship' %}checked{% endif %}>Internship</li>
@@ -255,14 +260,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour" class="filter_icon"><i class="more-less glyphicon glyphicon-minus"></i> Experience</a>
-                    </h4>
-                  </div>
-                  <div id="collapseFour" class="panel-collapse collapse in">
-                    <div class="panel-body">
+                <div class="accordion-item">
+
+                  <h4 class="accordion-header" id="headingSeven">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven" class="filter_icon">Experience <i class="fa-solid fa-plus"></i></button>
+                  </h4>
+
+                  <div id="collapseSeven" class="accordion-collapse collapse show" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
                       <div class="range-form">
                         <!--<input type="text" class="form-control" placeholder="10000"/>-->
                         <input type="hidden" name="refine_experience_min" id="refine_experience_min" value="{{ request.POST.refine_experience_min }}">
@@ -276,6 +281,7 @@
                 </div>
               </form>
             </div>
+           </div>
             <!-- side_filter_section ends here -->
           </div>
           <!-- job_list_section starts here -->
@@ -289,9 +295,9 @@
           <!-- job_list_section ends here -->
           {% if job_list%}
           <div class="text-center">
-            <div class="pagination_wrap">
+            <div class="pagination_wrap d-flex justify-content-center mt-4 mb-5">
           {% get_page current_page last_page as pages %}
-          <nav>
+          {% comment %} <nav>
             <ul class="pagination">
               {% if current_page != 1 %}
               <li class="prev"><a class="{{previous_page}}" href="{{current_url}}{{previous_page}}/"><i class="fa fa-angle-double-left"></i></a></li>
@@ -306,8 +312,26 @@
               <li><a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/"><i class="fa fa-angle-right pagination-next"></i></a></li>
               <li><a class="{{ after_page }}" href="{{current_url}}{{ after_page }}/"><i class="fa fa-angle-double-right"></i></a></li>
            {% endif %}
-    </ul>
-  </nav>
+            </ul>
+          </nav> {% endcomment %}
+
+          <nav aria-label="Page navigation">
+            <ul class="pagination">
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
 </div>
           </div>{% endif %}
           <!-- jobs_tabs starts here -->
@@ -451,7 +475,7 @@
 
 </script>
 <script type="text/javascript">
-$(window).load(function() {
+$(window).on('load', function() {
     // Animate loader off screen
     $(".se-pre-con").fadeOut("slow");;
   });
@@ -563,5 +587,18 @@ $(window).load(function() {
       $('.tab_block').removeClass('active')
       $('#' + panel).addClass('active');
     })
+
+    {% comment %} $(document).ready(function(){
+      $(".collapse.show").each(function(){
+        $(this).prev(".accordion-header").find(".far").addClass("fa-solid fa-minus").removeClass("fa-solid fa-plus");
+      });
+
+      $(".collapse").on('show.bs.collapse', function(){
+        $(this).prev(".accordion-header").find(".far").addClass("fa-solid fa-plus").removeClass("fa-solid fa-minus");
+
+      }).on('hide.bs.collapse',function(){
+        $(this).prev(".accordion-header").find(".far").addClass("fa-solid fa-plus").removeClass("fa-solid fa-plus");
+      });
+    }); {% endcomment %}
   </script>
 {% endblock %}

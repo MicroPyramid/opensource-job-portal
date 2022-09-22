@@ -169,9 +169,6 @@ class QualificationForm(ModelForm):
 
         if Qualification.objects.filter(name=form_cleaned_data["name"]).exists():
             raise forms.ValidationError("Qualification name Should be unique")
-
-        # if bool(re.search(r"[0-9]", form_cleaned_data['name'])):
-        #     raise forms.ValidationError("Qualification name Should not contain numbers")
         return form_cleaned_data["name"]
 
 

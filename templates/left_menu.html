@@ -33,6 +33,7 @@
       <form id="Jobsubscribeform" name="Jobsubscribeform" class="Jobsubscribeform" method = "POST">
         <div class="form-group">
           <select class="form-control" id="job_skills" name="skill" multiple>
+            
           </select>
           <span class="skill_err"></span>
           <p id="job_response_message"></p>
@@ -48,8 +49,8 @@
       </form>
     </div>
   </div>
-  <div style="margin-top:10px;margin-bottom:10px;">
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  {% comment %} <div style="margin-top:10px;margin-bottom:10px;"> {% endcomment %}
+    {% comment %} <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <!-- PJ Right Nav -->
       <ins class="adsbygoogle"
            style="display:block"
@@ -58,8 +59,14 @@
            data-ad-format="auto"></ins>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
+    </script> {% endcomment %}
+  {% comment %} </div> {% endcomment %}
+<script>
+      $("#multiple").select2({
+        placeholder: "Select a programming language",
+        allowClear: true
+    });
     </script>
-  </div>
   <!--subscribe_box form ends here -->
   <!--register_login form starts here -->
   {% if not request.user.is_authenticated %}

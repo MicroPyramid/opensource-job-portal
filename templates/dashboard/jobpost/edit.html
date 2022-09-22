@@ -133,87 +133,89 @@
             <!-- form div -->
             <div class="form_div">
               <div class="col-lg-12 inputs-block pad_lr_0">
-                <div class="col-lg-6 left_inputs pad_lr_0">
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Min Experience</label>
-                    <select class="input experience" name="min_year" id="min_year">
-                      <option value="" default>years</option>
-                      {% for year in years %}
-                      <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.min_year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="input_element">
-                    <select class="input experience" name="min_month" id="min_month">
-                      <option value="" default>Months</option>
-                      {% for month in months%}
-                      <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.min_month|slugify month.0 %} selected {% endifequal %}>{{ month.1 }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <!--/ input element -->
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Technical Skills</label>
-                    <select class="input select2" multiple name="skills" id="skills">
-                      {% for skill in skills %}
-                      <option value="{{skill.id}}" {% if skill in job_post.skills.all %} selected {% endif %}>{{skill.name}}</option>
-                      {% endfor %}
-                      <option value="other_skills">Other Technical Skill</option>
-                    </select>
-                    <input type="hidden" name="company_description" id="company_description" value="{{ job_post.company_description }}">
-                    <input type="hidden" name="job_interview_location" id="job_interview_location">
-                    <input type="hidden" class="form-control" placeholder="Maximum Salary" id='status' name="status">
-                  </div>
-                  <!--/ input element -->
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Major Skill{% if job_type == 'government' %}{% else %}<span class="error">*</span>{% endif %}</label>
-                    <select class="input select2" name="major_skill" id="major_skill">
-                      {% for skill in skills %}
-                      <option value="{{skill.id}}" {% ifequal skill.id job_post.major_skill.id %} selected {% endifequal %}>{{skill.name}}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <!--/ input element -->
-                </div>
-                <div class="col-lg-6 left_inputs pad_lr_0">
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Max Experience</label>
-                    <select class="input experience" name="max_year" id="max_year">
-                      <option value="" default>years</option>
-                      {% for year in years %}
-                      <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.max_year|slugify year.0 %} selected {% endifequal %}{% if job_post.min_year|change_to_int > year.0|change_to_int %} class="max_experience" {% endif %}>{{ year.1}}</option>
-                      {% endfor %}
+                <div class="row">
+                  <div class="col-lg-6 left_inputs pad_lr_0">
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Min Experience</label>
+                      <select class="input experience" name="min_year" id="min_year">
+                        <option value="" default>years</option>
+                        {% for year in years %}
+                        <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.min_year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
+                        {% endfor %}
                       </select>
-                  </div>
-                  <div class="input_element">
-                      <select class="input experience" name="max_month" id="max_month">
+                    </div>
+                    <div class="input_element">
+                      <select class="input experience" name="min_month" id="min_month">
                         <option value="" default>Months</option>
                         {% for month in months%}
-                          {% ifequal job_post.min_year|slugify  job_post.max_year|slugify %}
-                            <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% ifequal job_post.max_month|slugify month.0 %} selected {% endifequal %}>{{ month.1 }}</option>
-                          {% else %}
-                            <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% ifequal job_post.max_month|slugify month.0 %} selected {% endifequal %} {% if job_post.min_year >= job_post.max_year %} class="max_experience" {% endif %}>{{ month.1 }}</option>
-                          {% endifequal %}
+                        <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.min_month|slugify month.0 %} selected {% endifequal %}>{{ month.1 }}</option>
                         {% endfor %}
-                    </select>
+                      </select>
+                    </div>
+                    <!--/ input element -->
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Technical Skills</label>
+                      <select class="input select2" multiple name="skills" id="skills">
+                        {% for skill in skills %}
+                        <option value="{{skill.id}}" {% if skill in job_post.skills.all %} selected {% endif %}>{{skill.name}}</option>
+                        {% endfor %}
+                        <option value="other_skills">Other Technical Skill</option>
+                      </select>
+                      <input type="hidden" name="company_description" id="company_description" value="{{ job_post.company_description }}">
+                      <input type="hidden" name="job_interview_location" id="job_interview_location">
+                      <input type="hidden" class="form-control" placeholder="Maximum Salary" id='status' name="status">
+                    </div>
+                    <!--/ input element -->
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Major Skill{% if job_type == 'government' %}{% else %}<span class="error">*</span>{% endif %}</label>
+                      <select class="input select2" name="major_skill" id="major_skill">
+                        {% for skill in skills %}
+                        <option value="{{skill.id}}" {% ifequal skill.id job_post.major_skill.id %} selected {% endifequal %}>{{skill.name}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <!--/ input element -->
                   </div>
-                  <!--/ input element -->
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Educational Qualification</label>
-                    <select class="input select2" multiple name="edu_qualification" id="edu_qualification">
-                      <option value=''>select a Qualification</option>
-                      {% for qualification in qualifications %}
-                      <option value="{{ qualification.id }}" {% if qualification in job_post.edu_qualification.all %} selected {% endif %}>{{ qualification.name }}</option>
-                      {% endfor %}
-                      <option value="other_edu_qualification">Other Educational Qualification</option>
-                    </select>
+                  <div class="col-lg-6 left_inputs pad_lr_0">
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Max Experience</label>
+                      <select class="input experience" name="max_year" id="max_year">
+                        <option value="" default>years</option>
+                        {% for year in years %}
+                        <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.max_year|slugify year.0 %} selected {% endifequal %}{% if job_post.min_year|change_to_int > year.0|change_to_int %} class="max_experience" {% endif %}>{{ year.1}}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <div class="input_element">
+                        <select class="input experience" name="max_month" id="max_month">
+                          <option value="" default>Months</option>
+                          {% for month in months%}
+                            {% ifequal job_post.min_year|slugify  job_post.max_year|slugify %}
+                              <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% ifequal job_post.max_month|slugify month.0 %} selected {% endifequal %}>{{ month.1 }}</option>
+                            {% else %}
+                              <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% ifequal job_post.max_month|slugify month.0 %} selected {% endifequal %} {% if job_post.min_year >= job_post.max_year %} class="max_experience" {% endif %}>{{ month.1 }}</option>
+                            {% endifequal %}
+                          {% endfor %}
+                      </select>
+                    </div>
+                    <!--/ input element -->
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Educational Qualification</label>
+                      <select class="input select2" multiple name="edu_qualification" id="edu_qualification">
+                        <option value=''>select a Qualification</option>
+                        {% for qualification in qualifications %}
+                        <option value="{{ qualification.id }}" {% if qualification in job_post.edu_qualification.all %} selected {% endif %}>{{ qualification.name }}</option>
+                        {% endfor %}
+                        <option value="other_edu_qualification">Other Educational Qualification</option>
+                      </select>
+                    </div>
+                    <!--/ input element -->
                   </div>
-                  <!--/ input element -->
                 </div>
               </div>
               <!--input element -->

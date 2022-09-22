@@ -16,12 +16,12 @@
 {% endblock %}
 {% block base %}
   <!-- main_container starts here -->
-    <div class="row mar_lr_0 main_container">
+    <div class="main_container">
       <div class="container">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+    <div class="breadcrumb_section row">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li><a href="/">Home</a></li>
           <li><a href="/profile/">Profile</a></li>
           <li class="current"><a>Education</a></li>
@@ -30,98 +30,100 @@
     </div>
         <div class="row mar_lr_0">
           <div class="profile_container">
-            <!-- profile_left_container starts here -->
+              <div class="row">
+                  <!-- profile_left_container starts here -->
               {% include 'candidate/profile_completion.html' %}
-            <!-- profile_left_container ends here -->
-            <!-- profile_right_container starts here -->
-          <div class="col-md-9 col-sm-9 detail_description_column">
-          <div class="panel">
-            <div class="panel-heading text-center text-uppercase">EDIT Eduacation details</div>
-            <div class="panel-body">
-            <form name="educationform" id="educationform" method="post">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Current Education</label>
-                  <div class="col-sm-9">
-                    <input type="checkbox" name="current_education" id="current_education" {% if education.current_education %} checked {% endif %}>
-                  </div>
+              <!-- profile_left_container ends here -->
+              <!-- profile_right_container starts here -->
+              <div class="col-md-9 col-sm-9 detail_description_column">
+                <div class="card">
+                  <div class="card-header text-center text-uppercase">EDIT Eduacation details</div>
+                  <div class="card-body">
+                  <form name="educationform" id="educationform" method="post">
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">Current Education</label>
+                        <div class="col-sm-9">
+                          <input type="checkbox" name="current_education" id="current_education" {% if education.current_education %} checked {% endif %}>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">Institute Name<span class="important">*</span></label>
+                        <div class="col-sm-9">
+                          <input type="text" class="form-control" placeholder="Institute Name" name="name" id="name" value="{{ education.institute.name}}">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">City<span class="important">*</span></label>
+                        <div class="col-sm-9">
+                          <select class="form-select" name="city" id="city">
+                            <option value="">Select A Location</option>
+                            {% for city in cities %}
+                            <option value="{{ city.id }}" {% ifequal city.id|slugify education.institute.city.id|slugify %} selected {% endifequal %}>{{ city.name }}</option>
+                            {% endfor%}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">From<span class="important">*</span></label>
+                        <div class="col-sm-9">
+                          <input type="text" class="form-control" placeholder="From" name="from_date" id="from_date" value="{{ education.from_date|date:"m/d/Y" }}">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">To<span class="important">*</span></label>
+                        <div class="col-sm-9">
+                          <input type="text" class="form-control" placeholder="To Date" name="to_date" id="to_date" {% if not education.current_education %}value="{{ education.to_date|date:"m/d/Y" }}"{%else%}{%endif%} {% if education.current_education %}disabled {% endif %}>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">Degree Name<span class="important">*</span></label>
+                        <div class="col-sm-9">
+                          <select class="form-select" name="degree_name" id="degree_name">
+                            <option value="">Select A Degree Name</option>
+                            {% for qualification in qualifications %}
+                            <option value="{{ qualification.id }}" {% ifequal qualification.id|slugify education.degree.degree_name.id|slugify %} selected {% endifequal %}>{{ qualification.name }}</option>
+                            {% endfor%}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">Degree Type<span class="important">*</span></label>
+                        <div class="col-sm-9">
+                          <select class="form-select" name="degree_type" id="degree_type">
+                            <option value="">Select A Degree Type</option>
+                            {% for degree_type in degree_types %}
+                            <option value="{{ degree_type.0 }}" {% ifequal degree_type.0|slugify education.degree.degree_type|slugify %} selected {% endifequal %}>{{ degree_type.1 }}</option>
+                            {% endfor%}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">Specialization<span class="important">*</span></label>
+                        <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="Specialization" id="specialization" name="specialization" value="{{ education.degree.specialization }}">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label">Score(Pecentage/CGPA)</label>
+                        <div class="col-sm-9">
+                          <input type="text" class="form-control" placeholder="Score" name="score" id="score" value="{{ education.score }}">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label for="colFormLabelSm" class="col-sm-3 control-label"></label>
+                        <div class="col-sm-9">
+                          <button type="submit" class='submit'>Save</button>
+                          <button type="button" class='add_another'>Save & Add Other</button>
+                          <button type="button" class="cancelbutton">Cancel</button>
+                        </div>
+                      </div>
+                      <div class="clearfix"></div>
+                  </form>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Institute Name<span class="important">*</span></label>
-                  <div class="col-sm-9">
-                    <input type="text" class="form-control" placeholder="Institute Name" name="name" id="name" value="{{ education.institute.name}}">
-                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">City<span class="important">*</span></label>
-                  <div class="col-sm-9">
-                    <select class="form-control" name="city" id="city">
-                      <option value="">Select A Location</option>
-                      {% for city in cities %}
-                      <option value="{{ city.id }}" {% ifequal city.id|slugify education.institute.city.id|slugify %} selected {% endifequal %}>{{ city.name }}</option>
-                      {% endfor%}
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">From<span class="important">*</span></label>
-                  <div class="col-sm-9">
-                    <input type="text" class="form-control" placeholder="From" name="from_date" id="from_date" value="{{ education.from_date|date:"m/d/Y" }}">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">To<span class="important">*</span></label>
-                  <div class="col-sm-9">
-                    <input type="text" class="form-control" placeholder="To Date" name="to_date" id="to_date" {% if not education.current_education %}value="{{ education.to_date|date:"m/d/Y" }}"{%else%}{%endif%} {% if education.current_education %}disabled {% endif %}>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Degree Name<span class="important">*</span></label>
-                  <div class="col-sm-9">
-                    <select class="form-control" name="degree_name" id="degree_name">
-                      <option value="">Select A Degree Name</option>
-                      {% for qualification in qualifications %}
-                      <option value="{{ qualification.id }}" {% ifequal qualification.id|slugify education.degree.degree_name.id|slugify %} selected {% endifequal %}>{{ qualification.name }}</option>
-                      {% endfor%}
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Degree Type<span class="important">*</span></label>
-                  <div class="col-sm-9">
-                    <select class="form-control" name="degree_type" id="degree_type">
-                      <option value="">Select A Degree Type</option>
-                      {% for degree_type in degree_types %}
-                      <option value="{{ degree_type.0 }}" {% ifequal degree_type.0|slugify education.degree.degree_type|slugify %} selected {% endifequal %}>{{ degree_type.1 }}</option>
-                      {% endfor%}
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Specialization<span class="important">*</span></label>
-                  <div class="col-sm-9">
-                  <input type="text" class="form-control" placeholder="Specialization" id="specialization" name="specialization" value="{{ education.degree.specialization }}">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Score(Pecentage/CGPA)</label>
-                  <div class="col-sm-9">
-                    <input type="text" class="form-control" placeholder="Score" name="score" id="score" value="{{ education.score }}">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label"></label>
-                  <div class="col-sm-9">
-                    <button type="submit" class='submit'>Save</button>
-                    <button type="button" class='add_another'>Save & Add Other</button>
-                    <button type="button" class="cancelbutton">Cancel</button>
-                  </div>
-                </div>
-                <div class="clearfix"></div>
-            </form>
-           </div>
+              </div>
+              </div>
           </div>
-          </div>
-        </div>
     </div>
     </div>
     {% block pj_info %}

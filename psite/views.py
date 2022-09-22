@@ -8,16 +8,16 @@ from django.http.response import HttpResponseRedirect, HttpResponse
 from django.conf import settings
 from itertools import chain
 from django.template import loader
-from oauth2client.contrib import xsrfutil
+# from oauth2client.contrib import xsrfutil
 from django.urls import reverse
 
 from peeldb.models import JobPost, ENQUERY_TYPES, Skill, City, Qualification, State
 from .forms import SimpleContactForm
 from mpcomp.views import get_prev_after_pages_count
 from django.db.models import Count, F
-from pjob.calendar_events import FLOW
-from oauth2client.contrib.django_util.storage import DjangoORMStorage
-from peeldb.models import CredentialsModel
+# from pjob.calendar_events import FLOW
+# from oauth2client.contrib.django_util.storage import DjangoORMStorage
+# from peeldb.models import CredentialsModel
 from dashboard.tasks import send_email
 
 
@@ -30,9 +30,8 @@ def pages(request, page_name):
         "faq",
     ]
     if page_name in pages_slugs:
-        if not request.is_mobile:
-            return render(request, "pages/" + page_name + ".html")
-        return render(request, "mobile/" + page_name + ".html")
+        return render(request, "pages/" + page_name + ".html")
+        
 
     message = "Sorry, the page you requested can not be found"
     reason = "The URL may be misspelled or the page you're looking for is no longer available."
@@ -48,8 +47,8 @@ def pages(request, page_name):
     )
 
 
-def users_login(request):
-    return render(request, "login.html")
+# def users_login(request):
+    # return render(request, "login.html")
 
 
 def get_out(request):
@@ -159,10 +158,6 @@ def contact(request):
             return HttpResponse(json.dumps(data))
         data = {"error": True, "response": validate_simplecontactform.errors}
         return HttpResponse(json.dumps(data))
-    if request.is_mobile:
-        return render(
-            request, "mobile/contact-us.html", {"enquery_types": ENQUERY_TYPES}
-        )
     return render(request, "pages/contact-us.html", {"enquery_types": ENQUERY_TYPES})
 
 
@@ -183,7 +178,7 @@ def sitemap(request, **kwargs):
     internships = JobPost.objects.filter(status="Live", job_type="internship")
     walk_ins = JobPost.objects.filter(status="Live", job_type="walk-in")
     government_jobs = JobPost.objects.filter(status="Live", job_type="government")
-    states = State.objects.filter(status="Enabled").exclude(state__name__in=F("name"))
+    states = State.objects.filter(status="Enabled").exclude(state__name__in=[F("name")])
     jobposts = list(chain(full_jobposts, internships, walk_ins, government_jobs))
     no_pages = int(math.ceil(float(len(jobposts)) / 100))
     page = 1
@@ -197,7 +192,7 @@ def sitemap(request, **kwargs):
         jobposts = jobposts[(page - 8) * 100 : (page - 7) * 100]
     else:
         jobposts = jobposts[(page - 1) * 100 : page * 100]
-    template = "mobile/sitemap.html" if request.is_mobile else "sitemap.html"
+    template = "sitemap.html"
     return render(
         request,
         template,

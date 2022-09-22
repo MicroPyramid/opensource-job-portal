@@ -206,18 +206,18 @@ reg_v = re.compile(
 )
 
 
-class DetectMobileBrowser(MiddlewareMixin):
-    def process_request(self, request):
-        if "referer" not in request.session.keys():
-            request.session["referer"] = request.META.get("HTTP_REFERER", "")
-        if "is_mobile" not in request.session.keys():
-            if request.META.get("HTTP_USER_AGENT", ""):
-                user_agent = request.META["HTTP_USER_AGENT"]
-                b = reg_b.search(user_agent)
-                v = reg_v.search(user_agent[0:4])
-                if b or v:
-                    request.session["is_mobile"] = True
-        request.is_mobile = request.session.get("is_mobile", False)
+# class DetectMobileBrowser(MiddlewareMixin):
+#     def process_request(self, request):
+#         if "referer" not in request.session.keys():
+#             request.session["referer"] = request.META.get("HTTP_REFERER", "")
+#         if "is_mobile" not in request.session.keys():
+#             if request.META.get("HTTP_USER_AGENT", ""):
+#                 user_agent = request.META["HTTP_USER_AGENT"]
+#                 b = reg_b.search(user_agent)
+#                 v = reg_v.search(user_agent[0:4])
+#                 if b or v:
+#                     request.session["is_mobile"] = True
+#         request.is_mobile = request.session.get("is_mobile", False)
 
 
 class LowerCased(MiddlewareMixin):

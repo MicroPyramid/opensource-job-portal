@@ -111,7 +111,7 @@ def index(request):
         "states": states,
     }
 
-    template = "mobile/index.html" if request.is_mobile else "index.html"
+    template = "index.html"
     return render(request, template, data)
 
 
@@ -297,39 +297,38 @@ def profile(request):
         user = request.user
         user.profile_completeness = user.profile_completion_percentage
         user.save()
-        if not request.is_mobile:
-            nationality = ""
-            functional_areas = FunctionalArea.objects.filter(status="Active").order_by(
-                "name"
-            )
-            cities = (
-                City.objects.filter(status="Enabled")
-                .exclude(slug__icontains="india")
-                .order_by("name")
-            )
-            skills = Skill.objects.filter(status="Active").order_by("name")
-            industries = (
-                Industry.objects.filter(status="Active").order_by("name").exclude(id=36)
-            )
-            if request.user.nationality:
-                nationality = Country.objects.get(id=request.user.nationality)
-            return render(
-                request,
-                "candidate/view_userinfo.html",
-                {
-                    "nationality": nationality,
-                    "cities": cities,
-                    "skills": skills,
-                    "years": YEARS,
-                    "months": MONTHS,
-                    "industries": industries,
-                    "languages": Language.objects.all(),
-                    "martial_status": MARTIAL_STATUS,
-                    "functional_areas": functional_areas,
-                    "unread_messages": messages.count(),
-                },
-            )
-        return render(request, "mobile/profile/profile.html")
+    
+        nationality = ""
+        functional_areas = FunctionalArea.objects.filter(status="Active").order_by(
+            "name"
+        )
+        cities = (
+            City.objects.filter(status="Enabled")
+            .exclude(slug__icontains="india")
+            .order_by("name")
+        )
+        skills = Skill.objects.filter(status="Active").order_by("name")
+        industries = (
+            Industry.objects.filter(status="Active").order_by("name").exclude(id=36)
+        )
+        if request.user.nationality:
+            nationality = Country.objects.get(id=request.user.nationality)
+        return render(
+            request,
+            "candidate/view_userinfo.html",
+            {
+                "nationality": nationality,
+                "cities": cities,
+                "skills": skills,
+                "years": YEARS,
+                "months": MONTHS,
+                "industries": industries,
+                "languages": Language.objects.all(),
+                "martial_status": MARTIAL_STATUS,
+                "functional_areas": functional_areas,
+                "unread_messages": messages.count(),
+            },
+        )
     return HttpResponseRedirect("/")
 
 
@@ -432,9 +431,7 @@ def edit_personalinfo(request):
             "functional_areas": functional_areas,
         }
         template = (
-            "mobile/profile/edit_personalinfo.html"
-            if request.is_mobile
-            else "candidate/edit_personalinfo.html"
+            "candidate/edit_personalinfo.html"
         )
         return render(request, template, data)
 
@@ -500,9 +497,7 @@ def edit_profile_description(request):
             data = {"error": True, "response": validate_personalform.errors}
         return HttpResponse(json.dumps(data))
     template = (
-        "mobile/profile/edit_profile_description.html"
-        if request.is_mobile
-        else "candidate/edit_profile_description.html"
+        "candidate/edit_profile_description.html"
     )
     return render(request, template)
 
@@ -546,9 +541,7 @@ def edit_professionalinfo(request):
             "months": MONTHS,
         }
         template = (
-            "mobile/profile/edit_professionalInfo.html"
-            if request.is_mobile
-            else "candidate/edit_professionalInfo.html"
+            "candidate/edit_professionalInfo.html"
         )
         return render(request, template, data)
 
@@ -558,9 +551,7 @@ def add_language(request):
     if request.method == "GET":
         languages = Language.objects.all()
         template = (
-            "mobile/profile/add_language.html"
-            if request.is_mobile
-            else "candidate/add_language.html"
+            "candidate/add_language.html"
         )
         return render(request, template, {"languages": languages})
     if request.POST.get("language"):
@@ -601,13 +592,11 @@ def edit_language(request, language_id):
         languages = Language.objects.all()
         if user_language:
             template = (
-                "mobile/profile/editlanguage.html"
-                if request.is_mobile
-                else "candidate/editlanguage.html"
+                "candidate/editlanguage.html"
             )
             data = {"language": user_language[0], "languages": languages}
         else:
-            template = "mobile/404.html" if request.is_mobile else "404.html"
+            template = "404.html"
             data = {
                 "message": "Sorry, User with this language not exists",
                 "reason": "The URL may be misspelled or the language you're looking for is no longer available.",
@@ -678,9 +667,7 @@ def delete_language(request, language_id):
 def add_experience(request):
     if request.method == "GET":
         template = (
-            "mobile/profile/add_experience.html"
-            if request.is_mobile
-            else "candidate/add_experience.html"
+            "candidate/add_experience.html"
         )
         return render(request, template)
     work_experience = WorkExperienceForm(request.POST)
@@ -732,13 +719,11 @@ def edit_experience(request, experience_id):
         if experiences:
             experience = experiences[0]
             template = (
-                "mobile/profile/edit_experience.html"
-                if request.is_mobile
-                else "candidate/edit_experience.html"
+                "candidate/edit_experience.html"
             )
             data = {"experience": experience}
         else:
-            template = "mobile/404.html" if request.is_mobile else "404.html"
+            template = "404.html"
             data = {
                 "message": "Sorry, User with this Experience not exists",
                 "reason": "The URL may be misspelled or the experience you're looking for is no longer available.",
@@ -803,9 +788,7 @@ def delete_experience(request, experience_id):
 def add_education(request):
     if request.method == "GET":
         template = (
-            "mobile/profile/add_education.html"
-            if request.is_mobile
-            else "candidate/add_education.html"
+            "candidate/add_education.html"
         )
         return render(
             request,
@@ -888,9 +871,7 @@ def edit_education(request, education_id):
     if education:
         if request.method == "GET":
             template = (
-                "mobile/profile/edit_education.html"
-                if request.is_mobile
-                else "candidate/edit_education.html"
+                "candidate/edit_education.html"
             )
             return render(
                 request,
@@ -971,7 +952,7 @@ def edit_education(request, education_id):
                 errors[k] = education_institute_valid.errors[k][0]
             return HttpResponse(json.dumps({"error": True, "response": errors}))
     else:
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         reason = "The URL may be misspelled or the education you're looking for is no longer available."
         return render(
             request,
@@ -1005,9 +986,7 @@ def add_technicalskill(request):
             .order_by("name")
         )
         template = (
-            "mobile/profile/add_technicalskill.html"
-            if request.is_mobile
-            else "candidate/add_technicalskill.html"
+            "candidate/add_technicalskill.html"
         )
         return render(
             request,
@@ -1059,9 +1038,7 @@ def edit_technicalskill(request, technical_skill_id):
         if request.method == "GET":
             skills = Skill.objects.filter(status="Active").order_by("name")
             template = (
-                "mobile/profile/edit_technicalskill.html"
-                if request.is_mobile
-                else "candidate/edit_technicalskill.html"
+                "candidate/edit_technicalskill.html"
             )
             return render(
                 request,
@@ -1105,7 +1082,7 @@ def edit_technicalskill(request, technical_skill_id):
         return HttpResponse(json.dumps(data))
     else:
         message = "Sorry, User with this Technical Skill not exists"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(request, template, {"message": message}, status=404)
 
 
@@ -1127,9 +1104,7 @@ def delete_technicalskill(request, technical_skill_id):
 def add_project(request):
     if request.method == "GET":
         template = (
-            "mobile/profile/add_project.html"
-            if request.is_mobile
-            else "candidate/add_project.html"
+            "candidate/add_project.html"
         )
         return render(
             request,
@@ -1170,9 +1145,7 @@ def edit_project(request, project_id):
     if projects:
         if request.method == "GET":
             template = (
-                "mobile/profile/edit_project.html"
-                if request.is_mobile
-                else "candidate/edit_project.html"
+                "candidate/edit_project.html"
             )
             return render(
                 request,
@@ -1208,7 +1181,7 @@ def edit_project(request, project_id):
         return HttpResponse(json.dumps(data))
     else:
         message = "Sorry, User with this Project not exists"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(request, template, {"message": message}, status=404)
 
 
@@ -1247,9 +1220,7 @@ def edit_email(request):
 
     else:
         template = (
-            "mobile/profile/edit_email.html"
-            if request.is_mobile
-            else "candidate/edit_email.html"
+            "candidate/edit_email.html"
         )
         return render(request, template)
 
@@ -1263,9 +1234,7 @@ def job_alert(request):
             meta_description = Template(meta[0].meta_description).render(Context({}))
             h1_tag = Template(meta[0].h1_tag).render(Context({}))
         template = (
-            "mobile/alert/job_alert.html"
-            if request.is_mobile
-            else "alert/job_alert.html"
+            "alert/job_alert.html"
         )
         return render(
             request,
@@ -1385,7 +1354,7 @@ def job_alert_results(request, job_alert_id):
     if request.user.is_authenticated:
         if request.user.is_staff or request.user.user_type == "RR":
             message = "Sorry, No Job Alerts Availableble"
-            template = "mobile/404.html" if request.is_mobile else "404.html"
+            template = "404.html"
             return render(request, template, {"message": message}, status=404)
 
     if job_alerts:
@@ -1438,13 +1407,11 @@ def job_alert_results(request, job_alert_id):
             "last_page": no_pages,
         }
         template = (
-            "mobile/alert/job_alert_results.html"
-            if request.is_mobile
-            else "alert/job_alert_results.html"
+           "alert/job_alert_results.html"
         )
         return render(request, template, data)
     else:
-        template = "mobile/alert/list.html" if request.is_mobile else "alert/list.html"
+        template = "alert/list.html"
         return render(request, "alert/list.html", {"job_alerts": []})
 
 
@@ -1461,9 +1428,7 @@ def modify_job_alert(request, job_alert_id):
                 "job_alert": job_alert,
             }
             template = (
-                "mobile/alert/modify_job_alert.html"
-                if request.is_mobile
-                else "alert/modify_job_alert.html"
+                "alert/modify_job_alert.html"
             )
             return render(request, template, data)
         validate_jobalert = JobAlertForm(request.POST, instance=job_alert)
@@ -1498,7 +1463,7 @@ def modify_job_alert(request, job_alert_id):
         return HttpResponse(json.dumps(data))
     else:
         message = "Sorry, No Alerts Fount"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(request, template, {"message": message}, status=404)
 
 
@@ -1535,7 +1500,7 @@ def alerts_list(request, **kwargs):
         prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
             page, no_pages
         )
-        template = "mobile/alert/list.html" if request.is_mobile else "alert/list.html"
+        template = "alert/list.html"
         return render(
             request,
             template,
@@ -1555,9 +1520,7 @@ def alerts_list(request, **kwargs):
         )
     else:
         template = (
-            "mobile/alert/job_alert.html"
-            if request.is_mobile
-            else "alert/job_alert.html"
+            "alert/job_alert.html"
         )
         return render(
             request,
@@ -1636,9 +1599,7 @@ def user_password_change(request):
                 json.dumps({"error": True, "response": validate_changepassword.errors})
             )
     template = (
-        "mobile/profile/change_user_password.html"
-        if request.is_mobile
-        else "candidate/change_user_password.html"
+        "candidate/change_user_password.html"
     )
     return render(request, template)
 
@@ -1664,7 +1625,7 @@ def question_view(request, que_id):
                 "latest_questions": latest_questions[:7],
             },
         )
-    template = "mobile/404.html" if request.is_mobile else "404.html"
+    template = "404.html"
     data = {
         "message": "Sorry, Question does not exists",
         "reason": "The URL may be misspelled or the language you're looking for is no longer available.",
@@ -1956,9 +1917,7 @@ def messages(request):
             )
             users = users.order_by(recruiter_order)
         template = (
-            "mobile/profile/profile.html"
-            if request.is_mobile
-            else "candidate/user_messages.html"
+            "candidate/user_messages.html"
         )
         return render(request, template, {"recruiters": users, "jobs": jobs})
     else:

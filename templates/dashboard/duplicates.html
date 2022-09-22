@@ -8,14 +8,14 @@
       <section id='blog-post-create'>
         <h4>Move Duplicate {{ status }}</h4>
         <h4>
-          <a class="label {% if status == 'skills' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:move_duplicates" 'skills' %}">Skills</a>/
-          <a class="label {% if status == 'degrees' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:move_duplicates" 'degrees' %}">Degrees</a> /
-          <a class="label {% if status == 'locations' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:move_duplicates" 'locations' %}">Locations</a>
+          <a class="badge {% if status == 'skills' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:move_duplicates" 'skills' %}">Skills</a>/
+          <a class="badge {% if status == 'degrees' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:move_duplicates" 'degrees' %}">Degrees</a> /
+          <a class="badge {% if status == 'locations' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:move_duplicates" 'locations' %}">Locations</a>
         </h4>
         <form name="companyform" id="companyform" method="post">
         <div class="form-horizontal mail_form">
-          <div class="form-group">
-            <label class="col-sm-4 control-label">{{ status }} - Status - JobPosts</label>
+          <div class="row mb-3">
+            <label for="colFormLabelSm" class="col-sm-4 control-label">{{ status }} - Status - JobPosts</label>
             <div class="col-sm-8">
             <select class="input company-select2" name="original" id="original">
               <option value="">Select A {{ status }}</option>
@@ -25,19 +25,19 @@
             </select>
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Select Duplicate {{ status }}</label>
+          <div class="row mb-3">
+            <label for="colFormLabelSm" class="col-sm-4 control-label">Select Duplicate {{ status }}</label>
             <div class="col-sm-8">
             <select class="input select2" multiple name="duplicates" id="duplicates">
             </select>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-2 control-label">&nbsp;</label>
+          <div class="row mb-3">
+            <label for="colFormLabelSm" class="col-sm-2 control-label">&nbsp;</label>
             <div class="col-sm-10">
-              <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
-              <button class="cancelbutton"><i class="fa fa-floppy-o"></i>Cancel</button>
+              <button type="submit"><i class="fa-solid fa-floppy-disk"></i>Save</button>
+              <button class="cancelbutton"><i class="fa-solid fa-floppy-disk"></i>Cancel</button>
             </div>
           </div>
         </div>

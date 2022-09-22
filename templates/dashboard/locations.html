@@ -5,21 +5,23 @@
         <div class="title">
             <h3>Location(No Of Job Posts)
               <span>
-                <a class={% if status == 'active'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:locations' 'active' %}">Active</a> /
-                <a class={% if status == 'inactive'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:locations' 'inactive' %}">Inactive</a>
+                <a class={% if status == 'active'%}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:locations' 'active' %}">Active</a> /
+                <a class={% if status == 'inactive'%}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:locations' 'inactive' %}">Inactive</a>
               </span> 
             </h3>
         </div>
         <div class="search_form clearfix">
           <form id="search_form" name="adv-search-form" class="search-form" method="POST">
-            <div class="col-md-12 search_form">
-              <div class="col-md-5">
-                <input type="text" name="search" id="search" class="form-control"
-                       placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
-                <input type="hidden" name="page" id="page" value="{{ page }}">
-              </div>
-              <div class="col-md-3">
-                <button type="submit" class="form-control submit">Submit</button>
+            <div class="col-md-12 search_form mt-3">
+              <div class="row">
+                <div class="col-md-5">
+                  <input type="text" name="search" id="search" class="form-control"
+                         placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
+                  <input type="hidden" name="page" id="page" value="{{ page }}">
+                </div>
+                <div class="col-md-3">
+                  <button type="submit" class="form-control submit">Submit</button>
+                </div>
               </div>
             </div>
           </form>
@@ -36,8 +38,8 @@
                             {% if location.child_cities.all %}
                               <a><i class="fa fa-chevron-down other_city" title='View Other Cities'></i></a>
                             {% endif %}
-                              <a><i class="fa fa-pencil-square-o edit"></i></a>
-                              <a><i class="fa fa fa-trash-o delete" data-id='{{ location.id }}'></i></a>
+                              <a><i class="fa-solid fa-pen-to-square edit"></i></a>
+                              <a><i class="fa-solid fa-trash-can delete" data-id='{{ location.id }}'></i></a>
                           </div>
                           <div class="clearfix"></div>
                           <div class="edit_panel">
@@ -76,9 +78,9 @@
         </div>
     </section>
     {% if locations %}
-        <div class="pagination_wrap">
+        <div class="pagination_wrap d-flex justify-content-center mt-4">
             {% get_page current_page last_page as pages %}
-            <nav>
+            {% comment %} <nav>
                 <ul class="pagination">
                     {% if current_page != 1 %}
                         <li class="prev"><a
@@ -104,6 +106,24 @@
                                     class="fa fa-angle-double-right"></i></a></li>
                     {% endif %}
                 </ul>
+            </nav> {% endcomment %}
+
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                <li class="page-item">
+                  <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
             </nav>
         </div>
     {% endif %}

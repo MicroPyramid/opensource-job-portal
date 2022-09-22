@@ -1,0 +1,225 @@
+/* $brown:#633329; */
+.marl_15 {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.marl_5 {
+  margin-left: -5px !important;
+  margin-right: -5px !important;
+}
+
+/* media values */
+/* media values */
+.pagination {
+  text-align: center;
+  display: block;
+}
+.pagination .mob_pagination {
+  display: none;
+}
+@media (min-width: 240px) and (max-width: 852px) {
+  .pagination .mob_pagination {
+    text-align: right;
+    display: block;
+  }
+}
+.pagination .mob_pagination .link_each {
+  border-radius: 0;
+  display: inline-block;
+  padding: 0px 15px;
+  padding-top: 5px;
+  width: auto;
+  height: 30px;
+}
+.pagination .pages_count {
+  display: none;
+  float: left;
+  padding-top: 10px;
+  color: #222223;
+}
+.pagination .pages_count strong {
+  color: #0B86C6;
+  font-weight: 700;
+  padding: 0px 5px;
+  font-size: 1.2em;
+}
+@media (min-width: 240px) and (max-width: 852px) {
+  .pagination .pages_count {
+    display: inline-block !important;
+  }
+}
+.pagination a .link_each {
+  margin: 2px;
+  width: 30px;
+  height: 30px;
+  padding-top: 5px;
+  border-radius: 50%;
+  border: 1px solid #F5A134;
+  display: inline-block;
+  background: #fff;
+  /* color: $header_yellow; */
+  color: #222223;
+  font-weight: 600;
+}
+@media (min-width: 240px) and (max-width: 852px) {
+  .pagination a .link_each {
+    display: none;
+    text-align: center;
+  }
+}
+
+.recruiter_table {
+  margin-top: 15px;
+  padding: 0 5px;
+  font-size: 13px;
+}
+.recruiter_table .table thead tr th {
+  background: #ddd;
+}
+.recruiter_table .table tbody tr td {
+  vertical-align: middle;
+  padding: 2px 5px;
+}
+.recruiter_table .table tbody tr td.pic img {
+  width: 40px;
+  height: 40px;
+}
+.recruiter_table .table tbody tr td.actions a {
+  color: white;
+  display: inline-block;
+  text-align: center;
+  padding: 4px 8px;
+  margin: 2px;
+}
+.recruiter_table .table tbody tr td.actions a.edit {
+  background: #63C076;
+}
+.recruiter_table .table tbody tr td.actions a.delete {
+  background: #FE7062;
+}
+.recruiter_table .table tbody tr td.actions a.active {
+  background: #0B86C6;
+}
+.recruiter_table .table tbody tr td.actions a i {
+  display: inline-block;
+  padding-right: 6px;
+}
+.recruiter_table .table tbody tr td.tickets a {
+  color: white;
+  display: inline-block;
+  text-align: center;
+  padding: 4px 8px;
+  margin: 2px;
+  background-color: #F5A134;
+}
+.recruiter_table .table tbody tr td.status span {
+  color: white;
+  display: inline-block;
+  text-align: center;
+  padding: 4px 8px;
+  margin: 2px;
+}
+.recruiter_table .table tbody tr td.status span.draft-bg {
+  background-color: #F5A134;
+}
+.recruiter_table .table tbody tr td.status span.pending-bg {
+  background-color: #0c7cd5;
+}
+.recruiter_table .table tbody tr td.status span.published-bg {
+  background-color: #0a9fe2;
+}
+.recruiter_table .table tbody tr td.status span.live-bg {
+  background-color: #49a54e;
+}
+.recruiter_table .table tbody tr td.status span.deleted-bg {
+  background-color: #ea1c0d;
+}
+
+.job_item {
+  padding: 15px;
+}
+.job_item .title a {
+  font-size: 20px;
+  color: #1b7fdc;
+  font-weight: 500;
+}
+.job_item .title a .exp {
+  color: #00aeef;
+  font-size: 15px;
+  font-weight: 500;
+}
+.job_item .apply_btn a {
+  border-radius: 20px;
+  padding: 3px 12px;
+  border: none;
+  font-size: 12px;
+  font-weight: 400;
+  color: #fff;
+  background: #62bb46;
+}
+.job_item p {
+  margin: 0;
+  /*&.location{
+       font-size: 10px;
+       margin-top:3px;
+       color: lighten($grey, 11%);
+       a{
+  color: lighten($grey, 11%);
+       }
+     }*/
+}
+.job_item .job_type {
+  display: block;
+  margin: 5px 0;
+  font-size: 12px;
+}
+.job_item .job_type span {
+  font-size: 12px;
+  margin-left: 20px;
+  margin-top: 3px;
+}
+.job_item .company {
+  display: block;
+  margin-top: 6px;
+}
+.job_item .company i {
+  display: inline-block;
+  width: 15px;
+}
+.job_item .company span {
+  color: #88898a;
+}
+.job_item .description {
+  display: block;
+  margin: 5px 0;
+}
+.job_item .description .head {
+  width: 17%;
+  float: left;
+}
+.job_item .description .content {
+  width: 81%;
+  float: left;
+  line-height: 22px;
+}
+.job_item .description.Keyskills {
+  margin-top: 10px;
+}
+.job_item .description.Keyskills .tags a {
+  border: 1px solid #e5e8e5;
+  display: inline-block;
+  padding: 1px 6px;
+  padding-bottom: 0;
+  margin: 0px 2px;
+  font-size: 11px;
+}
+
+.white_box, .job_item {
+  background: #fff;
+  padding: 15px 0;
+  margin-top: 10px;
+  /*-webkit-box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);
+  -moz-box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);
+  box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);*/
+}/*# sourceMappingURL=ref.css.map */

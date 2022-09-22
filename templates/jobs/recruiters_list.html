@@ -29,15 +29,15 @@
     background: none;
   }
   </style>
-  <div class="content_div">
+  <section class="content_div">
 <!-- main_container starts here -->
-<div class="row mar_lr_0 main_container">
+<div class="main_container">
   <div class="container">
 
   <!-- breadcrumb_section starts here -->
-  <div class="breadcrumb_section row mar_lr_0">
-    <nav>
-      <ol class="cd-breadcrumb triangle">
+  <div class="breadcrumb_section row">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb triangle">
         <li>
           <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
             <span class="name" >Home</span>
@@ -96,7 +96,7 @@
               <!-- alphabets_row ends here -->
           <div class="clearfix"></div>
          <!-- companies_row starts here -->
-          <div class="companies_row recruiters_row" id="timelines">
+          <div class="row companies_row recruiters_row g-3" id="timelines">
         {% for recruiter in recruiters %}
                 <!-- company_col starts here -->
                 <div class="col-md-4 browse_col">
@@ -121,32 +121,32 @@
                     <li>
                     {% if recruiter.facebook_user %}
                     <a class="facebook" href="https://facebook.com/{{ recruiter.facebook_user.facebook_url }}" target="_blank">
-                      <i class='fa fa-facebook'></i>
+                      <i class="fa-brands fa-facebook-f"></i>
                     </a>
                     {% else %}
                     <span class='social_each fb'>
-                      <a class="facebook" style="background-color:#676767"><i class='fa fa-facebook'></i></a>
+                      <a class="facebook" style="background-color:#676767"><i class="fa-brands fa-facebook-f"></i></a>
                     </span>
                     {% endif %}</li>
                     <li>
                     {% if recruiter.twitter %}
                     <a class="twitter" href="https://twitter.com/{{ recruiter.twitter.screen_name }}" target="_blank">
-                      <i class='fa fa-twitter'></i>
+                      <i class="fa-brands fa-twitter"></i>
                     </a>
                     {% else %}
                     <span class='social_each gplus'>
-                      <a class="twitter" style="background-color:#676767"><i class='fa fa-twitter'></i></a>
+                      <a class="twitter" style="background-color:#676767"><i class="fa-brands fa-twitter"></i></a>
                     </span>
                     {% endif %}
                     </li>
                     <li>
                     {% if recruiter.linkedin %}
                     <a class="linkedin" href="https://linkedin.com/{{ recruiter.linkedin.linkedin_url }}" target="_blank">
-                      <i class='fa fa-linkedin'></i>
+                      <i class="fa-brands fa-linkedin-in"></i>
                     </a>
                     {% else %}
                     <span class='social_each gplus'>
-                      <a class="linkedin" style="background-color:#676767"><i class='fa fa-linkedin'></i></a>
+                      <a class="linkedin" style="background-color:#676767"><i class="fa-brands fa-linkedin-in"></i></a>
                     </span>
                     {% endif %}</li>
                         </ul>
@@ -160,9 +160,9 @@
           </div>
         <!-- companies_row ends here -->
          <div class="clearfix"></div>
-        <div class="pagination_wrap text-center">
+        <div class="pagination_wrap d-flex justify-content-center mt-5">
       {% get_page current_page last_page as pages %}
-      <nav>
+      {% comment %} <nav>
          <ul class="pagination">
             {% if current_page != 1 %}
               <li class="prev"><a href="#" class="{{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
@@ -177,9 +177,28 @@
               <li><a href="#" class="{{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
               <li><a href="#" class="{{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
               {% endif %}
-            </ul>
-          </nav>
-              </div>
+          </ul>
+      </nav> {% endcomment %}
+
+      <nav aria-label="Page navigation">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+        </div>
         </div>
       </div>
       <div class="col-md-3 right_container">
@@ -226,8 +245,8 @@
           </div>
         </div>
         <!--subscribe_box form ends here -->
-          <div style="margin-top:10px;margin-bottom:10px;">
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+          {% comment %} <div style="margin-top:10px;margin-bottom:10px;"> {% endcomment %}
+    {% comment %} <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <!-- PJ Right Nav -->
       <ins class="adsbygoogle"
            style="display:block"
@@ -236,8 +255,14 @@
            data-ad-format="auto"></ins>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
+    </script> {% endcomment %}
+  {% comment %} </div> {% endcomment %}
+  <script>
+      $("#multiple").select2({
+        placeholder: "Select a programming language",
+        allowClear: true
+    });
     </script>
-  </div>
 
         <!--register_login form starts here -->
         {% if not request.user.is_authenticated %}
@@ -317,7 +342,7 @@
       </div>
       </div>
     </div>
-  </div>
+  </section>
   <!--/ CONTENT -->
 {% block pj_info %}
   <div class="col-md-2 col-sm-8 col-xs-8 about">
@@ -325,7 +350,7 @@
 {% endblock %}
 {% endblock %}
 {% block 'extra_js' %}
-<script type="text/javascript">
+{% comment %} <script type="text/javascript">
 $(document).ready(function(e){
   $('#timelines').masonry({
     // options
@@ -374,5 +399,5 @@ $('.company_col').click(function(e){
           })
       });
 
-</script>
+</script> {% endcomment %}
 {% endblock %}

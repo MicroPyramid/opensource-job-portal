@@ -19,3 +19,9 @@ dist/
 env
 env/
 .env
+secret
+staticfiles/CACHE
+media/
+peeljobs_22032021.sql
+static/antivirus.png
+static/sfdc.png

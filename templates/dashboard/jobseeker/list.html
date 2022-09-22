@@ -6,59 +6,61 @@
   <div class="list_table">
 
  <span>
-        <a class="label {% if status == 'all' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:applicants" 'all' %}">All Logins</a>/
-        <a class="label {% if status == 'social' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:applicants" 'social' %}">Social Logins</a> /
-        <a class="label {% if status == 'email' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:applicants" 'email' %}">Registrations</a> /
-         <a class="label {% if status == 'resume' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:applicants" 'resume' %}">Resume Users</a> /
-         <a class="label {% if status == 'resume-pool' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:applicants" 'resume-pool' %}">Resume Pool</a>
+        <a class="badge {% if status == 'all' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'all' %}">All Logins</a>/
+        <a class="badge {% if status == 'social' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'social' %}">Social Logins</a> /
+        <a class="badge {% if status == 'email' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'email' %}">Registrations</a> /
+         <a class="badge {% if status == 'resume' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'resume' %}">Resume Users</a> /
+         <a class="badge {% if status == 'resume-pool' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'resume-pool' %}">Resume Pool</a>
       </span>
   <!-- Tab panes -->
           <h4>Job Seekers<span>
-        <a class="label label-primary" href="{% url 'dashboard:applicants' status %}">All</a>
-        <a class="label label-primary" href="{% url 'dashboard:applicants' status %}?resume_uploaded=true">Resume Uploaded</a>
-        <a class="label label-default" href="{% url 'dashboard:applicants' status %}?profile_completed=true">Profile Completed</a>
-        <a class="label label-success" href="{% url 'dashboard:applicants' status %}?appliedto_jobs=true">Aplliedto Jobs</a>
-        <a class="label label-danger" href="{% url 'dashboard:applicants' status %}?login_once=true">Login Only Once</a>
+        <a class="badge bg-primary" href="{% url 'dashboard:applicants' status %}">All</a>
+        <a class="badge bg-primary" href="{% url 'dashboard:applicants' status %}?resume_uploaded=true">Resume Uploaded</a>
+        <a class="badge bg-secondary" href="{% url 'dashboard:applicants' status %}?profile_completed=true">Profile Completed</a>
+        <a class="badge bg-success" href="{% url 'dashboard:applicants' status %}?appliedto_jobs=true">Apllied to Jobs</a>
+        <a class="badge bg-danger" href="{% url 'dashboard:applicants' status %}?login_once=true">Login Only Once</a>
       </span>
       {% if status != "social" %}
         <span>
-        <a class="label label-default filter_active" href="{% if request.GET.resume_uploaded %}?resume_uploaded=true&active=true{% elif request.GET.profile_completed %}?profile_completed=true&active=true{% elif request.GET.appliedto_jobs %}?appliedto_jobs=true&active=true{% elif request.GET.login_once %}?login_once=true&active=true{% else %}?active=true{% endif %}">Active</a> /
-        <a class="label label-default filter_inactive" href="{% if request.GET.resume_uploaded %}?resume_uploaded=true&inactive=true{% elif request.GET.profile_completed %}?profile_completed=true&inactive=true{% elif request.GET.appliedto_jobs %}?appliedto_jobs=true&inactive=true{% elif request.GET.login_once %}?login_once=true&inactive=true{% else %}?inactive=true{% endif %}">Inactive</a>
+        <a class="badge bg-secondary filter_active" href="{% if request.GET.resume_uploaded %}?resume_uploaded=true&active=true{% elif request.GET.profile_completed %}?profile_completed=true&active=true{% elif request.GET.appliedto_jobs %}?appliedto_jobs=true&active=true{% elif request.GET.login_once %}?login_once=true&active=true{% else %}?active=true{% endif %}">Active</a> /
+        <a class="badge bg-secondary filter_inactive" href="{% if request.GET.resume_uploaded %}?resume_uploaded=true&inactive=true{% elif request.GET.profile_completed %}?profile_completed=true&inactive=true{% elif request.GET.appliedto_jobs %}?appliedto_jobs=true&inactive=true{% elif request.GET.login_once %}?login_once=true&inactive=true{% else %}?inactive=true{% endif %}">Inactive</a>
       </span>
       {% endif %}
       </h4>
 
       <form id="search_form" name="adv-search-form" class="search-form" method="POST">
     <div class="col-md-12 search_form">
-      <div class="col-md-2 pad_lr_0">
-        <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
-      </div>
-      <div class="col-md-2 pad_lr_0">
-        <input type="number" name="profile_completion" id="profile_completion" class="form-control" placeholder="Profile completion" value="{{ request.POST.profile_completion }}"/>
-      </div>
-     <div class="col-md-2 pad_lr_0">
-        <select class="form-control" multiple name="location" id="location">
-        {% get_locations as cities %}
-            {% for city in cities %}
-            <option value="{{city.id}}" {% if city.id|slugify in search_location %} selected {% endif %}>{{city.name}}</option>
+      <div class="row">
+        <div class="col-md-2 pad_lr_0">
+          <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
+        </div>
+        <div class="col-md-2 pad_lr_0">
+          <input type="number" name="profile_completion" id="profile_completion" class="form-control" placeholder="Profile completion" value="{{ request.POST.profile_completion }}"/>
+        </div>
+        <div class="col-md-2 pad_lr_0">
+          <select class="form-control" multiple name="location" id="location">
+          {% get_locations as cities %}
+              {% for city in cities %}
+              <option value="{{city.id}}" {% if city.id|slugify in search_location %} selected {% endif %}>{{city.name}}</option>
+              {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2 pad_lr_0">
+          <select class="form-control" multiple name="skills" id="skills">
+          {% get_all_skills as skills %}
+            {% for skill in skills %}
+              <option value="{{skill.id}}" {% if skill.id|slugify in search_skills %} selected {% endif %}>{{skill.name}}</option>
             {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2 pad_lr_0">
-        <select class="form-control" multiple name="skills" id="skills">
-        {% get_all_skills as skills %}
-          {% for skill in skills %}
-            <option value="{{skill.id}}" {% if skill.id|slugify in search_skills %} selected {% endif %}>{{skill.name}}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2 pad_lr_0">
-        <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
-        <input type="hidden" name="page" id="page" value="{{ request.POST.page }}"/>
-        <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{request.POST.timestamp}}" placeholder="Select the date">
-      </div>
-      <div class="col-md-2 pad_lr_0">
-        <button type="submit" class="form-control submit">Submit</button>
+          </select>
+        </div>
+        <div class="col-md-2 pad_lr_0">
+          <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
+          <input type="hidden" name="page" id="page" value="{{ request.POST.page }}"/>
+          <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{request.POST.timestamp}}" placeholder="Select the date">
+        </div>
+        <div class="col-md-2 pad_lr_0">
+          <button type="submit" class="form-control submit">Submit</button>
+        </div>
       </div>
     </div>
   </form>
@@ -93,16 +95,16 @@
             <ul class="social_integration">
               <li>
                 {% if applicant.is_fb_connected %}
-                <i class="fa fa-facebook fb"></i>
+                <i class="fa-brands fa-facebook-f fb"></i>
                 {% else %}
-                <i class="fa fa-facebook"></i></a>
+                <i class="fa-brands fa-facebook-f"></i></a>
                 {% endif %}
               </li>
               <li>
                 {% if applicant.is_tw_connected %}
-                <i class="fa fa-twitter twit"></i>
+                <i class="fa-brands fa-twitter twit"></i>
                 {% else %}
-                <i class="fa fa-twitter"></i>
+                <i class="fa-brands fa-twitter"></i>
                 {% endif %}
               </li>
               <!-- <li>
@@ -114,16 +116,16 @@
               </li> -->
               <li>
                 {% if applicant.is_ln_connected %}
-                <i class="fa fa-linkedin in"></i>
+                <i class="fa-brands fa-linkedin-in in"></i>
                 {% else %}
-                <i class="fa fa-linkedin"></i>
+                <i class="fa-brands fa-linkedin-in"></i>
                 {% endif %}
               </li>
               <li>
                 {% if applicant.is_gh_connected %}
-                <i class="fa fa-github gh"></i>
+                <i class="fa-brands fa-github gh"></i>
                 {% else %}
-                <i class="fa fa-github"></i>
+                <i class="fa-brands fa-github"></i>
                 {% endif %}
               </li>
             </ul>
@@ -141,9 +143,9 @@
       {% endfor %}
       </tbody>
     </table>
-        <div class="pagination_wrap">
+        <div class="pagination_wrap d-flex justify-content-center mt-4 mb-4">
         {% get_page current_page last_page as pages %}
-        <nav>
+        {% comment %} <nav>
             <ul class="pagination">
             {% if current_page != 1 %}
               <li class="prev"><a href="#" class="{{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
@@ -159,6 +161,24 @@
               <li><a href="#" class="{{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
               {% endif %}
             </ul>
+        </nav> {% endcomment %}
+
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
         </nav>
   </div>
   {% else%}

@@ -1,7 +1,8 @@
 import os
-from dotenv import load_dotenv
+
 from celery.schedules import crontab
 from corsheaders.defaults import default_headers, default_methods
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -56,7 +57,7 @@ FB_PEELJOBS_PAGEID = os.getenv("FBPEELJOBSPAGEID")
 # google app
 GOOGLE_CLIENT_ID = GOOGLE_OAUTH2_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-GOOGLE_OAUTH2_REDIRECT = os.getenv("GOOGLE_OAUTH2_REDIRECT")
+GOOGLE_LOGIN_HOST = os.getenv("GOOGLE_LOGIN_HOST")
 
 # ln app
 LN_API_KEY = os.getenv("LNAPIKEY")
@@ -154,7 +155,7 @@ MIDDLEWARE = [
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     # "hmin.middleware.MinMiddleware",
     # "hmin.middleware.MarkMiddleware",
-    "jobsp.middlewares.DetectMobileBrowser",
+    # "jobsp.middlewares.DetectMobileBrowser",
     "jobsp.middlewares.LowerCased",
 ]
 
@@ -171,9 +172,7 @@ AUTH_USER_MODEL = "peeldb.User"
 LOGIN_URL = "/"
 
 AUTHENTICATION_BACKENDS = (
-    # ... your other backends
     "social.auth_backend.PasswordlessAuthBackend",
-    # 'social_core.backends.google.GoogleOAuth2',
     "django.contrib.auth.backends.ModelBackend",
 )
 
@@ -194,22 +193,14 @@ TEMPLATES = [
         },
     },
 ]
-SESSION_ENGINE = "django.contrib.sessions.backends.file"
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-AWS_STORAGE_BUCKET_NAME = AWS_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AM_ACCESS_KEY = AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY")
 AM_PASS_KEY = AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_KEY")
 AWS_SES_REGION_NAME = os.getenv("AWS_SES_REGION_NAME")
 AWS_SES_REGION_ENDPOINT = os.getenv("AWS_SES_REGION_ENDPOINT")
-AWS_DEFAULT_ACL = "public-read"
-S3_DOMAIN = AWS_S3_CUSTOM_DOMAIN = str(AWS_BUCKET_NAME) + ".s3.amazonaws.com"
+AWS_STORAGE_BUCKET_NAME=os.getenv("AWS_STORAGE_BUCKET_NAME")
 
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-DEFAULT_S3_PATH = "media"
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-STATIC_S3_PATH = "static"
-COMPRESS_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
 COMPRESS_CSS_FILTERS = [
     "compressor.filters.css_default.CssAbsoluteFilter",
     "compressor.filters.cssmin.CSSMinFilter",
@@ -217,51 +208,49 @@ COMPRESS_CSS_FILTERS = [
 COMPRESS_JS_FILTERS = ["compressor.filters.jsmin.JSMinFilter"]
 COMPRESS_REBUILD_TIMEOUT = 5400
 
-AWS_HEADERS = {
-    "Expires": "Sun, 15 June 2020 20:00:00 GMT",
-    "Cache-Control": "max-age=16400000",
-    "public-read": True,
-}
 
-AWS_IS_GZIPPED = True
-AWS_ENABLED = True
-AWS_S3_SECURE_URLS = True
-MEDIA_ROOT = "/%s/" % DEFAULT_S3_PATH
-MEDIA_URL = "//%s/%s/" % (S3_DOMAIN, DEFAULT_S3_PATH)
-STATIC_ROOT = "/%s/" % STATIC_S3_PATH
-STATIC_URL = "https://%s/" % (S3_DOMAIN)
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_URL = "/static/"
+
 ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
 COMPRESS_OUTPUT_DIR = "CACHE"
 COMPRESS_URL = STATIC_URL
 COMPRESS_ENABLED = True
 COMPRESS_PRECOMPILERS = (
-    ("text/less", "/usr/local/bin/lessc {infile} {outfile}"),
-    ("text/x-sass", "/usr/local/bin/sass {infile} {outfile}"),
-    ("text/x-scss", "/usr/local/bin/sass {infile} {outfile}"),
+    ("text/less", "lessc {infile} {outfile}"),
+    ("text/x-sass", "sass {infile} {outfile}"),
+    ("text/x-scss", "sass {infile} {outfile}"),
 )
 
 COMPRESS_OFFLINE_CONTEXT = {
     "STATIC_URL": "STATIC_URL",
 }
-# else :
-#     MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-#     MEDIA_URL = "/media/"
-#     # STATIC_ROOT = os.path.join(BASE_DIR, "static")
-#     STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-#     STATIC_URL = "/static/"
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 
 # Haystack settings for Elasticsearch
+# HAYSTACK_CONNECTIONS = {
+#     "default": {
+#         "ENGINE": "peeldb.backends.ConfigurableElasticSearchEngine",
+#         "URL": "http://127.0.0.1:9200/",
+#         "INDEX_NAME": "job_haystack",
+#         "TIMEOUT": 60,
+#     },
+# }
+
 HAYSTACK_CONNECTIONS = {
     "default": {
-        "ENGINE": "peeldb.backends.ConfigurableElasticSearchEngine",
+        "ENGINE": "haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine",
         "URL": "http://127.0.0.1:9200/",
-        "INDEX_NAME": "job_haystack",
-        "TIMEOUT": 60,
+        "INDEX_NAME": "haystack",
     },
 }
+
+
 HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
 HAYSTACK_DEFAULT_OPERATOR = "OR"
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1
@@ -280,12 +269,12 @@ CELERY_BEAT_SCHEDULE = {
             hour="16", minute="00", day_of_week="mon,tue,wed,thu,fri,sat"
         ),
     },
-    "sending-profile_update-notifications-to-applicants": {
-        "task": "dashboard.tasks.applicants_notifications",
-        "schedule": crontab(
-            hour="16", minute="00", day_of_week="mon,tue,wed,thu,fri,sat"
-        ),
-    },
+    # "sending-profile_update-notifications-to-applicants": {
+    #     "task": "dashboard.tasks.applicants_notifications",
+    #     "schedule": crontab(
+    #         hour="16", minute="00", day_of_week="mon,tue,wed,thu,fri,sat"
+    #     ),
+    # },
     "sending-daily-statistics-report-to-admins": {
         "task": "dashboard.tasks.daily_report",
         "schedule": crontab(
@@ -296,18 +285,18 @@ CELERY_BEAT_SCHEDULE = {
         "task": "dashboard.tasks.applicants_job_notifications",
         "schedule": crontab(hour="09", minute="00", day_of_week="mon"),
     },
-    "all-users-profile-update-and-birthday-notifications": {
-        "task": "dashboard.tasks.alerting_applicants",
-        "schedule": crontab(
-            hour="10", minute="05", day_of_week="mon,tue,wed,thu,fri,sat,sun"
-        ),
-    },
-    "alerting-all-inactive-users-and-applicants-resume-upload-notifications": {
-        "task": "dashboard.tasks.applicants_profile_update_notifications",
-        "schedule": crontab(
-            hour="09", minute="00", day_of_week="mon,tue,wed,thu,fri,sat,sun"
-        ),
-    },
+    # "all-users-profile-update-and-birthday-notifications": {
+    #     "task": "dashboard.tasks.alerting_applicants",
+    #     "schedule": crontab(
+    #         hour="10", minute="05", day_of_week="mon,tue,wed,thu,fri,sat,sun"
+    #     ),
+    # },
+    # "alerting-all-inactive-users-and-applicants-resume-upload-notifications": {
+    #     "task": "dashboard.tasks.applicants_profile_update_notifications",
+    #     "schedule": crontab(
+    #         hour="09", minute="00", day_of_week="mon,tue,wed,thu,fri,sat,sun"
+    #     ),
+    # },
     "sending-profile-update-notifications-two-hours-after-registering": {
         "task": "dashboard.tasks.applicants_profile_update_notifications_two_hours",
         "schedule": crontab(
@@ -348,10 +337,10 @@ CELERY_BEAT_SCHEDULE = {
             hour="18", minute="00", day_of_week="mon,tue,wed,thu,fri,sat,sun"
         ),
     },
-    "recruiter-profile-update-notifications": {
-        "task": "dashboard.tasks.recruiter_profile_update_notifications",
-        "schedule": crontab(hour="09", minute="30", day_of_week="mon"),
-    },
+    # "recruiter-profile-update-notifications": {
+    #     "task": "dashboard.tasks.recruiter_profile_update_notifications",
+    #     "schedule": crontab(hour="09", minute="30", day_of_week="mon"),
+    # },
     "haystack-rebuilding-indexes": {
         "task": "dashboard.tasks.rebuilding_index",
         "schedule": crontab(
@@ -370,7 +359,7 @@ THUMBNAIL_FORMAT = "PNG"
 THUMBNAIL_CACHE_TIMEOUT = 3600 * 24 * 365 * 10
 
 TIMEZONE = "Asia/Calcutta"
-LOGO = "https://%s/logo.png" % (S3_DOMAIN)
+LOGO = "http://localhost:8000/logo.png"
 
 # BULK_SMS_USERNAME = os.getenv("BULKSMSUSERNAME")
 # BULK_SMS_PASSWORD = os.getenv("BULKSMSPASSWORD")
@@ -387,19 +376,25 @@ THUMBNAIL_FORCE_OVERWRITE = True
 # SMS_AUTH_KEY = os.getenv("SMSAUTHKEY")
 
 
-AWS_ENABLED = os.getenv("AWSENABLED")
-DISQUS_SHORTNAME = ""
+# AWS_ENABLED = os.getenv("AWSENABLED")
+# DISQUS_SHORTNAME = ""
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-        "LOCATION": "127.0.0.1:11211",
-        "TIMEOUT": 48 * 60 * 60,
-        "OPTIONS": {"server_max_value_length": 1024 * 1024 * 2,},
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+#         "LOCATION": "127.0.0.1:11211",
+#         "TIMEOUT": 48 * 60 * 60,
+#         "OPTIONS": {"server_max_value_length": 1024 * 1024 * 2,},
+#     }
+# }
 
-CACHE_BACKEND = os.getenv("CACHE_BACKEND", "memcached://127.0.0.1:11211/")
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+#     }
+# }
+
+#CACHE_BACKEND = os.getenv("CACHE_BACKEND", "memcached://127.0.0.1:11211/")
 
 FB_ACCESS_TOKEN = os.getenv("FBACCESSTOKEN")
 FB_PAGE_ACCESS_TOKEN = os.getenv("FBPAGEACCESSTOKEN")
@@ -416,8 +411,8 @@ URLS = [
 ]
 
 DAILY_REPORT_USERS = [
-    "anusha@micropyramid.com",
     "kamal.seo@gmail.com",
+    "varun@micropyramid.com",
     "ashwin@micropyramid.com",
 ]
 # MIDDLEWARE_CLASSES = MIDDLEWARE
@@ -453,8 +448,6 @@ if os.getenv("ENV_TYPE") == "DEV":
     ]
 
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 
     TEST_RUNNER = "django_behave.runner.DjangoBehaveTestSuiteRunner"
 
@@ -518,3 +511,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 EMAIL_BACKEND = "django_ses.SESBackend"
 
+MP_CELERY_MONITOR_KEY = os.getenv("MP_CELERY_MONITOR_KEY")
+CELERY_MONITOR_URL = os.getenv("CELERY_MONITOR_URL")

@@ -77,12 +77,12 @@
                     <a href="https://peeljobs.com{{location.get_job_url}}">{{ location.name }}{% if forloop.last %}{% else %},{% endif%}</a>
                     {% endfor %}</p>
                           </div>
-                          {% if job.job_type == 'walk-in' %}
-                          {% else %}
+                          <!-- {% if job.job_type == 'walk-in' %} -->
+                          <!-- {% else %} -->
                           <div style="width:170px;float:left;text-align:right;">
                                <a href="https://peeljobs.com{{job.slug}}" style="font-size:12px;font-weight:normal;background:#62bb46;color:#fff;display: inline-block;margin-top:7px;padding:5px 10px;letter-spacing:0.6px;text-decoration:none;">Apply Job</a>
                           </div>
-                          {% endif %}
+                          <!-- {% endif %} -->
                           <br clear="all">
                         </div>
                         {% endfor %}

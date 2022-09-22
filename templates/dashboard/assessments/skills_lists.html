@@ -29,7 +29,7 @@
             <td>{{ skill.name }}</a></td>
             <td>{{ skill.skill_questions.all|length }}</td>
             <td>
-            <a href="{% url 'dashboard:new_question' %}?skill={{ skill.id }}" title="Add Question" class="perform-actions"><i class="fa fa-plus edit">Add New Question</i></a>
+            <a href="{% url 'dashboard:new_question' %}?skill={{ skill.id }}" title="Add Question" class="perform-actions"><i class="fa-solid fa-plus edit">Add New Question</i></a>
             </td>
           </tr>
         {% endfor %}
@@ -42,12 +42,12 @@
 </section>
 {% endblock stage %}
  {% block script %}
- <script type="text/javascript">
+ {% comment %} <script type="text/javascript">
 $(".skill_click a").click(function(e){
     e.stopPropagation()
   })
 $(".skill_click").click(function(e){
   window.location = $(this).attr('data-href')
  })
-</script>
+</script> {% endcomment %}
 {% endblock %}

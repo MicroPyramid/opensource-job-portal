@@ -15,12 +15,12 @@
 {% endblock %}
 {% block base %}
 <!-- main_container starts here -->
-<div class="row mar_lr_0 main_container">
+<div class="main_container">
   <div class="container">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+    <div class="breadcrumb_section row">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li><a href="/">Home</a></li>
           <li><a href="/profile/">Profile</a></li>
           <li class="current"><a>Experience</a></li>
@@ -29,70 +29,71 @@
     </div>
     <div class="row mar_lr_0">
       <div class="profile_container">
-        <!-- profile_left_container starts here -->
+          <div class="row">
+                    <!-- profile_left_container starts here -->
         {% include 'candidate/profile_completion.html' %}
         <!-- profile_left_container ends here -->
         <!-- profile_right_container starts here -->
         <div class="col-md-9 col-sm-9 detail_description_column">
-          <div class="panel">
-            <div class="panel-heading text-center text-uppercase">EDIT EXPERIENCE</div>
-            <div class="panel-body">
+          <div class="card">
+            <div class="card-header text-center text-uppercase">EDIT EXPERIENCE</div>
+            <div class="card-body">
               <form name="experienceform" id="experienceform" method="post">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Current Job</label>
+                <div class="row">
+                  <label for="colFormLabelSm" class="col-sm-3 control-label">Current Job</label>
                   <div class="col-sm-9">
                     <input type="checkbox" name="current_job" id="current_job"
                     {% if experience.current_job %} checked {% endif %}>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Job Profile</label>
+                <div class="row">
+                  <label for="colFormLabelSm" class="col-sm-3 control-label">Job Profile</label>
                   <div class="col-sm-9">
                     <textarea class="form-control" placeholder="Job Profile" name="job_profile"
                       id="job_profile">{% if experience.job_profile %}
                     {{ experience.job_profile }}{% endif %}</textarea>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Company Name<span class="important">*</span></label>
+                <div class="row">
+                  <label for="colFormLabelSm" class="col-sm-3 control-label">Company Name<span class="important">*</span></label>
                   <div class="col-sm-9">
                     <input type="text" class="form-control" placeholder="Company Name"
                       name="company" id="company" value="{{ experience.company }}">
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">From<span class="important">*</span></label>
+                <div class="row">
+                  <label for="colFormLabelSm" class="col-sm-3 control-label">From<span class="important">*</span></label>
                   <div class="col-sm-9">
                     <input type="text" class="form-control" placeholder="From Date"
                     name="from_date" id="from_date"
                     value="{{ experience.from_date|date:"m/d/Y" }}">
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">To<span class="important">*</span></label>
+                <div class="row">
+                  <label for="colFormLabelSm" class="col-sm-3 control-label">To<span class="important">*</span></label>
                   <div class="col-sm-9">
                     <input type="text" class="form-control" placeholder="To Date" name="to_date"
                     id="to_date" value="{{ experience.to_date|date:"m/d/Y" }}"
                     {% if experience.current_job %} disabled {% endif %}>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Designation<span class="important">*</span></label>
+                <div class="row">
+                  <label for="colFormLabelSm" class="col-sm-3 control-label">Designation<span class="important">*</span></label>
                   <div class="col-sm-9">
                     <input type="text" class="form-control" placeholder="Designation"
                       id="designation" name="designation"
                       value="{{ experience.designation }}">
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label">Salary(Per Anum)</label>
+                <div class="row">
+                  <label for="colFormLabelSm" class="col-sm-3 control-label">Salary(Per Anum)</label>
                   <div class="col-sm-9">
                     <input type="text" class="form-control" placeholder="Salary" name="salary"
                       id="salary" value="{{ experience.salary }}">
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label"></label>
+                <div class="row">
+                  <label for="colFormLabelSm" class="col-sm-3 control-label"></label>
                   <div class="col-sm-9">
                     <button type="submit" class='submit'>Save</button>
                     <button type="button" class='add_another'>Save & Add Other</button>
@@ -104,6 +105,7 @@
             </form>
           </div>
         </div>
+          </div>
       </div>
     </div>
   </div>

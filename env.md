@@ -24,7 +24,7 @@
 
 > GOOGLE_CLIENT_ID=""
 > GOOGLE_CLIENT_SECRET=""
-> GOOGLE_OAUTH2_REDIRECT='http://localhost:8000/oauth2callback/'
+> GOOGLE_LOGIN_HOST='http://localhost:8000/'
 > GOOGLE_MAPS_API_KEY=""
 ## Elasticsearch keys
 
@@ -78,11 +78,6 @@
 
 > RECAPTCHAPUBLICKEY=""
 > RECAPTCHAPRIVATEKEY=""
-
-## Sendgrid authentication keys
-
-> SGUSER=''
-> SGPWD=''
 
 ## SMS api keys
 

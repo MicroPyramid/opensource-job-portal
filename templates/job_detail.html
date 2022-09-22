@@ -239,8 +239,8 @@
   <div class="job_item">
   <div class="job"> 
     <div class="logo_apply">
-      {% if job.job_type == 'walk-in' %}
-      {% elif job.user.is_superuser %}
+
+      {% if job.user.is_superuser %}
         {% if job.company_emails %}
           <span class="pull-right apply_btn">
             <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="latest_job_type send_mail {% if request.user.is_active %}active{% endif %} {% if request.user.profile_completion_percentage > 50 %}completed{% endif %} {% if request.user.is_authenticated %}logged{% endif %}">Apply</a>

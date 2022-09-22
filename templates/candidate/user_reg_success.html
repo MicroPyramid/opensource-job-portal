@@ -134,6 +134,14 @@
 {% endblock %}
 {% block 'extra_js' %}
 <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+
+  $("#multiple").select2({
+    placeholder: "Select a programming language",
+    allowClear: true
+});
+</script>
+<script>
 $(document).ready(function(){
  $(function(){
   introguide = introJs();
@@ -179,15 +187,12 @@ introguide.setOptions({
         window.location = "/profile/"
       });
     })
-   $("select#job_skills").select2( { placeholder: "Select here", maximumSelectionSize: 100 } );
- $('#job_skills').empty()
-    $('#job_skills').append(new Option('Select a Skill', ''))
-    $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
-      $.each(JSON.parse(data.response), function( key, field ) {
-        $('#job_skills').append(new Option(field.fields.name, field.pk))
-      })
-    });
-  })
+
+    
+    $("#multiple").select2({
+      placeholder: "Select a programming language",
+      allowClear: true
+  });
 
 </script>
 {% endblock %}

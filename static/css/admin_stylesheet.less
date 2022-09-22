@@ -44,7 +44,7 @@
   padding-right: 0;
 }
 body{
-    font-family: 'Ubuntu', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 13px;
     font-weight: normal;
     line-height: 1.5em;
@@ -97,7 +97,7 @@ a{
             }
         }
         .text_logo{
-            position: absolute;
+            // position: absolute;
             font-family: 'Lobster',cursive;
             color: #3a3a3a;
             margin-top: 2px;
@@ -283,7 +283,7 @@ a{
     }
 }
 .content_wrapper{
-    margin-left: 71px;
+    // margin-left: 71px;
 }
 .content_wrap{
     padding-left: 14px;
@@ -326,6 +326,26 @@ a{
         h3{
             display: inline-block;
             margin-top: 0px;
+            font-weight: 600;
+            .badge {
+                font-size: 18px;
+                &:hover {
+                    background-color: #286090;
+                    color: white;
+                }
+            }
+            .badge-primary {
+                background-color: #337ab7;
+            }
+            .badge-secondary {
+                background-color: #777;
+                color: white;
+                &:hover {
+                   
+                background-color: #5e5e5e;
+                color: white;
+                }
+            }
         }
         .add_div{
             float: right;
@@ -563,6 +583,30 @@ a{
 #recruiters{
     width: 98%;
     margin: 0px auto;
+
+    
+  .list_table {
+    .span {
+        .badge {
+            font-size: 18px;
+            &:hover {
+                background-color: #286090;
+                color: white;
+            }
+        }
+        .badge-primary {
+            background-color: #337ab7;
+        }
+        .badge-secondary {
+            background-color: #777;
+            color: white;
+            &:hover {
+               
+            background-color: #5e5e5e;
+            color: white;
+            }
+        }
+    }
     .title_div{
         padding-bottom: 15px;
         border-bottom: 1px solid #ddd;
@@ -732,6 +776,7 @@ a{
         }
 
     }
+  }
 }
 #new_employee{
     width: 95%;
@@ -863,22 +908,44 @@ a{
         .form-control{
             .form_style;
         }
+      .add_btn {
+          float: right;
         button{
-          background: #5c4c8d;
-          color: #fff;
-          padding: 6px 15px;
-          border: 1px solid #3c315b;
-          font-weight: 600;
-          i{
-            margin-right:5px;
+            background: #5c4c8d;
+            color: #fff;
+            padding: 6px 15px;
+            border: 1px solid #3c315b;
+            font-weight: 600;
+            i{
+              margin-right:5px;
+            }
           }
-        }
+      }
         .max_experience{
             display:none;
         }
     }
 }
 #blog-post-create{
+    .badge {
+        font-size: 75%;
+        &:hover {
+            background-color: #286090;
+            color: white;
+        }
+    }
+    .badge-primary {
+        background-color: #337ab7;
+    }
+    .badge-secondary {
+        background-color: #777;
+        color: white;
+        &:hover {
+           
+        background-color: #5e5e5e;
+        color: white;
+        }
+    }
     #mail_template;
     .slug-text{
           display: block;
@@ -897,12 +964,25 @@ a{
           padding: 6px 15px;
           border: 1px solid #3c315b;
           font-weight: 600;
+         
           i{
             margin-right:5px;
           }
     }
 }
-#blog-post-create{      
+#blog-post-create{ 
+   button {
+    background: #5c4c8d;
+    color: #fff;
+    padding: 6px 15px;
+    border: 1px solid #3c315b;
+    font-weight: 600;
+   
+    i{
+      margin-right:5px;
+    }
+   }
+    
     #mail_template;     
     .slug-text{     
           display: block;       
@@ -920,7 +1000,8 @@ a{
           color: #fff;      
           padding: 6px 15px;        
           border: 1px solid #3c315b;        
-          font-weight: 600;     
+          font-weight: 600;
+              
           i{        
             margin-right:5px;       
           }     
@@ -940,7 +1021,7 @@ a{
 #three_panel_layout{
     width: 98%;
     margin: 0px auto;
-    margin-top: 20px;
+    margin-top: 42px;
     min-height: 550px;
     background: #fff;
     box-shadow: 0 5px 5px -5px #ccc;
@@ -964,6 +1045,8 @@ a{
             .form-control{
                 .form_style;
             }
+           .form-inline {
+               display: inline-flex;
             button{
                 .button_default;
                 padding: 7px 16px;
@@ -974,6 +1057,9 @@ a{
                 transition:0.5s;
                 border:2px solid @voilet;
                 border-radius: 4px;
+                width: 96px;
+                height: 40px;
+                margin: 3px;
                 i{
                     font-weight: 300;
                 }
@@ -983,6 +1069,7 @@ a{
                     transition:0.5s;
                 }
             }
+           }
         }
         .edit_form_div{
             .add_form_div;
@@ -1033,7 +1120,7 @@ a{
                 .remove_ticket{
                     float: right;
                     a{
-                        .fa-trash-o{
+                        .fa-trash-can{
                             padding: 5px;
                             color: #fff;
                             background: @pink;
@@ -1087,6 +1174,70 @@ a{
     width: 98%;
     margin: 0px auto;
     margin-top: 50px;
+
+    h4 {
+        .badge {
+            font-size: 18px;
+            &:hover {
+                background-color: #286090;
+                color: white;
+            }
+        }
+        .badge-primary {
+            background-color: #337ab7;
+        }
+        .badge-secondary {
+            background-color: #777;
+            color: white;
+            &:hover {
+               
+            background-color: #5e5e5e;
+            color: white;
+            }
+        }
+
+    }
+
+    .span {
+        .badge {
+            font-size: 18px;
+            &:hover {
+                background-color: #286090;
+                color: white;
+            }
+        }
+        .badge-primary {
+            background-color: #337ab7;
+        }
+        .badge-secondary {
+            background-color: #777;
+            color: white;
+            &:hover {
+               
+            background-color: #5e5e5e;
+            color: white;
+            }
+        }
+    }
+    .pull_right{
+        .btn {
+            color: #fff;
+            background-color: #f0ad4e;
+            border-color: #eea236;
+            float: right;
+        }
+    }
+
+    .pull-right {
+        .list-inline {
+            display: inline-flex;
+            float: right;
+            li {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+    }
     .search_form{
         margin-bottom: 10px;
     .pad_lr_0{
@@ -1163,7 +1314,7 @@ a{
                     padding: 6px;
                     /*color: #1485c3;
                     border: 1px solid #1485c3;*/
-                    margin-right: 8px;
+                    margin-right: 3px;
                     transition: .5s;
                     background: #fff;
                     /*color: #ee9402;
@@ -1198,6 +1349,14 @@ a{
                 .edit{
                     color: #5c4c8d!important;
                     border: 1px solid #5c4c8d;
+                    font-family: 'Inter', sans-serif;
+                    font-weight: normal;
+                    font-size: 13px;
+                    &::before {
+                        content: "\2b";
+                        font-weight: 900;
+                        font-size: 16px;
+                    }
                     &:hover{
                         background: #5c4c8d;
                         color: #fff!important;
@@ -1299,7 +1458,7 @@ a{
 #job_detail{
     margin: 0px auto;
     margin-top: 4%;
-    width: 98%;
+    // width: 100%;
     .pagination{
         text-align: center;
         width: 100%;
@@ -1532,7 +1691,7 @@ a{
                     display: none;
                 }
                 button{
-                    float:right;
+                    
                     padding: 7px 15px;
                     border: 1px solid #497a37;
                     font-weight: 600;
@@ -2163,7 +2322,7 @@ a{
         //border-top:2px solid @stroke_color;
         &.wrap{
             background: #EBEBEB;
-            margin: 0px -15px -15px -15px;
+            // margin: 0px -15px -15px -15px;
             padding-left: 5px;
         }
         .button{
@@ -2197,6 +2356,7 @@ a{
     }
     .post_details{
         padding: 15px 0px;
+        padding-left: 5px;
         .button{
             display: inline-block;
             padding: 5px 15px;
@@ -2359,15 +2519,15 @@ a{
         h6{
             font-size: 20px;
         font-weight: 600;
-        padding: 25px 0px 15px 5px;
+        padding: 24px 0px 24px 15px;
         margin-bottom: 20px;
         background: #EBEBEB;
-        margin:0px -15px;
+        // margin:0px -15px;
         color: #5C4C8D;
         }
     }
     .post_details{
-        margin: -10px;
+        // margin: -10px;
         background: #EBEBEB;
         .button{
             height: 34px;
@@ -2561,6 +2721,54 @@ a{
     }
 }
 .statistics_graphs{
+
+    .nav-tabs {
+
+        li {
+            a {
+                margin-right: 2px;
+                line-height: 1.42857143;
+                border: 1px solid transparent;
+                border-radius: 4px 4px 0 0;
+                letter-spacing: 0.04rem;
+            }
+        }
+        .nav-link {
+            &.active{
+                background: #767676;
+                color: #fff;
+            }
+        }
+        &.tabs-left {
+            .nav-items{
+                float: none;
+                display: block;
+                margin:1px 0;
+                width: 100%;
+                a{
+                  background-color: #6b7988;
+                  color: #fff;
+                  border:none;
+                  border-radius: 0;
+                  &:hover{
+                    background: darken(#6b7988, 10%);
+                  }
+                }
+               
+            }
+
+            .nav-link {
+                &.active{
+                    a{
+                      background-color:#dd1533;
+                    }
+                  }
+            }
+        }
+    }
+
+
+
   .nav-tabs{
     li{
       a{
@@ -2576,7 +2784,7 @@ a{
       }
     }
     &.tabs-left {
-      li{
+      .nav-items{
         float: none;
         display: block;
         margin:1px 0;
@@ -2600,6 +2808,23 @@ a{
   .tab-content{
     .tab-pane{
       padding:10px;
+
+      label {
+          .title {
+              font-size: 16px;
+              font-weight: bold;
+          }
+      }
+      .pull-right {
+        .list-inline {
+            display: inline-flex;
+            float: right;
+            li {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+      }
     }
   }
 }
@@ -2609,8 +2834,10 @@ a{
 .alphabetics{
     margin-top:10px;
     margin-left:5px;
+    text-align: center;
     ul{
         text-align: center !important;
+        display: flex;
         li{
                 padding: 1px;
             a{

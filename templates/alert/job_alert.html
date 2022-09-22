@@ -26,12 +26,12 @@
   display: none;
 }
 </style>
-  <div class="row mar_lr_0 main_container">
+  <section class="main_container">
     <div class="container">
     <!-- breadcrumb_section starts here -->
     <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li>
             <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name"><span class="name" >Home</span></a>
           </li>
@@ -40,27 +40,27 @@
       </nav>
     </div>
     <!-- breadcrumb_section ends here -->
-      <div class="row mar_lr_0">
+      <div class="row">
         <div class="col-md-9 left_container">
           <!-- side_filter_section starts here -->
           <div class="row">
             <!-- job_alert_form starts here -->
-            <div class="col-md-12">
+            <div class="col-md-12 mb-4">
               <div class="job_alert_form">
-               <div class="panel panel-default">
-                <div class="panel-heading text-center text-uppercase">Tell us what kind of jobs you want</div>
-                <div class="panel-body">
+               <div class="card">
+                <div class="card-header text-center text-uppercase">Tell us what kind of jobs you want</div>
+                <div class="card-body">
                   <form name="jobalertform" id="jobalertform" method="post" class="form-horizontal">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-sm-3 control-label">Name your Job Alert<span class="important">*</span></label>
+                    <div class="row">
+                      <label for="colFormLabelSm" class="col-sm-3 control-label">Name your Job Alert<span class="important">*</span></label>
                       <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="Enter a name that will help you recognize this Job Alert" name="name" id="name">
                       </div>
                     </div>
 
                     {% if not request.user.is_authenticated %}
-                     <div class="form-group">
-                      <label for="inputEmail3" class="col-sm-3 control-label">Email Address  <span class="important">*</span></label>
+                     <div class="row mb-3">
+                      <label for="colFormLabelSm" class="col-sm-3 control-label">Email Address  <span class="important">*</span></label>
                       <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="Email Address" name="email" id="email">
                       </div>
@@ -69,10 +69,10 @@
                       <input type="hidden" class="form-control" placeholder="Email Address" name="email" id="email" value="{{request.user.email}}">
                     {% endif %}
 
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-sm-3 control-label">Skills<span class="important">*</span></label>
+                    <div class="row mb-3">
+                      <label for="colFormLabelSm" class="col-sm-3 control-label">Skills<span class="important">*</span></label>
                       <div class="col-sm-9">
-                        <select class="location form-control skills" multiple="multiple" name="skill" id="skill">
+                        <select class="location form-control skills"  name="skill" id="skill" multiple>
                           <option value="">Enter the skill</option>
                           {% for skill in skills %}
                           <option value="{{ skill.id }}">{{ skill.name }}</option>
@@ -81,10 +81,10 @@
                         <span class="skill_err"></span>
                       </div>
                     </div>
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-sm-3 control-label">Location</label>
+                    <div class="row mb-3">
+                      <label for="colFormLabelSm" class="col-sm-3 control-label">Location</label>
                       <div class="col-sm-9">
-                        <select class="location form-control cities" multiple="multiple" name="location" id="location">
+                        <select class="location form-control cities"  name="location" id="location">
                           <option value="">Enter the location</option>
                           {% for city in cities %}
                           <option value="{{ city.id }}">{{ city.name }}</option>
@@ -92,10 +92,10 @@
                         </select>
                       </div>
                     </div>
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-sm-3 control-label">Industry</label>
+                    <div class="row mb-3">
+                      <label for="colFormLabelSm" class="col-sm-3 control-label">Industry</label>
                       <div class="col-sm-9">
-                        <select class="location form-control industry " multiple="multiple" name="industry" id="industry">
+                        <select class="location form-control industry " name="industry" id="industry">
                           <option value="">Enter the industry</option>
                           {% for industry in industires %}
                           <option value="{{ industry.id }}">{{ industry.name }}</option>
@@ -103,44 +103,50 @@
                         </select>
                       </div>
                     </div>
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-sm-3 control-label">Job Role</label>
+                    <div class="row mb-3">
+                      <label for="colFormLabelSm" class="col-sm-3 control-label">Job Role</label>
                       <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="Specify the desired role where you want to work" id="role" name="role">
                       </div>
                     </div>
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-sm-3 control-label">Experience</label>
+                    <div class="row mb-3">
+                      <label for="colFormLabelSm" class="col-sm-3 control-label">Experience</label>
                       <div class="col-md-9 mar_lr_0">
-                          <div id="div-min_year" class="col-md-6 pad_lr_0">
-                            <select class="form-control experience" name="min_year" id="min_year" style="width:98%">
-                              <option value="">Min Year</option>
-                              {% for year in years %}
-                              <option value="{{ year.0 }}" id="{{ forloop.counter }}">{{ year.1}}</option>
-                              {% endfor %}
-                            </select>
-                          </div>
-                          <div id="div-min_month" class="col-md-6 pad_lr_0">
-                            <select class="form-control experience" name="max_year" id="max_year">
-                              <option value="">Max year</option>
-                              {% for year in years %}
-                              <option value="{{ year.0 }}" class="max_experience" id="{{ forloop.counter }}">{{ year.1}}</option>
-                              {% endfor %}
-                            </select>
+                          <div class="row">
+                            <div id="div-min_year" class="col-md-6">
+                              <select class="form-select experience" name="min_year" id="min_year">
+                                <option value="">Min Year</option>
+                                {% for year in years %}
+                                <option value="{{ year.0 }}" id="{{ forloop.counter }}">{{ year.1}}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            <div id="div-min_month" class="col-md-6">
+                              <select class="form-select experience" name="max_year" id="max_year">
+                                <option value="">Max year</option>
+                                {% for year in years %}
+                                <option value="{{ year.0 }}" class="max_experience" id="{{ forloop.counter }}">{{ year.1}}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
                           </div>
                       </div>
                     </div>
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-sm-3 control-label">Salary</label>
+                    <div class="row mb-3">
+                      <label for="colFormLabelSm" class="col-sm-3 control-label">Salary</label>
                       <div class="col-sm-9  mar_lr_0">
-                      <div class="col-sm-6 pad_lr_0" id='min_salary'>
-                        <input type="text" class="form-control" placeholder="Minimum Salary" name="min_salary" style="width:98%"></div>
-                      <div class="col-sm-6 pad_lr_0" id="max_salary">
-                       <input type="text" class="form-control" placeholder="Maximum Salary" name="max_salary" ></div>
-                      <input type="hidden" class="form-control" placeholder="Email" name="user_authenticated" id="user_authenticated" value="{% if not request.user.is_authenticated %}False{%else%}True{%endif%}">
+                        <div class="row">
+                          <div class="col-sm-6" id='min_salary'>
+                            <input type="text" class="form-control" placeholder="Minimum Salary" name="min_salary">
+                            </div>
+                            <div class="col-sm-6" id="max_salary">
+                            <input type="text" class="form-control" placeholder="Maximum Salary" name="max_salary" >
+                            </div>
+                        </div>
+                        <input type="hidden" class="form-control" placeholder="Email" name="user_authenticated" id="user_authenticated" value="{% if not request.user.is_authenticated %}False{%else%}True{%endif%}">
                       </div>
                     </div>
-                    <div class="form-group">
+                    <div class="row mb-3">
                       <div class="col-sm-offset-3 col-sm-9">
                         <button type="submit" class="btn btn-default">Create Job Alert</button>
                         <button type="button" class="btn cancelbutton">Cancel</button>
@@ -154,6 +160,14 @@
             <!-- job_alert_form ends here -->
           </div>
         </div>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+    
+          $("#multiple").select2({
+            placeholder: "Select a programming language",
+            allowClear: true
+        });
+        </script>
         <!-- Left section starts here -->
         <div class="col-md-3 right_container" style="top:7px;">
         <div class="similar_job_posts" style="margin-bottom:10px;">
@@ -182,7 +196,7 @@
         <!-- Left section ends here -->
       </div>
     </div>
-  </div>
+  </section>
 <!-- main_container ends here -->
 {% block pj_info %}
   <div class="col-md-2 col-sm-8 col-xs-8 about">
@@ -248,5 +262,7 @@
         $('select#max_year option[id='+ i +']').removeClass('max_experience');
       }
   });
+
+ 
 </script>
 {% endblock %}

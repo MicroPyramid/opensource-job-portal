@@ -8,21 +8,21 @@
         <form name="questionform" id="questionform" method="post">
         {{ question_form_set.management_form }}
         <div class="form-horizontal mail_form qform" style="margin:8px auto;border:2px solid #9E9E9E;padding:38px;">
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Title<span class="error">*</span></label>
+          <div class="row mb-3">
+            <label for="colFormLabelSm" class="col-sm-2 control-label">Title<span class="error">*</span></label>
             <div class="col-sm-10">
               <input type="text" class="form-control" placeholder='Question Title' name="form-0-title" class="title">
               <input type="hidden" name="form-0-created_by" value="{{ request.user.id }}">
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Description<span class="error">*</span></label>
+          <div class="row mb-3">
+            <label for="colFormLabelSm" class="col-sm-2 control-label">Description<span class="error">*</span></label>
             <div class="col-sm-10">
               <textarea name='form-0-description' class='description form-control' rows='4' placeholder="Question Description"></textarea>
             </div> 
           </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Skills<span class="error">*</span></label>
+          <div class="row mb-3">
+            <label for="colFormLabelSm" class="col-sm-2 control-label">Skills<span class="error">*</span></label>
             <div class="col-sm-10">
               <select name='form-0-skills' class='skills form-control'>
               <option value="">Select A Skill</option>
@@ -35,14 +35,14 @@
           </div>
           <div class="solutions">
           </div>
-        <div class="form-group">
+        <div class="add_btn mb-3">
           <button type='button' class="add_solution pull-right"><i class="fa fa-plus"></i>Add Solution</button>
         </div>
         </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">&nbsp;</label>
+          <div class="row mb-3">
+            <label for="colFormLabelSm" class="col-sm-4 control-label">&nbsp;</label>
             <div class="col-sm-8">
-              <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
+              <button type="submit"><i class="fa-solid fa-floppy-disk"></i>Save</button>
               <button class="add_question"><i class="fa fa-plus"></i>Add Another Question</button>
             </div>
           </div>
@@ -54,35 +54,35 @@
     </div>
   </div>
   <div class="hidden_solution" style="display:none">
-            <div class="form-group solution">
-              <label class="col-sm-2 control-label">Solution<span class="error">*</span></label>
+            <div class="row solution">
+              <label for="colFormLabelSm" class="col-sm-2 control-label">Solution<span class="error">*</span></label>
               <div class="col-sm-9">
                 <textarea name='answer_0' class="answer form-control" rows='4' placeholder="Solution Description"></textarea>
               </div>
               <div class="col-sm-1 mar_lr_0">
-                <button type='button' class="close_ans">Cancel</button>
+                <button type='button' class="close_ans float-end">Cancel</button>
               </div>
           </div>
       </div>
     <div class="form-horizontal hidden_question mail_form" style="display:none;margin:8px auto;border:2px solid #9E9E9E;padding:38px;">
             <div class="form-group">
-              <button type='button' class="cancelbutton pull-right">Cancel</button>
+              <button type='button' class="cancelbutton float-end">Cancel</button>
             </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Title<span class="error">*</span></label>
+            <div class="row mb-3 mt-5">
+              <label for="colFormLabelSm" class="col-sm-2 control-label">Title<span class="error">*</span></label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" placeholder='Question Title' name="form-0-title" class="title">
                 <input type="hidden" name="form-0-created_by" value="{{ request.user.id }}">
               </div>
             </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Description<span class="error">*</span></label>
+            <div class="row mb-3">
+              <label for="colFormLabelSm" class="col-sm-2 control-label">Description<span class="error">*</span></label>
               <div class="col-sm-10">
                 <textarea name='form-0-description' class='description form-control' rows='4' placeholder="Question Description"></textarea>
               </div>
             </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Skills<span class="error">*</span></label>
+            <div class="row mb-3">
+              <label for="colFormLabelSm" class="col-sm-2 control-label">Skills<span class="error">*</span></label>
               <div class="col-sm-10">
                 <select name='form-0-skills' class='skills form-control'>
                 {%for skill in skills%}
@@ -95,7 +95,7 @@
             <div class="solutions">
             </div>
             <div class="form-group">
-              <button type='button' class="add_solution pull-right"><i class="fa fa-plus"></i>Add Solution</button>
+              <button type='button' class="add_solution float-end"><i class="fa fa-plus"></i>Add Solution</button>
             </div>
             <div class="clearfix"></div>
        </div>

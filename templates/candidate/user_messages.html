@@ -17,12 +17,12 @@
 {% endblock %}
 {% block base %}
 <!-- main_container starts here -->
-<div class="row mar_lr_0 main_container">
+<div class="main_container">
   <div class="container">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
+    <div class="breadcrumb_section row">
       <nav>
-        <ol class="cd-breadcrumb triangle">
+        <ol class="breadcrumb triangle">
           <li><a href="/">Home</a></li>
           <li><a href="/profile/">Profile</a></li>
           <li class="current"><a>Contact Recruiters</a></li>
@@ -31,42 +31,44 @@
     </div>
     <div class="row mar_lr_0">
       <div class="profile_container">
-        <!-- profile_left_container starts here -->
-          {% include 'candidate/profile_completion.html' %}
-        <!-- profile_left_container ends here -->
-        <!-- profile_right_container starts here -->
-        <div class="col-md-9 col-sm-9 detail_description_column">
-          <div class="panel message_panel">
-            <div class="panel-heading text-center text-uppercase">JobPosts</div>
-              <div class="panel-body">
-              <div class="row marl chat_main_block mar_lr_0">
-                {% if jobs %}
-                <div class="col-md-3 pad_lr_0 recruiters_list_block">
-                  <ul class="recruiters_list">
-                    {% for job in jobs %}
-                    {% get_unread_messages request.user job.user job.id as unread%}
-                      <li class="col-md-12 pad_lr_0 job_button" id="{{ job.user_id }}" data-id='{{ job.id }}'>
-                        <a>{{ job.title }}{% if unread %}<span class="msg_count pull-right">{{ unread }}</span>{% endif %}</a>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-                <div class="col-md-9 pad_lr_0 message_box1">
-                  <h2 class="empty_msg">Select Jobs and Message</h2>
-                </div>
-                {% else %}
-                  <div class="col-md-3 pad_lr_0"></div>
-                  <div class="col-md-9 pad_lr_0">
-                  <h2 class="empty_msg">No Conversations With JobPosts</h2>
-                </div>
-                {% endif %}
-              </div>
-          </div>
+        <div class="row">
+           <!-- profile_left_container starts here -->
+           {% include 'candidate/profile_completion.html' %}
+           <!-- profile_left_container ends here -->
+           <!-- profile_right_container starts here -->
+             <div class="col-md-9 col-sm-9 detail_description_column">
+               <div class="card message_card">
+                 <div class="card-header text-center text-uppercase">JobPosts</div>
+                   <div class="card-body">
+                   <div class="row marl chat_main_block mar_lr_0">
+                     {% if jobs %}
+                     <div class="col-md-3 pad_lr_0 recruiters_list_block">
+                       <ul class="recruiters_list">
+                         {% for job in jobs %}
+                         {% get_unread_messages request.user job.user job.id as unread%}
+                           <li class="col-md-12 pad_lr_0 job_button" id="{{ job.user_id }}" data-id='{{ job.id }}'>
+                             <a>{{ job.title }}{% if unread %}<span class="msg_count pull-right">{{ unread }}</span>{% endif %}</a>
+                           </li>
+                         {% endfor %}
+                       </ul>
+                     </div>
+                     <div class="col-md-9 pad_lr_0 message_box1">
+                       <h2 class="empty_msg">Select Jobs and Message</h2>
+                     </div>
+                     {% else %}
+                       <div class="col-md-3 pad_lr_0"></div>
+                       <div class="col-md-9 pad_lr_0">
+                       <h2 class="empty_msg">No Conversations With JobPosts</h2>
+                     </div>
+                     {% endif %}
+                   </div>
+               </div>
+             </div>
         </div>
           <!-- Contancting recruiters starts-->
-          <div class="panel message_panel">
-            <div class="panel-heading text-center text-uppercase">Contact Recruiters</div>
-              <div class="panel-body">
+          <div class="card message_card">
+            <div class="card-header text-center text-uppercase">Contact Recruiters</div>
+              <div class="card-body">
               {% if recruiters %}
                 <div class="row marl chat_main_block mar_lr_0">
                 <div class="col-md-3 pad_lr_0 recruiters_list_block">

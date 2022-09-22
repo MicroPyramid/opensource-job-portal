@@ -292,7 +292,7 @@ def add_other_industry(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-
+   
     for industry in data:
         for value in industry.values():
             o_industries = value.replace(" ", "").split(",")
@@ -1409,6 +1409,7 @@ def new_user(request):  # pragma: no mccabe
                     "meta_title": meta_title,
                     "meta_description": meta_description,
                     "h1_tag": h1_tag,
+                    'RECAPTCHA_PUBLIC_KEY': settings.RECAPTCHA_PUBLIC_KEY
                 },
             )
 
@@ -1431,7 +1432,7 @@ def new_user(request):  # pragma: no mccabe
             show_errors = True if user_obj.is_valid() else False
         if show_errors:
             payload = {
-                "secret": "6LdZcgkTAAAAAGkY3zbzO4lWhqCStbWUef_6MWW-",
+                "secret": settings.RECAPTCHA_PRIVATE_KEY,
                 "response": request.POST.get("g-recaptcha-response"),
                 "remoteip": request.META.get("REMOTE_ADDR"),
             }
@@ -1583,7 +1584,7 @@ def new_user(request):  # pragma: no mccabe
 
     else:
         return HttpResponse("")
-
+       
 
 def account_activation(request, user_id):
     user = User.objects.filter(activation_code__iexact=user_id).first()
@@ -2086,7 +2087,7 @@ def edit_profile(request):
         user.functional_area.add(*request.POST.getlist("functional_area"))
         user.profile_completeness = user.profile_completion_percentage
         user.save()
-        data = {"error": False, "response": message, "is_login": user_login}
+        data = {"error": False, "response": "Profile updated successfully", "is_login": user_login}
         return HttpResponse(json.dumps(data))
     else:
         data = {"error": True, "response": validate_user.errors}
@@ -2165,10 +2166,7 @@ def google_login(request):
         params = {
             "grant_type": "authorization_code",
             "code": request.GET.get("code"),
-            "redirect_uri": request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:google_login"),
+            "redirect_uri": settings.GOOGLE_LOGIN_HOST + reverse("social:google_login"),
             "client_id": settings.GOOGLE_CLIENT_ID,
             "client_secret": settings.GOOGLE_CLIENT_SECRET,
         }
@@ -2255,10 +2253,8 @@ def google_login(request):
         )
         rty += (
             "&redirect_uri="
-            + request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:google_login")
+            + settings.GOOGLE_LOGIN_HOST
+            + reverse("social:google_login")
             + "&state=1235dfghjkf123"
         )
         return HttpResponseRedirect(rty)
@@ -2891,21 +2887,21 @@ def edit_company(request):
                 if company_obj.profile_pic:
                     url = str(company.profile_pic).split("cdn.peeljobs.com")[-1:]
                     AWS().cloudfront_invalidate(paths=url)
-                file_path = get_aws_file_path(
+                    file_path = get_aws_file_path(
                     request.FILES.get("profile_pic"),
                     "company/logo/",
                     slugify(request.POST["name"]),
                 )
-                company_obj.profile_pic = file_path
+                    company_obj.profile_pic = file_path
             if request.user.is_agency_recruiter:
                 company_obj.company_type = "Consultant"
             else:
                 company_obj.company_type = "Company"
-            company_obj.slug = slugify(request.POST.get("name"))
-            company_obj.save()
+                company_obj.slug = slugify(request.POST.get("name"))
+                company_obj.save()
             if not company:
                 request.user.company = company_obj
-            request.user.save()
+                request.user.save()
             data = {"error": False, "response": "Company Edited Successfully"}
             return HttpResponse(json.dumps(data))
         else:
@@ -3579,7 +3575,7 @@ def resume_upload(request):
                             path,
                             request.FILES["resume"],
                             settings.AWS_STORAGE_BUCKET_NAME,
-                            public=True,
+                            public=False,
                         )
                         email = request.POST.get("email")
                         user = User.objects.filter(email__iexact=email).first()
@@ -3596,7 +3592,7 @@ def resume_upload(request):
                             user.set_password(passwd)
                             user.save()
                             save_codes_and_send_mail(user, request, passwd)
-                        resume_upload = AgencyResume.objects.create(
+                            resume_upload = AgencyResume.objects.create(
                             candidate_name=request.POST.get("candidate_name"),
                             email=email,
                             user=user,
@@ -3606,8 +3602,8 @@ def resume_upload(request):
                         )
                         if request.POST.get("experience"):
                             resume_upload.experience = request.POST.get("experience")
-                        resume_upload.save()
-                        resume_upload.skill.add(*request.POST.getlist("skill"))
+                            resume_upload.save()
+                            resume_upload.skill.add(*request.POST.getlist("skill"))
                         for job in request.POST.getlist("job_post"):
                             AppliedJobs.objects.create(
                                 status="Pending",
@@ -3717,7 +3713,7 @@ def multiple_resume_upload(request):
                     user.set_password(passwd)
                     user.save()
                     save_codes_and_send_mail(user, request, passwd)
-                conn = tinys3.Connection(
+                    conn = tinys3.Connection(
                     settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
                 )
                 random_string = "".join(

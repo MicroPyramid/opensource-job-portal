@@ -5,8 +5,8 @@
     <div class="title" style="padding-bottom: 3px;">
       <h3>Qualifications(No Of Job Posts)
         <span>
-          <a class={% if status == 'active'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:qualifications' %}?status=active">Active</a> /
-          <a class={% if status == 'inactive'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:qualifications' %}?status=inactive">Inactive</a>
+          <a class={% if status == 'active'%}"badge badge-primary"{% else %}"badge bg-secondary"{% endif %} href="{% url 'dashboard:qualifications' %}?status=active">Active</a> /
+          <a class={% if status == 'inactive'%}"badge badge-primary"{% else %}"badge bg-secondary"{% endif %} href="{% url 'dashboard:qualifications' %}?status=inactive">Inactive</a>
         </span>
       </h3>
     </div>
@@ -37,9 +37,9 @@
             {{qualification.name}}( {{ qualification.get_no_of_jobposts|length }} )
             </div>
             <div class="icon_div">
-              <a><i class="fa fa-pencil-square-o edit"></i></a>
+              <a><i class="fa-solid fa-pen-to-square edit"></i></a>
               {% ifequal qualification.status 'InActive' %}<a href="#" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" id="{{ qualification.id }}" class="enable-qualification"><i class="fa fa-check edit" title="Activate Qualification"></i></a>{% else %}<a href="#" id="{{ qualification.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="deactivate-qualification"><i class="fa fa-times delete" title="Deactivate Qualification"></i></a>{% endifequal %}
-              <a href="{% url "dashboard:delete_qualification" qualification_id=qualification.id %}"><i class="fa fa-trash-o delete"></i></a>
+              <a href="{% url "dashboard:delete_qualification" qualification_id=qualification.id %}"><i class="fa-solid fa-trash-can delete"></i></a>
             </div>
             <div class="clearfix"></div>
             <div class="edit_panel">
@@ -59,13 +59,13 @@
     </div>
 </section>
 {% if qualifications %}
-    <div class="pagination_wrap">
+    <div class="pagination_wrap d-flex justify-content-center mt-4 mb-4">
         {% get_page current_page last_page as pages %}
-        <nav>
+        {% comment %} <nav aria-label="Page navigation">
             <ul class="pagination">
             {% if current_page != 1 %}
               <li class="prev"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
-              <li class="prev"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+              <li class="prev page-item"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
               <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page=1">first</a></li>
               {% endif %}
               {% for s in pages %}
@@ -77,8 +77,26 @@
               <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
               {% endif %}
             </ul>
-        </nav>
-      </div>
+        </nav> {% endcomment %}
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <li class="page-item"><a class="page-link active" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+    </div>
   {% endif %}
 {% endblock stage %}
 

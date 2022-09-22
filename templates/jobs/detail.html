@@ -26,9 +26,9 @@
   {% endwith %}
   <div class="container">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+    <div class="breadcrumb_section row">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li>
             <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
               <span class="name" >Home</span>
@@ -92,8 +92,8 @@
               {% include 'job_detail.html' with job=job recruiter=False %}
               <!-- job_item ends here -->
               <div class="tag_div">
-                  {% if job.job_type == 'walk-in' %}
-                  {% elif job.user.is_superuser %}
+
+                  {% if job.user.is_superuser %}
                     {% if job.company_emails %}
                       <span class="apply_btn">
                         <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="latest_job_type send_mail {% if request.user.is_active %}active{% endif %} {% if request.user.profile_completion_percentage > 50 %}completed{% endif %} {% if request.user.is_authenticated %}logged{% endif %}">Apply</a>
@@ -183,8 +183,8 @@
                 </div>
               </div>
 
-              <div style="margin-top:10px;margin-bottom:10px;">
-                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+              {% comment %} <div style="margin-top:10px;margin-bottom:10px;"> {% endcomment %}
+                {% comment %} <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                   <!-- PJ Right Nav -->
                   <ins class="adsbygoogle"
                        style="display:block"
@@ -193,7 +193,16 @@
                        data-ad-format="auto"></ins>
                 <script>
                   (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
+                </script> {% endcomment %}
+              {% comment %} </div> {% endcomment %}
+                       <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                  
+                        $("#multiple").select2({
+                          placeholder: "Select a programming language",
+                          allowClear: true
+                      });
+                      </script>
               </div>
               <!-- similar_jobs starts here -->
               <div class="similar_jobs_section">
@@ -733,7 +742,7 @@
   
       // }
       // {% endif %}
-$(document).ready(function () {
+{% comment %} $(document).ready(function () {
   $("select#job_skills").select2({placeholder: "Select here", maximumSelectionSize: 100});
   $('#job_skills').empty()
   $('#job_skills').append(new Option('Select a Skill', ''))
@@ -768,7 +777,12 @@ $(document).ready(function () {
             $('.Jobsubscribeform .select2').children().children().children().append('<li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="textbox" placeholder="Select here" style="width: 254px;"></li>')
         }
     })
-  });
+  }); {% endcomment %}
+  $("#multiple").select2({
+    placeholder: "Select a programming language",
+    allowClear: true
+});
+
     $(".redirect_job_click").click(function(e){
       e.preventDefault()
       window.open($(this).find('.job_url').attr('href'))
