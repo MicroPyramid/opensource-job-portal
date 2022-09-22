@@ -292,7 +292,7 @@ def add_other_industry(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
     mto = [settings.DEFAULT_FROM_EMAIL]
-   
+
     for industry in data:
         for value in industry.values():
             o_industries = value.replace(" ", "").split(",")
@@ -980,15 +980,21 @@ def view_job(request, job_post_id):
         else:
             user = User.objects.filter(id=request.POST.get("user_id")).first()
             UserMessage.objects.filter(
-                message_to=request.user.id, message_from=user.id, job=int(job_post_id),
+                message_to=request.user.id,
+                message_from=user.id,
+                job=int(job_post_id),
             ).update(is_read=True)
 
             m1 = UserMessage.objects.filter(
-                message_from=user.id, message_to=request.user.id, job=int(job_post_id),
+                message_from=user.id,
+                message_to=request.user.id,
+                job=int(job_post_id),
             )
 
             m2 = UserMessage.objects.filter(
-                message_to=user.id, message_from=request.user.id, job=int(job_post_id),
+                message_to=user.id,
+                message_from=request.user.id,
+                job=int(job_post_id),
             )
 
             messages = list(m1) + list(m2)
@@ -1409,7 +1415,7 @@ def new_user(request):  # pragma: no mccabe
                     "meta_title": meta_title,
                     "meta_description": meta_description,
                     "h1_tag": h1_tag,
-                    'RECAPTCHA_PUBLIC_KEY': settings.RECAPTCHA_PUBLIC_KEY
+                    "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY,
                 },
             )
 
@@ -1584,7 +1590,7 @@ def new_user(request):  # pragma: no mccabe
 
     else:
         return HttpResponse("")
-       
+
 
 def account_activation(request, user_id):
     user = User.objects.filter(activation_code__iexact=user_id).first()
@@ -2087,7 +2093,11 @@ def edit_profile(request):
         user.functional_area.add(*request.POST.getlist("functional_area"))
         user.profile_completeness = user.profile_completion_percentage
         user.save()
-        data = {"error": False, "response": "Profile updated successfully", "is_login": user_login}
+        data = {
+            "error": False,
+            "response": "Profile updated successfully",
+            "is_login": user_login,
+        }
         return HttpResponse(json.dumps(data))
     else:
         data = {"error": True, "response": validate_user.errors}
@@ -2888,10 +2898,10 @@ def edit_company(request):
                     url = str(company.profile_pic).split("cdn.peeljobs.com")[-1:]
                     AWS().cloudfront_invalidate(paths=url)
                     file_path = get_aws_file_path(
-                    request.FILES.get("profile_pic"),
-                    "company/logo/",
-                    slugify(request.POST["name"]),
-                )
+                        request.FILES.get("profile_pic"),
+                        "company/logo/",
+                        slugify(request.POST["name"]),
+                    )
                     company_obj.profile_pic = file_path
             if request.user.is_agency_recruiter:
                 company_obj.company_type = "Consultant"
@@ -3593,13 +3603,13 @@ def resume_upload(request):
                             user.save()
                             save_codes_and_send_mail(user, request, passwd)
                             resume_upload = AgencyResume.objects.create(
-                            candidate_name=request.POST.get("candidate_name"),
-                            email=email,
-                            user=user,
-                            resume=path,
-                            uploaded_by=request.user,
-                            mobile=request.POST.get("mobile"),
-                        )
+                                candidate_name=request.POST.get("candidate_name"),
+                                email=email,
+                                user=user,
+                                resume=path,
+                                uploaded_by=request.user,
+                                mobile=request.POST.get("mobile"),
+                            )
                         if request.POST.get("experience"):
                             resume_upload.experience = request.POST.get("experience")
                             resume_upload.save()
@@ -3714,8 +3724,8 @@ def multiple_resume_upload(request):
                     user.save()
                     save_codes_and_send_mail(user, request, passwd)
                     conn = tinys3.Connection(
-                    settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
-                )
+                        settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
+                    )
                 random_string = "".join(
                     random.choice("0123456789ABCDEF") for i in range(3)
                 )

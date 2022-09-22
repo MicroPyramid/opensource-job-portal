@@ -8,6 +8,7 @@ from django.http.response import HttpResponseRedirect, HttpResponse
 from django.conf import settings
 from itertools import chain
 from django.template import loader
+
 # from oauth2client.contrib import xsrfutil
 from django.urls import reverse
 
@@ -15,6 +16,7 @@ from peeldb.models import JobPost, ENQUERY_TYPES, Skill, City, Qualification, St
 from .forms import SimpleContactForm
 from mpcomp.views import get_prev_after_pages_count
 from django.db.models import Count, F
+
 # from pjob.calendar_events import FLOW
 # from oauth2client.contrib.django_util.storage import DjangoORMStorage
 # from peeldb.models import CredentialsModel
@@ -31,7 +33,6 @@ def pages(request, page_name):
     ]
     if page_name in pages_slugs:
         return render(request, "pages/" + page_name + ".html")
-        
 
     message = "Sorry, the page you requested can not be found"
     reason = "The URL may be misspelled or the page you're looking for is no longer available."
@@ -48,7 +49,7 @@ def pages(request, page_name):
 
 
 # def users_login(request):
-    # return render(request, "login.html")
+# return render(request, "login.html")
 
 
 def get_out(request):
@@ -104,7 +105,13 @@ def custom_500(request):
                 status=404,
             )
     return render(
-        request, "404.html", {"message": message, "reason": reason,}, status=404,
+        request,
+        "404.html",
+        {
+            "message": message,
+            "reason": reason,
+        },
+        status=404,
     )
 
 

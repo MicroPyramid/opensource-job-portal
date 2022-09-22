@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.urls import re_path as url 
 from django.urls import path
 from pjob.views import (
     skill_location_wise_fresher_jobs,
@@ -155,7 +156,7 @@ urlpatterns = [
     url(r"^skill-auto/$", skill_auto_search),
     url(r"^city-auto/$", city_auto_search),
     url(r"^get/search-slugs/$", search_slugs, name="get_search_slugs"),
-    url(r'^admin/', admin.site.urls),# Here's the typo
+    url(r"^admin/", admin.site.urls),  # Here's the typo
     url(r"^search/", include("search.urls", namespace="search")),
     url(r"^skill-auto/$", skill_auto_search),
     url(
@@ -305,7 +306,7 @@ urlpatterns = [
     url(r"^process-email/$", process_email, name="process_email"),
     # url(r'^dj-rest-auth/', include('dj_rest_auth.urls')),
     url(r"^api-recruiter/", include("recruiter.api_urls", namespace="api_recruiter")),
-    url(r"^celery-check/", include("mp_celery_monitor.urls", namespace="celery-check"))
+    url(r"^celery-check/", include("mp_celery_monitor.urls", namespace="celery-check")),
 ]
 
 handler404 = custom_404

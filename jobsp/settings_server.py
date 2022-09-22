@@ -19,7 +19,10 @@ sentry_sdk.init(
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
-    "root": {"level": "WARNING", "handlers": ["sentry"],},
+    "root": {
+        "level": "WARNING",
+        "handlers": ["sentry"],
+    },
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
@@ -42,7 +45,11 @@ LOGGING = {
             "handlers": ["console"],
             "propagate": False,
         },
-        "raven": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
+        "raven": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": False,
+        },
         "sentry.errors": {
             "level": "DEBUG",
             "handlers": ["console"],

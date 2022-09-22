@@ -158,7 +158,7 @@ def getdocumenttext(document):
     # iterate through each paragraph, appending all text (t) children to that
     # paragraphs text.
     for para in paralist:
-        paratext = u""
+        paratext = ""
         # Loop through each paragraph
         for element in para.iter():
             # Find t (text) elements
@@ -310,7 +310,7 @@ def float_round(num, places=0, direction=floor):
     no_of_digits = str(num)[::-1].find(".")
     if int(no_of_digits) <= 2:
         return num
-    return direction(num * (10 ** places)) / float(10 ** places)
+    return direction(num * (10**places)) / float(10**places)
 
 
 def get_current_date_time():
@@ -650,4 +650,3 @@ def get_meta_data(name, data):
             )
         )
     return meta_title, meta_description, h1_tag
-

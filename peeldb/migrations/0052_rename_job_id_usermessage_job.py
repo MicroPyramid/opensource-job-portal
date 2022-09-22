@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0051_usermessage'),
+        ("peeldb", "0051_usermessage"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='usermessage',
-            old_name='job_id',
-            new_name='job',
+            model_name="usermessage",
+            old_name="job_id",
+            new_name="job",
         ),
     ]

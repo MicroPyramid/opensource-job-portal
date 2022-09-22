@@ -10,7 +10,7 @@ class PasswordlessAuthBackend(ModelBackend):
 
     """Custom authentication in djnago without providing a password."""
 
-    def authenticate(self,request, username=None, password=None):
+    def authenticate(self, request, username=None, password=None):
         try:
             # Try to find a user matching your username
             user = User.objects.get(Q(username=username) | Q(email=username))

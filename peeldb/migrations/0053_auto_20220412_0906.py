@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('peeldb', '0052_rename_job_id_usermessage_job'),
+        ("peeldb", "0052_rename_job_id_usermessage_job"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='city',
-            name='meta',
+            model_name="city",
+            name="meta",
             field=models.JSONField(null=True),
         ),
         migrations.AlterField(
-            model_name='skill',
-            name='meta',
+            model_name="skill",
+            name="meta",
             field=models.JSONField(null=True),
         ),
     ]

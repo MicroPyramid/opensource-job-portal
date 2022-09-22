@@ -376,7 +376,7 @@ class PostalCode(core.XmlElement):
 
 class Country(core.XmlElement):
 
-    """ The name or code of the country. """
+    """The name or code of the country."""
 
     _qname = CONTACTS_TEMPLATE % "country"
 

@@ -219,7 +219,6 @@ class UserForm(ModelForm):
             "gender",
         ]
 
-
     # def clean_password(self):
     #     if self.instance.id:
     #         return ''

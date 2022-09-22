@@ -9,19 +9,40 @@ from operator import __or__ as OR
 import requests
 from django.conf import settings
 from django.core.mail import EmailMessage
+
 # from pytz import timezone
 from django.db.models import Case, Q, When
 from django.template import loader
+
 # from jobsp.celery import app
 from jobsp.celery import app
 from microurl import google_mini
 from mpcomp.facebook import GraphAPI, get_app_access_token
 from mpcomp.views import get_absolute_url
-from peeldb.models import (AppliedJobs, City, Company, Facebook, FacebookGroup,
-                           FacebookPage, FacebookPost, Industry, JobAlert,
-                           JobPost, Linkedin, LinkedinPost, Qualification,
-                           SearchResult, SentMail, Skill, State, Subscriber,
-                           Ticket, Twitter, TwitterPost, User)
+from peeldb.models import (
+    AppliedJobs,
+    City,
+    Company,
+    Facebook,
+    FacebookGroup,
+    FacebookPage,
+    FacebookPost,
+    Industry,
+    JobAlert,
+    JobPost,
+    Linkedin,
+    LinkedinPost,
+    Qualification,
+    SearchResult,
+    SentMail,
+    Skill,
+    State,
+    Subscriber,
+    Ticket,
+    Twitter,
+    TwitterPost,
+    User,
+)
 from twython.api import Twython
 
 
@@ -558,7 +579,9 @@ def postonlinkedin(user, job_post):
         locations = job_post.location.values_list("name", flat=True)
         job_name += ", ".join(locations)
         post = {
-            "visibility": {"code": "anyone",},
+            "visibility": {
+                "code": "anyone",
+            },
             "comment": job_post.published_message,
             "content": {
                 "title": job_name,
@@ -1192,7 +1215,7 @@ def applicants_profile_update_notifications():
     #         rendered = temp.render({"user": user})
     #         mto = [user.email]
     #         send_email.delay(mto, subject, rendered)
- 
+
     day = datetime.today() - timedelta(days=2)
     users = User.objects.filter(
         user_type="JS",
@@ -1746,9 +1769,7 @@ def sitemap_generation():
     states_walkins_xml_file = open("sitemap/sitemap-state-walkins.xml", "w")
     states_walkins_xml_file.write(states_walkins_xml_count)
     states_fresher_jobs_xml_count = states_fresher_jobs_xml_count + "</urlset>"
-    states_fresher_jobs_xml_file = open(
-        "sitemap/sitemap-state-fresher-jobs.xml", "w"
-    )
+    states_fresher_jobs_xml_file = open("sitemap/sitemap-state-fresher-jobs.xml", "w")
     states_fresher_jobs_xml_file.write(states_fresher_jobs_xml_count)
 
     # skill fresher jobs

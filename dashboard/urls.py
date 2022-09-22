@@ -1,4 +1,5 @@
-from django.conf.urls import url
+from django.urls import re_path as url 
+
 from .views import (
     index,
     change_password,
@@ -217,8 +218,11 @@ urlpatterns = [
         adding_existing_candidates_to_jobposts,
         name="adding_existing_candidates_to_jobposts",
     ),
-    url(r"^jobpost/mail_to_recruiter/(?P<job_post_id>[-\w]+)/$", mail_to_recruiter, name="mail_to_recruiter"),
-
+    url(
+        r"^jobpost/mail_to_recruiter/(?P<job_post_id>[-\w]+)/$",
+        mail_to_recruiter,
+        name="mail_to_recruiter",
+    ),
     # applicants
     url(r"^applicants/list/$", applicants, name="applicants"),
     url(r"^applicants/(?P<status>[-\w]+)/list/$", applicants, name="applicants"),
@@ -361,5 +365,4 @@ urlpatterns = [
         name="move_duplicates",
     ),
     url(r"^clear/cache/", clear_cache, name="clear_cache"),
-
 ]

@@ -182,7 +182,7 @@ def bounces(request):
 
 @login_required
 def upload_resume(request):
-    """ validate file size <250kb and type doc,docx,pdf,rtf,odt """
+    """validate file size <250kb and type doc,docx,pdf,rtf,odt"""
     if "resume" in request.FILES and request.user.user_type == "JS":
         fo = request.FILES["resume"]
         sup_formates = [
@@ -266,7 +266,7 @@ def upload_resume(request):
 
 @login_required
 def upload_profilepic(request):
-    """ validate file size <250kb and type doc,docx,pdf,rtf,odt """
+    """validate file size <250kb and type doc,docx,pdf,rtf,odt"""
     if "profile_pic" in request.FILES:
         pic = request.FILES["profile_pic"]
         sup_formates = ["image/jpeg", "image/png"]
@@ -291,13 +291,13 @@ def upload_profilepic(request):
 
 @jobseeker_login_required
 def profile(request):
-    """ need to check user login or not"""
+    """need to check user login or not"""
     if request.user.is_authenticated:
         messages = UserMessage.objects.filter(message_to=request.user.id, is_read=False)
         user = request.user
         user.profile_completeness = user.profile_completion_percentage
         user.save()
-    
+
         nationality = ""
         functional_areas = FunctionalArea.objects.filter(status="Active").order_by(
             "name"
@@ -430,9 +430,7 @@ def edit_personalinfo(request):
             "industries": industires,
             "functional_areas": functional_areas,
         }
-        template = (
-            "candidate/edit_personalinfo.html"
-        )
+        template = "candidate/edit_personalinfo.html"
         return render(request, template, data)
 
 
@@ -496,9 +494,7 @@ def edit_profile_description(request):
         else:
             data = {"error": True, "response": validate_personalform.errors}
         return HttpResponse(json.dumps(data))
-    template = (
-        "candidate/edit_profile_description.html"
-    )
+    template = "candidate/edit_profile_description.html"
     return render(request, template)
 
 
@@ -540,9 +536,7 @@ def edit_professionalinfo(request):
             "years": YEARS,
             "months": MONTHS,
         }
-        template = (
-            "candidate/edit_professionalInfo.html"
-        )
+        template = "candidate/edit_professionalInfo.html"
         return render(request, template, data)
 
 
@@ -550,9 +544,7 @@ def edit_professionalinfo(request):
 def add_language(request):
     if request.method == "GET":
         languages = Language.objects.all()
-        template = (
-            "candidate/add_language.html"
-        )
+        template = "candidate/add_language.html"
         return render(request, template, {"languages": languages})
     if request.POST.get("language"):
         if request.user.language.filter(language_id=request.POST.get("language")):
@@ -591,9 +583,7 @@ def edit_language(request, language_id):
     if request.method == "GET":
         languages = Language.objects.all()
         if user_language:
-            template = (
-                "candidate/editlanguage.html"
-            )
+            template = "candidate/editlanguage.html"
             data = {"language": user_language[0], "languages": languages}
         else:
             template = "404.html"
@@ -666,9 +656,7 @@ def delete_language(request, language_id):
 @login_required
 def add_experience(request):
     if request.method == "GET":
-        template = (
-            "candidate/add_experience.html"
-        )
+        template = "candidate/add_experience.html"
         return render(request, template)
     work_experience = WorkExperienceForm(request.POST)
     if work_experience.is_valid():
@@ -718,9 +706,7 @@ def edit_experience(request, experience_id):
     if request.method == "GET":
         if experiences:
             experience = experiences[0]
-            template = (
-                "candidate/edit_experience.html"
-            )
+            template = "candidate/edit_experience.html"
             data = {"experience": experience}
         else:
             template = "404.html"
@@ -787,9 +773,7 @@ def delete_experience(request, experience_id):
 @login_required
 def add_education(request):
     if request.method == "GET":
-        template = (
-            "candidate/add_education.html"
-        )
+        template = "candidate/add_education.html"
         return render(
             request,
             template,
@@ -870,9 +854,7 @@ def edit_education(request, education_id):
     education = EducationDetails.objects.filter(id=education_id).first()
     if education:
         if request.method == "GET":
-            template = (
-                "candidate/edit_education.html"
-            )
+            template = "candidate/edit_education.html"
             return render(
                 request,
                 template,
@@ -985,9 +967,7 @@ def add_technicalskill(request):
             .exclude(id__in=user_skills)
             .order_by("name")
         )
-        template = (
-            "candidate/add_technicalskill.html"
-        )
+        template = "candidate/add_technicalskill.html"
         return render(
             request,
             template,
@@ -1037,9 +1017,7 @@ def edit_technicalskill(request, technical_skill_id):
     if skill:
         if request.method == "GET":
             skills = Skill.objects.filter(status="Active").order_by("name")
-            template = (
-                "candidate/edit_technicalskill.html"
-            )
+            template = "candidate/edit_technicalskill.html"
             return render(
                 request,
                 template,
@@ -1103,9 +1081,7 @@ def delete_technicalskill(request, technical_skill_id):
 @login_required
 def add_project(request):
     if request.method == "GET":
-        template = (
-            "candidate/add_project.html"
-        )
+        template = "candidate/add_project.html"
         return render(
             request,
             template,
@@ -1144,9 +1120,7 @@ def edit_project(request, project_id):
     projects = Project.objects.filter(id=project_id)
     if projects:
         if request.method == "GET":
-            template = (
-                "candidate/edit_project.html"
-            )
+            template = "candidate/edit_project.html"
             return render(
                 request,
                 template,
@@ -1219,9 +1193,7 @@ def edit_email(request):
         return HttpResponse(json.dumps(data))
 
     else:
-        template = (
-            "candidate/edit_email.html"
-        )
+        template = "candidate/edit_email.html"
         return render(request, template)
 
 
@@ -1233,9 +1205,7 @@ def job_alert(request):
             meta_title = Template(meta[0].meta_title).render(Context({}))
             meta_description = Template(meta[0].meta_description).render(Context({}))
             h1_tag = Template(meta[0].h1_tag).render(Context({}))
-        template = (
-            "alert/job_alert.html"
-        )
+        template = "alert/job_alert.html"
         return render(
             request,
             template,
@@ -1406,9 +1376,7 @@ def job_alert_results(request, job_alert_id):
             "current_page": page,
             "last_page": no_pages,
         }
-        template = (
-           "alert/job_alert_results.html"
-        )
+        template = "alert/job_alert_results.html"
         return render(request, template, data)
     else:
         template = "alert/list.html"
@@ -1427,9 +1395,7 @@ def modify_job_alert(request, job_alert_id):
                 "years": YEARS,
                 "job_alert": job_alert,
             }
-            template = (
-                "alert/modify_job_alert.html"
-            )
+            template = "alert/modify_job_alert.html"
             return render(request, template, data)
         validate_jobalert = JobAlertForm(request.POST, instance=job_alert)
         if validate_jobalert.is_valid():
@@ -1519,9 +1485,7 @@ def alerts_list(request, **kwargs):
             },
         )
     else:
-        template = (
-            "alert/job_alert.html"
-        )
+        template = "alert/job_alert.html"
         return render(
             request,
             template,
@@ -1598,9 +1562,7 @@ def user_password_change(request):
             return HttpResponse(
                 json.dumps({"error": True, "response": validate_changepassword.errors})
             )
-    template = (
-        "candidate/change_user_password.html"
-    )
+    template = "candidate/change_user_password.html"
     return render(request, template)
 
 
@@ -1839,7 +1801,7 @@ def get_messages(request):
 
 @jobseeker_login_required
 def messages(request):
-    """ need to check user login or not"""
+    """need to check user login or not"""
     if request.POST.get("mode") == "get_messages":
         data = get_messages(request)
         return HttpResponse(json.dumps(data))
@@ -1916,9 +1878,7 @@ def messages(request):
                 *[When(pk=pk, then=pos) for pos, pk in enumerate(recruiter_ids)]
             )
             users = users.order_by(recruiter_order)
-        template = (
-            "candidate/user_messages.html"
-        )
+        template = "candidate/user_messages.html"
         return render(request, template, {"recruiters": users, "jobs": jobs})
     else:
         return HttpResponseRedirect("/")

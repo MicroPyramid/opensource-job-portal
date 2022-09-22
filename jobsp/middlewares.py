@@ -234,4 +234,3 @@ class LowerCased(MiddlewareMixin):
                 return redirect("/social/user/update/", permanent=False)
         if request.path == "/recruiter/":
             return redirect("/post-job/", permanent=False)
-

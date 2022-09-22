@@ -122,12 +122,12 @@ def index(request):
             and not request.user.is_agency_recruiter
         ):
             current_date = datetime.strptime(
-                    str(datetime.now().date()), "%Y-%m-%d"
-                ).strftime("%Y-%m-%d")
+                str(datetime.now().date()), "%Y-%m-%d"
+            ).strftime("%Y-%m-%d")
             today_admin_walkin_jobs_count = JobPost.objects.filter(
-                    job_type="walk-in",
-                    user__is_superuser=True,
-                )
+                job_type="walk-in",
+                user__is_superuser=True,
+            )
             today_tickets_open = Ticket.objects.filter(
                 created_on__contains=current_date, status="Open"
             ).count()
@@ -441,18 +441,18 @@ def index(request):
                 status="Disabled"
             ).count()
 
-            today_admin_internship_pending_jobs = today_admin_internship_jobs_count.filter(
-                status="Pending"
-            ).count()
-            today_admin_internship_published_jobs = today_admin_internship_jobs_count.filter(
-                status="Published"
-            ).count()
+            today_admin_internship_pending_jobs = (
+                today_admin_internship_jobs_count.filter(status="Pending").count()
+            )
+            today_admin_internship_published_jobs = (
+                today_admin_internship_jobs_count.filter(status="Published").count()
+            )
             today_admin_internship_live_jobs = today_admin_internship_jobs_count.filter(
                 status="Live"
             ).count()
-            today_admin_internship_disabled_jobs = today_admin_internship_jobs_count.filter(
-                status="Disabled"
-            ).count()
+            today_admin_internship_disabled_jobs = (
+                today_admin_internship_jobs_count.filter(status="Disabled").count()
+            )
 
             today_walkin_pending_jobs = today_walkin_jobs_count.filter(
                 status="Pending"
@@ -520,18 +520,18 @@ def index(request):
                 status="Disabled"
             ).count()
 
-            today_admin_full_time_pending_jobs = today_admin_full_time_jobs_count.filter(
-                status="Pending"
-            ).count()
-            today_admin_full_time_published_jobs = today_admin_full_time_jobs_count.filter(
-                status="Published"
-            ).count()
+            today_admin_full_time_pending_jobs = (
+                today_admin_full_time_jobs_count.filter(status="Pending").count()
+            )
+            today_admin_full_time_published_jobs = (
+                today_admin_full_time_jobs_count.filter(status="Published").count()
+            )
             today_admin_full_time_live_jobs = today_admin_full_time_jobs_count.filter(
                 status="Live"
             ).count()
-            today_admin_full_time_disabled_jobs = today_admin_full_time_jobs_count.filter(
-                status="Disabled"
-            ).count()
+            today_admin_full_time_disabled_jobs = (
+                today_admin_full_time_jobs_count.filter(status="Disabled").count()
+            )
 
             total_skills = Skill.objects.filter()
             total_active_skills = total_skills.filter(status="Active").count()
@@ -563,180 +563,178 @@ def index(request):
             total_tickets_closed = Ticket.objects.filter(status="Closed").count()
 
             context = {
-                    "today_tickets_open": today_tickets_open,
-                    "today_tickets_closed": today_tickets_closed,
-                    "today_fulltime_pending_jobs": today_fulltime_pending_jobs,
-                    "today_fulltime_published_jobs": today_fulltime_published_jobs,
-                    "today_fulltime_live_jobs": today_fulltime_live_jobs,
-                    "today_fulltime_disabled_jobs": today_fulltime_disabled_jobs,
-                    "today_social_login_once_applicants": today_social_login_once_applicants,
-                    "today_job_applications": today_job_applications.count(),
-                    "total_job_applications": total_job_applications.count(),
-                    "today_social_resume_applicants": today_social_resume_applicants,
-                    "today_social_applied_applicants": today_social_applied_applicants,
-                    "today_social_profile_applicants": today_social_profile_applicants,
-                    "total_social_applicants": total_social_applicants.count(),
-                    "social_login_once_applicants": social_login_once_applicants,
-                    "social_resume_applicants": social_resume_applicants,
-                    "social_applied_applicants": social_applied_applicants,
-                    "social_profile_applicants": social_profile_applicants,
-                    "today_agency_recruiters_count": today_agency_recruiters.count(),
-                    "today_agency_active_recruiters_count": today_agency_recruiters.filter(
-                        is_active=True
-                    ).count(),
-                    "today_agency_inactive_recruiters_count": today_agency_recruiters.filter(
-                        is_active=False
-                    ).count(),
-                    "today_agency_mobile_verified_recruiters_count": today_agency_recruiters.filter(
-                        mobile_verified=True
-                    ).count(),
-                    "today_agency_mobile_not_verified_recruiters_count": today_agency_recruiters.filter(
-                        mobile_verified=False
-                    ).count(),
-                    "total_agency_recruiters_count": total_agency_recruiters.count(),
-                    "total_agency_active_recruiters_count": total_agency_recruiters.filter(
-                        is_active=True
-                    ).count(),
-                    "total_agency_inactive_recruiters_count": total_agency_recruiters.filter(
-                        is_active=False
-                    ).count(),
-                    "total_agency_mobile_verified_recruiters_count": total_agency_recruiters.filter(
-                        mobile_verified=True
-                    ).count(),
-                    "total_agency_mobile_not_verified_recruiters_count": total_agency_recruiters.filter(
-                        mobile_verified=False
-                    ).count(),
-                    "today_admin_full_time_pending_jobs": today_admin_full_time_pending_jobs,
-                    "today_admin_full_time_published_jobs": today_admin_full_time_published_jobs,
-                    "today_admin_full_time_live_jobs": today_admin_full_time_live_jobs,
-                    "today_admin_full_time_disabled_jobs": today_admin_full_time_disabled_jobs,
-                    "total_tickets_open": total_tickets_open,
-                    "total_tickets_closed": total_tickets_closed,
-                    "today_pending_jobs": today_pending_jobs,
-                    "today_published_jobs": today_published_jobs,
-                    "today_live_jobs": today_live_jobs,
-                    "today_disabled_jobs": today_disabled_jobs,
-                    "today_admin_pending_jobs": today_admin_pending_jobs,
-                    "today_admin_published_jobs": today_admin_published_jobs,
-                    "today_admin_live_jobs": today_admin_live_jobs,
-                    "today_admin_disabled_jobs": today_admin_disabled_jobs,
-                    "today_social_applicants": today_social_applicants.count(),
-                    "today_recruiters_count": today_recruiters.count(),
-                    "today_active_recruiters_count": today_recruiters.filter(
-                        is_active=True
-                    ).count(),
-                    "today_inactive_recruiters_count": today_recruiters.filter(
-                        is_active=False
-                    ).count(),
-                    "today_recruiters_mobile_verified_count": today_recruiters.filter(
-                        mobile_verified=True
-                    ).count(),
-                    "today_recruiters_mobile_not_verified_count": today_recruiters.filter(
-                        mobile_verified=False
-                    ).count(),
-                    "total_pending_jobs": total_pending_jobs,
-                    "total_published_jobs": total_published_jobs,
-                    "total_live_jobs": total_live_jobs,
-                    "total_disabled_jobs": total_disabled_jobs,
-                    "total_recruiters": total_recruiters.count(),
-                    "total_active_recruiters_count": total_recruiters.filter(
-                        is_active=True
-                    ).count(),
-                    "total_inactive_recruiters_count": total_recruiters.filter(
-                        is_active=False
-                    ).count(),
-                    "total_recruiters_mobile_verified_count": total_recruiters.filter(
-                        mobile_verified=True
-                    ).count(),
-                    "total_recruiters_mobile_not_verified_count": total_recruiters.filter(
-                        mobile_verified=False
-                    ).count(),
-                    "total_walkin_pending_jobs": total_walkin_pending_jobs,
-                    "total_walkin_published_jobs": total_walkin_published_jobs,
-                    "total_walkin_live_jobs": total_walkin_live_jobs,
-                    "total_walkin_disabled_jobs": total_walkin_disabled_jobs,
-                    "total_fulltime_pending_jobs": total_fulltime_pending_jobs,
-                    "total_fulltime_published_jobs": total_fulltime_published_jobs,
-                    "total_fulltime_live_jobs": total_fulltime_live_jobs,
-                    "total_fulltime_disabled_jobs": total_fulltime_disabled_jobs,
-                    "total_internship_pending_jobs": total_internship_pending_jobs,
-                    "total_internship_published_jobs": total_internship_published_jobs,
-                    "total_internship_live_jobs": total_internship_live_jobs,
-                    "total_internship_disabled_jobs": total_internship_disabled_jobs,
-                    "today_internship_pending_jobs": today_internship_pending_jobs,
-                    "today_internship_published_jobs": today_internship_published_jobs,
-                    "today_internship_live_jobs": today_internship_live_jobs,
-                    "today_internship_disabled_jobs": today_internship_disabled_jobs,
-                    "today_walkin_pending_jobs": today_walkin_pending_jobs,
-                    "today_walkin_published_jobs": today_walkin_published_jobs,
-                    "today_walkin_live_jobs": today_walkin_live_jobs,
-                    "today_walkin_disabled_jobs": today_walkin_disabled_jobs,
-                    "today_govt_pending_jobs": today_govt_pending_jobs,
-                    "today_govt_published_jobs": today_govt_published_jobs,
-                    "today_govt_live_jobs": today_govt_live_jobs,
-                    "today_govt_disabled_jobs": today_govt_disabled_jobs,
-                    "today_admin_internship_pending_jobs": today_admin_internship_pending_jobs,
-                    "today_admin_internship_published_jobs": today_admin_internship_published_jobs,
-                    "today_admin_internship_live_jobs": today_admin_internship_live_jobs,
-                    "today_admin_internship_disabled_jobs": today_admin_internship_disabled_jobs,
-                    "today_admin_walkin_pending_jobs": today_admin_walkin_pending_jobs,
-                    "today_admin_walkin_published_jobs": today_admin_walkin_published_jobs,
-                    "today_admin_walkin_live_jobs": today_admin_walkin_live_jobs,
-                    "today_admin_walkin_disabled_jobs": today_admin_walkin_disabled_jobs,
-                    "total_skills": total_skills.count(),
-                    "total_active_skills": total_active_skills,
-                    "total_inactive_skills": total_inactive_skills,
-                    "total_locations": total_locations.count(),
-                    "total_active_locations": total_active_locations,
-                    "total_inactive_locations": total_inactive_locations,
-                    "total_user_locations": total_user_locations.count(),
-                    "total_active_user_locations": total_active_user_locations,
-                    "total_inactive_user_locations": total_inactive_user_locations,
-                    "today_active_user_locations": today_user_locations.filter(
-                        status="Enabled"
-                    ).count(),
-                    "today_inactive_user_locations": today_user_locations.filter(
-                        status="Disabled"
-                    ).count(),
-                    "total_companies": total_companies,
-                    "total_active_companies": total_active_companies,
-                    "total_inactive_companies": total_inactive_companies,
-                    "total_govt_pending_jobs": total_govt_pending_jobs,
-                    "total_govt_published_jobs": total_govt_published_jobs,
-                    "total_govt_live_jobs": total_govt_live_jobs,
-                    "total_govt_disabled_jobs": total_govt_disabled_jobs,
-                    "today_active_skills": today_skills.filter(status="Active").count(),
-                    "today_inactive_skills": today_skills.filter(
-                        status="InActive"
-                    ).count(),
-                    "today_active_locations": today_locations.filter(
-                        status="Enabled"
-                    ).count(),
-                    "today_inactive_locations": today_locations.filter(
-                        status="Disabled"
-                    ).count(),
-                    "today_companies_active": today_companies_active,
-                    "today_companies_not_active": today_companies_not_active,
-                    "today_register_applicants": today_register_applicants.count(),
-                    "today_register_login_once_applicants": today_register_login_once_applicants,
-                    "today_register_resume_applicants": today_register_resume_applicants,
-                    "today_register_profile_applicants": today_register_profile_applicants,
-                    "today_register_applied_applicants": today_register_applied_applicants,
-                    "total_register_applicants": total_register_applicants.count(),
-                    "register_login_once_applicants": register_login_once_applicants,
-                    "register_resume_applicants": register_resume_applicants,
-                    "register_applied_applicants": register_applied_applicants,
-                    "register_profile_applicants": register_profile_applicants,
-                    "resume_applicants": resume_applicants.count(),
-                    "resume_login_once_applicants": resume_login_once_applicants,
-                    "resume_applied_applicants": resume_applied_applicants,
-                    "resume_profile_applicants": resume_profile_applicants,
-                    "today_resume_applicants": today_resume_applicants.count(),
-                    "today_resume_login_once_applicants": today_resume_login_once_applicants,
-                    "today_resume_applied_applicants": today_resume_applied_applicants,
-                    "today_resume_profile_applicants": today_resume_profile_applicants,
-                    "months":months     
-                }     
+                "today_tickets_open": today_tickets_open,
+                "today_tickets_closed": today_tickets_closed,
+                "today_fulltime_pending_jobs": today_fulltime_pending_jobs,
+                "today_fulltime_published_jobs": today_fulltime_published_jobs,
+                "today_fulltime_live_jobs": today_fulltime_live_jobs,
+                "today_fulltime_disabled_jobs": today_fulltime_disabled_jobs,
+                "today_social_login_once_applicants": today_social_login_once_applicants,
+                "today_job_applications": today_job_applications.count(),
+                "total_job_applications": total_job_applications.count(),
+                "today_social_resume_applicants": today_social_resume_applicants,
+                "today_social_applied_applicants": today_social_applied_applicants,
+                "today_social_profile_applicants": today_social_profile_applicants,
+                "total_social_applicants": total_social_applicants.count(),
+                "social_login_once_applicants": social_login_once_applicants,
+                "social_resume_applicants": social_resume_applicants,
+                "social_applied_applicants": social_applied_applicants,
+                "social_profile_applicants": social_profile_applicants,
+                "today_agency_recruiters_count": today_agency_recruiters.count(),
+                "today_agency_active_recruiters_count": today_agency_recruiters.filter(
+                    is_active=True
+                ).count(),
+                "today_agency_inactive_recruiters_count": today_agency_recruiters.filter(
+                    is_active=False
+                ).count(),
+                "today_agency_mobile_verified_recruiters_count": today_agency_recruiters.filter(
+                    mobile_verified=True
+                ).count(),
+                "today_agency_mobile_not_verified_recruiters_count": today_agency_recruiters.filter(
+                    mobile_verified=False
+                ).count(),
+                "total_agency_recruiters_count": total_agency_recruiters.count(),
+                "total_agency_active_recruiters_count": total_agency_recruiters.filter(
+                    is_active=True
+                ).count(),
+                "total_agency_inactive_recruiters_count": total_agency_recruiters.filter(
+                    is_active=False
+                ).count(),
+                "total_agency_mobile_verified_recruiters_count": total_agency_recruiters.filter(
+                    mobile_verified=True
+                ).count(),
+                "total_agency_mobile_not_verified_recruiters_count": total_agency_recruiters.filter(
+                    mobile_verified=False
+                ).count(),
+                "today_admin_full_time_pending_jobs": today_admin_full_time_pending_jobs,
+                "today_admin_full_time_published_jobs": today_admin_full_time_published_jobs,
+                "today_admin_full_time_live_jobs": today_admin_full_time_live_jobs,
+                "today_admin_full_time_disabled_jobs": today_admin_full_time_disabled_jobs,
+                "total_tickets_open": total_tickets_open,
+                "total_tickets_closed": total_tickets_closed,
+                "today_pending_jobs": today_pending_jobs,
+                "today_published_jobs": today_published_jobs,
+                "today_live_jobs": today_live_jobs,
+                "today_disabled_jobs": today_disabled_jobs,
+                "today_admin_pending_jobs": today_admin_pending_jobs,
+                "today_admin_published_jobs": today_admin_published_jobs,
+                "today_admin_live_jobs": today_admin_live_jobs,
+                "today_admin_disabled_jobs": today_admin_disabled_jobs,
+                "today_social_applicants": today_social_applicants.count(),
+                "today_recruiters_count": today_recruiters.count(),
+                "today_active_recruiters_count": today_recruiters.filter(
+                    is_active=True
+                ).count(),
+                "today_inactive_recruiters_count": today_recruiters.filter(
+                    is_active=False
+                ).count(),
+                "today_recruiters_mobile_verified_count": today_recruiters.filter(
+                    mobile_verified=True
+                ).count(),
+                "today_recruiters_mobile_not_verified_count": today_recruiters.filter(
+                    mobile_verified=False
+                ).count(),
+                "total_pending_jobs": total_pending_jobs,
+                "total_published_jobs": total_published_jobs,
+                "total_live_jobs": total_live_jobs,
+                "total_disabled_jobs": total_disabled_jobs,
+                "total_recruiters": total_recruiters.count(),
+                "total_active_recruiters_count": total_recruiters.filter(
+                    is_active=True
+                ).count(),
+                "total_inactive_recruiters_count": total_recruiters.filter(
+                    is_active=False
+                ).count(),
+                "total_recruiters_mobile_verified_count": total_recruiters.filter(
+                    mobile_verified=True
+                ).count(),
+                "total_recruiters_mobile_not_verified_count": total_recruiters.filter(
+                    mobile_verified=False
+                ).count(),
+                "total_walkin_pending_jobs": total_walkin_pending_jobs,
+                "total_walkin_published_jobs": total_walkin_published_jobs,
+                "total_walkin_live_jobs": total_walkin_live_jobs,
+                "total_walkin_disabled_jobs": total_walkin_disabled_jobs,
+                "total_fulltime_pending_jobs": total_fulltime_pending_jobs,
+                "total_fulltime_published_jobs": total_fulltime_published_jobs,
+                "total_fulltime_live_jobs": total_fulltime_live_jobs,
+                "total_fulltime_disabled_jobs": total_fulltime_disabled_jobs,
+                "total_internship_pending_jobs": total_internship_pending_jobs,
+                "total_internship_published_jobs": total_internship_published_jobs,
+                "total_internship_live_jobs": total_internship_live_jobs,
+                "total_internship_disabled_jobs": total_internship_disabled_jobs,
+                "today_internship_pending_jobs": today_internship_pending_jobs,
+                "today_internship_published_jobs": today_internship_published_jobs,
+                "today_internship_live_jobs": today_internship_live_jobs,
+                "today_internship_disabled_jobs": today_internship_disabled_jobs,
+                "today_walkin_pending_jobs": today_walkin_pending_jobs,
+                "today_walkin_published_jobs": today_walkin_published_jobs,
+                "today_walkin_live_jobs": today_walkin_live_jobs,
+                "today_walkin_disabled_jobs": today_walkin_disabled_jobs,
+                "today_govt_pending_jobs": today_govt_pending_jobs,
+                "today_govt_published_jobs": today_govt_published_jobs,
+                "today_govt_live_jobs": today_govt_live_jobs,
+                "today_govt_disabled_jobs": today_govt_disabled_jobs,
+                "today_admin_internship_pending_jobs": today_admin_internship_pending_jobs,
+                "today_admin_internship_published_jobs": today_admin_internship_published_jobs,
+                "today_admin_internship_live_jobs": today_admin_internship_live_jobs,
+                "today_admin_internship_disabled_jobs": today_admin_internship_disabled_jobs,
+                "today_admin_walkin_pending_jobs": today_admin_walkin_pending_jobs,
+                "today_admin_walkin_published_jobs": today_admin_walkin_published_jobs,
+                "today_admin_walkin_live_jobs": today_admin_walkin_live_jobs,
+                "today_admin_walkin_disabled_jobs": today_admin_walkin_disabled_jobs,
+                "total_skills": total_skills.count(),
+                "total_active_skills": total_active_skills,
+                "total_inactive_skills": total_inactive_skills,
+                "total_locations": total_locations.count(),
+                "total_active_locations": total_active_locations,
+                "total_inactive_locations": total_inactive_locations,
+                "total_user_locations": total_user_locations.count(),
+                "total_active_user_locations": total_active_user_locations,
+                "total_inactive_user_locations": total_inactive_user_locations,
+                "today_active_user_locations": today_user_locations.filter(
+                    status="Enabled"
+                ).count(),
+                "today_inactive_user_locations": today_user_locations.filter(
+                    status="Disabled"
+                ).count(),
+                "total_companies": total_companies,
+                "total_active_companies": total_active_companies,
+                "total_inactive_companies": total_inactive_companies,
+                "total_govt_pending_jobs": total_govt_pending_jobs,
+                "total_govt_published_jobs": total_govt_published_jobs,
+                "total_govt_live_jobs": total_govt_live_jobs,
+                "total_govt_disabled_jobs": total_govt_disabled_jobs,
+                "today_active_skills": today_skills.filter(status="Active").count(),
+                "today_inactive_skills": today_skills.filter(status="InActive").count(),
+                "today_active_locations": today_locations.filter(
+                    status="Enabled"
+                ).count(),
+                "today_inactive_locations": today_locations.filter(
+                    status="Disabled"
+                ).count(),
+                "today_companies_active": today_companies_active,
+                "today_companies_not_active": today_companies_not_active,
+                "today_register_applicants": today_register_applicants.count(),
+                "today_register_login_once_applicants": today_register_login_once_applicants,
+                "today_register_resume_applicants": today_register_resume_applicants,
+                "today_register_profile_applicants": today_register_profile_applicants,
+                "today_register_applied_applicants": today_register_applied_applicants,
+                "total_register_applicants": total_register_applicants.count(),
+                "register_login_once_applicants": register_login_once_applicants,
+                "register_resume_applicants": register_resume_applicants,
+                "register_applied_applicants": register_applied_applicants,
+                "register_profile_applicants": register_profile_applicants,
+                "resume_applicants": resume_applicants.count(),
+                "resume_login_once_applicants": resume_login_once_applicants,
+                "resume_applied_applicants": resume_applied_applicants,
+                "resume_profile_applicants": resume_profile_applicants,
+                "today_resume_applicants": today_resume_applicants.count(),
+                "today_resume_login_once_applicants": today_resume_login_once_applicants,
+                "today_resume_applied_applicants": today_resume_applied_applicants,
+                "today_resume_profile_applicants": today_resume_profile_applicants,
+                "months": months,
+            }
             return render(
                 request,
                 "dashboard/index.html",
@@ -793,7 +791,7 @@ def new_admin_user(request):
         else:
             validate_user = UserForm(request.POST, request.FILES)
         if validate_user.is_valid():
-            user,created = User.objects.get_or_create(
+            user, created = User.objects.get_or_create(
                 email=request.POST["email"],
             )
             user.is_active = True
@@ -802,12 +800,12 @@ def new_admin_user(request):
             if created:
                 UserEmail.objects.create(
                     user=user, email=request.POST["email"], is_primary=True
-                    )
-                user.username=request.POST["email"]
-                user.first_name=request.POST["first_name"]
-                user.last_name=request.POST["last_name"]
-                user.address=request.POST["address"]
-                user.permanent_address=request.POST["permanent_address"]
+                )
+                user.username = request.POST["email"]
+                user.first_name = request.POST["first_name"]
+                user.last_name = request.POST["last_name"]
+                user.address = request.POST["address"]
+                user.permanent_address = request.POST["permanent_address"]
 
             if request.POST["mobile"]:
                 user.mobile = request.POST["mobile"]
@@ -883,15 +881,23 @@ def edit_user(request, user_id):
 def delete_user(request, user_id):
     user = User.objects.get(id=user_id)
     if user:
-        permissions=Permission.objects.filter(user=user)
-        permission_list=["activity_edit","activity_view","add_user","change_user","delete_user","support_edit","support_view"]
+        permissions = Permission.objects.filter(user=user)
+        permission_list = [
+            "activity_edit",
+            "activity_view",
+            "add_user",
+            "change_user",
+            "delete_user",
+            "support_edit",
+            "support_view",
+        ]
         for permission in permissions:
             if permission.codename in permission_list:
                 user.user_permissions.remove(permission)
-        user.is_staff=False
-        user.is_superuser=False
+        user.is_staff = False
+        user.is_superuser = False
         user.save()
-        #user.delete()
+        # user.delete()
         data = {"error": False, "response": "User Deleted"}
     else:
         data = {"error": True, "response": "Unabe to delete user"}
@@ -2031,7 +2037,7 @@ def post_detail(request, post_id):
     applicants = applicants.exclude(ip_address="", user_agent="")
     users = applicants.exclude(user=None)
     resumes = applicants.exclude(resume_applicant=None)
- 
+
     return render(
         request,
         "dashboard/jobpost/post_view.html",
@@ -2110,7 +2116,7 @@ def deactivate_job(request, job_post_id):
     }
     # return HttpResponse(json.dumps(data))
     return HttpResponseRedirect(
-        reverse('dashboard:job_posts', args=(job_post.job_type,))
+        reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
 
 
@@ -2196,7 +2202,7 @@ def publish_job(request, job_post_id):
     }
     # return HttpResponse(json.dumps(data))
     return HttpResponseRedirect(
-        reverse('dashboard:job_posts', args=(job_post.job_type,))
+        reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
 
 
@@ -2223,23 +2229,25 @@ def enable_job(request, job_post_id):
     data = {"error": False, "response": "Job Post enabled Successfully"}
     # return HttpResponse(json.dumps(data))
     return HttpResponseRedirect(
-        reverse('dashboard:job_posts', args=(job_post.job_type,))
+        reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
+
 
 @permission_required("activity_edit")
 def mail_to_recruiter(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     user = User.objects.get(id=job_post.user.id)
     recruiter_email = user.email
-    c = {"job_post": job_post, "user": user, "comments":request.POST.get("comments")}
+    c = {"job_post": job_post, "user": user, "comments": request.POST.get("comments")}
     t = loader.get_template("email/mail_to_recruiter.html")
     subject = "PeelJobs JobPost"
     rendered = t.render(c)
     mto = recruiter_email
     send_email.delay(mto, subject, rendered)
     return HttpResponseRedirect(
-        reverse('dashboard:job_posts', args=(job_post.job_type,))
+        reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
+
 
 @permission_required("activity_view", "activity_edit")
 def applicants(request, status="all"):
@@ -4784,4 +4792,3 @@ def moving_duplicates(request, value):
 def clear_cache(request):
     cache._cache.flush_all()
     return HttpResponseRedirect("/dashboard/")
-

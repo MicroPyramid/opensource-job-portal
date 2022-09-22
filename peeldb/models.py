@@ -4,6 +4,7 @@ from datetime import datetime
 import re
 import arrow
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+
 # from oauth2client.contrib.django_util.models import CredentialsField
 
 # from twython.api import Twython
@@ -12,8 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q, Count, F, JSONField
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
-
+from django.utils.translation import gettext_lazy as _
 # from microurl import google_mini
 
 COMPANY_SIZE = (
@@ -2051,7 +2051,7 @@ class AssessmentData(models.Model):
 
 # class CredentialsModel(models.Model):
 #     id = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
-    # credential = CredentialsField()
+# credential = CredentialsField()
 
 
 class MetaData(models.Model):
@@ -2072,4 +2072,3 @@ class UserMessage(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     job = models.ForeignKey(JobPost, null=True, on_delete=models.SET_NULL)
     is_read = models.BooleanField(default=False)
-

@@ -279,7 +279,7 @@ def custome_search(request, skill_name, city_name, **kwargs):
             "h1_tag": h1_tag,
         }
         template = "jobs/jobs_list.html"
-        return render(request , template , data)
+        return render(request, template, data)
     else:
         template = "404.html"
         meta_title, meta_description = get_404_meta(
