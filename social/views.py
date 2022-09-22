@@ -138,7 +138,10 @@ def facebook_login(request):
         accesstoken = graph.extend_access_token(settings.FB_APP_ID, settings.FB_SECRET)[
             "accesstoken"
         ]
-        profile = graph.get_object("me", fields="id, name, email",)
+        profile = graph.get_object(
+            "me",
+            fields="id, name, email",
+        )
         email = profile.get("email", "")
 
         if "email" in profile.keys():
@@ -387,7 +390,7 @@ def google_login(request):
             "https://accounts.google.com/o/oauth2/auth?client_id="
             + settings.GOOGLE_CLIENT_ID
             + "&response_type=code"
-        )        
+        )
         rty += (
             "&scope=https://www.googleapis.com/auth/userinfo.profile \
                https://www.googleapis.com/auth/userinfo.email&redirect_uri="
@@ -885,7 +888,10 @@ def facebook_connect(request):
             "accesstoken"
         ]
 
-        profile = graph.get_object("me", fields="id, name, email",)
+        profile = graph.get_object(
+            "me",
+            fields="id, name, email",
+        )
         # email = profile['email'] if 'email' in profile.keys() else ''
         if "email" not in profile.keys():
             message = "Sorry, We didnt find your email id through facebook"

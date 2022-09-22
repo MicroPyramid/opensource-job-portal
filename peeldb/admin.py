@@ -16,7 +16,7 @@ from peeldb.models import (
     TwitterFriend,
     Language,
     Qualification,
-    FunctionalArea,  
+    FunctionalArea,
 )
 
 admin.site.register(Country)
@@ -36,4 +36,3 @@ admin.site.register(Twitter)
 admin.site.register(TwitterFollower)
 admin.site.register(TwitterFriend)
 admin.site.register(Qualification)
-

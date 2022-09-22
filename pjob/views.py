@@ -76,7 +76,6 @@ from django.core.cache import cache
 from dashboard.tasks import save_search_results, send_email
 
 
-
 months = [
     {"Name": "Jan", "id": 1},
     {"Name": "Feb", "id": 2},
@@ -229,9 +228,7 @@ def jobs_applied(request):
             "no_of_jobs": no_of_jobs,
             "suggested_jobs": suggested_jobs[:10],
         }
-        template = (
-            "candidate/applied_jobs.html"
-        )
+        template = "candidate/applied_jobs.html"
         return render(request, template, data)
     else:
         return HttpResponseRedirect("/")
@@ -307,9 +304,7 @@ def job_detail(request, job_title_slug, job_id):
             meta_description = Template(meta[0].meta_description).render(
                 Context({"job": job})
             )
-        template = (
-            "jobs/detail.html"
-        )
+        template = "jobs/detail.html"
         data = {
             "job": job,
             "show_pop_up": show_pop,
@@ -385,9 +380,7 @@ def recruiter_profile(request, recruiter_name, **kwargs):
             h1_tag = Template(meta[0].h1_tag).render(
                 Context({"current_page": page, "user": user[0]})
             )
-        template = (
-           "jobs/recruiter_profile.html"
-        )
+        template = "jobs/recruiter_profile.html"
         return render(
             request,
             template,
@@ -453,9 +446,7 @@ def recruiters(request, **kwargs):
         (page - 1) * items_per_page : page * items_per_page
     ]
     meta_title, meta_description, h1_tag = get_meta("recruiters_list", {"page": page})
-    template = (
-        "jobs/recruiters_list.html"
-    )
+    template = "jobs/recruiters_list.html"
     return render(
         request,
         template,
@@ -544,7 +535,7 @@ def index(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    
+
     template = "jobs/jobs_list.html"
     return render(request, template, data)
 
@@ -657,9 +648,7 @@ def job_locations(request, location, **kwargs):
             "h1_tag": h1_tag,
             "state": state.first(),
         }
-        template = (
-            "jobs/jobs_list.html"
-        )
+        template = "jobs/jobs_list.html"
         return render(request, template, data)
     else:
         if final_location:
@@ -852,9 +841,7 @@ def job_skills(request, skill, **kwargs):
             "h1_tag": h1_tag,
             "searched_text": searched_text,
         }
-        template = (
-            "jobs/jobs_list.html"
-        )
+        template = "jobs/jobs_list.html"
         return render(request, template, data)
     else:
         if final_skill or final_edu:
@@ -964,9 +951,7 @@ def job_industries(request, industry, **kwargs):
             "meta_description": meta_description,
             "h1_tag": h1_tag,
         }
-        template = (
-            "jobs/jobs_list.html"
-        )
+        template = "jobs/jobs_list.html"
         return render(request, template, data)
     else:
         if searched_industry:
@@ -1085,7 +1070,7 @@ def job_apply(request, job_id):
                     # else:
                     #     data = {'error': True, 'response': 'Jobpost is already expired'}
                     #     return HttpResponse(json.dumps(data))
-               
+
                 else:
                     data = {
                         "error": True,
@@ -1369,10 +1354,18 @@ def job_add_event(request):
             "summary": str(jobpost.title),
             "location": str(msg),
             "description": str(jobpost.title),
-            "start": {"date": str(jobpost.last_date), "timeZone": "Asia/Calcutta",},
-            "end": {"date": str(jobpost.last_date), "timeZone": "Asia/Calcutta",},
+            "start": {
+                "date": str(jobpost.last_date),
+                "timeZone": "Asia/Calcutta",
+            },
+            "end": {
+                "date": str(jobpost.last_date),
+                "timeZone": "Asia/Calcutta",
+            },
             "recurrence": ["RRULE:FREQ=DAILY;COUNT=2"],
-            "attendees": [{"email": str(request.user.email)},],
+            "attendees": [
+                {"email": str(request.user.email)},
+            ],
             "reminders": {
                 "useDefault": False,
                 "overrides": [
@@ -1478,9 +1471,7 @@ def jobs_by_location(request, job_type):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    template = (
-        "jobs/jobs_by_location.html"
-    )
+    template = "jobs/jobs_by_location.html"
     return render(request, template, data)
 
 
@@ -1504,9 +1495,7 @@ def jobs_by_skill(request):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    template = (
-       "jobs/jobs_by_skills.html"
-    )
+    template = "jobs/jobs_by_skills.html"
     return render(request, template, data)
 
 
@@ -1541,9 +1530,7 @@ def fresher_jobs_by_skills(request, job_type):
         "meta_title": meta_title,
         "meta_description": meta_description,
     }
-    template = (
-        "jobs/fresher_jobs_by_skills.html"
-    )
+    template = "jobs/fresher_jobs_by_skills.html"
     return render(request, template, data)
 
 
@@ -1570,9 +1557,7 @@ def jobs_by_industry(request):
         "meta_title": meta_title,
         "meta_description": meta_description,
     }
-    template = (
-       "jobs/jobs_by_industries.html"
-    )
+    template = "jobs/jobs_by_industries.html"
     return render(request, template, data)
 
 
@@ -1596,9 +1581,7 @@ def jobs_by_degree(request):
         "meta_title": meta_title,
         "meta_description": meta_description,
     }
-    template = (
-        "jobs/jobs_by_degree.html"
-    )
+    template = "jobs/jobs_by_degree.html"
     return render(request, template, data)
 
 
@@ -1670,7 +1653,7 @@ def full_time_jobs(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    
+
     template = "jobs/jobs_list.html"
     return render(request, template, data)
 
@@ -1787,7 +1770,7 @@ def city_internship_jobs(request, location, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    
+
     template = "jobs/jobs_list.html"
     return render(request, template, data)
 
@@ -1856,7 +1839,7 @@ def walkin_jobs(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    
+
     template = "jobs/jobs_list.html"
     return render(request, template, data)
 
@@ -1985,9 +1968,7 @@ def each_company_jobs(request, company_name, **kwargs):
             "meta_description": meta_description,
             "h1_tag": h1_tag,
         }
-        template = (
-           "jobs/company_jobs.html"
-        )
+        template = "jobs/company_jobs.html"
         return render(request, template, data)
 
 
@@ -2032,9 +2013,7 @@ def companies(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    template = (
-        "jobs/companies_list.html"
-    )
+    template = "jobs/companies_list.html"
     return render(request, template, data)
 
 
@@ -2917,7 +2896,7 @@ def forgot_password(request):
             data = {
                 "error": True,
                 "response_message": "User Already registered as a Recruiter",
-                }
+            }
             return HttpResponse(json.dumps(data))
         if user:
             new_pass = get_random_string(length=10).lower()
@@ -3012,13 +2991,9 @@ def user_reg_success(request):
         data = {"error": True, "response": validate_user.errors}
         return HttpResponse(json.dumps(data))
     if request.user.registered_from == "Social" and not request.user.mobile:
-        template_name = (
-            "candidate/social_register.html"
-        )
+        template_name = "candidate/social_register.html"
         return render(request, template_name)
-    template = (
-        "candidate/user_reg_success.html"
-    )
+    template = "candidate/user_reg_success.html"
     return render(request, template)
 
 

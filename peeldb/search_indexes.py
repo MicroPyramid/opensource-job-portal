@@ -146,7 +146,7 @@ class skillautoIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class locationIndex(indexes.SearchIndex, indexes.Indexable):
-    """ index for loacation"""
+    """index for loacation"""
 
     text = indexes.CharField(
         document=True, use_template=True, template_name="index/city_text.txt"
@@ -166,7 +166,7 @@ class locationIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class industryIndex(indexes.SearchIndex, indexes.Indexable):
-    """ index for loacation"""
+    """index for loacation"""
 
     text = indexes.CharField(
         document=True, use_template=True, template_name="index/industry_text.txt"
@@ -186,7 +186,7 @@ class industryIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class functionalareaIndex(indexes.SearchIndex, indexes.Indexable):
-    """ index for loacation"""
+    """index for loacation"""
 
     text = indexes.CharField(
         document=True, use_template=True, template_name="index/functionalarea_text.txt"
@@ -205,7 +205,7 @@ class functionalareaIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class qualificationIndex(indexes.SearchIndex, indexes.Indexable):
-    """ index for loacation"""
+    """index for loacation"""
 
     text = indexes.CharField(
         document=True, use_template=True, template_name="index/qualification_text.txt"
@@ -225,7 +225,7 @@ class qualificationIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class stateIndex(indexes.SearchIndex, indexes.Indexable):
-    """ index for State"""
+    """index for State"""
 
     text = indexes.CharField(
         document=True, use_template=True, template_name="index/state_text.txt"

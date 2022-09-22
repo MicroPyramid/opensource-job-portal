@@ -26,11 +26,13 @@ Recruiter can register using email or google login to post job.
 - Email Notifications
 
 ### Useful tools and packages
-```
+
+```sh
 pipdeptree # to see pip dependancy tree
 black # to format code to meet python coding standards
 pip-check -H  # to see upgradable packages
 ```
+
 ## Setup
 
 Following are the setup instruction for ubuntu 20.04.
@@ -42,7 +44,7 @@ sudo apt-get install -y nodejs
 sudo apt-get install node-less
 ```
 
-##### Install and configure sass and less compilers
+### Install and configure sass and less compilers
 
 ```bash
 sudo gem install sass
@@ -56,13 +58,13 @@ you can find yours with this command `which lessc`
 sudo ln -s /usr/bin/lessc /usr/local/bin/lessc
 ```
 
-##### Install virtualenvwrapper
+#### Install virtualenvwrapper
+
 pip install virtualenvwrapper
 add the following to your path
 
 ```export PATH="$PATH:/home/ubuntu/.local/bin"```
 ```source /home/ubuntu/.local/bin/virtualenvwrapper.sh```
-
 
 ##### Install requirements
 
@@ -73,23 +75,27 @@ pip install -r requirements.txt
 For env variables, refer to env.md in source directory and you need to create a .env file to keep all env variables with their respective values.
 
 ##### Create db and import basic data to postgresql
+
 sudo -u postgres psql
 
-###### to change postgres password 
+##### to change postgres password
+
 ALTER USER postgres PASSWORD 'myPassword';
 
 create database peeljobs
 sudo -u postgres -i psql peeljobs < init_db/db_init.sql
 
 ##### Install docker and Run elasticsearch
+
 to add user to docker group
 
 ```sudo usermod -aG docker $USER```
 restart to apply changes.
 
 ```bash
-docker run -d --name elasticsearch -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+docker run -d --name elasticsearch -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.6
 ```
+
 ##### Create index
 
 Finally `update_index` command will freshen all of the content in your index. It iterates through all indexed models and updates the records in the index.
@@ -98,7 +104,8 @@ Finally `update_index` command will freshen all of the content in your index. It
 python manage.py update_index
 ```
 
- ##### Load data to postgres Database
- Load data to cities, companies and etc using json files in "peeldb/fixtures" folder. please check below command for reference.
+##### Load data to postgres Database
 
- `python manage.py loaddata cities`
+Load data to cities, companies and etc using json files in "peeldb/fixtures" folder. please check below command for reference.
+
+`python manage.py loaddata cities`

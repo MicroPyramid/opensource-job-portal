@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path as url 
 from search.views import (
     skill_auto_search,
     city_auto_search,
