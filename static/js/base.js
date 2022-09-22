@@ -10,6 +10,7 @@ $('.search-form').submit(function(e){
       if ((skill == '' || skill == null) & (location == '' || location == null)) {
         setTimeout(open_dialog('Please select atleast one location or skill', 'Info!!!'), 12000);
       return false;
+      
       }
       else{
         $.ajax({
@@ -177,7 +178,7 @@ $('.adv_job_type').click(function(e){
       })
 
       $('.select2').select2();
-      $.fn.modal.Constructor.prototype.enforceFocus = function() {};
+      // $.fn.modal.Constructor.prototype.enforceFocus = function() {};
       $("select#user_register_technical_skills").select2( { placeholder: "Choose required Skillset", maximumSelectionSize: 6 } );
       $("select#user_register_current_city").select2({placeholder: "Choose current location", 'positionDropdown': true})
       $('.select2').click(function(e){

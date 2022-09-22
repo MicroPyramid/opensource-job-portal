@@ -29,13 +29,13 @@
 </style>
 <div class="content_div">
 <!-- main_container starts here -->
-<div class="row mar_lr_0 main_container">
+<div class="main_container">
   <div class="container">
 
   <!-- breadcrumb_section starts here -->
   <div class="breadcrumb_section row mar_lr_0">
-    <nav>
-      <ol class="cd-breadcrumb triangle">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb triangle">
       <li>
         <a href="/" class="name"><span class="name" >Home</span></a></li>
         <li class="current">
@@ -53,26 +53,26 @@
       <div class="row" id="register_div">
         <div class="col-md-12">
         <div class="form_panel form job_alert_form">
-         <div class="panel panel-default">
-                <div class="panel-heading text-center text-uppercase">Update Below details to Continue</div>
-                <div class="panel-body">
+         <div class="card">
+                <div class="card-header text-center text-uppercase">Update Below details to Continue</div>
+                <div class="card-body">
           <form id="SocialRegister" name="SocialRegister" class="form-horizontal ApplicantForm" method="POST" enctype="multipart/form-data">
 
 
 
                 
-              <div class="form-group">
-                <label for="inputPassword3" class="col-sm-4 control-label">Mobile Number<span class="error">*</span></label>
+              <div class="row mb-3">
+                <label for="colFormLabelSm" class="col-sm-4 control-label">Mobile Number<span class="error">*</span></label>
                  <div class="col-sm-8">
                  <input type="hidden" class="form-control" name="email" value="{{request.user.email}}">
                 <input type="text" class="form-control" id="user_register_mobile" placeholder="Recruiters will reach you on this number" name="mobile"></div>
                 </div>
                 
-              <div class="form-group">
-                <label for="inputPassword3" class="col-sm-4 control-label">Current Location<span class="error">*</span></label>
+              <div class="row mb-3">
+                <label for="colFormLabelSm" class="col-sm-4 control-label">Current Location<span class="error">*</span></label>
                 <div class="col-sm-8">
                   {% get_all_cities as cities %}
-                  <select class="form-control select2" name="current_city" id="user_register_current_city">
+                  <select class="form-control" name="current_city" id="user_register_current_city">
                     <option value="">Choose required location</option>
                     {% for city in cities%}
                      {% if not 'India' in city.name %}
@@ -84,11 +84,11 @@
                 </div>
                 </div>
                 
-              <div class="form-group" style="margin-top:5px">
-                <label for="inputPassword3" class="col-sm-4 control-label">Skills<span class="error">*</span></label>
+              <div class="row mb-3">
+                <label for="colFormLabelSm" class="col-sm-4 control-label">Skills<span class="error">*</span></label>
                  <div class="col-sm-8">
                 {% get_all_skills as skills %}
-                 <select class="form-control select2" name="technical_skills" id="user_register_technical_skills" multiple placeholder="select skill">
+                 <select class="form-control" name="technical_skills" id="user_register_technical_skills" multiple placeholder="select skill">
                     {% for skill in skills %}
                         <option value="{{ skill.id }}">{{ skill.name }}</option>
                     {% endfor %}
@@ -97,41 +97,42 @@
               </div>
               </div>
               
-              <div class="form-group" style="margin-top:5px">
-              <label for="inputPassword3" class="col-sm-4 control-label">Experience</label>
+              <div class="row mb-3">
+              <label for="colFormLabelSm" class="col-sm-4 control-label">Experience</label>
                  <div class="col-sm-8">
                     <div class="row">
-                    <div  class="col-md-6">
-                      <select class="form-control" name="year" id="user_register_year">
-                      {% get_years as years %}
-                        <option value=''>Year</option>
-                      {% for i in years %}
-                        <option value='{{i.0}}'>{{i.1}}</option>
-                      {% endfor %}
-                  </select>
-                    </div>
-                    <div  class="col-md-6">
-                      <select class="form-control" name="month" id="user_register_month">
-                    {% get_months as months %}
-                      <option value=''>Month</option>
-                  {% for k in months %}
-                      <option value='{{k.0}}'>{{k.1}}</option>
-                    {% endfor %}
-                  </select>
-                    </div>
+                      <div  class="col-md-6">
+                        <select class="form-control" name="year" id="user_register_year">
+                        {% get_years as years %}
+                          <option value=''>Year</option>
+                        {% for i in years %}
+                          <option value='{{i.0}}'>{{i.1}}</option>
+                        {% endfor %}
+                        </select>
+                      </div>
+                      <div  class="col-md-6">
+                        <select class="form-control" name="month" id="user_register_month">
+                          {% get_months as months %}
+                            <option value=''>Month</option>
+                            {% for k in months %}
+                            <option value='{{k.0}}'>{{k.1}}</option>
+                            {% endfor %}
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-              <div class="form-group" style="margin-top:5px">
-<label for="inputPassword3" class="col-sm-4 control-label">Upload Resume:</label>
+              <div class="row mb-5">
+                <label for="colFormLabelSm" class="col-sm-4 control-label">Upload Resume:</label>
                  <div class="col-sm-8">
                     <input type="file" name="resume" id="user_register_resume" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt">
                     <p class="help_text">doc, docx, pdf - 300kb max</p>
                      <input type="hidden" name="social" value="social">
                     </div>
                     </div>
-              <div class="form-group" style="margin-top:10px"> <div class="col-sm-offset-4 col-sm-8"> <button type="submit" class="btn btn-default register_form_button">Submit</button> </div> 
+              <div class="row" style="margin-top:10px"> 
+                <div class="col-sm-offset-4 col-sm-8"> <button type="submit" class="btn btn-default register_form_button">Submit</button> </div> 
               </div>
             </form>
             </div>

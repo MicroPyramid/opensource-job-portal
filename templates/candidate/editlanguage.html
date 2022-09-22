@@ -15,21 +15,22 @@
 {% endblock %}
 {% block base %}
 <!-- main_container starts here -->
-<div class="row mar_lr_0 main_container">
+<div class="main_container">
 <div class="container">
   <div class="row mar_lr_0">
     <div class="profile_container">
-      <!-- profile_left_container starts here -->
+        <div class="row">
+              <!-- profile_left_container starts here -->
       {% include 'candidate/profile_completion.html' %}
       <!-- profile_left_container ends here -->
       <!-- profile_right_container starts here -->
       <div class="col-md-9 col-sm-9 detail_description_column">
-        <div class="panel">
-          <div class="panel-heading text-center text-uppercase">EDIT PROFILE</div>
-          <div class="panel-body">
+        <div class="card">
+          <div class="card-header text-center text-uppercase">EDIT PROFILE</div>
+          <div class="card-body">
             <form name="languageform" id="languageform" method="post">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Language Name</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Language Name</label>
                 <div class="col-sm-9">
                   <select class="form-control" name="language" id="language" readonly>
                     <option value="">Select A Language</option>
@@ -41,29 +42,29 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Read</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Read</label>
                 <div class="col-sm-9">
                   <input type="checkbox" name="read" id="read"
                   {% if language.read %}checked{% endif %}>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Write</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Write</label>
                 <div class="col-sm-9">
                   <input type="checkbox" name="write" id="write"
                   {% if language.write %}checked{% endif %}>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Speak</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Speak</label>
                 <div class="col-sm-9">
                   <input type="checkbox" name="speak" id="speak"
                   {% if language.speak %}checked{% endif %}>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label"></label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label"></label>
                 <div class="col-sm-9">
                   <button type="submit" class='submit'>Save</button>
                   <button type="button" class='add_another'>Save & Add Other</button>
@@ -75,6 +76,7 @@
           </div>
         </div>
       </div>
+        </div>
     </div>
   </div>
 </div>

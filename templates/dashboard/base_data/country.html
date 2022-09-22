@@ -9,143 +9,147 @@
     }
 </style>
     <section id='three_panel_layout'>
-        <section class="col-md-4 country">
-            <div class="title">Country(No Of Job Posts)</div>
-            <div class="add_form_div active_ticket_form" id="add_conform">
-                <form id="newcountryform" method="post">
-                    <div class="form-inline">
-                        <input type="text" class="form-control" name="country" id="country">
-                        <button type="submit"><i class="fa fa-plus"></i>Add</button>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4 country">
+                    <div class="title">Country(No Of Job Posts)</div>
+                    <div class="add_form_div active_ticket_form" id="add_conform">
+                        <form id="newcountryform" method="post">
+                            <div class="form-inline">
+                                <input type="text" class="form-control" name="country" id="country">
+                                <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-            <div class="edit_form_div" id="edit_conform">
-                <div class="form-inline">
-                    <form id="editcountryform" method="post">
-                        <input type="text" class="form-control" id="country_name" placeholder="Name" name="country">
-                        <input type="hidden" id="country_id">
-                        <input type="text" class="form-control" placeholder="Slug" id="country_slug" name="slug">
-                        <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
-                        <button id="btnconcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
-                    </form>
-                </div>
-            </div>
-            <div class="list_div_wrap" id="country-list-div">
-                {% for country in countries %}
-                    <div class="ticket {% if country.status == "Disabled" %}disabled_ticket{% endif %}">
-                        <a class='name_ticket' id="{{ country.status }}"
-                           href="{{ country.id }}">{{ country.name }}</a><span class="job_count">({{ country.get_no_of_jobposts|length }})</span>
-                        <div class="remove_ticket remove_country">
-                            <a class="delete" href="{{country.id}}">
-                                <i class="fa fa-trash-o"></i>
-                            </a>
+                    <div class="edit_form_div" id="edit_conform">
+                        <div class="form-inline">
+                            <form id="editcountryform" method="post">
+                                <input type="text" class="form-control" id="country_name" placeholder="Name" name="country">
+                                <input type="hidden" id="country_id">
+                                <input type="text" class="form-control" placeholder="Slug" id="country_slug" name="slug">
+                                <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
+                                <button id="btnconcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
+                            </form>
                         </div>
-                        <div class="actions_ticket">
-                            {% if country.status == "Enabled" %}
-                                <a href="{{ country.id }}" id="{{ country.status }}"><i
-                                        class="fa fa-toggle-off"></i></a>
-                            {% else %}
-                                <a class="edit" href="{{ country.id }}" id="{{ country.status }}"><i
-                                        class="fa fa-toggle-on"></i></a>
-                            {% endif %}
+                    </div>
+                    <div class="list_div_wrap" id="country-list-div">
+                        {% for country in countries %}
+                            <div class="ticket {% if country.status == "Disabled" %}disabled_ticket{% endif %}">
+                                <a class='name_ticket' id="{{ country.status }}"
+                                   href="{{ country.id }}">{{ country.name }}</a><span class="job_count">({{ country.get_no_of_jobposts|length }})</span>
+                                <div class="remove_ticket remove_country">
+                                    <a class="delete" href="{{country.id}}">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </a>
+                                </div>
+                                <div class="actions_ticket">
+                                    {% if country.status == "Enabled" %}
+                                        <a href="{{ country.id }}" id="{{ country.status }}">
+                                            <i class="fa-solid fa-toggle-off"></i></a>
+                                    {% else %}
+                                        <a class="edit" href="{{ country.id }}" id="{{ country.status }}">
+                                            <i class="fa-solid fa-toggle-on"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-4 state">
+                    <div class="title">State</div>
+                    <div class="add_form_div active_ticket_form" id="add_stform">
+                        <form id="newstateform" method="post">
+                            <div class="form-inline">
+                                <input type="text" class="form-control" name="state" id="state">
+                                <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="edit_form_div" id="edit_stform">
+                        <div class="form-inline">
+                            <form id="editstateform" method="post">
+                                <input type="text" class="form-control" placeholder="State Name" id="state_name" name="state">
+                                <input type="hidden" id="state_id">
+                                <select id="state_country" class="form-control" name="country">
+                                 {% for country in countries %}
+                                    <option value="{{ country.id }}" >{{ country.name }}</option>
+                                {% endfor %}
+                                </select>
+                                <input type="text" class="form-control" id="state_slug" placeholder='Slug' name="slug">
+                                <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
+                                <button id="btnstcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
+                            </form>
                         </div>
-                        <div class="clearfix"></div>
                     </div>
-                {% endfor %}
-            </div>
-        </section>
-        <section class="col-md-4 state">
-            <div class="title">State</div>
-            <div class="add_form_div active_ticket_form" id="add_stform">
-                <form id="newstateform" method="post">
-                    <div class="form-inline">
-                        <input type="text" class="form-control" name="state" id="state">
-                        <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                    <div class="list_div_wrap" id="state-list-div">
                     </div>
-                </form>
-            </div>
-            <div class="edit_form_div" id="edit_stform">
-                <div class="form-inline">
-                    <form id="editstateform" method="post">
-                        <input type="text" class="form-control" placeholder="State Name" id="state_name" name="state">
-                        <input type="hidden" id="state_id">
-                        <select id="state_country" class="form-control" name="country">
-                         {% for country in countries %}
-                            <option value="{{ country.id }}" >{{ country.name }}</option>
-                        {% endfor %}
-                        </select>
-                        <input type="text" class="form-control" id="state_slug" placeholder='Slug' name="slug">
-                        <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
-                        <button id="btnstcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
-                    </form>
+                </div>
+                <div class="col-md-4 city">
+                    <div class="title">City</div>
+                    <div class="add_form_div active_ticket_form" id="add_ctform">
+                        <form id="newcityform" method="post" action="{% url 'dashboard:country' %}">
+                            <div class="form-inline">
+                                <input type="text" class="form-control" name="city" id="city">
+                                <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="edit_form_div" id="edit_ctform">
+                        <div class="form-inline">
+                            <form id="editcityform" method="post" action="{% url 'dashboard:country' %}">
+                                <input type="text" class="form-control city-form-control" id="editcity" name="city">
+                                 <select id="city_country" class="form-control" name="state">
+                                 {% for country in countries %}
+                                    <option value="{{ country.id }}" >{{ country.name }}</option>
+                                {% endfor %}
+                                </select>
+                                 <select id="city_state" class="form-control" name="state">
+                                    <option value=""  >Select State</option>
+                                 {% for state in states %}
+                                    <option value="{{ state.id }}" class="hide" id="city_{{ state.country.id }}">{{ state.name }}</option>
+                                {% endfor %}
+                                </select>
+                                <select id="city_parent" class="form-control" name="parent_city">
+                                    <option value=""  >Select Parent City</option>
+                                 {% for city in cities %}
+                                    <option value="{{ city.id }}">{{ city.name }}</option>
+                                {% endfor %}
+                                </select>
+                                <input type="text" class="form-control city-form-control" placeholder="Slug" id="slug" name="slug">
+                                <input type="hidden" id="city_id">
+                                <textarea class="form-control city-form-control meta_title" name='meta_title' id='meta_title'
+                                          placeholder='City Meta Title'>{{ skill.meta_title }}</textarea>
+                                <textarea class="form-control city-form-control meta_description" name='meta_description'
+                                          id='meta_description'
+                                          placeholder='City Meta Description'>{{ skill.meta_description }}</textarea>
+                                <textarea class="form-control city-form-control internship_meta_title"
+                                          name='internship_meta_title' id='internship_meta_title'
+                                          placeholder='Internship Meta Title'>{{ skill.internship_meta_title }}</textarea>
+                                <textarea class="form-control city-form-control internship_meta_description"
+                                          name='internship_meta_description' id='internship_meta_description'
+                                          placeholder='Internship Meta Description'>{{ skill.internship_meta_description }}</textarea>
+                                <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
+                                <button id="btnctcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="list_div_wrap" id="city-list-div">
+                    </div>
+                    <div class="add_form_div" id='add_other_id'>
+                      <form id="othercityform" method="post" action="{% url 'dashboard:country' %}">
+                        <div class="form-inline">
+                          <input type="text" class="form-control" name="name" id="city">
+                          <input type="hidden" class="form-control" name="state" id="state">
+                          <input type="hidden" class="form-control" name="parent_city" id="parent_city">
+                          <input type="hidden" class="form-control" name="mode" value="add_other_city">
+                          <button type="submit"><i class="fa fa-plus"></i>Add</button>
+                        </div>
+                      </form>
+                    </div>
                 </div>
             </div>
-            <div class="list_div_wrap" id="state-list-div">
-            </div>
-        </section>
-        <section class="col-md-4 city">
-            <div class="title">City</div>
-            <div class="add_form_div active_ticket_form" id="add_ctform">
-                <form id="newcityform" method="post" action="{% url 'dashboard:country' %}">
-                    <div class="form-inline">
-                        <input type="text" class="form-control" name="city" id="city">
-                        <button type="submit"><i class="fa fa-plus"></i>Add</button>
-                    </div>
-                </form>
-            </div>
-            <div class="edit_form_div" id="edit_ctform">
-                <div class="form-inline">
-                    <form id="editcityform" method="post" action="{% url 'dashboard:country' %}">
-                        <input type="text" class="form-control city-form-control" id="editcity" name="city">
-                         <select id="city_country" class="form-control" name="state">
-                         {% for country in countries %}
-                            <option value="{{ country.id }}" >{{ country.name }}</option>
-                        {% endfor %}
-                        </select>
-                         <select id="city_state" class="form-control" name="state">
-                            <option value=""  >Select State</option>
-                         {% for state in states %}
-                            <option value="{{ state.id }}" class="hide" id="city_{{ state.country.id }}">{{ state.name }}</option>
-                        {% endfor %}
-                        </select>
-                        <select id="city_parent" class="form-control" name="parent_city">
-                            <option value=""  >Select Parent City</option>
-                         {% for city in cities %}
-                            <option value="{{ city.id }}">{{ city.name }}</option>
-                        {% endfor %}
-                        </select>
-                        <input type="text" class="form-control city-form-control" placeholder="Slug" id="slug" name="slug">
-                        <input type="hidden" id="city_id">
-                        <textarea class="form-control city-form-control meta_title" name='meta_title' id='meta_title'
-                                  placeholder='City Meta Title'>{{ skill.meta_title }}</textarea>
-                        <textarea class="form-control city-form-control meta_description" name='meta_description'
-                                  id='meta_description'
-                                  placeholder='City Meta Description'>{{ skill.meta_description }}</textarea>
-                        <textarea class="form-control city-form-control internship_meta_title"
-                                  name='internship_meta_title' id='internship_meta_title'
-                                  placeholder='Internship Meta Title'>{{ skill.internship_meta_title }}</textarea>
-                        <textarea class="form-control city-form-control internship_meta_description"
-                                  name='internship_meta_description' id='internship_meta_description'
-                                  placeholder='Internship Meta Description'>{{ skill.internship_meta_description }}</textarea>
-                        <button type="submit" class="save_button"><i class="fa fa-floppy-o"></i>Save</button>
-                        <button id="btnctcancel" class="cancel_button"><i class="fa fa-close"></i>Cancel</button>
-                    </form>
-                </div>
-            </div>
-            <div class="list_div_wrap" id="city-list-div">
-            </div>
-            <div class="add_form_div" id='add_other_id'>
-              <form id="othercityform" method="post" action="{% url 'dashboard:country' %}">
-                <div class="form-inline">
-                  <input type="text" class="form-control" name="name" id="city">
-                  <input type="hidden" class="form-control" name="state" id="state">
-                  <input type="hidden" class="form-control" name="parent_city" id="parent_city">
-                  <input type="hidden" class="form-control" name="mode" value="add_other_city">
-                  <button type="submit"><i class="fa fa-plus"></i>Add</button>
-                </div>
-              </form>
-            </div>
-        </section>
+        </div>
     </section>
 {% endblock stage %}
 
@@ -301,7 +305,7 @@
                                     click: function () {
                                         var newcontent = $('#state-list-div').html();
                                         newcontent += '<div class="ticket"><a class="name_ticket" href="' + data.id + '">' + data.name + '(0)</a><div class="remove_ticket remove_states"><a class="delete" href="' + data.id +'"'+
-                        'id="' + data.status + ' "><i class="fa fa-trash-o"></i></a></div><div class="actions_ticket"><a class="edit" href="' + data.id + '" id="' + data.status + '"><i class="fa fa-toggle-off"></i></a></div><div class="clearfix"></div></div>';
+                        'id="' + data.status + ' "><i class="fa-solid fa-trash-can"></i></a></div><div class="actions_ticket"><a class="edit" href="' + data.id + '" id="' + data.status + '"><i class="fa-solid fa-toggle-off"></i></a></div><div class="clearfix"></div></div>';
                                         $('#state-list-div').html(newcontent);
                                         $(this).dialog("close");
                                     }
@@ -504,7 +508,7 @@
                         open_dialog(data.message, 'Error!')
                         var newcontent = $('#city-list-div').html();
                         newcontent += '<div class="ticket"><a class="name_ticket" href="' + data.id + '">' + data.name + '</a><div class="remove_ticket remove_city"><a class="delete" href="' + data.id +'"'+
-                        'id="' + data.status + ' "><i class="fa fa-trash-o"></i></a></div><div class="actions_ticket"><a class="edit" href="' + data.id + '" id="' + data.status + '"><i class="fa fa-toggle-off"></i></a></div><div class="clearfix"></div></div>';
+                        'id="' + data.status + ' "><i class="fa-solid fa-trash-can"></i></a></div><div class="actions_ticket"><a class="edit" href="' + data.id + '" id="' + data.status + '"><i class="fa-solid fa-toggle-off"></i></a></div><div class="clearfix"></div></div>';
                         $('#city-list-div').html(newcontent);
                     } else {
                         open_dialog(data.message, 'Error!')

@@ -418,12 +418,12 @@ def change_to_int(value):
 
 @register.filter()
 def filter_jobposts(value, status):
-    return "todo def filter_jobposts"  # value.filter(status=status).count()
+    return value.filter(status=status).count()
 
 
 @register.filter()
 def filter_users(value, status):
-    return "todo def filter_users"  # value.filter(is_active=status).count()
+    return value.filter(is_active=status).count()
 
 
 @register.simple_tag

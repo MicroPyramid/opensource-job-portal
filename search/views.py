@@ -193,7 +193,7 @@ def custome_search(request, skill_name, city_name, **kwargs):
             request.META["REMOTE_ADDR"], request.POST, 0, request.user.id
         )
     if not final_location or not final_skill:
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -279,17 +279,9 @@ def custome_search(request, skill_name, city_name, **kwargs):
             "h1_tag": h1_tag,
         }
         template = "jobs/jobs_list.html"
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
-            template = "mobile/jobs/list.html"
-        return render(request, template, data)
+        return render(request , template , data)
     else:
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         meta_title, meta_description = get_404_meta(
             "skill_location_404", {"skill": final_skill, "city": final_location}
         )
@@ -326,7 +318,7 @@ def custom_walkins(request, skill_name, city_name, **kwargs):
             )
         location = final_location or [city_name]
         skills = final_skill or [skill_name]
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         meta_title = meta_description = ""
         return render(
             request,
@@ -415,17 +407,9 @@ def custom_walkins(request, skill_name, city_name, **kwargs):
             "walkin": True,
         }
         template = "jobs/jobs_list.html"
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
-            template = "mobile/jobs/list.html"
         return render(request, template, data)
     else:
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         meta_title, meta_description = get_404_meta(
             "skill_location_404", {"skill": final_skill, "city": final_location}
         )

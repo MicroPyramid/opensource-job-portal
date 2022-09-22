@@ -210,7 +210,7 @@ def facebook_login(request):
             )
 
         login(request, user)
-        if "design" in request.session.keys() and request.is_mobile == "mobile":
+        if "design" in request.session.keys():
             if request.session.get("job_id"):
                 post = JobPost.objects.filter(
                     id=request.session["job_id"], status="Live"
@@ -249,17 +249,14 @@ def facebook_login(request):
 
 def google_login(request):
     if "code" in request.GET:
+
         params = {
             "grant_type": "authorization_code",
             "code": request.GET.get("code"),
-            "redirect_uri": request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("social:google_login"),
+            "redirect_uri": settings.GOOGLE_LOGIN_HOST + reverse("social:google_login"),
             "client_id": settings.GOOGLE_CLIENT_ID,
             "client_secret": settings.GOOGLE_CLIENT_SECRET,
         }
-
         info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
         info = info.json()
         if not info.get("access_token"):
@@ -373,8 +370,8 @@ def google_login(request):
         # add_google_friends.delay(request.user.id, info["access_token"])
         if request.session.get("job_event"):
             return HttpResponseRedirect(reverse("pjob:job_add_event"))
-        if request.is_mobile == "mobile":
-            return HttpResponseRedirect("/jobs/")
+        # if request.is_mobile == "mobile":
+        #     return HttpResponseRedirect("/jobs/")
 
         if request.session.get("job_id"):
             log_apply = login_and_apply(request)
@@ -386,22 +383,19 @@ def google_login(request):
             return HttpResponseRedirect(reverse("my:profile"))
         return HttpResponseRedirect("/")
     else:
-        print(settings.GOOGLE_CLIENT_ID)
         rty = (
             "https://accounts.google.com/o/oauth2/auth?client_id="
             + settings.GOOGLE_CLIENT_ID
             + "&response_type=code"
-        )
+        )        
         rty += (
-            "&scope=https://www.googleapis.com/auth/userinfo.profile"
-            + " https://www.googleapis.com/auth/userinfo.email"
-            + " &redirect_uri="
-            + request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
+            "&scope=https://www.googleapis.com/auth/userinfo.profile \
+               https://www.googleapis.com/auth/userinfo.email&redirect_uri="
+            + settings.GOOGLE_LOGIN_HOST
             + reverse("social:google_login")
             + "&state=1235dfghjkf123"
         )
+
         return HttpResponseRedirect(rty)
 
 
@@ -549,8 +543,8 @@ def github_login(request):
 
         login(request, user)
 
-        if request.is_mobile == "mobile":
-            return HttpResponseRedirect("/jobs/")
+        # if request.is_mobile == "mobile":
+        #     return HttpResponseRedirect("/jobs/")
 
         if request.session.get("job_id"):
             log_apply = login_and_apply(request)
@@ -771,8 +765,8 @@ def linkedin_login(request):
         # lngroups(id_value,details['id'],accesstoken)
         # lnfrnds(id_value,details['id'],accesstoken)
 
-        if request.is_mobile == "mobile":
-            return HttpResponseRedirect("/jobs/")
+        # if request.is_mobile == "mobile":
+        #     return HttpResponseRedirect("/jobs/")
 
         if request.session.get("job_id"):
             log_apply = login_and_apply(request)
@@ -845,8 +839,8 @@ def twitter_login(request):
 
         add_twitter_friends_followers.delay(request.user.id, friends, followers)
 
-        if request.is_mobile == "mobile":
-            return HttpResponseRedirect("/jobs/")
+        # if request.is_mobile == "mobile":
+        #     return HttpResponseRedirect("/jobs/")
         if request.session.get("job_id"):
             log_apply = login_and_apply(request)
             if log_apply:

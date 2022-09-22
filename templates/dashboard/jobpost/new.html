@@ -53,71 +53,73 @@
               </div>
               {% endif %}
               input element -->
-              <div class="col-lg-12 inputs-block pad_lr_0">
-                <div class="col-lg-6 left_inputs pad_lr_0">
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Job Title<span class="error">*</span></label>
-                    <input type="text" class="input" placeholder="Enter complete title, Eg. Assisant Manager, not ast. mngr" name="title" id="title">
+              <div class="col-lg-12 inputs-block">
+                 <div class="row">
+                  <div class="col-lg-6 left_inputs">
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Job Title<span class="error">*</span></label>
+                      <input type="text" class="input" placeholder="Enter complete title, Eg. Assisant Manager, not ast. mngr" name="title" id="title">
+                    </div>
+                    <!--/ input element -->
+                    <!--input element -->
+                    <div class="input_element has-feedback">
+                      <label>Industry{% if job_type == 'government' or job_type == 'walk-in' %}{% else %}<span class="error">*</span>{% endif %}</label>
+                      <select class="input select2" multiple placeholder="Industries" name="industry" id="industry">
+                        <option value="">select a Industry</option>
+                        {% for industry in industries %}
+                        <option value="{{industry.id}}">{{industry.name}}</option>
+                        {% endfor %}
+                        <option value="other_industry">Other Industry</option>
+                      </select>
+                    </div>
+                    <!--/ input element -->
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Job Location<span class="error">*</span></label>
+                      <select class="input select2" multiple name="location" id="location">
+                          {% for city in cities %}
+                          <option value="{% firstof city.parent_city.id city.id %}">{{ city.name }}</option>
+                        {% endfor %}
+                        <option value="other_location">Other Location</option>
+  
+                      </select>
+                    </div>
+                    <!--/ input element -->
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Pincode</label>
+                      <input type="text" class="input" placeholder="Pincode" name="pincode" id="pincode">
+                    </div>
+                    <!--/ input element -->
                   </div>
-                  <!--/ input element -->
-                  <!--input element -->
-                  <div class="input_element has-feedback">
-                    <label>Industry{% if job_type == 'government' or job_type == 'walk-in' %}{% else %}<span class="error">*</span>{% endif %}</label>
-                    <select class="input select2" multiple placeholder="Industries" name="industry" id="industry">
-                      <option value="">select a Industry</option>
-                      {% for industry in industries %}
-                      <option value="{{industry.id}}">{{industry.name}}</option>
-                      {% endfor %}
-                      <option value="other_industry">Other Industry</option>
-                    </select>
+                  <div class="col-lg-6 right_inputs pad_lr_0">
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Job Role{% if job_type == 'government' or job_type == 'walk-in' %}{% else %}<span class="error">*</span>{% endif %}</label>
+                      <input type="text" class="input" placeholder="Job Role" name="job_role" id="job_role">
+                    </div>
+                    <!--/ input element -->
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Number of vacancies</label>
+                      <input type="number" class="input" placeholder="Vacancies" name="vacancies" id="vacancies">
+                    </div>
+                    <!--/ input element -->
+                    <!--input element -->
+                    <div class="input_element">
+                      <label>Functional area{% if job_type == 'government' or job_type == 'walk-in' %}{% else %}<span class="error">*</span>{% endif %}</label>
+                      <select class="input select2" multiple placeholder="Functional Area" name="functional_area" id="functional_area">
+                        <option value="">select a Functional Area</option>
+                        {% for fa in functional_area %}
+                        <option value="{{ fa.id }}">{{ fa.name }}</option>
+                        {% endfor %}
+                        <option value="other_functional_area">Other Functional Area</option>
+                      </select>
+                    </div>
+                    <!--/ input element -->
                   </div>
-                  <!--/ input element -->
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Job Location<span class="error">*</span></label>
-                    <select class="input select2" multiple name="location" id="location">
-                        {% for city in cities %}
-                        <option value="{% firstof city.parent_city.id city.id %}">{{ city.name }}</option>
-                      {% endfor %}
-                      <option value="other_location">Other Location</option>
-
-                    </select>
-                  </div>
-                  <!--/ input element -->
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Pincode</label>
-                    <input type="text" class="input" placeholder="Pincode" name="pincode" id="pincode">
-                  </div>
-                  <!--/ input element -->
-                </div>
-                <div class="col-lg-6 right_inputs pad_lr_0">
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Job Role{% if job_type == 'government' or job_type == 'walk-in' %}{% else %}<span class="error">*</span>{% endif %}</label>
-                    <input type="text" class="input" placeholder="Job Role" name="job_role" id="job_role">
-                  </div>
-                  <!--/ input element -->
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Number of vacancies</label>
-                    <input type="number" class="input" placeholder="Vacancies" name="vacancies" id="vacancies">
-                  </div>
-                  <!--/ input element -->
-                  <!--input element -->
-                  <div class="input_element">
-                    <label>Functional area{% if job_type == 'government' or job_type == 'walk-in' %}{% else %}<span class="error">*</span>{% endif %}</label>
-                    <select class="input select2" multiple placeholder="Functional Area" name="functional_area" id="functional_area">
-                      <option value="">select a Functional Area</option>
-                      {% for fa in functional_area %}
-                      <option value="{{ fa.id }}">{{ fa.name }}</option>
-                      {% endfor %}
-                      <option value="other_functional_area">Other Functional Area</option>
-                    </select>
-                  </div>
-                  <!--/ input element -->
-                </div>
+                 </div>
               </div>
               <div class="clearfix"></div>
               <!--input element -->
@@ -144,7 +146,8 @@
             <!-- form div -->
             <div class="form_div">
               <div class="col-lg-12 inputs-block pad_lr_0">
-                <div class="col-lg-6 left_inputs pad_lr_0">
+               <div class="row">
+                <div class="col-lg-6 left_inputs">
                   <!--input element -->
                   <div class="input_element">
                     <label>Min Experience{% if job_type == 'government' %}{% else %}<span class="error">*</span>{% endif %}</label>
@@ -188,7 +191,7 @@
                   </div>
                   <!--/ input element -->
                 </div>
-                <div class="col-lg-6 left_inputs pad_lr_0">
+                <div class="col-lg-6 left_inputs">
                   <!--input element -->
                   <div class="input_element">
                     <label>Max Experience{% if job_type == 'government' %}{% else %}<span class="error">*</span>{% endif %}</label>
@@ -221,6 +224,7 @@
                   </div>
                   <!--/ input element -->
                 </div>
+               </div>
               </div>
               <!--input element -->
               <div class="input_element area_element">
@@ -229,7 +233,8 @@
               </div>
               <!--/ input element -->
               <div class="col-lg-12 inputs-block pad_lr_0">
-                <div class="col-lg-6 left_inputs pad_lr_0">
+               <div class="row">
+                <div class="col-lg-6 left_inputs">
                   <!--input element -->
                   <div class="input_element">
                     <label>Visa Country</label>
@@ -242,7 +247,7 @@
                   </div>
                   <!--/ input element -->
                 </div>
-                <div class="col-lg-6 left_inputs pad_lr_0">
+                <div class="col-lg-6 left_inputs">
                   <!--input element -->
                   <div class="input_element">
                     <label>Required Visa type</label>
@@ -251,6 +256,7 @@
                   </div>
                   <!--/ input element -->
                 </div>
+               </div>
               </div>
               <div class="clearfix"></div>
             </div>
@@ -263,7 +269,8 @@
             <!-- form div -->
             <div class="form_div">
               <div class="col-lg-12 inputs-block pad_lr_0">
-                <div class="col-lg-6 left_inputs pad_lr_0">
+               <div class="row">
+                <div class="col-lg-6 left_inputs">
                   <!--input element -->
                   <div class="input_element area_element">
                     <label>Company<span class="error">*</span></label>
@@ -285,16 +292,16 @@
                     <textarea class="input" name='company_address' id='company_address' placeholder='Company Address'></textarea>
                   </div>
                   <!--/ input element -->
-                <!--input element -->
-                <div class="input_element area_element company">
-                  <label>About Company</label>
-                  <textarea class="input" name='contents' id='contents' placeholder='Description'></textarea>
-                  <input type="hidden" name="company_description" id="company_description">
-                  <input type="hidden" name="job_interview_location" id="job_interview_location">
+                  <!--input element -->
+                    <div class="input_element area_element company">
+                      <label>About Company</label>
+                      <textarea class="input" name='contents' id='contents' placeholder='Description'></textarea>
+                      <input type="hidden" name="company_description" id="company_description">
+                      <input type="hidden" name="job_interview_location" id="job_interview_location">
+                    </div>
+                  <!--/input element -->
                 </div>
-                <!--/input element -->
-                </div>
-                <div class="col-lg-6 right_inputs pad_lr_0">
+                <div class="col-lg-6 right_inputs">
                   <!--/ input element -->
                   <div class="input_element area_element">
                     <label>Company website</label>
@@ -312,6 +319,7 @@
                   </div>
                   <!--/input element -->
                 </div>
+               </div>
               </div>
 
               <!--input element -->
@@ -436,7 +444,8 @@
             <!-- form div -->
             <div class="form_div">
               <div class="col-lg-12 inputs-block pad_lr_0">
-                <div class="col-lg-4 left_inputs pad_lr_0">
+               <div class="row">
+                <div class="col-lg-4 left_inputs">
                   <!--input element -->
                   <div class="input_element area_element">
                     <label>Salary Type</label>
@@ -448,13 +457,13 @@
                   </div>
                   <!--input element -->
                 </div>
-                <div class="col-lg-4 left_inputs pad_lr_0">
+                <div class="col-lg-4 left_inputs">
                   <div class="input_element area_element">
                     <label>Minimum salary</label>
                     <input type="text" class="input" placeholder="Minimum Salary" id='min_salary' name="min_salary">
                   </div>
                 </div>
-                <div class="col-lg-4 left_inputs pad_lr_0">
+                <div class="col-lg-4 left_inputs">
                   <div class="input_element area_element">
                     <label>Maximum salary</label>
                     <input type="text" class="input" placeholder="Maximum Salary" id='max_salary' name="max_salary">
@@ -464,6 +473,7 @@
                     <input type="hidden" class="form-control" placeholder="Maximum Salary" id='job_type' name="job_type" value="{{ job_type }}">
                   </div>
                 </div>
+               </div>
               </div>
               <!--/input element -->
               <div class="clearfix"></div>
@@ -532,7 +542,7 @@
             {% else %}
             <a  href="{% url 'recruiter:facebook_login' %}" class="fb_btn unlink_button">
               <span class='button fb'>
-            <i class="fa fa-facebook"></i>Get Connected With Facebook</span></a>
+                <i class="fa-brands fa-facebook-f"></i>Get Connected With Facebook</span></a>
           {% endif %}
           {% if request.user.is_tw_connected %}
           <span class='button twit'>
@@ -541,7 +551,7 @@
           {% else %}
             <a href="{% url 'recruiter:twitter_login' %}" class="fb_btn unlink_button">
             <span class='button twit'>
-            <i class="fa fa-twitter"></i>Get Connected With Twitter
+              <i class="fa-brands fa-twitter"></i>Get Connected With Twitter
             </span>
             </a>
           {% endif %}
@@ -552,7 +562,7 @@
           {% else %}
             <a href="{% url 'recruiter:linkedin_login' %}" class="in_btn unlink_button">
               <span class='button in'>
-              <i class="fa fa-linkedin"></i>Get Connected With LinkedIn</span></a>
+                <i class="fa-brands fa-linkedin-in"></i>Get Connected With LinkedIn</span></a>
           {% endif %}
           </span>
           </div>

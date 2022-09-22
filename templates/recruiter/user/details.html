@@ -22,14 +22,14 @@
             <!--/ input element -->
             <!--input element -->
             <div class="input_element">
-              <label>First Name</label>
+              <label>First Name <span style="color:red"class="important">*</span></label>
               <input type="text" class="input" placeholder="First name" name="first_name"
                 id="first_name" value="{{ user.first_name }}">
             </div>
             <!--/ input element -->
             <!--input element -->
             <div class="input_element">
-              <label>Last Name</label>
+              <label>Last Name <span style="color:red"class="important">*</span></label>
               <input type="text" class="input" placeholder="Last name" name="last_name" id="last_name"
                 value="{{ user.last_name|default_if_none:'' }}">
               <input type="hidden" class="form-control" placeholder="Last name" name="user_id"
@@ -51,14 +51,14 @@
             <!--/ input element -->
             <!--input element -->
             <div class="input_element">
-              <label>Date Of Birth</label>
+              <label>Date Of Birth <span style="color:red"class="important">*</span></label>
               <input type="text" id='dob' class="input" placeholder="Date of Birth(dd/mm/yyyy)"
               name="dob" id="dob" value="{{ user.dob|date:"m/d/Y" }}">
             </div>
             <!--/ input element -->
             <!--input element -->
             <div class="input_element">
-              <label>Gender</label>
+              <label>Gender <span style="color:red"class="important">*</span></label>
               <input type="radio" name="gender" id="gender" value="M"
               {% if user.gender == 'M' %} checked {% endif %}><span
                 class='name'>Male</span>
@@ -79,14 +79,14 @@
           <div class="form_div">
             <!--input element -->
             <div class="input_element">
-              <label>Mobile Number</label>
+              <label>Mobile Number <span style="color:red"class="important">*</span></label>
               <input type="text" class="input" placeholder="Mobile Number" name="mobile" id="mobile"
                 value="{{ user.mobile }}">
             </div>
             <!--/ input element -->
             <!--input element -->
             <div class="input_element">
-              <label>Email Address</label>
+              <label>Email Address <span style="color:red"class="important">*</span></label>
               <input type="email" class="input" placeholder="Email Address" name="email" id="email"
                 value="{{ user.email }}" readonly>
             </div>
@@ -104,7 +104,7 @@
             <div class="clearfix"></div>
             <!--input element -->
             <div class="input_element">
-              <label>Nationality</label>
+              <label>Nationality <span style="color:red"class="important">*</span></label>
               <select class="input" name="nationality" id="nationality">
                 <option value="">Select A Location</option>
                 {% for country in countries %}
@@ -117,7 +117,7 @@
             <!--/ input element -->
             <!--input element -->
             <div class="input_element">
-              <label>State</label>
+              <label>State <span style="color:red"class="important">*</span></label>
               <select class="input" name="state" id="state">
                 <option value="">select a state</option>
                 {% for state in states %}
@@ -130,7 +130,7 @@
             <!--/ input element -->
             <!--input element -->
             <div class="input_element">
-              <label>Cities</label>
+              <label>Cities <span style="color:red"class="important">*</span></label>
               <select class="input" name="city" id="city">
                 <option value="">select a city</option>
                 {% for city in cities %}
@@ -164,7 +164,7 @@
             </div>
             <!--/ input element -->
             <div class="input_element area_element">
-              <label>Permanent Address</label>
+              <label>Permanent Address <span style="color:red"class="important">*</span></label>
               <textarea class="input" name="permanent_address" id="permanent_address"
                 placeholder="Permanent Address">{{ user.permanent_address }}</textarea>
             </div>
@@ -177,7 +177,7 @@
             </div>
             <!--/ input element -->
             <div class="input_element">
-              <label>Industry</label>
+              <label>Industry <span style="color:red"class="important">*</span></label>
               <select class="input industry" multiple placeholder="Industries" name="industry"
                 id="industry">
                 <option value="">select a Industry</option>
@@ -188,7 +188,7 @@
               </select>
             </div>
             <div class="input_element">
-              <label>Functional Area</label>
+              <label>Functional Area <span style="color:red"class="important">*</span></label>
               <select class="input functional_area" multiple placeholder="Functional Area"
                 name="functional_area" id="functional_area">
                 <option value="">select a Functional Area</option>
@@ -199,7 +199,7 @@
               </select>
             </div>
             <div class="input_element">
-              <label>Skills</label>
+              <label>Skills <span style="color:red"class="important">*</span></label>
               <select class="input skills" multiple name="technical_skills" id="technical_skills">
                 <option value="">select a Skill</option>
                 {% for skill in skills %}
@@ -215,7 +215,7 @@
                 id="job_role" value="{{ user.job_role }}">
             </div>
             <div class="input_element">
-              <label>Total Experience</label>
+              <label>Total Experience <span style="color:red"class="important">*</span></label>
               <input type="text" class="input" placeholder="Year" name="year" id="year"
                 value="{{ user.year|default_if_none:'' }}">
             </div>

@@ -22,21 +22,22 @@
   }
 </style>
 <!-- main_container starts here -->
-<div class="row mar_lr_0 main_container">
+<section class="main_container">
   <div class="container">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+    <div class="breadcrumb_section row ">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li><a href="/">Home</a></li>
           <li class="current"><a>Profile</a></li>
         </ol>
       </nav>
     </div>
     <!-- breadcrumb_section ends here -->
-    <div class="row mar_lr_0">
+    <div class="row">
       <div class="profile_container">
-        <!-- profile_left_container starts here -->
+        <div class="row">
+                  <!-- profile_left_container starts here -->
         {% include 'candidate/profile_completion.html' %}
         <!-- profile_left_container ends here -->
         <!-- profile_right_container starts here -->
@@ -182,7 +183,7 @@
                     <div class="fields_block">
                       <form name="techskillform" id="techskillform" method="POST" class="profileform" data-href="{% url "my:add_technicalskill" %}">
                       <div class="form-group">
-                        <select class="form-control" name="skill" id="profile_skill">
+                        <select class="form-control" name="skill" id="profile_skill" multiple>
                           <option value="">Select A Skill</option>
                           {% for skill in skills %}
                           <option value="{{ skill.id }}">{{ skill.name }}</option>
@@ -223,8 +224,8 @@
             <div class="profile_job_list">
               <div class="profile_detail_block parent_block" id="div_profile">
                 <div class="head">Profile Sumamry<span class="edit pull-right"><a href="" class="edit_this">Edit</a></span></div>
-                <div class="content row child1">
-                  <div class="item_col col-md-4">
+                <div class="row content child1">
+                  <div class="col-md-4 item_col">
                     <div class="item_block ">
                       <span class="title">First Name</span>
                       <span class="ans first_name">{% if request.user.first_name %}{{ request.user.first_name }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
@@ -250,7 +251,7 @@
                       <span class="ans">{% if request.user.marital_status %}{{ request.user.marital_status }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
                     </div>
                   </div>
-                  <div class="item_col col-md-4">
+                  <div class="col-md-4 item_col">
                     <div class="item_block ">
                       <span class="title">Industry</span>
                       <span class="ans">{% if request.user.industry.all %}{% for industry in request.user.industry.all %}{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
@@ -272,7 +273,7 @@
                       <span class="ans">{% if request.user.preferred_city.all %}{%for location in request.user.preferred_city.all %}{{ location.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
                     </div>
                   </div>
-                  <div class="item_col col-md-4">
+                  <div class="col-md-4 item_col">
                     <div class="item_block">
                       <span class="title">Pin code</span>
                       <span class="ans">{% if request.user.pincode %}{{ request.user.pincode }}{% else %}<span class="error">Not Specified</span>{% endif %}</span>
@@ -295,152 +296,154 @@
                     </div>
                   </div>
                 </div>
-                <div class="content row child2" style="display:none">
-                 <form name="personalform" id="personalform" class="personalform" method="post">
-                   <div class="item_col col-md-4">
-                    <div class="item_block ">
-                      <span class="title">First Name<span class="error">*</span></span>
-                      <span class="ans first_name">
-                        <input type="text" class="form-control" placeholder="First Name" name="first_name" id="first_name" value="{{ request.user.first_name }}">
-                      </span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Last Name</span>
-                      <span class="ans">
-                        <input type="text" class="form-control" placeholder="Last Name" name="last_name" id="last_name" value="{% if request.user.last_name %}{{ request.user.last_name }}{% endif %}">
-                      </span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Current Location<span class="error">*</span></span>
-                      <span class="ans current_city">
-                        <select class="form-control" name="current_city" id="current_city">
-                          <option value="">Select A Location</option>
-                          {% for city in cities %}
-                            <option value="{{ city.id }}" {% ifequal city.id request.user.current_city.id %} selected {% endifequal %}>{{ city.name }}</option>
-                          {% endfor %}
-                          {% if request.user.current_city.status == 'Disabled' %}
-                            <option value="{{request.user.current_city.id}}" selected>
-                              {{request.user.current_city.name}}
-                            </option>
-                          {% endif %}
-                        </select>
-                        <input type="text" class="form-control" placeholder="Enter Other Location" id="another_location" name="other_location" style="display:none">
-                        <span><input type="checkbox" name="other_loc" id="other_loc"> Other Location </span>
-                      </span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Functional Area</span>
-                      <span class="ans">
-                        <select class="form-control" name="functional_area" id="functional_area" multiple="multiple">
-                          <option value="">Select A Industry</option>
-                          {% for functional_area in functional_areas %}
-                            <option value="{{ functional_area.id }}" id="{{ functional_area.id}}" {% if functional_area in request.user.functional_area.all %} selected {% endif %}>{{ functional_area.name }}</option>
-                          {% endfor%}
-                        </select>
-                      </span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Marital Status</span>
-                      <span class="ans">
-                        <select class="form-control" name="marital_status" id="marital_status">
-                          <option value="">Select A Status</option>
-                          {% for status in martial_status%}
-                          <option value="{{ status.0 }}" {% ifequal status.0|slugify request.user.marital_status|slugify %} selected {% endifequal %}>{{ status.1 }}</option>
-                          {% endfor%}
-                        </select>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="item_col col-md-4">
-                    <div class="item_block">
-                      <span class="title">Profile Title<span class="error">*</span></span>
-                      <span class="ans">
-                        <input type='text' class='form-control' id="resume_title" name="resume_title" placeholder="Resume Title" value='{% if request.user.resume_title %}{{ request.user.resume_title }}{% endif %}'>
-                      </span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Phone Number</span>
-                      <span class="ans mobile"><input type="text" class="form-control" placeholder="Mobile Number" id="mobile" name="mobile" value="{% if request.user.mobile %}{{ request.user.mobile }}{% endif %}"></span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Preferred Location</span>
-                      <span class="ans">
-                        <select class="form-control" name="preferred_city" id="preferred_city" multiple="multiple">
-                          <option value="">Select A Location</option>
-                          {% for city in cities%}
-                          {% if request.user.nationality|length > 0 %}
-                          <option value="{{ city.id }}" id="{{ city.state.country.id}}" {% if city in request.user.preferred_city.all %} selected {% endif %} {% ifnotequal city.state.country.id|slugify request.user.nationality|slugify %} disabled {% endifnotequal %}>{{ city.name }}</option>
-                          {% else %}
-                          <option value="{{ city.id }}" id="{{ city.state.country.id}}">{{ city.name }}</option>
-                          {% endif %}
-                          {% endfor%}
-                        </select>
-                      </span>
-                    </div>
-                    <div class="item_block ">
-                      <span class="title">Present Address</span>
-                      <span class="ans">
-                        <textarea class="form-control" name="address" id="address">{% if request.user.address %}{{ request.user.address }}{%endif%}</textarea>
-                        <span><input type="checkbox" name="present_address" id="present_address">Click Here If Present Address is same as Permanent Address</span>
-                          </span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Gender:
-                          <input type="radio" class="in_span" name="gender" id="gender" value="M" {% if request.user.gender == 'M' %} checked {% endif %}>
-                          <span class="in_span">Male</span>
-                          <input type="radio" class="in_span" name="gender" id="gender" value="F" {% if request.user.gender == 'F' %} checked {% endif %}>
-                          <span class="in_span">Female</span>
-                        </span>
-                      </span>
-
-                    </div>
-                  </div>
-                  <div class="item_col col-md-4">
-                    <div class="item_block">
-                      <span class="title">Date OF Birth<span class="error">*</span></span>
-                      <span class="ans dob">
-                        <input type='text' id='dob' class="form-control" placeholder="Date Of Birth" name="dob" value="{{ request.user.dob|date:"m/d/Y" }}"/>
-                      </span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Alternate Phone Number</span>
-                      <span class="ans mobile"><input type="text" class="form-control" placeholder="Alterate Mobile Number" id="alternate_mobile" name="alternate_mobile" value="{% if request.user.alternate_mobile > 0 %}{{ request.user.alternate_mobile }}{% endif %}"></span>
-                    </div>
-                    <div class="item_block ">
-                        <span class="title">Industry</span>
-                        <span class="ans">
-                          <select class="form-control" name="industry" id="industry" multiple="multiple">
-                            <option value="">Select A Industry</option>
-                            {% for industry in industries %}
-                              <option value="{{ industry.id }}" id="{{ industry.id}}" {% if industry in request.user.industry.all %} selected {% endif %}>{{ industry.name }}</option>
-                            {% endfor%}
-                            <option value="36" {% for i in request.user.industry.all %}{% if i.id == 36 %} selected {% endif %}{% endfor %}>Other Industry</option>
-                          </select>
-                      </span>
-                      </div>
-                    <div class="item_block">
-                      <span class="title">Permanent Address</span>
-                      <span class="ans">
-                        <textarea class="form-control" name="permanent_address" id="permanent_address">{% if request.user.permanent_address %}{{ request.user.permanent_address }}{% endif %}</textarea>
-                        <input type="hidden" name="user_id" id="user_id" value="{{ request.user.id }}">
-                      </span>
-                    </div>
-                    <div class="item_block">
-                      <span class="title">Pin code</span>
-                      <span class="ans">
-                        <input type="text" class="form-control" placeholder="pincode" name="pincode" id="pincode" value="{% if request.user.pincode > 0 %}{{ request.user.pincode }}{% endif %}">
-                      </span>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-3 control-label"></label>
-                  <div class="col-sm-9">
-                    <button type="submit" class='submit'>Save</button>
-                    <button type="button" class="cancelbutton">Cancel</button>
-                  </div>
-                </div>
-                <div class="clearfix"></div>
-                </form>
+                <div class="row content child2" style="display:none">
+                    
+                      <form name="personalform" id="personalform" class="personalform row content child2" method="post">
+                        <div class="col-sm-4 col-lg-4 item_col">
+                         <div class="item_block ">
+                           <span class="title">First Name<span class="error">*</span></span>
+                           <span class="ans first_name">
+                             <input type="text" class="form-control" placeholder="First Name" name="first_name" id="first_name" value="{{ request.user.first_name }}">
+                           </span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Last Name</span>
+                           <span class="ans">
+                             <input type="text" class="form-control" placeholder="Last Name" name="last_name" id="last_name" value="{% if request.user.last_name %}{{ request.user.last_name }}{% endif %}">
+                           </span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Current Location<span class="error">*</span></span>
+                           <span class="ans current_city">
+                             <select class="form-control" name="current_city" id="current_city">
+                               <option value="">Select A Location</option>
+                               {% for city in cities %}
+                                 <option value="{{ city.id }}" {% ifequal city.id request.user.current_city.id %} selected {% endifequal %}>{{ city.name }}</option>
+                               {% endfor %}
+                               {% if request.user.current_city.status == 'Disabled' %}
+                                 <option value="{{request.user.current_city.id}}" selected>
+                                   {{request.user.current_city.name}}
+                                 </option>
+                               {% endif %}
+                             </select>
+                             <input type="text" class="form-control" placeholder="Enter Other Location" id="another_location" name="other_location" style="display:none">
+                             <span><input type="checkbox" name="other_loc" id="other_loc"> Other Location </span>
+                           </span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Functional Area</span>
+                           <span class="ans">
+                            <select class="form-control" name="functional_area" id="functional_area" multiple="multiple">
+                              <option value="">Select A Industry</option>
+                              {% for functional_area in functional_areas %}
+                                <option value="{{ functional_area.id }}" id="{{ functional_area.id}}" {% if functional_area in request.user.functional_area.all %} selected {% endif %}>{{ functional_area.name }}</option>
+                              {% endfor%}
+                            </select>
+                           </span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Marital Status</span>
+                           <span class="ans">
+                             <select class="form-control" name="marital_status" id="marital_status">
+                               <option value="">Select A Status</option>
+                               {% for status in martial_status%}
+                               <option value="{{ status.0 }}" {% ifequal status.0|slugify request.user.marital_status|slugify %} selected {% endifequal %}>{{ status.1 }}</option>
+                               {% endfor%}
+                             </select>
+                           </span>
+                         </div>
+                       </div>
+                       <div class="col-sm-4 col-lg-4 item_col">
+                         <div class="item_block">
+                           <span class="title">Profile Title<span class="error">*</span></span>
+                           <span class="ans">
+                             <input type='text' class='form-control' id="resume_title" name="resume_title" placeholder="Resume Title" value='{% if request.user.resume_title %}{{ request.user.resume_title }}{% endif %}'>
+                           </span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Phone Number</span>
+                           <span class="ans mobile"><input type="text" class="form-control" placeholder="Mobile Number" id="mobile" name="mobile" value="{% if request.user.mobile %}{{ request.user.mobile }}{% endif %}"></span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Preferred Location</span>
+                           <span class="ans">
+                             <select class="form-control" name="preferred_city" id="preferred_city" multiple="multiple">
+                               <option value="">Select A Location</option>
+                               {% for city in cities%}
+                               {% if request.user.nationality|length > 0 %}
+                               <option value="{{ city.id }}" id="{{ city.state.country.id}}" {% if city in request.user.preferred_city.all %} selected {% endif %} {% ifnotequal city.state.country.id|slugify request.user.nationality|slugify %} disabled {% endifnotequal %}>{{ city.name }}</option>
+                               {% else %}
+                               <option value="{{ city.id }}" id="{{ city.state.country.id}}">{{ city.name }}</option>
+                               {% endif %}
+                               {% endfor%}
+                             </select>
+                           </span>
+                         </div>
+                         <div class="item_block ">
+                           <span class="title">Present Address</span>
+                           <span class="ans">
+                             <textarea class="form-control" name="address" id="address">{% if request.user.address %}{{ request.user.address }}{%endif%}</textarea>
+                             <span><input type="checkbox" name="present_address" id="present_address">Click Here If Present Address is same as Permanent Address</span>
+                               </span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Gender:
+                               <input type="radio" class="in_span" name="gender" id="gender" value="M" {% if request.user.gender == 'M' %} checked {% endif %}>
+                               <span class="in_span">Male</span>
+                               <input type="radio" class="in_span" name="gender" id="gender" value="F" {% if request.user.gender == 'F' %} checked {% endif %}>
+                               <span class="in_span">Female</span>
+                             </span>
+                           </span>
+     
+                         </div>
+                       </div>
+                       <div class="col-sm-4 col-lg-4 item_col">
+                         <div class="item_block">
+                           <span class="title">Date OF Birth<span class="error">*</span></span>
+                           <span class="ans dob">
+                             <input type='text' id='dob' class="form-control" placeholder="Date Of Birth" name="dob" value="{{ request.user.dob|date:"m/d/Y" }}"/>
+                           </span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Alternate Phone Number</span>
+                           <span class="ans mobile"><input type="text" class="form-control" placeholder="Alterate Mobile Number" id="alternate_mobile" name="alternate_mobile" value="{% if request.user.alternate_mobile > 0 %}{{ request.user.alternate_mobile }}{% endif %}"></span>
+                         </div>
+                         <div class="item_block ">
+                             <span class="title">Industry</span>
+                             <span class="ans">
+                               <select class="form-control" name="industry" id="industry" multiple="multiple">
+                                 <option value="">Select A Industry</option>
+                                 {% for industry in industries %}
+                                   <option value="{{ industry.id }}" id="{{ industry.id}}" {% if industry in request.user.industry.all %} selected {% endif %}>{{ industry.name }}</option>
+                                 {% endfor%}
+                                 <option value="36" {% for i in request.user.industry.all %}{% if i.id == 36 %} selected {% endif %}{% endfor %}>Other Industry</option>
+                               </select>
+                           </span>
+                           </div>
+                         <div class="item_block">
+                           <span class="title">Permanent Address</span>
+                           <span class="ans">
+                             <textarea class="form-control" name="permanent_address" id="permanent_address">{% if request.user.permanent_address %}{{ request.user.permanent_address }}{% endif %}</textarea>
+                             <input type="hidden" name="user_id" id="user_id" value="{{ request.user.id }}">
+                           </span>
+                         </div>
+                         <div class="item_block">
+                           <span class="title">Pin code</span>
+                           <span class="ans">
+                             <input type="text" class="form-control" placeholder="pincode" name="pincode" id="pincode" value="{% if request.user.pincode > 0 %}{{ request.user.pincode }}{% endif %}">
+                           </span>
+                         </div>
+                       </div>
+                       <div class="form-group">
+                       <label for="inputEmail3" class="col-sm-3 control-label"></label>
+                       <div class="col-sm-9">
+                         <button type="submit" class='submit'>Save</button>
+                         <button type="button" class="cancelbutton">Cancel</button>
+                       </div>
+                     </div>
+                     <div class="clearfix"></div>
+                     </form>
+                    
                 </div>
               </div>
               <div class="profile_detail_block parent_block" id="div_user_profile_description">
@@ -571,30 +574,32 @@
             </div>
           </div>
           <div class="content row child2" style="display:none">
-              <form name="professionalform" id="professionalform" class="personalform" method="post">
+              <form name="professionalform" id="professionalform" class="personalform content row child2" method="post">
                 <div class="item_col col-md-6">
-                <div class="item_block ">
-                  <div class="title">Total Experience <span class="error">*</span></div>
-                  <span class="ans col-md-12 pad_lr_0">
-                    <span class="col-md-6">
-                      <select class="form-control experience" name="year" id="year">
-                        <option value="" default>years</option>
-                          {% for year in years %}
-                          <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
-                          {% endfor %}
-                      </select>
+                  <div class="item_block ">
+                    <div class="title">Total Experience <span class="error">*</span></div>
+                    <span class="ans col-md-12 pad_lr_0">
+                      <div class="row">
+                        <span class="col-md-6">
+                          <select class="form-control experience" name="year" id="year">
+                            <option value="" default>years</option>
+                              {% for year in years %}
+                              <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
+                              {% endfor %}
+                          </select>
+                        </span>
+                        <span class="col-md-6 pad_lr_0">
+                          <select class="form-control experience col-md-12 pad_lr_0" id="month" name="month">
+                            <option value="" default>months</option>
+                              {% for month in months %}
+                              <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.month|slugify month.0 %} selected {% endifequal %}>{{ month.1}}</option>
+                              {% endfor %}
+                          </select>
+                        </span>
+                      </div>
                     </span>
-                    <span class="col-md-6 pad_lr_0">
-                      <select class="form-control experience col-md-12 pad_lr_0" id="month" name="month">
-                        <option value="" default>months</option>
-                          {% for month in months %}
-                          <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.month|slugify month.0 %} selected {% endifequal %}>{{ month.1}}</option>
-                          {% endfor %}
-                      </select>
-                    </span>
-                  </span>
-                  <div class="clearfix"></div>
-                </div>
+                    <div class="clearfix"></div>
+                  </div>
               <div class="item_block ">
                 <span class="title">Expected Salary</span>
                 <span class="ans">
@@ -934,11 +939,12 @@
           </div>
           {% endif %}
         </div>
+        </div>
       </div>
     </div>
     <!-- profile_right_container ends here -->
   </div>
-</div>
+</section>
 </div>
 </div>
 <br clear="all">
@@ -951,9 +957,18 @@
 {% endblock %}
 {% endblock %}
 {% block 'extra_js' %}
+
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+
+  $("#multiple").select2({
+    placeholder: "Select a programming language",
+    allowClear: true
+});
+</script>
 <script type="text/javascript">
   /* profile title */
-   $(document).ready(function () {
+   {% comment %} $(document).ready(function () {
   {% if request.user.is_authenticated and request.GET.verify %}
   open_dialog('Account Activated successfully', 'Success!')
   {% endif %}
@@ -961,7 +976,11 @@
     id = "{{request.GET.goto}}"
     $(window).scrollTop($('#div_'+id).offset().top-280);
   {% endif %}
-  })
+  }) {% endcomment %}
   /* profile title */
+  $("#multiple").select2({
+    placeholder: "Select a programming language",
+    allowClear: true
+});
 </script>
 {% endblock %}

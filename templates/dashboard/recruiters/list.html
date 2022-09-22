@@ -7,8 +7,8 @@
   <div>
     <h4>Recruiters
       <span>
-        <a class={% if status == 'active'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:recruiters_list' "active" %}">Active</a> /
-        <a class={% if status == 'inactive'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:recruiters_list' "inactive" %}">Inactive</a>
+        <a class={% if status == 'active'%}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:recruiters_list' "active" %}">Active</a> /
+        <a class={% if status == 'inactive'%}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:recruiters_list' "inactive" %}">Inactive</a>
       </span>
     </h4>
   <span class="pull-right">
@@ -23,24 +23,26 @@
   </div>
    <form name="recruiterform" id="recruiterform" class="search-form" method="POST">
     <div class="col-md-12 search_form"><div class="col-md-1"></div>
-      <div class="col-md-4">
-        <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
-      </div>
-      <div class="col-md-4">
-        <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{request.POST.timestamp}}" placeholder="Select the date">
-         <input type="hidden" name="alphabet_value" id="alphabet_value"
-         value="{{request.POST.alphabet_value}}">
-         <input type="hidden" name="page" id="page" value={% if request.POST %}"{{ request.POST.page }}"
-            {% else %}"{{ request.GET.page}}" {% endif %}>
-      </div>
-      <div class="col-md-3">
-        <button type="submit" class="form-control submit">Submit</button>
+      <div class="row">
+        <div class="col-md-4">
+          <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{request.POST.timestamp}}" placeholder="Select the date">
+           <input type="hidden" name="alphabet_value" id="alphabet_value"
+           value="{{request.POST.alphabet_value}}">
+           <input type="hidden" name="page" id="page" value={% if request.POST %}"{{ request.POST.page }}"
+              {% else %}"{{ request.GET.page}}" {% endif %}>
+        </div>
+        <div class="col-md-3">
+          <button type="submit" class="form-control submit">Submit</button>
+        </div>
       </div>
     </div>
   </form>
           <div class="clearfix"></div>
-          <div class="alphabetics">
-            <ul class="list-inline">
+          <div class="alphabetics mt-4 mb-4">
+            <ul class="list-inline text-center">
               <li><a href="#" class="">All</a></li>
               <li><a href="#" class="a">A</a></li>
               <li><a href="#" class="b">B</a></li>
@@ -79,9 +81,9 @@
           <th width="3%">Name</th>
           <th width= "25%";>Job Posts</th>
           <th width="10%">Joined On</th>
-          <th >Mobile Verified</th>
+          <th width="10%">Mobile Verified</th>
           <th width="20%">Social Links</th>
-          <th >Actions</th>
+          <th width="10%">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -97,16 +99,16 @@
             <ul class="social_integration">
               <li>
                 {% if recruiter.is_fb_connected %}
-                <i class="fa fa-facebook fb"></i>
+                <i class="fa-brands fa-facebook-f fb"></i>
                 {% else %}
-                <i class="fa fa-facebook"></i></a>
+                <i class="fa-brands fa-facebook-f"></i></a>
                 {% endif %}
               </li>
               <li>
                 {% if recruiter.is_tw_connected %}
-                <i class="fa fa-twitter twit"></i>
+                <i class="fa-brands fa-twitter twit"></i>
                 {% else %}
-                <i class="fa fa-twitter"></i>
+                <i class="fa-brands fa-twitter"></i>
                 {% endif %}
               </li>
               <!-- <li>
@@ -118,9 +120,9 @@
               </li> -->
               <li>
                 {% if recruiter.is_ln_connected %}
-                <i class="fa fa-linkedin in"></i>
+                <i class="fa-brands fa-linkedin-in in"></i>
                 {% else %}
-                <i class="fa fa-linkedin"></i>
+                <i class="fa-brands fa-linkedin-in"></i>
                 {% endif %}
               </li>
             </ul>
@@ -132,7 +134,7 @@
             {% else %}
               <a data-href="{% url 'dashboard:recruiter_status_change' recruiter.id %}?page={{ current_page }}" id="{{ recruiter.id }}" class="enable-recruiter"><i class="fa fa-times delete" title="Enable"></i></a>
             {% endif %}
-            <a data-href="{% url 'dashboard:recruiter_delete' recruiter.id %}" id="{{ recruiter.id }}" class="delete-recruiter"><i class="fa fa-trash-o delete" title="Delete Recruiter"></i>
+            <a data-href="{% url 'dashboard:recruiter_delete' recruiter.id %}" id="{{ recruiter.id }}" class="delete-recruiter"><i class="fa-solid fa-trash-can delete" title="Delete Recruiter"></i>
             </a>
 
             {% if recruiter.get_active_jobposts_count >= 100 %}
@@ -150,9 +152,9 @@
       {% endfor %}
       </tbody>
     </table>
-  <div class="pagination_wrap">
+  <div class="pagination_wrap d-flex justify-content-center mt-4 mb-5">
     {% get_page current_page last_page as pages %}
-    <nav>
+    {% comment %} <nav>
         <ul class="pagination">
             {% if current_page != 1 %}
               <li class="prev"><a href="#" class="{{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
@@ -168,6 +170,23 @@
               <li><a href="#" class="{{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
               {% endif %}
             </ul>
+    </nav> {% endcomment %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
     </nav>
   </div>
     {% else%}

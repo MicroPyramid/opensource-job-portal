@@ -1,25 +1,28 @@
 {% extends 'dashboard/base.html' %}
 {% load page_tags %}
 {% block stage %}
+
 <section id='recruiters'>
   <div class="list_table">
     <h4>Daily Search Summary</h4>
      <span>
-        <a class="label {% if search_type == 'skills' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:search_summary" 'skills' %}">Skills</a>
-        <a class="label {% if search_type == 'other-skills' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:search_summary" 'other-skills' %}">Other Skills</a>
-        <a class="label {% if search_type == 'locations' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:search_summary" 'locations' %}">Locations</a>
-        <a class="label {% if search_type == 'other-locations' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:search_summary" 'other-locations' %}">Other Locations</a>
+        <a class="badge {% if search_type == 'skills' %} bg-info{% else %}bg-secondary{% endif %}" href="{% url "dashboard:search_summary" 'skills' %}">Skills</a>
+        <a class="badge {% if search_type == 'other-skills' %}bg-info{% else %}bg-secondary{% endif %}" href="{% url "dashboard:search_summary" 'other-skills' %}">Other Skills</a>
+        <a class="badge {% if search_type == 'locations' %}bg-info{% else %}bg-secondary{% endif %}" href="{% url "dashboard:search_summary" 'locations' %}">Locations</a>
+        <a class="badge {% if search_type == 'other-locations' %}bg-info{% else %}bg-secondary{% endif %}" href="{% url "dashboard:search_summary" 'other-locations' %}">Other Locations</a>
       </span>
     <form id="search_form" name="adv-search-form" class="search-form" method="POST" action=".">
       <div class="col-md-offset-1 col-md-11 search_form">
-        <div class="col-md-4">
-          <input type="text" class="form-control" id="search" name="search" value="{{ request.POST.search }}" placeholder="Enter Search Values i.e: python,java">
-        </div>
-        <div class="col-md-4">
-          <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{ request.POST.timestamp }}" placeholder="Select the date" autocomplete="off">
-        </div>
-        <div class="col-md-2">
-          <button type="submit" class="form-control submit">Submit</button>
+        <div class="row">
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="search" name="search" value="{{ request.POST.search }}" placeholder="Enter Search Values i.e: python,java">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{ request.POST.timestamp }}" placeholder="Select the date" autocomplete="off">
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="form-control submit">Submit</button>
+          </div>
         </div>
       <div class="clearfix"></div>
       </div>

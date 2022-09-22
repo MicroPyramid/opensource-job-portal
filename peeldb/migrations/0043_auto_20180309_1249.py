@@ -23,14 +23,4 @@ class Migration(migrations.Migration):
                 to="peeldb.City",
             ),
         ),
-        migrations.AlterField(
-            model_name="credentialsmodel",
-            name="id",
-            field=models.OneToOneField(
-                on_delete=django.db.models.deletion.CASCADE,
-                primary_key=True,
-                serialize=False,
-                to=settings.AUTH_USER_MODEL,
-            ),
-        ),
     ]

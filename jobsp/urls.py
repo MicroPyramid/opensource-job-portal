@@ -64,13 +64,13 @@ from psite.views import (
     pages,
     custom_500,
     sitemap_xml,
-    users_login,
+    # users_login,
     custom_404,
     auth_return,
 )
 from pjob.views import index as job_list
 
-# from django.contrib import admin
+from django.contrib import admin
 
 
 urlpatterns = [
@@ -155,7 +155,7 @@ urlpatterns = [
     url(r"^skill-auto/$", skill_auto_search),
     url(r"^city-auto/$", city_auto_search),
     url(r"^get/search-slugs/$", search_slugs, name="get_search_slugs"),
-    # url(r'^admin/', admin.site.urls),# Here's the typo
+    url(r'^admin/', admin.site.urls),# Here's the typo
     url(r"^search/", include("search.urls", namespace="search")),
     url(r"^skill-auto/$", skill_auto_search),
     url(
@@ -232,7 +232,7 @@ urlpatterns = [
     url(r"^assessment-questions/(?P<page_num>[0-9]+)/$", assessments_questions),
     url(r"^assessment-changes/$", assessment_changes),
     url(r"^sitemap.xml$", sitemap_xml, name="sitemap_xml"),
-    url(r"^login/$", users_login, name="users_login"),
+    # url(r"^login/$", users_login, name="users_login"),
     url(r"^contact/$", contact, name="contact"),
     url(
         r"^unsubscribe/(?P<email>[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4})/$",
@@ -305,6 +305,7 @@ urlpatterns = [
     url(r"^process-email/$", process_email, name="process_email"),
     # url(r'^dj-rest-auth/', include('dj_rest_auth.urls')),
     url(r"^api-recruiter/", include("recruiter.api_urls", namespace="api_recruiter")),
+    url(r"^celery-check/", include("mp_celery_monitor.urls", namespace="celery-check"))
 ]
 
 handler404 = custom_404

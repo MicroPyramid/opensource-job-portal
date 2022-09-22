@@ -16,12 +16,12 @@
             <div class="content_job_post">
               <div class="form_div">
                 <div class="input_element area_element">
-                  <label>Company Name</label>
+                  <label>Company Name<span style="color:red" class="red_hint">*</span></label>
                   <input type="text" class="input full_wid" id="name" name="name"
                     value="{{ company.name }}">
                 </div>
                 <div class="input_element area_element">
-                  <label>Company Logo</label>
+                  <label>Company Logo<span style="color:red" class="red_hint">*</span></label>
                   <input type="file" class="input full_wid" name="profile_pic" accept="image/*" id="profile_pic"
                     value="{{ company.profile_pic }}">
                 </div>
@@ -42,8 +42,8 @@
                     value="{% if company.level %}{{ company.level }}{% endif %}">
                 </div>
                 <div class="input_element area_element">
-                  <label>Company Description</label>
-                  <textarea class="input full_wid" rows="7" name="profile"
+                  <label>Company Description<span style="color:red" class="red_hint">*</span></label>
+                  <textarea class="input full_wid" rows="7" cols="80" minLength="100" maxlength="200" name="profile"
                     id="profile">{{ company.profile }}</textarea>
                 </div>
                 <div class="input_element area_element">

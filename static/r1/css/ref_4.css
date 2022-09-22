@@ -1,0 +1,22 @@
+.no-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.bold_upper {
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.marl {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.heading {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2e2f30;
+  position: relative;
+}/*# sourceMappingURL=ref_4.css.map */

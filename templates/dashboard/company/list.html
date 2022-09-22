@@ -9,51 +9,52 @@
     {% if not company_type == 'company' %}
     &nbsp;&nbsp;
     <span>
-        <a class="label {% if status == 'active' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?active=true">Active</a> /
-        <a class="label {% if status == 'inactive' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?active=false">Inactive</a>
-        <a class="label {% if status == 'admin_active' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?admin=true">Active Agency Admins</a>
-        <a class="label {% if status == 'admin_inactive' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?admin=false">Inactive Agency Admins</a>
+        <a class="badge {% if status == 'active' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?active=true">Active</a> /
+        <a class="badge {% if status == 'inactive' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?active=false">Inactive</a>
+        <a class="badge {% if status == 'admin_active' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?admin=true">Active Agency Admins</a>
+        <a class="badge {% if status == 'admin_inactive' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:companies" 'consultant' %}?admin=false">Inactive Agency Admins</a>
       </span>
     {% endif %}
     {% if company_type == 'company' %}
     &nbsp;&nbsp;
     <span>
-        <a class="label {% if status == 'true' %}label-primary{% elif active == 'true' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'company' %}?active=true">Active</a> /
-        <a class="label {% if status == 'false' %}label-primary{% elif active == 'false' %}label-primary{% else %}label-default{% endif %}" href="{% url "dashboard:companies" 'company' %}?active=false">Inactive</a>
+        <a class="badge {% if status == 'true' %}badge-primary{% elif active == 'true' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:companies" 'company' %}?active=true">Active</a> /
+        <a class="badge {% if status == 'false' %}badge-primary{% elif active == 'false' %}badge-primary{% else %}badge-secondary{% endif %}" href="{% url "dashboard:companies" 'company' %}?active=false">Inactive</a>
 
       </span>
     {% endif %}
     </h4>
     {% if company_type == 'company' %}
-    <div class="form-inline pull-right">
-       <div class="form-group">
-          <span><a href="{% url 'dashboard:new_company' %}"><button class="btn btn-warning"><i class="fa fa-plus"></i> Add New Company</button></a></span>
+    <div class="form-inline">
+       <div class="pull_right">
+          <span><a href="{% url 'dashboard:new_company' %}"><button class="btn"><i class="fa fa-plus"></i> Add New Company</button></a></span>
        </div>
     </div>
     {% endif %}
     <form id="search_form" name="adv-search-form" class="search-form" method="GET">
-    <div class="col-md-12 search_form">
-      <div class="col-md-4">
-        <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.search }}"/>
-        <input type="hidden" name="active" id="active" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.active }}"/>
-        <input type="hidden" name="admin" id="admin" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.admin }}"/>
-        <input type="hidden" name="page" id="page" value="{% if page %}{{page}}{% else %}1{% endif %}">
+    <div class="col-md-12 search_form mt-5">
+      <div class="row">
+        <div class="col-md-4">
+          <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.search }}"/>
+          <input type="hidden" name="active" id="active" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.active }}"/>
+          <input type="hidden" name="admin" id="admin" class="form-control" placeholder="Enter The search value here" value="{{ request.GET.admin }}"/>
+          <input type="hidden" name="page" id="page" value="{% if page %}{{page}}{% else %}1{% endif %}">
+        </div>
+        <div class="col-md-4">
+          <button type="submit" class="form-control submit">Submit</button>
+        </div>
+        <div class="col-md-4 pull-right mt-3">
+          <ul class="list-inline">
+            <li class="draft"><i class="fa fa-circle"></i> Draft</li>
+            <li class="pending"><i class="fa fa-circle"></i> Pending</li>
+            <li class="published"><i class="fa fa-circle"></i> Published</li>
+            <li class="live"><i class="fa fa-circle"></i> Live</li>
+            <li class="deleted"><i class="fa fa-circle"></i> Deleted</li>
+          </ul>
+        </div>
       </div>
-      <div class="col-md-4">
-        <button type="submit" class="form-control submit">Submit</button>
-      </div>
-      <span class="pull-right" style="margin-top: 13px;">
-        <ul class="list-inline">
-          <li class="draft"><i class="fa fa-circle"></i> Draft</li>
-          <li class="pending"><i class="fa fa-circle"></i> Pending</li>
-          <li class="published"><i class="fa fa-circle"></i> Published</li>
-          <li class="live"><i class="fa fa-circle"></i> Live</li>
-          <li class="deleted"><i class="fa fa-circle"></i> Deleted</li>
-        </ul>
-      </span>
     </div>
-
-  </form>
+    </form>
     <table class="table table-hover" id="sample_1">
       <thead>
         <tr>
@@ -142,9 +143,9 @@
       {% endfor %}
       </tbody>
     </table>
-        <div class="pagination_wrap">
+        <div class="pagination_wrap d-flex justify-content-center mt-4 mb-4">
         {% get_page current_page last_page as pages %}
-        <nav>
+        {% comment %} <nav>
             <ul class="pagination">
             {% if current_page != 1 %}
               <li class="prev"><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
@@ -160,6 +161,23 @@
               <li><a href="?{% if admin %}admin={{ admin }}&{% endif %}{% if active %}active={{ active }}&{% endif %}{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
               {% endif %}
             </ul>
+        </nav> {% endcomment %}
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
         </nav>
       </div>
   </div>

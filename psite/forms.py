@@ -31,7 +31,7 @@ class UserEmailRegisterForm(forms.ModelForm):
     mobile = forms.CharField(
         required=True,
         error_messages={
-            "required": "Phone Number can not be blank",
+            "required": "Phone number can not be blank",
             "invalid": "Please enter a valid phone number",
         },
     )
@@ -49,7 +49,7 @@ class UserEmailRegisterForm(forms.ModelForm):
     )
     resume = forms.FileField(required=False)
     other_location = forms.CharField(
-        required=False, error_messages={"required": "Other Location cannot be empty"}
+        required=False, error_messages={"required": "Other location cannot be empty"}
     )
 
     class Meta:
@@ -69,7 +69,7 @@ class UserEmailRegisterForm(forms.ModelForm):
         super(UserEmailRegisterForm, self).__init__(*args, **kwargs)
         self.fields["current_city"].required = True
         self.fields["current_city"].error_messages = {
-            "required": "Current Location cannot be empty"
+            "required": "Current location cannot be empty"
         }
         self.fields["technical_skills"].error_messages = {
             "required": "Skills cannot be empty"
@@ -88,7 +88,7 @@ class UserEmailRegisterForm(forms.ModelForm):
         )
         if user.exists():
             raise forms.ValidationError(
-                "User Already Exists as " + user[0].get_user_type_display()
+                "User already exists as " + user[0].get_user_type_display()
             )
         return form_cleaned_data["email"]
 

@@ -26,13 +26,19 @@
     {% block block_canonical_tag %}
     {% endblock %}
     {% block css %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <link rel="shortcut icon" href="{{favicon}}">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+
+
     {% compress css %}
     <link rel="stylesheet" type="text/x-scss" href="{% static 'css/main.scss' %}">
-    <link rel="stylesheet" type="text/less" href="{% static 'css/select2.min.css' %}">
+    <!-- <link rel="stylesheet" type="text/less" href="{% static 'css/select2.min.css' %}"> -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/introjs.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui-slider-pips.css' %}">
@@ -50,156 +56,169 @@
     <!-- HEADER -->
     <div id="wrapper" >
       <!--banner starts here -->
-      <div class="row mar_lr_0 header_banner">
+      <section class="header_banner">
         <div class="icon_banner">
-          <header class="row mar_lr_0 sticky header_panel" >
+         <div class="header_panel">
+          <nav class="navbar navbar-expand-lg megamenu py-3">
             <div class="container">
-              <div class="row mar_lr_0">
-                <div class="">
-                  <nav class="navbar navbar-default megamenu">
-                    <div class="">
-                      <!-- Brand and toggle get grouped for better mobile display -->
-                      <div class="navbar-header">
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" href="/">Peeljobs</a>
-                      </div>
-                      <!-- Collect the nav links, forms, and other content for toggling -->
-                      <div class="collapse navbar-collapse">
-                        <ul class="nav navbar-nav main_menu">
-                        {% cache 604800 latest_jobs_menu %}
+               <a class="navbar-brand" href="/">Peeljobs</a>
 
-                          {% get_skills as total_skills %}
-                          {% get_industries as total_industries %}
-                          {% get_locations as total_locations %}
-                          {% get_government_jobs as all_government_jobs %}
-                          {% get_internships as all_internship_jobs %}
-
-                          <li class="dropdown megamenu-fw">
-                            <a href="{% url 'jobs:index' %}" class="dropdown-toggle latest-jobs" data-toggle="dropdown" role="button" aria-expanded="false">Latest Jobs<span class="caret"></span></a>
-
-                            <ul class="dropdown-menu megamenu-content" role="menu">
-                            <li>
-                              <ul class="col-md-2 information" style="width:19.99%">
-                                <li><a href="{% url 'jobs_by_skill' %}">Skills</a></li>
-                                {% for skill in total_skills %}
-                                <li><a href="{{ skill.get_job_url }}">{{ skill.name|truncatewords:2 }} Jobs</a></li>
-                                {% endfor %}
-                              </ul>
-                              <ul class="col-md-2 information industries_parts">
-                                <li><a href="{% url 'jobs_by_industry' %}">Industry</a></li>
-                                {% for industry in total_industries %}
-                                <li><a href="{% url 'job_industries' industry.slug %}">{{ industry.name|get_industry_name }} Jobs</a></li>
-                                {% endfor %}
-                              </ul>
-                              <ul class="col-md-2 information location_parts">
-                                <li><a href="{% url 'jobs_by_location' 'jobs' %}">Location</a></li>
-                                  {% for location in total_locations|slice:"17" %}
-                                    <li><a href="{{ location.get_job_url }}">Jobs in {{ location.name }}</a></li>
-                                  {% endfor %}
-                              </ul>
-                              <!--
-                              <div class="col-md-2 information government_parts">
-                                <ul>
-                                  <li><a href="{% url 'government_jobs' %}">Government</a></li>
-                                  {% for job in all_government_jobs %}
-                                  <li><a href="{{ job.get_absolute_url }}" title="{{ job.title}}">{{ job.title|truncatewords:2 }}</a></li>
-                                  {% endfor %}
-                                </ul>
-                              </div>
-                              <div class="col-md-3 information internship_parts" style="width:20.99% !important">-->
-                              <ul class="col-md-3 information internship_parts" style="width: 19.99% !important;">
-                                <li><a href="{% url 'internship_jobs' %}">Internship</a></li>
-                                {% for city in all_internship_jobs %}
-                                <li><a href="{% url 'city_internship_jobs' city.slug %}">Internship Jobs in {{ city.name }}</a></li>
-                                {% endfor %}
-                              </ul>
-                              <ul class="col-md-3 information fresher-jobs-part">
-                                <li><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher</a></li>
-                                {% for skill in total_skills %}
-                                <li><a href="/{{skill.slug}}-fresher-jobs/">{{ skill.name|truncatewords:2 }} Fresher Jobs</a></li>
-                                {% endfor %}
-                              </ul>
-                              </li>
-                            </ul>
-                          </li>
-                          {% endcache %}
-                          <li {% if request.path == '/fresher-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher Jobs <span class="sr-only">(current)</span></a></li>
-                           <li {% if request.path == '/walkin-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'walkin' %}">Walkin Jobs <span class="sr-only">(current)</span></a></li>
-                          {% if request.user.user_type == 'JS' %}
-                          <li><a href="{% url 'jobs:jobs_applied' %}">Applied Jobs</a></li>
-                          {% endif %}
-                          <li {% if request.path == '/internship-jobs/' %}class="active"{% endif %}>
-                            <a href="{% url 'internship_jobs'%}">Internship</a>
-                          </li>
-                          <li {% if request.path == '/companies/' %}class="active"{% endif %}>
-                            <a href="{% url 'companies' %}">Companies</a>
-                          </li>
-                          <li {% if request.path == '/recruiters/' %}class="active"{% endif %}>
-                            <a href="{% url 'recruiters' %}">Recruiters</a>
-                          </li>
-                          <li><a href="{% url 'my:alerts_list'%}">Job Alerts</a></li>
-                          <!-- <li {% if request.path == "/calendar/2017/" %}class="active"{% endif %}>
-                            <a href="/calendar/{% now "Y" %}/">Calendar</a>
-                          </li> -->
-                          {% if request.user.user_type == 'JS' %}
-                            {% get_unread_messages request.user '' '' as unread_messages %}
-                            <li {% if request.path == '/profile/' %}class="active"{% endif %} {% if unread_messages %} title="{{ unread_messages }} Messages From recruiters"{% endif %}>
-                              <a href="{% url 'my:profile' %}">My Profile {% if unread_messages %}({{ unread_messages }}){% endif %}</a>
-                            </li>
-                            <li>
-                              <span>
-                              {% if request.user.profile_pic|length > 0 %}
-                                <img class="profile_picture" src="{{request.user.profile_pic.url}}" width="40" height="40">
-                              {% elif request.user.photo %}
-                                <img class="profile_picture" src="{{request.user.photo}}" >
-                              {% else %}
-                                <img class="profile_picture" src="https://cdn.peeljobs.com/dummy.jpg">
-                              {% endif %}
-                              </span>
-                            </li>
-                            <li><a href="/logout/?next={{ request.path }}" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
-                            {% elif request.user.is_superuser %}
-                            <li><a href="/dashboard/">Dashboard</a></li>
-                            <li><a href="/logout/" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
-                            {% elif request.user.is_recruiter or request.user.is_agency_recruiter %}
-                            <li><a href="/recruiter/">Dashboard</a></li>
-                            <li><a href="/logout/" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
-                          {% endif %}
-                        </ul>
-                        {% if not request.user.is_authenticated %}
-                        <ul class="nav navbar-nav navbar-right">
-                          <li class="jobseeker_auth"><!-- <a href="" class="login_modal">Jobseeker Login</a> -->
-                            <span class="title">Job Seeker</span>
-                            <div class="items">
-                              <a href="#" class="login_modal">Login</a>
-                              <a href="#" class="new_account">Register</a>
-                            </div>
-                          </li>
-                          <li><a href="{% url 'post_job' %}">Recruiter Login | register</a></li>
-                          <!-- <li><a href="/post-job/" class="up_resume">Upload Resume</a></li> -->
-                        </ul>
-                        {% endif %}
-                      </div>
-                      <!-- /.navbar-collapse -->
-                    </div>
-                  </nav>
-                </div>
+              <!-- Brand and toggle get grouped for better mobile display -->
+              <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                  <i class="fa-solid fa-bars"></i>
+                </button>
               </div>
+              <!-- Collect the nav links, forms, and other content for toggling -->
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav main_menu">
+                {% cache 604800 latest_jobs_menu %}
+        
+                  {% get_skills as total_skills %}
+                  {% get_industries as total_industries %}
+                  {% get_locations as total_locations %}
+                  {% get_government_jobs as all_government_jobs %}
+                  {% get_internships as all_internship_jobs %}
+                  
+                  <li class="dropdown megamenu-fw">
+                    <a href="{% url 'jobs:index' %}" class="dropdown-toggle latest-jobs" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                    aria-expanded="false">Latest Jobs<span class="caret"></span></a>
+        
+                    <ul class="dropdown-menu megamenu-content" role="menu">
+                    <li>
+                      <ul class="col-md-2 information" style="width:19.99%">
+                        <li><a href="{% url 'jobs_by_skill' %}">Skills</a></li>
+                        {% for skill in total_skills %}
+                        <li><a href="{{ skill.get_job_url }}">{{ skill.name|truncatewords:2 }} Jobs</a></li>
+                        {% endfor %}
+                      </ul>
+                      <ul class="col-md-2 information industries_parts">
+                        <li><a href="{% url 'jobs_by_industry' %}">Industry</a></li>
+                        {% for industry in total_industries %}
+                        <li><a href="">{{ industry.name|get_industry_name }} Jobs</a></li>
+                        
+                        {% endfor %}
+                      </ul>
+                      <ul class="col-md-2 information location_parts">
+                        <li><a href="{% url 'jobs_by_location' 'jobs' %}">Location</a></li>
+                          {% for location in total_locations|slice:"17" %}
+                            <li><a href="{{ location.get_job_url }}">Jobs in {{ location.name }}</a></li>
+                          {% endfor %}
+                      </ul>
+                      <!--
+                      <div class="col-md-2 information government_parts">
+                        <ul>
+                          <li><a href="{% url 'government_jobs' %}">Government</a></li>
+                          {% for job in all_government_jobs %}
+                          <li><a href="{{ job.get_absolute_url }}" title="{{ job.title}}">{{ job.title|truncatewords:2 }}</a></li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                      <div class="col-md-3 information internship_parts" style="width:20.99% !important">-->
+                      <ul class="col-md-3 information internship_parts" style="width: 19.99% !important;">
+                        <li><a href="{% url 'internship_jobs' %}">Internship</a></li>
+                        {% for city in all_internship_jobs %}
+                        <li><a href="{% url 'city_internship_jobs' city.slug %}">Internship Jobs in {{ city.name }}</a></li>
+                        {% endfor %}
+                      </ul>
+                      <ul class="col-md-3 information fresher-jobs-part">
+                        <li><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher</a></li>
+                        {% for skill in total_skills %}
+                        <li><a href="/{{skill.slug}}-fresher-jobs/">{{ skill.name|truncatewords:2 }} Fresher Jobs</a></li>
+                        {% endfor %}
+                      </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  {% endcache %}
+                  <li {% if request.path == '/fresher-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher Jobs <span class="sr-only">(current)</span></a></li>
+                   <li {% if request.path == '/walkin-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'walkin' %}">Walkin Jobs <span class="sr-only">(current)</span></a></li>
+                  {% if request.user.user_type == 'JS' %}
+                  <li><a href="{% url 'jobs:jobs_applied' %}">Applied Jobs</a></li>
+                  {% endif %}
+                  <li {% if request.path == '/internship-jobs/' %}class="active"{% endif %}>
+                    <a href="{% url 'internship_jobs'%}">Internship</a>
+                  </li>
+                  <li {% if request.path == '/companies/' %}class="active"{% endif %}>
+                    <a href="{% url 'companies' %}">Companies</a>
+                  </li>
+                  <li {% if request.path == '/recruiters/' %}class="active"{% endif %}>
+                    <a href="{% url 'recruiters' %}">Recruiters</a>
+                  </li>
+                  <li><a href="{% url 'my:alerts_list'%}">Job Alerts</a></li>
+                  <!-- <li {% if request.path == "/calendar/2017/" %}class="active"{% endif %}>
+                    <a href="/calendar/{% now "Y" %}/">Calendar</a>
+                  </li> -->
+                  {% if request.user.user_type == 'JS' %}
+                    {% get_unread_messages request.user '' '' as unread_messages %}
+                    <li {% if request.path == '/profile/' %}class="active"{% endif %} {% if unread_messages %} title="{{ unread_messages }} Messages From recruiters"{% endif %}>
+                      <a href="{% url 'my:profile' %}">My Profile {% if unread_messages %}({{ unread_messages }}){% endif %}</a>
+                    </li>
+                    <li>
+                      <span>
+                      {% if request.user.profile_pic|length > 0 %}
+                        <img class="profile_picture" src="{{request.user.profile_pic.url}}" width="40" height="40">
+                      {% elif request.user.photo %}
+                        <img class="profile_picture" src="{{request.user.photo}}" >
+                      {% else %}
+                        <img class="profile_picture" src="https://cdn.peeljobs.com/dummy.jpg">
+                      {% endif %}
+                      </span>
+                    </li>
+                    <li><a href="/logout/?next={{ request.path }}" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
+                    {% elif request.user.is_superuser %}
+                    <li><a href="/dashboard/">Dashboard</a></li>
+                    <li><a href="/logout/" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
+                    {% elif request.user.is_recruiter or request.user.is_agency_recruiter %}
+                    <li><a href="/recruiter/">Dashboard</a></li>
+                    <li><a href="/logout/" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
+                  {% endif %}
+                </ul>
+                {% if not request.user.is_authenticated %}
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 navbar-right">
+                  <li class="jobseeker_auth"><!-- <a href="" class="login_modal">Jobseeker Login</a> -->
+                    <!-- <span class="title">Job Seeker</span>
+                    <div class="items">
+                      <a href="#" class="login_modal" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                      <a href="#" class="new_account" data-bs-toggle="modal" data-bs-target="#register-div">Register</a>
+                     
+                    </div> -->
+                    <div class="dropdown">
+                      <button class="item dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Job Seeker
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a href="#" class="login_modal" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+                        <li><a href="#" class="new_account" data-bs-toggle="modal" data-bs-target="#register-div">Register</a></li>
+                      </ul>
+                    </div>
+                  </li>
+
+
+                 
+
+                  <li class="log"><a href="{% url 'post_job' %}">Recruiter Login | register</a></li>
+                  <!-- <li><a href="/post-job/" class="up_resume">Upload Resume</a></li> -->
+                </ul>
+                {% endif %}
+              </div>
+              <!-- /.navbar-collapse -->
+              
             </div>
-            {% block page_search_block %}
-            {% endblock %}
-          </header>
+        </nav>
+       
+        {% block page_search_block %}
+        {% endblock %}
+         </div>
+
           <!-- search_login starts here -->
           {% block search_block %}
           {% endblock %}
           <!-- search_login ends here -->
         </div>
-      </div>
+      </section>
+     
       {% block base %}
       {% endblock %}
       <!-- banner ends here -->
@@ -211,12 +230,12 @@
         {% get_internships as all_internship_jobs %}
         {% get_companies as all_companies %}
 
-      <div class="row job_types_links mar_lr_0">
+      <section class="job_types_links mar_lr_0">
         <div class="container">
-          <div class="row mar_lr_0">
+          <div class="row  d-flex justify-content-center  mar_lr_0">
             <div class="col-md-2 col-sm-4 job_types_link_col">
               <ul>
-                <li><a href="{% url "jobs_by_skill" %}">Skills</a></li>
+                <li><a href="{% url 'jobs_by_skill' %}">Skills</a></li>
                 {% for skill in total_skills %}
                 <li><a href="{{ skill.get_job_url }}">Jobs For {{ skill.name|truncatewords:2  }}</a></li>
                 {% endfor %}
@@ -224,7 +243,7 @@
             </div>
             <div class="col-md-2 col-sm-4  job_types_link_col">
               <ul>
-                <li><a href="{% url "jobs_by_industry" %}">Industry</a></li>
+                <li><a href="{% url 'jobs_by_industry' %}">Industry</a></li>
                 {% for industry in total_industries %}
                 <li><a href="{{ industry.get_job_url }}">Jobs For {{ industry.name|get_industry_name }}</a></li>
                 {% endfor %}
@@ -232,7 +251,7 @@
             </div>
             <div class="col-md-2 col-sm-4  job_types_link_col">
               <ul>
-                <li><a href="{% url "jobs_by_location" 'jobs' %}">Location</a></li>
+                <li><a href="{% url 'jobs_by_location' 'jobs' %}">Location</a></li>
                 {% for location in total_locations|slice:"17" %}
                 <li><a href="{{ location.get_job_url }}">Jobs in {{ location.name }}</a></li>
                 {% endfor %}
@@ -264,7 +283,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </section>
       {% endcache %}
       <!-- job_types_links ends here -->
       <div id="WaitDialog"   class="hidden" style="text-align: center">
@@ -273,86 +292,88 @@
         </div>
       </div>
       <!-- footer starts here -->
-        <footer class="row mar_lr_0">
-          <div class="container">
-            <div class="row mar_lr_0">
-              {% block pj_info %}
-                <div class="col-md-4 col-sm-12 col-xs-12 about">
-                  <strong class="logo">Peeljobs</strong>
-                  <p>Peeljobs is a platform to connect recruiters and job seekers from all over India. The features which make us stand out amongst the many available job portals is our uniqueness and the ease of use of our platform. We have many free of cost services in the platter, to offer to Job-seekers as well as to the recruiters.</p>
-                </div>
-              {% endblock %}
-              <div class="col-md-5 col-sm-12 col-xs-12 links">
-                <ul class="footer_links">
-                  <li class="text-uppercase">About Us</li>
-                  <li><a href="{% url 'pages' 'about-us' %}" target="_blank">About Peeljobs</a></li>
-                  <li><a href="{% url "sitemap" %}" target="_blank">Sitemap</a></li>
-                  <li><a href="{% url 'pages' 'terms-conditions' %}" target="_blank">Terms &amp; Conditions</a></li>
-                  <li><a href="{% url 'pages' 'privacy-policy' %}" target="_blank">Privacy Policy</a></li>
-                  <li><a href="{% url 'contact' %}" target="_blank">Contact Us</a></li>
-                </ul>
-                <ul class="footer_links">
-                  <li class="text-uppercase">Recruiter</li>
-                  <li><a href="{% url 'recruiter:new_user' %}" target="_blank">Registration</a></li>
-                  <li><a href="{% url 'pages' 'recruiter-faq' %}" target="_blank">FAQs</a></li>
-                  <li><a href="{% url 'post_job' %}" target="_blank">Post Job For Free</a></li>
-                </ul>
-                <ul class="footer_links">
-                  <li class="text-uppercase">Job Seekers</li>
-                  {% if request.user.is_authenticated %}                  
-                  <li style="display: none;"><a href="#" data-toggle="modal" data-target="#login_register">Login / Connect</a></li>
-                  {%else%}
-                  <li><a href="#" data-toggle="modal" data-target="#login_register">Login / Connect</a></li>
-                  {%endif%}
-                  <li><a href="/" target="_blank">Search Jobs</a></li>
-                  <li><a href="{% url 'jobs:index' %}" target="_blank">View All Jobs</a></li>
-                  <li><a href="{% url 'pages' 'faq' %}" target="_blank">FAQs</a></li>
-                </ul>
-              </div>
-              <div class="col-md-3 col-sm-12 col-xs-12 subscribe_social_copy">
-              {% if not request.user.is_authenticated %}
-                <form name="BaseSubscribeform" id="BaseSubscribeform" method="POST">
-                  <div class="subscribe">
-                    <div class="input-group">
-                      <input type="text" class="form-control text-capitalize" placeholder="Subscribe to get updates" name='email' id="subscribe_email" value="{{request.user.email}}">
-                      <input type="hidden" name="subscribe_from" id="subscribe_from" value="All">
-                      <span class="input-group-btn">
-                      <button class="btn btn-secondary text-uppercase" type="submit"><i class="fa fa-paper-plane"></i></button>
-                      </span>
-                    </div>
-                      <p id="subscribe_response_message"></p>
+        <section>
+          <footer>
+            <div class="container">
+              <div class="row mar_lr_0">
+                {% block pj_info %}
+                  <div class="col-md-4 col-sm-12 col-xs-12 about">
+                    <strong class="logo">Peeljobs</strong>
+                    <p>Peeljobs is a platform to connect recruiters and job seekers from all over India. The features which make us stand out amongst the many available job portals is our uniqueness and the ease of use of our platform. We have many free of cost services in the platter, to offer to Job-seekers as well as to the recruiters.</p>
                   </div>
-                </form>
-                {% endif %}
-
-                {% cache 604800 social_footer_links %}
-                <div class="social_links text-center">
-                  <ul>
-                    <li><a target="_blank" href="https://facebook.com/peeljobs/"><i class="fa fa-facebook"></i></a></li>
-                    <li><a target="_blank" href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home"><i class="fa fa-linkedin"></i></a></li>
-                    <li ><a href="{% url 'social:google_login' %}"><strong>G</strong></a></li>
-                    <li><a target="_blank" href="https://twitter.com/PeelJobs"><i class="fa fa-twitter"></i></a></li>
+                {% endblock %}
+                <div class="col-md-5 col-sm-12 col-xs-12 links">
+                  <ul class="footer_links">
+                    <li class="text-uppercase">About Us</li>
+                    <li><a href="{% url 'pages' 'about-us' %}" target="_blank">About Peeljobs</a></li>
+                    <li><a href="{% url 'sitemap' %}" target="_blank">Sitemap</a></li>
+                    <li><a href="{% url 'pages' 'terms-conditions' %}" target="_blank">Terms &amp; Conditions</a></li>
+                    <li><a href="{% url 'pages' 'privacy-policy' %}" target="_blank">Privacy Policy</a></li>
+                    <li><a href="{% url 'contact' %}" target="_blank">Contact Us</a></li>
+                  </ul>
+                  <ul class="footer_links">
+                    <li class="text-uppercase">Recruiter</li>
+                    <li><a href="{% url 'recruiter:new_user' %}" target="_blank">Registration</a></li>
+                    <li><a href="{% url 'pages' 'recruiter-faq' %}" target="_blank">FAQs</a></li>
+                    <li><a href="{% url 'post_job' %}" target="_blank">Post Job For Free</a></li>
+                  </ul>
+                  <ul class="footer_links">
+                    <li class="text-uppercase">Job Seekers</li>
+                    {% if request.user.is_authenticated %}                  
+                    <li style="display: none;"><a href="#" data-bs-toggle="modal" data-bs-target="#login_register">Login / Connect</a></li>
+                    {%else%}
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#login_register">Login / Connect</a></li>
+                    {%endif%}
+                    <li><a href="/" target="_blank">Search Jobs</a></li>
+                    <li><a href="{% url 'jobs:index' %}" target="_blank">View All Jobs</a></li>
+                    <li><a href="{% url 'pages' 'faq' %}" target="_blank">FAQs</a></li>
                   </ul>
                 </div>
-                <div class="copy_right text-center">Copyright &copy; {% now "Y" %} Peeljobs.com<br><a href="https://micropyramid.com" title="MicroPyramid Informatics Private Ltd" target="_blank">Development + SEO by MicroPyramid</a>
+                <div class="col-md-3 col-sm-12 col-xs-12 subscribe_social_copy">
+                {% if not request.user.is_authenticated %}
+                  <form name="BaseSubscribeform" id="BaseSubscribeform" method="POST">
+                    <div class="subscribe">
+                      <div class="input-group">
+                        <input type="text" class="form-control text-capitalize" placeholder="Subscribe to get updates" name='email' id="subscribe_email" value="{{request.user.email}}">
+                        <input type="hidden" name="subscribe_from" id="subscribe_from" value="All">
+                        <span class="input-group-btn">
+                        <button class="btn btn-secondary text-uppercase" type="submit"><i class="fa fa-paper-plane"></i></button>
+                        </span>
+                      </div>
+                        <p id="subscribe_response_message"></p>
+                    </div>
+                  </form>
+                  {% endif %}
+  
+                  {% cache 604800 social_footer_links %}
+                  <div class="social_links text-center">
+                    <ul>
+                      <li><a target="_blank" href="https://facebook.com/peeljobs/"><i class="fa-brands fa-facebook-f"></i></a></li>
+                      <li><a target="_blank" href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                      <li ><a href="{% url 'social:google_login' %}"><strong>G</strong></a></li>
+                      <li><a target="_blank" href="https://twitter.com/PeelJobs"><i class="fa-brands fa-twitter"></i></a></li>
+                    </ul>
+                  </div>
+                  <div class="copy_right text-center">Copyright &copy; {% now "Y" %} Peeljobs.com<br><a href="https://micropyramid.com" title="MicroPyramid Informatics Private Ltd" target="_blank">Development + SEO by MicroPyramid</a>
+                  </div>
+                  {% endcache %}
                 </div>
-                {% endcache %}
               </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        </section>
       <!-- footer ends here -->
     </div>
     <div class="modal_loading">
       <!-- Place at bottom of page -->
     </div>
 <!-- Modal -->
-  <div class="modal fade" id="login_register" tabindex='-1' role="dialog" data-keyboard="true">
+  {% comment %} <div class="modal fade in" id="login_register" tabindex='-1' role="dialog" data-bs-keyboard="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <div class="text-center"><h3 id="modal_head" style="display:none">Not A Member? Register</h3>
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-close"></i></button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true"><i class="fa fa-close"></i></button>
           </div>
         </div>
         <div class="modal-body">
@@ -730,33 +751,227 @@
         </div><!-- modal body ends -->
       </div>
     </div>
+  </div> {% endcomment %}
+
+
+
+
+  <!-- Modal -->
+  <div class="modal fade modal-dialog-scrollable" id="register-div" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          
+            <h3 id="modal_head" class="my-2">Not A Member? Register</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          
+        </div>
+        <div class="modal-body">
+          
+
+          <div class="row g-3 align-items-center">
+            <div class="col-md-12">
+              <div class="form_panel form">
+                <form id="ApplicantFormRegister" name="ApplicantFormRegister" class="form-horizontal ApplicantForm" method="POST" enctype="multipart/form-data">
+                  <div class="row">
+                    <label for="colFormLabelSm" class="col-sm-4 control-label">Email ID<span class="important">*</span></label>
+                    <div class="col-sm-8">
+                      <input type="email" class="form-control" id="user_register_email" placeholder="Enter valid email address" name="email">
+                      <p id="user_register_response_message"></p>
+                      <input type="hidden" name="register_from" id='register_from' value="Email">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="colFormLabelSm" class="col-sm-4 control-label">Password<span class="important">*</span></label>
+                    <div class="col-sm-8">
+                      <input type="password" class="form-control" id="user_register_password" placeholder="Enter Password minimum of 7 characters" name="password">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="colFormLabelSm" class="col-sm-4 control-label">Mobile Number<span class="important">*</span></label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" id="user_register_mobile" placeholder="Recruiters will reach you on this number" name="mobile">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="colFormLabelSm" class="col-sm-4 control-label">Current Location<span class="important">*</span></label>
+                    <div class="col-sm-8">
+                      <select class="form-select select2" name="current_city" id="user_register_current_city">
+                        <option value="">Choose required location</option>
+                        {% get_all_cities as all_cities %}
+                        {% for city in all_cities %}
+                          {% if not 'India' in city.name %}
+                            <option value="{{ city.id }}">{{ city.name }}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                      <span class="city_err"></span>
+                      <input type="text" class="form-control pb-1" id="user_register_other_location" placeholder="Enter your Location" name="other_location" style="display:none">
+                      <input class="form-check-input" type="checkbox" name="other_loc" id="other_location"> <span class="text">Other Location</span>
+                    </div>
+                  </div>
+                  <div class="row  mb-3">
+                    <label for="colFormLabelSm" class="col-sm-4 control-label">Skills<span class="important">*</span></label>
+                    <div class="col-sm-8">
+                      <select class="form-select select2" name="technical_skills" id="user_register_technical_skills">
+                      {% get_all_skills as all_skills %}
+                        {% for skill in all_skills %}
+                            <option value="{{ skill.id }}">{{ skill.name }}</option>
+                        {% endfor %}
+                      </select>
+                      <span class="reg_skill_err"></span>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="colFormLabelSm" class="col-sm-4 control-label">Experience</label>
+                    <div class="col-sm-8">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <select class="form-select" name="year" id="user_register_year">
+                              <option value=''>Year</option>
+                            {% get_years as years %}
+                            {% for i in years %}
+                              <option value='{{i.0}}'>{{i.1}}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <select class="form-select" name="month" id="user_register_month">
+                              <option value=''>Month</option>
+                            {% get_months as months %}
+                            {% for k in months %}
+                              <option value='{{k.0}}'>{{k.1}}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="colFormLabelSm" class="col-sm-4 control-label">Resume</label>
+                    <div class="col-sm-8">
+                      <span class="resume_class">
+                        <input type="file" name="resume" id="user_register_resume" accept=".docx, .odt, .doc, .rtf, .text, .pdf">
+                      </span>
+                      <p class="help_text">doc, docx, pdf, odt - 300kb max</p>
+                      <div>
+                        <input class="form-check-input" type="checkbox" name="email_notifications"> <span class="text">I agree to receive notifications from PeelJobs</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-7 d-flex">
+                      <button for="colFormLabelSm" type="submit" class="btn  register_form_button">
+                        <span class='load_register'>
+                          <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...
+                        </span>
+                        <span class='register_click'>Create Account</span>
+                      </button>
+                      <p><a id="login_but">Already a Member? Login</a></p>
+                    </div>
+                  </div>
+                </form>
+              
+                <div class="alternate_login">
+                  <span class="or_reg">
+                    <span class="text">Or Register With</span>
+                  </span>
+                  <div class="social_reg_logins">
+                    <ul>
+                      <li><a href="{% url 'social:facebook_login' %}" class="facebook" style="line-height: 32px; padding: 0; padding-left: 7px;"><i class="fa-brands fa-facebook-f fb"></i></a></li>
+                      <li><a href="{% url 'social:linkedin_login' %}" class="linkedin" style="line-height: 32px; padding: 0; padding-left: 7px;"><i class="fa-brands fa-linkedin-in in"></i></a></li>
+                      <li><a href="{% url 'social:github_login' %}" class="github" style="line-height: 32px; padding: 0; padding-left: 7px;"><i class="fa-brands fa-github git"></i></a></li>
+                      <li><a href="{% url 'social:google_login' %}" class="gplus" style="line-height: 32px; padding: 0; padding-left: 7px;"><i style="color: white; font-style: normal; font-size: larger;"><strong>G</strong></i></a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <!-- Modal ends-->
+
+
+  <div class="modal fade modal-dialog-scrollable" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="login_reg" id="is_show_popup" value="False">
+          <input type="hidden" name="logged_usser" id="logged_user" value="{{request.user}}">
+          <div class="row marl" id="login_div">
+            <div class="social_panel">
+              <div class="icons_list">
+                <ul class="other_options clearfix">
+                  <li class="active" id="login_li"><a class="sign_in_li" target="_blank">Login</a></li>
+                  <li id="sign_up_li"><a class="sign_up_li" target="_blank">Create Account</a></li>
+                </ul>
+                <div class="or"><span>Or</span></div>
+                <ul>
+                  <li class="facebook_li" style="padding-left: 5px;"><a href="{% url 'social:facebook_login' %}" target="_blank"><i class="fa-brands fa-facebook-f fb"></i><span>Sign in with <span>FaceBook</span></span></a></li>
+                  <li class="linkedin_li" style="padding-left: 5px;"><a href="{% url 'social:linkedin_login' %}" target="_blank"><i class="fa-brands fa-linkedin-in in"></i><span>Sign in with <span>LinkedIn</span></span></a></li>
+                  <li class="github_li" style="padding-left: 5px;"><a href="{% url 'social:github_login' %}" target="_blank"><i class="fa-brands fa-github git"></i><span>Sign in with <span>GitHub</span></span></a></li>
+                </ul>
+                <div class="customGPlusSignIn" data-href="{% url 'social:google_login' %}">
+                  <span class="icon"></span>
+                  <span class="buttonText">Sign in With Google</span>
+                </div>
+              </div>
+            </div>
+            <div class="form_panel form">
+              <div class="login_box">
+                <h3 id="pop_up_header">Already a Member? Login</h3>
+                <form id="ApplicantForm" name="ApplicantForm" class="ApplicantForm" method="POST" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <input type="email" class="form-control" id="userlogin_email" placeholder="Enter Email ID" name="email">
+                    <p id="userlogin_response_message"></p>
+                    <input type="hidden" name="register_type" id='user_register_type' value="login">
+                    <input type="hidden" name="next" value="{{request.GET.next}}">
+                    <input type="password" class="form-control" id="userlogin_password" placeholder="Enter Password" name="password">
+                    <button type="submit" class="btn btn-default login_form_button" id="button_value">Sign In</button>
+                    <div id="forgot_pass"><a>Forgot Password?</a></div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="block_question" style="display:none;"></div>
 
     <!--/ select2 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha512-pax4MlgXjHEPfCwcJLQhigY7+N8rt6bVvWLFyUMuxShv170X53TRzGPmPkZmGBhk+jikR8WBM4yl7A9WMHHqvg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% comment %} <script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script> {% endcomment %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Select2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
     {% compress js %}
-    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
     <script type="text/javascript" src="{% static 'tellme_js/feedback.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.form.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.blockUI.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/circle-progress.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/captcha.js' %}"></script>
+    {% comment %} <script type="text/javascript" src="{% static 'js/captcha.js' %}"></script> {% endcomment %}
     <script type="text/javascript" src="{% static 'r1/js/jquery.plainmodal.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui-slider-pips.js' %}" ></script>
     <script type="text/javascript" src="{% static 'js/masonry.min.js' %}"></script>
-
     <script type="text/javascript" src="{% static 'js/intro.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/highlight.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/base.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/userinfo.js' %}"></script>
-    {% block jquery %}
-    {% endblock %}
+
 
     <!-- pip slider -->
     <script>
@@ -832,7 +1047,6 @@
       })
 
       $('.latest-jobs').click(function(e){
-
         window.location = '/jobs/';
       });
     </script>
@@ -906,5 +1120,30 @@
         }
       }
     </script>
+
+    <script>
+    var initOpts = {
+      projectKey: "HqNqwbmBQwy4gFRWtkOc",
+      ingestPoint: "https://replay.micropyramid.com/ingest",
+      defaultInputMode: 0,
+      obscureTextNumbers: false,
+      obscureTextEmails: true,
+    };
+    var startOpts = { userID: "" };
+    (function(A,s,a,y,e,r){
+      r=window.OpenReplay=[e,r,y,[s-1, e]];
+      s=document.createElement('script');s.src=A;s.async=!a;
+      document.getElementsByTagName('head')[0].appendChild(s);
+      r.start=function(v){r.push([0])};
+      r.stop=function(v){r.push([1])};
+      r.setUserID=function(id){r.push([2,id])};
+      r.setUserAnonymousID=function(id){r.push([3,id])};
+      r.setMetadata=function(k,v){r.push([4,k,v])};
+      r.event=function(k,p,i){r.push([5,k,p,i])};
+      r.issue=function(k,p){r.push([6,k,p])};
+      r.isActive=function(){return false};
+      r.getSessionToken=function(){};
+    })("//static.openreplay.com/3.5.10/openreplay.js",1,0,initOpts,startOpts);
+  </script>
   </body>
 </html>

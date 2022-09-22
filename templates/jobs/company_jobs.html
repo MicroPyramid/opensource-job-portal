@@ -35,9 +35,9 @@
 <div class="row mar_lr_0 main_container">
   <div class="container">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+    <div class="breadcrumb_section row">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li>
             <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
               <span itemprop="name" class="name">Home</span>
@@ -97,25 +97,42 @@
           <div class="job_list_section company_prof_job_list row mar_lr_0 jobs_list">
          {% include 'company_job_list.html' with job_list=job_list %}
             {% if job_list %}
-                  <div class="pagination_wrap text-center">
+                  <div class="pagination_wrap d-flex justify-content-center mt-4">
                     {% get_page current_page last_page as pages %}
-                    <nav>
+                    {% comment %} <nav>
                        <ul class="pagination">
-                {% if current_page != 1 %}
-                <li class="prev"><a class="{{previous_page}}" href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% endif %}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}"><i class="fa fa-angle-double-left"></i></a></li>
-                <li class="prev"><a class="{{prev_page}}" href="{{current_url}}{% if prev_page == 1 %}
-                {% else %}{{prev_page}}/{% endif %}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}"><i class="fa fa-angle-left"></i></a></li>
-                <li><a class="1" href="{{current_url}}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}">first</a></li>
-                {% endif %}
-                {% for s in pages %}
-                <li {% ifequal s current_page %} class="active" {% endifequal %}><a  class="{{ s }}" href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% endif %}">{{s}}</a></li>
-                {% endfor %}
-                {% if current_page != last_page %}
-                <li><a class="{{ last_page }}" href="{{current_url}}{{ last_page }}/">last</a></li>
-                <li><a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/"><i class="fa fa-angle-right pagination-next"></i></a></li>
-                <li><a class="{{ after_page }}" href="{{current_url}}{{after_page}}/"><i class="fa fa-angle-double-right"></i></a></li>
-                {% endif %}
-              </ul>
+                          {% if current_page != 1 %}
+                          <li class="prev"><a class="{{previous_page}}" href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% endif %}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}"><i class="fa fa-angle-double-left"></i></a></li>
+                          <li class="prev"><a class="{{prev_page}}" href="{{current_url}}{% if prev_page == 1 %}
+                          {% else %}{{prev_page}}/{% endif %}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}"><i class="fa fa-angle-left"></i></a></li>
+                          <li><a class="1" href="{{current_url}}{% if search_value or search_job_type %}?{% endif %}{% if search_job_type %}job_type={{ search_job_type }}{% endif %}{% if search_value %}&search={{ search_value }}{% endif %}">first</a></li>
+                          {% endif %}
+                          {% for s in pages %}
+                          <li {% ifequal s current_page %} class="active" {% endifequal %}><a  class="{{ s }}" href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% endif %}">{{s}}</a></li>
+                          {% endfor %}
+                          {% if current_page != last_page %}
+                          <li><a class="{{ last_page }}" href="{{current_url}}{{ last_page }}/">last</a></li>
+                          <li><a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/"><i class="fa fa-angle-right pagination-next"></i></a></li>
+                          <li><a class="{{ after_page }}" href="{{current_url}}{{after_page}}/"><i class="fa fa-angle-double-right"></i></a></li>
+                          {% endif %}
+                      </ul>
+                    </nav> {% endcomment %}
+                    <nav aria-label="Page navigation">
+                      <ul class="pagination">
+                        <li class="page-item">
+                          <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                          <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
                     </nav>
                   </div>
                   {% endif %}
@@ -204,8 +221,8 @@
     </div>
   </div>
   <!--subscribe_box form ends here -->
-    <div style="margin-top:10px;margin-bottom:10px;">
-      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    {% comment %} <div style="margin-top:10px;margin-bottom:10px;"> {% endcomment %}
+      {% comment %} <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <!-- PJ Right Nav -->
         <ins class="adsbygoogle"
              style="display:block"
@@ -214,9 +231,15 @@
              data-ad-format="auto"></ins>
       <script>
         (adsbygoogle = window.adsbygoogle || []).push({});
+      </script> {% endcomment %}
+    {% comment %} </div> {% endcomment %}
+<script>
+        $("#multiple").select2({
+          placeholder: "Select a programming language",
+          allowClear: true
+      });
       </script>
-    </div>
-
+  
   <!--register_login form starts here -->
   {% if not request.user.is_authenticated %}
   <div class="inner_login_box">

@@ -18,9 +18,9 @@
 <!-- content of list page -->
   <section class="content_wrap_list main_container">
     <div class="container">
-      <div class="breadcrumb_section row mar_lr_0">
-        <nav>
-          <ol class="cd-breadcrumb triangle">
+      <div class="breadcrumb_section row">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb triangle">
             <li>
               <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
                 <span class="name" >Home</span>
@@ -51,15 +51,16 @@
             {% get_locations as total_locations %}
             {% get_qualifications as total_degrees %}
             <div class="browse_list">
-              <div class="panel-group side_filter_section" id="accordion">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <span class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseZero" class="filter_icon"> Browse by Degree <i class="more-less glyphicon glyphicon-minus pull-right"></i></a>
-                      </span>
-                    </div>
-                    <div id="collapseZero" class="panel-collapse collapse in">
-                      <div class="panel-body">
+              <div class="side_filter_section">
+                <div class="accordion" id="accordion">
+                  <div class="accordion-item">
+                    <h4 class="accordion-header" id="headingOne">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Browse by Degrees <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </h4>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                      <div class="accordion-body">
                         <ul>
                           {% for degree in all_degrees|slice:'10' %}
                             <li class="filter_option"><a href="{% url 'job_skills' degree.slug %}" >{{ degree.name }}</a></li>
@@ -70,14 +71,14 @@
                     </div>
                   </div>
 
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <span class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="filter_icon"> Browse by Location <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
-                      </span>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse collapse">
-                      <div class="panel-body">
+                  <div class="accordion-item">
+                    <h4 class="accordion-header" id="headingTwo">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                        Browse by Location <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </h4>
+                    <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordion">
+                      <div class="accordion-body">
                         <ul>
                           {% for location in total_locations|slice:'10' %}
                             <li class="filter_option"><a href="{{ location.get_job_url }}" >{{ location.name }}</a></li>
@@ -88,14 +89,14 @@
                     </div>
                   </div>
 
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <span class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="filter_icon collapsed">Browse by Skills <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
-                      </span>
-                    </div>
-                    <div id="collapseTwo" class="panel-collapse collapse">
-                      <div class="panel-body">
+                  <div class="accordion-item">
+                    <h4 class="accordion-header" id="headingThree">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                        Browse by Skills <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </h4>
+                    <div id="collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordion">
+                      <div class="accordion-body">
                         <ul class="list-group">
                           {% for skill in total_skills|slice:'10' %}
                           <li class="filter_option"><a href="{{ skill.get_job_url }}" >{{ skill.name }}</a></li>
@@ -106,14 +107,14 @@
                     </div>
                   </div>
 
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <span class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" class="filter_icon collapsed">Browse by Industries <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
-                      </span>
-                    </div>
-                    <div id="collapseThree" class="panel-collapse collapse">
-                      <div class="panel-body">
+                  <div class="accordion-item">
+                    <h4 class="accordion-header" id="headingFour">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                        Browse by Industries <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </h4>
+                    <div id="collapseFour" class="accordion-collapse collapse show" aria-labelledby="headingFour" data-bs-parent="#accordion">
+                      <div class="accordion-body">
                         <ul class="list-group">
                           {% for industry in total_industries|slice:'10' %}
                             <li class="filter_option"><a href="{{ industry.get_job_url }}">{{ industry.name|get_industry_name }}</a></li>
@@ -123,6 +124,7 @@
                       </div>
                     </div>
                   </div>
+                </div>
 
                 </div>
               </div>

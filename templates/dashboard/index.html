@@ -11,12 +11,12 @@
 
 <div class="col-md-12 stats">
 
-  <div class="statistics_graphs" style="margin-top:-15px;">
+  <div class="statistics_graphs">
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Statistics</a></li>
-    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" id="graph_click">Graphs</a></li>
+    <li role="presentation" class="nav-items"><a href="#home" class="nav-link active" aria-controls="home" aria-expanded="true" role="tab" data-bs-toggle="tab">Statistics</a></li>
+    <li role="presentation" class="nav-items"><a href="#profile" class="nav-link" aria-controls="profile" aria-expanded="false" role="tab" data-bs-toggle="tab" id="graph_click">Graphs</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -25,7 +25,7 @@
       <form id="search_form" name="adv-search-form" class="search-form" method="POST" action=".">
         <div class="row">
           <!-- <span ><a href="{% url 'dashboard:new_admin_user' %}"><button class="btn btn-warning" style="float: left;background: #5C4C8D"><i class="fa fa-plus"></i> Add New User</button></a></span> -->
-            <div class="col-md-offset-4 col-md-8 search_form">
+            <div class="col-md-8 offset-md-4  search_form">
             <div class="row">
             <div class="col-md-8">
               <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
@@ -41,7 +41,7 @@
         </div>
       </form>
 
-<label><span class="table-title">Job Posts</span>
+<label><span class="title">Job Posts</span>
   <span class="pull-right">
     <ul class="list-inline">
       <!--<li class="draft"><i class="fa fa-circle"></i> Draft</li>-->
@@ -374,27 +374,31 @@
     <div role="tabpanel" class="tab-pane" id="profile">
         <form id="graph_search_form" name="graph_search_form" class="search-form" method="POST" action=".">
           <div class="row">
-            <div class="col-md-offset-2 col-md-10 search_form">
+            <div class="col-md-10 offset-md-2  search_form">
+              
+            <div class="row">
               <div class="col-md-4">
-                <select name="year" id="year" class="form-control">
+                <select name="year" id="year" class="form-select">
                   <option value="2017" selected>2017</option>
                   <option value="2016" {% ifequal request.POST.year|slugify '2016' %}selected{% endifequal %}>2016</option>
                   <option value="2015" {% ifequal request.POST.year|slugify '2015' %}selected{% endifequal %}>2015</option>
                 </select>
               </div>
-              <div class="row">
-                <div class="col-md-4">
-                  <select name="month" id="month" class="form-control">
-                    <option value="">Select A Month</option>
-                    {% for month in months %}
-                      <option value="{{ month.id }}" {% ifequal request.POST.month|slugify month.id|slugify %}selected{% endifequal %}>{{ month.Name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="col-md-2">
-                  <button type="submit" class="form-control submit">Submit</button>
-                </div>
+            
+            
+              <div class="col-md-4">
+                <select name="month" id="month" class="form-select">
+                  <option value="">Select A Month</option>
+                  {% for month in months %}
+                    <option value="{{ month.id }}" {% ifequal request.POST.month|slugify month.id|slugify %}selected{% endifequal %}>{{ month.Name }}</option>
+                  {% endfor %}
+                </select>
               </div>
+              <div class="col-md-2">
+                <button type="submit" class="form-control submit">Submit</button>
+              </div>
+            </div>
+              
               <div class="clearfix"></div>
             </div>
           </div>
@@ -402,12 +406,12 @@
       <div class="col-xs-2" style="width: 9%;padding: 0px;"> <!-- required for floating -->
       <!-- Nav tabs -->
       <ul class="nav nav-tabs tabs-left"><!-- 'tabs-right' for right tabs -->
-        <li class="active"><a href="#home1" data-toggle="tab">Recruiters</a></li>
-        <li><a href="#profile1" data-toggle="tab">Social Login Applicants</a></li>
-        <li><a href="#profile2" data-toggle="tab">Registered Applicants</a></li>
-        <li><a href="#all_applicants" data-toggle="tab">All Applicants</a></li>
-        <li><a href="#messages1" data-toggle="tab">Job Posts</a></li>
-        <li><a href="#emails" data-toggle="tab">Email Bounces</a></li>
+        <li class="nav-items"><a href="#home1" class="nav-link active" data-bs-toggle="tab">Recruiters</a></li>
+        <li class="nav-items"><a href="#profile1" class="nav-link" data-bs-toggle="tab">Social Login Applicants</a></li>
+        <li class="nav-items"><a href="#profile2" class="nav-link" data-bs-toggle="tab">Registered Applicants</a></li>
+        <li class="nav-items"><a href="#all_applicants" class="nav-link" data-bs-toggle="tab">All Applicants</a></li>
+        <li class="nav-items"><a href="#messages1" class="nav-link" data-bs-toggle="tab">Job Posts</a></li>
+        <li class="nav-items"><a href="#emails" class="nav-link" data-bs-toggle="tab">Email Bounces</a></li>
       </ul>
     </div>
     <div class="col-xs-10" style="width:90.33%">

@@ -11,15 +11,15 @@
 {% block base %}
 
   <!-- main_container starts here -->
-    <div class="row mar_lr_0 main_container">
+    <section class="main_container">
       <div class="container">
         <div class="row mar_lr_0">
           <div class="profile_container">
             <!-- profile_left_container starts here -->
           <div class="col-md-9 col-sm-9 detail_description_column" style="margin-left:12.7%;padding: 37px 54px;">
-          <div class="panel">
-            <div class="panel-heading text-center text-uppercase">Unsubscribe</div>
-            <div class="panel-body">
+          <div class="card">
+            <div class="card-header text-center text-uppercase">Unsubscribe</div>
+            <div class="card-body">
             {% if unsubscribed %}
               <div class="text-center register_col">
                 <a><strong>You are already Unsubscribed!</strong></a>
@@ -51,7 +51,7 @@
           </div>
         </div>
     </div>
-    </div>
+  </section>
 {% block pj_info %}
   <div class="col-md-2 col-sm-8 col-xs-8 about">
   </div>

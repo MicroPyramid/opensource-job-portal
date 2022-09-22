@@ -10,10 +10,10 @@ from datetime import datetime
 import arrow
 from django.http import HttpResponseRedirect
 from django.conf import settings
-from oauth2client.contrib import xsrfutil
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.contrib.django_util.storage import DjangoORMStorage
-from peeldb.models import CredentialsModel
+# from oauth2client.contrib import xsrfutil
+# from oauth2client.client import flow_from_clientsecrets
+# from oauth2client.contrib.django_util.storage import DjangoORMStorage
+# from peeldb.models import CredentialsModel
 
 
 client_id = settings.GOOGLE_CLIENT_ID
@@ -36,13 +36,13 @@ scope = "https://www.googleapis.com/auth/calendar"
 
 # service = build('calendar', 'v3', http=http)
 
-CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), "..", "client_secret.json")
+# CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), "..", "client_secret.json")
 
-FLOW = flow_from_clientsecrets(
-    CLIENT_SECRETS,
-    scope="https://www.googleapis.com/auth/calendar",
-    redirect_uri=settings.GOOGLE_OAUTH2_REDIRECT,
-)
+# FLOW = flow_from_clientsecrets(
+#     CLIENT_SECRETS,
+#     scope="https://www.googleapis.com/auth/calendar",
+#     redirect_uri=settings.GOOGLE_LOGIN_HOST,
+# )
 # FLOW = OAuth2WebServerFlow(client_id, client_secret, scope)
 
 

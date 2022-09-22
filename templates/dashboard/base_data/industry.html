@@ -5,8 +5,8 @@
     <div class="title" style="padding-bottom: 3px;">
       <h3>Industry(No Of Job Posts)
         <span>
-          <a class={% if status == 'active'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:industries' %}?status=active">Active</a> /
-          <a class={% if status == 'inactive'%}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:industries' %}?status=inactive">Inactive</a>
+          <a class={% if status == 'active'%}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:industries' %}?status=active">Active</a> /
+          <a class={% if status == 'inactive'%}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:industries' %}?status=inactive">Inactive</a>
         </span>
       </h3>
     </div>
@@ -39,9 +39,9 @@
             {% ifequal industry.status 'Active' %}
               <a href="/{{industry.slug}}-industry-jobs/" target="_blank"><i class="fa fa-eye edit"></i></a>
             {% endifequal %}
-              <a><i class="fa fa-pencil-square-o edit"></i></a>
+              <a><i class="fa-solid fa-pen-to-square edit"></i></a>
               {% ifequal industry.status 'InActive' %}<a href="#" id="{{ industry.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="enable-industry"><i class="fa fa-check edit" title="Activate Industry"></i></a>{% else %}<a href="#" id="{{ industry.id }}" class="deactivate-industry" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}"><i class="fa fa-times delete" title="Deactivate Industry"></i></a>{% endifequal %}
-              <a href="{% url "dashboard:delete_industry" industry_id=industry.id %}"><i class="fa fa-trash-o delete"></i></a>
+              <a href="{% url "dashboard:delete_industry" industry_id=industry.id %}"><i class="fa-solid fa-trash-can delete"></i></a>
             </div>
             <div class="clearfix"></div>
             <div class="edit_panel">
@@ -66,9 +66,9 @@
     </div>
 </section>
 {% if industries %}
-      <div class="pagination_wrap">
+      <div class="pagination_wrap d-flex justify-content-center mt-4 mb-4">
         {% get_page current_page last_page as pages %}
-        <nav>
+        {% comment %} <nav>
             <ul class="pagination">
             {% if current_page != 1 %}
               <li class="prev"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
@@ -84,7 +84,25 @@
               <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
               {% endif %}
             </ul>
-        </nav>
+        </nav> {% endcomment %}
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
       </div>
   {% endif %}
 {% endblock stage %}

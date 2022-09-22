@@ -1,0 +1,315 @@
+a:hover {
+  text-decoration: none;
+}
+
+.form-control_opt {
+  box-shadow: none;
+  height: 40px;
+  border: none;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+.heading {
+  color: #00aeef;
+  font-size: 13px;
+  font-weight: 500;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ced5df;
+}
+
+.white_box, .job_list_section .job_item {
+  background: #fff;
+  padding: 15px 0;
+  margin-top: 10px;
+  /*-webkit-box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);
+  -moz-box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);
+  box-shadow: 4px 3px 2px -1px rgba(196,186,196,0.4);*/
+}
+
+.radius_btn {
+  border-radius: 20px;
+  padding: 7px 30px;
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.social_links {
+  margin-top: 20px;
+}
+.social_links ul {
+  margin: 0;
+  padding: 0;
+}
+.social_links ul li {
+  list-style: none;
+  display: inline-block;
+  margin: 2px;
+}
+.social_links ul li a {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  color: #848488;
+  text-align: center;
+  padding-top: 7px;
+  border-radius: 50%;
+  background: #f5f6f7;
+}
+.social_links ul li a:hover {
+  background: #848488;
+  color: #fff;
+}
+
+.view-more {
+  background: #00aeef;
+  color: white;
+  border-radius: 2px;
+  padding: 3px 10px;
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: 500;
+}
+.view-more:hover {
+  background: #0076a3;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.green {
+  color: #62bb46;
+  font-size: 12px;
+}
+
+.grey {
+  color: #45586d;
+  font-size: 12px;
+}
+
+.job_list_section {
+  margin-top: 10px;
+}
+.job_list_section .job_item {
+  min-height: 225px;
+}
+@media (min-width: 1199px) {
+  .job_list_section .job_item {
+    padding: 0;
+    min-height: auto;
+    height: auto;
+  }
+}
+.job_list_section .job_item .logo_post_date {
+  max-width: 140px;
+  float: right;
+  text-align: right;
+}
+.job_list_section .job_item .logo_post_date img {
+  max-width: 100%;
+  width: 100px;
+  height: auto;
+  margin-top: 20px;
+}
+.job_list_section .job_item .logo_post_date small {
+  display: block;
+  color: #88898a;
+  margin-top: 6px;
+  font-size: 12px;
+}
+.job_list_section .job_item .logo_post_date .apply {
+  background: #62bb46;
+  color: #fff;
+  height: 29px;
+  padding-top: 6px;
+  padding-bottom: 4px;
+  font-weight: 500;
+  font-size: 11px;
+  display: inline-block;
+  text-align: center;
+  width: 80px;
+  text-transform: uppercase;
+}
+.job_list_section .job_item .title {
+  display: block;
+}
+.job_list_section .job_item .title a {
+  color: #1b7fdc;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 23px;
+}
+.job_list_section .job_item .title a .exp {
+  color: #00aeef;
+  font-size: 12px;
+  font-weight: 500;
+}
+.job_list_section .job_item .title a .highlight {
+  font-size: 16px;
+}
+.job_list_section .job_item .apply_btn a {
+  border-radius: 20px;
+  padding: 3px 12px;
+  border: none;
+  font-size: 12px;
+  font-weight: 400;
+  color: #fff;
+  background: #62bb46;
+}
+.job_list_section .job_item p {
+  color: #5b748f;
+  margin: 0;
+  /*&.location{
+    font-size: 10px;
+    margin-top:3px;
+    color: lighten($grey, 11%);
+    a{
+      color: lighten($grey, 11%);
+    }
+  }*/
+}
+.job_list_section .job_item .job_type {
+  display: block;
+  color: #5b748f;
+  margin: 5px 0;
+  font-size: 12px;
+}
+.job_list_section .job_item .job_type span {
+  font-size: 12px;
+  margin-left: 20px;
+  margin-top: 3px;
+  color: #5b748f;
+}
+.job_list_section .job_item .job_type span a {
+  color: #5b748f;
+}
+.job_list_section .job_item .ind_type {
+  display: block;
+  color: #5b748f;
+  margin: 5px 0;
+  font-size: 12px;
+}
+.job_list_section .job_item .company {
+  display: block;
+  margin-top: 6px;
+  color: #5b748f;
+}
+.job_list_section .job_item .company i {
+  display: inline-block;
+  width: 20px;
+  color: #45586d;
+}
+.job_list_section .job_item .company span {
+  color: #88898a;
+}
+.job_list_section .job_item .description {
+  display: block;
+  margin: 5px 0;
+}
+.job_list_section .job_item .description .head {
+  width: 90px;
+  float: left;
+  color: #728ba6;
+}
+.job_list_section .job_item .description .content {
+  width: 81%;
+  float: left;
+  color: #59718c;
+  line-height: 22px;
+}
+.job_list_section .job_item .description.Keyskills {
+  margin-top: 5px;
+}
+.job_list_section .job_item .description.Keyskills .tags a {
+  color: #5b748f;
+  border: 1px solid #e5e8e5;
+  display: inline-block;
+  padding: 1px 6px;
+  padding-bottom: 0;
+  margin: 0px 2px;
+  margin-bottom: 4px;
+  font-size: 10px;
+}
+.job_list_section .job_item .social_share_group .btn {
+  border: none;
+}
+.job_list_section .job_item .social_share_group .btn:first-child {
+  padding-left: 0;
+  font-size: 12px;
+}
+.job_list_section .job_item .social_share_group .btn.disabled {
+  opacity: 1;
+  color: #45586d;
+}
+.job_list_section .job_item .social_share_group .btn.facebook {
+  color: #3b5998 !important;
+}
+
+.jobs_columns .job_outer_col {
+  padding: 0 5px 0 5px;
+}
+.jobs_columns .job_outer_col .job_col {
+  padding: 10px;
+  min-height: 160px;
+  position: relative;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e4e8ed;
+}
+.jobs_columns .job_outer_col .job_col:hover {
+  box-shadow: 3px 2px 10px rgba(0, 0, 0, 0.2);
+}
+.jobs_columns .job_outer_col .job_col .title a {
+  color: #45586d;
+  font-weight: 500;
+}
+.jobs_columns .job_outer_col .job_col p {
+  color: #617b99;
+  margin: 0;
+  font-weight: 400;
+}
+.jobs_columns .job_outer_col .job_col p a {
+  color: #617b99;
+}
+.jobs_columns .job_outer_col .job_col p.location {
+  margin-top: 6px;
+  color: #4f657d;
+}
+.jobs_columns .job_outer_col .job_col p.location a {
+  color: #4f657d;
+}
+.jobs_columns .job_outer_col .job_col p .apply {
+  display: inline-block;
+  background: #62bb46;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 12px;
+  padding-bottom: 0px;
+  color: #fff !important;
+  margin-top: 8px;
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+}
+
+.sty i {
+  display: inline-block;
+  width: 20px;
+  color: #5b748f;
+}
+.sty a {
+  color: #5b748f;
+}
+.sty a i {
+  display: inline-block;
+  width: 20px;
+}
+
+.no_border {
+  border: none;
+}/*# sourceMappingURL=ref.css.map */

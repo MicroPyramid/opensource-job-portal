@@ -15,12 +15,12 @@
 {% endblock %}
 {% block base %}
 <!-- main_container starts here -->
-<div class="row mar_lr_0 main_container">
+<div class="main_container">
 <div class="container">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+    <div class="breadcrumb_section row">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li><a href="/">Home</a></li>
           <li><a href="/profile/">Profile</a></li>
           <li class="current"><a>Technical Skills</a></li>
@@ -29,20 +29,21 @@
     </div>
   <div class="row mar_lr_0">
     <div class="profile_container">
-      <!-- profile_left_container starts here -->
+        <div class="row">
+            <!-- profile_left_container starts here -->
       {% include 'candidate/profile_completion.html' %}
       <!-- profile_left_container ends here -->
       <!-- profile_right_container starts here -->
       <div class="col-md-9 col-sm-9 detail_description_column">
-        <div class="panel">
-          <div class="panel-heading text-center text-uppercase">ADD Technical Skills</div>
-          <div class="panel-body">
+        <div class="card">
+          <div class="card-header text-center text-uppercase">ADD Technical Skills</div>
+          <div class="card-body">
             <form name="projectform" id="projectform" method="post">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Skill Name<span
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Skill Name<span
                   class="important">*</span></label>
                 <div class="col-sm-9">
-                  <select class="form-control" name="skill" id="skill">
+                  <select class="form-select" name="skill" id="skill" multiple>
                     <option value="">Select A Skill</option>
                     {% for skill in skills %}
                     <option value="{{ skill.id }}">{{ skill.name }}</option>
@@ -50,48 +51,50 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Experience<span
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Experience<span
                   class="important">*</span></label>
-                <div class="col-sm-9 profile_exp row">
-                  <div class="col-md-6 profile_year">
-                    <select class="form-control experience" name="year" id="year">
-                      <option value="" default>years</option>
-                      {% for year in years %}
-                      <option value="{{ year.0 }}"
-                        id="{{ forloop.counter }}">{{ year.1 }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="col-md-6 profile_year">
-                    <select class="form-control experience" id="month" name="month">
-                      <option value="" default>months</option>
-                      {% for month in months %}
-                      <option value="{{ month.0 }}"
-                        id="{{ forloop.counter }}">{{ month.1 }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
+                <div class="col-sm-9 profile_exp">
+                    <div class="row">
+                      <div class="col-md-6 profile_year">
+                        <select class="form-select experience" name="year" id="year">
+                          <option value="" default>years</option>
+                          {% for year in years %}
+                          <option value="{{ year.0 }}"
+                            id="{{ forloop.counter }}">{{ year.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-md-6 profile_year">
+                        <select class="form-select experience" id="month" name="month">
+                          <option value="" default>months</option>
+                          {% for month in months %}
+                          <option value="{{ month.0 }}"
+                            id="{{ forloop.counter }}">{{ month.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Last Used</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Last Used</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" placeholder="Last Used"
                     name="last_used" id="last_used">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Version</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Version</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" placeholder="Version" id="version"
                     name="version">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Proficiency</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Proficiency</label>
                 <div class="col-sm-9">
-                  <select class="form-control" name="proficiency" id="proficiency">
+                  <select class="form-select" name="proficiency" id="proficiency">
                     <option value="">Select A status</option>
                     {% for status in status %}
                     <option value="{{ status.0 }}">{{ status.1 }}</option>
@@ -99,14 +102,14 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label">Is Major Skill</label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label">Is Major Skill</label>
                 <div class="col-sm-9">
                   <input type="checkbox" name="is_major" id="is_major" value="True">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-3 control-label"></label>
+              <div class="row">
+                <label for="colFormLabelSm" class="col-sm-3 control-label"></label>
                 <div class="col-sm-9">
                   <button type="submit" class='submit'>Save</button>
                   <button type="button" class='add_another'>Save & Add Other</button>
@@ -118,9 +121,18 @@
           </div>
         </div>
       </div>
+        </div>
     </div>
   </div>
 </div>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+
+  $("#multiple").select2({
+    placeholder: "Select a programming language",
+    allowClear: true
+});
+</script>
 {% block pj_info %}
   <div class="col-md-2 col-sm-8 col-xs-8 about">
   </div>

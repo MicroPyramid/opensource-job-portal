@@ -39,12 +39,12 @@
             <li>
               <a href=""><span class="name">Calendar</span></a>
             </li>
-            <li>
-              <a href="{% url 'year_calendar' year%}"><span class="name">{{ year }}</span></a>
-            </li>
-            <li>
+            {% comment %} <li>
+              {% comment %} <a href="{% url 'year_calendar' year%}"><span class="name">{{ year }}</span></a> 
+            </li> {% endcomment %}
+            {% comment %} <li>
               <a href="{% url 'month_calendar' year month_num %}"><span class="name">{{ month }}</span></a>
-            </li>
+            </li> {% endcomment %}
             <li class="current">
               <span href="{% url 'jobposts_by_date' year month_num date %}" class="job_detail">
               <span class="name">{{ date }}</span></span>
@@ -79,9 +79,9 @@
                 <br clear="all">
               </div>
               {% if results %}
-              <div class="pagination_wrap">
+              <div class="pagination_wrap d-flex justify-content-center mt-4 mb-4">
                 {% get_page current_page last_page as pages %}
-                <nav>
+                {% comment %} <nav>
                   <ul class="pagination">
                     {% if current_page != 1 %}
                     <li class="prev"><a class="{{previous_page}}" href="{{current_url}}{% if previous_page == 1 %}{% else %}{{previous_page}}/{% endif %}"><i class="fa fa-angle-double-left"></i></a></li>
@@ -97,6 +97,23 @@
                     <li><a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/"><i class="fa fa-angle-right pagination-next"></i></a></li>
                     <li><a class="{{ after_page }}" href="{{current_url}}{{after_page}}/"><i class="fa fa-angle-double-right"></i></a></li>
                     {% endif %}
+                  </ul>
+                </nav> {% endcomment %}
+                <nav aria-label="Page navigation">
+                  <ul class="pagination">
+                    <li class="page-item">
+                      <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                      <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
                   </ul>
                 </nav>
               </div>

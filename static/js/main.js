@@ -20,7 +20,6 @@ $(document).ready(function (e) {
             $('.fa-chevron-down').removeClass('fa-chevron-down').addClass('fa-chevron-up');
             $(this).siblings('.filter_options').slideDown('slow');
             $(this).children('span').children('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-
         }
     });
 // filter search starts

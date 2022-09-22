@@ -230,9 +230,7 @@ def jobs_applied(request):
             "suggested_jobs": suggested_jobs[:10],
         }
         template = (
-            "mobile/jobs/applied_jobs.html"
-            if request.is_mobile
-            else "candidate/applied_jobs.html"
+            "candidate/applied_jobs.html"
         )
         return render(request, template, data)
     else:
@@ -242,7 +240,7 @@ def jobs_applied(request):
 def job_detail(request, job_title_slug, job_id):
     if not job_id or bool(re.search(r"[A-Za-z]", job_id)):
         reason = "The URL may be misspelled or the page you're looking for is no longer available."
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -290,7 +288,7 @@ def job_detail(request, job_title_slug, job_id):
                 )
             return HttpResponseRedirect(reverse("jobs:index"))
         else:
-            template = "mobile/404.html" if request.is_mobile else "404.html"
+            template = "404.html"
             return render(
                 request,
                 template,
@@ -310,7 +308,7 @@ def job_detail(request, job_title_slug, job_id):
                 Context({"job": job})
             )
         template = (
-            "mobile/jobs/detail.html" if request.is_mobile else "jobs/detail.html"
+            "jobs/detail.html"
         )
         data = {
             "job": job,
@@ -325,7 +323,7 @@ def job_detail(request, job_title_slug, job_id):
             return redirect(reverse("jobs:index"), permanent=True)
         message = "Sorry,  no jobs available"
         reason = "Unfortunately, we are unable to locate the job you are looking for"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -388,9 +386,7 @@ def recruiter_profile(request, recruiter_name, **kwargs):
                 Context({"current_page": page, "user": user[0]})
             )
         template = (
-            "mobile/jobs/recruiter_detail.html"
-            if request.is_mobile
-            else "jobs/recruiter_profile.html"
+           "jobs/recruiter_profile.html"
         )
         return render(
             request,
@@ -412,7 +408,7 @@ def recruiter_profile(request, recruiter_name, **kwargs):
             },
         )
     else:
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -458,9 +454,7 @@ def recruiters(request, **kwargs):
     ]
     meta_title, meta_description, h1_tag = get_meta("recruiters_list", {"page": page})
     template = (
-        "mobile/jobs/recruiters_list.html"
-        if request.is_mobile
-        else "jobs/recruiters_list.html"
+        "jobs/recruiters_list.html"
     )
     return render(
         request,
@@ -550,14 +544,8 @@ def index(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    if request.is_mobile:
-        data.update(
-            {
-                "searched_industry": request.POST.get("industry"),
-                "searched_functional_area": request.POST.get("functional_area"),
-            }
-        )
-    template = "mobile/jobs/list.html" if request.is_mobile else "jobs/jobs_list.html"
+    
+    template = "jobs/jobs_list.html"
     return render(request, template, data)
 
 
@@ -669,15 +657,8 @@ def job_locations(request, location, **kwargs):
             "h1_tag": h1_tag,
             "state": state.first(),
         }
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
         template = (
-            "mobile/jobs/list.html" if request.is_mobile else "jobs/jobs_list.html"
+            "jobs/jobs_list.html"
         )
         return render(request, template, data)
     else:
@@ -692,7 +673,7 @@ def job_locations(request, location, **kwargs):
             status = 404
             meta_title = meta_description = ""
         reason = "Only Cities/States names are accepted in location field"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -871,16 +852,8 @@ def job_skills(request, skill, **kwargs):
             "h1_tag": h1_tag,
             "searched_text": searched_text,
         }
-
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
         template = (
-            "mobile/jobs/list.html" if request.is_mobile else "jobs/jobs_list.html"
+            "jobs/jobs_list.html"
         )
         return render(request, template, data)
     else:
@@ -893,7 +866,7 @@ def job_skills(request, skill, **kwargs):
             status = 404
             meta_title = meta_description = ""
         reason = "Only valid Skills/Qualifications names are accepted"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -991,27 +964,20 @@ def job_industries(request, industry, **kwargs):
             "meta_description": meta_description,
             "h1_tag": h1_tag,
         }
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
         template = (
-            "mobile/jobs/list.html" if request.is_mobile else "jobs/jobs_list.html"
+            "jobs/jobs_list.html"
         )
         return render(request, template, data)
     else:
         if searched_industry:
-            reason = "No Jobs available with searched Industry"
+            reason = "No Jobs available with searched industry"
             meta_title, meta_description = get_404_meta(
                 "industry_404", {"industry": industry}
             )
         else:
-            reason = "Unable to locate the Industry you are looking for"
+            reason = "Unable to locate the industry you are looking for"
             meta_title = meta_description = ""
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -1070,7 +1036,7 @@ def job_apply(request, job_id):
                         import urllib.request
 
                         urllib.request.urlretrieve(
-                            "http://s3.amazonaws.com/peeljobs/"
+                            "https://peeljobs.s3.amazonaws.com/"
                             + str(
                                 request.user.resume.encode("ascii", "ignore").decode(
                                     "ascii"
@@ -1119,7 +1085,7 @@ def job_apply(request, job_id):
                     # else:
                     #     data = {'error': True, 'response': 'Jobpost is already expired'}
                     #     return HttpResponse(json.dumps(data))
-
+               
                 else:
                     data = {
                         "error": True,
@@ -1130,17 +1096,17 @@ def job_apply(request, job_id):
             else:
                 data = {"error": True, "response": "User already applied for this job"}
                 return HttpResponse(json.dumps(data))
-        data = {"error": True, "response": "Job you are searching Not found"}
+        data = {"error": True, "response": "Job you are searching not found"}
         return HttpResponse(json.dumps(data))
     if request.user.user_type == "RR":
-        data = {"error": True, "response": "Recruiter Not allowed to Apply for Jobs"}
+        data = {"error": True, "response": "Recruiter not allowed to apply for jobs"}
         return HttpResponse(json.dumps(data))
     if request.user.is_staff:
-        data = {"error": True, "response": "Admin Not allowed to Apply For jobs"}
+        data = {"error": True, "response": "Admin not allowed to apply for jobs"}
         return HttpResponse(json.dumps(data))
     data = {
         "error": True,
-        "response": "You need to verify your Email to apply For this Job",
+        "response": "You need to verify your e-mail to apply for this job",
     }
     return HttpResponse(json.dumps(data))
 
@@ -1156,12 +1122,12 @@ def unsubscribe(request, email, job_post_id):
                 subscribers.delete()
                 data = {
                     "error": False,
-                    "response": "Please Update Your Profile To Apply For a job ",
+                    "response": "Please update your profile to apply for a job ",
                 }
             else:
                 data = {
                     "error": True,
-                    "response": "Please Update Your Profile To Apply For a job ",
+                    "response": "Please update your profile to apply for a job ",
                 }
             return HttpResponse(json.dumps(data))
         return render(
@@ -1170,7 +1136,7 @@ def unsubscribe(request, email, job_post_id):
     else:
         message = "Sorry, no jobs available"
         reason = "Unfortunately, we are unable to locate the job you are looking for"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request, template, {"message": message, "reason": reason}, status=404
         )
@@ -1327,7 +1293,7 @@ def jobposts_by_date(request, year, month, date, **kwargs):
                 event_titles.append(event["summary"])
     events = JobPost.objects.filter(title__in=event_titles)
     if not results:
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -1513,9 +1479,7 @@ def jobs_by_location(request, job_type):
         "h1_tag": h1_tag,
     }
     template = (
-        "mobile/jobs/jobs_by_location.html"
-        if request.is_mobile
-        else "jobs/jobs_by_location.html"
+        "jobs/jobs_by_location.html"
     )
     return render(request, template, data)
 
@@ -1541,9 +1505,7 @@ def jobs_by_skill(request):
         "h1_tag": h1_tag,
     }
     template = (
-        "mobile/jobs/jobs_by_skill.html"
-        if request.is_mobile
-        else "jobs/jobs_by_skills.html"
+       "jobs/jobs_by_skills.html"
     )
     return render(request, template, data)
 
@@ -1580,9 +1542,7 @@ def fresher_jobs_by_skills(request, job_type):
         "meta_description": meta_description,
     }
     template = (
-        "mobile/jobs/fresher_jobs_by_skills.html"
-        if request.is_mobile
-        else "jobs/fresher_jobs_by_skills.html"
+        "jobs/fresher_jobs_by_skills.html"
     )
     return render(request, template, data)
 
@@ -1611,9 +1571,7 @@ def jobs_by_industry(request):
         "meta_description": meta_description,
     }
     template = (
-        "mobile/jobs/jobs_by_industries.html"
-        if request.is_mobile
-        else "jobs/jobs_by_industries.html"
+       "jobs/jobs_by_industries.html"
     )
     return render(request, template, data)
 
@@ -1639,9 +1597,7 @@ def jobs_by_degree(request):
         "meta_description": meta_description,
     }
     template = (
-        "mobile/jobs/jobs_by_degree.html"
-        if request.is_mobile
-        else "jobs/jobs_by_degree.html"
+        "jobs/jobs_by_degree.html"
     )
     return render(request, template, data)
 
@@ -1714,14 +1670,8 @@ def full_time_jobs(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    if request.is_mobile:
-        data.update(
-            {
-                "searched_industry": request.POST.get("industry"),
-                "searched_functional_area": request.POST.get("functional_area"),
-            }
-        )
-    template = "mobile/jobs/list.html" if request.is_mobile else "jobs/jobs_list.html"
+    
+    template = "jobs/jobs_list.html"
     return render(request, template, data)
 
 
@@ -1745,27 +1695,6 @@ def internship_jobs(request, **kwargs):
     field = get_social_referer(request)
     show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
     meta_title, meta_description, h1_tag = get_meta("internship_jobs", {"page": page})
-    if request.is_mobile:
-        return render(
-            request,
-            "mobile/jobs/list.html",
-            {
-                "job_list": jobs_list,
-                "aft_page": aft_page,
-                "after_page": after_page,
-                "prev_page": prev_page,
-                "previous_page": previous_page,
-                "current_page": page,
-                "current_url": reverse("internship_jobs"),
-                "last_page": no_pages,
-                "no_of_jobs": no_of_jobs,
-                "show_pop_up": show_pop,
-                "internship": True,
-                "meta_title": meta_title,
-                "meta_description": meta_description,
-                "h1_tag": h1_tag,
-            },
-        )
     return render(
         request,
         "internship.html",
@@ -1858,14 +1787,8 @@ def city_internship_jobs(request, location, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    if request.is_mobile:
-        data.update(
-            {
-                "searched_industry": request.POST.get("industry"),
-                "searched_functional_area": request.POST.get("functional_area"),
-            }
-        )
-    template = "mobile/jobs/list.html" if request.is_mobile else "jobs/jobs_list.html"
+    
+    template = "jobs/jobs_list.html"
     return render(request, template, data)
 
 
@@ -1933,14 +1856,8 @@ def walkin_jobs(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    if request.is_mobile:
-        data.update(
-            {
-                "searched_industry": request.POST.get("industry"),
-                "searched_functional_area": request.POST.get("functional_area"),
-            }
-        )
-    template = "mobile/jobs/list.html" if request.is_mobile else "jobs/jobs_list.html"
+    
+    template = "jobs/jobs_list.html"
     return render(request, template, data)
 
 
@@ -1986,7 +1903,7 @@ def government_jobs(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    template = "mobile/jobs/list.html" if request.is_mobile else "jobs/jobs_list.html"
+    template = "jobs/jobs_list.html"
     return render(request, template, data)
 
 
@@ -2014,7 +1931,7 @@ def each_company_jobs(request, company_name, **kwargs):
                 return render(request, "recruiter/recruiter_404.html", data, status=404)
             elif request.user.is_staff:
                 return render(request, "dashboard/404.html", data, status=404)
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(request, template, data, status=404)
     else:
         company = company[0]
@@ -2069,9 +1986,7 @@ def each_company_jobs(request, company_name, **kwargs):
             "h1_tag": h1_tag,
         }
         template = (
-            "mobile/jobs/company_jobs.html"
-            if request.is_mobile
-            else "jobs/company_jobs.html"
+           "jobs/company_jobs.html"
         )
         return render(request, template, data)
 
@@ -2118,9 +2033,7 @@ def companies(request, **kwargs):
         "h1_tag": h1_tag,
     }
     template = (
-        "mobile/jobs/companies_list.html"
-        if request.is_mobile
-        else "jobs/companies_list.html"
+        "jobs/companies_list.html"
     )
     return render(request, template, data)
 
@@ -2226,14 +2139,6 @@ def skill_fresher_jobs(request, skill_name, **kwargs):
             "h1_tag": h1_tag,
         }
         template = "jobs/jobs_list.html"
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
-            template = "mobile/jobs/list.html"
         return render(request, template, data)
     else:
         meta_title = meta_description = ""
@@ -2250,7 +2155,7 @@ def skill_fresher_jobs(request, skill_name, **kwargs):
                 skill_name
             ]
             reason = "Only valid Skill/city names are accepted"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -2373,14 +2278,6 @@ def location_fresher_jobs(request, city_name, **kwargs):
             "state": state.first(),
         }
         template = "jobs/jobs_list.html"
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
-            template = "mobile/jobs/list.html"
         return render(request, template, data)
     else:
         if final_locations:
@@ -2397,7 +2294,7 @@ def location_fresher_jobs(request, city_name, **kwargs):
                 filter(None, request.POST.get("location", "").split(", "))
             ) or [city_name]
             reason = "Only valid Skill/city names are accepted"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -2541,14 +2438,6 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
             "state": state.first(),
         }
         template = "jobs/jobs_list.html"
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
-            template = "mobile/jobs/list.html"
         return render(request, template, data)
 
     else:
@@ -2583,7 +2472,7 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
                 )
                 meta_title = meta_description = ""
         reason = "Only valid Skill/City names are accepted in search field"
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -2694,14 +2583,6 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
             "h1_tag": h1_tag,
         }
         template = "jobs/jobs_list.html"
-        if request.is_mobile:
-            data.update(
-                {
-                    "searched_industry": request.POST.get("industry"),
-                    "searched_functional_area": request.POST.get("functional_area"),
-                }
-            )
-            template = "mobile/jobs/list.html"
         return render(request, template, data)
     else:
         status = 200 if final_skill and final_location else 404
@@ -2716,7 +2597,7 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
             or list(filter(None, request.POST.get("location", "").split(", ")))
             or [city_name]
         )
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         if status == 200:
             meta_title, meta_description = get_404_meta(
                 "skill_location_404",
@@ -2916,7 +2797,7 @@ def user_activation(request, user_id):
     else:
         message = "Looks like Activation Url Expired"
         reason = "The URL may be misspelled or the user you're looking for is no longer available."
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request, template, {"message": message, "reason": reason}, status=404
         )
@@ -3019,7 +2900,7 @@ def set_password(request, user_id, passwd):
         usr = authenticate(username=user[0], password=passwd)
         if usr:
             return render(request, "set_password.html")
-    template = "mobile/404.html" if request.is_mobile else "404.html"
+    template = "404.html"
     return render(
         request,
         template,
@@ -3074,7 +2955,7 @@ def forgot_password(request):
 def user_reg_success(request):
     if not request.user.is_authenticated:
         reason = "The URL may be misspelled or the page you're looking for is no longer available."
-        template = "mobile/404.html" if request.is_mobile else "404.html"
+        template = "404.html"
         return render(
             request,
             template,
@@ -3132,15 +3013,11 @@ def user_reg_success(request):
         return HttpResponse(json.dumps(data))
     if request.user.registered_from == "Social" and not request.user.mobile:
         template_name = (
-            "mobile/profile/social_register.html"
-            if request.is_mobile
-            else "candidate/social_register.html"
+            "candidate/social_register.html"
         )
         return render(request, template_name)
     template = (
-        "mobile/profile/user_reg_success.html"
-        if request.is_mobile
-        else "candidate/user_reg_success.html"
+        "candidate/user_reg_success.html"
     )
     return render(request, template)
 

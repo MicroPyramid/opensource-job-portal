@@ -1,51 +1,28 @@
 import json
 import math
 import urllib
-import requests
 from datetime import datetime, timedelta
 from functools import reduce
 from itertools import chain
 from operator import __or__ as OR
 
+import requests
+from django.conf import settings
+from django.core.mail import EmailMessage
+# from pytz import timezone
+from django.db.models import Case, Q, When
+from django.template import loader
 # from jobsp.celery import app
 from jobsp.celery import app
-from django.conf import settings
-
-# from pytz import timezone
-from django.db.models import Q
-from django.template import loader
-from django.db.models import Case, When
 from microurl import google_mini
-from twython.api import Twython
-from django.core.mail import EmailMessage
-
-
 from mpcomp.facebook import GraphAPI, get_app_access_token
 from mpcomp.views import get_absolute_url
-from peeldb.models import (
-    AppliedJobs,
-    City,
-    Company,
-    User,
-    Facebook,
-    FacebookGroup,
-    FacebookPage,
-    FacebookPost,
-    Industry,
-    JobAlert,
-    JobPost,
-    Linkedin,
-    LinkedinPost,
-    Qualification,
-    SearchResult,
-    SentMail,
-    Skill,
-    Subscriber,
-    Ticket,
-    Twitter,
-    TwitterPost,
-    State,
-)
+from peeldb.models import (AppliedJobs, City, Company, Facebook, FacebookGroup,
+                           FacebookPage, FacebookPost, Industry, JobAlert,
+                           JobPost, Linkedin, LinkedinPost, Qualification,
+                           SearchResult, SentMail, Skill, State, Subscriber,
+                           Ticket, Twitter, TwitterPost, User)
+from twython.api import Twython
 
 
 @app.task
@@ -188,20 +165,11 @@ def job_alerts_to_alerts():
 def jobpost_published():
     jobposts = JobPost.objects.filter(status="Published")
     for job in jobposts:
-        # asia_timezone = timezone(settings.TIMEZONE)
-        # asia_time = datetime.now(asia_timezone).strftime('%Y-%m-%d %H:%M:%S')
 
-        # current_date = datetime.strptime(
-        #     str(datetime.now().date()), "%Y-%m-%d").strftime("%Y-%m-%d")
-        # job_date = job.published_date
-        # if str(job.last_date) >= str(current_date):
-        # if str(job_date) == str(asia_time) or str(job_date) <=
-        # str(asia_time):
         job.status = "Live"
         job.published_on = datetime.now()
         job_url = get_absolute_url(job)
         job.slug = job_url
-        # job.minified_url = google_mini('https://peeljobs.com' + job_url, settings.MINIFIED_URL)
         job.save()
         posts = FacebookPost.objects.filter(job_post=job)
         for each in posts:
@@ -212,8 +180,6 @@ def jobpost_published():
         if job.post_on_fb:
             fbpost(job.user.id, job.id)
             postonpage(job.user.id, job.id)
-            # need to check this condition
-            # if emp['peelfbpost']:
             posts = FacebookPost.objects.filter(
                 job_post=job,
                 page_or_group="group",
@@ -223,8 +189,6 @@ def jobpost_published():
             for group in job.fb_groups:
                 fb_group = FacebookGroup.objects.get(user=job.user, group_id=group)
                 postongroup(job.id, fb_group.id)
-                # need to get accetoken for peeljobs twitter
-                # page
         posts = TwitterPost.objects.filter(job_post=job)
         for each in posts:
             del_jobpost_tw(job.user, each)
@@ -248,7 +212,6 @@ def del_jobpost_fb(user, post):
         try:
             post.post_status = "Deleted"
             post.save()
-            # urllib.urlopen('https://graph.facebook.com/postid_user[id]?access_token=accesstoken')
             graph.delete_object(post.post_id)
             return "deleted successfully"
         except Exception as e:
@@ -290,20 +253,13 @@ def fbpost(user, job_post):
             params["name"] = job_post.title
             params["description"] = job_post.company_name
             params["privacy"] = {"value": "ALL_FRIENDS"}
-            # params = urllib.urlencode(params)
             facebook_id = Facebook.objects.get(user=user).facebook_id
-            # response = urllib.urlopen("https://graph.facebook.com/" + facebook_id + "/feed", params).read()
-            # response = json.loads(response)
-
-            # params = urllib.parse.urlencode(params)
-            # response = urllib.urlopen("https://graph.facebook.com/" + settings.FB_PEELJOBS_PAGEID + "/feed", params).read()
             u = requests.post(
                 "https://graph.facebook.com/" + facebook_id + "/feed", params=params
             )
             response = u.json()
 
             if "error" in response.keys():
-                # found error, we need to log it for review.
                 pass
             if "id" in response.keys():
                 FacebookPost.objects.create(
@@ -371,7 +327,6 @@ def postonpeel_fb(job_post):
         params["actions"] = [{"name": "get peeljobs", "link": "http://peeljobs.com/"}]
 
         params = urllib.parse.urlencode(params)
-        # response = urllib.urlopen("https://graph.facebook.com/" + settings.FB_PEELJOBS_PAGEID + "/feed", params).read()
         u = requests.post(
             "https://graph.facebook.com/" + settings.FB_PEELJOBS_PAGEID + "/feed",
             params=params,
@@ -379,9 +334,7 @@ def postonpeel_fb(job_post):
         response = u.json()
         print(params)
         print(response, "response")
-        # response = json.loads(response)
         if "error" in response.keys():
-            # found error, we need to log it for review.
             pass
         if "id" in response.keys():
             FacebookPost.objects.create(
@@ -429,7 +382,6 @@ def postonpage(user, job_post):
             params["description"] = job_post.company_name
             params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
             params["access_token"] = pages[0].accesstoken
-            # params = urllib.urlencode(params)
             params = urllib.parse.urlencode(params)
 
             for page in pages:
@@ -441,10 +393,6 @@ def postonpage(user, job_post):
                     )
                     response = u.json()
 
-                    # if 'error' in response.keys():
-                    # if response['error']['code'] == 190 and response['error']['error_subcode'] == 460:
-                    # need to evaluate this condition
-                    # pass
                     if "id" in response.keys():
                         FacebookPost.objects.create(
                             job_post=job_post,
@@ -495,22 +443,13 @@ def postongroup(job_post, group_id):
         params["link"] = PEEL_URL + str(job_post.get_absolute_url())
 
         params["name"] = job_post.title
-        # from django.utils.html import strip_tags
-        # description = strip_tags(job_post.description)
         params["description"] = job_post.company_name
         params["access_token"] = settings.FB_GROUP_ACCESS_TOKEN
         params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
         params = urllib.parse.urlencode(params)
-        # response = urllib.urlopen("https://graph.facebook.com/" + str(group.group_id) + "/feed", params).read()
-        # response = json.loads(response)
         requests.post(
             "https://graph.facebook.com/" + str(group_id) + "/feed", params=params
         )
-        # response = u.json()
-        # if 'id' in response.keys():
-        #     FacebookPost.objects.create(job_post=job_post, page_or_group='group', page_or_group_id=group.group_id, post_id=response[
-        #                                 'id'], post_status='Posted', is_active=is_active)
-
         return "posted successfully"
     else:
         return "jobpost not exists"
@@ -552,21 +491,13 @@ def poston_allfb_groups(job_post):
             params["link"] = PEEL_URL + str(job_post.get_absolute_url())
 
             params["name"] = job_name
-            # from django.utils.html import strip_tags
-            # description = strip_tags(job_post.description)
             params["description"] = job_post.company_name
             params["access_token"] = settings.FB_ALL_GROUPS_TOKEN
             params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
             params = urllib.parse.urlencode(params)
-            # response = urllib.urlopen("https://graph.facebook.com/" + str(group.group_id) + "/feed", params).read()
-            # response = json.loads(response)
             requests.post(
                 "https://graph.facebook.com/" + str(group_id) + "/feed", params=params
             )
-            # response = u.json()
-            # if 'id' in response.keys():
-            #     FacebookPost.objects.create(job_post=job_post, page_or_group='group', page_or_group_id=group.group_id, post_id=response[
-            #                                 'id'], post_status='Posted', is_active=is_active)
 
 
 def del_jobpost_tw(user, post):
@@ -602,7 +533,6 @@ def del_jobpost_peel_fb(user, post):
             post = FacebookPost.objects.get(id=post)
             post.post_status = "Deleted"
             post.save()
-            # urllib.urlopen('https://graph.facebook.com/postid_user[id]?access_token=accesstoken')
             graph.delete_object(post.post_id)
         except:
             print("not deleted")
@@ -794,38 +724,38 @@ def get_conditions(user):
     return conditions
 
 
-@app.task()
-def applicants_notifications():
+# @app.task()
+# def applicants_notifications():
 
-    current_date = datetime.strptime(
-        str(datetime.now().date() - timedelta(days=10)), "%Y-%m-%d"
-    ).strftime("%Y-%m-%d")
-    today_applicants = User.objects.filter(
-        email_notifications=True,
-        profile_updated__lte=current_date,
-        profile_completeness__lte=50,
-        user_type="JS",
-        is_bounce=False,
-        is_unsubscribe=False,
-    )
-    for user in today_applicants:
-        conditions = get_conditions(user)
-        if conditions:
-            jobposts = (
-                JobPost.objects.filter(reduce(OR, conditions))
-                .filter(status="Live")
-                .distinct()[:10]
-            )
-        else:
-            jobposts = JobPost.objects.filter(status="Live")[:10]
-        # sending an email
-        c = {"job_posts": jobposts, "user": user}
-        t = loader.get_template("email/applicant.html")
-        subject = "Update Your Profile To Get Top Matching Jobs - PeelJobs"
-        rendered = t.render(c)
-        mto = [user.email]
-        user_active = True if user.is_active else False
-        send_email.delay(mto, subject, rendered)
+#     current_date = datetime.strptime(
+#         str(datetime.now().date() - timedelta(days=10)), "%Y-%m-%d"
+#     ).strftime("%Y-%m-%d")
+#     today_applicants = User.objects.filter(
+#         email_notifications=True,
+#         profile_updated__lte=current_date,
+#         profile_completeness__lte=50,
+#         user_type="JS",
+#         is_bounce=False,
+#         is_unsubscribe=False,
+#     )
+#     for user in today_applicants:
+#         conditions = get_conditions(user)
+#         if conditions:
+#             jobposts = (
+#                 JobPost.objects.filter(reduce(OR, conditions))
+#                 .filter(status="Live")
+#                 .distinct()[:10]
+#             )
+#         else:
+#             jobposts = JobPost.objects.filter(status="Live")[:10]
+#         # sending an email
+#         c = {"job_posts": jobposts, "user": user}
+#         t = loader.get_template("email/applicant.html")
+#         subject = "Update Your Profile To Get Top Matching Jobs - PeelJobs"
+#         rendered = t.render(c)
+#         mto = [user.email]
+#         user_active = True if user.is_active else False
+#         send_email.delay(mto, subject, rendered)
 
 
 # sending mail to recruiters about applicants
@@ -939,13 +869,6 @@ def daily_report():
     today_active_recruiters = today_recruiters_count.filter(is_active=True)
     today_inactive_recruiters = today_recruiters_count.filter(is_active=False)
 
-    # today_mobile_verified_recruiters = today_recruiters_count.filter(
-    #     mobile_verified=True
-    # )
-    # today_mobile_not_verified_recruiters = today_recruiters_count.filter(
-    #     mobile_verified=False
-    # )
-
     today_agency_recruiters_count = User.objects.filter(
         date_joined__contains=current_date, user_type="AA"
     )
@@ -956,13 +879,6 @@ def daily_report():
     today_agency_inactive_recruiters = today_agency_recruiters_count.filter(
         is_active=False
     )
-
-    # today_mobile_verified_agency_recruiters = today_agency_recruiters_count.filter(
-    #     mobile_verified=True
-    # )
-    # today_mobile_not_verified_agency_recruiters = today_agency_recruiters_count.filter(
-    #     mobile_verified=False
-    # )
 
     today_job_applications = AppliedJobs.objects.filter(
         applied_on__contains=current_date
@@ -1190,13 +1106,9 @@ def daily_report():
         "today_recruiters_count": today_recruiters_count.count(),
         "today_active_recruiters": today_active_recruiters.count(),
         "today_inactive_recruiters": today_inactive_recruiters.count(),
-        # "today_mobile_verified_recruiters": today_mobile_verified_recruiters.count(),
-        # "today_mobile_not_verified_recruiters": today_mobile_not_verified_recruiters.count(),
         "today_agency_recruiters_count": today_agency_recruiters_count.count(),
         "today_agency_active_recruiters": today_agency_active_recruiters.count(),
         "today_agency_inactive_recruiters": today_agency_inactive_recruiters.count(),
-        # "today_mobile_verified_agency_recruiters": today_mobile_verified_agency_recruiters.count(),
-        # "today_mobile_not_verified_agency_recruiters": today_mobile_not_verified_agency_recruiters.count(),
     }
     users = settings.DAILY_REPORT_USERS
 
@@ -1208,25 +1120,25 @@ def daily_report():
         send_email.delay(mto, subject, rendered)
 
 
-@app.task()
-def applicants_profile_update_notifications_two_hours():
-    today_applicants = User.objects.filter(
-        user_type="JS",
-        profile_completeness__lt=50,
-        is_unsubscribe=False,
-        is_bounce=False,
-        email_notifications=True,
-    ).exclude(email__icontains="micropyramid.com")
-    for user in today_applicants:
-        if user.date_joined and user.date_joined > datetime.today() - timedelta(
-            hours=2
-        ):
-            temp = loader.get_template("email/user_profile_alert.html")
-            subject = "Update Your Profile To Get Top Matching Jobs - Peeljobs"
-            mto = [user.email]
-            rendered = temp.render({"user": user})
-            user_active = True if user.is_active else False
-            send_email.delay(mto, subject, rendered)
+# @app.task()
+# def applicants_profile_update_notifications_two_hours():
+#     today_applicants = User.objects.filter(
+#         user_type="JS",
+#         profile_completeness__lt=50,
+#         is_unsubscribe=False,
+#         is_bounce=False,
+#         email_notifications=True,
+#     ).exclude(email__icontains="micropyramid.com")
+#     for user in today_applicants:
+#         if user.date_joined and user.date_joined > datetime.today() - timedelta(
+#             hours=2
+#         ):
+#             temp = loader.get_template("email/user_profile_alert.html")
+#             subject = "Update Your Profile To Get Top Matching Jobs - Peeljobs"
+#             mto = [user.email]
+#             rendered = temp.render({"user": user})
+#             user_active = True if user.is_active else False
+#             send_email.delay(mto, subject, rendered)
 
 
 @app.task()
@@ -1272,29 +1184,15 @@ def applicants_profile_update_notifications():
             is_active=False,
         )
     )
-    for user in recruiters:
-        days = (datetime.today() - user.date_joined).days
-        if days == 2 or days % 10 == 0:
-            temp = loader.get_template("email/account_inactive.html")
-            subject = "Update Your Profile - Peeljobs"
-            rendered = temp.render({"user": user})
-            mto = [user.email]
-            send_email.delay(mto, subject, rendered)
-    # inactive_users = User.objects.filter(
-    #     is_unsubscribe=False,
-    #     email_notifications=True,
-    #     is_bounce=False,
-    #     is_active=False,
-    #     user_type="JS",
-    # )
-    # for user in inactive_users:
+    # for user in recruiters:
     #     days = (datetime.today() - user.date_joined).days
-    #     if days % 7 == 0:
+    #     if days == 2 or days % 10 == 0:
     #         temp = loader.get_template("email/account_inactive.html")
-    #         subject = "Verify your Email Address - Peeljobs"
+    #         subject = "Update Your Profile - Peeljobs"
     #         rendered = temp.render({"user": user})
     #         mto = [user.email]
     #         send_email.delay(mto, subject, rendered)
+ 
     day = datetime.today() - timedelta(days=2)
     users = User.objects.filter(
         user_type="JS",
@@ -1311,23 +1209,6 @@ def applicants_profile_update_notifications():
         user_active = True if user.is_active else False
         mto = [user.email]
         send_email.delay(mto, subject, rendered)
-
-
-# @app.task()
-# def applicants_walkin_job_notifications():
-
-#     today_applicants = User.objects.filter(
-#         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
-#     )
-#     for each in today_applicants:
-#         job_posts = each.related_walkin_jobs()
-#         temp = loader.get_template("email/applicant.html")
-#         subject = "Latest Walkin Jobs - Peeljobs"
-#         mto = [each.email]
-#         c = {"job_posts": job_posts[:10], "user": each, "walk_in": True}
-#         rendered = temp.render(c)
-#         user_active = True if each.is_active else False
-#         send_email.delay(mto, subject, rendered)
 
 
 @app.task()
@@ -1391,90 +1272,58 @@ def applicants_job_notifications():
         rendered = temp.render({"jobposts": job_posts[:10], "user": user})
         user_active = True if user.is_active else False
         send_email.delay(mto, subject, rendered)
-    # users = User.objects.filter(
-    #     user_type="JS", email_notifications=True, is_unsubscribe=False, is_bounce=False
-    # )
-    # users = users.filter(
-    #     Q(facebook_user__isnull=True)
-    #     | Q(google_user__isnull=True)
-    #     | Q(linkedin__isnull=True)
-    #     | Q(twitter__isnull=True)
-    # )
-    # for user in users:
-    #     temp = loader.get_template("email/social_connect.html")
-    #     subject = "Social Connect - Peeljobs"
-    #     mto = [user.email]
-    #     rendered = temp.render({"user": user})
-    #     user_active = True if user.is_active else False
-    #     send_email.delay(mto, subject, rendered)
-
-
-@app.task()
-def alerting_applicants():
-    date = (datetime.today() - timedelta(days=7)).date()
-    users = User.objects.filter(
-        user_type="JS",
-        email_notifications=True,
-        is_unsubscribe=False,
-        is_bounce=False,
-        last_login__icontains=date,
-    )
-    for user in users:
-        temp = loader.get_template("email/user_profile_alert.html")
-        subject = "Update Your Profile To Get Top Matching Jobs - PeelJobs"
-        mto = [user.email]
-        rendered = temp.render({"user": user, "inactive_user": True})
-        user_active = True if user.is_active else False
-        send_email.delay(mto, subject, rendered)
-    recruiters = User.objects.filter(
-        Q(Q(user_type="RR") | Q(user_type="AA"))
-        & Q(
-            email_notifications=True,
-            is_unsubscribe=False,
-            is_bounce=False,
-            last_login__icontains=date,
-        )
-    )
-    for recruiter in recruiters:
-        temp = loader.get_template("email/user_profile_alert.html")
-        subject = "Update Your Profile To Post Unlimited Jobs - PeelJobs"
-        mto = [recruiter.email]
-        rendered = temp.render(
-            {"user": recruiter, "recruiter": True, "inactive_user": True}
-        )
-        user_active = True if recruiter.is_active else False
-        send_email.delay(mto, subject, rendered)
-    # Sending Birthday Wishes
-    current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime(
-        "%m-%d"
-    )
-    users = User.objects.filter(dob__icontains=current_date)
-    for user in users:
-        temp = loader.get_template("email/birthdays.html")
-        subject = (
-            "=?UTF-8?Q?=F0=9F=8E=82?="
-            + " Birthday Wishes - Peeljobs "
-            + "=?UTF-8?Q?=F0=9F=8E=82?="
-        )
-        rendered = temp.render({"user": user})
-        user_active = True if user.is_active else False
-        mto = user.email
-        send_email.delay(mto, subject, rendered)
 
 
 # @app.task()
-# def send_weekly_login_notifications():
-#     today_applicants = User.objects.filter(
-#         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
+# def alerting_applicants():
+#     date = (datetime.today() - timedelta(days=7)).date()
+#     users = User.objects.filter(
+#         user_type="JS",
+#         email_notifications=True,
+#         is_unsubscribe=False,
+#         is_bounce=False,
+#         last_login__icontains=date,
 #     )
-#     for each in today_applicants:
-#         job_posts = each.related_jobs()
-
-#         temp = loader.get_template("email/applicant.html")
-#         subject = "Latest Walkin Jobs - Peeljobs"
-#         mto = [each.email]
-#         rendered = temp.render({"user": each, "job_posts": job_posts[:10]})
-#         user_active = True if each.is_active else False
+#     for user in users:
+#         temp = loader.get_template("email/user_profile_alert.html")
+#         subject = "Update Your Profile To Get Top Matching Jobs - PeelJobs"
+#         mto = [user.email]
+#         rendered = temp.render({"user": user, "inactive_user": True})
+#         user_active = True if user.is_active else False
+#         send_email.delay(mto, subject, rendered)
+#     recruiters = User.objects.filter(
+#         Q(Q(user_type="RR") | Q(user_type="AA"))
+#         & Q(
+#             email_notifications=True,
+#             is_unsubscribe=False,
+#             is_bounce=False,
+#             last_login__icontains=date,
+#         )
+#     )
+#     for recruiter in recruiters:
+#         temp = loader.get_template("email/user_profile_alert.html")
+#         subject = "Update Your Profile To Post Unlimited Jobs - PeelJobs"
+#         mto = [recruiter.email]
+#         rendered = temp.render(
+#             {"user": recruiter, "recruiter": True, "inactive_user": True}
+#         )
+#         user_active = True if recruiter.is_active else False
+#         send_email.delay(mto, subject, rendered)
+#     # Sending Birthday Wishes
+#     current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime(
+#         "%m-%d"
+#     )
+#     users = User.objects.filter(dob__icontains=current_date)
+#     for user in users:
+#         temp = loader.get_template("email/birthdays.html")
+#         subject = (
+#             "=?UTF-8?Q?=F0=9F=8E=82?="
+#             + " Birthday Wishes - Peeljobs "
+#             + "=?UTF-8?Q?=F0=9F=8E=82?="
+#         )
+#         rendered = temp.render({"user": user})
+#         user_active = True if user.is_active else False
+#         mto = user.email
 #         send_email.delay(mto, subject, rendered)
 
 
@@ -2116,7 +1965,6 @@ def sitemap_generation():
     pages_xml_file.write(pages_xml_cont)
 
     directory = settings.BASE_DIR + "/sitemap/"
-    # pages, blog categories, blog posts, resources.
 
     xml_cont = """<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
@@ -2171,4 +2019,3 @@ def save_search_results(ip_address, data, results, user):
         search_result.user = user
     search_result.job_post = results
     search_result.save()
-

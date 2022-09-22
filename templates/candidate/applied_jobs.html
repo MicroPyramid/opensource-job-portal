@@ -26,12 +26,12 @@
   }
 </style>
     <!-- main_container starts here -->
-    <div class="row mar_lr_0 main_container">
+    <div class="main_container">
       <div class="container">
         <!-- breadcrumb_section starts here -->
         <div class="breadcrumb_section row mar_lr_0">
-          <nav>
-            <ol class="cd-breadcrumb triangle">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb triangle">
               <li><a href="/">Home</a></li>
               <li class="current"><a>Profile</a></li>
             </ol>
@@ -40,7 +40,8 @@
         <!-- breadcrumb_section ends here -->
         <div class="row mar_lr_0">
           <div class="profile_container">
-            <!-- profile_left_container starts here -->
+            <div class="row">
+              <!-- profile_left_container starts here -->
               {% include 'candidate/profile_completion.html' %}
             <!-- profile_left_container ends here -->
             <!-- profile_right_container starts here -->
@@ -78,26 +79,44 @@
                     <!-- job_item starts here -->
                     {% include 'company_job_list.html' with job_list=applied_jobs %}
                     <!-- job_item ends here -->
-                     <div class="pagination_wrap text-center">
-                {% get_page current_page last_page as pages %}
-                <nav>
-                    <ul class="pagination">
-                    {% if current_page != 1 %}
-                      <li class="prev"><a href="?page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
-                      <li class="prev"><a href="?page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
-                      <li><a href="?page=1">first</a></li>
-                      {% endif %}
-                      {% for s in pages %}
-                      <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="?page={{s}}">{{s}}</a></li>
-                      {% endfor %}
-                      {% if current_page != last_page %}
-                      <li><a href="?page={{last_page}}">last</a></li>
-                      <li><a href="?page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
-                      <li><a href="?page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
-                      {% endif %}
-                    </ul>
-                </nav>
-                </div>
+                     <div class="pagination_wrap d-flex justify-content-center mt-4">
+                        {% get_page current_page last_page as pages %}
+                        {% comment %} <nav>
+                            <ul class="pagination">
+                            {% if current_page != 1 %}
+                              <li class="prev"><a href="?page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
+                              <li class="prev"><a href="?page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
+                              <li><a href="?page=1">first</a></li>
+                              {% endif %}
+                              {% for s in pages %}
+                              <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="?page={{s}}">{{s}}</a></li>
+                              {% endfor %}
+                              {% if current_page != last_page %}
+                              <li><a href="?page={{last_page}}">last</a></li>
+                              <li><a href="?page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
+                              <li><a href="?page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
+                              {% endif %}
+                            </ul>
+                        </nav> {% endcomment %}
+
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination">
+                            <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                              </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                              </a>
+                            </li>
+                          </ul>
+                        </nav>
+                      </div>
                   {% else %}
                     <div class="job_item" style="min-height:100px">
                        <div class="detail_each_wrap text-center">
@@ -114,6 +133,7 @@
                 </div>
               </div>
               <!-- profile_right_container ends here -->
+            </div>
             </div>
           </div>
         </div>

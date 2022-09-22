@@ -11,8 +11,8 @@
       <div class="job">
         <div class="logo_post_date">
 
-          {% if job.job_type == 'walk-in' %}
-          {% elif job.user.is_superuser %}
+
+          {% if job.user.is_superuser %}
             {% if job.company_emails %}
              <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
             {% endif %}
@@ -96,7 +96,7 @@
     <!-- job_item ends here -->
     {% if forloop.counter|divisibleby:6 %}
       <div style="margin-top:10px;margin-bottom:10px;">
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    {% comment %} <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <!-- PJ Right Nav -->
       <ins class="adsbygoogle"
            style="display:block"
@@ -105,7 +105,7 @@
            data-ad-format="auto"></ins>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    </script> {% endcomment %}
   </div>
     {% endif %}
 

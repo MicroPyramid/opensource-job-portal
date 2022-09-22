@@ -15,8 +15,8 @@
 <meta name="msvalidate.01" content="7748852145A5ECD3CF9FD6D8EAA04EDE" />
 {% endblock %}
 {% block search_block %}
-  <div class="row mar_lr_0 search_login_row">
-    <div class="container">
+<section>
+  <div class="container search_login_row">
       <div class="row mar_lr_0 search_login_blocks">
         <div class="search_block col-md-8 col-sm-12">
           <p class="message">One step to change your career<br> Better matching jobs for your bright career</p>
@@ -30,10 +30,10 @@
             <div class="search_location_other_block">
               <div class="job-location_other">
                 <form class="form-inline autocomplete-me search-form" name="search-form" id="search-form" method="POST">
-                  <div class="form_input_groups">
-                    <div class="form-group location">
+                  <div class="input-group">
+                    
                       <label class="sr-only"></label>
-                      <select class="js-example-basic-single form-control form-control_opt" name="location" id="job_location">
+                      <select class="form-select form-control_opt" name="location" id="job_location ">
                         <option value="">Location</option>
                         {% get_locations as total_locations %}
                         {% for city in total_locations %}
@@ -43,15 +43,15 @@
                           <option value="{{ state.name }}">{{ state.name }}</option>
                         {% endfor %}
                       </select>
-                    </div>
-                    <div class="form-group">
+                    
+                    
                       <label class="sr-only"></label>
                       <input type="text" class="form-control form-control_opt content_wrap_list" id ="q-field" name="q" placeholder="Enter Any Skills, Qualifications" autocomplete="off">
                       <input type="hidden" name="job_type" id='job_type'>
+                      <button type="submit" class="btn btn-default">Search Jobs</button>
                       <!--<input type="hidden" name="search_slug" id='search_slug'>-->
-                    </div>
+                    
                   </div>
-                  <button type="submit" class="btn btn-default">Search Jobs</button>
                 </form>
               </div>
               <!--<span class="advanced_tag_div"><a href="#" class="adv_srch_link adv_search">Advanced Search</a></span>-->
@@ -74,13 +74,13 @@
           <div class="login_box">
             <p class="head text-capitalize login_text">Already a Member? Login</p>
             <form id="ApplicantLoginForm" name="ApplicantLoginForm" class="ApplicantLoginForm" method="POST">
-              <div class="form-group">
+              <div class="mb-3">
                 <input type="email" class="form-control form-control_opt" id="user_login_email" placeholder="Enter Email ID" name="email">
                 <p id="user_response_message"></p>
                 <input type="hidden" name="register_type" id='register_type' value="login">
                 <input type="hidden" name="next" value="{{request.GET.next}}">
               </div>
-              <div class="form-group">
+              <div class="mb-3">
                 <input type="password" class="form-control form-control_opt" id="user_login_password" placeholder="Enter Password" name="password">
               </div>
               <div class="forgot_right">
@@ -90,16 +90,16 @@
               </div>
 
               <div class="forgot_create-new">
-                 <a href="#" class="upload_btn_resume up_res">Upload Resume</a>
-                 <a href="#" class="new_account"> New Account?</a>
+                 <a href="#" class="btn upload_btn_resume up_res">Upload Resume</a>
+                 <a href="#" class="btn new_account"> New Account?</a>
               </div>
             </form>
             <div class="social_links">
               <ul>
                 <li class="text-capitalize">login with social networks</li><br>
-                <li ><a href="{% url 'social:facebook_login' %}" target="_blank"><i class='fa fa-facebook fb'></i></a></li>
-                <li ><a href="{% url 'social:linkedin_login' %}"  target="_blank"><i class='fa fa-linkedin in'></i></a></li>
-                <li ><a href="{% url 'social:github_login' %}"  target="_blank"><i class='fa fa-github git'></i></a></li>
+                <li ><a href="{% url 'social:facebook_login' %}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a></li>
+                <li ><a href="{% url 'social:linkedin_login' %}"  target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                <li ><a href="{% url 'social:github_login' %}"  target="_blank"><i class="fa-brands fa-github"></i></a></li>
                 <li ><a href="{% url 'social:google_login' %}"><strong>G</strong></a></li>
 
               </ul>
@@ -110,23 +110,17 @@
         {% endif %}
       </div>
     </div>
-  </div>
+</section>
 {% endblock %}
 {% block base %}
 <!-- main_container starts here -->
-  <div class="row mar_lr_0 main_container">
+  <section class="main_container">
     <div class="container">
       <div class="row mar_lr_0">
         <div class="col-md-9 left_container">
           <!-- register_block starts here -->
           <div class="row mar_lr_0 register_block">
-            <div class="col-md-6 col-sm-6 register_point border {% if not request.user.is_authenticated %}new_account{% endif %}">
-              <div class="text-center register_col">
-                <a><strong>Sign Up For Today</strong></a>
-                <p>Get started with Peeljobs and find your dream job today!</p>
-              </div>
-            </div>
-            <div class="col-md-6 col-sm-6 register_point border redirect_link" data-href="{% url 'my:alerts_list'%}">
+            <div class="col-md-12 register_point border redirect_link" data-href="{% url 'my:alerts_list'%}">
               <div class="text-center register_col">
                 <strong>Get Jobs Into your inbox</strong>
                 <p>Create Job Alert in your desired areas and get best-matched jobs into your inbox.</p>
@@ -138,13 +132,13 @@
           <div class="row mar_lr_0 skills_locations">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-              <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Top companies</a></li>
-              <li role="presentation" ><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Top Skills</a></li>
+              <li role="presentation" class="nav-items"><a href="#profile" class="nav-link active" aria-controls="profile" aria-expanded="true" role="tab" data-bs-toggle="tab">Top companies</a></li>
+              <li role="presentation" class="nav-items" ><a href="#home" class="nav-link" aria-controls="home" role="tab" aria-expanded="false" data-bs-toggle="tab">Top Skills</a></li>
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
               <div role="tabpanel" class="tab-pane active" id="profile">
-                <div class="row image_row">
+                <div class="row d-flex justify-content-center align-items-center image_row">
                     <div class="col-md-2 col-sm-3 col-xs-3 image_col">
                      <a href="/micropyramid-informatics-pvt-ltd-job-openings/" class='company_logo'><img src="https://d28k6hocvoxiuc.cloudfront.net/site/images/new_design/logo.png" alt="Micropyramid Informatics Private Ltd."/></a>
                     </div>
@@ -209,29 +203,29 @@
                 <div class="row image_row">
 
                   <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/java-jobs/">
-                  <img src="{% static 'static/skills1/java_logo.png' %}" alt="Java Jobs" />
+                  <img src="https://peeljobs.s3.amazonaws.com/static/skills1/java_logo.png" alt="Java Jobs">
                   </a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/asp-dot-net-jobs/"><img src="{% static 'static/skills1/asp-dot-net.png' %}" alt="ASP.net Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/bootstrap-jobs/"><img src="{% static 'static/skills1/bootstrap.png' %}" alt="Bootstrap Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/css-jobs/"><img src="{% static 'static/skills/CSS.png' %}" alt="Css Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/adobe-photoshop-jobs/"><img src="{% static 'static/skills1/Adobe_Photoshop.png' %}" alt="Adobe Photoshop Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/javascript-jobs/"><img src="{% static 'static/skills/js.png' %}" alt="JavaScript Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/jquery-jobs/"><img src="{% static 'static/skills/jquery.png' %}" alt="JQuery Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/android-jobs/"><img src="{% static 'static/skills1/android1.jpg' %}" alt="Android Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/oracle-jobs/"><img src="{% static 'static/skills1/oracle.png' %}" alt="Oracle Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/c-plus-plus-jobs/"><img src="{% static 'static/skills/c-logo.png' %}" alt="C Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/mysql-jobs/"><img src="{% static 'static/skills1/MySQL.png' %}" alt="Mysql Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/spring-jobs/"><img src="{% static 'static/skills1/spring.png' %}" alt="Spring Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/angular-js-jobs/"><img src="{% static 'static/skills1/AngularJS_logo.png' %}" alt="Angular Js Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/j2ee-jobs/"><img src="{% static 'static/skills1/j2ee.png' %}" alt="J2ee Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/c-sharp-jobs/"><img src="{% static 'static/skills1/c-sharp.png' %}" alt="c-sharp Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/xml-jobs/"><img src="{% static 'static/skills1/xml-logo.png' %}" alt="Xml Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/hibernate-jobs/"><img src="{% static 'static/skills1/hibernate.png' %}" alt="Hibernate Jobs" /></a></div>
-                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/bpo-jobs/"><img src="{% static 'static/skills1/bpo.png' %}" alt="BPO Jobs" /></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/asp-dot-net-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/asp-dot-net.png" alt="ASP.net Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/bootstrap-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/bootstrap.png" alt="Bootstrap Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/css-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills/CSS.png" alt="Css Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/adobe-photoshop-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/Adobe_Photoshop.png" alt="Adobe Photoshop Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/javascript-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills/js.png" alt="JavaScript Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/jquery-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills/jquery.png" alt="JQuery Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/android-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/android1.jpg" alt="Android Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/oracle-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/oracle.png" alt="Oracle Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/c-plus-plus-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills/c-logo.png" alt="C Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/mysql-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/MySQL.png" alt="Mysql Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/spring-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/spring.png" alt="Spring Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/angular-js-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/AngularJS_logo.png" alt="Angular Js Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/j2ee-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/j2ee.png" alt="J2ee Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/c-sharp-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/c-sharp.png" alt="c-sharp Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/xml-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/xml-logo.png" alt="Xml Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/hibernate-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/hibernate.png" alt="Hibernate Jobs"></a></div>
+                  <div class="col-md-2 col-sm-3 col-xs-3 image_col skill_image"><a href="/bpo-jobs/"><img src="https://peeljobs.s3.amazonaws.com/static/skills1/bpo.png" alt="BPO Jobs"></a></div>
 
 
                 </div>
-                <a class="pull-right view-more" href="{% url "jobs_by_skill" %}">View More</a>
+                <a class="pull-right view-more" href="{% url 'jobs_by_skill' %}">View More</a>
               </div>
             </div>
           </div>
@@ -284,8 +278,7 @@
                   {% endif %}{% if forloop.last %}{% else %}, {% endif%}{% endfor %}</p>
                   <!--<p><a href="https://peeljobs.com/{{job.get_job_type}}-jobs/" class="apply">{{ job.job_type|get_string }}</a></p>-->
                     <p>
-                      {% if job.job_type == 'walk-in' %}
-                    {% elif job.user.is_superuser %}
+                    {% if job.user.is_superuser %}
                       {% if job.company_emails %}
                        <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
                       {% endif %}
@@ -305,7 +298,7 @@
                 </div>
                {% endwith %}
               {% endfor %}
-              <a class="pull-right view-more" href="/jobs/">View More</a>
+              <div><a class="pull-rit view-more" href="/jobs/">View More</a></div>
             </div>
           </div>
           <!-- latest_jobs ends here -->
@@ -363,7 +356,7 @@
               {% for recruiter in latest_recruiters|slice:"4" %}
                 <li class="recruiter_block" id="{% url 'recruiter_profile' recruiter.username %}">
                   <div class="img_part">
-                    <img src="{% if recruiter.profile_pic %}{% thumbnail recruiter.profile_pic.url "40x40" upscale=True padding=True %}{% else %}{% static 'static/img/dummy.jpg' %}{% endif %}" alt="Jobs Posted By {{ recruiter.get_full_name }}"/>
+                    <img src="{% if recruiter.profile_pic %}{% thumbnail recruiter.profile_pic.url '40x40' upscale=True padding=True %}{% else %}{% static 'static/img/dummy.jpg' %}{% endif %}" alt="Jobs Posted By {{ recruiter.get_full_name }}"/>
                   </div>
                   <div class="content">
                     <strong class="title"><a href="{% url 'recruiter_profile' recruiter.username %}">{{ recruiter.get_full_name }}</a></strong>
@@ -383,7 +376,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
   <!-- main_container ends here -->
   <!-- help_options_row starts here -->
   <div class="hint_options_row row mar_lr_0">

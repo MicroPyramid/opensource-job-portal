@@ -8,37 +8,37 @@
                 <h4>Mail Template</h4>
                 <form name="emailtemplateform" id="emailtemplateform" method="post">
                     <div class="form-horizontal mail_form">
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label">Title</label>
+                        <div class="row mb-3">
+                            <label for="colFormLabelSm" class="col-sm-1 control-label">Title</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" placeholder='Title' name="title" id="title">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label">Subject</label>
+                        <div class="row mb-3">
+                            <label for="colFormLabelSm" class="col-sm-1 control-label">Subject</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" placeholder='Subject' name="subject"
                                        id="subject">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label">Body</label>
+                        <div class="row mb-3">
+                            <label for="colFormLabelSm" class="col-sm-1 control-label">Body</label>
                             <div class="col-sm-10">
                                 <textarea class="form-control" name='textareacontents' id='textareacontents'
                                           placeholder='Message'></textarea>
                                 <input type="hidden" name="message" id="message"/></textarea>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label">Show To Recruiter</label>
+                        <div class="row mb-3">
+                            <label for="colFormLabelSm" class="col-sm-1 control-label">Show To Recruiter</label>
                             <div class="col-sm-10">
                                 <input type="checkbox" name="show_recruiter" id="show_recruiter" value="True"/>
                             </div>
                         </div>
-                        <div class="form-group applicant hidden">
+                        <div for="colFormLabelSm" class="row applicant hidden">
                             <label class="col-sm-1 control-label">Applicant Status</label>
                             <div class="col-sm-10">
-                                <select class="applicant_status form-control" placeholder="Applicant Status"
+                                <select class="applicant_status form-select" placeholder="Applicant Status"
                                         name="applicant_status" id="applicant_status">
                                     {% for status in applicant_status %}
                                         <option value="{{ status.0 }}" class="">{{ status.1 }}</option>
@@ -46,11 +46,11 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">&nbsp;</label>
-                            <div class="col-sm-10">
-                                <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
-                                <button class="cancelbutton"><i class="fa fa-floppy-o"></i>Cancel</button>
+                        <div class="row mb-3">
+                            <label for="colFormLabelSm" class="col-sm-2 control-label">&nbsp;</label>
+                            <div class="col-sm-10 mt-5">
+                                <button type="submit"><i class="fa-solid fa-floppy-disk"></i>Save</button>
+                                <button class="cancelbutton"><i class="fa-solid fa-floppy-disk"></i>Cancel</button>
                             </div>
                         </div>
                     </div>

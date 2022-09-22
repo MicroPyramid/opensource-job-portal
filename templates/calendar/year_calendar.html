@@ -71,11 +71,11 @@
           </select>
          <span class="calendar-header">
         {% if prev_year %}
-        <a href="{% url 'year_calendar' prev_year%}" class="prev_next" data="{{prev_year}}"><i class="fa fa-angle-double-left"></i></a>
+        {% comment %} <a href="{% url 'year_calendar' prev_year%}" class="prev_next" data="{{prev_year}}"><i class="fa fa-angle-double-left"></i></a> {% endcomment %}
         {% endif %}
-        <a href="{% url 'year_calendar' year%}" class="full_year_view" data="{{year}}">{{ year }}</a>
+        {% comment %} <a href="{% url 'year_calendar' year%}" class="full_year_view" data="{{year}}">{{ year }}</a> {% endcomment %}
         {% if next_year %}
-        <a href="{% url 'year_calendar' next_year%}" class="prev_next" data="{{next_year}}"><i class="fa fa-angle-double-right"></i></a>
+        {% comment %} <a href="{% url 'year_calendar' next_year%}" class="prev_next" data="{{next_year}}"><i class="fa fa-angle-double-right"></i></a> {% endcomment %}
         {% endif %}
         {% if request.user.is_authenticated %}
         <!--<div class="pull-right add_event_button">

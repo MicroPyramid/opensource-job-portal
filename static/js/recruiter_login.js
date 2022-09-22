@@ -1,4 +1,4 @@
-$.fn.modal.Constructor.prototype.enforceFocus = function() {};
+// $.fn.modal.Constructor.prototype.enforceFocus = function() {};
       $("select#user_register_technical_skills").select2( { placeholder: "Choose required Skillset", maximumSelectionSize: 6 } );
       $("select#user_register_current_city").select2({placeholder: "Choose current location", 'positionDropdown': true})
 $(window).scroll(function() {
@@ -122,34 +122,34 @@ $(document).ready(function(e){
         $('.company').show();
       }
     })
-          var getData = function (request, response) {
-      if ($('#register-name').val() == ''){
-        $('.ac-result').parent().remove();
-      }
-      $.getJSON("/recruiter/login/?&q=" + request.term, function (data) {
-          // console.log(data)
-          if (data.response){
-            $('.ac-result').parent().remove();
-            for (i = 0; i < data.response.length; i++) {
-                elem = $('<div class="result-wrapper"><a href="" class="ac-result"><span>'+data.response[i] + '</span></a></div>');
-                $('#register-name').after(elem)
-            }
-          }
-          else if (data.message){
-            $('#register-name').parent().after('<div class="error">This field is required</div>');
-          }
-          else{
-            $('.ac-result').parent().remove();
-          }
-        });
-      };
-      $("#register-name").autocomplete({
-        source: getData,
-        minLength: 0,
-        change: function() {
-            console.log("hai")
-        }
-      });
+      //     var getData = function (request, response) {
+      // if ($('#register-name').val() == ''){
+      //   $('.ac-result').parent().remove();
+      // }
+      // $.getJSON("/recruiter/login/?&q=" + request.term, function (data) {
+      //     // console.log(data)
+      //     if (data.response){
+      //       $('.ac-result').parent().remove();
+      //       for (i = 0; i < data.response.length; i++) {
+      //           elem = $('<div class="result-wrapper"><a href="" class="ac-result"><span>'+data.response[i] + '</span></a></div>');
+      //           $('#register-name').after(elem)
+      //       }
+      //     }
+      //     else if (data.message){
+      //       $('#register-name').parent().after('<div class="error">This field is required</div>');
+      //     }
+      //     else{
+      //       $('.ac-result').parent().remove();
+      //     }
+      //   });
+      // };
+      // $("#register-name").autocomplete({
+      //   source: getData,
+      //   minLength: 0,
+      //   change: function() {
+      //       console.log("hai")
+      //   }
+      // });
       $("body" ).on("click",".ac-result",function(e){
       e.preventDefault();
       $('#register-name').val($(this).text())

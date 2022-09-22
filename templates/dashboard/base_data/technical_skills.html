@@ -8,39 +8,43 @@
   }
 </style>
 <section id='tech_skills'>
-  <div class="title" style="padding-bottom: 3px;">
+  <div class="title pb-2">
       <h3>Technical Skills
         <span>
-          <a class={% if status == 'active' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=active">Active</a> /
-          <a class={% if status == 'inactive' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=inactive">Inactive</a> /
-          <a class={% if status == 'it' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=it">IT</a> /
-          <a class={% if status == 'non-it' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=non-it">Non-IT</a> /
-          <a class={% if status == 'other' %}"label label-primary"{% else %}"label label-default"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=other">Other</a>
+          <a class={% if status == 'active' %}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=active">Active</a> /
+          <a class={% if status == 'inactive' %}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=inactive">Inactive</a> /
+          <a class={% if status == 'it' %}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=it">IT</a> /
+          <a class={% if status == 'non-it' %}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=non-it">Non-IT</a> /
+          <a class={% if status == 'other' %}"badge badge-primary"{% else %}"badge badge-secondary"{% endif %} href="{% url 'dashboard:tech_skills' %}?status=other">Other</a>
         </span>
       </h3>
     </div>
     <div class="title" style="border-bottom:none; padding-bottom: 41px;">
-    <div class="add_div" style="width:66%;">
-      <form id="addform" method="post" enctype="multipart/form-data">
-      <div class="col-md-4"  style="padding:0 6px;">
-        <input type="text" class="form-control" id="name" name="name" style="width:100%;">
-      </div>
-       <div  class="col-md-3" style="padding:0 6px;">
-        <select class="form-control" name="skill_type" style="width:100%;">
-          <option value="">Skill Type</option>
-          {% for type in skill_types %}
-          <option value="{{ type.0 }}">{{ type.1 }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div  class="col-md-3" style="padding:0 6px;">
-        <input type="file" class="form-control" id="icon" name="icon" style="width:100%;">
-        <input type="hidden" name="mode" value="add_skill">
-      </div>
-      <div class="col-md-2"  style="padding:0 6px;text-align:right;">
-        <button class="add_new_btn" style="margin-top:5px;padding:7px 15px;"><i class="fa fa-plus"></i>Add Skill</button>
-        </div>
-      </form>
+      <div class="add_div" style="width:66%;">
+        
+          <form id="addform" method="post" enctype="multipart/form-data">
+           <div class="row">
+            <div class="col-md-4">
+              <input type="text" class="form-control" id="name" name="name" style="width:100%;">
+            </div>
+            <div  class="col-md-3">
+              <select class="form-control" name="skill_type" style="width:100%;">
+                <option value="">Skill Type</option>
+                {% for type in skill_types %}
+                <option value="{{ type.0 }}">{{ type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div  class="col-md-3">
+              <input type="file" class="form-control" id="icon" name="icon" style="width:100%;">
+              <input type="hidden" name="mode" value="add_skill">
+            </div>
+            <div class="col-md-2"  style="text-align:right;">
+            <button class="add_new_btn" style="margin-top:5px;padding:7px 15px;"><i class="fa fa-plus"></i>Add Skill</button>
+            </div>
+           </div>
+          </form>
+      
       </div>
       <div class="add_div" style="width:34%;">
       <form id="search_form" name="adv-search-form" class="search-form" method="GET">
@@ -69,24 +73,25 @@
               {% ifequal skill.status 'Active' %}
                 <a href="/{{skill.slug}}-jobs/" target="_blank" title="View Skill Jobs"><i class="fa fa-eye edit"></i></a>
               {% endifequal %}
-              <a><i class="fa fa-pencil-square-o edit"></i></a>
+              <a><i class="fa-solid fa-pen-to-square edit"></i></a>
               {% ifequal skill.status 'InActive' %}<a href="#" id="{{ skill.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="enable-skill"><i class="fa fa-check edit" title="Activate Skill"></i></a>{% else %}<a href="#" id="{{ skill.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}"  class="deactivate-skill"><i class="fa fa-times delete" title="Deactivate Skill"></i></a>{% endifequal %}
-              <a data-href="{% url "dashboard:delete_skill" skill_id=skill.id %}" class="delete_skill"><i class="fa fa-trash-o delete"></i></a>
+              <a data-href="{% url "dashboard:delete_skill" skill_id=skill.id %}" class="delete_skill"><i class="fa-solid fa-trash-can delete"></i></a>
             </div>
             <div class="clearfix"></div>
             <div class="edit_panel">
             <form class="editform" id ="{{ skill.id }}" method="post" enctype="multipart/form-data">
               <input type="hidden" name="id" value="{{skill.id}}">
               <input type="hidden" name="mode" value="edit_skill">
-              <textarea class="form-control" name="name">{{skill.name}}</textarea>
+              <textarea class="form-control" name="name"></textarea>
               <textarea class="form-control" name="slug" >{{skill.slug}}</textarea>
-              <select class="form-control" name="skill_type" >
+              {% comment %} <textarea name="description" oninput="myFunction1()" id="editor1" rows="10" cols="80">{{skill.slug}}</textarea> {% endcomment %}
+              <select class="form-select" name="skill_type" >
                 <option value="">Select Skill Type</option>
               {% for type in skill_types %}
                 <option value="{{ type.0 }}" {% if skill.skill_type == type.0 %}selected{% endif %}>{{ type.1 }}</option>
               {% endfor %}
               </select>
-              <textarea class="form-control" name='meta' id='meta' placeholder='Meta Data in Json Format'>{{ skill.get_meta_data }}</textarea>
+              <textarea class="form-control" name='meta' id='meta' placeholder='Meta Data in Json Format'></textarea>
               <textarea class="form-control ckeditor_page_content" name='ckeditor_page_content_{{ skill.id }}' id='ckeditor_page_content_{{skill.id}}' placeholder='Page Content'>{{ skill.page_content }}</textarea>
               <input type="hidden" class="form-control" name="page_content" id="page_content_{{ skill.id }}">
               <input type="hidden" class="form-control" name="page" value="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}">
@@ -104,9 +109,9 @@
     </div>
 </section>
 {% if skills %}
-  <div class="pagination_wrap">
+  <div class="pagination_wrap d-flex justify-content-center mt-4 mb-4">
     {% get_page current_page last_page as pages %}
-    <nav>
+    {% comment %} <nav>
         <ul class="pagination">
             {% if current_page != 1 %}
               <li class="prev"><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
@@ -122,6 +127,23 @@
               <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
               {% endif %}
         </ul>
+    </nav> {% endcomment %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
     </nav>
   </div>
 {% endif %}
@@ -155,7 +177,7 @@ $('form#addform').ajaxForm({
     }
 });
 
-$('form.editform').ajaxForm({
+{% comment %} $('form.editform').ajaxForm({
     beforeSerialize: function ($form, options) {
         ckeditor_name = 'ckeditor_page_content_' + $form.attr('id')
         var get_data = CKEDITOR.instances[ckeditor_name].getData()
@@ -177,7 +199,7 @@ $('form.editform').ajaxForm({
         }
         }
     }
-});
+}); {% endcomment %}
 
 $('.deactivate-skill').click(function (e) {
     e.preventDefault();
@@ -290,4 +312,15 @@ $('.add').click(function (e) {
     }
 });
 </script>
+
+<script>
+  var editor=CKEDITOR.replace( 'editor1' );
+ </script>
+<script>
+  function myFunction1() {
+    var x = document.getElementById("editor1").value;
+    document.getElementById("con_number").innerHTML = x;
+    close.log(x);
+  }
+  </script>
 {% endblock script %}

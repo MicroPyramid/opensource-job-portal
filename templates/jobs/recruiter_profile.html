@@ -19,13 +19,13 @@
   </style>
   <div class="content_div">
     <!-- main_container starts here -->
-      <div class="row mar_lr_0 main_container">
+      <div class="main_container">
         <div class="container">
 
         <!-- breadcrumb_section starts here -->
-        <div class="breadcrumb_section row mar_lr_0">
-          <nav>
-            <ol class="cd-breadcrumb triangle">
+        <div class="breadcrumb_section row">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb triangle">
               <li>
                 <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
                   <span class="name" >Home</span>
@@ -52,9 +52,9 @@
                 <div class="col-md-12">
                   <br>
                   <div class="recruiter_profile_container">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">Recruiter Profile - {{ user.get_full_username }}</div>
-                      <div class="panel-body">
+                    <div class="card">
+                      <div class="card-header">Recruiter Profile - {{ user.get_full_username }}</div>
+                      <div class="card-body">
                         <div class="recruiter_details row">
                           <div class="recruiter_pic col-md-2">
                              <img src="{% if user.profile_pic %}{% thumbnail user.profile_pic.url "100x100" upscale=True padding=True %}{% else %}{% static 'static/img/dummy.jpg' %}{% endif %}">
@@ -122,9 +122,9 @@
                     <br clear="all">
                     {% if job_list%}
                     <div class="text-center">
-                      <div class="pagination_wrap">
+                      <div class="pagination_wrap d-flex justify-content-center mt-5">
                     {% get_page current_page last_page as pages %}
-                    <nav>
+                    {% comment %} <nav>
                       <ul class="pagination">
                         {% if current_page != 1 %}
                         <li class="prev"><a class="{{previous_page}}" href="{{current_url}}{{previous_page}}/"><i class="fa fa-angle-double-left"></i></a></li>
@@ -138,10 +138,28 @@
                         <li><a class="{{ last_page }}" href="{{current_url}}{{last_page}}/">last</a></li>
                         <li><a class="{{ aft_page }}" href="{{current_url}}{{ aft_page }}/"><i class="fa fa-angle-right pagination-next"></i></a></li>
                         <li><a class="{{ after_page }}" href="{{current_url}}{{ after_page }}/"><i class="fa fa-angle-double-right"></i></a></li>
-                     {% endif %}
-              </ul>
-            </nav>
-          </div>
+                        {% endif %}
+                      </ul>
+                    </nav> {% endcomment %}
+
+                    <nav aria-label="Page navigation">
+                      <ul class="pagination">
+                        <li class="page-item">
+                          <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                          <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                    </div>
                     </div>{% endif %}
                   </div>
                 </div>
@@ -191,8 +209,8 @@
     </div>
   </div>
   <!--subscribe_box form ends here -->
-    <div style="margin-top:10px;margin-bottom:10px;">
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    {% comment %} <div style="margin-top:10px;margin-bottom:10px;"> {% endcomment %}
+    {% comment %} <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <!-- PJ Right Nav -->
       <ins class="adsbygoogle"
            style="display:block"
@@ -201,9 +219,14 @@
            data-ad-format="auto"></ins>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
+    </script> {% endcomment %}
+  {% comment %} </div> {% endcomment %}
+<script>
+      $("#multiple").select2({
+        placeholder: "Select a programming language",
+        allowClear: true
+    });
     </script>
-  </div>
-
   <!--register_login form starts here -->
   {% if not request.user.is_authenticated %}
   <div class="inner_login_box">

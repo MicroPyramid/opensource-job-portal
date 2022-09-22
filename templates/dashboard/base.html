@@ -9,14 +9,15 @@
     <title>PeelJobs Admin</title>
     <link rel="icon" type="image/x-icon" href="{{logo}}"/>
     <!-- FONT-->
-    <link href='https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic'
-          rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!--/ FONT-->
     <!-- GLOBAL CSS-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.ckeditor.com/4.5.11/standard/ckeditor.js"></script>
 
     {% compress css %}
         <link rel="stylesheet" type="text/less" href="{% static 'css/jquery.dataTables.min.css' %}">
@@ -33,33 +34,35 @@
 <div class="wrapper">
     <!-- TOP BAR -->
     <section id='header'>
-        <div class="row mt">
-            <div class="logo">
-            <span class="img_div">
-            <img src="{% static 'logo.png' %}">
-            </span>
-            <span class="text_logo">
-            <span style="color: rgb(96, 125, 189); font-size: 23px;">Peel</span>
-            <span style="color: rgb(194, 85, 85); font-size: 23px;">Jobs</span>
-            </span>
-          </div>
-          <div class="top_menu">
-          <ul>
-            <li><a href="{% url 'dashboard:clear_cache' %}" class="settings">Clear Cache</a>
-            </li>
-            <li><a href="{% url 'dashboard:admin_user_list' %}" class="settings">Admin</a>
-            </li>
-            <li><a href="{% url 'dashboard:new_admin_user' %}" class="settings"><i class='fa fa-user-plus'></i>Add User</a>
-            </li>
-            <!--<li><a class="requiter"><i class='fa fa-user'></i>Recruiters</a></li>-->
-            <li><a class="settings"><i class='fa fa-cogs'></i>Settings</a>
-            <ul class="sub_list">
-            <li><a href="{% url "dashboard:change_password" %}">Change Password</a></li>
-            <li><a href="{% url "get_out" %}">Logout</a></li>
-            </ul>
-            </li>
-          </ul>
-          </div>
+        <div class="topbar">
+            <div class="mt">
+                <div class="logo">
+                    <span class="img_div">
+                    <img src="{% static 'logo.png' %}">
+                    </span>
+                    <span class="text_logo">
+                    <span style="color: rgb(96, 125, 189); font-size: 23px;">Peel</span>
+                    <span style="color: rgb(194, 85, 85); font-size: 23px;">Jobs</span>
+                    </span>
+              </div>
+              <div class="top_menu">
+              <ul>
+                <li><a href="{% url 'dashboard:clear_cache' %}" class="settings">Clear Cache</a>
+                </li>
+                <li><a href="{% url 'dashboard:admin_user_list' %}" class="settings">Admin</a>
+                </li>
+                <li><a href="{% url 'dashboard:new_admin_user' %}" class="settings"><i class='fa fa-user-plus'></i>Add User</a>
+                </li>
+                <!--<li><a class="requiter"><i class='fa fa-user'></i>Recruiters</a></li>-->
+                <li><a class="settings"><i class='fa fa-cogs'></i>Settings</a>
+                <ul class="sub_list">
+                <li><a href="{% url "dashboard:change_password" %}">Change Password</a></li>
+                <li><a href="{% url "get_out" %}">Logout</a></li>
+                </ul>
+                </li>
+              </ul>
+              </div>
+            </div>
         </div>
     </section>
     <!--/ TOP BAR -->
@@ -101,14 +104,14 @@
             <a class="menu_item"><i class="fa fa-briefcase"></i><span>Job Posts</span></a>
             <ul class="sub_list">
               <li><a href="{% url 'dashboard:new_govt_job' 'full-time' %}" class="menu_item"><i class='fa fa-caret-right'></i>Post A New Job</a></li>
-              <li><a href="{% url 'dashboard:job_posts' "full-time" %}"  class="menu_item"><i class='fa fa-caret-right'></i>Full Time</a></li>
-              <li><a href="{% url "dashboard:job_posts" 'internship' %}" class="menu_item"><i class='fa fa-caret-right'></i>Internship</a></li>
-              <li><a href="{% url "dashboard:job_posts" 'walk-in' %}" class="menu_item"><i class='fa fa-caret-right'></i>Walk-in</a></li>
-              <li><a href="{% url "dashboard:job_posts" 'government' %}" class="menu_item"><i class='fa fa-caret-right'></i>Government Jobs</a></li>
+              <li><a href="{% url 'dashboard:job_posts' 'full-time' %}"  class="menu_item"><i class='fa fa-caret-right'></i>Full Time</a></li>
+              <li><a href="{% url 'dashboard:job_posts' 'internship' %}" class="menu_item"><i class='fa fa-caret-right'></i>Internship</a></li>
+              <li><a href="{% url 'dashboard:job_posts' 'walk-in' %}" class="menu_item"><i class='fa fa-caret-right'></i>Walk-in</a></li>
+              <li><a href="{% url 'dashboard:job_posts' 'government' %}" class="menu_item"><i class='fa fa-caret-right'></i>Government Jobs</a></li>
                 </ul>
             </li>
             <li {% ifequal request.session.url_id 'applicant' %}class="active_menu"{% endifequal %}><a
-                    href="{% url "dashboard:applicants" %}" class="menu_item"><i class="fa fa-graduation-cap"></i><span>Job Seekers</span></a>
+                    href="{% url 'dashboard:applicants' %}" class="menu_item"><i class="fa fa-graduation-cap"></i><span>Job Seekers</span></a>
             </li>
             <li {% ifequal request.session.url_id 'search_log' %}class="active_menu"{% endifequal %}>
                 <a href="{% url "dashboard:search_log" %}" class="menu_item"><i class="fa fa-search"></i><span>Search Log</span></a>
@@ -126,10 +129,10 @@
           </li>
           <li><a><i class="fa fa-medkit"></i><span>Duplicates</span></a>
             <ul class="sub_list">
-              <li><a href="{% url "dashboard:removing_duplicate_companies" %}" class="menu_item"><i class='fa fa-caret-right'></i>Company Jobposts</a></li>
-              <li><a href="{% url "dashboard:move_duplicates" 'skills' %}" class="menu_item"><i class='fa fa-caret-right'></i>Skills</a></li>
-              <li><a href="{% url "dashboard:move_duplicates" 'degrees' %}" class="menu_item"><i class='fa fa-caret-right'></i>Degrees</a></li>
-              <li><a href="{% url "dashboard:move_duplicates" 'locations' %}" class="menu_item"><i class='fa fa-caret-right'></i>Loations</a></li>
+              <li><a href="{% url 'dashboard:removing_duplicate_companies' %}" class="menu_item"><i class='fa fa-caret-right'></i>Company Jobposts</a></li>
+              <li><a href="{% url 'dashboard:move_duplicates' 'skills' %}" class="menu_item"><i class='fa fa-caret-right'></i>Skills</a></li>
+              <li><a href="{% url 'dashboard:move_duplicates' 'degrees' %}" class="menu_item"><i class='fa fa-caret-right'></i>Degrees</a></li>
+              <li><a href="{% url 'dashboard:move_duplicates' 'locations' %}" class="menu_item"><i class='fa fa-caret-right'></i>Loations</a></li>
             </ul>
           </li>
           <li>
@@ -143,7 +146,7 @@
           <li {% ifequal request.session.url_id 'helpdesk' %}class="active_menu"{% endifequal %}>
             <a><i class="fa fa-envelope"></i><span>Support</span></a>
             <ul class="sub_list">
-              <li><a href="{% url "tickets:admin_tickets_list" %}" class="menu_item"><i class="fa fa-question"></i>Support</a></li>
+              <li><a href="{% url 'tickets:admin_tickets_list' %}" class="menu_item"><i class="fa fa-question"></i>Support</a></li>
               <li><a href="/admin/tellme/feedback/" class="menu_item"><i class="fa fa-question"></i>Feedback</a></li>
             </ul>
           </li>
@@ -152,8 +155,8 @@
           <li>
             <a><i class="fa fa-envelope"></i><span>Mailing</span></a>
             <ul class="sub_list">
-              <li><a href="{% url "dashboard:emailtemplates" %}" class="menu_item"><i class='fa fa-caret-right'></i>Templates</a></li>
-              <li><a href="{% url "dashboard:sent_mails" %}" class="menu_item"><i class='fa fa-caret-right'></i>Sent Mails</a></li>
+              <li><a href="{% url 'dashboard:emailtemplates' %}" class="menu_item"><i class='fa fa-caret-right'></i>Templates</a></li>
+              <li><a href="{% url 'dashboard:sent_mails' %}" class="menu_item"><i class='fa fa-caret-right'></i>Sent Mails</a></li>
             </ul>
           </li>
           <li {% ifequal request.session.url_id 'reports' %}class="active_menu"{% endifequal %}><a href="{% url "dashboard:reports" %}" class="menu_item"><i class="fa fa-flag" aria-hidden="true"></i><span>Reports</span></a></li>
@@ -161,7 +164,7 @@
     </section>
     <!-- MENU -->
     <!-- CONTENT WRAPPER -->
-    <div class="content_wrapper">
+    <div class="container content_wrapper">
         <div class="row mt">
             <!-- CONTENT -->
             {% block stage %}
@@ -176,22 +179,18 @@
 </div>
 <!--/ WRAPPER -->
 <!-- GLOBAL SCRIPTS-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> {% endcomment %}
 
  {% compress js %}
     {% endcompress %}
 
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script src="https://cdn.ckeditor.com/4.5.1/standard/ckeditor.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
-
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js" type="text/javascript"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.0.0/js/bootstrap-datetimepicker.min.js"
-        type="text/javascript"></script>
+    <!--/ select2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha512-pax4MlgXjHEPfCwcJLQhigY7+N8rt6bVvWLFyUMuxShv170X53TRzGPmPkZmGBhk+jikR8WBM4yl7A9WMHHqvg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% comment %} <script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script> {% endcomment %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Select2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
 <!-- <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&sensor=false"
         type="text/javascript"></script> -->

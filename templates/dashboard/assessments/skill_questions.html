@@ -74,9 +74,9 @@
     </table>
   </div>
   {% if skill_questions %}
-  <div class="pagination_wrap text-center">
+  <div class="pagination_wrap d-flex justify-content-center mt-4">
   {% get_page current_page last_page as pages %}
-  <nav>
+  {% comment %} <nav>
     <ul class="pagination">
       {% if current_page != 1 and prev_page %}
         <li class="prev">
@@ -100,7 +100,7 @@
         </li>
     {% endif %}
     </ul>
-  </nav>
+  </nav> {% endcomment %}
 </div>
   {% endif %}
 </section>

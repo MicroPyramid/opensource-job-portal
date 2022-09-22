@@ -17,8 +17,8 @@
 <section class="content_wrap_list main_container">
   <div class="container">
     <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb triangle">
           <li>
             <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
             <span class="name" >Home</span></a>
@@ -47,96 +47,102 @@
           {% get_locations as total_locations %}
           {% get_qualifications as total_degrees %}
           <div class="browse_list">
-            <div class="panel-group side_filter_section" id="accordion">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <span class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="filter_icon">Browse by Skills <i class="more-less glyphicon glyphicon-minus pull-right"></i></a>
-                  </span>
-                </div>
-                <div id="collapseTwo" class="panel-collapse collapse in">
-                  <div class="panel-body">
-                    <ul class="list-group">
-                      {% if job_type == 'fresher' %}
-                        {% for skill in total_skills|slice:'10' %}
-                          <li class="filter_option"><a href="{% url 'skill_fresher_jobs' skill.slug %}" >{{ skill.name }}</a></li>
+            <div class="side_filter_section">
+              <div class="accordion" id="accordion">
+                <div class="accordion-item">
+                  <h4 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Browse by Skills <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </h4>
+                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                   
+                    <div class="accordion-body">
+                      <ul class="list-group">
+                        {% if job_type == 'fresher' %}
+                          {% for skill in total_skills|slice:'10' %}
+                            <li class="filter_option"><a href="{% url 'skill_fresher_jobs' skill.slug %}" >{{ skill.name }}</a></li>
+                          {% endfor %}
+                          <li class="filter_option more"><a href="{% url "fresher_jobs_by_skills" 'fresher' %}" >More</a></li>
+                        {% else %}
+                          {% for skill in total_skills|slice:'10' %}
+                          <li class="filter_option"><a href="{% url 'skill_walkin_jobs' skill.slug %}" >{{ skill.name }}</a></li>
                         {% endfor %}
-                        <li class="filter_option more"><a href="{% url "fresher_jobs_by_skills" 'fresher' %}" >More</a></li>
-                      {% else %}
-                        {% for skill in total_skills|slice:'10' %}
-                        <li class="filter_option"><a href="{% url 'skill_walkin_jobs' skill.slug %}" >{{ skill.name }}</a></li>
-                      {% endfor %}
-                      <li class="filter_option more"><a href="{% url "fresher_jobs_by_skills" 'walkin' %}" >More</a></li>
-                      {% endif %}
-                    </ul>
+                        <li class="filter_option more"><a href="{% url "fresher_jobs_by_skills" 'walkin' %}" >More</a></li>
+                        {% endif %}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <span class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="filter_icon collapsed"> Browse by Location <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
-                  </span>
-                </div>
-                <div id="collapseOne" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <ul>
-                      {% if job_type == 'fresher' %}
+  
+                <div class="accordion-item">
+                  <h4 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                      Browse by Locations <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </h4>
+                  <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                      <ul>
+                        {% if job_type == 'fresher' %}
+                          {% for location in total_locations|slice:'10' %}
+                          <li class="filter_option"><a href="{% url "location_fresher_jobs" location.slug %}" >{{ location.name }}</a></li>
+                          {% endfor %}
+                          <li class="filter_option more"><a href="{% url "jobs_by_location" 'fresher-jobs' %}" >More</a></li>
+                        {% else %}
                         {% for location in total_locations|slice:'10' %}
-                        <li class="filter_option"><a href="{% url "location_fresher_jobs" location.slug %}" >{{ location.name }}</a></li>
-                        {% endfor %}
-                        <li class="filter_option more"><a href="{% url "jobs_by_location" 'fresher-jobs' %}" >More</a></li>
-                      {% else %}
-                      {% for location in total_locations|slice:'10' %}
-                        <li class="filter_option"><a href="{% url 'location_walkin_jobs' location.slug %}" >{{ location.name }}</a></li>
-                        {% endfor %}
-                        <li class="filter_option more"><a href="{% url 'jobs_by_location' 'walkins' %}" >More</a></li>
-                    {% endif %}
-                    </ul>
+                          <li class="filter_option"><a href="{% url 'location_walkin_jobs' location.slug %}" >{{ location.name }}</a></li>
+                          {% endfor %}
+                          <li class="filter_option more"><a href="{% url 'jobs_by_location' 'walkins' %}" >More</a></li>
+                      {% endif %}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <span class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" class="filter_icon collapsed">Browse by Industries <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
-                  </span>
-                </div>
-                <div id="collapseThree" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <ul class="list-group">
-                      {% for industry in total_industries|slice:'10' %}
-                        <li class="filter_option"><a href="{{ industry.get_job_url }}">{{ industry.name|get_industry_name }}</a></li>
-                      {% endfor %}
-                      <li class="filter_option more"><a href="{% url "jobs_by_industry" %}" >More</a></li>
-                    </ul>
+  
+                <div class="accordion-item">
+                  <h4 class="accordion-header" id="headingThree">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                      Browse by Industries <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </h4>
+                  <div id="collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                      <ul class="list-group">
+                        {% for industry in total_industries|slice:'10' %}
+                          <li class="filter_option"><a href="{{ industry.get_job_url }}">{{ industry.name|get_industry_name }}</a></li>
+                        {% endfor %}
+                        <li class="filter_option more"><a href="{% url "jobs_by_industry" %}" >More</a></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <span class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseZero" class="filter_icon"> Browse by Degree <i class="more-less glyphicon glyphicon-plus pull-right"></i></a>
-                  </span>
-                </div>
-                <div id="collapseZero" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <ul>
-                      {% for degree in total_degrees|slice:'10' %}
-                        <li class="filter_option"><a href="{% url 'job_skills' degree.slug %}" >{{ degree.name }}</a></li>
-                      {% endfor %}
-                      <li class="filter_option more"><a href="{% url "jobs_by_degree" %}" >More</a></li>
-                    </ul>
+  
+                <div class="accordion-item">
+                  <h4 class="accordion-header" id="headingFour">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                      Browse by Degrees <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </h4>
+                  <div id="collapseFour" class="accordion-collapse collapse show" aria-labelledby="headingFour" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                      <ul>
+                        {% for degree in total_degrees|slice:'10' %}
+                          <li class="filter_option"><a href="{% url 'job_skills' degree.slug %}" >{{ degree.name }}</a></li>
+                        {% endfor %}
+                        <li class="filter_option more"><a href="{% url "jobs_by_degree" %}" >More</a></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
 
             </div>
+
+           
           </div>
-        {% endcache %}
+          
+        {%endcache%}
         <!-- browse_list ends here -->
 
         <!-- browse_results starts here -->

@@ -404,6 +404,27 @@
             </div>
         </div>
       </div>
+      <div class='specific_detail'>
+        <form action="{% url 'dashboard:mail_to_recruiter' post.id %}" name="commentform" id="commentform" method="post">{% csrf_token %}
+        <div class="tile_each">
+          <label>Admin Comments</label><br>
+          <textarea class="form-control" placeholder="Leave comments to recruiter" id="description"
+          rows="50" cols="10" name="comments" style="margin-bottom: 20px;"></textarea>
+          <a class="publish-job">
+            <button class="btn btn-warning"  style="margin-left:10px;" type="submit"> Comment</button>        
+          </a>
+        </div>
+        </form>
+        <div class="tile_each">
+          <a href="{% url 'dashboard:publish' post.id %}" class="publish-job">
+            <button class="btn btn-warning" style="margin-left:20px;" type="submit"> Publish</button>        
+          </a>
+          <a>&nbsp;</a> 
+          <a href="{% url 'dashboard:job_posts' post.job_type %}" class="publish-job">
+            <button class="btn btn-warning"  style="margin-left:10px;"> Cancel</button>        
+          </a>
+      </div>
+      </div>
       <!--/ deadline -->
       </div>
       </div>

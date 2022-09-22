@@ -4,7 +4,7 @@ from datetime import datetime
 import re
 import arrow
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
-from oauth2client.contrib.django_util.models import CredentialsField
+# from oauth2client.contrib.django_util.models import CredentialsField
 
 # from twython.api import Twython
 from django.contrib.postgres.fields import ArrayField
@@ -233,7 +233,7 @@ class Skill(models.Model):
     meta_title = models.TextField(default="")
     meta_description = models.TextField(default="")
     page_content = models.TextField(default="")
-    meta = models.JSONField()
+    meta = models.JSONField(null=True)
     skill_type = models.CharField(choices=SKILL_TYPE, max_length=20, default="it")
 
     def __str__(self):
@@ -303,7 +303,7 @@ class City(models.Model):
     internship_meta_description = models.TextField(default="")
     page_content = models.TextField(default="")
     internship_content = models.TextField(default="")
-    meta = JSONField()
+    meta = JSONField(null=True)
     parent_city = models.ForeignKey(
         "self",
         related_name="child_cities",
@@ -2049,9 +2049,9 @@ class AssessmentData(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 
 
-class CredentialsModel(models.Model):
-    id = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
-    credential = CredentialsField()
+# class CredentialsModel(models.Model):
+#     id = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
+    # credential = CredentialsField()
 
 
 class MetaData(models.Model):
