@@ -277,7 +277,7 @@
                     <select class="input select2" name="company" id="company">
                       <option value="">Select a Company</option>
                       {% for company in companies %}
-                        <option value="{{company.id}}" {% ifequal company.id job_post.company.id %} selected {% endifequal %}>{{company.name}} - {{ company.get_total_jobposts|length }}</option>
+                        <option value="{{company.id}}" {% if company.id == job_post.company.id %} selected {% endif %}>{{company.name}} - {{ company.get_total_jobposts|length }}</option>
                       {% endfor %}
                     </select>
                   </div>
@@ -329,7 +329,7 @@
                 <select class="input" name="govt_job_type" id="govt_job_type">
                   <option value="">Select a Type</option>
                   {% for type in gov_job_type %}
-                    <option value="{{type.0}}" {% ifequal type.0 job_post.govt_job_type %} selected {% endifequal %}>{{type.1}}</option>
+                    <option value="{{type.0}}" {% if type.0 == job_post.govt_job_type %} selected {% endif %}>{{type.1}}</option>
                   {% endfor %}
                 </select>
               </div>

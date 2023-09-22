@@ -1,7 +1,7 @@
 {% load schedule_tags %}
 {% for date in week_days %}
   <td class="cal-check">
-      {% ifequal date 0 %}
+      {% if date == 0 %}
       {% else %}
           <a class="project_overview" href="{% url 'jobposts_by_date' year month.id date %}"><span class="day">{{ date }}</span>
             <p class="projects_list">
@@ -11,6 +11,6 @@
                 </p>
             </p>
           </a>
-      {% endifequal %}
+      {% endif %}
   </td>
 {% endfor %}

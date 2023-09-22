@@ -153,10 +153,10 @@
     <section class="job_list">
       <!-- tabs -->
       <div class="tab_row row mt">
-        <a href="{% url 'agency:company_recruiter_profile' recruiter.id %}"><span class="tab_button {% ifequal job_status "active" %}active{% endifequal %}">
+        <a href="{% url 'agency:company_recruiter_profile' recruiter.id %}"><span class="tab_button {% if job_status == "active" %}active{% endif %}">
         Active Jobs
         </span></a>
-        <a href="{% url 'agency:company_recruiter_profile' recruiter.id %}?job_status=inactive"><span class="tab_button {% ifequal job_status "inactive" %}active{% endifequal %}">
+        <a href="{% url 'agency:company_recruiter_profile' recruiter.id %}?job_status=inactive"><span class="tab_button {% if job_status == "inactive" %}active{% endif %}">
         Inactive Jobs
         </span></a>
         <form name="jobtypeform" id="jobtypeform" method="get">
@@ -227,7 +227,7 @@
               <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{previous_page}}" title="First"><span class='link_each'><i class="fa fa-angle-double-left"></i></span></a>
               <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{prev_page}}" title="Prev"><span class='link_each'><i class="fa fa-angle-left"></i></span></a>
               {% for s in pages %}
-              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{s}}"><span class='link_each'{% ifequal s current_page %} class="active" {% endifequal %}>{{s}}</span></a>
+              <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{s}}"><span class='link_each'{% if s == current_page %} class="active" {% endif %}>{{s}}</span></a>
               {% endfor %}
               <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{last_page}}"><span class='link_each'>last</span></a>
               <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{current_page| add:"1"}}"><span class='link_each'>Next</span></a>

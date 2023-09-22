@@ -89,8 +89,8 @@
                     <option value="">Select A Location</option>
                     {% for city in cities %}
                     <option value="{{ city.id }}" id="{{ city.state.country.id }}"
-                    {% ifequal city.id project.location.id %}
-                    selected {% endifequal %}>{{ city.name }}</option>
+                    {% if city.id == project.location.id %}
+                    selected {% endif %}>{{ city.name }}</option>
                     {% endfor %}
                   </select>
                 </div>

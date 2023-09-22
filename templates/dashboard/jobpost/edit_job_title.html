@@ -75,7 +75,7 @@
                 <label>Major Skill{% if job_type == 'government' %}{% else %}<span class="error">*</span>{% endif %}</label>
                 <select class="input select2" name="major_skill" id="major_skill">
                   {% for skill in skills %}
-                  <option value="{{skill.id}}" {% ifequal skill.id job_post.major_skill.id %} selected {% endifequal %}>{{skill.name}}</option>
+                  <option value="{{skill.id}}" {% if skill.id == job_post.major_skill.id %} selected {% endif %}>{{skill.name}}</option>
                   {% endfor %}
                 </select>
               </div>

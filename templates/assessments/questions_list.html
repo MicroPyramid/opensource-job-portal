@@ -106,7 +106,7 @@
                   <li><a class="1" href="{{current_url}}{% if search %}?search={{ search }}{% endif %}">first</a></li>
                 {% endif %}
                 {% for s in pages %}
-                  <li {% ifequal s current_page %} class="active" {% endifequal %}>
+                  <li {% if s == current_page %} class="active" {% endif %}>
                     <a  class="{{ s }}" href="{{current_url}}{% if s == 1 %}{% else %}{{ s }}/{% endif %}{% if search %}?search={{ search }}{% endif %}">{{s}}</a>
                   </li>
                 {% endfor %}

@@ -29,14 +29,14 @@
                     <td>{{ post.published_on|date:"M. d, Y" }}</td>
                     <td>{{ post.get_all_applied_users_count }}</td>
                     <td>
-                        {% ifequal post.job_type 'government' %}
+                        {% if post.job_type == 'government' %}
                             <a href="{% url 'dashboard:edit_govt_job' post.id %}" id="{{ post.id }}" class="edit-job"><i
-                                    class="fa fa-edit edit" title="enable Job"></i></a>{% endifequal %}
-                        {% ifequal post.status 'Disabled' %}
+                                    class="fa fa-edit edit" title="enable Job"></i></a>{% endif %}
+                        {% if post.status == 'Disabled' %}
                             <a href="#" id="{{ post.id }}" class="enable-job"><i class="fa fa-check edit"
                                                                                  title="enable Job"></i></a>{% else %}
                             <a href="#" id="{{ post.id }}" class="deactivate-job" class="deactivate-job"><i
-                                    class="fa fa-times delete" title="Deactivate Job"></i></a>{% endifequal %}
+                                    class="fa fa-times delete" title="Deactivate Job"></i></a>{% endif %}
                         {% if post.status == 'Pending' %}
                             <a href="{% url 'dashboard:publish' post.id %}" id="{{ post.id }}" class="pending-job"><i
                                     class="fa fa-hand-o-up pending"
@@ -79,7 +79,7 @@
                     <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page=1">first</a></li>
                 {% endif %}
                 {% for s in pages %}
-                    <li {% ifequal s current_page %} class="active" {% endifequal %}><a
+                    <li {% if s == current_page %} class="active" {% endif %}><a
                             href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ s }}">{{ s }}</a>
                     </li>
                 {% endfor %}

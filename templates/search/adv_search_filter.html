@@ -8,13 +8,13 @@
       <!-- input -->
       <div class="form_input_div">
         <span class='input_check_box'>
-          <input type="radio" name="job_type" class="adv_job_type" value="Full_Time" {% ifequal 'Full_Time' request.session.formdata.job_type %}checked{% endifequal %}><span class='name'>Full Time</span></span>
+          <input type="radio" name="job_type" class="adv_job_type" value="Full_Time" {% if 'Full_Time' == request.session.formdata.job_type %}checked{% endif %}><span class='name'>Full Time</span></span>
         </span>
         <span class='input_check_box'>
-          <input type="radio" name="job_type" class="adv_job_type" value="Internship" {% ifequal 'Internship' request.session.formdata.job_type %}checked{% endifequal %}><span class='name'>Internship</span></span>
+          <input type="radio" name="job_type" class="adv_job_type" value="Internship" {% if 'Internship' == request.session.formdata.job_type %}checked{% endif %}><span class='name'>Internship</span></span>
         </span>
         <span class='input_check_box'>
-          <input type="radio" name="job_type" class="adv_job_type" value="Walk-in" {% ifequal 'Walk-in' request.session.formdata.job_type %}checked{% endifequal %}><span class='name'>Walk-in</span></span>
+          <input type="radio" name="job_type" class="adv_job_type" value="Walk-in" {% if 'Walk-in' == request.session.formdata.job_type %}checked{% endif %}><span class='name'>Walk-in</span></span>
         </span>
         <div class="clearfix"></div>
       </div>
@@ -44,7 +44,7 @@
         <select class="form-control" placeholder='Experience' name='{{ search_form.experience.html_name }}'>
           <option value="">Experience(Y)</option>
           {% for i in "xxxxxxxxxxxxx" %}
-            <option value="{{ forloop.counter0 }}" {% ifequal forloop.counter0|add:"0" request.session.formdata.experience|add:"0" %}selected{% endifequal %}>{{ forloop.counter0 }}</option>
+            <option value="{{ forloop.counter0 }}" {% if forloop.counter0|add:"0" == request.session.formdata.experience|add:"0" %}selected{% endif %}>{{ forloop.counter0 }}</option>
           {% endfor %}
         </select>
       </div>
@@ -54,7 +54,7 @@
           <select class="form-control" name='walkin_type' id="walkin_type">
           <option value="">Walkin Type</option>
           {% for walkin_type in walkin_types %}
-            <option value="{{ walkin_type.0 }}" {% ifequal walkin_type.0 request.session.formdata.walkin_type %}selected{% endifequal %}>{{ walkin_type.1 }}</option>
+            <option value="{{ walkin_type.0 }}" {% if walkin_type.0 == request.session.formdata.walkin_type %}selected{% endif %}>{{ walkin_type.1 }}</option>
           {% endfor %}
           </select>
         </div>

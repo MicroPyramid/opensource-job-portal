@@ -170,7 +170,7 @@
               {% if jobpost.send_email_notifications %} Disable{% else %} Enable{% endif %} Email Notifications</a>
             </li>
             <li class="deactivate-job" data-href="{% url 'recruiter:deactivate_job' jobpost.id %}"><a ><i class="fa fa-times" aria-hidden="true"></i> Close this Job</a></li>
-            {% ifequal jobpost.status 'Live'  %}
+            {% if jobpost.status == 'Live'  %}
             <li ><a href="mailto:?subject=Peeljobs%20Job%20post%20sharing&body={{ jobpost.get_job_minified_url }}" target="_blank" class="envelope social"><i class="fa fa-envelope" aria-hidden="true"></i> Email Job</a></li>
             <li ><a href="https://www.facebook.com/sharer/sharer.php?u={{ jobpost.get_job_minified_url }}&t={{ jobpost.title }}" target="_blank" class="facebook social"><i class="fa fa-facebook" aria-hidden="true"></i> Share on Facebook</a></li>
             <li ><a href="https://twitter.com/intent/tweet?text={{ jobpost.title }}&url={{ jobpost.get_job_minified_url }}&via=PeelJobs" target="_blank" class="twitter social"><i class="fa fa-twitter" aria-hidden="true"></i> Share on Twitter</a></li>
@@ -181,7 +181,7 @@
             <li ><a href="https://twitter.com/intent/tweet?text={{ jobpost.title }}&url={{ jobpost.get_job_minified_url }}&via=PeelJobs" target="_blank" class="share_post twitter social"><i class="fa fa-twitter" aria-hidden="true"></i> Share on Twitter</a></li>
             <!-- <li ><a href="https://plus.google.com/share?hl=en-US&url={{ jobpost.get_job_minified_url }}" class="share_post google social" target="_blank"><i class="fa fa-google-plus" aria-hidden="true"></i> Share on Google+</a></li> -->
             <li ><a href="https://www.linkedin.com/cws/share?url={{ jobpost.get_job_minified_url }}&token=&isFramed=true" target="_blank" class="share_post linkedin social"><i class="fa fa-linkedin" aria-hidden="true"></i> Share on LinkedIn</a></li>
-            {% endifequal %}
+            {% endif %}
             {% else %}
             <li ><a title='Activate' href="{% url 'recruiter:edit' jobpost.id%}">
               <i class='fa fa-check edit'></i>Activate this job</a>

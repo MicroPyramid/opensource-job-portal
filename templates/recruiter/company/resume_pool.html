@@ -118,8 +118,8 @@
             title="Prev"><span class='link_each'><i class="fa fa-angle-left"></i></span></a>
           {% for s in pages %}
           <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ s }}"><span
-          class='link_each'{% ifequal s current_page %}
-          class="active" {% endifequal %}>{{ s }}</span></a>
+          class='link_each'{% if s == current_page %}
+          class="active" {% endif %}>{{ s }}</span></a>
           {% endfor %}
           <a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><span
             class='link_each'><i class="fa fa-angle-right pagination-next"></i></span></a>

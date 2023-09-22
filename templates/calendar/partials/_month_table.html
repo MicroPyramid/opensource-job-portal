@@ -16,7 +16,7 @@
         <td><a class="week" data="{{ forloop.counter }}" data_month="{{ month.id }}" href="{% url 'week_calendar' year month.id forloop.counter %}">w{{ forloop.counter }}</a></td>
         {% for date in week %}
           <td class="cal-check ">
-            {% ifequal date 0 %}
+            {% if date == 0 %}
             {% else %}
               {% get_per_day_jobposts year month.id date as per_day_projects %}
               {% get_per_day_events year month.id date as per_day_events %}
@@ -35,7 +35,7 @@
                   {% endif %}
                 </div>  
               </a>
-            {% endifequal %}
+            {% endif %}
           </td>
         {% endfor %}
         </tr>

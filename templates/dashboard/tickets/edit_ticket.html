@@ -30,7 +30,7 @@
                                     <option value="">Select a ticket priority</option>
                                     {% for priority in priorities %}
                                         <option value="{{ priority.0 }}"
-                                                {% ifequal priority.0|slugify ticket.priority|slugify %}selected{% endifequal %}>{{ priority.1 }}</option>
+                                                {% if priority.0|slugify == ticket.priority|slugify %}selected{% endif %}>{{ priority.1 }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -39,7 +39,7 @@
                                     <option value="">Select a ticket type</option>
                                     {% for ticket_type in ticket_types %}
                                         <option value="{{ ticket_type.0 }}"
-                                                {% ifequal ticket_type.0|slugify ticket.ticket_type|slugify %}selected{% endifequal %}>{{ ticket_type.1 }}</option>
+                                                {% if ticket_type.0|slugify == ticket.ticket_type|slugify %}selected{% endif %}>{{ ticket_type.1 }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

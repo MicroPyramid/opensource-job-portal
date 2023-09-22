@@ -70,11 +70,11 @@
                     <td>{{ post.published_on|timezone:'Asia/Calcutta'|date:"M. d, Y h:i a" }}</td>
                     <td class="text-center">{{ post.get_all_applied_users_count }}</td>
                     <td>
-                        {% ifequal post.user.id|slugify request.user.id|slugify %}
+                        {% if post.user.id|slugify == request.user.id|slugify %}
                             <a href="{% url 'dashboard:edit_govt_job' post.id %}" id="{{ post.id }}" class="edit-job"><i
-                                    class="fa fa-edit edit" title="edit Job"></i></a>{% else %}{% endifequal %}
+                                    class="fa fa-edit edit" title="edit Job"></i></a>{% else %}{% endif %}
 
-                        {% ifequal post.status 'Disabled' %}
+                        {% if post.status == 'Disabled' %}
                             <a id="{{ post.id }}" class="enable-job "
                                href="{% url 'dashboard:enable' post.id %}"><i class="fa fa-check edit"
                                                                                    title="Enable Job"></i></a>
@@ -82,7 +82,7 @@
                             <a  id="{{ post.id }}" class="deactivate-job"
                                href="{% url 'dashboard:deactivate_job' post.id %}"><i class="fa fa-times delete"
                                                                                            title="Deactivate Job"></i></a>
-                        {% endifequal %}
+                        {% endif %}
 
                         {% if post.status == 'Pending' %}
                             <a href="{% url 'dashboard:publish' post.id %}" id="{{ post.id }}" class="publish-job"
@@ -133,7 +133,7 @@
                     <li class="prev"><a href="#" class="{{ prev_page }}"><i class="fa fa-angle-left"></i></a></li>
                     <li><a href="#" class="1">first</a></li>               {% endif %}
                 {% for s in pages %}
-                    <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="#"
+                    <li {% if s == current_page %} class="active" {% endif %}><a href="#"
                                                                                         class="{{ s }}">{{ s }}</a>
                     </li>               {% endfor %}               {% if current_page != last_page %}
                 <li><a href="{{ last_page }}" class="{{ last_page }}">last</a></li>

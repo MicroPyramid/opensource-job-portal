@@ -23,7 +23,7 @@
             <select class="form-select" name="experience">
               <option value="">Experience(Y)</option>
               {% for i in "xxxxxxxxxxxxx" %}
-                <option value="{{ forloop.counter0 }}" {% ifequal forloop.counter0|add:"0" searched_experience|add:'0' %}selected{% endifequal %}>{{ forloop.counter0 }}</option>
+                <option value="{{ forloop.counter0 }}" {% if forloop.counter0|add:"0" == searched_experience|add:'0' %}selected{% endif %}>{{ forloop.counter0 }}</option>
               {% endfor %}
             </select>
           </div>

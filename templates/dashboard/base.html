@@ -70,9 +70,9 @@
     <!-- MENU -->
     <section id='menu'>
         <ul>
-            <li {% ifequal request.session.url_id 'dashboard' %}class="active_menu"{% endifequal %}><a
+            <li {% if request.session.url_id == 'dashboard' %}class="active_menu"{% endif %}><a
                     href="/dashboard/" class="menu_item"><i class="fa fa-tachometer"></i><span>Dashboard</span></a></li>
-            <li {% ifequal request.session.url_id 'data' %}class="active_menu"{% endifequal %}>
+            <li {% if request.session.url_id == 'data' %}class="active_menu"{% endif %}>
                 <a><i class="fa fa-clipboard"></i><span>Data</span></a>
                 <ul class="sub_list">
                     <li><a href="{% url "dashboard:country" %}" class="menu_item"><i class='fa fa-caret-right'></i>Country</a>
@@ -92,15 +92,15 @@
                     </li>
                 </ul>
             </li>
-          <li {% ifequal request.session.url_id 'company' %}class="active_menu"{% endifequal %}>
+          <li {% if request.session.url_id == 'company' %}class="active_menu"{% endif %}>
             <a><i class="fa fa-medkit"></i><span>Agencies</span></a>
             <ul class="sub_list">
               <li><a href="{% url "dashboard:companies" 'company' %}" class="menu_item"><i class='fa fa-caret-right'></i>Companies</a></li>
               <li><a href="{% url "dashboard:companies" 'consultant' %}" class="menu_item"><i class='fa fa-caret-right'></i>Agencies</a></li>
             </ul>
           </li>
-          <li {% ifequal request.session.url_id 'recruiter' %}class="active_menu"{% endifequal %}><a href="{% url "dashboard:recruiters_list" "active" %}" class="menu_item"><i class="fa fa-users"></i><span>Recruiters</span></a></li>
-          <li {% ifequal request.session.url_id 'job_post' %}class="active_menu"{% endifequal %}>
+          <li {% if request.session.url_id == 'recruiter' %}class="active_menu"{% endif %}><a href="{% url "dashboard:recruiters_list" "active" %}" class="menu_item"><i class="fa fa-users"></i><span>Recruiters</span></a></li>
+          <li {% if request.session.url_id == 'job_post' %}class="active_menu"{% endif %}>
             <a class="menu_item"><i class="fa fa-briefcase"></i><span>Job Posts</span></a>
             <ul class="sub_list">
               <li><a href="{% url 'dashboard:new_govt_job' 'full-time' %}" class="menu_item"><i class='fa fa-caret-right'></i>Post A New Job</a></li>
@@ -110,18 +110,18 @@
               <li><a href="{% url 'dashboard:job_posts' 'government' %}" class="menu_item"><i class='fa fa-caret-right'></i>Government Jobs</a></li>
                 </ul>
             </li>
-            <li {% ifequal request.session.url_id 'applicant' %}class="active_menu"{% endifequal %}><a
+            <li {% if request.session.url_id == 'applicant' %}class="active_menu"{% endif %}><a
                     href="{% url 'dashboard:applicants' %}" class="menu_item"><i class="fa fa-graduation-cap"></i><span>Job Seekers</span></a>
             </li>
-            <li {% ifequal request.session.url_id 'search_log' %}class="active_menu"{% endifequal %}>
+            <li {% if request.session.url_id == 'search_log' %}class="active_menu"{% endif %}>
                 <a href="{% url "dashboard:search_log" %}" class="menu_item"><i class="fa fa-search"></i><span>Search Log</span></a>
                 <ul class="sub_list">
                     <li><a href="{% url "dashboard:search_summary" 'skills' %}" class="menu_item"><i class="fa fa-question"></i>Search
                         Summary</a></li>
                 </ul>
             </li>
-          <li {% ifequal request.session.url_id 'subscribers' %}class="active_menu"{% endifequal %}><a href="{% url "dashboard:subscribers" %}" class="menu_item"><i class="fa fa-bell"></i><span>Subscribe</span></a></li>
-          <li {% ifequal request.session.url_id 'subscribers' %}class="active_menu"{% endifequal %}>
+          <li {% if request.session.url_id == 'subscribers' %}class="active_menu"{% endif %}><a href="{% url "dashboard:subscribers" %}" class="menu_item"><i class="fa fa-bell"></i><span>Subscribe</span></a></li>
+          <li {% if request.session.url_id == 'subscribers' %}class="active_menu"{% endif %}>
             <a><i class="fa fa-share"></i><span>Sent Mails</span></a>
             <ul class="sub_list">
               <li><a href="{% url "dashboard:applicants_mail" %}" class="menu_item"><i class='fa fa-caret-right'></i>Today's Mails</a></li>
@@ -143,7 +143,7 @@
                 </ul>
             </li>
         {% if request.user|check_perm %}
-          <li {% ifequal request.session.url_id 'helpdesk' %}class="active_menu"{% endifequal %}>
+          <li {% if request.session.url_id == 'helpdesk' %}class="active_menu"{% endif %}>
             <a><i class="fa fa-envelope"></i><span>Support</span></a>
             <ul class="sub_list">
               <li><a href="{% url 'tickets:admin_tickets_list' %}" class="menu_item"><i class="fa fa-question"></i>Support</a></li>
@@ -159,7 +159,7 @@
               <li><a href="{% url 'dashboard:sent_mails' %}" class="menu_item"><i class='fa fa-caret-right'></i>Sent Mails</a></li>
             </ul>
           </li>
-          <li {% ifequal request.session.url_id 'reports' %}class="active_menu"{% endifequal %}><a href="{% url "dashboard:reports" %}" class="menu_item"><i class="fa fa-flag" aria-hidden="true"></i><span>Reports</span></a></li>
+          <li {% if request.session.url_id == 'reports' %}class="active_menu"{% endif %}><a href="{% url "dashboard:reports" %}" class="menu_item"><i class="fa fa-flag" aria-hidden="true"></i><span>Reports</span></a></li>
         </ul>
     </section>
     <!-- MENU -->

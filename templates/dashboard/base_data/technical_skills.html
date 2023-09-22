@@ -70,11 +70,11 @@
             <div class="icon_div">
             <span>No.Of Applicants ({{skill.get_no_of_applicants|length }})</span>
                 <span>  No.Of Resume Applicants ({{skill.get_no_of_resume_applicants|length }})</span>
-              {% ifequal skill.status 'Active' %}
+              {% if skill.status == 'Active' %}
                 <a href="/{{skill.slug}}-jobs/" target="_blank" title="View Skill Jobs"><i class="fa fa-eye edit"></i></a>
-              {% endifequal %}
+              {% endif %}
               <a><i class="fa-solid fa-pen-to-square edit"></i></a>
-              {% ifequal skill.status 'InActive' %}<a href="#" id="{{ skill.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="enable-skill"><i class="fa fa-check edit" title="Activate Skill"></i></a>{% else %}<a href="#" id="{{ skill.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}"  class="deactivate-skill"><i class="fa fa-times delete" title="Deactivate Skill"></i></a>{% endifequal %}
+              {% if skill.status == 'InActive' %}<a href="#" id="{{ skill.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="enable-skill"><i class="fa fa-check edit" title="Activate Skill"></i></a>{% else %}<a href="#" id="{{ skill.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}"  class="deactivate-skill"><i class="fa fa-times delete" title="Deactivate Skill"></i></a>{% endif %}
               <a data-href="{% url "dashboard:delete_skill" skill_id=skill.id %}" class="delete_skill"><i class="fa-solid fa-trash-can delete"></i></a>
             </div>
             <div class="clearfix"></div>
@@ -119,7 +119,7 @@
               <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page=1">first</a></li>
               {% endif %}
               {% for s in pages %}
-              <li {% ifequal s current_page %} class="active" {% endifequal %}><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{s}}">{{s}}</a></li>
+              <li {% if s == current_page %} class="active" {% endif %}><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{s}}">{{s}}</a></li>
               {% endfor %}
               {% if current_page != last_page %}
               <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{last_page}}">last</a></li>

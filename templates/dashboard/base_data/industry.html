@@ -36,11 +36,11 @@
             {{industry.name}}( {{ industry.get_no_of_jobposts|length }} )
             </div>
             <div class="icon_div">
-            {% ifequal industry.status 'Active' %}
+            {% if industry.status == 'Active' %}
               <a href="/{{industry.slug}}-industry-jobs/" target="_blank"><i class="fa fa-eye edit"></i></a>
-            {% endifequal %}
+            {% endif %}
               <a><i class="fa-solid fa-pen-to-square edit"></i></a>
-              {% ifequal industry.status 'InActive' %}<a href="#" id="{{ industry.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="enable-industry"><i class="fa fa-check edit" title="Activate Industry"></i></a>{% else %}<a href="#" id="{{ industry.id }}" class="deactivate-industry" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}"><i class="fa fa-times delete" title="Deactivate Industry"></i></a>{% endifequal %}
+              {% if industry.status == 'InActive' %}<a href="#" id="{{ industry.id }}" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}" class="enable-industry"><i class="fa fa-check edit" title="Activate Industry"></i></a>{% else %}<a href="#" id="{{ industry.id }}" class="deactivate-industry" rel="{% if request.GET.page %}{{request.GET.page}}{% else %}1{% endif %}"><i class="fa fa-times delete" title="Deactivate Industry"></i></a>{% endif %}
               <a href="{% url "dashboard:delete_industry" industry_id=industry.id %}"><i class="fa-solid fa-trash-can delete"></i></a>
             </div>
             <div class="clearfix"></div>
@@ -76,7 +76,7 @@
               <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page=1">first</a></li>
               {% endif %}
               {% for s in pages %}
-              <li {% ifequal s current_page %} class="active" {% endifequal %}><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{s}}">{{s}}</a></li>
+              <li {% if s == current_page %} class="active" {% endif %}><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{s}}">{{s}}</a></li>
               {% endfor %}
               {% if current_page != last_page %}
               <li><a rel="pagination_numbers" href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{last_page}}">last</a></li>

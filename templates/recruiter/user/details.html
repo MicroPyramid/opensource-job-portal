@@ -43,8 +43,8 @@
                 <option value="">Select A Status</option>
                 {% for status in martial_status %}
                 <option value="{{ status.0 }}"
-                {% ifequal status.0|slugify user.marital_status|slugify %}
-                selected {% endifequal %}>{{ status.1 }}</option>
+                {% if status.0|slugify == user.marital_status|slugify %}
+                selected {% endif %}>{{ status.1 }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -109,8 +109,8 @@
                 <option value="">Select A Location</option>
                 {% for country in countries %}
                 <option value="{{ country.id }}"
-                {% ifequal country.id|slugify user.nationality|slugify %}
-                selected {% endifequal %}>{{ country.name }}</option>
+                {% if country.id|slugify == user.nationality|slugify %}
+                selected {% endif %}>{{ country.name }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -122,8 +122,8 @@
                 <option value="">select a state</option>
                 {% for state in states %}
                 <option value="{{ state.id }}" class="hide" id="{{ state.country.id }}"
-                {% ifequal state.id|slugify user.state.id|slugify %}
-                selected {% endifequal %}>{{ state.name }}</option>
+                {% if state.id|slugify == user.state.id|slugify %}
+                selected {% endif %}>{{ state.name }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -136,8 +136,8 @@
                 {% for city in cities %}
                 <option value="{{ city.id }}" class="hide"
                 id="{{ city.state.id }}_{{ city.state.country.id }}"
-                {% ifequal city.id|slugify user.city.id|slugify %}
-                selected {% endifequal %}>{{ city.name }}</option>
+                {% if city.id|slugify == user.city.id|slugify %}
+                selected {% endif %}>{{ city.name }}</option>
                 {% endfor %}
               </select>
             </div>

@@ -74,7 +74,7 @@
             <select class="form-control" name="status" id="status">
               <option value="">Select a ticket status</option>
               {% for status in status %}
-              <option value="{{ status.0 }}" {% ifequal status.0|slugify ticket.status|slugify %}selected{% endifequal %}>{{ status.1 }}</option>
+              <option value="{{ status.0 }}" {% if status.0|slugify == ticket.status|slugify %}selected{% endif %}>{{ status.1 }}</option>
               {% endfor %}
             </select>
           </div>

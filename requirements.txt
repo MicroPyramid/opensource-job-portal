@@ -14,7 +14,7 @@ django-haystack==3.2.1
 #django-hmin==0.3.3
 django-ses==3.1.2
 django-ses-gateway==0.1.1
-django-tellme==0.7.3
+git+https://github.com/ludrao/django-tellme  #once new version is released replace with "django-tellme==0.7.x"
 elasticsearch==7.17.6
 google-api-python-client==2.62.0
 prospector==1.7.7

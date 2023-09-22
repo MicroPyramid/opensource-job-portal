@@ -89,7 +89,7 @@
         </li>
       {% endif %}
       {% for s in pages %}
-        <li {% ifequal s current_page %} class="active" {% endifequal %}>
+        <li {% if s == current_page %} class="active" {% endif %}>
           <a href="" class="{{ s }}">{{ s }}</a>
         </li>
       {% endfor %}

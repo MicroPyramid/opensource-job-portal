@@ -380,8 +380,8 @@
               <div class="col-md-4">
                 <select name="year" id="year" class="form-select">
                   <option value="2017" selected>2017</option>
-                  <option value="2016" {% ifequal request.POST.year|slugify '2016' %}selected{% endifequal %}>2016</option>
-                  <option value="2015" {% ifequal request.POST.year|slugify '2015' %}selected{% endifequal %}>2015</option>
+                  <option value="2016" {% if request.POST.year|slugify == '2016' %}selected{% endif %}>2016</option>
+                  <option value="2015" {% if request.POST.year|slugify == '2015' %}selected{% endif %}>2015</option>
                 </select>
               </div>
             
@@ -390,7 +390,7 @@
                 <select name="month" id="month" class="form-select">
                   <option value="">Select A Month</option>
                   {% for month in months %}
-                    <option value="{{ month.id }}" {% ifequal request.POST.month|slugify month.id|slugify %}selected{% endifequal %}>{{ month.Name }}</option>
+                    <option value="{{ month.id }}" {% if request.POST.month|slugify == month.id|slugify %}selected{% endif %}>{{ month.Name }}</option>
                   {% endfor %}
                 </select>
               </div>
