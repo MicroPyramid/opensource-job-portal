@@ -36,8 +36,8 @@
                     <option value="">Select A Language</option>
                     {% for lang in languages %}
                     <option value="{{ lang.id }}"
-                    {% ifequal lang.id language.language.id %}
-                    selected {% endifequal %}>{{ lang.name }}</option>
+                    {% if lang.id == language.language.id %}
+                    selected {% endif %}>{{ lang.name }}</option>
                     {% endfor %}
                   </select>
                 </div>

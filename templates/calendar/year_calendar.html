@@ -59,14 +59,14 @@
           <div class='select_year_month select_box'>
           <select class="form-control pull-right calender-top-select" id="month_calendar">
             {% for month in months %}
-            <option value="{{ month.id }}" {% ifequal requested_month.id|slugify month.id|slugify %}selected{% endifequal %}>{{ month.Name }}</option>
+            <option value="{{ month.id }}" {% if requested_month.id|slugify == month.id|slugify %}selected{% endif %}>{{ month.Name }}</option>
             {% endfor %}
             </select>
         </div>
         <div class='select_year_month select_box'>
           <select class="form-control pull-right calender-top-select" id="week_calendar">
             {% for week_count in year|get_weekdays:month.id %}
-              <option value="{{ forloop.counter }}" {% ifequal week|slugify forloop.counter|slugify %}selected{% endifequal %}>Week {{ forloop.counter }}</option>
+              <option value="{{ forloop.counter }}" {% if week|slugify == forloop.counter|slugify %}selected{% endif %}>Week {{ forloop.counter }}</option>
               {% endfor %}
           </select>
          <span class="calendar-header">

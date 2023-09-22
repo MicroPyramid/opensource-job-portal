@@ -31,8 +31,8 @@
                     <option value="">Select A Company Type</option>
                     {% for company_type in company_types %}
                       <option value="{{ company_type.0 }}"
-                                      {% ifequal company.company_type|slugify company_type.0|slugify %}selected
-                                      {% endifequal %}>{{ company_type.1 }}</option>
+                                      {% if company.company_type|slugify == company_type.0|slugify %}selected
+                                      {% endif %}>{{ company_type.1 }}</option>
                     {% endfor %}
                   </select>
                   </div>-->

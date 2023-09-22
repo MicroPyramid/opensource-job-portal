@@ -69,7 +69,7 @@
                         <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page=1">first</a></li>
                     {% endif %}
                     {% for s in pages %}
-                        <li {% ifequal s current_page %} class="active" {% endifequal %}><a
+                        <li {% if s == current_page %} class="active" {% endif %}><a
                                 href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ s }}">{{ s }}</a>
                         </li>
                     {% endfor %}

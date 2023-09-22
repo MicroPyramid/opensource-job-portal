@@ -122,7 +122,7 @@
                  {% get_unread_messages request.user '' '' as unread_messages %}
                   <li><a href="{% url 'recruiter:messages' %}"><i class='fa fa-comments'></i>Messages 
                   <span class='count green'>{{ unread_messages }}</span></a></li>
-                 <li {% ifequal request.session.url_id 'recruiter_tickets' %}class="active"{% endifequal %}><a href="{% url 'tickets:index' %}"><i class='fa fa-comments'></i>Support</a></li>
+                 <li {% if request.session.url_id == 'recruiter_tickets' %}class="active"{% endif %}><a href="{% url 'tickets:index' %}"><i class='fa fa-comments'></i>Support</a></li>
                  <li><a>{{ request.user.username }}
                     <img src="{% if request.user.profile_pic %}{{ request.user.profile_pic.url }}{% else %}{% static 'dummy.jpg' %}{% endif %}" style="width:50px;height:50px;"></a>
                     <ul class='sub_list'>
@@ -256,19 +256,19 @@
 {% block mobile_menu %}
     <div class="vertical_menu">
         <ul>
-            <li {% ifequal request.session.url_id 'recruiter_jobposts' %}class="active"{% endifequal %}>
+            <li {% if request.session.url_id == 'recruiter_jobposts' %}class="active"{% endif %}>
                 <a class="post-new" href="#">Post a job</a>
             </li>
-            <li {% ifequal request.session.url_id 'recruiter_jobposts_list' %}class="active"{% endifequal %}>
+            <li {% if request.session.url_id == 'recruiter_jobposts_list' %}class="active"{% endif %}>
                 <a href="{% url 'recruiter:list' %}">Job List</a>
             </li>
-            <li {% ifequal request.session.url_id 'recruiter_tickets' %}class="active"{% endifequal %}>
+            <li {% if request.session.url_id == 'recruiter_tickets' %}class="active"{% endif %}>
                 <a href="{% url 'tickets:index' %}">Support</a>
             </li>
-            <li {% ifequal request.session.url_id 'recruiter_profile' %}class="active"{% endifequal %}>
+            <li {% if request.session.url_id == 'recruiter_profile' %}class="active"{% endif %}>
                 <a href="{% url 'recruiter:profile' %}">Profile</a>
             </li>
-            <li {% ifequal request.session.url_id 'recruiter_change_password' %}class="active"{% endifequal %}>
+            <li {% if request.session.url_id == 'recruiter_change_password' %}class="active"{% endif %}>
                 <a href="{% url 'recruiter:change_password' %}">Change Password</a>
                 <input type="hidden" name="is_mobile_verifed" id="is_mobile_verifed"
                        value="{{ request.user.mobile_verified }}">

@@ -47,8 +47,8 @@
                       <option value="">Select A Skill</option>
                       {% for skill in skills %}
                       <option value="{{ skill.id }}"
-                      {% ifequal skill.id|slugify technical_skill.skill.id|slugify %}
-                      selected {% endifequal %}>{{ skill.name }}</option>
+                      {% if skill.id|slugify == technical_skill.skill.id|slugify %}
+                      selected {% endif %}>{{ skill.name }}</option>
                       {% endfor %}
                     </select>
                   </div>
@@ -63,8 +63,8 @@
                           <option value="" default>years</option>
                           {% for year in years %}
                           <option value="{{ year.0 }}" id="{{ forloop.counter }}"
-                          {% ifequal technical_skill.year|slugify year.0 %}
-                          selected {% endifequal %}>{{ year.1 }}</option>
+                          {% if technical_skill.year|slugify == year.0 %}
+                          selected {% endif %}>{{ year.1 }}</option>
                           {% endfor %}
                         </select>
                       </div>
@@ -73,8 +73,8 @@
                           <option value="" default>months</option>
                           {% for month in months %}
                           <option value="{{ month.0 }}" id="{{ forloop.counter }}"
-                          {% ifequal technical_skill.month|slugify month.0 %}
-                          selected {% endifequal %}>{{ month.1 }}</option>
+                          {% if technical_skill.month|slugify == month.0 %}
+                          selected {% endif %}>{{ month.1 }}</option>
                           {% endfor %}
                         </select>
                       </div>
@@ -103,7 +103,7 @@
                       <option value="">Select A status</option>
                       {% for status in status %}
                       <option value="{{ status.0 }}"
-                      {% ifequal status.0 technical_skill.proficiency %}selected {% endifequal %}>{{ status.1 }}</option>
+                      {% if status.0 == technical_skill.proficiency %}selected {% endif %}>{{ status.1 }}</option>
                       {% endfor %}
                     </select>
                   </div>

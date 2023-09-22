@@ -64,7 +64,7 @@
                       <select class="input" name="location_{{forloop.counter}}" id="location_{{forloop.counter}}">
                         <option value=''>Select A Branch Location</option>
                         {% for city in cities %}
-                        <option value='{{ city.id }}' {% ifequal branch.location.id city.id %}selected{% endifequal %}>{{ city.name }}</option>
+                        <option value='{{ city.id }}' {% if branch.location.id == city.id %}selected{% endif %}>{{ city.name }}</option>
                         {% endfor %}
                       </select>
                     </div>

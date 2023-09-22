@@ -89,7 +89,7 @@
                               <li><a href="?page=1">first</a></li>
                               {% endif %}
                               {% for s in pages %}
-                              <li {% ifequal s current_page %} class="active" {% endifequal %}><a href="?page={{s}}">{{s}}</a></li>
+                              <li {% if s == current_page %} class="active" {% endif %}><a href="?page={{s}}">{{s}}</a></li>
                               {% endfor %}
                               {% if current_page != last_page %}
                               <li><a href="?page={{last_page}}">last</a></li>

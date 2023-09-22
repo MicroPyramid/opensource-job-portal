@@ -51,7 +51,7 @@
                             <select class="input" name='agency_job_type' id="agency_job_type">
                               <option value=''>Select A Job Type</option>
                               {% for agency_job_type in agency_job_types %}
-                              <option value="{{ agency_job_type.0 }}" {% ifequal agency_job_type.0 job_post.agency_job_type %}selected{% endifequal %}>{{ agency_job_type.1 }}</option>
+                              <option value="{{ agency_job_type.0 }}" {% if agency_job_type.0 == job_post.agency_job_type %}selected{% endif %}>{{ agency_job_type.1 }}</option>
                               {% endfor %}
                             </select>
                           </div>
@@ -64,7 +64,7 @@
                         <select class="input" name="agency_invoice_type" id="agency_invoice_type">
                           <option value=''>Select Invoice Type</option>
                           {% for invoice in agency_invoice_types %}
-                          <option value="{{ invoice.0 }}" {% ifequal invoice.0 job_post.agency_invoice_type %}selected{% endifequal %}>{{ invoice.1 }}</option>
+                          <option value="{{ invoice.0 }}" {% if invoice.0 == job_post.agency_invoice_type %}selected{% endif %}>{{ invoice.1 }}</option>
                           {% endfor %}
                         </select>
                          <span>If you are a consultancy choose your invoice type to get amount from your client company</span>
@@ -99,7 +99,7 @@
                           <select class="input" name='agency_client' id="agency_client">
                             <option value=''>Select A Client</option>
                             {% for each in clients %}
-                            <option value="{{ each.id }}" {% ifequal job_post.agency_client.id each.id  %}selected{% endifequal %}>{{ each.name }}</option>
+                            <option value="{{ each.id }}" {% if job_post.agency_client.id == each.id  %}selected{% endif %}>{{ each.name }}</option>
                             {% endfor %}
                           </select>
                            <span class="hint">
@@ -188,7 +188,7 @@
                             <select class="input" name="country" id="country">
                               <option value="">Country</option>
                               {% for country in countries %}
-                              <option value="{{country.id}}" {% ifequal country.id job_post.country.id %} selected {% endifequal %}>{{country.name}}</option>
+                              <option value="{{country.id}}" {% if country.id == job_post.country.id %} selected {% endif %}>{{country.name}}</option>
                               {% endfor %}
                             </select>
                           </div>
@@ -280,7 +280,7 @@
                               <select class="input experience" name="min_year" id="min_year" style="width:96%">
                                 <option value="" default>Min Year</option>
                                 {% for year in years %}
-                                <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.min_year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
+                                <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% if job_post.min_year|slugify == year.0 %} selected {% endif %}>{{ year.1}}</option>
                                 {% endfor %}
                               </select>
                             </div>
@@ -288,7 +288,7 @@
                               <select class="input experience" name="min_month" id="min_month" style="width:96%">
                                 <option value="" default>Min Month</option>
                                 {% for month in months%}
-                                <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal job_post.min_month|slugify month.0 %} selected {% endifequal %}>{{ month.1 }}</option>
+                                <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% if job_post.min_month|slugify == month.0 %} selected {% endif %}>{{ month.1 }}</option>
                                 {% endfor %}
                               </select>
                             </div>
@@ -296,7 +296,7 @@
                               <select class="input experience" name="max_year" id="max_year" style="width:96%">
                                 <option value="" default>Max Year</option>
                                 {% for year in years %}
-                                <option value="{{ year.0 }}" {% ifequal job_post.max_year|slugify year.0 %} selected {% endifequal %}{% if job_post.min_year|slugify > year.0 %} class="max_experience" {% endif %} id="{{ forloop.counter }}">{{ year.1}}</option>
+                                <option value="{{ year.0 }}" {% if job_post.max_year|slugify == year.0 %} selected {% endif %}{% if job_post.min_year|slugify > year.0 %} class="max_experience" {% endif %} id="{{ forloop.counter }}">{{ year.1}}</option>
                                 {% endfor %}
                               </select>
                             </div>
@@ -304,11 +304,11 @@
                               <select class="input experience pull-right" name="max_month" id="max_month">
                                 <option value="" default>Max Month</option>
                                 {% for month in months%}
-                                {% ifequal job_post.min_year|slugify  job_post.max_year|slugify %}
-                                  <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% ifequal job_post.max_month|slugify month.0 %} selected {% endifequal %}>{{ month.1 }}</option>
+                                {% if job_post.min_year|slugify  job_post.max_year|slugify %}
+                                  <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% if job_post.max_month|slugify == month.0 %} selected {% endif %}>{{ month.1 }}</option>
                                 {% else %}
-                                  <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% ifequal job_post.max_month|slugify month.0 %} selected {% endifequal %} {% if job_post.min_year >= job_post.max_year %} class="max_experience" {% endif %}>{{ month.1 }}</option>
-                                {% endifequal %}
+                                  <option id="{{ forloop.counter }}" value="{{ month.0 }}" {% if job_post.max_month|slugify == month.0 %} selected {% endif %} {% if job_post.min_year >= job_post.max_year %} class="max_experience" {% endif %}>{{ month.1 }}</option>
+                                {% endif %}
                               {% endfor %}
                               </select>
                             </div>
@@ -361,7 +361,7 @@
                           <select class="input select2" name="visa_country" id="visa_country">
                             <option value="">Visa Country</option>
                             {% for country in countries %}
-                            <option value="{{country.id}}" {% ifequal country.id job_post.visa_country.id %} selected {% endifequal %}>{{country.name}}</option>
+                            <option value="{{country.id}}" {% if country.id job_post.visa_country.id %} selected {% endif %}>{{country.name}}</option>
                             {% endfor %}
                           </select>
                         </div>

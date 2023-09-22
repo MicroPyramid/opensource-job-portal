@@ -107,7 +107,7 @@
                         <select class="form-control" name="current_city" id="profile_current_city">
                           <option value="">Select A Location</option>
                           {% for city in cities%}
-                          <option value="{{ city.id }}" id="{{ city.state.country.id}}" {% ifequal city.id request.user.current_city.id %} selected {% endifequal %}>{{ city.name }}</option>
+                          <option value="{{ city.id }}" id="{{ city.state.country.id}}" {% if city.id == request.user.current_city.id %} selected {% endif %}>{{ city.name }}</option>
                           {% endfor%}
                         </select>
                       </div>
@@ -146,7 +146,7 @@
                         <select class="form-control" name="prefered_industry" id="profile_prefered_industry">
                           <option value="">Select A Industry</option>
                           {% for industry in industries %}
-                          <option value="{{ industry.id }}" {% ifequal request.user.prefered_industry.id|slugify industry.id|slugify %} selected {% endifequal %}>{{ industry.name }}</option>
+                          <option value="{{ industry.id }}" {% if request.user.prefered_industry.id|slugify == industry.id|slugify %} selected {% endif %}>{{ industry.name }}</option>
                           {% endfor%}
                         </select>
                       </div>
@@ -318,7 +318,7 @@
                              <select class="form-control" name="current_city" id="current_city">
                                <option value="">Select A Location</option>
                                {% for city in cities %}
-                                 <option value="{{ city.id }}" {% ifequal city.id request.user.current_city.id %} selected {% endifequal %}>{{ city.name }}</option>
+                                 <option value="{{ city.id }}" {% if city.id == request.user.current_city.id %} selected {% endif %}>{{ city.name }}</option>
                                {% endfor %}
                                {% if request.user.current_city.status == 'Disabled' %}
                                  <option value="{{request.user.current_city.id}}" selected>
@@ -347,7 +347,7 @@
                              <select class="form-control" name="marital_status" id="marital_status">
                                <option value="">Select A Status</option>
                                {% for status in martial_status%}
-                               <option value="{{ status.0 }}" {% ifequal status.0|slugify request.user.marital_status|slugify %} selected {% endifequal %}>{{ status.1 }}</option>
+                               <option value="{{ status.0 }}" {% if status.0|slugify == request.user.marital_status|slugify %} selected {% endif %}>{{ status.1 }}</option>
                                {% endfor%}
                              </select>
                            </span>
@@ -584,7 +584,7 @@
                           <select class="form-control experience" name="year" id="year">
                             <option value="" default>years</option>
                               {% for year in years %}
-                              <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
+                              <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% if request.user.year|slugify == year.0 %} selected {% endif %}>{{ year.1}}</option>
                               {% endfor %}
                           </select>
                         </span>
@@ -592,7 +592,7 @@
                           <select class="form-control experience col-md-12 pad_lr_0" id="month" name="month">
                             <option value="" default>months</option>
                               {% for month in months %}
-                              <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.month|slugify month.0 %} selected {% endifequal %}>{{ month.1}}</option>
+                              <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% if request.user.month|slugify == month.0 %} selected {% endif %}>{{ month.1}}</option>
                               {% endfor %}
                           </select>
                         </span>
@@ -624,9 +624,9 @@
                   <select class="form-control select2" name="prefered_industry">
                       <option value="">Select A Industry</option>
                       {% for industry in industries%}
-                      <option value="{{ industry.id }}" {% ifequal request.user.prefered_industry.id|slugify industry.id|slugify %} selected {% endifequal %}>{{ industry.name }}</option>
+                      <option value="{{ industry.id }}" {% if request.user.prefered_industry.id|slugify == industry.id|slugify %} selected {% endif %}>{{ industry.name }}</option>
                       {% endfor%}
-                      <option value="36" {% ifequal request.user.prefered_industry.id|slugify 36|slugify %} selected {% endifequal %}>Other Industry</option>
+                      <option value="36" {% if request.user.prefered_industry.id|slugify == 36|slugify %} selected {% endif %}>Other Industry</option>
                     </select>
                     <span id="prefered_industry"></span>
                 </span>

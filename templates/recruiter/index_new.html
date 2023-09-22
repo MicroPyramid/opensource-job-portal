@@ -109,7 +109,7 @@
               <span class="count green">{{ unread_messages }}</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" {% ifequal request.session.url_id 'recruiter_tickets' %}class="active"{% endifequal %} href="{% url 'tickets:index' %}"><i class="fas fa-phone"></i>Support</a>
+                <a class="nav-link" {% if request.session.url_id == 'recruiter_tickets' %}class="active"{% endif %} href="{% url 'tickets:index' %}"><i class="fas fa-phone"></i>Support</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

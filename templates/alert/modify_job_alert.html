@@ -124,8 +124,8 @@
                                 <option value="">Min Year</option>
                                 {% for year in years %}
                                   <option value="{{ year.0 }}" id="{{ forloop.counter }}"
-                                  {% ifequal job_alert.min_year|slugify year.0 %}
-                                  selected {% endifequal %}>{{ year.1 }}</option>
+                                  {% if job_alert.min_year|slugify == year.0 %}
+                                  selected {% endif %}>{{ year.1 }}</option>
                                 {% endfor %}
                               </select>
                             </div>
@@ -134,7 +134,7 @@
                                 <option value="">Max year</option>
                                 {% for year in years %}
                                   <option value="{{ year.0 }}" id="{{ forloop.counter }}"
-                                  {% ifequal job_alert.max_year|slugify year.0 %} selected {% endifequal %}{% if job_alert.min_year|slugify > year.0|slugify %} class="max_experience" {% endif %}>{{ year.1 }}
+                                  {% if job_alert.max_year|slugify == year.0 %} selected {% endif %}{% if job_alert.min_year|slugify > year.0|slugify %} class="max_experience" {% endif %}>{{ year.1 }}
                                   </option>
                                   {% endfor %}
                               </select>

@@ -45,7 +45,7 @@
                                         name="applicant_status" id="applicant_status">
                                     {% for status in applicant_status %}
                                         <option value="{{ status.0 }}" class=""
-                                                {% ifequal status.0 email_template.applicant_status %}selected{% endifequal %}>{{ status.1 }}</option>
+                                                {% if status.0 == email_template.applicant_status %}selected{% endif %}>{{ status.1 }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

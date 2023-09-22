@@ -108,7 +108,7 @@
                            <select class="form-control" name="nationality" id="nationality">
                              <option value="">Select A Location</option>
                              {% for country in countries%}
-                             <option value="{{ country.id }}" {% ifequal country.id|slugify request.user.nationality|slugify %} selected {% endifequal %}>{{ country.name }}</option>
+                             <option value="{{ country.id }}" {% if country.id|slugify == request.user.nationality|slugify %} selected {% endif %}>{{ country.name }}</option>
                              {% endfor%}
                            </select>
                          </div>
@@ -121,7 +121,7 @@
                            <select class="js-example-basic-multiple" name="marital_status" id="marital_status">
                              <option value="">Select A Status</option>
                              {% for status in martial_status%}
-                             <option value="{{ status.0 }}" {% ifequal status.0|slugify request.user.marital_status|slugify %} selected {% endifequal %}>{{ status.1 }}</option>
+                             <option value="{{ status.0 }}" {% if status.0|slugify == request.user.marital_status|slugify %} selected {% endif %}>{{ status.1 }}</option>
                              {% endfor%}
                            </select>
                          </div>
@@ -132,7 +132,7 @@
                            <select class="js-example-basic-multiple" name="current_city" id="current_city">
                              <option value="">Select A Location</option>
                              {% for city in cities%}
-                               <option value="{{ city.id }}" {% ifequal city.id request.user.current_city.id %} selected {% endifequal %}>{{ city.name }}</option>
+                               <option value="{{ city.id }}" {% if city.id == request.user.current_city.id %} selected {% endif %}>{{ city.name }}</option>
                              {% endfor %}
                              {% if request.user.current_city.status == 'Disabled' %}
                              <option value="{{request.user.current_city.id}}" selected>{{request.user.current_city.name}}</option>

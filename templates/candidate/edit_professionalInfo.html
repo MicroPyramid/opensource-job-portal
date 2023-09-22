@@ -38,7 +38,7 @@
                                 <select class="js-example-basic-single experience" name="year" id="year">
                                   <option value="" default>years</option>
                                     {% for year in years %}
-                                    <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.year|slugify year.0 %} selected {% endifequal %}>{{ year.1}}</option>
+                                    <option value="{{ year.0 }}" id="{{ forloop.counter }}" {% if request.user.year|slugify == year.0 %} selected {% endif %}>{{ year.1}}</option>
                                     {% endfor %}
                                 </select>
                               </div>
@@ -46,7 +46,7 @@
                                 <select class="js-example-basic-single experience" id="month" name="month">
                                   <option value="" default>months</option>
                                     {% for month in months %}
-                                    <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% ifequal request.user.month|slugify month.0 %} selected {% endifequal %}>{{ month.1}}</option>
+                                    <option value="{{ month.0 }}" id="{{ forloop.counter }}" {% if request.user.month|slugify == month.0 %} selected {% endif %}>{{ month.1}}</option>
                                     {% endfor %}
                                 </select>
                               </div>
@@ -66,9 +66,9 @@
                             <select class="js-example-basic-single" name="prefered_industry" id="prefered_industry">
                               <option value="">Select A Industry</option>
                               {% for industry in industires%}
-                              <option value="{{ industry.id }}" {% ifequal request.user.prefered_industry.id|slugify industry.id|slugify %} selected {% endifequal %}>{{ industry.name }}</option>
+                              <option value="{{ industry.id }}" {% if request.user.prefered_industry.id|slugify == industry.id|slugify %} selected {% endif %}>{{ industry.name }}</option>
                               {% endfor%}
-                              <option value="36" {% ifequal request.user.prefered_industry.id|slugify 36|slugify %} selected {% endifequal %}>Other Industry</option>
+                              <option value="36" {% if request.user.prefered_industry.id|slugify == 36|slugify %} selected {% endif %}>Other Industry</option>
                             </select>
     
                           </div>

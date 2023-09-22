@@ -39,8 +39,8 @@
                                                 <option value="">select a Bank</option>
                                                 {% for bank in bank_names %}
                                                     <option value="{{ bank.0 }}"
-                                                            {% ifequal bank.0 request.user.bank_name %}
-                                                            selected {% endifequal %}>{{ bank.1 }}</option>
+                                                            {% if bank.0 == request.user.bank_name %}
+                                                            selected {% endif %}>{{ bank.1 }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>

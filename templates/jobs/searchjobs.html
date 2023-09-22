@@ -47,7 +47,7 @@
 <div id="jpages">
 	<ul class="pagination">
 		{% for s in pages %}
-		<li {% ifequal s page %} class="active"{% endifequal %} ><a	href="{{s}}">{{s}}</a></li>
+		<li {% if s == page %} class="active"{% endif %} ><a	href="{{s}}">{{s}}</a></li>
 		{% endfor %}
 	</ul>
 </div>

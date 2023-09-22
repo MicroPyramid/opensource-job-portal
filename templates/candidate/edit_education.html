@@ -58,7 +58,7 @@
                           <select class="form-select" name="city" id="city">
                             <option value="">Select A Location</option>
                             {% for city in cities %}
-                            <option value="{{ city.id }}" {% ifequal city.id|slugify education.institute.city.id|slugify %} selected {% endifequal %}>{{ city.name }}</option>
+                            <option value="{{ city.id }}" {% if city.id|slugify == education.institute.city.id|slugify %} selected {% endif %}>{{ city.name }}</option>
                             {% endfor%}
                           </select>
                         </div>
@@ -81,7 +81,7 @@
                           <select class="form-select" name="degree_name" id="degree_name">
                             <option value="">Select A Degree Name</option>
                             {% for qualification in qualifications %}
-                            <option value="{{ qualification.id }}" {% ifequal qualification.id|slugify education.degree.degree_name.id|slugify %} selected {% endifequal %}>{{ qualification.name }}</option>
+                            <option value="{{ qualification.id }}" {% if qualification.id|slugify == education.degree.degree_name.id|slugify %} selected {% endif %}>{{ qualification.name }}</option>
                             {% endfor%}
                           </select>
                         </div>
@@ -92,7 +92,7 @@
                           <select class="form-select" name="degree_type" id="degree_type">
                             <option value="">Select A Degree Type</option>
                             {% for degree_type in degree_types %}
-                            <option value="{{ degree_type.0 }}" {% ifequal degree_type.0|slugify education.degree.degree_type|slugify %} selected {% endifequal %}>{{ degree_type.1 }}</option>
+                            <option value="{{ degree_type.0 }}" {% if degree_type.0|slugify == education.degree.degree_type|slugify %} selected {% endif %}>{{ degree_type.1 }}</option>
                             {% endfor%}
                           </select>
                         </div>

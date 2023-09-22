@@ -136,7 +136,7 @@
                           <option value=''>Select Recruiter</option>
                           {% for recruiter in recruiters %}
                             {% if recruiter.agency_admin or recruiter|check_recruiter_perm:"jobposts_edit"  %}
-                              <option value="{{recruiter.id}}" {% ifequal request.user.email recruiter.email %} selected{% endifequal %}>{{ recruiter.email }}</option>
+                              <option value="{{recruiter.id}}" {% if request.user.email == recruiter.email %} selected{% endif %}>{{ recruiter.email }}</option>
                             {% endif %}
                           {% endfor %}
                         </select>

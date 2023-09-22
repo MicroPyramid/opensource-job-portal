@@ -111,7 +111,7 @@
                         <select class="input select2 applicant_status" name="applicant_status" id="applicant_status">
                           <option value=''>Select Jobpost</option>
                           {% for each in status %}
-                            <option value="{{ each.0 }}" {% ifequal applicant.status each.0 %}selected{% endifequal %}>{{ each.1 }}</option>
+                            <option value="{{ each.0 }}" {% if applicant.status == each.0 %}selected{% endif %}>{{ each.1 }}</option>
                           {% endfor %}
                         </select>
                       </form>
