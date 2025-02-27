@@ -92,7 +92,7 @@ DATABASES = {
 }
 
 
-TIME_ZONE = "Asia/Calcutta"
+TIME_ZONE = 'Asia/Kolkata'
 
 LANGUAGE_CODE = "en-us"
 
