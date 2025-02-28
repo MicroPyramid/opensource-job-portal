@@ -1,6 +1,6 @@
 language : python
 python:
-  - "3.6"
+  - "3.10"
 
 #Django & Database
 addons:
