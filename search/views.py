@@ -30,7 +30,7 @@ from peeldb.models import (
 )
 from pjob.refine_search import refined_search
 from pjob.views import get_page_number
-from search.forms import job_searchForm
+from search.forms import JobSearchForm
 from dashboard.tasks import save_search_results
 
 
@@ -98,7 +98,7 @@ from dashboard.tasks import save_search_results
 
 
 def custom_search(data, request):
-    form = job_searchForm(data)
+    form = JobSearchForm(data)
     searched_locations = searched_skills = searched_edu = searched_industry = (
         searched_states
     ) = ""
