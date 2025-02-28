@@ -5,7 +5,7 @@ email to recruiter when admin gives suggestions
 
 import json
 from django.shortcuts import render
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.template import loader

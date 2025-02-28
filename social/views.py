@@ -46,7 +46,6 @@ from .tasks import (
     facebook_groups,
     facebook_friends,
     facebook_pages,
-    add_google_friends,
     add_twitter_friends_followers,
 )
 
@@ -361,7 +360,6 @@ def google_login(request):
             user.save()
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
-            # add_google_friends.delay(request.user.id, info["access_token"])
             return HttpResponseRedirect("/social/user/update/")
 
         # user.last_login = datetime.now()
@@ -369,7 +367,6 @@ def google_login(request):
         # login(request, user)
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
-        # add_google_friends.delay(request.user.id, info["access_token"])
         if request.session.get("job_event"):
             return HttpResponseRedirect(reverse("pjob:job_add_event"))
         # if request.is_mobile == "mobile":
@@ -980,7 +977,6 @@ def google_connect(request):
             UserEmail.objects.create(user=request.user, email=user_document["email"])
 
         # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
-        # add_google_friends.delay(request.user.id, info["access_token"])
         return HttpResponseRedirect(reverse("my:profile"))
     else:
         rty = (

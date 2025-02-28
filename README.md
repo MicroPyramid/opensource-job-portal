@@ -69,7 +69,7 @@ add the following to your path
 ##### Install requirements
 
 ```bash
-pipenv install
+pipenv install -d
 ```
 
 For env variables, refer to env.md in source directory and you need to create a .env file to keep all env variables with their respective values.

@@ -9,7 +9,7 @@ deploy_live:
     - sudo /bin/rm -rf /home/peeljobs/peeljobs/; cp -r . /home/peeljobs/peeljobs
     - source /home/peeljobs/env/bin/activate
     - pip install pipenv
-    - pipenv install
+    - pipenv install -d
     - python /home/peeljobs/peeljobs/manage_server.py migrate --noinput
     - sudo /usr/bin/supervisorctl restart all
   tags:

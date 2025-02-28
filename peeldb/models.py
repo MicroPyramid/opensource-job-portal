@@ -860,9 +860,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_user_twitter_followers(self):
         return TwitterFollower.objects.filter(user=self)
 
-    def get_user_google_friends(self):
-        return GoogleFirend.objects.filter(user=self)
-
     def get_open_tickets(self):
         return Ticket.objects.filter(
             Q(user=self) & Q(status="Open") | Q(status="Ongoing")
@@ -1178,15 +1175,6 @@ class TwitterFriend(models.Model):
     twitter_id = models.CharField(max_length=100)
     screen_name = models.CharField(max_length=100)
 
-
-class GoogleFirend(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    friend_id = models.CharField(max_length=200, default="")
-    fullname = models.CharField(max_length=200, default="")
-    title = models.CharField(max_length=200, default="")
-    email = models.CharField(max_length=2000, default="")
-    phone = models.CharField(max_length=200, default="")
-    familyname = models.CharField(max_length=200, default="")
 
 
 class FacebookFriend(models.Model):
