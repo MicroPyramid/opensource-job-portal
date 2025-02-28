@@ -17,7 +17,7 @@ django-compressor = "==4.1"
 django-cors-headers = "==3.13.0"
 django-debug-toolbar-template-profiler = "==2.1.0"
 django-haystack = "==3.2.1"
-django-ses = "==4.4.0"
+django-ses = "==3.5.0"
 django-ses-gateway = "==0.1.1"
 django-tellme = {git = "https://github.com/ludrao/django-tellme"}
 elasticsearch = "==7.17.6"
