@@ -26,7 +26,7 @@ sorl-thumbnail==12.9.0
 twython==3.9.1
 dj-rest-auth==2.2.5
 pyjwt==2.5.0
-djangorestframework==3.14.0
+djangorestframework==3.15.2
 djangorestframework-simplejwt==5.2.0
 sentry-sdk==1.9.8
 pip-check==2.7
