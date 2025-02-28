@@ -62,7 +62,7 @@ from .views import (
     subscribers,
     view_subscribers,
     search_summary,
-    applicants_mail,
+    # applicants_mail,
     removing_duplicate_companies,
     reports,
     new_company,
@@ -286,7 +286,7 @@ urlpatterns = [
         search_summary,
         name="search_summary",
     ),
-    url(r"^applicants-mails/", applicants_mail, name="applicants_mail"),
+    # url(r"^applicants-mails/", applicants_mail, name="applicants_mail"),
     url(
         r"^update-company-jobposts/",
         removing_duplicate_companies,

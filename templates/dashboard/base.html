@@ -121,12 +121,15 @@
                 </ul>
             </li>
           <li {% if request.session.url_id == 'subscribers' %}class="active_menu"{% endif %}><a href="{% url "dashboard:subscribers" %}" class="menu_item"><i class="fa fa-bell"></i><span>Subscribe</span></a></li>
+          {% comment %}
           <li {% if request.session.url_id == 'subscribers' %}class="active_menu"{% endif %}>
             <a><i class="fa fa-share"></i><span>Sent Mails</span></a>
             <ul class="sub_list">
               <li><a href="{% url "dashboard:applicants_mail" %}" class="menu_item"><i class='fa fa-caret-right'></i>Today's Mails</a></li>
             </ul>
           </li>
+          {% endcomment %}
+
           <li><a><i class="fa fa-medkit"></i><span>Duplicates</span></a>
             <ul class="sub_list">
               <li><a href="{% url 'dashboard:removing_duplicate_companies' %}" class="menu_item"><i class='fa fa-caret-right'></i>Company Jobposts</a></li>
@@ -191,9 +194,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Select2 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-
-<!-- <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&sensor=false"
-        type="text/javascript"></script> -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 {% compress js %}

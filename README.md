@@ -38,10 +38,10 @@ pip-check -H  # to see upgradable packages
 Following are the setup instruction for ubuntu 20.04.
 
 ```bash
-sudo apt install git postgresql python3 python3-dev python3-virtualenv build-essential ruby ruby-dev gem redis-server memcached redis-tools -y
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install git postgresql python3 python3-dev python3-virtualenv build-essential ruby ruby-dev gem redis-server memcached redis-tools virtualenv apt-transport-https ca-certificates curl software-properties-common gcc g++ make -y
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
-sudo apt-get install node-less
+sudo npm install -g less
 ```
 
 ### Install and configure sass and less compilers
@@ -69,7 +69,18 @@ add the following to your path
 ##### Install requirements
 
 ```bash
+cp env.md .env
+sed -i 's/^SECRET_KEY=.*/SECRET_KEY="'$(openssl rand -base64 50 | tr -d '\n' | tr -d '=')'"/' .env
 pipenv install -d
+python manage.py migrate
+python manage.py loaddata industries
+python manage.py loaddata qualification
+python manage.py loaddata skills
+python manage.py loaddata countries
+python manage.py loaddata states
+python manage.py loaddata cities
+python manage.py update_index
+python manage.py createsuperuser
 ```
 
 For env variables, refer to env.md in source directory and you need to create a .env file to keep all env variables with their respective values.
