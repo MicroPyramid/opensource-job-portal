@@ -4,9 +4,9 @@ black==25.1.0
 boto3==1.24.78
 bpython==0.23
 coverage==6.4.4
-django==4.0.10
+django==4.2.19
 django-behave==0.1.6
-django-celery-beat==2.3.0
+django-celery-beat==2.7.0
 django-compressor==4.1
 django-cors-headers==3.13.0
 django-debug-toolbar-template-profiler==2.1.0
