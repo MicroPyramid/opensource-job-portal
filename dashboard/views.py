@@ -3735,45 +3735,45 @@ def edit_company(request, company_id):
     return render(request, "dashboard/company/new_company.html", {"company": company})
 
 
-@permission_required("activity_edit", "activity_view")
-def applicants_mail(request):
-    current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime(
-        "%Y-%m-%d"
-    )
+# @permission_required("activity_edit", "activity_view")
+# def applicants_mail(request):
+#     current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime(
+#         "%Y-%m-%d"
+#     )
 
-    all_mail_applicants = list(db.users.find({"date": current_date}))
+#     all_mail_applicants = list(db.users.find({"date": current_date}))
 
-    items_per_page = 100
+#     items_per_page = 100
 
-    no_pages = int(math.ceil(float(len(all_mail_applicants)) / items_per_page))
-    page = request.POST.get("page")
-    if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
-        if int(page) > (no_pages + 2):
-            return HttpResponseRedirect(reverse("dashboard:applicants"))
-        page = int(page)
-    else:
-        page = 1
+#     no_pages = int(math.ceil(float(len(all_mail_applicants)) / items_per_page))
+#     page = request.POST.get("page")
+#     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
+#         if int(page) > (no_pages + 2):
+#             return HttpResponseRedirect(reverse("dashboard:applicants"))
+#         page = int(page)
+#     else:
+#         page = 1
 
-    all_mail_applicants = all_mail_applicants[
-        (page - 1) * items_per_page : page * items_per_page
-    ]
-    prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
-        page, no_pages
-    )
+#     all_mail_applicants = all_mail_applicants[
+#         (page - 1) * items_per_page : page * items_per_page
+#     ]
+#     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
+#         page, no_pages
+#     )
 
-    return render(
-        request,
-        "dashboard/all_mail_applicants.html",
-        {
-            "all_mail_applicants": all_mail_applicants,
-            "aft_page": aft_page,
-            "after_page": after_page,
-            "prev_page": prev_page,
-            "previous_page": previous_page,
-            "current_page": page,
-            "last_page": no_pages,
-        },
-    )
+#     return render(
+#         request,
+#         "dashboard/all_mail_applicants.html",
+#         {
+#             "all_mail_applicants": all_mail_applicants,
+#             "aft_page": aft_page,
+#             "after_page": after_page,
+#             "prev_page": prev_page,
+#             "previous_page": previous_page,
+#             "current_page": page,
+#             "last_page": no_pages,
+#         },
+#     )
 
 
 def edit_job_title(request, post_id):

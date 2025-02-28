@@ -1,16 +1,17 @@
-
 # Environment variables guidelines
 
+- All environment variables defined below and their usage.
+- Kindly add below environment variables to your local development with appropriate key/value accordingly.
 
 ## Common keys
 
 DEBUG=True/False
-SECRET_KEY="kaljoi uJFVK356"
-HTML_MINIFY=False
-ENV_TYPE="DEV/PROD"
-DEFAULT_FROM_EMAIL=''
-CONTACT_NUMBER=''
-PEEL_URL=""
+SECRET_KEY=""
+HTML_MINIFY=True/False
+ENV_TYPE="DEV" or "PROD"
+DEFAULT_FROM_EMAIL='PeelJobs <support@peeljobs.com>'
+CONTACT_NUMBER='850 009 9499'
+PEEL_URL="http://peeljobs.com/"
 CACHE_BACKEND = "memcached://127.0.0.1:11211/"
 MINIFIED_URL=''
 
@@ -23,8 +24,7 @@ CELERY_BROKER_URL='redis://localhost:6379/1'
 
 GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
-GOOGLE_LOGIN_HOST='http://localhost:8000/'
-GOOGLE_MAPS_API_KEY=""
+GOOGLE_LOGIN_HOST='http://localhost:8000'
 ## Elasticsearch keys
 
 HAYSTACKURL='http://127.0.0.1:9200/'
