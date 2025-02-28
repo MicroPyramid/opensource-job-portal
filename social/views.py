@@ -1,6 +1,6 @@
 """
-    social logins module which includes facebook, google, twitter, linkedin, github, stackoverflow connections
-    Also applying jobs when user clicks on apply button in jobs list page
+social logins module which includes facebook, google, twitter, linkedin, github, stackoverflow connections
+Also applying jobs when user clicks on apply button in jobs list page
 """
 
 from email.mime.text import MIMEText
@@ -52,7 +52,6 @@ from .tasks import (
 
 
 def login_and_apply(request):
-
     """
     1. Check for jobpost id present in user session exists or not
     2. Checking for if user already applies to a job

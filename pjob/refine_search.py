@@ -6,9 +6,9 @@ valid_time_formats = ["%Y-%m-%d 00:00:00"]
 
 
 def refined_search(data):
-    searched_skills = (
-        searched_locations
-    ) = searched_industry = searched_edu = state = Skill.objects.none()
+    searched_skills = searched_locations = searched_industry = searched_edu = state = (
+        Skill.objects.none()
+    )
     sqs = SearchQuerySet().models(JobPost).filter_and(status="Live")
     if "refine_skill" in data and data.getlist("refine_skill"):
         term = data.getlist("refine_skill")

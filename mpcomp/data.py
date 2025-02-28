@@ -36,7 +36,6 @@ CONTACTS_TEMPLATE = "{%s}%%s" % CONTACTS_NAMESPACE
 
 
 class BillingInformation(core.XmlElement):
-
     """
     gContact:billingInformation
     Specifies billing information of the entity represented by the contact. The element cannot be repeated.
@@ -46,7 +45,6 @@ class BillingInformation(core.XmlElement):
 
 
 class Birthday(core.XmlElement):
-
     """
     Stores birthday date of the person represented by the contact. The element cannot be repeated.
     """
@@ -56,7 +54,6 @@ class Birthday(core.XmlElement):
 
 
 class ContactLink(atom_data.Link):
-
     """
     Extends atom_data.Link to add gd:etag attribute for photo link.
     """
@@ -65,7 +62,6 @@ class ContactLink(atom_data.Link):
 
 
 class CalendarLink(core.XmlElement):
-
     """
     Storage for URL of the contact's calendar. The element can be repeated.
     """
@@ -78,7 +74,6 @@ class CalendarLink(core.XmlElement):
 
 
 class DirectoryServer(core.XmlElement):
-
     """
     A directory server associated with this contact.
     May not be repeated.
@@ -88,7 +83,6 @@ class DirectoryServer(core.XmlElement):
 
 
 class Event(core.XmlElement):
-
     """
     These elements describe events associated with a contact.
     They may be repeated
@@ -101,7 +95,6 @@ class Event(core.XmlElement):
 
 
 class ExternalId(core.XmlElement):
-
     """
      Describes an ID of the contact in an external system of some kind.
     This element may be repeated.
@@ -118,7 +111,6 @@ def ExternalIdFromString(xml_string):
 
 
 class Gender(core.XmlElement):
-
     """
     Specifies the gender of the person represented by the contact.
     The element cannot be repeated.
@@ -129,7 +121,6 @@ class Gender(core.XmlElement):
 
 
 class Hobby(core.XmlElement):
-
     """
     Describes an ID of the contact in an external system of some kind.
     This element may be repeated.
@@ -139,7 +130,6 @@ class Hobby(core.XmlElement):
 
 
 class Initials(core.XmlElement):
-
     """Specifies the initials of the person represented by the contact. The
     element cannot be repeated."""
 
@@ -147,7 +137,6 @@ class Initials(core.XmlElement):
 
 
 class Jot(core.XmlElement):
-
     """
     Storage for arbitrary pieces of information about the contact. Each jot
     has a type specified by the rel attribute and a text value.
@@ -159,7 +148,6 @@ class Jot(core.XmlElement):
 
 
 class Language(core.XmlElement):
-
     """
     Specifies the preferred languages of the contact.
     The element can be repeated.
@@ -175,7 +163,6 @@ class Language(core.XmlElement):
 
 
 class MaidenName(core.XmlElement):
-
     """
     Specifies maiden name of the person represented by the contact.
     The element cannot be repeated.
@@ -185,7 +172,6 @@ class MaidenName(core.XmlElement):
 
 
 class Mileage(core.XmlElement):
-
     """
     Specifies the mileage for the entity represented by the contact.
     Can be used for example to document distance needed for reimbursement
@@ -196,7 +182,6 @@ class Mileage(core.XmlElement):
 
 
 class NickName(core.XmlElement):
-
     """
     Specifies the nickname of the person represented by the contact.
     The element cannot be repeated.
@@ -206,7 +191,6 @@ class NickName(core.XmlElement):
 
 
 class Occupation(core.XmlElement):
-
     """
     Specifies the occupation/profession of the person specified by the contact.
     The element cannot be repeated.
@@ -216,7 +200,6 @@ class Occupation(core.XmlElement):
 
 
 class Priority(core.XmlElement):
-
     """
     Classifies importance of the contact into 3 categories:
       * Low
@@ -230,7 +213,6 @@ class Priority(core.XmlElement):
 
 
 class Relation(core.XmlElement):
-
     """
     This element describe another entity (usually a person) that is in a
     relation of some kind with the contact.
@@ -242,7 +224,6 @@ class Relation(core.XmlElement):
 
 
 class Sensitivity(core.XmlElement):
-
     """
     Classifies sensitivity of the contact into the following categories:
       * Confidential
@@ -258,7 +239,6 @@ class Sensitivity(core.XmlElement):
 
 
 class UserDefinedField(core.XmlElement):
-
     """
     Represents an arbitrary key-value pair attached to the contact.
     """
@@ -273,7 +253,6 @@ def UserDefinedFieldFromString(xml_string):
 
 
 class Website(core.XmlElement):
-
     """
     Describes websites associated with the contact, including links.
     May be repeated.
@@ -292,7 +271,6 @@ def WebsiteFromString(xml_string):
 
 
 class HouseName(core.XmlElement):
-
     """
     Used in places where houses or buildings have names (and
     not necessarily numbers), eg. "The Pillars".
@@ -302,7 +280,6 @@ class HouseName(core.XmlElement):
 
 
 class Street(core.XmlElement):
-
     """
     Can be street, avenue, road, etc. This element also includes the house
     number and room/apartment/flat/floor number.
@@ -312,7 +289,6 @@ class Street(core.XmlElement):
 
 
 class POBox(core.XmlElement):
-
     """
     Covers actual P.O. boxes, drawers, locked bags, etc. This is usually but not
     always mutually exclusive with street, atom
@@ -322,7 +298,6 @@ class POBox(core.XmlElement):
 
 
 class Neighborhood(core.XmlElement):
-
     """
     This is used to disambiguate a street address when a city contains more than
     one street with the same name, or to specify a small place whose mail is
@@ -334,7 +309,6 @@ class Neighborhood(core.XmlElement):
 
 
 class City(core.XmlElement):
-
     """
     Can be city, village, town, borough, etc. This is the postal town and not
     necessarily the place of residence or place of business.
@@ -344,7 +318,6 @@ class City(core.XmlElement):
 
 
 class SubRegion(core.XmlElement):
-
     """
     Handles administrative districts such as U.S. or U.K. counties that are not
      used for mail addressing purposes. Subregion is not intended for
@@ -355,7 +328,6 @@ class SubRegion(core.XmlElement):
 
 
 class Region(core.XmlElement):
-
     """
     A state, province, county (in Ireland), Land (in Germany),
     departement (in France), etc.
@@ -365,7 +337,6 @@ class Region(core.XmlElement):
 
 
 class PostalCode(core.XmlElement):
-
     """
     Postal code. Usually country-wide, but sometimes specific to the
     city (e.g. "2" in "Dublin 2, Ireland" addresses).
@@ -375,14 +346,12 @@ class PostalCode(core.XmlElement):
 
 
 class Country(core.XmlElement):
-
     """The name or code of the country."""
 
     _qname = CONTACTS_TEMPLATE % "country"
 
 
 class Status(core.XmlElement):
-
     """Person's status element."""
 
     _qname = CONTACTS_TEMPLATE % "status"
@@ -390,7 +359,6 @@ class Status(core.XmlElement):
 
 
 class PersonEntry(gdata_data.BatchEntry):
-
     """Represents a google contact"""
 
     link = [ContactLink]
@@ -429,7 +397,6 @@ class PersonEntry(gdata_data.BatchEntry):
 
 
 class GroupMembershipInfo(core.XmlElement):
-
     """
     Identifies the group to which the contact belongs or belonged.
     The group is referenced by its id.
@@ -445,7 +412,6 @@ class GroupMembershipInfo(core.XmlElement):
 
 
 class ContactEntry(PersonEntry):
-
     """A Google Contacts flavor of an Atom Entry."""
 
     group_membership_info = [GroupMembershipInfo]
@@ -468,7 +434,6 @@ class ContactEntry(PersonEntry):
 
 
 class ContactsFeed(gdata_data.BatchFeed):
-
     """A collection of Contacts."""
 
     entry = [ContactEntry]
@@ -479,7 +444,6 @@ class ContactsFeed(gdata_data.BatchFeed):
 
 
 class SystemGroup(core.XmlElement):
-
     """The contacts systemGroup element.
 
     When used within a contact group entry, indicates that the group in
@@ -490,7 +454,6 @@ class SystemGroup(core.XmlElement):
 
 
 class GroupEntry(gdata_data.BatchEntry):
-
     """Represents a contact group."""
 
     extended_property = [gdata_data.ExtendedProperty]
@@ -498,14 +461,12 @@ class GroupEntry(gdata_data.BatchEntry):
 
 
 class GroupsFeed(gdata_data.BatchFeed):
-
     """A Google contact groups feed flavor of an Atom Feed."""
 
     entry = [GroupEntry]
 
 
 class ProfileEntry(PersonEntry):
-
     """A Google Profiles flavor of an Atom Entry."""
 
 
@@ -522,7 +483,6 @@ def ProfileEntryFromString(xml_string):
 
 
 class ProfilesFeed(gdata_data.BatchFeed):
-
     """A Google Profiles feed flavor of an Atom Feed."""
 
     _qname = atom_data.ATOM_TEMPLATE % "feed"

@@ -7,7 +7,6 @@ from django.db.models import Q
 
 
 class PasswordlessAuthBackend(ModelBackend):
-
     """Custom authentication in djnago without providing a password."""
 
     def authenticate(self, request, username=None, password=None):

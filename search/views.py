@@ -99,9 +99,9 @@ from dashboard.tasks import save_search_results
 
 def custom_search(data, request):
     form = job_searchForm(data)
-    searched_locations = (
-        searched_skills
-    ) = searched_edu = searched_industry = searched_states = ""
+    searched_locations = searched_skills = searched_edu = searched_industry = (
+        searched_states
+    ) = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,

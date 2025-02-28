@@ -18,7 +18,6 @@ from django.core import management
 
 
 class BaseTest(TestCase):
-
     """
     Common class with setUp method for all test cases
     """

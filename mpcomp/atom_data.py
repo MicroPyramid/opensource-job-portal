@@ -31,28 +31,24 @@ APP_TEMPLATE_V2 = "{http://www.w3.org/2007/app}%s"
 
 
 class Name(core.XmlElement):
-
     """The atom:name element."""
 
     _qname = ATOM_TEMPLATE % "name"
 
 
 class Email(core.XmlElement):
-
     """The atom:email element."""
 
     _qname = ATOM_TEMPLATE % "email"
 
 
 class Uri(core.XmlElement):
-
     """The atom:uri element."""
 
     _qname = ATOM_TEMPLATE % "uri"
 
 
 class Person(core.XmlElement):
-
     """A foundation class which atom:author and atom:contributor extend.
 
     A person contains information like name, email address, and web page URI for
@@ -65,7 +61,6 @@ class Person(core.XmlElement):
 
 
 class Author(Person):
-
     """The atom:author element.
 
     An author is a required element in Feed unless each Entry contains an Author.
@@ -75,14 +70,12 @@ class Author(Person):
 
 
 class Contributor(Person):
-
     """The atom:contributor element."""
 
     _qname = ATOM_TEMPLATE % "contributor"
 
 
 class Link(core.XmlElement):
-
     """The atom:link element."""
 
     _qname = ATOM_TEMPLATE % "link"
@@ -95,7 +88,6 @@ class Link(core.XmlElement):
 
 
 class Generator(core.XmlElement):
-
     """The atom:generator element."""
 
     _qname = ATOM_TEMPLATE % "generator"
@@ -104,7 +96,6 @@ class Generator(core.XmlElement):
 
 
 class Text(core.XmlElement):
-
     """A foundation class from which atom:title, summary, etc. extend.
 
     This class should never be instantiated.
@@ -114,35 +105,30 @@ class Text(core.XmlElement):
 
 
 class Title(Text):
-
     """The atom:title element."""
 
     _qname = ATOM_TEMPLATE % "title"
 
 
 class Subtitle(Text):
-
     """The atom:subtitle element."""
 
     _qname = ATOM_TEMPLATE % "subtitle"
 
 
 class Rights(Text):
-
     """The atom:rights element."""
 
     _qname = ATOM_TEMPLATE % "rights"
 
 
 class Summary(Text):
-
     """The atom:summary element."""
 
     _qname = ATOM_TEMPLATE % "summary"
 
 
 class Content(Text):
-
     """The atom:content element."""
 
     _qname = ATOM_TEMPLATE % "content"
@@ -150,7 +136,6 @@ class Content(Text):
 
 
 class Category(core.XmlElement):
-
     """The atom:category element."""
 
     _qname = ATOM_TEMPLATE % "category"
@@ -160,35 +145,30 @@ class Category(core.XmlElement):
 
 
 class Id(core.XmlElement):
-
     """The atom:id element."""
 
     _qname = ATOM_TEMPLATE % "id"
 
 
 class Icon(core.XmlElement):
-
     """The atom:icon element."""
 
     _qname = ATOM_TEMPLATE % "icon"
 
 
 class Logo(core.XmlElement):
-
     """The atom:logo element."""
 
     _qname = ATOM_TEMPLATE % "logo"
 
 
 class Draft(core.XmlElement):
-
     """The app:draft element which indicates if this entry should be public."""
 
     _qname = (APP_TEMPLATE_V1 % "draft", APP_TEMPLATE_V2 % "draft")
 
 
 class Control(core.XmlElement):
-
     """The app:control element indicating restrictions on publication.
 
     The APP control element may contain a draft element indicating whether or
@@ -200,26 +180,22 @@ class Control(core.XmlElement):
 
 
 class Date(core.XmlElement):
-
     """A parent class for atom:updated, published, etc."""
 
 
 class Updated(Date):
-
     """The atom:updated element."""
 
     _qname = ATOM_TEMPLATE % "updated"
 
 
 class Published(Date):
-
     """The atom:published element."""
 
     _qname = ATOM_TEMPLATE % "published"
 
 
 class LinkFinder(object):
-
     """An "interface" providing methods to find link elements
 
     Entry elements often contain multiple links which differ in the rel
@@ -328,7 +304,6 @@ class LinkFinder(object):
 
 
 class FeedEntryParent(core.XmlElement, LinkFinder):
-
     """A super class for atom:feed and entry, contains shared attributes"""
 
     author = [Author]
@@ -347,7 +322,6 @@ class FeedEntryParent(core.XmlElement, LinkFinder):
 
 
 class Source(FeedEntryParent):
-
     """The atom:source element."""
 
     _qname = ATOM_TEMPLATE % "source"
@@ -358,7 +332,6 @@ class Source(FeedEntryParent):
 
 
 class Entry(FeedEntryParent):
-
     """The atom:entry element."""
 
     _qname = ATOM_TEMPLATE % "entry"
@@ -370,7 +343,6 @@ class Entry(FeedEntryParent):
 
 
 class Feed(Source):
-
     """The atom:feed element which contains entries."""
 
     _qname = ATOM_TEMPLATE % "feed"
@@ -378,7 +350,6 @@ class Feed(Source):
 
 
 class ExtensionElement(core.XmlElement):
-
     """Provided for backwards compatibility to the v1 ExtensionElement."""
 
     def __init__(

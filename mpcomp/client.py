@@ -131,7 +131,6 @@ def get_xml_version(version):
 
 
 class GDClient(atom_client.AtomPubClient):
-
     """Communicates with Google Data servers to perform CRUD operations.
 
     This class is currently experimental and may change in backwards

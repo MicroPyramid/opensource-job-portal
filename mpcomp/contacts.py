@@ -322,7 +322,6 @@ class ContactsClient(client.GDClient):
 
 
 class ContactsQuery(client.Query):
-
     """
     Create a custom Contacts Query
 
