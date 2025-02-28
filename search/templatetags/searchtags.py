@@ -1,5 +1,5 @@
 from django import template
-from search.forms import job_searchForm
+from search.forms import JobSearchForm
 from peeldb.models import JOB_TYPE
 from peeldb.models import WALKIN_TYPE
 
@@ -8,7 +8,7 @@ register = template.Library()
 
 @register.inclusion_tag("search/search_filter.html", takes_context=True)
 def show_search_filter(context):
-    search_form = job_searchForm()
+    search_form = JobSearchForm()
     return {
         "request": context["request"],
         "search_form": search_form,
@@ -25,7 +25,7 @@ def show_search_filter(context):
 
 @register.inclusion_tag("search/adv_search_filter.html", takes_context=True)
 def show_adv_search_filter(context):
-    search_form = job_searchForm()
+    search_form = JobSearchForm()
 
     return {
         "request": context["request"],
@@ -37,7 +37,7 @@ def show_adv_search_filter(context):
 
 @register.inclusion_tag("mobile/search/search_filter.html", takes_context=True)
 def show_mobile_search_filter(context):
-    search_form = job_searchForm()
+    search_form = JobSearchForm()
     return {
         "request": context["request"],
         "search_form": search_form,

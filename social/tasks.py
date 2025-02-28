@@ -1,6 +1,5 @@
 from jobsp.celery import app
 from mpcomp.facebook import GraphAPI
-import celery
 import requests
 from django.conf import settings
 from peeldb.models import (
@@ -11,7 +10,6 @@ from peeldb.models import (
     TwitterFollower,
     TwitterFriend,
 )
-from mpcomp import gauth, contacts
 
 
 @app.task()
