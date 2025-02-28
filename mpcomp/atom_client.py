@@ -15,9 +15,7 @@
 # limitations under the License.
 
 
-"""AtomPubClient provides CRUD ops. in line with the Atom Publishing Protocol.
-
-"""
+"""AtomPubClient provides CRUD ops. in line with the Atom Publishing Protocol."""
 
 __author__ = "j.s@google.com (Jeff Scudder)"
 

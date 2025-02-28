@@ -476,9 +476,9 @@ def index(request, **kwargs):
     # jobs_list = JobPost.objects.filter(
     #     status='Live').select_related('company', 'user').prefetch_related(
     #     'location', 'skills', 'industry').distinct()
-    searched_locations = (
-        searched_skills
-    ) = searched_industry = searched_edu = searched_states = ""
+    searched_locations = searched_skills = searched_industry = searched_edu = (
+        searched_states
+    ) = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -1593,9 +1593,9 @@ def full_time_jobs(request, **kwargs):
         return redirect(url, permanent=True)
     request.session["formdata"] = ""
 
-    searched_locations = (
-        searched_industry
-    ) = searched_skills = searched_edu = searched_states = ""
+    searched_locations = searched_industry = searched_skills = searched_edu = (
+        searched_states
+    ) = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -1700,9 +1700,9 @@ def city_internship_jobs(request, location, **kwargs):
         return redirect(url, permanent=True)
     request.session["formdata"] = ""
     location = City.objects.filter(slug=location)
-    searched_locations = (
-        searched_industry
-    ) = searched_skills = searched_edu = searched_states = ""
+    searched_locations = searched_industry = searched_skills = searched_edu = (
+        searched_states
+    ) = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -1788,9 +1788,9 @@ def walkin_jobs(request, **kwargs):
         .prefetch_related("location", "skills", "industry")
     )
 
-    searched_locations = (
-        searched_industry
-    ) = searched_skills = searched_edu = searched_states = ""
+    searched_locations = searched_industry = searched_skills = searched_edu = (
+        searched_states
+    ) = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -3006,9 +3006,11 @@ def user_subscribe(request):
         if user and not user.user_type == "JS":
             data = {
                 "error": True,
-                "response_message": "Admin is not allowed to Subscribe"
-                if user.is_staff
-                else "Recruiter/Agency is not allowed to Subscribe",
+                "response_message": (
+                    "Admin is not allowed to Subscribe"
+                    if user.is_staff
+                    else "Recruiter/Agency is not allowed to Subscribe"
+                ),
             }
             return HttpResponse(json.dumps(data))
         if validate_subscribe.is_valid():

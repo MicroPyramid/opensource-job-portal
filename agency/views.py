@@ -68,9 +68,9 @@ def client_list(request):
             "previous_page": previous_page,
             "current_page": page,
             "last_page": no_pages,
-            "search_value": request.GET["search"]
-            if "search" in request.GET.keys()
-            else "",
+            "search_value": (
+                request.GET["search"] if "search" in request.GET.keys() else ""
+            ),
             "cities": cities,
         },
     )

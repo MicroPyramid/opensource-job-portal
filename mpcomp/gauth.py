@@ -134,14 +134,12 @@ class Error(Exception):
 
 
 class UnsupportedTokenType(Error):
-
     """Raised when token to or from blob is unable to convert the token."""
 
     pass
 
 
 class OAuth2AccessTokenError(Error):
-
     """Raised when an OAuth2 error occurs."""
 
     def __init__(self, error_message):
@@ -149,7 +147,6 @@ class OAuth2AccessTokenError(Error):
 
 
 class OAuth2RevokeError(Error):
-
     """Raised when an OAuth2 token revocation was unsuccessful."""
 
     def __init__(self, http_response, response_body=None):
@@ -185,7 +182,6 @@ ACCESS_TOKEN = 3
 
 
 class OAuth2Token(object):
-
     """Token object for OAuth 2.0 as described on
     <http://code.google.com/apis/accounts/docs/OAuth2.html>.
 

@@ -1,6 +1,6 @@
 """
-    Support module for recruiter, will generate a notification
-    email to recruiter when admin gives suggestions
+Support module for recruiter, will generate a notification
+email to recruiter when admin gives suggestions
 """
 
 import json
@@ -24,7 +24,6 @@ from .forms import TicketForm, CommentForm
 
 @login_required
 def index(request):
-
     """
     Method: GET
         1. Recruiter: Will display the recent tickets created by loggedin user
@@ -86,7 +85,6 @@ def index(request):
 
 @login_required
 def new_ticket(request):
-
     """
     Method: GET
         1. Recruiter: Will display create ticket page and sending the priority types,
@@ -188,7 +186,6 @@ def edit_ticket(request, ticket_id):
 
 @login_required
 def delete_ticket(request, ticket_id):
-
     """
     Method: GET
         1. Check for a ticket existed or not with the id mentioned in the url
@@ -235,7 +232,6 @@ def delete_attachment(request, attachment_id):
 
 @login_required
 def delete_comment(request, comment_id):
-
     """
     Method: GET
         1. Check for a comment existed or not with the id mentioned in the url
@@ -265,7 +261,6 @@ TICKET_STATUS = (
 
 @login_required
 def view_ticket(request, ticket_id):
-
     """
     Method: GET
         1. Check for a ticket existed or not with the id mentioned in the url

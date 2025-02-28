@@ -162,7 +162,6 @@ class MissingRequiredParameters(Error):
 
 
 class LinkFinder(atom_data.LinkFinder):
-
     """Mixin used in Feed and Entry classes to simplify link lookups by type.
 
     Provides lookup methods for edit, edit-media, post, ACL and other special
@@ -249,7 +248,6 @@ class LinkFinder(atom_data.LinkFinder):
 
 
 class TotalResults(core.XmlElement):
-
     """opensearch:TotalResults for a GData feed."""
 
     _qname = (
@@ -259,7 +257,6 @@ class TotalResults(core.XmlElement):
 
 
 class StartIndex(core.XmlElement):
-
     """The opensearch:startIndex element in GData feed."""
 
     _qname = (
@@ -269,7 +266,6 @@ class StartIndex(core.XmlElement):
 
 
 class ItemsPerPage(core.XmlElement):
-
     """The opensearch:itemsPerPage element in GData feed."""
 
     _qname = (
@@ -279,7 +275,6 @@ class ItemsPerPage(core.XmlElement):
 
 
 class ExtendedProperty(core.XmlElement):
-
     """The Google Data extendedProperty element.
 
     Used to store arbitrary key-value information specific to your
@@ -329,7 +324,6 @@ class ExtendedProperty(core.XmlElement):
 
 
 class GDEntry(atom_data.Entry, LinkFinder):
-
     """Extends Atom Entry to provide data processing"""
 
     etag = "{http://schemas.google.com/g/2005}etag"
@@ -360,7 +354,6 @@ class GDEntry(atom_data.Entry, LinkFinder):
 
 
 class GDFeed(atom_data.Feed, LinkFinder):
-
     """A Feed from a GData service."""
 
     etag = "{http://schemas.google.com/g/2005}etag"
@@ -383,14 +376,12 @@ class GDFeed(atom_data.Feed, LinkFinder):
 
 
 class BatchId(core.XmlElement):
-
     """Identifies a single operation in a batch request."""
 
     _qname = BATCH_TEMPLATE % "id"
 
 
 class BatchOperation(core.XmlElement):
-
     """The CRUD operation which this batch entry represents."""
 
     _qname = BATCH_TEMPLATE % "operation"
@@ -398,7 +389,6 @@ class BatchOperation(core.XmlElement):
 
 
 class BatchStatus(core.XmlElement):
-
     """The batch:status element present in a batch response entry.
 
     A status element contains the code (HTTP response code) and
@@ -417,7 +407,6 @@ class BatchStatus(core.XmlElement):
 
 
 class BatchEntry(GDEntry):
-
     """An atom:entry for use in batch requests.
 
     The BatchEntry contains additional members to specify the operation to be
@@ -432,7 +421,6 @@ class BatchEntry(GDEntry):
 
 
 class BatchInterrupted(core.XmlElement):
-
     """The batch:interrupted element sent if batch request was interrupted.
 
     Only appears in a feed if some of the batch entries could not be processed.
@@ -447,7 +435,6 @@ class BatchInterrupted(core.XmlElement):
 
 
 class BatchFeed(GDFeed):
-
     """A feed containing a list of batch request entries."""
 
     interrupted = BatchInterrupted
@@ -617,7 +604,6 @@ class BatchFeed(GDFeed):
 
 
 class EntryLink(core.XmlElement):
-
     """The gd:entryLink element.
 
     Represents a logically nested entry. For example, a <gd:who>
@@ -632,7 +618,6 @@ class EntryLink(core.XmlElement):
 
 
 class FeedLink(core.XmlElement):
-
     """The gd:feedLink element.
 
     Represents a logically nested feed. For example, a calendar feed might
@@ -648,7 +633,6 @@ class FeedLink(core.XmlElement):
 
 
 class AdditionalName(core.XmlElement):
-
     """The gd:additionalName element.
 
     Specifies additional (eg. middle) name of the person.
@@ -660,7 +644,6 @@ class AdditionalName(core.XmlElement):
 
 
 class Comments(core.XmlElement):
-
     """The gd:comments element.
 
     Contains a comments feed for the enclosing entry (such as a calendar event).
@@ -672,7 +655,6 @@ class Comments(core.XmlElement):
 
 
 class Country(core.XmlElement):
-
     """The gd:country element.
 
     Country name along with optional country code. The country code is
@@ -692,7 +674,6 @@ class EmailImParent(core.XmlElement):
 
 
 class Email(EmailImParent):
-
     """The gd:email element.
 
     An email address associated with the containing entity (which is
@@ -707,7 +688,6 @@ class Email(EmailImParent):
 
 
 class FamilyName(core.XmlElement):
-
     """The gd:familyName element.
 
     Specifies family name of the person, eg. "Smith".
@@ -721,7 +701,6 @@ class FamilyName(core.XmlElement):
 
 
 class Im(EmailImParent):
-
     """The gd:im element.
 
     An instant messaging address associated with the containing entity.
@@ -732,7 +711,6 @@ class Im(EmailImParent):
 
 
 class GivenName(core.XmlElement):
-
     """The gd:givenName element.
 
     Specifies given name of the person, eg. "John".
@@ -746,7 +724,6 @@ class GivenName(core.XmlElement):
 
 
 class NamePrefix(core.XmlElement):
-
     """The gd:namePrefix element.
 
     Honorific prefix, eg. 'Mr' or 'Mrs'.
@@ -759,7 +736,6 @@ class NamePrefix(core.XmlElement):
 
 
 class NameSuffix(core.XmlElement):
-
     """The gd:nameSuffix element.
 
     Honorific suffix, eg. 'san' or 'III'.
@@ -772,7 +748,6 @@ class NameSuffix(core.XmlElement):
 
 
 class FullName(core.XmlElement):
-
     """The gd:fullName element.
 
     Unstructured representation of the name.
@@ -785,7 +760,6 @@ class FullName(core.XmlElement):
 
 
 class Name(core.XmlElement):
-
     """The gd:name element.
 
     Allows storing person's name in a structured way. Consists of
@@ -805,7 +779,6 @@ class Name(core.XmlElement):
 
 
 class OrgDepartment(core.XmlElement):
-
     """The gd:orgDepartment element.
 
     Describes a department within an organization. Must appear within a
@@ -816,7 +789,6 @@ class OrgDepartment(core.XmlElement):
 
 
 class OrgJobDescription(core.XmlElement):
-
     """The gd:orgJobDescription element.
 
     Describes a job within an organization. Must appear within a
@@ -827,7 +799,6 @@ class OrgJobDescription(core.XmlElement):
 
 
 class OrgName(core.XmlElement):
-
     """The gd:orgName element.
 
     The name of the organization. Must appear within a gd:organization
@@ -842,7 +813,6 @@ class OrgName(core.XmlElement):
 
 
 class OrgSymbol(core.XmlElement):
-
     """The gd:orgSymbol element.
 
     Provides a symbol of an organization. Must appear within a
@@ -853,7 +823,6 @@ class OrgSymbol(core.XmlElement):
 
 
 class OrgTitle(core.XmlElement):
-
     """The gd:orgTitle element.
 
     The title of a person within an organization. Must appear within a
@@ -864,7 +833,6 @@ class OrgTitle(core.XmlElement):
 
 
 class Organization(core.XmlElement):
-
     """The gd:organization element.
 
     An organization, typically associated with a contact.
@@ -882,7 +850,6 @@ class Organization(core.XmlElement):
 
 
 class When(core.XmlElement):
-
     """The gd:when element.
 
     Represents a period of time or an instant.
@@ -895,7 +862,6 @@ class When(core.XmlElement):
 
 
 class OriginalEvent(core.XmlElement):
-
     """The gd:originalEvent element.
 
     Equivalent to the Recurrence ID property specified in section 4.8.4.4
@@ -913,7 +879,6 @@ class OriginalEvent(core.XmlElement):
 
 
 class PhoneNumber(core.XmlElement):
-
     """The gd:phoneNumber element.
 
     A phone number associated with the containing entity (which is usually
@@ -931,7 +896,6 @@ class PhoneNumber(core.XmlElement):
 
 
 class PostalAddress(core.XmlElement):
-
     """The gd:postalAddress element."""
 
     _qname = GDATA_TEMPLATE % "postalAddress"
@@ -942,7 +906,6 @@ class PostalAddress(core.XmlElement):
 
 
 class Rating(core.XmlElement):
-
     """The gd:rating element.
 
     Represents a numeric rating of the enclosing entity, such as a
@@ -961,7 +924,6 @@ class Rating(core.XmlElement):
 
 
 class Recurrence(core.XmlElement):
-
     """The gd:recurrence element.
 
     Represents the dates and times when a recurring event takes place.
@@ -1000,7 +962,6 @@ class Recurrence(core.XmlElement):
 
 
 class RecurrenceException(core.XmlElement):
-
     """The gd:recurrenceException element.
 
     Represents an event that's an exception to a recurring event-that is,
@@ -1055,7 +1016,6 @@ class RecurrenceException(core.XmlElement):
 
 
 class Reminder(core.XmlElement):
-
     """The gd:reminder element.
 
     A time interval, indicating how long before the containing entity's start
@@ -1074,7 +1034,6 @@ class Reminder(core.XmlElement):
 
 
 class Transparency(core.XmlElement):
-
     """The gd:transparency element:
 
     Extensible enum corresponding to the TRANSP property defined in RFC 244.
@@ -1085,7 +1044,6 @@ class Transparency(core.XmlElement):
 
 
 class Agent(core.XmlElement):
-
     """The gd:agent element.
 
     The agent who actually receives the mail. Used in work addresses.
@@ -1096,7 +1054,6 @@ class Agent(core.XmlElement):
 
 
 class HouseName(core.XmlElement):
-
     """The gd:housename element.
 
     Used in places where houses or buildings have names (and not
@@ -1107,7 +1064,6 @@ class HouseName(core.XmlElement):
 
 
 class Street(core.XmlElement):
-
     """The gd:street element.
 
     Can be street, avenue, road, etc. This element also includes the
@@ -1118,7 +1074,6 @@ class Street(core.XmlElement):
 
 
 class PoBox(core.XmlElement):
-
     """The gd:pobox element.
 
     Covers actual P.O. boxes, drawers, locked bags, etc. This is usually
@@ -1129,7 +1084,6 @@ class PoBox(core.XmlElement):
 
 
 class Neighborhood(core.XmlElement):
-
     """The gd:neighborhood element.
 
     This is used to disambiguate a street address when a city contains more
@@ -1142,7 +1096,6 @@ class Neighborhood(core.XmlElement):
 
 
 class City(core.XmlElement):
-
     """The gd:city element.
 
     Can be city, village, town, borough, etc. This is the postal town and
@@ -1153,7 +1106,6 @@ class City(core.XmlElement):
 
 
 class Subregion(core.XmlElement):
-
     """The gd:subregion element.
 
     Handles administrative districts such as U.S. or U.K. counties that are
@@ -1165,7 +1117,6 @@ class Subregion(core.XmlElement):
 
 
 class Region(core.XmlElement):
-
     """The gd:region element.
 
     A state, province, county (in Ireland), Land (in Germany),
@@ -1176,7 +1127,6 @@ class Region(core.XmlElement):
 
 
 class Postcode(core.XmlElement):
-
     """The gd:postcode element.
 
     Postal code. Usually country-wide, but sometimes specific to the
@@ -1196,7 +1146,6 @@ class Postcode(core.XmlElement):
 
 
 class FormattedAddress(core.XmlElement):
-
     """The gd:formattedAddress element.
 
     The full, unstructured postal address.
@@ -1206,7 +1155,6 @@ class FormattedAddress(core.XmlElement):
 
 
 class StructuredPostalAddress(core.XmlElement):
-
     """The gd:structuredPostalAddress element.
 
     Postal address split into components. It allows to store the address
@@ -1239,7 +1187,6 @@ class StructuredPostalAddress(core.XmlElement):
 
 
 class Where(core.XmlElement):
-
     """The gd:where element.
 
     A place (such as an event location) associated with the containing
@@ -1261,7 +1208,6 @@ class Where(core.XmlElement):
 
 
 class AttendeeType(core.XmlElement):
-
     """The gd:attendeeType element."""
 
     _qname = GDATA_TEMPLATE % "attendeeType"
@@ -1269,7 +1215,6 @@ class AttendeeType(core.XmlElement):
 
 
 class AttendeeStatus(core.XmlElement):
-
     """The gd:attendeeStatus element."""
 
     _qname = GDATA_TEMPLATE % "attendeeStatus"
@@ -1277,7 +1222,6 @@ class AttendeeStatus(core.XmlElement):
 
 
 class EventStatus(core.XmlElement):
-
     """The gd:eventStatus element."""
 
     _qname = GDATA_TEMPLATE % "eventStatus"
@@ -1285,7 +1229,6 @@ class EventStatus(core.XmlElement):
 
 
 class Visibility(core.XmlElement):
-
     """The gd:visibility element."""
 
     _qname = GDATA_TEMPLATE % "visibility"
@@ -1293,7 +1236,6 @@ class Visibility(core.XmlElement):
 
 
 class Who(core.XmlElement):
-
     """The gd:who element.
 
     A person associated with the containing entity. The type of the
@@ -1314,14 +1256,12 @@ class Who(core.XmlElement):
 
 
 class Deleted(core.XmlElement):
-
     """gd:deleted when present, indicates the containing entry is deleted."""
 
     _qname = GD_TEMPLATE % "deleted"
 
 
 class Money(core.XmlElement):
-
     """Describes money"""
 
     _qname = GD_TEMPLATE % "money"
@@ -1330,7 +1270,6 @@ class Money(core.XmlElement):
 
 
 class MediaSource(object):
-
     """GData Entries can refer to media sources, so this class provides a
     place to store references to these objects along with some metadata.
     """

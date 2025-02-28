@@ -17,7 +17,6 @@ from mpcomp import gauth, contacts
 
 @app.task()
 def add_twitter_friends_followers(user_id, friends, followers):
-
     """
     getting the user object
     Removing twitter followers, friends if the user previously connected to twitter

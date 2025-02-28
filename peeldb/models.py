@@ -14,6 +14,7 @@ from django.db import models
 from django.db.models import Q, Count, F, JSONField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
 # from microurl import google_mini
 
 COMPANY_SIZE = (

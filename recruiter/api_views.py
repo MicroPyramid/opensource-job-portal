@@ -126,9 +126,9 @@ def jobs_list(request):
         "previous_page": previous_page,
         "current_page": page,
         "last_page": no_pages,
-        "search_value": request.POST["search_value"]
-        if "search_value" in request.POST
-        else "All",
+        "search_value": (
+            request.POST["search_value"] if "search_value" in request.POST else "All"
+        ),
     }
     return JsonResponse(response_data, status=status.HTTP_200_OK)
 
@@ -172,9 +172,11 @@ def inactive_jobs(request):
             "previous_page": previous_page,
             "current_page": page,
             "last_page": no_pages,
-            "search_value": request.POST["search_value"]
-            if "search_value" in request.POST.keys()
-            else "All",
+            "search_value": (
+                request.POST["search_value"]
+                if "search_value" in request.POST.keys()
+                else "All"
+            ),
         },
     )
 

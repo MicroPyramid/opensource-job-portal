@@ -90,7 +90,6 @@ def get_headers(http_response):
 
 
 class HttpRequest(object):
-
     """Contains all of the parameters for an HTTP 1.1 request.
 
     The HTTP headers are represented by a dictionary, and it is the
@@ -256,7 +255,6 @@ def _apply_defaults(http_request):
 
 
 class Uri(object):
-
     """A URI as used in HTTP 1.1"""
 
     scheme = None
@@ -374,9 +372,9 @@ class Uri(object):
             for pair in param_pairs:
                 pair_parts = pair.split("=")
                 if len(pair_parts) > 1:
-                    uri.query[
-                        urllib.parse.unquote(pair_parts[0])
-                    ] = urllib.parse.unquote(pair_parts[1])
+                    uri.query[urllib.parse.unquote(pair_parts[0])] = (
+                        urllib.parse.unquote(pair_parts[1])
+                    )
                 elif len(pair_parts) == 1:
                     uri.query[urllib.parse.unquote(pair_parts[0])] = None
         print(uri)
@@ -446,7 +444,6 @@ def _dump_response(http_response):
 
 
 class HttpClient(object):
-
     """Performs HTTP requests using httplib."""
 
     debug = None
@@ -521,9 +518,9 @@ class HttpClient(object):
             header_line = "Host: %s:443" % uri.host
             replacement_header_line = "Host: %s" % uri.host
             try:
-                connection._buffer[
-                    connection._buffer.index(header_line)
-                ] = replacement_header_line
+                connection._buffer[connection._buffer.index(header_line)] = (
+                    replacement_header_line
+                )
             except ValueError:  # header_line missing from connection._buffer
                 pass
 

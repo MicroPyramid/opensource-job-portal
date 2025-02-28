@@ -44,7 +44,6 @@ STRING_ENCODING = "utf-8"
 
 
 class XmlElement(object):
-
     """Represents an element node in an XML document.
 
     The text member is a UTF-8 encoded str or unicode.

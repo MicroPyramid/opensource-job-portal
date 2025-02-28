@@ -175,9 +175,11 @@ def jobs_list(request):
             "previous_page": previous_page,
             "current_page": page,
             "last_page": no_pages,
-            "search_value": request.POST["search_value"]
-            if "search_value" in request.POST
-            else "All",
+            "search_value": (
+                request.POST["search_value"]
+                if "search_value" in request.POST
+                else "All"
+            ),
         },
     )
 
@@ -222,9 +224,11 @@ def inactive_jobs(request):
             "previous_page": previous_page,
             "current_page": page,
             "last_page": no_pages,
-            "search_value": request.POST["search_value"]
-            if "search_value" in request.POST.keys()
-            else "All",
+            "search_value": (
+                request.POST["search_value"]
+                if "search_value" in request.POST.keys()
+                else "All"
+            ),
         },
     )
 
@@ -1697,9 +1701,11 @@ def user_password_reset(request):
 
                 data = {
                     "error": False,
-                    "info": "Sent a link to your email to reset your password"
-                    if usr.is_active
-                    else "An email has been sent to your email id, Please activate your account",
+                    "info": (
+                        "Sent a link to your email to reset your password"
+                        if usr.is_active
+                        else "An email has been sent to your email id, Please activate your account"
+                    ),
                 }
                 return HttpResponse(json.dumps(data))
             else:

@@ -1475,9 +1475,9 @@ def tech_skills(request):
                     data = {
                         "error": True,
                         "message": "Skill Not Found",
-                        "page": request.POST.get("page")
-                        if request.POST.get("page")
-                        else 1,
+                        "page": (
+                            request.POST.get("page") if request.POST.get("page") else 1
+                        ),
                     }
                     return HttpResponse(json.dumps(data))
         else:
@@ -3282,9 +3282,9 @@ def companies(request, company_type):
             "last_page": no_pages,
             "company_type": company_type,
             "status": status,
-            "search_value": request.GET.get("search")
-            if request.GET.get("search")
-            else "",
+            "search_value": (
+                request.GET.get("search") if request.GET.get("search") else ""
+            ),
             "active": request.GET.get("active") if request.GET.get("active") else "",
             "admin": request.GET.get("admin") if request.GET.get("admin") else "",
         },

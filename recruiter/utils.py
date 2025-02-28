@@ -1,5 +1,5 @@
-"""Helper functions for API
-"""
+"""Helper functions for API"""
+
 from __future__ import unicode_literals
 from collections import Iterable, OrderedDict
 import json
