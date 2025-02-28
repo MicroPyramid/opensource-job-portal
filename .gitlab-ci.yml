@@ -8,7 +8,8 @@ deploy_live:
   script:
     - sudo /bin/rm -rf /home/peeljobs/peeljobs/; cp -r . /home/peeljobs/peeljobs
     - source /home/peeljobs/env/bin/activate
-    - pip install -r /home/peeljobs/peeljobs/requirements.txt
+    - pip install pipenv
+    - pipenv install
     - python /home/peeljobs/peeljobs/manage_server.py migrate --noinput
     - sudo /usr/bin/supervisorctl restart all
   tags:

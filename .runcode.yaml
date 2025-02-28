@@ -20,7 +20,8 @@ onCreate:
         . ../venv/bin/activate
         cp ENV.md .env
         pip install -U pip
-        pip install -r requirements.txt
+        pip install pipenv
+        pipenv install
         python manage.py migrate
         python manage.py loaddata industries
         python manage.py loaddata qualification

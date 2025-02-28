@@ -69,7 +69,7 @@ add the following to your path
 ##### Install requirements
 
 ```bash
-pip install -r requirements.txt
+pipenv install
 ```
 
 For env variables, refer to env.md in source directory and you need to create a .env file to keep all env variables with their respective values.

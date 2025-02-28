@@ -19,7 +19,8 @@ env:
   -Django==2.2.8 DB=postgresql
 
 install:
-  - pip install -r requirements.txt
+  - pip install pipenv
+  - pipenv install
 
 #new
 #creating a database
