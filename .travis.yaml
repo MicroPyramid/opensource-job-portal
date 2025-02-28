@@ -20,7 +20,7 @@ env:
 
 install:
   - pip install pipenv
-  - pipenv install
+  - pipenv install -d
 
 #new
 #creating a database

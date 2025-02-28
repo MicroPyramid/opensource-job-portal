@@ -4,7 +4,7 @@ import math
 
 from django.shortcuts import render
 from django.contrib.auth import logout
-from django.http.response import HttpResponseRedirect, HttpResponse
+from django.http.response import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.conf import settings
 from itertools import chain
 from django.template import loader

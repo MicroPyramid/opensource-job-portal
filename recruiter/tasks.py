@@ -10,7 +10,6 @@ from peeldb.models import (
     User,
     TwitterFollower,
     TwitterFriend,
-    GoogleFirend,
     FacebookFriend,
     FacebookPage,
     FacebookGroup,
@@ -35,52 +34,6 @@ def add_twitter_friends_followers(user_id, friends, followers):
     for i in friends["users"]:
         TwitterFriend.objects.create(
             user=user, twitter_id=i["id"], screen_name=i["screen_name"]
-        )
-
-
-@app.task()
-def add_google_friends(user_id, accesstoken):
-    user = User.objects.filter(id=user_id).first()
-    auth_token = gauth.OAuth2Token(
-        client_id=settings.GOOGLE_CLIENT_ID,
-        client_secret=settings.GOOGLE_CLIENT_SECRET,
-        scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email "
-        + "https://www.googleapis.com/auth/contacts.readonly",
-        user_agent="dummy-sample",
-    )
-
-    auth_token.access_token = accesstoken
-    client1 = contacts.client.ContactsClient(source="")
-    client1 = auth_token.authorize(client1)
-    qry = contacts.client.ContactsQuery(max_results=3000)
-    feed = client1.get_contacts(query=qry)
-    print(feed.entry)
-    f1 = {}
-
-    for entry in feed.entry:
-        friend_id = entry.id.text
-        fullname = title = email = phone = familyname = ""
-        if entry.name is not None:
-            if entry.name.full_name is not None:
-                fullname = entry.name.full_name.text
-            if entry.name.family_name is not None:
-                familyname = entry.name.family_name.text
-
-        if entry.title is not None:
-            f1["title"] = entry.title.text
-        for email in entry.email:
-            f1["email"] = email.address
-        for phone in entry.phone_number:
-            f1["phone"] = phone.text
-
-        GoogleFirend.objects.create(
-            user=user,
-            friend_id=friend_id,
-            fullname=fullname,
-            title=title,
-            email=email,
-            phone=phone,
-            familyname=familyname,
         )
 
 

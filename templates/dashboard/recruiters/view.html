@@ -382,28 +382,6 @@
       </div>
       <!--/ twit pages -->
 
-
-      <!-- gplus friends  -->
-      <div class="tab_content"  id='gplus_friends'>
-      {% if recruiter.get_user_google_friends %}
-        {% for friend in recruiter.get_user_google_friends %}
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>First Name</label>
-              <span class="description">
-              <a href="{{ friend.friend_id }}" class="gp_friends"><span>{{ friend.fullname }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        {% endfor %}
-        {% else %}
-          User not connected to G+
-        {% endif %}
-      </div>
       {% if recruiter.get_active_jobposts_count >= 100 %}
       <div class="tab_content"  id='bank_details'>
         <div class='specific_detail'>

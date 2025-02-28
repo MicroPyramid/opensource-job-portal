@@ -8,7 +8,7 @@ import tinys3
 import csv
 from collections import OrderedDict
 
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from twython.api import Twython
@@ -95,7 +95,6 @@ from .tasks import (
     del_jobpost_fb,
     del_jobpost_peel_fb,
     add_twitter_friends_followers,
-    add_google_friends,
     add_facebook_friends_pages_groups,
 )
 from mpcomp.views import (
@@ -2322,7 +2321,6 @@ def google_connect(request):
                     picture=picture,
                 )
 
-            # add_google_friends.delay(request.user.id, info["access_token"])
             return HttpResponseRedirect(reverse("recruiter:index"))
         message_type = "Sorry,"
         message = "We didnt find your Account"

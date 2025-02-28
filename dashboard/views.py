@@ -15,7 +15,7 @@ from django.contrib.auth.models import ContentType, Permission
 from django.urls import reverse
 from django.db.models import Count, Q
 from django.forms import modelformset_factory
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
 from django.template.defaultfilters import slugify

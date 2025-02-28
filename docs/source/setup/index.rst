@@ -69,7 +69,7 @@ Configuration of Peeljobs
 		sudo apt install nodejs
 		npm install -g sass
 		pip install pipenv
-		pipenv install
+		pipenv install -d
 
 
 9. We used postgressql here open shell and create the following database
