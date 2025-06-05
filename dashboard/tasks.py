@@ -1,12 +1,9 @@
-import json
 import math
-import urllib
 from datetime import datetime, timedelta
 from functools import reduce
 from itertools import chain
 from operator import __or__ as OR
 
-import requests
 from django.conf import settings
 from django.core.mail import EmailMessage
 
@@ -16,8 +13,6 @@ from django.template import loader
 
 # from jobsp.celery import app
 from jobsp.celery import app
-from microurl import google_mini
-from mpcomp.facebook import GraphAPI, get_app_access_token
 from mpcomp.views import get_absolute_url
 from peeldb.models import (
     AppliedJobs,
