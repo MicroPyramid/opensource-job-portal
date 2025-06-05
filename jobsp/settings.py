@@ -136,7 +136,7 @@ INSTALLED_APPS = (
     "haystack",
     "dashboard",
     "search",
-    "simple_pagination",
+    # "simple_pagination",
     "tellme",
     "django_celery_beat",
     "corsheaders",
@@ -381,20 +381,21 @@ THUMBNAIL_FORCE_OVERWRITE = True
 
 # CACHES = {
 #     "default": {
-#         "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+#         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
 #         "LOCATION": "127.0.0.1:11211",
 #         "TIMEOUT": 48 * 60 * 60,
 #         "OPTIONS": {"server_max_value_length": 1024 * 1024 * 2,},
 #     }
 # }
 
+# Alternative Redis cache configuration (if you prefer Redis over Memcached)
 # CACHES = {
 #     "default": {
-#         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "TIMEOUT": 48 * 60 * 60,
 #     }
 # }
-
-# CACHE_BACKEND = os.getenv("CACHE_BACKEND", "memcached://127.0.0.1:11211/")
 
 FB_ACCESS_TOKEN = os.getenv("FBACCESSTOKEN")
 FB_PAGE_ACCESS_TOKEN = os.getenv("FBPAGEACCESSTOKEN")

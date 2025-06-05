@@ -2,13 +2,14 @@ import datetime
 from datetime import date
 import arrow
 import re
+import locale
 from collections import Counter
 
 from django import template
 from django.conf import settings
 from django.db.models import Count, Q, Prefetch
 from django.core.cache import cache
-from boto.s3.connection import S3Connection
+import boto3
 from peeldb.models import (
     AppliedJobs,
     JobPost,
@@ -28,6 +29,17 @@ from recruiter.forms import UserStatus
 from pjob.calendar_events import get_calendar_events_list
 
 register = template.Library()
+
+
+def str_to_list(value):
+    """Convert string representation of list to actual list"""
+    if isinstance(value, str):
+        # Remove brackets and quotes, then split by comma
+        value = value.strip('[]').replace("'", "").replace('"', '')
+        if value:
+            return [item.strip() for item in value.split(',') if item.strip()]
+        return []
+    return value if isinstance(value, list) else []
 
 
 @register.filter
@@ -54,8 +66,6 @@ def get_title(value):
 
 @register.filter
 def get_formatted_salary(value):
-    import locale
-
     locale.setlocale(locale.LC_ALL, "en_IN.UTF-8")
     try:
         salary = locale.format("%d", int(value), grouping=True)
@@ -94,11 +104,15 @@ def get_resume_name(value):
 
 @register.filter
 def get_s3_url(key):
-    s3 = S3Connection(
-        settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, is_secure=True
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
     )
-    stored_url = s3.generate_url(
-        600, "GET", bucket=settings.AWS_STORAGE_BUCKET_NAME, key=key, force_http=False
+    stored_url = s3_client.generate_presigned_url(
+        'get_object',
+        Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': key},
+        ExpiresIn=600
     )
     return stored_url
 

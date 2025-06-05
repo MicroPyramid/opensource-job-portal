@@ -9,7 +9,7 @@ from email.mime.application import MIMEApplication
 from datetime import datetime
 import json
 import urllib
-import boto
+import boto3
 import requests
 import os
 
@@ -96,13 +96,18 @@ def login_and_apply(request):
                     )
                     msg.attach(resume_part)
                     os.remove(str(request.user.email) + ".docx")
-                conn = boto.ses.connect_to_region(
-                    "eu-west-1",
+                
+                # Use boto3 SES client
+                ses_client = boto3.client(
+                    'ses',
+                    region_name='eu-west-1',
                     aws_access_key_id=settings.AM_ACCESS_KEY,
                     aws_secret_access_key=settings.AM_PASS_KEY,
                 )
-                conn.send_raw_email(
-                    msg.as_string(), source=msg["From"], destinations=[msg["To"]]
+                ses_client.send_raw_email(
+                    Source=msg["From"],
+                    Destinations=[msg["To"]],
+                    RawMessage={'Data': msg.as_string()}
                 )
                 return job_post, "applied"
         return job_post, "apply"

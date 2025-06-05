@@ -1,19 +1,19 @@
 from .settings import *
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
+# import sentry_sdk
+# from sentry_sdk.integrations.django import DjangoIntegration
+# from sentry_sdk.integrations.celery import CeleryIntegration
 
 DEBUG = False
 
 CELERY_IMPORTS = ("social.tasks", "dashboard.tasks")
 
 
-sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"),
-    integrations=[DjangoIntegration(), CeleryIntegration()],
-    traces_sample_rate=1.0,
-    send_default_pii=True,
-)
+# sentry_sdk.init(
+#     dsn=os.getenv("SENTRY_DSN"),
+#     integrations=[DjangoIntegration(), CeleryIntegration()],
+#     traces_sample_rate=1.0,
+#     send_default_pii=True,
+# )
 
 
 LOGGING = {
@@ -21,7 +21,7 @@ LOGGING = {
     "disable_existing_loggers": True,
     "root": {
         "level": "WARNING",
-        "handlers": ["sentry"],
+        "handlers": ["console"],  # Changed from ["sentry"]
     },
     "formatters": {
         "verbose": {
@@ -29,10 +29,10 @@ LOGGING = {
         },
     },
     "handlers": {
-        "sentry": {
-            "level": "ERROR",
-            "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-        },
+        # "sentry": {
+        #     "level": "ERROR",
+        #     "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
+        # },
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
@@ -45,16 +45,16 @@ LOGGING = {
             "handlers": ["console"],
             "propagate": False,
         },
-        "raven": {
-            "level": "DEBUG",
-            "handlers": ["console"],
-            "propagate": False,
-        },
-        "sentry.errors": {
-            "level": "DEBUG",
-            "handlers": ["console"],
-            "propagate": False,
-        },
+        # "raven": {
+        #     "level": "DEBUG",
+        #     "handlers": ["console"],
+        #     "propagate": False,
+        # },
+        # "sentry.errors": {
+        #     "level": "DEBUG",
+        #     "handlers": ["console"],
+        #     "propagate": False,
+        # },
     },
 }
 

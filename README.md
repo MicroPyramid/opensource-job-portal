@@ -78,7 +78,7 @@ https://opensource-job-portal.readthedocs.io/en/latest/
 1. **System packages**  
    ```bash
    sudo apt update
-   sudo apt install -y git postgresql python3-dev python3-venv build-essential      redis-server memcached npm ruby-full
+   sudo apt install -y git postgresql python3-dev python3-venv build-essential redis-server memcached ruby-full libjpeg-dev zlib1g-dev
    ```
 2. **Node.js & Less**  
    ```bash

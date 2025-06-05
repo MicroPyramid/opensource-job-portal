@@ -2,8 +2,7 @@ import json
 import math
 import re
 import os
-import boto
-import tinys3
+import boto3
 import random
 
 from django.shortcuts import render, redirect
@@ -40,6 +39,7 @@ from mpcomp.views import (
     get_meta,
     get_ordered_skill_degrees,
     get_404_meta,
+    rand_string,
 )
 from peeldb.models import (
     JobPost,
@@ -1048,18 +1048,20 @@ def job_apply(request, job_id):
                         )
                         msg.attach(part)
                         os.remove(str(request.user.email) + ".docx")
-                    boto.connect_ses(
+                    
+                    # Use boto3 SES client
+                    ses_client = boto3.client(
+                        'ses',
+                        region_name='eu-west-1',
                         aws_access_key_id=settings.AM_ACCESS_KEY,
                         aws_secret_access_key=settings.AM_PASS_KEY,
                     )
-                    conn = boto.ses.connect_to_region(
-                        "eu-west-1",
-                        aws_access_key_id=settings.AM_ACCESS_KEY,
-                        aws_secret_access_key=settings.AM_PASS_KEY,
-                    )
-                    # and send the message
-                    conn.send_raw_email(
-                        msg.as_string(), source=msg["From"], destinations=[msg["To"]]
+                    
+                    # Send the message using boto3
+                    ses_client.send_raw_email(
+                        Source=msg["From"],
+                        Destinations=[msg["To"]],
+                        RawMessage={'Data': msg.as_string()}
                     )
                     data = {
                         "error": False,
@@ -2702,8 +2704,10 @@ def register_using_email(request):
                 user.save()
                 save_codes_and_send_mail(user, request, password)
                 if "resume" in request.FILES:
-                    conn = tinys3.Connection(
-                        settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
+                    s3_client = boto3.client(
+                        's3',
+                        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
                     )
                     random_string = "".join(
                         random.choice("0123456789ABCDEF") for i in range(3)
@@ -2718,12 +2722,11 @@ def register_using_email(request):
                         .encode("ascii", "ignore")
                         .decode("ascii")
                     )
-                    conn.upload(
-                        path,
-                        request.FILES["resume"],
-                        settings.AWS_STORAGE_BUCKET_NAME,
-                        public=True,
-                        expires="max",
+                    s3_client.put_object(
+                        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                        Key=path,
+                        Body=request.FILES["resume"].read(),
+                        ACL='public-read'
                     )
                     user.resume = path
                     user.profile_updated = datetime.now(timezone.utc)
@@ -2960,8 +2963,10 @@ def user_reg_success(request):
                     tech_skill = TechnicalSkill.objects.create(skill=skill)
                     user.skills.add(tech_skill)
             if "resume" in request.FILES:
-                conn = tinys3.Connection(
-                    settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
+                s3_client = boto3.client(
+                    's3',
+                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
                 )
                 random_string = "".join(
                     random.choice("0123456789ABCDEF") for i in range(3)
@@ -2976,12 +2981,11 @@ def user_reg_success(request):
                     .encode("ascii", "ignore")
                     .decode("ascii")
                 )
-                conn.upload(
-                    path,
-                    request.FILES["resume"],
-                    settings.AWS_STORAGE_BUCKET_NAME,
-                    public=True,
-                    expires="max",
+                s3_client.put_object(
+                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                    Key=path,
+                    Body=request.FILES["resume"].read(),
+                    ACL='public-read'
                 )
                 user.resume = path
             user.profile_updated = datetime.now(timezone.utc)
