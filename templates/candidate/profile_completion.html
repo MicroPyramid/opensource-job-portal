@@ -47,8 +47,6 @@
         <li>
           {% if request.user.is_fb_connected %}
           <a href="{{ request.user.get_facebook_url }}" class="facebook"  target="_blank"><i class="fa fa-facebook"></i>Connected</a>
-          {% else %}
-            <a href="{% url 'social:facebook_connect' %}" class="facebook"><i class='fa fa-facebook'></i><b>FaceBook</b></a>
           {% endif %}
         </li>
          <li>
@@ -68,15 +66,11 @@
         <li>
           {% if request.user.is_gp_connected %}
             <a href="{{ request.user.get_google_url }}" class="google" target="_blank"><span class='gplus'><i class='fa fa-google-plus'></i> Connected</a>
-          {% else %}
-            <a href="{% url 'social:google_connect' %}" class="google"><i class="fa fa-google-plus"></i>Google Plus</a>
           {% endif %}
         </li>
         <li>
           {% if request.user.is_so_connected %}
             <a href="{{ request.user.get_stack_overflow_object.link }}" class="stack" target="_blank"><span class='stack'><i class='fa fa-stack-overflow'></i> Connected</a>
-          {% else %}
-          <a href="{% url 'social:sofconnect' %}" class="stack"><i class="fa fa-stack-overflow"></i>Stack Over Flow</a>
           {% endif %}
         </li>
        </ul> -->

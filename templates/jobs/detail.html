@@ -15,15 +15,6 @@
 {% block base %}
 <!-- main_container starts here -->
 <div class="row mar_lr_0 main_container">
-  {% with job.get_job_minified_url as job_url %}
-  <ul class="social-share ">
-    <li><a href="https://www.facebook.com/sharer/sharer.php?u={{ job_url }}&t={{ job.title }}" target="_blank" class="facebook social"><i class="fa fa-facebook"></i></a></li>
-    <li><a href="https://www.linkedin.com/cws/share?url={{ job_url }}&token=&isFramed=true" target="_blank" class="linkedin social"><i class="fa fa-linkedin"></i></a></li>
-    <!-- <li><a href="https://plus.google.com/share?hl=en-US&url={{ job_url }}" class="google social" target="_blank"><i class="fa fa-google-plus"></i></a></li> -->
-    <li><a href="https://twitter.com/intent/tweet?text={{ job.title }}&url={{ job_url }}&via=PeelJobs" target="_blank" class="twitter social"><i class="fa fa-twitter"></i></a></li>
-    <li><a href="mailto:?subject=Peeljobs%20Job%20post%20sharing&body={{ job_url }}" target="_blank" class="envelope social"><i class="fa fa-envelope"></i></a></li>
-  </ul>
-  {% endwith %}
   <div class="container">
     <!-- breadcrumb_section starts here -->
     <div class="breadcrumb_section row">
@@ -64,6 +55,28 @@
           <!-- job_list_section starts here -->
           <div class="col-md-12">
             <div class="job_detail_section">
+              <!-- Social Share Section -->
+              {% with job.get_job_minified_url as job_url %}
+              <div class="row mb-3">
+                <div class="col-12">
+                  <div class="d-flex flex-wrap">
+                    <span class="mr-2 mb-2">Share this job:</span>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ job_url }}&t={{ job.title }}" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">
+                      <i class="fa fa-facebook"></i> Facebook
+                    </a>
+                    <a href="https://www.linkedin.com/cws/share?url={{ job_url }}&token=&isFramed=true" target="_blank" class="btn btn-sm btn-info mr-2 mb-2">
+                      <i class="fa fa-linkedin"></i> LinkedIn
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?text={{ job.title }}&url={{ job_url }}&via=PeelJobs" target="_blank" class="btn btn-sm btn-secondary mr-2 mb-2">
+                      <i class="fa fa-twitter"></i> Twitter
+                    </a>
+                    <a href="mailto:?subject=Peeljobs%20Job%20post%20sharing&body={{ job_url }}" target="_blank" class="btn btn-sm btn-success mb-2">
+                      <i class="fa fa-envelope"></i> Email
+                    </a>
+                  </div>
+                </div>
+              </div>
+              {% endwith %}
               <!-- job_item starts here -->
               {% if request.GET.job_apply == 'apply' %}
                 {% if request.user.profile_completion_percentage < 50 %}

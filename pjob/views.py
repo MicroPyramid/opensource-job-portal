@@ -986,6 +986,7 @@ def user_applied_job(request):
 
 @login_required
 def job_apply(request, job_id):
+    print("Job ID:", job_id)
     if (
         request.user.is_active or request.GET.get("apply_now")
     ) and request.user.user_type == "JS":
