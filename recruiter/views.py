@@ -4,7 +4,7 @@ import requests
 import math
 import random
 import time
-import tinys3
+from mpcomp.s3_utils import S3Connection
 import csv
 from collections import OrderedDict
 
@@ -25,7 +25,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import Permission, ContentType
 from django.db.models import Case, When
-from boto.s3.connection import S3Connection
+import boto3
 from django.contrib.auth import load_backend
 
 
@@ -3569,7 +3569,7 @@ def resume_upload(request):
                 size = fo.size / 1024
                 if str(ftype) in sup_formates:
                     if size < 300 and size > 0:
-                        conn = tinys3.Connection(
+                        conn = S3Connection(
                             settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
                         )
                         random_string = "".join(
@@ -3680,7 +3680,7 @@ def multiple_resume_upload(request):
                 if resume_user:
                     replace = request.POST.get(resume.name)
                     if replace and replace == "true":
-                        conn = tinys3.Connection(
+                        conn = S3Connection(
                             settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
                         )
                         random_string = "".join(
@@ -3727,7 +3727,7 @@ def multiple_resume_upload(request):
                     user.set_password(passwd)
                     user.save()
                     save_codes_and_send_mail(user, request, passwd)
-                    conn = tinys3.Connection(
+                    conn = S3Connection(
                         settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
                     )
                 random_string = "".join(
@@ -3943,7 +3943,7 @@ def resume_edit(request, resume_id):
                 size = fo.size / 1024
                 if str(ftype) in sup_formates:
                     if size < 300 and size > 0:
-                        conn = tinys3.Connection(
+                        conn = S3Connection(
                             settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
                         )
                         random_string = "".join(
@@ -4054,17 +4054,17 @@ def download_applicants(request, jobpost_id, status):
     headers["status"] = "Status"
     writer = csv.DictWriter(response, fieldnames=headers)
     writer.writerow(headers)
-    s3 = S3Connection(
-        settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, is_secure=False
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
     )
     for user in pending_applicants:
         if user.user.resume:
-            stored_url = s3.generate_url(
-                600,
-                "GET",
-                bucket=settings.AWS_STORAGE_BUCKET_NAME,
-                key=user.user.resume,
-                force_http=True,
+            stored_url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': user.user.resume},
+                ExpiresIn=600
             )
         else:
             stored_url = ""

@@ -36,7 +36,6 @@ gunicorn = "==23.0.0"
 jsonpickle = "==2.2.0"
 lockfile = "==0.12.2"
 olefile = "==0.46"
-tinys3 = "==0.1.12"
 
 [dev-packages]
 behave-django = "==1.4.0"

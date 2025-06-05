@@ -1,6 +1,6 @@
 import datetime
 import json
-import tinys3
+from mpcomp.s3_utils import S3Connection
 import random
 import math
 import re
@@ -199,7 +199,7 @@ def upload_resume(request):
         size = fo.size / 1024
         if str(ftype) in sup_formates:
             if size < 300 and size > 0:
-                conn = tinys3.Connection(
+                conn = S3Connection(
                     settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
                 )
                 random_string = "".join(

@@ -57,8 +57,6 @@ Django Packages Used
 	
 	sorl-thumbnail==12.5.0
 	
-	tinys3==0.1.12
-	
 	twython==3.7.0
 	
 	beautifulsoup4==4.6.3
