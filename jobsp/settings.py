@@ -137,7 +137,6 @@ INSTALLED_APPS = (
     "dashboard",
     "search",
     # "simple_pagination",
-    "tellme",
     "django_celery_beat",
     "corsheaders",
     "rest_framework",

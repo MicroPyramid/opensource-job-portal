@@ -173,7 +173,6 @@ urlpatterns = [
     url(r"^dashboard/", include("dashboard.urls", namespace="dashboard")),
     url(r"^recruiter/", include("recruiter.urls", namespace="recruiter")),
     url(r"^agency/", include("agency.urls", namespace="agency")),
-    url(r"^tellme/", include("tellme.urls")),
     url(r"^post-job/$", index, name="post_job"),
     url(r"^bounces/$", bounces),
     url(r"registration/using_email/$", register_using_email, name="register_email"),

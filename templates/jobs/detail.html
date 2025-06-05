@@ -183,21 +183,8 @@
                 </div>
               </div>
 
-              {% comment %} <div style="margin-top:10px;margin-bottom:10px;"> {% endcomment %}
-                {% comment %} <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                  <!-- PJ Right Nav -->
-                  <ins class="adsbygoogle"
-                       style="display:block"
-                       data-ad-client="ca-pub-5756092160559539"
-                       data-ad-slot="3490610504"
-                       data-ad-format="auto"></ins>
-                <script>
-                  (adsbygoogle = window.adsbygoogle || []).push({});
-                </script> {% endcomment %}
-              {% comment %} </div> {% endcomment %}
                        <script>
-                        (adsbygoogle = window.adsbygoogle || []).push({});
-                  
+                        
                         $("#multiple").select2({
                           placeholder: "Select a programming language",
                           allowClear: true
@@ -613,13 +600,7 @@
 {% endblock %}
 {% block 'extra_js' %}
 <script type="text/javascript">
-  {% if 'event' in request.GET %}
-    {% if request.GET.event == 'success' %}
-      open_dialog('Event Created successfully', 'Success')
-    {% else %}
-      open_dialog('Event Not Created', 'Alert')
-    {% endif %}
-  {% endif %}
+  
   $('form#CreateSimilarAlert').ajaxForm({
       type: 'POST',
       dataType: 'json',
@@ -644,12 +625,7 @@
     $('#CreateSimilarAlert')[0].reset()
     $("#create_similarjob_alert").modal('show')
   })
-  $('#recommended_jobs_carousel').carousel({
-    interval: 7000
-  });
-  $('#recommended_jobs_carousel2').carousel({
-    interval: 7000
-  });
+
   $('body').on('click', '.recommended_job', function () {
     window.location = $(this).find("a").attr("href");
   });
@@ -742,15 +718,12 @@
   
       // }
       // {% endif %}
-{% comment %} $(document).ready(function () {
+$(document).ready(function () {
   $("select#job_skills").select2({placeholder: "Select here", maximumSelectionSize: 100});
   $('#job_skills').empty()
   $('#job_skills').append(new Option('Select a Skill', ''))
   job_skills = []
-  {% for skill in job.skills.all %}
-    skill_id = {{skill.id}}
-    job_skills.push(skill_id)
-  {% endfor %}
+  
   $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
     $.each(JSON.parse(data.response), function (key, field) {
         if ($.inArray(field.pk, job_skills) == -1) {
@@ -777,7 +750,7 @@
             $('.Jobsubscribeform .select2').children().children().children().append('<li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="textbox" placeholder="Select here" style="width: 254px;"></li>')
         }
     })
-  }); {% endcomment %}
+  });
   $("#multiple").select2({
     placeholder: "Select a programming language",
     allowClear: true
