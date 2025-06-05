@@ -845,15 +845,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_user_emails(self):
         return UserEmail.objects.filter(user=self)
 
-    def get_user_facebook_groups(self):
-        return FacebookGroup.objects.filter(user=self)
-
-    def get_user_facebook_friends(self):
-        return FacebookFriend.objects.filter(user=self)
-
-    def get_user_facebook_pages(self):
-        return FacebookPage.objects.filter(user=self)
-
     def get_user_twitter_friends(self):
         return TwitterFriend.objects.filter(user=self)
 

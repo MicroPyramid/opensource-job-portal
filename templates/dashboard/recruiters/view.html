@@ -264,76 +264,7 @@
       {% endif %}
       </div>
       <!--/Agency Recruiter ends -->
-      <!-- fb friends -->
-      <div class="tab_content" id='fb_friends'>
-      {% if recruiter.get_user_facebook_friends %}
-        {% for friend in recruiter.get_user_facebook_friends %}
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>User Name</label>
-              <span class="description">
-              <a href="{{ friend.facebook_id }}" class="fb_friends"><span>{{ friend.name }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        {% endfor %}
-        {% else %}
-          User not connected to facebook
-        {% endif %}
-      </div>
-      <!--/fb friends -->
-      <!-- fb pages -->
-      <div class="tab_content" id='fb_pages'>
-      {% if recruiter.get_user_facebook_pages %}
-      {% for page in recruiter.get_user_facebook_pages %}
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>First Name</label>
-              <span class="description">
-              <a href="{{ page.page_id }}" class="fb_friends"><span>{{ page.name }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        {% endfor %}
-        {% else %}
-          User not connected to facebook
-        {% endif %}
-
-      </div>
-      <!--/fb pages -->
-
-      <!-- fb groups -->
-      <div class="tab_content" id='fb_groups'>
-      {% if recruiter.get_user_facebook_groups %}
-      {% for group in recruiter.get_user_facebook_groups %}
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>First Name</label>
-              <span class="description">
-              <a href="{{ group.group_id }}"><span>{{ group.name }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        {% endfor %}
-        {% else %}
-          User not connected to facebook
-        {% endif %}
-
-      </div>
-      <!--/fb groups -->
-
+    
       <!-- twit friends  -->
       <div class="tab_content" id='twit_friends'>
       {% if  recruiter.get_user_twitter_friends%}

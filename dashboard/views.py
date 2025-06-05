@@ -100,15 +100,8 @@ from .forms import (
     UserForm,
 )
 from .tasks import (
-    del_jobpost_fb,
-    del_jobpost_peel_fb,
-    del_jobpost_tw,
     fbpost,
-    poston_allfb_groups,
-    postongroup,
-    postonpage,
     postonpeel_fb,
-    postontwitter,
     sending_mail,
     send_email,
 )
@@ -2100,9 +2093,7 @@ def deactivate_job(request, job_post_id):
     posts = FacebookPost.objects.filter(job_post=job_post).exclude(
         post_status="Deleted"
     )
-    for each in posts:
-        del_jobpost_peel_fb(request.user, each)
-        del_jobpost_fb(job_post.user, each)
+    
     posts = TwitterPost.objects.filter(job_post=job_post)
 
     job_post.previous_status = job_post.status
@@ -2127,12 +2118,9 @@ def delete_job(request, job_post_id):
     posts = FacebookPost.objects.filter(job_post=job_post).exclude(
         post_status="Deleted"
     )
-    for each in posts:
-        del_jobpost_fb(job_post.user, each)
+    
     posts = TwitterPost.objects.filter(job_post=job_post)
-    for each in posts:
-        del_jobpost_tw(job_post.user, each)
-
+    
     job_post.delete()
 
     data = {
@@ -2152,17 +2140,14 @@ def publish_job(request, job_post_id):
         # postonpeel_fb.delay(job_post.user, job_post)
         # if job_post.post_on_fb:
         #     fbpost.delay(job_post.user, job_post)
-        #     postonpage.delay(job_post.user, job_post)
         #     # need to check this condition
         #     # if emp['peelfbpost']:
         # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
         # for group in job_post.fb_groups:
         #     fb_group = FacebookGroup.objects.get(user=job_post.user, group_id=group)
         #     is_active = True
-        #     postongroup.delay(job_post.user, job_post, fb_group, is_active)
         #     # need to get accetoken for peeljobs twitter page
-        # if job_post.post_on_tw:
-        #     postontwitter.delay(job_post.user, job_post, 'Profile'))
+        
     # else:
     #     job_post.status = "Published"
 
@@ -2172,26 +2157,20 @@ def publish_job(request, job_post_id):
         # postonpeel_fb.delay(job_post.user, job_post)
         # if job_post.post_on_fb:
         #     fbpost.delay(job_post.user, job_post)
-        #     postonpage.delay(job_post.user, job_post)
         #     # need to check this condition
         #     # if emp['peelfbpost']:
         # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
         # for group in job_post.fb_groups:
         #     fb_group = FacebookGroup.objects.get(user=job_post.user, group_id=group)
         #     is_active = True
-        #     postongroup.delay(job_post.user, job_post, fb_group, is_active)
         #     # need to get accetoken for peeljobs twitter page
-        # if job_post.post_on_tw:
-        #     postontwitter.delay(job_post.user, job_post, 'Profile'))
+        
     # else:
     #     job_post.status = "Published"
     posts = FacebookPost.objects.filter(job_post=job_post)
-    for each in posts:
-        del_jobpost_fb(job_post.user, each)
+    
     posts = TwitterPost.objects.filter(job_post=job_post)
-    for each in posts:
-        del_jobpost_tw(job_post.user, each)
-
+    
     job_post.save()
     job_type = job_post.job_type
     data = {
@@ -2213,21 +2192,9 @@ def enable_job(request, job_post_id):
     job_post.save()
     if job_post.post_on_fb:
         fbpost.delay(job_post.user.id, job_post_id)
-        postonpage.delay(job_post.user.id, job_post_id)
         postonpeel_fb(job_post)
-    posts = FacebookPost.objects.filter(
-        job_post=job_post, page_or_group="group", is_active=True, post_status="Deleted"
-    )
-    for group in posts:
-        fb_group = FacebookGroup.objects.get(
-            user=job_post.user, group_id=group.page_or_group_id
-        )
-        postongroup.delay(job_post.id, fb_group.id)
-    if job_post.post_on_tw:
-        postontwitter.delay(job_post.user.id, job_post_id, "Profile")
-
-    data = {"error": False, "response": "Job Post enabled Successfully"}
-    # return HttpResponse(json.dumps(data))
+   
+    
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
@@ -4064,8 +4031,7 @@ def get_csv_reader(file_path):
 
 def post_on_all_fb_groups(request, post_id):
     job_post = JobPost.objects.filter(id=post_id)
-    if job_post.exists():
-        poston_allfb_groups.delay(post_id)
+    
     return HttpResponse(
         json.dumps(
             {"errors": False, "response": "Sucessfully Published Job Post In Fb Groups"}
