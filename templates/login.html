@@ -1,0 +1,781 @@
+{% load static %}
+{% load page_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PeelJobs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 8px;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: none;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #00aeef 0%, #0681c4 100%);
+            color: white;
+            text-align: center;
+            padding: 16px 12px;
+            position: relative;
+        }
+
+        .brand-logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .login-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0 0 3px 0;
+        }
+
+        .login-header p {
+            font-size: 0.8rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .login-body {
+            padding: 12px;
+        }
+
+        .nav-tabs {
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 12px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 0;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #00aeef;
+            background: transparent;
+            border-bottom: 2px solid #00aeef;
+            font-weight: 600;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: #00aeef;
+            border-color: transparent;
+        }
+
+        .login-form {
+            margin-bottom: 10px;
+        }
+
+        .form-floating {
+            margin-bottom: 10px;
+        }
+
+        .form-floating .form-control,
+        .form-floating .form-select {
+            border: 1.5px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            height: 42px;
+            padding: 8px 10px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-floating .form-control:focus,
+        .form-floating .form-select:focus {
+            border-color: #00aeef;
+            box-shadow: 0 0 0 0.1rem rgba(0, 174, 239, 0.15);
+            background: white;
+        }
+
+        .form-floating label {
+            font-size: 0.75rem;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 8px 10px;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, #00aeef 0%, #0681c4 100%);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px;
+            height: 36px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 174, 239, 0.3);
+            background: linear-gradient(135deg, #0681c4 0%, #00aeef 100%);
+        }
+
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.75rem;
+        }
+
+        .form-check {
+            margin: 0;
+        }
+
+        .form-check-input {
+            border: 1.5px solid #dee2e6;
+            border-radius: 3px;
+        }
+
+        .form-check-input:checked {
+            background-color: #00aeef;
+            border-color: #00aeef;
+        }
+
+        .forgot-password {
+            color: #00aeef;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #0681c4;
+            text-decoration: underline;
+        }
+
+        .social-divider {
+            text-align: center;
+            margin: 10px 0 6px 0;
+            position: relative;
+            color: #6c757d;
+            font-size: 0.75rem;
+        }
+
+        .social-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+
+        .social-divider span {
+            background: white;
+            padding: 0 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .social-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border: 1.5px solid #e9ecef;
+            border-radius: 6px;
+            background: white;
+            color: #495057;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-social:hover {
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-social i {
+            margin-right: 6px;
+            font-size: 1rem;
+        }
+
+        .btn-google {
+            border-color: #db4437;
+            color: #db4437;
+        }
+
+        .btn-google:hover {
+            background: #db4437;
+            color: white;
+        }
+
+        .btn-facebook {
+            border-color: #4267B2;
+            color: #4267B2;
+        }
+
+        .btn-facebook:hover {
+            background: #4267B2;
+            color: white;
+        }
+
+        .btn-linkedin {
+            border-color: #0077B5;
+            color: #0077B5;
+        }
+
+        .btn-linkedin:hover {
+            background: #0077B5;
+            color: white;
+        }
+
+        .btn-github {
+            border-color: #333;
+            color: #333;
+        }
+
+        .btn-github:hover {
+            background: #333;
+            color: white;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+
+        .auth-switch a {
+            color: #00aeef;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .auth-switch a:hover {
+            color: #0681c4;
+            text-decoration: underline;
+        }
+
+        .alert {
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
+            color: #721c24;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1e7dd 0%, #a3cfbb 100%);
+            color: #0f5132;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 6px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 6px;
+            }
+
+            .login-container {
+                max-width: 320px;
+            }
+
+            .login-header {
+                padding: 12px 8px;
+            }
+
+            .login-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .login-body {
+                padding: 10px;
+            }
+
+            .social-buttons {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 6px 8px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .login-container {
+                max-width: 300px;
+            }
+
+            .login-header h1 {
+                font-size: 1.1rem;
+            }
+
+            .login-header p {
+                font-size: 0.75rem;
+            }
+
+            .login-body {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="card login-card">
+            <div class="login-header">
+                <div class="brand-logo">
+                    <i class="fas fa-briefcase"></i> PeelJobs
+                </div>
+                <h1>Welcome Back!</h1>
+                <p>Sign in to access your account</p>
+            </div>
+            
+            <div class="login-body">
+                <!-- Navigation Tabs -->
+                <ul class="nav nav-tabs" id="authTabs" role="tablist">
+                    <li class="nav-item flex-fill" role="presentation">
+                        <button class="nav-link active w-100" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-pane" type="button" role="tab">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </button>
+                    </li>
+                    <li class="nav-item flex-fill" role="presentation">
+                        <button class="nav-link w-100" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-pane" type="button" role="tab">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="authTabContent">
+                    <!-- Login Tab -->
+                    <div class="tab-pane fade show active" id="login-pane" role="tabpanel">
+                        <form id="ApplicantForm" name="ApplicantForm" class="login-form ApplicantForm" method="POST">
+                            {% csrf_token %}
+                            
+                            <div id="login-messages"></div>
+                            
+                            <div class="form-floating">
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="userlogin_email" 
+                                       placeholder="name@example.com" 
+                                       name="email" 
+                                       required>
+                                <label for="userlogin_email">
+                                    <i class="fas fa-envelope me-1"></i>Email
+                                </label>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="userlogin_password" 
+                                       placeholder="Password" 
+                                       name="password" 
+                                       required>
+                                <label for="userlogin_password">
+                                    <i class="fas fa-lock me-1"></i>Password
+                                </label>
+                            </div>
+                            
+                            <div class="login-options">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me">
+                                    <label class="form-check-label" for="remember_me">
+                                        Remember me
+                                    </label>
+                                </div>
+                                <a href="#" class="forgot-password" id="forgot-password-link">Forgot?</a>
+                            </div>
+                            
+                            <input type="hidden" name="register_type" id="user_register_type" value="login">
+                            <input type="hidden" name="next" value="{{ request.GET.next }}">
+                            
+                            <button type="submit" class="btn btn-login" id="login-button">
+                                <span class="loading-spinner"></span>
+                                <span class="button-text">Sign In</span>
+                            </button>
+                        </form>
+                        
+                        <div class="social-divider">
+                            <span>Or continue with</span>
+                        </div>
+                        
+                        <div class="social-buttons">
+                            <a href="{% url 'social:google_login' %}" class="btn-social btn-google">
+                                <i class="fab fa-google"></i>
+                                Google
+                            </a>
+                            <a href="{% url 'social:facebook_login' %}" class="btn-social btn-facebook">
+                                <i class="fab fa-facebook-f"></i>
+                                Facebook
+                            </a>
+                            <a href="{% url 'social:linkedin_login' %}" class="btn-social btn-linkedin">
+                                <i class="fab fa-linkedin-in"></i>
+                                LinkedIn
+                            </a>
+                            <a href="{% url 'social:github_login' %}" class="btn-social btn-github">
+                                <i class="fab fa-github"></i>
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Register Tab -->
+                    <div class="tab-pane fade" id="register-pane" role="tabpanel">
+                        <form id="ApplicantFormRegister" name="ApplicantFormRegister" class="login-form ApplicantForm" method="POST">
+                            {% csrf_token %}
+                            
+                            <div id="register-messages"></div>
+                            
+                            <div class="form-floating">
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="user_register_email" 
+                                       placeholder="name@example.com" 
+                                       name="email" 
+                                       required>
+                                <label for="user_register_email">
+                                    <i class="fas fa-envelope me-1"></i>Email
+                                </label>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="user_register_password" 
+                                       placeholder="Password" 
+                                       name="password" 
+                                       required 
+                                       minlength="7">
+                                <label for="user_register_password">
+                                    <i class="fas fa-lock me-1"></i>Password (min. 7)
+                                </label>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="tel" 
+                                       class="form-control" 
+                                       id="user_register_mobile" 
+                                       placeholder="Mobile Number" 
+                                       name="mobile" 
+                                       required>
+                                <label for="user_register_mobile">
+                                    <i class="fas fa-phone me-1"></i>Mobile
+                                </label>
+                            </div>
+                            
+                            <input type="hidden" name="register_from" id="register_from" value="Email">
+                            <input type="hidden" name="register_type" value="register">
+                            
+                            <button type="submit" class="btn btn-login" id="register-button">
+                                <span class="loading-spinner"></span>
+                                <span class="button-text">Create Account</span>
+                            </button>
+                        </form>
+                        
+                        <div class="social-divider">
+                            <span>Or sign up with</span>
+                        </div>
+                        
+                        <div class="social-buttons">
+                            <a href="{% url 'social:google_login' %}" class="btn-social btn-google">
+                                <i class="fab fa-google"></i>
+                                Google
+                            </a>
+                            <a href="{% url 'social:facebook_login' %}" class="btn-social btn-facebook">
+                                <i class="fab fa-facebook-f"></i>
+                                Facebook
+                            </a>
+                            <a href="{% url 'social:linkedin_login' %}" class="btn-social btn-linkedin">
+                                <i class="fab fa-linkedin-in"></i>
+                                LinkedIn
+                            </a>
+                            <a href="{% url 'social:github_login' %}" class="btn-social btn-github">
+                                <i class="fab fa-github"></i>
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="auth-switch">
+                    <span id="auth-switch-text">Don't have an account? <a href="#" id="auth-switch-link">Create one</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Handle tab switching text
+            $('#login-tab').on('shown.bs.tab', function() {
+                $('#auth-switch-text').html('Don\'t have an account? <a href="#" id="auth-switch-link">Create one</a>');
+            });
+            
+            $('#register-tab').on('shown.bs.tab', function() {
+                $('#auth-switch-text').html('Already have an account? <a href="#" id="auth-switch-link">Sign in</a>');
+            });
+            
+            // Auth switch link functionality
+            $(document).on('click', '#auth-switch-link', function(e) {
+                e.preventDefault();
+                if ($('#login-tab').hasClass('active')) {
+                    $('#register-tab').tab('show');
+                } else {
+                    $('#login-tab').tab('show');
+                }
+            });
+            
+            // Forgot password functionality
+            $('#forgot-password-link').click(function(e) {
+                e.preventDefault();
+                $('#user_register_type').val('forgot_password');
+                $('#userlogin_password').prop('required', false).closest('.form-floating').hide();
+                $('#login-button .button-text').text('Send Reset Link');
+                $(this).hide();
+                
+                // Add cancel button
+                if (!$('#cancel-forgot').length) {
+                    $(this).parent().append('<a href="#" id="cancel-forgot" class="forgot-password ms-3">Cancel</a>');
+                }
+            });
+            
+            // Cancel forgot password
+            $(document).on('click', '#cancel-forgot', function(e) {
+                e.preventDefault();
+                $('#user_register_type').val('login');
+                $('#userlogin_password').prop('required', true).closest('.form-floating').show();
+                $('#login-button .button-text').text('Sign In');
+                $('#forgot-password-link').show();
+                $(this).remove();
+            });
+            
+            // Form validation feedback
+            function showMessage(containerId, message, type) {
+                const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+                const iconClass = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
+                const messageHtml = `<div class="alert ${alertClass}" role="alert">
+                    <i class="fas ${iconClass} me-2"></i>${message}
+                </div>`;
+                $(`#${containerId}`).html(messageHtml);
+            }
+            
+            function setLoadingState(button, loading) {
+                const spinner = button.find('.loading-spinner');
+                const text = button.find('.button-text');
+                
+                if (loading) {
+                    spinner.show();
+                    button.prop('disabled', true);
+                } else {
+                    spinner.hide();
+                    button.prop('disabled', false);
+                }
+            }
+            
+            // Enhanced form submission handling
+            $('form#ApplicantForm').off('submit').on('submit', function(e) {
+                e.preventDefault();
+                
+                const button = $('#login-button');
+                const originalText = button.find('.button-text').text();
+                setLoadingState(button, true);
+                button.find('.button-text').text('Signing in...');
+                
+                const register_type = $('#user_register_type').val();
+                let url;
+                
+                if (register_type == 'login') {
+                    url = '/applicant/login/';
+                } else if (register_type == 'forgot_password') {
+                    url = '/user/forgot_password/';
+                } else {
+                    url = '/registration/using_email/';
+                }
+                
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    data: $(this).serialize(),
+                    url: url,
+                    success: function(data) {
+                        if (data.error == false) {
+                            if (register_type == 'forgot_password') {
+                                showMessage('login-messages', 'Password reset link sent! Check your email.', 'success');
+                            } else {
+                                showMessage('login-messages', 'Login successful! Redirecting...', 'success');
+                                setTimeout(() => {
+                                    window.location = data.redirect_url || '/';
+                                }, 1000);
+                            }
+                        } else if (data.response) {
+                            let errorMsg = '';
+                            for (var key in data.response) {
+                                errorMsg += data.response[key] + '<br>';
+                            }
+                            showMessage('login-messages', errorMsg, 'error');
+                        } else {
+                            showMessage('login-messages', data.response_message || 'Login failed. Please try again.', 'error');
+                        }
+                    },
+                    error: function() {
+                        showMessage('login-messages', 'Connection error. Please try again.', 'error');
+                    },
+                    complete: function() {
+                        setLoadingState(button, false);
+                        button.find('.button-text').text(originalText);
+                    }
+                });
+            });
+            
+            // Registration form handling
+            $('form#ApplicantFormRegister').off('submit').on('submit', function(e) {
+                e.preventDefault();
+                
+                const button = $('#register-button');
+                const originalText = button.find('.button-text').text();
+                setLoadingState(button, true);
+                button.find('.button-text').text('Creating Account...');
+                
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    data: $(this).serialize(),
+                    url: '/registration/using_email/',
+                    success: function(data) {
+                        if (data.error == false) {
+                            showMessage('register-messages', 
+                                `Registration successful! A verification email has been sent to ${data.user_email}`, 
+                                'success');
+                            setTimeout(() => {
+                                window.location = '/user/reg_success/';
+                            }, 2000);
+                        } else {
+                            let errorMsg = '';
+                            if (data.password_error) {
+                                errorMsg += data.password_error + '<br>';
+                            }
+                            if (data.mobile_error) {
+                                errorMsg += data.mobile_error + '<br>';
+                            }
+                            if (data.email_error) {
+                                errorMsg += data.email_error + '<br>';
+                            }
+                            if (data.response_message) {
+                                errorMsg += data.response_message + '<br>';
+                            }
+                            showMessage('register-messages', errorMsg || 'Registration failed. Please try again.', 'error');
+                        }
+                    },
+                    error: function() {
+                        showMessage('register-messages', 'Connection error. Please try again.', 'error');
+                    },
+                    complete: function() {
+                        setLoadingState(button, false);
+                        button.find('.button-text').text(originalText);
+                    }
+                });
+            });
+            
+            // Clear messages when switching tabs
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function() {
+                $('#login-messages, #register-messages').empty();
+            });
+            
+            // Form field animation
+            $('.form-floating .form-control, .form-floating .form-select').on('focus', function() {
+                $(this).closest('.form-floating').addClass('focused');
+            }).on('blur', function() {
+                if (!$(this).val()) {
+                    $(this).closest('.form-floating').removeClass('focused');
+                }
+            });
+            
+            // Social login hover effects
+            $('.btn-social').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-2px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+        });
+    </script>
+</body>
+</html>
