@@ -5,7 +5,6 @@ from social.views import (
     google_login,
     github_login,
     linkedin_login,
-    twitter_login,
     linkedin_connect,
 )
 
@@ -17,7 +16,6 @@ urlpatterns = [
     url(r"^google_login/$", google_login, name="google_login"),
     url(r"^github/$", github_login, name="github_login"),
     url(r"^linkedin_login/$", linkedin_login, name="linkedin_login"),
-    url(r"^twitter_login/$", twitter_login, name="twitter_login"),
     # connect after login
     url(r"^linkedin-connect/$", linkedin_connect, name="linkedin_connect"),
 ]

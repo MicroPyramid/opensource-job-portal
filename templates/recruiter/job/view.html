@@ -194,13 +194,7 @@
               <a href="{% url 'recruiter:facebook_login' %}" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i> Connect with Facebook</a></span>
             </li>
             {% endif %}
-            {% if request.user.is_tw_connected %}
-            <li> <a><i class="fa fa-twitter" aria-hidden="true"></i> Total Twitter Views: {{ jobpost.tw_views }} </a></li>
-            {% else %}
-            <li>
-              <a href="{% url 'recruiter:twitter_login' %}" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i> Connect with Twitter</a></span>
-            </li>
-            {% endif %}
+            
           </ul>
         </nav>
       </div>

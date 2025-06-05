@@ -7,7 +7,6 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 
 # from oauth2client.contrib.django_util.models import CredentialsField
 
-# from twython.api import Twython
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models

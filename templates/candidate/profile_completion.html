@@ -52,8 +52,6 @@
          <li>
             {% if request.user.is_tw_connected %}
               <a href="{{ request.user.get_twitter_url }}" class="twitter" target="_blank"><span class='twit'><i class='fa fa-twitter'></i>Connected</span></a>
-            {% else %}
-                <a href="{% url 'social:twitter_login' %}" class="twitter"><span class='twit'><i class='fa fa-twitter'></i><b>Twitter</b></span></a>
             {% endif %}
           </li>
         <li>

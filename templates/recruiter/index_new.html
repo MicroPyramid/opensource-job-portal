@@ -210,13 +210,6 @@
         <a href="{{ request.user.get_facebook_url }}" target="_blank" class="fb"><i class="fab fa-facebook"></i> Connected</a>
         {% endif %}
         </span>
-        <span>
-        {% if not request.user.is_tw_connected %}
-        <a href="{% url 'recruiter:twitter_login' %}" class="twit"><i class="fab fa-twitter"></i> Connect Now</a>
-        {% else %}
-        <a href="{{ request.user.get_twitter_url }}" target="_blank" class="twit"><i class="fab fa-twitter"></i> Connected</a>
-        {% endif %}
-        </span>
 
         <button type="button" id="feedback-btn" class="btn btn-info vertical-right-aligned">Feedback <span
         class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span></button>

@@ -2318,10 +2318,6 @@ class recruiter_get_views_test(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "recruiter/job/add_interview_location.html")
 
-    def test_twitter_logins(self):
-        response = self.client.post(reverse("recruiter:twitter_login"))
-        self.assertEqual(response.status_code, 302)
-
     def test_facebook_login(self):
         response = self.client.post(reverse("recruiter:facebook_login"))
         self.assertEqual(response.status_code, 302)

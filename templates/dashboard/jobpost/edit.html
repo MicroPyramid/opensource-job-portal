@@ -532,12 +532,6 @@
           <span class='button twit'>
             <input type="checkbox" name="tw_post" id="tw_post" checked><span class='name'>twitter</span>
             </span>
-          {% else %}
-            <a href="{% url 'recruiter:twitter_login' %}" class="fb_btn unlink_button">
-            <span class='button twit'>
-            <i class="fa fa-twitter"></i>Get Connected With Twitter
-            </span>
-            </a>
           {% endif %}
           </span>
           {% if request.user.is_ln_connected %}
