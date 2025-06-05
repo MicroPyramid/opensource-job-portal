@@ -104,17 +104,25 @@ def get_resume_name(value):
 
 @register.filter
 def get_s3_url(key):
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
-    )
-    stored_url = s3_client.generate_presigned_url(
-        'get_object',
-        Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': key},
-        ExpiresIn=600
-    )
-    return stored_url
+    # Handle empty, None, or invalid keys
+    if not key or not str(key).strip():
+        return '#'
+    
+    try:
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+        )
+        stored_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': str(key).strip()},
+            ExpiresIn=600
+        )
+        return stored_url
+    except Exception:
+        # Return a placeholder URL if S3 operation fails
+        return '#'
 
 
 @register.filter

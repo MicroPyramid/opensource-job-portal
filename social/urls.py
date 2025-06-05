@@ -6,10 +6,7 @@ from social.views import (
     github_login,
     linkedin_login,
     twitter_login,
-    facebook_connect,
-    google_connect,
     linkedin_connect,
-    sofconnect,
 )
 
 app_name = "social"
@@ -22,8 +19,5 @@ urlpatterns = [
     url(r"^linkedin_login/$", linkedin_login, name="linkedin_login"),
     url(r"^twitter_login/$", twitter_login, name="twitter_login"),
     # connect after login
-    url(r"^facebook-connect/$", facebook_connect, name="facebook_connect"),
-    url(r"^google-connect/$", google_connect, name="google_connect"),
     url(r"^linkedin-connect/$", linkedin_connect, name="linkedin_connect"),
-    url(r"^stackoverflow-connect/$", sofconnect, name="sofconnect"),
 ]

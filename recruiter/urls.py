@@ -46,7 +46,6 @@ from recruiter.views import (
     messages,
     resume_upload,
     resume_pool,
-    google_connect,
 )
 from recruiter.views import (
     add_menu,
@@ -116,7 +115,6 @@ urlpatterns = [
         name="account_activation",
     ),
     url(r"^twitter_login/$", twitter_login, name="twitter_login"),
-    url(r"^google_connect/$", google_connect, name="google_connect"),
     url(r"^google_login/$", google_login, name="google_login"),
     url(r"^facebook_login/$", facebook_login, name="facebook_login"),
     url(r"^linkedin_login/$", linkedin_login, name="linkedin_login"),
