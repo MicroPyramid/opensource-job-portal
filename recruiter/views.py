@@ -90,13 +90,7 @@ from .forms import (
     ApplicantResumeForm,
     ResumeUploadForm,
 )
-from .tasks import (
-    del_jobpost_tw,
-    del_jobpost_fb,
-    del_jobpost_peel_fb,
-    add_twitter_friends_followers,
-    add_facebook_friends_pages_groups,
-)
+
 from mpcomp.views import (
     rand_string,
     recruiter_login_required,
@@ -1174,13 +1168,9 @@ def deactivate_job(request, job_post_id):
         posts = FacebookPost.objects.filter(job_post=job_post).exclude(
             post_status="Deleted"
         )
-        for each in posts:
-            del_jobpost_fb.delay(request.user.id, each.id)
-            del_jobpost_peel_fb(request.user.id, each.id)
+       
         posts = TwitterPost.objects.filter(job_post=job_post)
-        for each in posts:
-            del_jobpost_tw.delay(request.user.id, each.id)
-
+        
         job_post.previous_status = job_post.status
         job_post.closed_date = datetime.now(timezone.utc)
         job_post.status = "Disabled"
@@ -1195,13 +1185,9 @@ def deactivate_job(request, job_post_id):
 def delete_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id, user=request.user)
     posts = FacebookPost.objects.filter(job_post=job_post)
-    for each in posts:
-        del_jobpost_fb.delay(request.user.id, each.id)
-        del_jobpost_peel_fb.delay(request.user.id, each.id)
+    
     posts = TwitterPost.objects.filter(job_post=job_post)
-    for each in posts:
-        del_jobpost_tw.delay(request.user.id, each.id)
-
+    
     job_post.status = "Disabled"
     job_post.closed_date = datetime.now(timezone.utc)
     job_post.save()
@@ -1216,21 +1202,14 @@ def enable_job(request, job_post_id):
     job_post.status = "Pending"
     job_post.closed_date = None
     job_post.save()
-    # postonpeel_fb.delay(request.user, job_post)
     # if job_post.post_on_fb:
-    #     fbpost.delay(request.user, job_post)
-    #     postonpage.delay(request.user, job_post)
     #     # need to check this condition
-    #     # if emp['peelfbpost']:
     # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
     # for group in posts:
     #     fb_group = FacebookGroup.objects.get(user=request.user, group_id=group.page_or_group_id)
     #     is_active = True
-    #     postongroup.delay(request.user, job_post, fb_group, is_active)
     #     # need to get accetoken for peeljobs twitter page
-    # if job_post.post_on_tw:
-    #     postontwitter.delay(request.user, job_post, 'Profile')
-    #     # postontwitter(request.user, post, 'Page')
+    
 
     data = {"error": False, "response": "Job Post enabled Successfully"}
     return HttpResponse(json.dumps(data))
@@ -2143,7 +2122,6 @@ def twitter_login(request):
                     oauth_secret=final_step["oauth_token_secret"],
                 )
 
-            add_twitter_friends_followers.delay(request.user.id, friends, followers)
             return HttpResponseRedirect(reverse("recruiter:index"))
         message_type = "Sorry,"
         message = "We didnt find your Twitter Account"
@@ -2415,9 +2393,7 @@ def facebook_login(request):
                         timezone=profile.get("timezone", ""),
                         accesstoken=accesstoken,
                     )
-                add_facebook_friends_pages_groups(
-                    accesstoken, profile["id"], request.user
-                )
+                
                 return HttpResponseRedirect(reverse("recruiter:index"))
         message_type = "Sorry,"
         message = "We didnt find your email id through facebook"

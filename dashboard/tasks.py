@@ -66,9 +66,7 @@ def rebuilding_index():
 def updating_jobposts():
     jobposts = JobPost.objects.filter(status="Live")
     for job in jobposts:
-        job_url = get_absolute_url(job)
         job.slug = get_absolute_url(job)
-        # job.minified_url = google_mini('https://peeljobs.com' + job_url, settings.wMINIFIED_URL)
         job.save()
 
 
@@ -110,6 +108,7 @@ def job_alerts_to_users():
 
 @app.task
 def job_alerts_to_subscribers():
+    return
     from_date = datetime.now() - timedelta(days=1)
     to_date = datetime.now()
     jobs = JobPost.objects.filter(
@@ -146,6 +145,7 @@ def job_alerts_to_subscribers():
 
 @app.task
 def job_alerts_to_alerts():
+    return
     from_date = datetime.now() - timedelta(days=1)
     to_date = datetime.now()
     job_posts = JobPost.objects.filter(
@@ -184,6 +184,7 @@ def job_alerts_to_alerts():
 
 @app.task()
 def jobpost_published():
+    return
     jobposts = JobPost.objects.filter(status="Published")
     for job in jobposts:
 
@@ -192,33 +193,7 @@ def jobpost_published():
         job_url = get_absolute_url(job)
         job.slug = job_url
         job.save()
-        posts = FacebookPost.objects.filter(job_post=job)
-        for each in posts:
-            del_jobpost_fb(job.user, each)
-            del_jobpost_peel_fb(job.user, each)
-        postonpeel_fb(job)
-        postontwitter(job.user.id, job.id, "Page")
-        if job.post_on_fb:
-            fbpost(job.user.id, job.id)
-            postonpage(job.user.id, job.id)
-            posts = FacebookPost.objects.filter(
-                job_post=job,
-                page_or_group="group",
-                is_active=True,
-                post_status="Deleted",
-            )
-            for group in job.fb_groups:
-                fb_group = FacebookGroup.objects.get(user=job.user, group_id=group)
-                postongroup(job.id, fb_group.id)
-        posts = TwitterPost.objects.filter(job_post=job)
-        for each in posts:
-            del_jobpost_tw(job.user, each)
-
-        if job.post_on_tw:
-            postontwitter(job.user.id, job.id, "Profile")
-
-        postonlinkedin(job.user.id, job)
-
+       
         c = {"job_post": job, "user": job.user}
         t = loader.get_template("email/jobpost.html")
         subject = "PeelJobs JobPost Status"
@@ -227,470 +202,7 @@ def jobpost_published():
         send_email.delay(mto, subject, rendered)
 
 
-def del_jobpost_fb(user, post):
-    if user:
-        graph = GraphAPI(settings.FB_DEL_ACCESS_TOKEN)
-        try:
-            post.post_status = "Deleted"
-            post.save()
-            graph.delete_object(post.post_id)
-            return "deleted successfully"
-        except Exception as e:
-            return e
-    else:
-        return "connect to fb"
 
-
-@app.task()
-def fbpost(user, job_post):
-    user = User.objects.filter(id=user).first()
-    if user.is_fb_connected:
-        access_token = get_app_access_token(settings.FB_APP_ID, settings.FB_SECRET)
-        job_post = JobPost.objects.filter(id=job_post).first()
-        if job_post and access_token:
-            params = {}
-            params["access_token"] = access_token
-            skill_hash = "".join(
-                [
-                    " #" + name.replace(" ", "").lower()
-                    for name in job_post.skills.values_list("name", flat=True)
-                ]
-            )
-            loc_hash = "".join(
-                [
-                    " #" + name.replace(" ", "").lower()
-                    for name in job_post.location.values_list("name", flat=True)
-                ]
-            )
-            params["message"] = (
-                (job_post.published_message or job_post.title)
-                + skill_hash
-                + loc_hash
-                + " #Jobs #Peeljobs"
-            )
-            params["picture"] = settings.LOGO
-            params["link"] = "http://peeljobs.com" + str(job_post.get_absolute_url())
-
-            params["name"] = job_post.title
-            params["description"] = job_post.company_name
-            params["privacy"] = {"value": "ALL_FRIENDS"}
-            facebook_id = Facebook.objects.get(user=user).facebook_id
-            u = requests.post(
-                "https://graph.facebook.com/" + facebook_id + "/feed", params=params
-            )
-            response = u.json()
-
-            if "error" in response.keys():
-                pass
-            if "id" in response.keys():
-                FacebookPost.objects.create(
-                    job_post=job_post,
-                    page_or_group="page",
-                    page_or_group_id=facebook_id,
-                    post_id=response["id"],
-                    post_status="Posted",
-                )
-                return "posted successfully"
-            return "error occured in posting"
-        else:
-            return "jobpost not exists"
-    else:
-        return "connect with fb first"
-
-
-def postonpeel_fb(job_post):
-    if job_post:
-        params = {}
-        skill_hash = "".join(
-            [
-                " #" + name.replace(" ", "").lower()
-                for name in job_post.skills.values_list("name", flat=True)
-            ]
-        )
-        loc_hash = "".join(
-            [
-                " #" + name.replace(" ", "").lower()
-                for name in job_post.location.values_list("name", flat=True)
-            ]
-        )
-        params["message"] = (
-            (job_post.published_message or job_post.title)
-            + skill_hash
-            + loc_hash
-            + " #Jobs #Peeljobs"
-        )
-        if job_post.company.profile_pic and job_post.company.is_active:
-            params["picture"] = (
-                job_post.company.profile_pic
-                if "https" in str(job_post.company.profile_pic)
-                else "https://cdn.peeljobs.com/" + str(job_post.company.profile_pic)
-            )
-        elif job_post.major_skill and job_post.major_skill.icon:
-            params["picture"] = job_post.major_skill.icon
-        elif (
-            job_post.skills.all()[0].icon
-            and job_post.skills.all()[0].status == "Active"
-        ):
-            params["picture"] = job_post.skills.all()[0].icon
-        else:
-            params["picture"] = "https://cdn.peeljobs.com/jobopenings1.png"
-        params["link"] = "http://peeljobs.com" + str(job_post.get_absolute_url())
-        job_name = job_post.title
-
-        params["description"] = (
-            job_post.company.name if job_post.company else job_post.company_name
-        )
-        params["access_token"] = settings.FB_PAGE_ACCESS_TOKEN
-        params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
-
-        params["name"] = job_name
-        params["caption"] = "http://peeljobs.com"
-        params["actions"] = [{"name": "get peeljobs", "link": "http://peeljobs.com/"}]
-
-        params = urllib.parse.urlencode(params)
-        u = requests.post(
-            "https://graph.facebook.com/" + settings.FB_PEELJOBS_PAGEID + "/feed",
-            params=params,
-        )
-        response = u.json()
-        print(params)
-        print(response, "response")
-        if "error" in response.keys():
-            pass
-        if "id" in response.keys():
-            FacebookPost.objects.create(
-                job_post=job_post,
-                page_or_group="peel_jobs",
-                page_or_group_id=settings.FB_PEELJOBS_PAGEID,
-                post_id=response["id"],
-                post_status="Posted",
-            )
-            return "posted successfully"
-        return "job not posted on page"
-    else:
-        return "jobpost not exists"
-
-
-@app.task()
-def postonpage(user, job_post):
-    user = User.objects.filter(id=user).first()
-    if user.is_fb_connected:
-        pages = FacebookPage.objects.filter(user=user)
-        if pages:
-            job_post = JobPost.objects.filter(id=job_post).first()
-            params = {}
-            skill_hash = "".join(
-                [
-                    " #" + name.replace(" ", "").lower()
-                    for name in job_post.skills.values_list("name", flat=True)
-                ]
-            )
-            loc_hash = "".join(
-                [
-                    " #" + name.replace(" ", "").lower()
-                    for name in job_post.location.values_list("name", flat=True)
-                ]
-            )
-            params["message"] = (
-                (job_post.published_message or job_post.title)
-                + skill_hash
-                + loc_hash
-                + " #Jobs #Peeljobs"
-            )
-            params["picture"] = settings.LOGO
-            params["link"] = settings.PEEL_URL + str(job_post.slug)
-            params["name"] = job_post.title
-            params["description"] = job_post.company_name
-            params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
-            params["access_token"] = pages[0].accesstoken
-            params = urllib.parse.urlencode(params)
-
-            for page in pages:
-                if page.allow_post:
-                    u = requests.post(
-                        "https://graph.facebook.com/" + str(page.page_id) + "/feed",
-                        params,
-                        params=params,
-                    )
-                    response = u.json()
-
-                    if "id" in response.keys():
-                        FacebookPost.objects.create(
-                            job_post=job_post,
-                            page_or_group=page,
-                            page_or_group_id=page.page_id,
-                            post_id=response["id"],
-                            post_status="Posted",
-                        )
-
-            data = "posted successfully"
-        else:
-            data = "page not exists"
-    else:
-        data = "user not connected to facebook"
-    return data
-
-
-@app.task()
-def postongroup(job_post, group_id):
-    job_post = JobPost.objects.filter(id=job_post).first()
-    if job_post:
-        params = {}
-        skill_hash = "".join(
-            [
-                " #" + name.replace(" ", "").lower()
-                for name in job_post.skills.values_list("name", flat=True)
-            ]
-        )
-        loc_hash = "".join(
-            [
-                " #" + name.replace(" ", "").lower()
-                for name in job_post.location.values_list("name", flat=True)
-            ]
-        )
-        params["message"] = (
-            (job_post.published_message or job_post.title)
-            + skill_hash
-            + loc_hash
-            + " #Jobs #Peeljobs"
-        )
-
-        skills = job_post.get_skills()
-        params["picture"] = (
-            skills[0].icon if skills and skills[0].icon else settings.LOGO
-        )
-
-        PEEL_URL = "https://peeljobs.com"
-        params["link"] = PEEL_URL + str(job_post.get_absolute_url())
-
-        params["name"] = job_post.title
-        params["description"] = job_post.company_name
-        params["access_token"] = settings.FB_GROUP_ACCESS_TOKEN
-        params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
-        params = urllib.parse.urlencode(params)
-        requests.post(
-            "https://graph.facebook.com/" + str(group_id) + "/feed", params=params
-        )
-        return "posted successfully"
-    else:
-        return "jobpost not exists"
-
-
-@app.task
-def poston_allfb_groups(job_post):
-    job_post = JobPost.objects.filter(id=job_post).first()
-    with open("mpcomp/fb_groups.json") as data_file:
-        data = json.load(data_file)
-        for each in data:
-            group_id = each["id"]
-            params = {}
-
-            job_name = (
-                str(job_post.title)
-                + ", for Exp "
-                + str(job_post.min_year)
-                + " - "
-                + str(job_post.min_year)
-            )
-            skill_hash = " #" + " #".join(
-                job_post.skills.values_list("name", flat=True)
-            )
-            loc_hash = " #" + " #".join(
-                job_post.location.values_list("name", flat=True)
-            )
-            params["message"] = (
-                job_post.published_message
-                or job_post.title + skill_hash + loc_hash + " #jobs #peeljobs"
-            )
-            skills = job_post.get_skills()
-
-            params["picture"] = (
-                skills[0].icon if skills and skills[0].icon else settings.LOGO
-            )
-
-            PEEL_URL = "https://peeljobs.com"
-            params["link"] = PEEL_URL + str(job_post.get_absolute_url())
-
-            params["name"] = job_name
-            params["description"] = job_post.company_name
-            params["access_token"] = settings.FB_ALL_GROUPS_TOKEN
-            params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
-            params = urllib.parse.urlencode(params)
-            requests.post(
-                "https://graph.facebook.com/" + str(group_id) + "/feed", params=params
-            )
-
-
-def del_jobpost_tw(user, post):
-    if user:
-        user_twitter = Twitter.objects.filter(user=user)
-        if user_twitter:
-            user_twitter = user_twitter[0]
-            twitter = Twython(
-                settings.TW_APP_KEY,
-                settings.TW_APP_SECRET,
-                user_twitter.oauth_token,
-                user_twitter.oauth_secret,
-            )
-            if twitter and user_twitter:
-                try:
-                    twitter.destroy_status(id=post.post_id)
-                    post.delete()
-                except Exception as e:
-                    return e
-            else:
-                return "connect to twitter"
-        else:
-            return "connect to twitter"
-    else:
-        return "connect to twitter"
-
-
-@app.task()
-def del_jobpost_peel_fb(user, post):
-    if user:
-        try:
-            graph = GraphAPI(settings.FB_ACCESS_TOKEN)
-            post = FacebookPost.objects.get(id=post)
-            post.post_status = "Deleted"
-            post.save()
-            graph.delete_object(post.post_id)
-        except:
-            print("not deleted")
-        return "deleted successfully"
-    return "connect to fb"
-
-
-@app.task()
-def postonlinkedin(user, job_post):
-    user = User.objects.get(id=user)
-    job_post = Jobpost.objects.get(id=job_post)
-    link = Linkedin.objects.filter(user__id=user).first()
-    job_post = JobPost.objects.filter(id=job_post).first()
-    if job_post:
-        job_name = (
-            str(job_post.title)
-            + ", for Exp "
-            + str(job_post.min_year)
-            + " - "
-            + str(job_post.min_year)
-            + " in "
-        )
-        locations = job_post.location.values_list("name", flat=True)
-        job_name += ", ".join(locations)
-        post = {
-            "visibility": {
-                "code": "anyone",
-            },
-            "comment": job_post.published_message,
-            "content": {
-                "title": job_name,
-                "submitted-url": "http://peeljobs.com"
-                + str(job_post.get_absolute_url()),
-                "submitted-image-url": settings.LOGO,
-                "description": job_name,
-            },
-        }
-
-        url = (
-            "https://api.linkedin.com/v1/companies/"
-            + settings.LN_COMPANYID
-            + "/shares?format=json"
-        )
-        headers = {"x-li-format": "json", "Content-Type": "application/json"}
-        pj_linkedin = Linkedin.objects.get(user__email="raghubethi@micropyramid.com")
-        params = {"oauth2_access_token": pj_linkedin.accesstoken}
-        kw = dict(data=json.dumps(post), params=params, headers=headers, timeout=60)
-        response = requests.request("POST", url, **kw)
-        response = response.json()
-        if "updatekey" in response.keys():
-            LinkedinPost.objects.create(
-                job_post=job_post,
-                profile_or_group="Profile",
-                post_id=response["updatekey"],
-                post_status="True",
-                update_url=response["update_url"],
-            )
-        if link:
-            url = "https://api.linkedin.com/v1/people/~/shares"
-            params["oauth2_access_token"] = link.accesstoken
-            response = requests.request("POST", url, **kw)
-            response = response.json()
-            if "updatekey" in response.keys():
-                LinkedinPost.objects.create(
-                    job_post=job_post,
-                    profile_or_group="Profile",
-                    post_id=response["updatekey"],
-                    post_status="True",
-                    update_url=response["update_url"],
-                )
-        return "posted successfully"
-    else:
-        return "jobpost not exists"
-
-
-@app.task()
-def postontwitter(user, job_post, page_or_profile):
-    job_post = JobPost.objects.filter(id=job_post).first()
-    if job_post:
-        user = User.objects.filter(id=user).first()
-        user_twitter = Twitter.objects.filter(user=user)
-        if page_or_profile == "Profile" and user_twitter:
-            user_twitter = user_twitter[0]
-            twitter = Twython(
-                settings.TW_APP_KEY,
-                settings.TW_APP_SECRET,
-                user_twitter.oauth_token,
-                user_twitter.oauth_secret,
-            )
-        else:
-            twitter = Twython(
-                settings.TW_APP_KEY,
-                settings.TW_APP_SECRET,
-                settings.OAUTH_TOKEN,
-                settings.OAUTH_SECRET,
-            )
-        job_name = job_post.title
-        skill_hash = "".join(
-            [
-                " @" + name.replace(" ", "").lower()
-                for name in job_post.skills.values_list("name", flat=True)
-            ]
-        )
-        loc_hash = "".join(
-            [
-                " @" + name.replace(" ", "").lower()
-                for name in job_post.location.values_list("name", flat=True)
-            ]
-        )
-        job_name = job_name + skill_hash + loc_hash + " #Jobs #PeelJobs"
-        twitter_status = (
-            job_name + "  http://peeljobs.com" + str(job_post.get_absolute_url())
-        )
-        try:
-            response = twitter.update_status(status=twitter_status)
-        except:
-            response = {"empty": ""}
-        if "id" in response.keys():
-            if page_or_profile == "Profile":
-                TwitterPost.objects.create(
-                    job_post=job_post,
-                    page_or_profile=page_or_profile,
-                    post_id=response["id"],
-                    post_status="Posted",
-                )
-            else:
-                TwitterPost.objects.create(
-                    job_post=job_post,
-                    page_or_profile=page_or_profile,
-                    post_id=response["id"],
-                    post_status="Posted",
-                )
-
-            return "posted successfully"
-        return "not posted in twitter"
-    else:
-        return "jobpost not exists"
 
 
 @app.task()
@@ -1143,29 +655,9 @@ def daily_report():
         send_email.delay(mto, subject, rendered)
 
 
-# @app.task()
-# def applicants_profile_update_notifications_two_hours():
-#     today_applicants = User.objects.filter(
-#         user_type="JS",
-#         profile_completeness__lt=50,
-#         is_unsubscribe=False,
-#         is_bounce=False,
-#         email_notifications=True,
-#     ).exclude(email__icontains="micropyramid.com")
-#     for user in today_applicants:
-#         if user.date_joined and user.date_joined > datetime.today() - timedelta(
-#             hours=2
-#         ):
-#             temp = loader.get_template("email/user_profile_alert.html")
-#             subject = "Update Your Profile To Get Top Matching Jobs - Peeljobs"
-#             mto = [user.email]
-#             rendered = temp.render({"user": user})
-#             user_active = True if user.is_active else False
-#             send_email.delay(mto, subject, rendered)
-
-
 @app.task()
 def applicants_profile_update_notifications():
+    return
     today_applicants = User.objects.filter(
         user_type="JS",
         profile_completeness__lt=50,
@@ -1256,7 +748,7 @@ def recruiter_profile_update_notifications():
 
 @app.task()
 def applicants_all_job_notifications():
-
+    return
     today_applicants = User.objects.filter(
         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
     )
@@ -1273,6 +765,7 @@ def applicants_all_job_notifications():
 
 @app.task()
 def applicants_job_notifications():
+    return
     users = User.objects.filter(
         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
     ).exclude(email__icontains="micropyramid.com")

@@ -52,7 +52,7 @@ https://opensource-job-portal.readthedocs.io/en/latest/
 
 ## Tech Stack
 
-- **Backend**: Python 3.x, Django  
+- **Backend**: Python, Django  
 - **Frontend**: HTML5, CSS3, Bootstrap, Less/Sass  
 - **Database**: PostgreSQL  
 - **Search**: Elasticsearch  
@@ -66,8 +66,8 @@ https://opensource-job-portal.readthedocs.io/en/latest/
 
 ### Prerequisites
 
-- Ubuntu 20.04 (or compatible Linux distro)  
-- Python 3.8+ & `pip`  
+- Ubuntu 24.04 (or compatible Linux distro)  
+- Python 3.12+ & `pip`  
 - PostgreSQL  
 - Node.js & `npm`  
 - Docker & Docker Compose  
@@ -82,7 +82,7 @@ https://opensource-job-portal.readthedocs.io/en/latest/
    ```
 2. **Node.js & Less**  
    ```bash
-   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
    sudo apt-get install -y nodejs
    sudo npm install -g less
    ```
@@ -164,6 +164,40 @@ https://opensource-job-portal.readthedocs.io/en/latest/
    ```bash
    python manage.py runserver 0.0.0.0:8000
    ```
+
+### Running Background Jobs with Celery
+
+For background job processing and periodic tasks, you need to run Celery alongside Django:
+
+1. **Start Redis server** (if not already running):  
+   ```bash
+   sudo systemctl start redis-server
+   # or manually: redis-server
+   ```
+
+2. **Run Celery worker** (in a separate terminal):  
+   ```bash
+   # From project root directory
+   celery -A jobsp worker --loglevel=info
+   ```
+
+3. **Run Celery beat scheduler** (in another terminal for periodic jobs):  
+   ```bash
+   # From project root directory  
+   celery -A jobsp beat --loglevel=info
+   ```
+
+4. **Optional: Run Celery flower** (monitoring dashboard):  
+   ```bash
+   pip install flower
+   celery -A jobsp flower
+   # Access at http://localhost:5555
+   ```
+
+**Development workflow:**
+- Terminal 1: `python manage.py runserver`
+- Terminal 2: `celery -A jobsp worker --loglevel=info`  
+- Terminal 3: `celery -A jobsp beat --loglevel=info`
 
 Visit <http://localhost:8000> to see the portal in action!
 

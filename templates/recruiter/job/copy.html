@@ -694,23 +694,7 @@
                           <span class='name'><i class="fa fa-twitter"></i> Twitter</span>
                           {% endif %}
                           </span>
-                             <!-- fb groups -->
-                          {% if request.user.is_fb_connected  and request.user.get_user_facebook_groups %}
-                          <div class='social_wrap'>
-                            <ul>
-                              {% for group in request.user.get_user_facebook_groups %}
-                              <li class="facebook_groups">
-                                <div class="ticket_wrap">
-                                  <input type="checkbox" class='social_selected'name="fb_groups" id="fb_groups" 
-                                  value="{{ group.group_id }}"><span>{{group.name}}</span>
-                              </div>
-                            </li>
-                            {% endfor %}
-                            <div class="clearfix"></div>
-                          </ul>
-                        </div>
-                        {% endif %}
-                      <!--/ fb groups -->
+                            
                         </div>
                     <!--/ post on row -->
       </div>

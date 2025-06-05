@@ -42,12 +42,6 @@ from mpcomp.facebook import GraphAPI, get_access_token_from_code
 
 from twython.api import Twython
 from urllib.parse import parse_qsl
-from .tasks import (
-    facebook_groups,
-    facebook_friends,
-    facebook_pages,
-    add_twitter_friends_followers,
-)
 
 
 def login_and_apply(request):
@@ -841,7 +835,6 @@ def twitter_login(request):
                 oauth_secret=final_step.get("oauth_token_secret", ""),
             )
 
-        add_twitter_friends_followers.delay(request.user.id, friends, followers)
 
         # if request.is_mobile == "mobile":
         #     return HttpResponseRedirect("/jobs/")

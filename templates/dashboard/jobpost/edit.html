@@ -552,22 +552,7 @@
           </div>
           <!--/ post on row -->
           <!--/ content job post -->
-          <!-- fb groups -->
-          <div class='social_wrap'>
-            <ul>
-            {% if request.user.is_fb_connected %}
-              {% for group in request.user.get_user_facebook_groups %}
-              <li class="facebook_groups">
-                <div class="ticket_wrap">
-                  <input type="checkbox" class='social_selected'name="fb_groups" id="fb_groups" value="{{ group.group_id }}"><span>{{group.name}}</span>
-                </div>
-              </li>
-              {% endfor %}
-            {% endif %}
-            <div class="clearfix"></div>
-            </ul>
-          </div>
-          <!--/ fb groups -->
+          
           </form>
       </section>
     </div>
