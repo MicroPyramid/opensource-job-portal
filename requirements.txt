@@ -22,7 +22,6 @@ python-dotenv==0.21.0
 python-memcached==1.62
 redis==4.3.4
 sorl-thumbnail==12.11.0
-twython==3.9.1
 dj-rest-auth==7.0.1
 pyjwt==2.5.0
 djangorestframework==3.14.0

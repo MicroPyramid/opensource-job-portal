@@ -639,11 +639,7 @@
               {% else %}
                <li class="facebook"><a href="{% url 'recruiter:facebook_login' %}" target="_blank"><i class="fa fa-facebook"></i><span>Connect with facebook</span> </a></li>
               {% endif %}
-              {% if request.user.is_tw_connected %}
-               <li class="twitter"><a href="{{ request.user.get_twitter_url }}" target="_blank"><i class="fa fa-twitter"></i> <span>Connected</span> </a></li>
-              {% else %}
-                <li class="twitter"><a href="{% url 'recruiter:twitter_login' %}" target="_blank"><i class="fa fa-twitter"></i> <span>Connect with twitter</span> </a></li>
-              {% endif %}
+              
                 <br clear="all">
               </ul>
               </div>
@@ -687,12 +683,7 @@
                           <span class='name' ><i class="fa fa-facebook"></i>facebook</span>
                           {% endif %}
                           </span>
-                          <span class='button twit' onclick="location.href='{% url 'recruiter:twitter_login' %}'">
-                          {% if request.user.is_tw_connected %}
-                        <input type="checkbox" name="tw_post" id="tw_post" checked><span class='name'>twitter</span>
-                        {% else %}
-                          <span class='name'><i class="fa fa-twitter"></i> Twitter</span>
-                          {% endif %}
+                         
                           </span>
                             
                         </div>

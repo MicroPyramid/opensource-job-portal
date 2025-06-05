@@ -23,15 +23,9 @@ from peeldb.models import (
     AppliedJobs,
     City,
     Company,
-    Facebook,
-    FacebookGroup,
-    FacebookPage,
-    FacebookPost,
     Industry,
     JobAlert,
     JobPost,
-    Linkedin,
-    LinkedinPost,
     Qualification,
     SearchResult,
     SentMail,
@@ -39,11 +33,8 @@ from peeldb.models import (
     State,
     Subscriber,
     Ticket,
-    Twitter,
-    TwitterPost,
     User,
 )
-from twython.api import Twython
 
 
 @app.task

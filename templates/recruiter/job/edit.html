@@ -690,13 +690,7 @@
                               <span class='name' ><i class="fa fa-facebook"></i>facebook</span>
                             {% endif %}
                           </span>
-                          <span class='button twit' onclick="location.href='{% url 'recruiter:twitter_login' %}'">
-                            {% if request.user.is_tw_connected %}
-                              <input type="checkbox" name="tw_post" id="tw_post" checked><span class='name'>twitter</span>
-                            {% else %}
-                              <span class='name'><i class="fa fa-twitter"></i> Twitter</span>
-                            {% endif %}
-                          </span>
+                          
                          
                         </div>
                     <!--/ post on row -->

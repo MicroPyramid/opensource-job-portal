@@ -1,8 +1,3 @@
-"""
-social logins module which includes facebook, google, twitter, linkedin, github, stackoverflow connections
-Also applying jobs when user clicks on apply button in jobs list page
-"""
-
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
@@ -29,18 +24,13 @@ from peeldb.models import (
     UserEmail,
     GitHub,
     Linkedin,
-    Twitter,
     JobPost,
-    StackOverFlow,
     AppliedJobs,
-    City,
-    State,
     Industry,
     EmploymentHistory,
 )
 from mpcomp.facebook import GraphAPI, get_access_token_from_code
 
-from twython.api import Twython
 from urllib.parse import parse_qsl
 
 
@@ -791,72 +781,6 @@ def linkedin_login(request):
             + reverse("social:linkedin_login")
         )
         return HttpResponseRedirect(rty)
-
-
-@login_required
-def twitter_login(request):
-
-    if "oauth_verifier" in request.GET:
-        oauth_verifier = request.GET["oauth_verifier"]
-        twitter = Twython(
-            settings.PJ_TW_APP_KEY,
-            settings.PJ_TW_APP_SECRET,
-            request.session["OAUTH_TOKEN"],
-            request.session["OAUTH_TOKEN_SECRET"],
-        )
-        final_step = twitter.get_authorized_tokens(oauth_verifier)
-        if not final_step.get("oauth_token_secret"):
-            return render(
-                request,
-                "404.html",
-                {
-                    "message": "Sorry, Your session has been expired",
-                    "reason": "Please kindly try again to update your profile",
-                    "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
-                },
-                status=404,
-            )
-        twitter = Twython(
-            settings.PJ_TW_APP_KEY,
-            settings.PJ_TW_APP_SECRET,
-            final_step["oauth_token"],
-            final_step["oauth_token_secret"],
-        )
-        followers = twitter.get_followers_list(screen_name=final_step["screen_name"])
-        friends = twitter.get_friends_list(screen_name=final_step["screen_name"])
-
-        if not request.user.is_tw_connected and request.user.is_authenticated:
-            Twitter.objects.create(
-                user=request.user,
-                twitter_id=final_step.get("user_id", ""),
-                screen_name=final_step.get("screen_name", ""),
-                oauth_token=final_step.get("oauth_token", ""),
-                oauth_secret=final_step.get("oauth_token_secret", ""),
-            )
-
-
-        # if request.is_mobile == "mobile":
-        #     return HttpResponseRedirect("/jobs/")
-        if request.session.get("job_id"):
-            log_apply = login_and_apply(request)
-            if log_apply:
-                return HttpResponseRedirect(
-                    log_apply[0].slug + "?job_apply=" + log_apply[1]
-                )
-        return HttpResponseRedirect(reverse("my:profile"))
-    else:
-        twitter = Twython(settings.PJ_TW_APP_KEY, settings.PJ_TW_APP_SECRET)
-        url = (
-            request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("social:twitter_login")
-        )
-        auth = twitter.get_authentication_tokens(callback_url=url)
-        request.session["OAUTH_TOKEN"] = auth["oauth_token"]
-        request.session["OAUTH_TOKEN_SECRET"] = auth["oauth_token_secret"]
-        return HttpResponseRedirect(auth["auth_url"])
 
 
 @login_required

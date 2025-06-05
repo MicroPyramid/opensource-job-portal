@@ -8,10 +8,9 @@ from mpcomp.s3_utils import S3Connection
 import csv
 from collections import OrderedDict
 
-from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
-from twython.api import Twython
 from django.urls import reverse
 from django.template import loader, Template, Context
 from django.template.loader import render_to_string
@@ -45,7 +44,6 @@ from peeldb.models import (
     Industry,
     Qualification,
     AppliedJobs,
-    Twitter,
     User,
     JOB_TYPE,
     FacebookPost,
@@ -2086,72 +2084,6 @@ def edit_profile(request):
     else:
         data = {"error": True, "response": validate_user.errors}
         return HttpResponse(json.dumps(data))
-
-
-@recruiter_login_required
-def twitter_login(request):
-    TW_APP_KEY = "iBFgK2szpfRgj0ayv3YFqDs5g"
-    TW_APP_SECURE = "H0C0q9qMWHMHakRmIUprdpGUKtvPRuZ19C3qeEWMfmJg9stCw9"
-
-    if "oauth_verifier" in request.GET:
-        oauth_verifier = request.GET["oauth_verifier"]
-        twitter = Twython(
-            TW_APP_KEY,
-            TW_APP_SECURE,
-            request.session["OAUTH_TOKEN"],
-            request.session["OAUTH_TOKEN_SECRET"],
-        )
-        final_step = twitter.get_authorized_tokens(oauth_verifier)
-        if final_step.get("oauth_token_secret"):
-            twitter = Twython(
-                TW_APP_KEY,
-                TW_APP_SECURE,
-                final_step["oauth_token"],
-                final_step["oauth_token_secret"],
-            )
-            followers = twitter.get_followers_list(
-                screen_name=final_step["screen_name"]
-            )
-            friends = twitter.get_friends_list(screen_name=final_step["screen_name"])
-            if not request.user.is_tw_connected:
-                Twitter.objects.create(
-                    user=request.user,
-                    twitter_id=final_step["user_id"],
-                    screen_name=final_step["screen_name"],
-                    oauth_token=final_step["oauth_token"],
-                    oauth_secret=final_step["oauth_token_secret"],
-                )
-
-            return HttpResponseRedirect(reverse("recruiter:index"))
-        message_type = "Sorry,"
-        message = "We didnt find your Twitter Account"
-        reason = "Please verify your details and try again"
-        email = settings.DEFAULT_FROM_EMAIL
-        number = settings.CONTACT_NUMBER
-        return render(
-            request,
-            "recruiter/recruiter_404.html",
-            {
-                "message_type": message_type,
-                "message": message,
-                "reason": reason,
-                "email": email,
-                "number": number,
-            },
-            status=404,
-        )
-    else:
-        twitter = Twython(TW_APP_KEY, TW_APP_SECURE)
-        url = (
-            request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:twitter_login")
-        )
-        auth = twitter.get_authentication_tokens(callback_url=url)
-        request.session["OAUTH_TOKEN"] = auth["oauth_token"]
-        request.session["OAUTH_TOKEN_SECRET"] = auth["oauth_token_secret"]
-        return HttpResponseRedirect(auth["auth_url"])
 
 
 def google_login(request):
