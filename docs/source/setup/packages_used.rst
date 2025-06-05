@@ -32,9 +32,7 @@ Django Packages Used
 	django-haystack==2.8.1
 	
 	django-hmin==0.3.3
-	
-	.. django-tellme==0.6.5
-	
+		
 	django-web-profiler==0.1.4
 	
 	elasticsearch==2.3

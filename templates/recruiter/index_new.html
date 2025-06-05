@@ -230,7 +230,6 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-  <script type="text/javascript" src="{% static 'tellme_js/feedback.min.js' %}"></script>
   <script src="https://cdn.ckeditor.com/4.5.4/basic/ckeditor.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js" type="text/javascript"></script>
@@ -376,25 +375,7 @@ function open_dialog_with_url(text, title, url){
     } // SetCaretAtEnd()
 
 </script>
-<script type="text/javascript">
-    $(function () {
-        $.feedback({
-            ajaxURL: "{% url 'tellme:post_feedback' %}",
-            html2canvasURL: "{% static 'tellme_js/html2canvas.min.js' %}",
-            feedbackButton: "#feedback-btn",
-            initButtonText: "{% filter escapejs %}{%  include 'tellme/initButtonText.txt' %}{% endfilter %}",
-            postHTML: false,
-            tpl: {
-                description: "{% filter escapejs %}{%  include 'tellme/tpl-description.html' %}{% endfilter %}",
-                highlighter: "{% filter escapejs %}{%  include 'tellme/tpl-highlighter.html' %}{% endfilter %}",
-                overview: "{% filter escapejs %}{%  include 'tellme/tpl-overview.html' %}{% endfilter %}",
-                submitSuccess: "{% filter escapejs %}{%  include 'tellme/tpl-submit-success.html' %}{% endfilter %}",
-                submitError: "{% filter escapejs %}{%  include 'tellme/tpl-submit-error.html' %}{% endfilter %}"
-            },
-            initialBox: true
-        });
-    });
-</script>
+
 <script type="text/javascript">
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection

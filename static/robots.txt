@@ -1,7 +1,6 @@
 User-agent: *
 Disallow: /my/
 Disallow: /dashboard/
-Disallow: /tellme/post_feedback/
 Disallow: /*?
 Disallow: https://peeljobs.com/jobs/applied_for/
 

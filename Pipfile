@@ -13,7 +13,6 @@ django-cors-headers = "==3.13.0"
 django-haystack = "==3.2.1"
 django-ses = "==4.4.0"
 django-ses-gateway = "==0.1.1"
-django-tellme = {git = "https://github.com/ludrao/django-tellme"}
 elasticsearch = "==7.17.6"
 google-api-python-client = "==2.62.0"
 psycopg2-binary = "==2.9.3"
