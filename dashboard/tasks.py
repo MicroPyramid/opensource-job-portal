@@ -66,9 +66,7 @@ def rebuilding_index():
 def updating_jobposts():
     jobposts = JobPost.objects.filter(status="Live")
     for job in jobposts:
-        job_url = get_absolute_url(job)
         job.slug = get_absolute_url(job)
-        # job.minified_url = google_mini('https://peeljobs.com' + job_url, settings.wMINIFIED_URL)
         job.save()
 
 
@@ -110,6 +108,7 @@ def job_alerts_to_users():
 
 @app.task
 def job_alerts_to_subscribers():
+    return
     from_date = datetime.now() - timedelta(days=1)
     to_date = datetime.now()
     jobs = JobPost.objects.filter(
@@ -146,6 +145,7 @@ def job_alerts_to_subscribers():
 
 @app.task
 def job_alerts_to_alerts():
+    return
     from_date = datetime.now() - timedelta(days=1)
     to_date = datetime.now()
     job_posts = JobPost.objects.filter(
@@ -184,6 +184,7 @@ def job_alerts_to_alerts():
 
 @app.task()
 def jobpost_published():
+    return
     jobposts = JobPost.objects.filter(status="Published")
     for job in jobposts:
 
@@ -192,13 +193,7 @@ def jobpost_published():
         job_url = get_absolute_url(job)
         job.slug = job_url
         job.save()
-        posts = FacebookPost.objects.filter(job_post=job)
        
-        postonpeel_fb(job)
-        if job.post_on_fb:
-            fbpost(job.user.id, job.id)
-           
-            
         c = {"job_post": job, "user": job.user}
         t = loader.get_template("email/jobpost.html")
         subject = "PeelJobs JobPost Status"
@@ -208,134 +203,6 @@ def jobpost_published():
 
 
 
-@app.task()
-def fbpost(user, job_post):
-    user = User.objects.filter(id=user).first()
-    if user.is_fb_connected:
-        access_token = get_app_access_token(settings.FB_APP_ID, settings.FB_SECRET)
-        job_post = JobPost.objects.filter(id=job_post).first()
-        if job_post and access_token:
-            params = {}
-            params["access_token"] = access_token
-            skill_hash = "".join(
-                [
-                    " #" + name.replace(" ", "").lower()
-                    for name in job_post.skills.values_list("name", flat=True)
-                ]
-            )
-            loc_hash = "".join(
-                [
-                    " #" + name.replace(" ", "").lower()
-                    for name in job_post.location.values_list("name", flat=True)
-                ]
-            )
-            params["message"] = (
-                (job_post.published_message or job_post.title)
-                + skill_hash
-                + loc_hash
-                + " #Jobs #Peeljobs"
-            )
-            params["picture"] = settings.LOGO
-            params["link"] = "http://peeljobs.com" + str(job_post.get_absolute_url())
-
-            params["name"] = job_post.title
-            params["description"] = job_post.company_name
-            params["privacy"] = {"value": "ALL_FRIENDS"}
-            facebook_id = Facebook.objects.get(user=user).facebook_id
-            u = requests.post(
-                "https://graph.facebook.com/" + facebook_id + "/feed", params=params
-            )
-            response = u.json()
-
-            if "error" in response.keys():
-                pass
-            if "id" in response.keys():
-                FacebookPost.objects.create(
-                    job_post=job_post,
-                    page_or_group="page",
-                    page_or_group_id=facebook_id,
-                    post_id=response["id"],
-                    post_status="Posted",
-                )
-                return "posted successfully"
-            return "error occured in posting"
-        else:
-            return "jobpost not exists"
-    else:
-        return "connect with fb first"
-
-
-def postonpeel_fb(job_post):
-    if job_post:
-        params = {}
-        skill_hash = "".join(
-            [
-                " #" + name.replace(" ", "").lower()
-                for name in job_post.skills.values_list("name", flat=True)
-            ]
-        )
-        loc_hash = "".join(
-            [
-                " #" + name.replace(" ", "").lower()
-                for name in job_post.location.values_list("name", flat=True)
-            ]
-        )
-        params["message"] = (
-            (job_post.published_message or job_post.title)
-            + skill_hash
-            + loc_hash
-            + " #Jobs #Peeljobs"
-        )
-        if job_post.company.profile_pic and job_post.company.is_active:
-            params["picture"] = (
-                job_post.company.profile_pic
-                if "https" in str(job_post.company.profile_pic)
-                else "https://cdn.peeljobs.com/" + str(job_post.company.profile_pic)
-            )
-        elif job_post.major_skill and job_post.major_skill.icon:
-            params["picture"] = job_post.major_skill.icon
-        elif (
-            job_post.skills.all()[0].icon
-            and job_post.skills.all()[0].status == "Active"
-        ):
-            params["picture"] = job_post.skills.all()[0].icon
-        else:
-            params["picture"] = "https://cdn.peeljobs.com/jobopenings1.png"
-        params["link"] = "http://peeljobs.com" + str(job_post.get_absolute_url())
-        job_name = job_post.title
-
-        params["description"] = (
-            job_post.company.name if job_post.company else job_post.company_name
-        )
-        params["access_token"] = settings.FB_PAGE_ACCESS_TOKEN
-        params["actions"] = [{"name": "get peeljobs", "link": settings.PEEL_URL}]
-
-        params["name"] = job_name
-        params["caption"] = "http://peeljobs.com"
-        params["actions"] = [{"name": "get peeljobs", "link": "http://peeljobs.com/"}]
-
-        params = urllib.parse.urlencode(params)
-        u = requests.post(
-            "https://graph.facebook.com/" + settings.FB_PEELJOBS_PAGEID + "/feed",
-            params=params,
-        )
-        response = u.json()
-        print(params)
-        print(response, "response")
-        if "error" in response.keys():
-            pass
-        if "id" in response.keys():
-            FacebookPost.objects.create(
-                job_post=job_post,
-                page_or_group="peel_jobs",
-                page_or_group_id=settings.FB_PEELJOBS_PAGEID,
-                post_id=response["id"],
-                post_status="Posted",
-            )
-            return "posted successfully"
-        return "job not posted on page"
-    else:
-        return "jobpost not exists"
 
 
 @app.task()
@@ -788,29 +655,9 @@ def daily_report():
         send_email.delay(mto, subject, rendered)
 
 
-# @app.task()
-# def applicants_profile_update_notifications_two_hours():
-#     today_applicants = User.objects.filter(
-#         user_type="JS",
-#         profile_completeness__lt=50,
-#         is_unsubscribe=False,
-#         is_bounce=False,
-#         email_notifications=True,
-#     ).exclude(email__icontains="micropyramid.com")
-#     for user in today_applicants:
-#         if user.date_joined and user.date_joined > datetime.today() - timedelta(
-#             hours=2
-#         ):
-#             temp = loader.get_template("email/user_profile_alert.html")
-#             subject = "Update Your Profile To Get Top Matching Jobs - Peeljobs"
-#             mto = [user.email]
-#             rendered = temp.render({"user": user})
-#             user_active = True if user.is_active else False
-#             send_email.delay(mto, subject, rendered)
-
-
 @app.task()
 def applicants_profile_update_notifications():
+    return
     today_applicants = User.objects.filter(
         user_type="JS",
         profile_completeness__lt=50,
@@ -901,7 +748,7 @@ def recruiter_profile_update_notifications():
 
 @app.task()
 def applicants_all_job_notifications():
-
+    return
     today_applicants = User.objects.filter(
         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
     )
@@ -918,6 +765,7 @@ def applicants_all_job_notifications():
 
 @app.task()
 def applicants_job_notifications():
+    return
     users = User.objects.filter(
         user_type="JS", is_unsubscribe=False, is_bounce=False, email_notifications=True
     ).exclude(email__icontains="micropyramid.com")

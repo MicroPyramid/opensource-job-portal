@@ -262,49 +262,6 @@ def get_resume_data(file):
     return email, mobile, text
 
 
-def postonpeel_fb(job_post):
-    params = {}
-    params["message"] = job_post.published_message
-    params["picture"] = settings.LOGO
-    params["link"] = settings.PEEL_URL + str(job_post.get_absolute_url())
-
-    job_name = (
-        str(job_post.title)
-        + ", for Exp "
-        + str(job_post.min_year)
-        + " - "
-        + str(job_post.min_year)
-    )
-
-    # for index, location in enumerate(job_post.location.all()):
-    #     job_name += str(location.name)
-    #     if str(index) == str(location_count):
-    #         job_name += str('.')
-    #     else:
-    #         job_name += str(', ')
-    if job_post.company:
-        params["description"] = job_post.company.name
-    else:
-        params["description"] = job_post.company_name
-
-    params["access_token"] = settings.FB_PAGE_ACCESS_TOKEN
-    params["name"] = job_name
-    params["caption"] = "http://peeljobs.com"
-    params["actions"] = [{"name": "get peeljobs", "link": "http://peeljobs.com/"}]
-
-    params = urllib.parse.urlencode(params)
-    # response = urllib.urlopen("https://graph.facebook.com/" + settings.FB_PEELJOBS_PAGEID + "/feed", params).read()
-    u = requests.post("https://graph.facebook.com/190700467767653/feed", params=params)
-    response = u.json()
-    # response = json.loads(response)
-    if "error" in response.keys():
-        # found error, we need to log it for review.
-        pass
-    if "id" in response.keys():
-        return "posted successfully"
-    return "job not posted on page"
-
-
 def float_round(num, places=0, direction=floor):
     num = float("%.10f" % num)
     no_of_digits = str(num)[::-1].find(".")
@@ -490,7 +447,7 @@ def get_social_referer(request):
 
 def get_aws_file_path(input_file, folder_path, company_name):
     file_name = input_file.name.lower()
-    file_name = re.sub("[^a-zA-Z0-9 \n\.]", "", file_name).replace(" ", "-")
+    file_name = re.sub(r"[^a-zA-Z0-9 \n\.]", "", file_name).replace(" ", "-")
     path = settings.BASE_DIR + "/static/"
     image_path = os.path.join(path, file_name)
     destination = open(image_path, "wb+")

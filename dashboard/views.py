@@ -100,8 +100,6 @@ from .forms import (
     UserForm,
 )
 from .tasks import (
-    fbpost,
-    postonpeel_fb,
     sending_mail,
     send_email,
 )
@@ -2137,11 +2135,8 @@ def publish_job(request, job_post_id):
     if job_post.status == "Pending":
         job_post.status = "Published"
         job_post.save()
-        # postonpeel_fb.delay(job_post.user, job_post)
         # if job_post.post_on_fb:
-        #     fbpost.delay(job_post.user, job_post)
         #     # need to check this condition
-        #     # if emp['peelfbpost']:
         # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
         # for group in job_post.fb_groups:
         #     fb_group = FacebookGroup.objects.get(user=job_post.user, group_id=group)
@@ -2154,11 +2149,8 @@ def publish_job(request, job_post_id):
     else:
         job_post.status = "Pending"
         job_post.save()
-        # postonpeel_fb.delay(job_post.user, job_post)
         # if job_post.post_on_fb:
-        #     fbpost.delay(job_post.user, job_post)
         #     # need to check this condition
-        #     # if emp['peelfbpost']:
         # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
         # for group in job_post.fb_groups:
         #     fb_group = FacebookGroup.objects.get(user=job_post.user, group_id=group)
@@ -2190,11 +2182,7 @@ def enable_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     job_post.status = job_post.previous_status
     job_post.save()
-    if job_post.post_on_fb:
-        fbpost.delay(job_post.user.id, job_post_id)
-        postonpeel_fb(job_post)
-   
-    
+        
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )

@@ -1202,11 +1202,8 @@ def enable_job(request, job_post_id):
     job_post.status = "Pending"
     job_post.closed_date = None
     job_post.save()
-    # postonpeel_fb.delay(request.user, job_post)
     # if job_post.post_on_fb:
-    #     fbpost.delay(request.user, job_post)
     #     # need to check this condition
-    #     # if emp['peelfbpost']:
     # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
     # for group in posts:
     #     fb_group = FacebookGroup.objects.get(user=request.user, group_id=group.page_or_group_id)
