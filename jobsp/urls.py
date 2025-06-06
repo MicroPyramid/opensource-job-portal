@@ -316,14 +316,13 @@ urlpatterns = [
 handler404 = custom_404
 handler500 = custom_500
 
-# if settings.DEBUG:
-#     # url(r'^profiler/', include('django_web_profiler.urls', namespace="django_web_profiler")),
-
-#     import debug_toolbar
-
-#     urlpatterns.append(url(r"^__debug__/", include(debug_toolbar.urls)))
-
-# urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
+# Include local development URLs if available
+try:
+    from .urls_local import local_urlpatterns
+    urlpatterns += local_urlpatterns
+    print("Local development URLs loaded")
+except ImportError:
+    pass  # urls_local.py doesn't exist or has import errors
 
 # if settings.DEBUG is False:   # if DEBUG is True it will be served automatically
 #     urlpatterns += [

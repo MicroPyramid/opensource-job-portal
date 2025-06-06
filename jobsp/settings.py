@@ -397,87 +397,6 @@ DAILY_REPORT_USERS = [
 ]
 # MIDDLEWARE_CLASSES = MIDDLEWARE
 
-if os.getenv("ENV_TYPE") == "DEV":
-    INSTALLED_APPS = INSTALLED_APPS + (
-        # "debug_toolbar",
-        # "template_profiler_panel",
-        "behave_django",
-    )
-
-    # MIDDLEWARE = [
-    #     "debug_toolbar.middleware.DebugToolbarMiddleware",
-    # ] + MIDDLEWARE
-
-    INTERNAL_IPS = ("127.0.0.1",)
-
-    DEBUG_TOOLBAR_PANELS = [
-        "debug_toolbar.panels.versions.VersionsPanel",
-        "debug_toolbar.panels.timer.TimerPanel",
-        "debug_toolbar.panels.settings.SettingsPanel",
-        "debug_toolbar.panels.headers.HeadersPanel",
-        "debug_toolbar.panels.request.RequestPanel",
-        "debug_toolbar.panels.sql.SQLPanel",
-        "debug_toolbar.panels.staticfiles.StaticFilesPanel",
-        "debug_toolbar.panels.templates.TemplatesPanel",
-        "debug_toolbar.panels.cache.CachePanel",
-        "debug_toolbar.panels.signals.SignalsPanel",
-        "debug_toolbar.panels.logging.LoggingPanel",
-        "debug_toolbar.panels.redirects.RedirectsPanel",
-        "debug_toolbar.panels.profiling.ProfilingPanel",
-        "template_profiler_panel.panels.template.TemplateProfilerPanel",
-    ]
-
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-    TEST_RUNNER = "django_behave.runner.DjangoBehaveTestSuiteRunner"
-
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "filters": {
-            "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}
-        },
-        "formatters": {
-            "verbose": {
-                "format": "%(levelname)s %(asctime)s %(module)s "
-                "%(process)d %(thread)d %(message)s"
-            },
-            "standard": {
-                "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-                #'datefmt' : "%d/%b/%Y %H:%M:%S"
-            },
-        },
-        "handlers": {
-            "mail_admins": {
-                "level": "ERROR",
-                "filters": ["require_debug_false"],
-                "class": "django.utils.log.AdminEmailHandler",
-            },
-            # 'file_log': {
-            #     'level':'DEBUG',
-            #     'class':'logging.handlers.TimedRotatingFileHandler',
-            #     'filename': BASE_DIR + '/logs/django_dev.log',
-            #     'when': 'S', # this specifies the interval
-            #     'interval': 5, # defaults to 1, only necessary for other values
-            #     # 'maxBytes': 1024*1024*5,# 5 MB
-            #     'backupCount': 5,
-            #     'formatter':'standard',
-            # }
-        },
-        "loggers": {
-            "django.request": {
-                "handlers": ["mail_admins"],
-                "level": "ERROR",
-                "propagate": True,
-            },
-            # 'request-logging': {
-            #     'level': 'DEBUG',
-            #     'handlers': ['file_log'],
-            #     'propagate': False,
-            # },
-        },
-    }
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
@@ -496,3 +415,10 @@ CELERY_MONITOR_URL = os.getenv("CELERY_MONITOR_URL")
 
 # Tailwind CSS Configuration
 TAILWIND_CSS_FILE = "css/tailwind-output.css"
+
+# Try to load local settings for development
+try:
+    from .settings_local import *
+    print("Local development settings loaded")
+except ImportError:
+    pass  # settings_local.py doesn't exist or has import errors
