@@ -1130,7 +1130,6 @@ def view_job(request, job_post_id):
             {
                 "jobpost": jobpost,
                 "jobpost_assigned_status": AGENCY_RECRUITER_JOB_TYPE,
-                "minified_url": jobpost.minified_url,
                 "selected_applicants": selected_applicants,
                 "shortlisted_applicants": shortlisted_applicants,
                 "process_applicants": process_applicants,
@@ -1762,13 +1761,6 @@ def send_mobile_verification_code(request):
             )
         user = request.user
         random_code = rand_string(size=6)
-        # message = 'Hello ' + request.user.username + ', An OTP ' + random_code + \
-        #     ' for your Peeljobs recruiter account, Please Confirm and Proceed'
-        # data = {"username": settings.BULK_SMS_USERNAME, "password": settings.BULK_SMS_PASSWORD,
-        #         "from": settings.BULK_SMS_FROM, "to": user.mobile, "message": message}
-        # requests.get("https://182.18.160.225/index.php/api/bulk-sms", params=data)
-        # response = requests.get(
-        #     'http://182.18.160.225/index.php/api/bulk-sms?username=micropyramid&password=p4rti2yka&from=PEELJB&to='+str(user.mobile)+'&message='+message)
         user.mobile_verification_code = random_code
         user.last_mobile_code_verified_on = datetime.now(timezone.utc)
         user.save()
@@ -1837,47 +1829,7 @@ def index(request):
 
             if user.is_active:
                 user_login = False
-                # if not user.mobile_verified:
-                #     password_reset_diff = int(
-                #         (datetime.now() - user.last_mobile_code_verified_on).seconds
-                #     )
-                #     if password_reset_diff > 600:
-                #         random_code = rand_string(size=6)
-                #         message = (
-                #             "Hello "
-                #             + user.username
-                #             + ", An OTP "
-                #             + random_code
-                #             + " for your Peeljobs recruiter account, Please Confirm and Proceed"
-                #         )
-
-                #         data = {
-                #             "username": settings.BULK_SMS_USERNAME,
-                #             "password": settings.BULK_SMS_PASSWORD,
-                #             "from": settings.BULK_SMS_FROM,
-                #             "to": user.mobile,
-                #             "message": message,
-                #         }
-                #         # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
-                #         requests.get(
-                #             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
-                #             + str(settings.SMS_AUTH_KEY)
-                #             + "&message="
-                #             + str(message)
-                #             + "&senderId="
-                #             + str(settings.BULK_SMS_FROM)
-                #             + "&routeId=1&mobileNos="
-                #             + str(user.mobile)
-                #             + "&smsContentType=english"
-                #         )
-
-                #         user.mobile_verification_code = random_code
-                #         user.mobile_verified = False
-                #         user.save()
-                #     user.is_login = True
-                #     user_login = True
-                #     user.profile_completeness = user.profile_completion_percentage
-                #     user.save()
+               
                 login(request, user)
                 data = {"error": False, "is_login": user_login}
                 if user.is_company_recruiter:
@@ -1994,51 +1946,7 @@ def edit_profile(request):
         password_reset_diff = int(
             (datetime.now() - user.last_mobile_code_verified_on).seconds
         )
-        # if not user.mobile_verified:
-        #     if password_reset_diff > 600:
-        #         random_code = rand_string(size=6)
-        #         message = (
-        #             "Hello "
-        #             + request.user.username
-        #             + ", An OTP "
-        #             + random_code
-        #             + " for your Peeljobs recruiter account, Please Confirm and Proceed"
-        #         )
-        #         data = {
-        #             "username": settings.BULK_SMS_USERNAME,
-        #             "password": settings.BULK_SMS_PASSWORD,
-        #             "from": settings.BULK_SMS_FROM,
-        #             "to": request.POST.get("mobile"),
-        #             "message": message,
-        #         }
-        #         # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
-        #         requests.get(
-        #             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
-        #             + str(settings.SMS_AUTH_KEY)
-        #             + "&message="
-        #             + str(message)
-        #             + "&senderId="
-        #             + str(settings.BULK_SMS_FROM)
-        #             + "&routeId=1&mobileNos="
-        #             + str(request.POST.get("mobile"))
-        #             + "&smsContentType=english"
-        #         )
-
-        #         user.mobile_verification_code = random_code
-        #         user.mobile_verified = False
-        #         user_login = True
-        #         user.mobile = request.POST["mobile"]
-        #         user.last_mobile_code_verified_on = datetime.now(timezone.utc)
-        #         message = "Your Details Updated Successfully"
-        #     else:
-        #         user.mobile = user_mobile
-        #         message = "An otp has been sent to you in the past 1 week, Please Verify Your Mobile Number"
-        # else:
-        #     if user.mobile == user_mobile:
-        #         user.mobile = user_mobile
-        #         message = "Your Details Updated Successfully"
-        #     else:
-        #         message = "Mobile num can't be change within a week"
+     
         user.marital_status = request.POST.get("marital_status", "")
         user.first_name = request.POST.get("first_name")
         user.last_name = request.POST.get("last_name", "")
@@ -2083,7 +1991,6 @@ def google_login(request):
                     "message": "Your session has been expired",
                     "reason": "Please kindly try again to update your profile",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
             )
         url = "https://www.googleapis.com/oauth2/v1/userinfo"
@@ -2213,7 +2120,6 @@ def google_connect(request):
         message = "We didnt find your Account"
         reason = "Please verify your details and try again"
         email = settings.DEFAULT_FROM_EMAIL
-        number = settings.CONTACT_NUMBER
         return render(
             request,
             "recruiter/recruiter_404.html",
@@ -2222,7 +2128,6 @@ def google_connect(request):
                 "message": message,
                 "reason": reason,
                 "email": email,
-                "number": number,
             },
             status=404,
         )
@@ -2308,7 +2213,6 @@ def facebook_login(request):
         message = "We didnt find your email id through facebook"
         reason = "Please verify your email id in facebook and try again"
         email = settings.DEFAULT_FROM_EMAIL
-        number = settings.CONTACT_NUMBER
         return render(
             request,
             "recruiter/recruiter_404.html",
@@ -2317,7 +2221,6 @@ def facebook_login(request):
                 "message": message,
                 "reason": reason,
                 "email": email,
-                "number": number,
             },
             status=404,
         )
@@ -2589,18 +2492,7 @@ def interview_location(request, location_count):
 
 @recruiter_login_required
 def registration_success(request):
-    # user = request.user
-    # random_code = rand_string(size=6)
-    # message = 'Hello ' + user.username + ', An OTP ' + random_code + ' for your Peeljobs recruiter account, Please Confirm and Proceed'
-    # data = {"username": settings.SMS_AUTH_KEY, "password": settings.BULK_SMS_PASSWORD, "from": settings.BULK_SMS_FROM, "to": user.mobile, "message": message}
-    # # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
-    # url = 'http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY='+str(settings.SMS_AUTH_KEY) + '&message=' + str(message)
-    # requests.get(url+'&senderId='+str(settings.BULK_SMS_FROM)+'&routeId=1&mobileNos=' + str(user.mobile) + '&smsContentType=english')
-
-    # user.mobile_verification_code = random_code
-    # user.mobile_verified = False
-    # user.save()
-
+   
     return render(request, "recruiter/registration_success.html", {})
 
 

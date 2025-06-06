@@ -110,7 +110,6 @@ def facebook_login(request):
                     "message": "Sorry, Your session has been expired",
                     "reason": "Please kindly try again login to update your profile",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
                 status=404,
             )
@@ -187,7 +186,6 @@ def facebook_login(request):
                     "message": "Sorry, We didnt find your email id through facebook",
                     "reason": "Please verify your email id in facebook and try again",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
                 status=404,
             )
@@ -250,7 +248,6 @@ def google_login(request):
                     "message": "Sorry, Your session has been expired",
                     "reason": "Please kindly try again to update your profile",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
                 status=404,
             )
@@ -404,7 +401,6 @@ def github_login(request):
                     "message": "Sorry, Your session has been expired",
                     "reason": "Please kindly try again to update your profile",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
                 status=404,
             )

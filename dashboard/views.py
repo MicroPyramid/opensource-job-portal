@@ -3728,7 +3728,6 @@ def edit_job_title(request, post_id):
                     job_post.major_skill = skill[0]
             job_url = get_absolute_url(job_post)
             job_post.slug = job_url
-            # job_post.minified_url = ('https://peeljobs.com' + job_url, settings.MINIFIED_URL)
             job_post.save()
             if (
                 job_post.major_skill

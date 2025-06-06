@@ -81,12 +81,6 @@ Configuration of Peeljobs
 		create database peeldb;
 
 10. We have to use third party related keys. We have to had those keys in order to run the application.
-
-		**Sendgrid details**
-
-		SG_USER=<sendgrid username>
-		
-		SG_PWD=<sendgrid password>
 		
 		**Google developers account details**
 

@@ -272,7 +272,7 @@
 
                     {% if job.user.is_superuser %}
                       {% if job.company_emails %}
-                       <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
+                       <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_absolute_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
                       {% endif %}
                     {% else %}
                     {% if request.user.is_authenticated %}

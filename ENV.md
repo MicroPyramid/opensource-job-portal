@@ -10,10 +10,8 @@ SECRET_KEY=""
 HTML_MINIFY=True/False
 ENV_TYPE="DEV" or "PROD"
 DEFAULT_FROM_EMAIL='PeelJobs <support@peeljobs.com>'
-CONTACT_NUMBER='850 009 9499'
 PEEL_URL="http://peeljobs.com/"
 CACHE_BACKEND = "memcached://127.0.0.1:11211/"
-MINIFIED_URL=''
 
 ## Celery keys
 
@@ -69,15 +67,6 @@ FBPEELJOBSPAGEID=""
 
 RECAPTCHAPUBLICKEY=""
 RECAPTCHAPRIVATEKEY=""
-
-## SMS api keys
-
-BULKSMSUSERNAME='micropyramid'
-BULKSMSPASSWORD=''
-BULKSMSFROM=''
-SETTINGSFILE=''
-SMSAUTHKEY=''
-
 
 ## AWS keys
 

@@ -375,14 +375,6 @@ def edit_personalinfo(request):
                 user.current_city = City.objects.get(
                     id=int(request.POST.get("current_city"))
                 )
-            # random_code = rand_string(size=6)
-            # message = 'Hello ' + request.user.username + ', An OTP ' + random_code + \
-            #     ' for your Peeljobs recruiter account, Please Confirm and Proceed'
-            # data = {"username": settings.BULK_SMS_USERNAME, "password": settings.BULK_SMS_PASSWORD,
-            #         "from": settings.BULK_SMS_FROM, "to": request.POST.get('mobile'), "message": message}
-            # requests.get(
-            #     "http://182.18.160.225/index.php/api/bulk-sms", params=data)
-            # user.mobile_verification_code = random_codea
             user.mobile_verified = True
             user.last_mobile_code_verified_on = datetime.datetime.now(timezone.utc)
             user.profile_updated = datetime.datetime.now(timezone.utc)
@@ -456,28 +448,6 @@ def edit_personalinfo(request):
 #         return render(request, 'candidate/mobile_verify.html')
 #     else:
 #         return render(request, 'mobile/profile/mobile_verify.html')
-
-
-# @jobseeker_login_required
-# def send_mobile_verification_code(request):
-#     if request.method == 'POST':
-#         password_reset_diff = int(
-#             (datetime.datetime.now() - request.user.last_mobile_code_verified_on).seconds)
-#         if not password_reset_diff > 60:
-#             return HttpResponse(json.dumps({'error': True, 'message': 'OTP Already sent to you, Please request new OTP'}))
-#         user = request.user
-#         random_code = rand_string(size=6)
-#         message = 'Hello ' + request.user.username + ', An OTP ' + random_code + \
-#             ' for your Peeljobs recruiter account, Please Confirm and Proceed'
-#         data = {"username": settings.BULK_SMS_USERNAME, "password": settings.BULK_SMS_PASSWORD,
-#                 "from": settings.BULK_SMS_FROM, "to": user.mobile, "message": message}
-#         requests.get(
-#             "http://182.18.160.225/index.php/api/bulk-sms", params=data)
-#         user.mobile_verification_code = random_code
-#         user.last_mobile_code_verified_on = datetime.datetime.now(timezone.utc)
-#         user.save()
-# return HttpResponse(json.dumps({'error': False, 'message': 'An OTP sent
-# to your mobile successfully'}))
 
 
 @login_required

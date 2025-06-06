@@ -6,14 +6,14 @@
     <!-- job_item starts here -->
     {% for each in job_list %}
     {% with each.object as job %}
-      {% with job.get_absolute_url as job_url and job.get_job_minified_url as minified_url%}
+      {% with job.get_absolute_url as job_url and job.get_absolute_url as minified_url%}
       <div class="job_item">
       <div class="job">
         <div class="logo_post_date">
 
           {% if job.user.is_superuser %}
             {% if job.company_emails %}
-             <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
+             <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_absolute_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
             {% endif %}
           {% else %}
           {% if request.user.is_authenticated %}

@@ -1308,7 +1308,6 @@ class JobPost(models.Model):
         on_delete=models.CASCADE,
     )
     closed_date = models.DateTimeField(null=True, blank=True)
-    minified_url = models.URLField(blank=True, null=True)
 
     fb_groups = ArrayField(models.CharField(max_length=200), blank=True, null=True)
 
@@ -1346,10 +1345,6 @@ class JobPost(models.Model):
                 + "/"
             )
         return qs
-
-    def get_job_minified_url(self):
-        job_url = "https://peeljobs.com" + self.get_absolute_url()
-        return job_url
 
     def get_total_views_count(self):
         total_views = self.fb_views + self.tw_views + self.ln_views + self.other_views
