@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DEBUG = os.getenv("DEBUG", True)
 TEMPLATE_DEBUG = DEBUG
 
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "support@peeljobs.com")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "peeljobs@micropyramid.com")
 
 
 PEEL_URL = os.getenv("PEEL_URL", "http://peeljobs.com/")

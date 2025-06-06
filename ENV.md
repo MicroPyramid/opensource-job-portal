@@ -9,7 +9,7 @@ DEBUG=True/False
 SECRET_KEY=""
 HTML_MINIFY=True/False
 ENV_TYPE="DEV" or "PROD"
-DEFAULT_FROM_EMAIL='PeelJobs <support@peeljobs.com>'
+DEFAULT_FROM_EMAIL='PeelJobs <peeljobs@micropyramid.com>'
 PEEL_URL="http://peeljobs.com/"
 CACHE_BACKEND = "memcached://127.0.0.1:11211/"
 
