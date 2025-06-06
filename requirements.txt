@@ -5,7 +5,7 @@ boto3
 bpython==0.23
 celery==5.5.0
 coverage==6.4.4
-django==4.2.19
+django==4.2.22
 django-celery-beat==2.7.0
 django-compressor==4.1
 django-cors-headers==3.13.0

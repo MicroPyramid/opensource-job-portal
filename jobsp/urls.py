@@ -72,7 +72,7 @@ from psite.views import (
 from pjob.views import index as job_list
 
 from django.contrib import admin
-from .views import   login
+from .views import login
 
 
 urlpatterns = [

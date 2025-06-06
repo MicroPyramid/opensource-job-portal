@@ -1,0 +1,38 @@
+{
+  "name": "peeljobs",
+  "version": "1.0.0",
+  "description": "Peel Jobs - Open Source Job Portal",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-css": "postcss static/css/tailwind-input.css -o static/css/tailwind-output.css",
+    "watch-css": "postcss static/css/tailwind-input.css -o static/css/tailwind-output.css --watch",
+    "dev": "npm run watch-css",
+    "build": "npm run build-css",
+    "tailwind:build": "./build-tailwind.sh",
+    "tailwind:watch": "npm run watch-css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MicroPyramid/opensource-job-portal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MicroPyramid/opensource-job-portal/issues"
+  },
+  "homepage": "https://github.com/MicroPyramid/opensource-job-portal#readme",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/postcss": "^4.1.8",
+    "@tailwindcss/typography": "^0.5.16",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.4",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^4.1.8"
+  }
+}

@@ -513,3 +513,6 @@ EMAIL_BACKEND = "django_ses.SESBackend"
 
 MP_CELERY_MONITOR_KEY = os.getenv("MP_CELERY_MONITOR_KEY")
 CELERY_MONITOR_URL = os.getenv("CELERY_MONITOR_URL")
+
+# Tailwind CSS Configuration
+TAILWIND_CSS_FILE = "css/tailwind-output.css"

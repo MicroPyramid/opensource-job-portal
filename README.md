@@ -194,6 +194,24 @@ For background job processing and periodic tasks, you need to run Celery alongsi
    # Access at http://localhost:5555
    ```
 
+
+## Development Workflow
+
+### 1. Start Development Server
+```bash
+# Terminal 1: Start Django
+python manage.py runserver
+
+# Terminal 2: Watch Tailwind changes
+npm run watch-css
+```
+
+### 2. Build for Production
+```bash
+npm run build
+python manage.py collectstatic
+```
+
 **Development workflow:**
 - Terminal 1: `python manage.py runserver`
 - Terminal 2: `celery -A jobsp worker --loglevel=info`  

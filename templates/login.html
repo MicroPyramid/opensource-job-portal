@@ -1,781 +1,467 @@
-{% load static %}
-{% load page_tags %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PeelJobs</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% extends "base_with_tailwind.html" %}
+
+{% block title %}Login - PeelJobs{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-violet-50 via-sky-50 to-cyan-50 flex items-center justify-center p-2 relative overflow-hidden">
+    <!-- Background Elements -->
+    <div class="absolute inset-0">
+        <!-- Gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-blue-600/5 to-cyan-600/5"></div>
+        <!-- Geometric shapes -->
+        <div class="absolute top-20 left-20 w-24 h-24 bg-gradient-to-br from-violet-400/20 to-purple-600/20 rounded-full blur-2xl"></div>
+        <div class="absolute top-32 right-24 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-cyan-600/20 rounded-full blur-xl"></div>
+        <div class="absolute bottom-24 left-32 w-28 h-28 bg-gradient-to-br from-indigo-400/15 to-blue-600/15 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-16 right-16 w-20 h-20 bg-gradient-to-br from-cyan-400/20 to-teal-600/20 rounded-full blur-2xl"></div>
+        <!-- Grid pattern using Tailwind -->
+        <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 32px 32px;"></div>
+    </div>
     
-    <style>
-        body {
-            margin: 0;
-            padding: 8px;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 380px;
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            border: none;
-        }
-
-        .login-header {
-            background: linear-gradient(135deg, #00aeef 0%, #0681c4 100%);
-            color: white;
-            text-align: center;
-            padding: 16px 12px;
-            position: relative;
-        }
-
-        .brand-logo {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .login-header h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin: 0 0 3px 0;
-        }
-
-        .login-header p {
-            font-size: 0.8rem;
-            margin: 0;
-            opacity: 0.9;
-        }
-
-        .login-body {
-            padding: 12px;
-        }
-
-        .nav-tabs {
-            border-bottom: 1px solid #e9ecef;
-            margin-bottom: 12px;
-        }
-
-        .nav-tabs .nav-link {
-            border: none;
-            border-radius: 0;
-            color: #6c757d;
-            font-weight: 500;
-            padding: 6px 10px;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-
-        .nav-tabs .nav-link.active {
-            color: #00aeef;
-            background: transparent;
-            border-bottom: 2px solid #00aeef;
-            font-weight: 600;
-        }
-
-        .nav-tabs .nav-link:hover {
-            color: #00aeef;
-            border-color: transparent;
-        }
-
-        .login-form {
-            margin-bottom: 10px;
-        }
-
-        .form-floating {
-            margin-bottom: 10px;
-        }
-
-        .form-floating .form-control,
-        .form-floating .form-select {
-            border: 1.5px solid #e9ecef;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            height: 42px;
-            padding: 8px 10px;
-            transition: all 0.3s ease;
-            background: #fafafa;
-        }
-
-        .form-floating .form-control:focus,
-        .form-floating .form-select:focus {
-            border-color: #00aeef;
-            box-shadow: 0 0 0 0.1rem rgba(0, 174, 239, 0.15);
-            background: white;
-        }
-
-        .form-floating label {
-            font-size: 0.75rem;
-            color: #6c757d;
-            font-weight: 500;
-            padding: 8px 10px;
-        }
-
-        .btn-login {
-            width: 100%;
-            background: linear-gradient(135deg, #00aeef 0%, #0681c4 100%);
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 8px;
-            height: 36px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0, 174, 239, 0.3);
-            background: linear-gradient(135deg, #0681c4 0%, #00aeef 100%);
-        }
-
-        .login-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.75rem;
-        }
-
-        .form-check {
-            margin: 0;
-        }
-
-        .form-check-input {
-            border: 1.5px solid #dee2e6;
-            border-radius: 3px;
-        }
-
-        .form-check-input:checked {
-            background-color: #00aeef;
-            border-color: #00aeef;
-        }
-
-        .forgot-password {
-            color: #00aeef;
-            text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .forgot-password:hover {
-            color: #0681c4;
-            text-decoration: underline;
-        }
-
-        .social-divider {
-            text-align: center;
-            margin: 10px 0 6px 0;
-            position: relative;
-            color: #6c757d;
-            font-size: 0.75rem;
-        }
-
-        .social-divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e9ecef;
-            z-index: 1;
-        }
-
-        .social-divider span {
-            background: white;
-            padding: 0 8px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .social-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-
-        .btn-social {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            border: 1.5px solid #e9ecef;
-            border-radius: 6px;
-            background: white;
-            color: #495057;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.75rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-social:hover {
-            text-decoration: none;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-social i {
-            margin-right: 6px;
-            font-size: 1rem;
-        }
-
-        .btn-google {
-            border-color: #db4437;
-            color: #db4437;
-        }
-
-        .btn-google:hover {
-            background: #db4437;
-            color: white;
-        }
-
-        .btn-facebook {
-            border-color: #4267B2;
-            color: #4267B2;
-        }
-
-        .btn-facebook:hover {
-            background: #4267B2;
-            color: white;
-        }
-
-        .btn-linkedin {
-            border-color: #0077B5;
-            color: #0077B5;
-        }
-
-        .btn-linkedin:hover {
-            background: #0077B5;
-            color: white;
-        }
-
-        .btn-github {
-            border-color: #333;
-            color: #333;
-        }
-
-        .btn-github:hover {
-            background: #333;
-            color: white;
-        }
-
-        .auth-switch {
-            text-align: center;
-            margin-top: 12px;
-            padding-top: 8px;
-            border-top: 1px solid #e9ecef;
-            color: #6c757d;
-            font-size: 0.8rem;
-        }
-
-        .auth-switch a {
-            color: #00aeef;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .auth-switch a:hover {
-            color: #0681c4;
-            text-decoration: underline;
-        }
-
-        .alert {
-            border-radius: 6px;
-            border: none;
-            font-weight: 500;
-            margin-bottom: 10px;
-            padding: 8px 10px;
-            font-size: 0.8rem;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
-            color: #721c24;
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, #d1e7dd 0%, #a3cfbb 100%);
-            color: #0f5132;
-        }
-
-        .loading-spinner {
-            display: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid transparent;
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 6px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 6px;
-            }
-
-            .login-container {
-                max-width: 320px;
-            }
-
-            .login-header {
-                padding: 12px 8px;
-            }
-
-            .login-header h1 {
-                font-size: 1.2rem;
-            }
-
-            .login-body {
-                padding: 10px;
-            }
-
-            .social-buttons {
-                grid-template-columns: 1fr;
-                gap: 4px;
-            }
-
-            .nav-tabs .nav-link {
-                padding: 6px 8px;
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .login-container {
-                max-width: 300px;
-            }
-
-            .login-header h1 {
-                font-size: 1.1rem;
-            }
-
-            .login-header p {
-                font-size: 0.75rem;
-            }
-
-            .login-body {
-                padding: 8px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <div class="card login-card">
-            <div class="login-header">
-                <div class="brand-logo">
-                    <i class="fas fa-briefcase"></i> PeelJobs
+    <div class="w-full max-w-md relative z-10">
+        <!-- Main Card Container -->
+        <div class="bg-white/95 backdrop-blur-2xl rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 px-6 py-6 relative overflow-hidden">
+                <!-- Background elements in header -->
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-cyan-600/20"></div>
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="absolute top-2 right-4 w-8 h-8 bg-white/10 rounded-full blur-lg"></div>
+                    <div class="absolute bottom-2 left-4 w-6 h-6 bg-white/5 rounded-full blur-md"></div>
                 </div>
-                <h1>Welcome Back!</h1>
-                <p>Sign in to access your account</p>
+                
+                <div class="text-center relative z-10">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center justify-center mb-4">
+                        <span class="text-2xl font-bold text-white tracking-tight bg-gradient-to-r from-white to-blue-100 bg-clip-text">PeelJobs</span>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-blue-100/90 text-sm opacity-95 font-medium">Access your career dashboard</p>
+                    </div>
+                </div>
             </div>
             
-            <div class="login-body">
-                <!-- Navigation Tabs -->
-                <ul class="nav nav-tabs" id="authTabs" role="tablist">
-                    <li class="nav-item flex-fill" role="presentation">
-                        <button class="nav-link active w-100" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-pane" type="button" role="tab">
-                            <i class="fas fa-sign-in-alt me-1"></i>Login
-                        </button>
-                    </li>
-                    <li class="nav-item flex-fill" role="presentation">
-                        <button class="nav-link w-100" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-pane" type="button" role="tab">
-                            <i class="fas fa-user-plus me-1"></i>Register
-                        </button>
-                    </li>
-                </ul>
+            <!-- Form Content -->
+            <div class="p-6 bg-gradient-to-b from-white/95 to-gray-50/95">
+                <!-- Tab Navigation -->
+                <div class="flex mb-6 bg-gray-100/80 rounded-xl p-1 backdrop-blur-sm">
+                    <button class="flex-1 text-center bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-lg py-2.5 px-3 group" 
+                            id="login-tab" type="button">
+                        <i data-lucide="log-in" class="w-4 h-4 inline mr-1.5"></i>
+                        <span class="text-sm font-semibold">Sign In</span>
+                    </button>
+                    <button class="flex-1 text-center bg-transparent text-gray-600 font-medium rounded-lg py-2.5 px-3 group" 
+                            id="register-tab" type="button">
+                        <i data-lucide="user-plus" class="w-4 h-4 inline mr-1.5"></i>
+                        <span class="text-sm font-semibold">Sign Up</span>
+                    </button>
+                </div>
 
-                <!-- Tab Content -->
-                <div class="tab-content" id="authTabContent">
-                    <!-- Login Tab -->
-                    <div class="tab-pane fade show active" id="login-pane" role="tabpanel">
-                        <form id="ApplicantForm" name="ApplicantForm" class="login-form ApplicantForm" method="POST">
-                            {% csrf_token %}
-                            
-                            <div id="login-messages"></div>
-                            
-                            <div class="form-floating">
+                <!-- Login Form -->
+                <div class="block" id="login-pane">
+                    <form id="ApplicantForm" name="ApplicantForm" class="space-y-4" method="POST">
+                        {% csrf_token %}
+                        
+                        <div id="login-messages" class="hidden rounded-lg p-2 border-l-4"></div>
+                        
+                        <!-- Email Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Email Address</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+                                </div>
                                 <input type="email" 
-                                       class="form-control" 
+                                       class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
                                        id="userlogin_email" 
-                                       placeholder="name@example.com" 
+                                       placeholder="Enter your email address" 
                                        name="email" 
                                        required>
-                                <label for="userlogin_email">
-                                    <i class="fas fa-envelope me-1"></i>Email
-                                </label>
                             </div>
-                            
-                            <div class="form-floating">
-                                <input type="password" 
-                                       class="form-control" 
-                                       id="userlogin_password" 
-                                       placeholder="Password" 
-                                       name="password" 
-                                       required>
-                                <label for="userlogin_password">
-                                    <i class="fas fa-lock me-1"></i>Password
-                                </label>
-                            </div>
-                            
-                            <div class="login-options">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me">
-                                    <label class="form-check-label" for="remember_me">
-                                        Remember me
-                                    </label>
-                                </div>
-                                <a href="#" class="forgot-password" id="forgot-password-link">Forgot?</a>
-                            </div>
-                            
-                            <input type="hidden" name="register_type" id="user_register_type" value="login">
-                            <input type="hidden" name="next" value="{{ request.GET.next }}">
-                            
-                            <button type="submit" class="btn btn-login" id="login-button">
-                                <span class="loading-spinner"></span>
-                                <span class="button-text">Sign In</span>
-                            </button>
-                        </form>
-                        
-                        <div class="social-divider">
-                            <span>Or continue with</span>
                         </div>
                         
-                        <div class="social-buttons">
-                            <a href="{% url 'social:google_login' %}" class="btn-social btn-google">
-                                <i class="fab fa-google"></i>
-                                Google
+                        <!-- Password Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Password</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
+                                </div>
+                                <input type="password" 
+                                       class="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                       id="userlogin_password" 
+                                       placeholder="Enter your password" 
+                                       name="password" 
+                                       required>
+                                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center z-10" id="toggle-password">
+                                    <i data-lucide="eye" class="w-4 h-4 text-gray-400" id="password-eye-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Options Row -->
+                        <div class="flex justify-between items-center">
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" id="remember_me" name="remember_me" 
+                                       class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-1 mr-2">
+                                <span class="text-sm text-gray-600 font-medium">Remember me</span>
+                            </label>
+                            <a href="#" class="text-blue-600 font-semibold text-sm" id="forgot-password-link">
+                                Forgot password?
                             </a>
-                            <a href="{% url 'social:facebook_login' %}" class="btn-social btn-facebook">
-                                <i class="fab fa-facebook-f"></i>
-                                Facebook
-                            </a>
-                            <a href="{% url 'social:linkedin_login' %}" class="btn-social btn-linkedin">
-                                <i class="fab fa-linkedin-in"></i>
-                                LinkedIn
-                            </a>
-                            <a href="{% url 'social:github_login' %}" class="btn-social btn-github">
-                                <i class="fab fa-github"></i>
-                                GitHub
-                            </a>
+                        </div>
+                        
+                        <input type="hidden" name="register_type" id="user_register_type" value="login">
+                        <input type="hidden" name="next" value="">
+                        
+                        <!-- Login Button -->
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group" id="login-button">
+                            <span class="button-text flex items-center justify-center relative z-10">
+                                <i data-lucide="log-in" class="w-4 h-4 mr-2"></i>
+                                Sign In to Your Account
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <!-- Social Login Section -->
+                    <div class="relative my-4">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-4 bg-gradient-to-r from-gray-50 to-white text-gray-600 font-medium">Or continue with</span>
                         </div>
                     </div>
                     
-                    <!-- Register Tab -->
-                    <div class="tab-pane fade" id="register-pane" role="tabpanel">
-                        <form id="ApplicantFormRegister" name="ApplicantFormRegister" class="login-form ApplicantForm" method="POST">
-                            {% csrf_token %}
-                            
-                            <div id="register-messages"></div>
-                            
-                            <div class="form-floating">
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <a href="/social/google_login/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-gray-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 group">
+                                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
+                                    <path fill="#ea4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"/>
+                                    <path fill="#34a853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z"/>
+                                    <path fill="#4285f4" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z"/>
+                                    <path fill="#fbbc05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"/>
+                                </svg>
+                                <span class="group-hover:text-gray-800 transition-colors duration-200">Google</span>
+                            </a>
+                            <a href="/social/linkedin_login/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-blue-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 group">
+                                <i data-lucide="linkedin" class="w-4 h-4 mr-2 text-blue-600 group-hover:scale-110 transition-transform duration-200"></i>
+                                <span class="group-hover:text-blue-700 transition-colors duration-200">LinkedIn</span>
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <a href="/social/facebook_login/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-700/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 group">
+                                <i data-lucide="facebook" class="w-4 h-4 mr-2 text-blue-700 group-hover:scale-110 transition-transform duration-200"></i>
+                                <span class="group-hover:text-blue-800 transition-colors duration-200">Facebook</span>
+                            </a>
+                            <a href="/social/github/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-gray-800 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-800/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 group">
+                                <i data-lucide="github" class="w-4 h-4 mr-2 text-gray-800 group-hover:scale-110 transition-transform duration-200"></i>
+                                <span class="group-hover:text-gray-900 transition-colors duration-200">GitHub</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Register Form -->
+                <div class="hidden" id="register-pane">
+                    <form id="ApplicantFormRegister" name="ApplicantFormRegister" class="space-y-4" method="POST">
+                        {% csrf_token %}
+                        
+                        <div id="register-messages" class="hidden rounded-lg p-2 border-l-4"></div>
+                        
+                        <!-- Email Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Email Address</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+                                </div>
                                 <input type="email" 
-                                       class="form-control" 
+                                       class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
                                        id="user_register_email" 
-                                       placeholder="name@example.com" 
+                                       placeholder="Enter your email address" 
                                        name="email" 
                                        required>
-                                <label for="user_register_email">
-                                    <i class="fas fa-envelope me-1"></i>Email
-                                </label>
                             </div>
-                            
-                            <div class="form-floating">
+                        </div>
+                        
+                        <!-- Password Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Password</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
+                                </div>
                                 <input type="password" 
-                                       class="form-control" 
+                                       class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
                                        id="user_register_password" 
-                                       placeholder="Password" 
+                                       placeholder="Password (min. 7 characters)" 
                                        name="password" 
                                        required 
                                        minlength="7">
-                                <label for="user_register_password">
-                                    <i class="fas fa-lock me-1"></i>Password (min. 7)
-                                </label>
                             </div>
-                            
-                            <div class="form-floating">
-                                <input type="tel" 
-                                       class="form-control" 
-                                       id="user_register_mobile" 
-                                       placeholder="Mobile Number" 
-                                       name="mobile" 
-                                       required>
-                                <label for="user_register_mobile">
-                                    <i class="fas fa-phone me-1"></i>Mobile
-                                </label>
-                            </div>
-                            
-                            <input type="hidden" name="register_from" id="register_from" value="Email">
-                            <input type="hidden" name="register_type" value="register">
-                            
-                            <button type="submit" class="btn btn-login" id="register-button">
-                                <span class="loading-spinner"></span>
-                                <span class="button-text">Create Account</span>
-                            </button>
-                        </form>
-                        
-                        <div class="social-divider">
-                            <span>Or sign up with</span>
                         </div>
                         
-                        <div class="social-buttons">
-                            <a href="{% url 'social:google_login' %}" class="btn-social btn-google">
-                                <i class="fab fa-google"></i>
+                        <!-- Mobile Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Mobile Number</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                                </div>
+                                <input type="tel" 
+                                       class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                       id="user_register_mobile" 
+                                       placeholder="Enter your mobile number" 
+                                       name="mobile" 
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="register_from" id="register_from" value="Email">
+                        <input type="hidden" name="register_type" value="register">
+                        
+                        <!-- Register Button -->
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group" id="register-button">
+                            <span class="button-text flex items-center justify-center relative z-10">
+                                <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
+                                Create Your Account
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <!-- Social Register Section -->
+                    <div class="relative my-4">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-3 bg-white text-gray-500 font-medium">Or sign up with</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="/social/google_login/" class="flex items-center justify-center px-2 py-1.5 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-xs font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-gray-300 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 sm:px-3 sm:py-2 sm:text-sm">
+                                <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
+                                    <path fill="#ea4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"/>
+                                    <path fill="#34a853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z"/>
+                                    <path fill="#4285f4" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z"/>
+                                    <path fill="#fbbc05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"/>
+                                </svg>
                                 Google
                             </a>
-                            <a href="{% url 'social:facebook_login' %}" class="btn-social btn-facebook">
-                                <i class="fab fa-facebook-f"></i>
-                                Facebook
-                            </a>
-                            <a href="{% url 'social:linkedin_login' %}" class="btn-social btn-linkedin">
-                                <i class="fab fa-linkedin-in"></i>
+                            <a href="/social/linkedin_login/" class="flex items-center justify-center px-2 py-1.5 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-xs font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-blue-500 hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-500/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 sm:px-3 sm:py-2 sm:text-sm">
+                                <i data-lucide="linkedin" class="w-4 h-4 mr-2 text-blue-600"></i>
                                 LinkedIn
                             </a>
-                            <a href="{% url 'social:github_login' %}" class="btn-social btn-github">
-                                <i class="fab fa-github"></i>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="/social/facebook_login/" class="flex items-center justify-center px-2 py-1.5 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-xs font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-blue-700 hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-700/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 sm:px-3 sm:py-2 sm:text-sm">
+                                <i data-lucide="facebook" class="w-4 h-4 mr-2 text-blue-700"></i>
+                                Facebook
+                            </a>
+                            <a href="/social/github/" class="flex items-center justify-center px-2 py-1.5 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-xs font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-gray-800 hover:-translate-y-0.5 hover:shadow-md hover:shadow-gray-800/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 sm:px-3 sm:py-2 sm:text-sm">
+                                <i data-lucide="github" class="w-4 h-4 mr-2 text-gray-800"></i>
                                 GitHub
                             </a>
                         </div>
                     </div>
                 </div>
                 
-                <div class="auth-switch">
-                    <span id="auth-switch-text">Don't have an account? <a href="#" id="auth-switch-link">Create one</a></span>
+                <!-- Auth Switch -->
+                <div class="text-center mt-4 pt-3 border-t border-gray-200">
+                    <span id="auth-switch-text" class="text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="#" id="auth-switch-link" class="text-blue-600 font-semibold">Create one</a>
+                    </span>
                 </div>
             </div>
         </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-6">
+            <div class="inline-flex items-center justify-center space-x-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-white/50">
+                <i data-lucide="heart" class="w-3 h-3 text-blue-600"></i>
+                <p class="text-gray-600 text-xs font-medium">
+                    © 2025 PeelJobs. Building careers, one opportunity at a time.
+                </p>
+            </div>
+            <div class="mt-3 flex justify-center space-x-4 text-xs text-gray-500">
+                <a href="/page/privacy-policy/" class="text-gray-500">Privacy Policy</a>
+                <a href="/page/terms-conditions/" class="text-gray-500">Terms of Service</a>
+                <a href="/contact/" class="text-gray-500">Help & Support</a>
+            </div>
+        </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<!-- Minimal CSS for grid pattern only -->
+<style>
+/* Only keep what Tailwind cannot handle natively */
+.bg-grid-pattern {
+    background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
     
-    <script>
-        $(document).ready(function() {
-            // Handle tab switching text
-            $('#login-tab').on('shown.bs.tab', function() {
-                $('#auth-switch-text').html('Don\'t have an account? <a href="#" id="auth-switch-link">Create one</a>');
-            });
-            
-            $('#register-tab').on('shown.bs.tab', function() {
-                $('#auth-switch-text').html('Already have an account? <a href="#" id="auth-switch-link">Sign in</a>');
-            });
-            
-            // Auth switch link functionality
-            $(document).on('click', '#auth-switch-link', function(e) {
-                e.preventDefault();
-                if ($('#login-tab').hasClass('active')) {
-                    $('#register-tab').tab('show');
-                } else {
-                    $('#login-tab').tab('show');
-                }
-            });
-            
-            // Forgot password functionality
-            $('#forgot-password-link').click(function(e) {
-                e.preventDefault();
-                $('#user_register_type').val('forgot_password');
-                $('#userlogin_password').prop('required', false).closest('.form-floating').hide();
-                $('#login-button .button-text').text('Send Reset Link');
-                $(this).hide();
-                
-                // Add cancel button
-                if (!$('#cancel-forgot').length) {
-                    $(this).parent().append('<a href="#" id="cancel-forgot" class="forgot-password ms-3">Cancel</a>');
-                }
-            });
-            
-            // Cancel forgot password
-            $(document).on('click', '#cancel-forgot', function(e) {
-                e.preventDefault();
-                $('#user_register_type').val('login');
-                $('#userlogin_password').prop('required', true).closest('.form-floating').show();
-                $('#login-button .button-text').text('Sign In');
-                $('#forgot-password-link').show();
-                $(this).remove();
-            });
-            
-            // Form validation feedback
-            function showMessage(containerId, message, type) {
-                const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
-                const iconClass = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
-                const messageHtml = `<div class="alert ${alertClass}" role="alert">
-                    <i class="fas ${iconClass} me-2"></i>${message}
-                </div>`;
-                $(`#${containerId}`).html(messageHtml);
-            }
-            
-            function setLoadingState(button, loading) {
-                const spinner = button.find('.loading-spinner');
-                const text = button.find('.button-text');
-                
-                if (loading) {
-                    spinner.show();
-                    button.prop('disabled', true);
-                } else {
-                    spinner.hide();
-                    button.prop('disabled', false);
-                }
-            }
-            
-            // Enhanced form submission handling
-            $('form#ApplicantForm').off('submit').on('submit', function(e) {
-                e.preventDefault();
-                
-                const button = $('#login-button');
-                const originalText = button.find('.button-text').text();
-                setLoadingState(button, true);
-                button.find('.button-text').text('Signing in...');
-                
-                const register_type = $('#user_register_type').val();
-                let url;
-                
-                if (register_type == 'login') {
-                    url = '/applicant/login/';
-                } else if (register_type == 'forgot_password') {
-                    url = '/user/forgot_password/';
-                } else {
-                    url = '/registration/using_email/';
-                }
-                
-                $.ajax({
-                    type: 'POST',
-                    dataType: 'json',
-                    data: $(this).serialize(),
-                    url: url,
-                    success: function(data) {
-                        if (data.error == false) {
-                            if (register_type == 'forgot_password') {
-                                showMessage('login-messages', 'Password reset link sent! Check your email.', 'success');
-                            } else {
-                                showMessage('login-messages', 'Login successful! Redirecting...', 'success');
-                                setTimeout(() => {
-                                    window.location = data.redirect_url || '/';
-                                }, 1000);
-                            }
-                        } else if (data.response) {
-                            let errorMsg = '';
-                            for (var key in data.response) {
-                                errorMsg += data.response[key] + '<br>';
-                            }
-                            showMessage('login-messages', errorMsg, 'error');
-                        } else {
-                            showMessage('login-messages', data.response_message || 'Login failed. Please try again.', 'error');
-                        }
-                    },
-                    error: function() {
-                        showMessage('login-messages', 'Connection error. Please try again.', 'error');
-                    },
-                    complete: function() {
-                        setLoadingState(button, false);
-                        button.find('.button-text').text(originalText);
-                    }
-                });
-            });
-            
-            // Registration form handling
-            $('form#ApplicantFormRegister').off('submit').on('submit', function(e) {
-                e.preventDefault();
-                
-                const button = $('#register-button');
-                const originalText = button.find('.button-text').text();
-                setLoadingState(button, true);
-                button.find('.button-text').text('Creating Account...');
-                
-                $.ajax({
-                    type: 'POST',
-                    dataType: 'json',
-                    data: $(this).serialize(),
-                    url: '/registration/using_email/',
-                    success: function(data) {
-                        if (data.error == false) {
-                            showMessage('register-messages', 
-                                `Registration successful! A verification email has been sent to ${data.user_email}`, 
-                                'success');
-                            setTimeout(() => {
-                                window.location = '/user/reg_success/';
-                            }, 2000);
-                        } else {
-                            let errorMsg = '';
-                            if (data.password_error) {
-                                errorMsg += data.password_error + '<br>';
-                            }
-                            if (data.mobile_error) {
-                                errorMsg += data.mobile_error + '<br>';
-                            }
-                            if (data.email_error) {
-                                errorMsg += data.email_error + '<br>';
-                            }
-                            if (data.response_message) {
-                                errorMsg += data.response_message + '<br>';
-                            }
-                            showMessage('register-messages', errorMsg || 'Registration failed. Please try again.', 'error');
-                        }
-                    },
-                    error: function() {
-                        showMessage('register-messages', 'Connection error. Please try again.', 'error');
-                    },
-                    complete: function() {
-                        setLoadingState(button, false);
-                        button.find('.button-text').text(originalText);
-                    }
-                });
-            });
-            
-            // Clear messages when switching tabs
-            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function() {
-                $('#login-messages, #register-messages').empty();
-            });
-            
-            // Form field animation
-            $('.form-floating .form-control, .form-floating .form-select').on('focus', function() {
-                $(this).closest('.form-floating').addClass('focused');
-            }).on('blur', function() {
-                if (!$(this).val()) {
-                    $(this).closest('.form-floating').removeClass('focused');
-                }
-            });
-            
-            // Social login hover effects
-            $('.btn-social').hover(
-                function() {
-                    $(this).css('transform', 'translateY(-2px)');
-                },
-                function() {
-                    $(this).css('transform', 'translateY(0)');
-                }
-            );
-        });
-    </script>
-</body>
-</html>
+    // Tab switching
+    function showLoginTab() {
+        const $loginTab = $('#login-tab');
+        const $registerTab = $('#register-tab');
+        const $loginPane = $('#login-pane');
+        const $registerPane = $('#register-pane');
+        
+        // Update tab styles
+        $loginTab.removeClass('bg-transparent text-gray-600').addClass('bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg');
+        $registerTab.removeClass('bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg').addClass('bg-transparent text-gray-600');
+        
+        // Switch content
+        $registerPane.hide();
+        $loginPane.show();
+        
+        // Update switch text
+        $('#auth-switch-text').html('Don\'t have an account? <a href="#" id="auth-switch-link" class="text-blue-600 font-semibold">Create one</a>');
+    }
+    
+    function showRegisterTab() {
+        const $loginTab = $('#login-tab');
+        const $registerTab = $('#register-tab');
+        const $loginPane = $('#login-pane');
+        const $registerPane = $('#register-pane');
+        
+        // Update tab styles
+        $registerTab.removeClass('bg-transparent text-gray-600').addClass('bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg');
+        $loginTab.removeClass('bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg').addClass('bg-transparent text-gray-600');
+        
+        // Switch content
+        $loginPane.hide();
+        $registerPane.show();
+        
+        // Update switch text
+        $('#auth-switch-text').html('Already have an account? <a href="#" id="auth-switch-link" class="text-blue-600 font-semibold">Sign in</a>');
+    }
+    
+    // Tab click handlers
+    $('#login-tab').on('click', function(e) {
+        e.preventDefault();
+        showLoginTab();
+    });
+    
+    $('#register-tab').on('click', function(e) {
+        e.preventDefault();
+        showRegisterTab();
+    });
+    
+    // Auth switch link
+    $(document).on('click', '#auth-switch-link', function(e) {
+        e.preventDefault();
+        if ($('#login-pane').is(':visible')) {
+            showRegisterTab();
+        } else {
+            showLoginTab();
+        }
+    });
+    
+    // Password toggle with Lucide icons
+    $('#toggle-password').on('click', function() {
+        const $passwordField = $('#userlogin_password');
+        const $icon = $('#password-eye-icon');
+        
+        if ($passwordField.attr('type') === 'password') {
+            $passwordField.attr('type', 'text');
+            $icon.attr('data-lucide', 'eye-off');
+        } else {
+            $passwordField.attr('type', 'password');
+            $icon.attr('data-lucide', 'eye');
+        }
+        
+        // Re-initialize the specific icon
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    });
+    
+    // Form submission with loading states
+    $('#ApplicantForm').on('submit', function(e) {
+        const $button = $('#login-button');
+        const $spinner = $('#login-spinner');
+        const $text = $button.find('.button-text');
+        
+        $button.prop('disabled', true).addClass('cursor-not-allowed');
+        $spinner.removeClass('hidden');
+        $text.text('Signing in...');
+        
+        // Reset after timeout (for demo purposes)
+        setTimeout(function() {
+            $button.prop('disabled', false).removeClass('cursor-not-allowed');
+            $spinner.addClass('hidden');
+            $text.html(`
+                <i data-lucide="log-in" class="w-4 h-4 mr-2"></i>
+                Sign In to Your Account
+            `);
+        }, 3000);
+    });
+    
+    $('#ApplicantFormRegister').on('submit', function(e) {
+        const $button = $('#register-button');
+        const $spinner = $('#register-spinner');
+        const $text = $button.find('.button-text');
+        
+        $button.prop('disabled', true).addClass('cursor-not-allowed');
+        $spinner.removeClass('hidden');
+        $text.text('Creating account...');
+        
+        // Reset after timeout (for demo purposes)
+        setTimeout(function() {
+            $button.prop('disabled', false).removeClass('cursor-not-allowed');
+            $spinner.addClass('hidden');
+            $text.html(`
+                <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
+                Create Your Account
+            `);
+        }, 3000);
+    });
+    
+    // Add input validation feedback
+    $('input[required]').on('blur', function() {
+        const $input = $(this);
+        const $group = $input.closest('.form-group');
+        
+        if (!this.checkValidity()) {
+            $input.addClass('border-red-300 focus:border-red-500 focus:ring-red-500/20');
+            $group.addClass('error');
+        } else {
+            $input.removeClass('border-red-300 focus:border-red-500 focus:ring-red-500/20');
+            $group.removeClass('error');
+        }
+    });
+    
+    // Social button click analytics (placeholder)
+    $('.social-btn').on('click', function() {
+        const provider = $(this).find('svg').next().text() || 'Unknown';
+        console.log(`Social login attempted: ${provider}`);
+    });
+    
+    // Re-initialize icons after dynamic content changes
+    function reinitializeLucideIcons() {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+    
+    // Call after tab switches
+    $('#login-tab, #register-tab').on('click', function() {
+        setTimeout(reinitializeLucideIcons, 100);
+    });
+});
+</script>
+{% endblock %}
