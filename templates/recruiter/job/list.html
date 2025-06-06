@@ -100,12 +100,10 @@
             <a href="#" data-href="https://www.facebook.com/sharer/sharer.php?u={{ post.get_job_minified_url }}&t={{ post.title }}" class="social_share share_icon fb" target="_blank"><i class="fa fa-facebook"></i></a>
             <a href="#" data-href="https://www.linkedin.com/cws/share?url={{ post.get_job_minified_url }}&token=&isFramed=true"  class="social_share share_icon linkedin" target="_blank"><i class="fa fa-linkedin"></i></a>
             <a href="#" data-href="https://twitter.com/intent/tweet?text={{ post.title }}&url={{ post.get_job_minified_url }}&via=PeelJobs" class="social_share share_icon twit" target="_blank"><i class="fa fa-twitter"></i></a>
-            <!-- <a href="#" data-href="https://plus.google.com/share?hl=en-US&url={{ post.get_job_minified_url }}" class="social_share share_icon google" target="_blank"><i class="fa fa-google-plus"></i></a> -->
           {% else %}
             <span class="social_share share_icon fb not_live" target="_blank"><i class="fa fa-facebook"></i></span>
             <span class="social_share share_icon linkedin not_live" target="_blank"><i class="fa fa-linkedin"></i></span>
             <span class="social_share share_icon twit not_live" target="_blank"><i class="fa fa-twitter"></i></span>
-            <!-- <span class="social_share share_icon google not_live" target="_blank"><i class="fa fa-google-plus"></i></span> -->
           {% endif %}
         </td>
         {% endif %}

@@ -82,27 +82,6 @@
                   {% endif %}
                 </li>
                 <li>
-                  {% if applicant.is_tw_connected %}
-                  <a href="{{applicant.get_twitter_url}}" target="_blank"><i class="fa fa-twitter twit"></i></a>
-                  {% else %}
-                  <i class="fa fa-twitter"></i>
-                  {% endif %}
-                </li>
-                <!-- <li>
-                  {% if applicant.is_gp_connected %}
-                  <a href="{{applicant.get_google_object.google_url}}" target="_blank"><i class="fa fa-google-plus plus"></i></a>
-                  {% else %}
-                  <i class="fa fa-google-plus"></i>
-                  {% endif %}
-                </li> -->
-                <li>
-                  {% if applicant.is_ln_connected %}
-                  <a href="{{applicant.get_linkedin_object.linkedin_url}}" target="_blank"><i class="fa fa-linkedin in"></i></a>
-                  {% else %}
-                  <i class="fa fa-linkedin"></i>
-                  {% endif %}
-                </li>
-                <li>
                   {% if applicant.is_gh_connected %}
                   <a href="{{applicant.get_github_object.git_url}}" target="_blank"><i class="fa fa-github gh"></i></a>
                   {% else %}
@@ -225,9 +204,7 @@
       <!-- tabs -->
       <div class="tab_button_row">
       <span class='button gplus linked' panelid='user_profile'><i class="fa fa-user"></i>Profile</span>
-      <span class='button linked {% if applicant.is_ln_connected %}linkedin{% endif %}' panelid='linkedin'><i class="fa fa-linkedin"></i>Linkedin</span>
       <span class='button linked {% if applicant.is_gh_connected %}github{% endif %}' panelid='github'><i class="fa fa-github"></i>Github</span>
-      <span class='button linked {% if applicant.is_so_connected %}stackoverflow{% endif %}' panelid='stackoverflow'><i class="fa fa-stack-overflow"></i>Stack Over Flow</span>
       <span class='button gplus linked' panelid='applied_jobs'><i class="fa fa-check-square-o"></i>Applied Jobs</span>
       <span class='button gplus linked' panelid='visited_jobs'><i class="fa fa-eye"></i>Visited Jobs</span>
       <span class='button gplus linked' panelid='skills_subscribed'><i class="fa fa-envelope"></i>Skills Subscribed</span>
@@ -268,40 +245,6 @@
           User not Applied Any Job
         {% endfor %}
       </div>
-      <div class="tab_content"  id='linkedin'>
-      {% if applicant.is_ln_connected %}
-        {% with applicant.get_linkedin_object as linkedin %}
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>Name</label>
-              <span class="description">
-              <a href="{{linkedin.linkedin_url}}"><span>{{ linkedin.first_name }} {{ linkedin.last_name }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Email</label>
-              <span class="description">
-              <span>{{ linkedin.email }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Location</label>
-              <span class="description">
-              <span>{{ linkedin.location }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        {% endwith %}
-        {% else %}
-          User not connected to linkedin
-        {% endif %}
-      </div>
       <div class="tab_content"  id='github'>
       {% if applicant.is_gh_connected %}
         {% with applicant.get_github_object as github %}
@@ -336,41 +279,7 @@
           User not connected to github
         {% endif %}
       </div>
-            <!-- gplus friends  -->
-      <div class="tab_content"  id='stackoverflow'>
-      {% if applicant.is_so_connected %}
-        {% with applicant.get_stack_overflow_object as stack_overflow %}
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>User Id</label>
-              <span class="description">
-              <a href="{{stack_overflow.link}}"><span>{{ stack_overflow.stack_user_id }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Account Id</label>
-              <span class="description">
-              <span>{{ stack_overflow.account_id }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Name</label>
-              <span class="description">
-              <span>{{ stack_overflow.display_name }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        {% endwith %}
-        {% else %}
-          User not connected to stack overflow
-        {% endif %}
-      </div>
+      
       <div class="tab_content"  id='search_done'>
       {% for search in applicant.get_search_done %}
         <div class='specific_detail'>
@@ -819,16 +728,6 @@
 <script type="text/javascript">
 $("span.download").click(function(e) {
     window.location = $(this).attr('id');
-  });
-$(document).ready(function() {
-    $('.fb_friends').click(function(e) {
-      e.preventDefault();
-      window.open('http://facebook.com/' + $(this).attr('href') + '/');
-    });
-    $('.tw_friends').click(function(e) {
-      e.preventDefault();
-      window.open('http://twitter.com/' + $(this).attr('href') + '/');
-    });
   });
 </script>
 {% endblock %}

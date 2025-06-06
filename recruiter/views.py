@@ -46,15 +46,12 @@ from peeldb.models import (
     AppliedJobs,
     User,
     JOB_TYPE,
-    FacebookPost,
-    TwitterPost,
     FunctionalArea,
     Keyword,
     UserEmail,
     MARTIAL_STATUS,
     Google,
     Facebook,
-    Linkedin,
     Company,
     MailTemplate,
     SentMail,
@@ -778,14 +775,12 @@ def edit_job(request, job_post_id):
                 functional_area.extend(
                     job_post.functional_area.filter(status="InActive")
                 )
-                fb_groups = FacebookPost.objects.filter(
-                    job_post=job_post, page_or_group="group", post_status="Posted"
-                ).order_by("-id")
+                
                 return render(
                     request,
                     "recruiter/job/edit.html",
                     {
-                        "fb_groups": fb_groups,
+                        "fb_groups": '',
                         "job_types": JOB_TYPE,
                         "qualifications": qualifications,
                         "functional_area": functional_area,
@@ -1162,13 +1157,7 @@ def view_job(request, job_post_id):
 def deactivate_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     if request.user.is_agency_admin or request.user == job_post.user:
-        # need to delete job post on fb, twitter and linkedin
-        posts = FacebookPost.objects.filter(job_post=job_post).exclude(
-            post_status="Deleted"
-        )
-       
-        posts = TwitterPost.objects.filter(job_post=job_post)
-        
+               
         job_post.previous_status = job_post.status
         job_post.closed_date = datetime.now(timezone.utc)
         job_post.status = "Disabled"
@@ -1182,9 +1171,6 @@ def deactivate_job(request, job_post_id):
 @recruiter_login_required
 def delete_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id, user=request.user)
-    posts = FacebookPost.objects.filter(job_post=job_post)
-    
-    posts = TwitterPost.objects.filter(job_post=job_post)
     
     job_post.status = "Disabled"
     job_post.closed_date = datetime.now(timezone.utc)
@@ -1200,15 +1186,6 @@ def enable_job(request, job_post_id):
     job_post.status = "Pending"
     job_post.closed_date = None
     job_post.save()
-    # if job_post.post_on_fb:
-    #     # need to check this condition
-    # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
-    # for group in posts:
-    #     fb_group = FacebookGroup.objects.get(user=request.user, group_id=group.page_or_group_id)
-    #     is_active = True
-    #     # need to get accetoken for peeljobs twitter page
-    
-
     data = {"error": False, "response": "Job Post enabled Successfully"}
     return HttpResponse(json.dumps(data))
 
@@ -2360,157 +2337,6 @@ def facebook_login(request):
             + ", user_website, email, user_likes, user_groups, publish_actions, publish_pages"
         )
         return HttpResponseRedirect(rty)
-
-
-@recruiter_login_required
-def linkedin_login(request):
-    if "code" in request.GET:
-        params = {}
-        params["grant_type"] = "authorization_code"
-        params["code"] = request.GET.get("code")
-        params["redirect_uri"] = (
-            request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:linkedin_login")
-        )
-        params["client_id"] = settings.LN_API_KEY
-        params["client_secret"] = settings.LN_SECRET_KEY
-        import urllib.request as ur
-
-        args = {
-            "grant_type": "authorization_code",
-            "code": request.GET.get("code"),
-            "redirect_uri": request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:linkedin_login"),
-            "client_id": settings.LN_API_KEY,
-            "client_secret": settings.LN_SECRET_KEY,
-        }
-        response = requests.get(
-            "https://www.linkedin.com/uas/oauth2/accessToken?"
-            + urllib.parse.urlencode(args)
-        ).json()
-        if response.get("access_token"):
-            accesstoken = response["access_token"]
-            required_info = "id,first-name,last-name,email-address,location,positions,educations,industry,summary,public-profile-url,picture-urls::(original)"
-            rty = (
-                "https://api.linkedin.com/v1/people/~:("
-                + required_info
-                + ")"
-                + "?format=json&oauth2_access_token="
-            )
-            rty += accesstoken
-            details = ur.urlopen(rty).read().decode("utf8")
-            details = json.loads(details)
-            if "positions" in details.keys():
-                if details["positions"]["_total"] == 0:
-                    positions = 0
-                else:
-                    positions = details["positions"]["values"]
-            else:
-                positions = 0
-            # purl = ""
-            # if 'pictureUrls' in details:
-            #     pictureurl = details['pictureUrls']
-            #     if pictureurl['_total'] != 0:
-            #             for i in pictureurl['values']:
-            #                 purl = i
-            Linkedin.objects.create(
-                user=request.user,
-                accesstoken=accesstoken,
-                linkedin_id=details["id"],
-                linkedin_url=details["publicProfileUrl"],
-                first_name=details["firstName"],
-                last_name=details["lastName"],
-                email=details["emailAddress"],
-                location=details["location"]["name"],
-                workhistory=positions,
-            )
-
-            # TODO need to store User groups and frnds in the database
-
-            # lninfo(id_value,details,location,edu,positions,industry,accesstoken,pictureurl,"login")
-            # lngroups(id_value,details['id'],accesstoken)
-            # lnfrnds(id_value,details['id'],accesstoken)
-
-            return HttpResponseRedirect(reverse("recruiter:index"))
-        message_type = "Sorry,"
-        message = "We didnt find your email id through facebook"
-        reason = "Please verify your email id in facebook and try again"
-        email = settings.DEFAULT_FROM_EMAIL
-        number = settings.CONTACT_NUMBER
-        return render(
-            request,
-            "recruiter/recruiter_404.html",
-            {
-                "message_type": message_type,
-                "message": message,
-                "reason": reason,
-                "email": email,
-                "number": number,
-            },
-            status=404,
-        )
-    else:
-        rty = (
-            "https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id="
-            + settings.LN_API_KEY
-        )
-        rty += "&scope=r_basicprofile r_emailaddress rw_company_admin w_share&state=8897239179ramya"
-        rty += (
-            "&redirect_uri="
-            + request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:linkedin_login")
-        )
-        return HttpResponseRedirect(rty)
-
-
-# def add_linkedin_group_friends(uemail, id, accesstoken):
-# TODO:
-# check wether we are getting all groups or just few as per paging
-# user = User.objects.get(id=id)
-# url = 'https://api.linkedin.com/v1/people/~/group-memberships:(group:(id,name),membership-state)'
-# params = {'count': 100}
-# headers = {'x-li-format': 'json', 'Content-Type': 'application/json'}
-# kw = dict(params=params, headers=headers, timeout=60)
-# params.update({'oauth2_access_token': accesstoken})
-# response = requests.request('GET', url, **kw).json()
-# if response['_total'] != 0:
-#     for i in response['values']:
-#         LinkedinGroup.objects.create(
-#             user=user,
-#             membership=i['membershipState']['code'],
-#             group_id=i['group']['id'],
-#             group_name=i['group']['name']
-#         )
-
-# required_info = "id,first-name,last-name,email-address,location,positions,educations,industry"
-# url = "https://api.linkedin.com/v1/people/~:(" + required_info + ")?format=json&oauth2_access_token=" + \
-#       "?format=json&oauth2_access_token="
-# url += accesstoken
-# fdetails = json.loads(urllib.urlopen(url).read())
-# friends = fdetails['values']
-
-# for friend in friends:
-#     industry = friend['industry'] if 'industry' in friend.keys() else None
-#     if 'positions' in friend.keys():
-#         positions = 0 if (friend['positions']['_total'] == 0) else friend['positions']['values']
-#     else:
-#         positions = 0
-#     location = friend['location'] if 'location' in friend.keys() else ""
-#     LinkedinFriend.objects.create(
-#         user=user,
-#         linkedin_id=friend['id'],
-#         first_name=friend['firstName'],
-#         last_name=friend['lastName'],
-#         location=location,
-#         workhistory=positions,
-#         industry=industry
-#     )
 
 
 @recruiter_login_required

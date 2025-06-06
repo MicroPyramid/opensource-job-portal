@@ -27,7 +27,6 @@ from recruiter.views import (
     change_password,
     user_profile,
     facebook_login,
-    linkedin_login,
     resume_view,
 )
 from recruiter.views import (
@@ -115,7 +114,6 @@ urlpatterns = [
     ),
     url(r"^google_login/$", google_login, name="google_login"),
     url(r"^facebook_login/$", facebook_login, name="facebook_login"),
-    url(r"^linkedin_login/$", linkedin_login, name="linkedin_login"),
     url(r"^microsite-page/$", view_company, name="view_company"),
     url(r"^company/edit/$", edit_company, name="edit_company"),
     url(r"^company/profile-pic/$", upload_profilepic, name="upload_profilepic"),

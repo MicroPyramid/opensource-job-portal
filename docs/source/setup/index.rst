@@ -116,12 +116,6 @@ Configuration of Peeljobs
 		
 		GIT_APP_SECRET = <git secret-key>
 
-		**LinkedIn account details**
-
-		LN_API_KEY = <linkedin api id>
-
-		LN_SECRET_KEY = <linkedin secret-key>
-
 
 11. Apply migrations to database using the following command
 

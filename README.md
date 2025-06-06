@@ -33,7 +33,6 @@ https://opensource-job-portal.readthedocs.io/en/latest/
 **For Recruiters**  
 - Register via email/password **or** Google OAuth  
 - Post, copy, deactivate, and manage job listings  
-- Share jobs to Facebook, Twitter, and LinkedIn  
 - Add “Walk-in” events with location via Google Maps integration  
 
 **For Job Seekers / Portal Users**  
