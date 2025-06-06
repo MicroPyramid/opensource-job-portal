@@ -5,7 +5,7 @@ import sentry_sdk
 
 DEBUG = False
 
-CELERY_IMPORTS = ("social.tasks", "dashboard.tasks")
+CELERY_IMPORTS = ("dashboard.tasks")
 
 
 # sentry_sdk.init(

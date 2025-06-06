@@ -81,9 +81,9 @@ class UserEmailRegisterForm(forms.ModelForm):
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
-        if password and len(password) < 7:
+        if password and len(password) < 8:  # Changed from 7 to 8 for consistency
             raise forms.ValidationError(
-                "The password must be at least %d characters long." % 7
+                "The password must be at least %d characters long." % 8
             )
         return password
 
@@ -159,9 +159,9 @@ class UserPassChangeForm(forms.Form):
 
     def clean_new_password(self):
         password = self.cleaned_data.get("new_password")
-        if password and len(password) < 7:
+        if password and len(password) < 8:  # Changed from 7 to 8 for consistency
             raise forms.ValidationError(
-                "The password must be at least %d characters long." % 7
+                "The password must be at least %d characters long." % 8
             )
         return password
 

@@ -615,6 +615,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     referer = models.TextField(null=True, blank=True)
     unsubscribe_reason = models.TextField(default="")
 
+    # Password reset fields
+    password_reset_token = models.CharField(max_length=100, null=True, blank=True)
+    password_reset_token_created = models.DateTimeField(null=True, blank=True)
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
