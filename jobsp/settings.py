@@ -18,9 +18,8 @@ PEEL_URL = os.getenv("PEEL_URL", "http://peeljobs.com/")
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
-CELERY_IMPORTS = ("social.tasks", "dashboard.tasks", "recruiter.tasks")
+CELERY_IMPORTS = ("dashboard.tasks")
 
-broker_api = os.getenv("BROKER_API", "http://guest:guest@localhost:15672/api/")
 
 # Enable debug logging
 

@@ -8,7 +8,7 @@ from pjob.views import (
     skill_location_walkin_jobs,
     register_using_email,
     login_user_email,
-    forgot_password,
+    # forgot_password,
     user_activation,
     user_reg_success,
     recruiter_profile,
@@ -27,7 +27,7 @@ from pjob.views import (
     jobposts_by_date,
     # week_calendar,
     job_locations,
-    set_password,
+    # set_password,
     job_skills,
     job_detail,
     # year_calendar,
@@ -72,11 +72,14 @@ from psite.views import (
 from pjob.views import index as job_list
 
 from django.contrib import admin
-from .views import login
+from .views import user_login, user_register, forgot_password, set_password
 
 
 urlpatterns = [
-    path("login/", login, name="login"),
+    path("login/", user_login, name="login"),
+    path("register/", user_register, name="register"),
+    path("forgot-password/", forgot_password, name="forgot_password"),
+    path("set-password/<int:user_id>/<str:passwd_reset_token>/", set_password, name="set_password"),
     url(
         r"^(?P<job_title_slug>[a-z0-9-.,*?]+)-(?P<job_id>([0-9])+)/$",
         job_detail,
@@ -179,12 +182,12 @@ urlpatterns = [
     url(r"^bounces/$", bounces),
     url(r"registration/using_email/$", register_using_email, name="register_email"),
     url(r"applicant/login/$", login_user_email, name="login_user"),
-    url(r"user/forgot_password/$", forgot_password, name="forgot_password"),
-    url(
-        r"^user/set_password/(?P<user_id>[0-9]+)/(?P<passwd>[a-zA-Z0-9]+)/$",
-        set_password,
-        name="set_password",
-    ),
+    # url(r"user/forgot_password/$", forgot_password, name="forgot_password"),
+    # url(
+    #     r"^user/set_password/(?P<user_id>[0-9]+)/(?P<passwd>[a-zA-Z0-9]+)/$",
+    #     set_password,
+    #     name="set_password",
+    # ),
     url(
         r"^user/activation/(?P<user_id>[a-zA-Z0-9]+)/$",
         user_activation,

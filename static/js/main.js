@@ -67,11 +67,8 @@ $(document).ready(function (e) {
 
     $('.jobseeker_login').click(function (e) {
         e.preventDefault();
-        // $('#demo').plainModal('open');
-        $('p.hint').remove();
-        $('#login_register').modal('show');
-        $.post('/jobs/applied_for/', {'job_id': $(this).attr('id')}, function (data) {
-        }, 'json')
+        // Redirect to login page instead of showing modal
+        window.location.href = '/login';
     })
 });
 
@@ -228,18 +225,8 @@ $('form#JobMailRegisterForm').submit(function(e){
     });
 $(".login_modal").click(function(e){
         e.preventDefault()
-        $("#login_register").modal('show')
-         $("#login_li").addClass('active')
-      $("#sign_up_li").removeClass('active')
-        $("#modal_head").hide()
-         $("#login_div").show()
-        $("#register_div").hide()
-        $('#user_register_type').val('login')
-        $('p.hint').remove();
-        $('#button_value').text('Login Here')
-        $('#userlogin_password').show()
-        $('#pop_up_header').text('Already a Member? Login')
-        $('#forgot_pass').show()
+        // Redirect to login page instead of showing modal
+        window.location.href = '/login';
     })
 
     $(".sign_up_li").click(function(){
@@ -256,17 +243,8 @@ $(".login_modal").click(function(e){
         }
       })
     $("#login_but").click(function(){
-        $("#login_register").modal('show')
-         $("#login_li").addClass('active')
-        $('#forgot_pass').show()
-        $("#modal_head").hide()
-         $("#login_div").show()
-        $("#register_div").hide()
-        $('#user_register_type').val('login')
-        $('p.hint').remove();
-        $('#button_value').text('Login Here')
-        $('#userlogin_password').show()
-        $('#pop_up_header').text('Already a Member? Login')
+        // Redirect to login page instead of showing modal
+        window.location.href = '/login';
     })
     $(".sign_in_li").click(function(){
       $("#login_li").addClass('active')
@@ -303,13 +281,8 @@ $(".login_modal").click(function(e){
     })
     $('.new_account').click(function(e){
         e.preventDefault();
-        $('#login_register').modal('show');
-        $("#modal_head").show()
-        $('p.hint').remove();
-        $('#login_div').hide()
-        $('#register_div').show()
-        $('#ApplicantFormRegister').get(0).reset()
-
+        // Redirect to register page instead of showing modal
+        window.location.href = '/register';
       });
       $('.new_user_login').click(function(e){
         e.preventDefault();
@@ -338,13 +311,8 @@ $(".login_modal").click(function(e){
 
       $('.left_new_account').click(function(e){
         e.preventDefault();
-        $('#login_register').modal('show');
-        $("#modal_head").show()
-        $("#login_div").hide()
-        $("#register_div").show()
-        $('#pop_up_header').text('New User? Register Now')
-        $('p.hint').remove();
-        $('#button_value').text('Register Now')
+        // Redirect to register page instead of showing modal
+        window.location.href = '/register';
       });
       $('.left_new_user_login').click(function(e){
         e.preventDefault();

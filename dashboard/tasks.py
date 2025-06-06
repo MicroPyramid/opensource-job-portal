@@ -34,11 +34,45 @@ from peeldb.models import (
 
 @app.task
 def send_email(mto, msubject, mbody):
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    
     if not isinstance(mto, list):
         mto = [mto]
+    
+    # Log email details for debugging
+    logger.info(f"Sending email to: {mto}")
+    logger.info(f"Subject: {msubject}")
+    logger.info(f"Email backend: {settings.EMAIL_BACKEND}")
+    
+    # Check if we're in development mode and should log to console
+    if (settings.DEBUG or 
+        settings.EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend" or
+        getattr(settings, 'ENV_TYPE', None) == 'DEV'):
+        
+        # Print email to console for development
+        print("=" * 80)
+        print("EMAIL SENT VIA CELERY")
+        print("=" * 80)
+        print(f"To: {', '.join(mto)}")
+        print(f"From: {settings.DEFAULT_FROM_EMAIL}")
+        print(f"Subject: {msubject}")
+        print("-" * 80)
+        print("Body:")
+        print(mbody)
+        print("=" * 80)
+    
     msg = EmailMessage(msubject, mbody, settings.DEFAULT_FROM_EMAIL, mto)
     msg.content_subtype = "html"
-    msg.send()
+    
+    try:
+        result = msg.send()
+        logger.info(f"Email sent successfully. Result: {result}")
+        return result
+    except Exception as e:
+        logger.error(f"Failed to send email: {str(e)}")
+        raise
 
 
 @app.task

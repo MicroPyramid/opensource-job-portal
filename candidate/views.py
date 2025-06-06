@@ -137,9 +137,6 @@ def applicant_email_unsubscribing(request, email_type, message_id):
             user.unsubscribe_code = ""
             user.unsubscribe_reason = request.POST.get("reason")
             user.save()
-            if email_type == "user":
-                user = authenticate(username=user.username)
-                login(request, user)
             return HttpResponse(json.dumps({"error": False}))
         elif not user:
             return HttpResponse(

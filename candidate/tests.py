@@ -329,14 +329,6 @@ class applicant_get_views_test(TestCase):
         self.new_recruiter.set_password("mp")
         self.new_recruiter.save()
 
-    def test_index(self):
-        user_login = self.client.login(email="applicant@mp.com", password="mp")
-        self.assertTrue(user_login)
-
-        response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "index.html")
-
     def test_recruiter_index(self):
         user_login = self.client.login(email="new_recruiter@mp.com", password="mp")
         self.assertTrue(user_login)

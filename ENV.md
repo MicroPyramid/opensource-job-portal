@@ -15,7 +15,6 @@ CACHE_BACKEND = "memcached://127.0.0.1:11211/"
 
 ## Celery keys
 
-BROKER_API="http://guest:guest@localhost:15672/api/"
 CELERY_BROKER_URL='redis://localhost:6379/1'
 
 ## Google authentication keys
@@ -35,27 +34,12 @@ DB_PASSWORD='root'
 DB_HOST='127.0.0.1'
 DB_PORT='5432'
 
-## Stack Overflow keys
-
-SOFAPPID="7099"
-SOFAPPSECRET=""
-SOFAPPKEY=""
 
 ## Github keys
 
 GITAPPID=""
 GITAPPSECRET=""
 
-## Twitter keys
-
-twoauthtokensecret=''
-twoauthtoken=''
-TWAPPKEY=""
-TWAPPSECRET=""
-OAUTHTOKEN=''
-OAUTHSECRET=''
-PJTWAPPKEY=""
-PJTWAPPSECRET=""
 
 ## Facebook Integration keys
 

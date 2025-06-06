@@ -2837,100 +2837,100 @@ def login_user_email(request):
     return HttpResponseRedirect("/")
 
 
-def set_password(request, user_id, passwd):
-    user = User.objects.filter(id=user_id)
-    if request.method == "POST":
-        validate_changepassword = UserPassChangeForm(request.POST)
-        if validate_changepassword.is_valid():
-            if request.POST["new_password"] != request.POST["retype_password"]:
-                return HttpResponse(
-                    json.dumps(
-                        {
-                            "error": True,
-                            "response_message": "Password and Confirm Password did not match",
-                        }
-                    )
-                )
-            user = user[0]
-            user.set_password(request.POST["new_password"])
-            user.save()
-            # usr = authenticate(
-            #     username=user.email, password=request.POST["new_password"]
-            # )
-            # if usr:
-            #     usr.last_login = datetime.now()
-            #     usr.save()
-            #     login(request, usr)
-            if user.user_type == "JS":
-                url = "/"
-            else:
-                url = reverse("recruiter:new_user")
-            return HttpResponse(
-                json.dumps(
-                    {
-                        "error": False,
-                        "message": "Password changed successfully",
-                        "url": url,
-                    }
-                )
-            )
-        else:
-            return HttpResponse(
-                json.dumps({"error": True, "response": validate_changepassword.errors})
-            )
-    if user:
-        usr = authenticate(username=user[0], password=passwd)
-        if usr:
-            return render(request, "set_password.html")
-    template = "404.html"
-    return render(
-        request,
-        template,
-        {"message": "Not Found", "reason": "URL may Expired"},
-        status=404,
-    )
+# def set_password(request, user_id, passwd):
+#     user = User.objects.filter(id=user_id)
+#     if request.method == "POST":
+#         validate_changepassword = UserPassChangeForm(request.POST)
+#         if validate_changepassword.is_valid():
+#             if request.POST["new_password"] != request.POST["retype_password"]:
+#                 return HttpResponse(
+#                     json.dumps(
+#                         {
+#                             "error": True,
+#                             "response_message": "Password and Confirm Password did not match",
+#                         }
+#                     )
+#                 )
+#             user = user[0]
+#             user.set_password(request.POST["new_password"])
+#             user.save()
+#             # usr = authenticate(
+#             #     username=user.email, password=request.POST["new_password"]
+#             # )
+#             # if usr:
+#             #     usr.last_login = datetime.now()
+#             #     usr.save()
+#             #     login(request, usr)
+#             if user.user_type == "JS":
+#                 url = "/"
+#             else:
+#                 url = reverse("recruiter:new_user")
+#             return HttpResponse(
+#                 json.dumps(
+#                     {
+#                         "error": False,
+#                         "message": "Password changed successfully",
+#                         "url": url,
+#                     }
+#                 )
+#             )
+#         else:
+#             return HttpResponse(
+#                 json.dumps({"error": True, "response": validate_changepassword.errors})
+#             )
+#     if user:
+#         usr = authenticate(username=user[0], password=passwd)
+#         if usr:
+#             return render(request, "set_password.html")
+#     template = "404.html"
+#     return render(
+#         request,
+#         template,
+#         {"message": "Not Found", "reason": "URL may Expired"},
+#         status=404,
+#     )
 
 
-def forgot_password(request):
-    form_valid = ForgotPassForm(request.POST)
-    if form_valid.is_valid():
-        user = User.objects.filter(email=request.POST.get("email")).first()
-        if user and (user.is_recruiter or user.is_agency_admin):
-            data = {
-                "error": True,
-                "response_message": "User Already registered as a Recruiter",
-            }
-            return HttpResponse(json.dumps(data))
-        if user:
-            new_pass = get_random_string(length=10).lower()
-            user.set_password(new_pass)
-            user.save()
-            temp = loader.get_template("email/subscription_success.html")
-            subject = "Password Reset - PeelJobs"
-            mto = request.POST.get("email")
-            url = (
-                request.scheme
-                + "://"
-                + request.META["HTTP_HOST"]
-                + "/user/set_password/"
-                + str(user.id)
-                + "/"
-                + str(new_pass)
-                + "/"
-            )
-            c = {"randpwd": new_pass, "user": user, "redirect_url": url}
-            rendered = temp.render(c)
-            user_active = True if user.is_active else False
-            send_email.delay(mto, subject, rendered)
-            data = {"error": False, "response": "Success", "redirect_url": "/"}
-        else:
-            data = {
-                "error": True,
-                "response_message": "User doesn't exist with this Email",
-            }
-        return HttpResponse(json.dumps(data))
-    data = {"error": True, "response": form_valid.errors}
-    return HttpResponse(json.dumps(data))
+# def forgot_password(request):
+#     form_valid = ForgotPassForm(request.POST)
+#     if form_valid.is_valid():
+#         user = User.objects.filter(email=request.POST.get("email")).first()
+#         if user and (user.is_recruiter or user.is_agency_admin):
+#             data = {
+#                 "error": True,
+#                 "response_message": "User Already registered as a Recruiter",
+#             }
+#             return HttpResponse(json.dumps(data))
+#         if user:
+#             new_pass = get_random_string(length=10).lower()
+#             user.set_password(new_pass)
+#             user.save()
+#             temp = loader.get_template("email/subscription_success.html")
+#             subject = "Password Reset - PeelJobs"
+#             mto = request.POST.get("email")
+#             url = (
+#                 request.scheme
+#                 + "://"
+#                 + request.META["HTTP_HOST"]
+#                 + "/user/set_password/"
+#                 + str(user.id)
+#                 + "/"
+#                 + str(new_pass)
+#                 + "/"
+#             )
+#             c = {"randpwd": new_pass, "user": user, "redirect_url": url}
+#             rendered = temp.render(c)
+#             user_active = True if user.is_active else False
+#             send_email.delay(mto, subject, rendered)
+#             data = {"error": False, "response": "Success", "redirect_url": "/"}
+#         else:
+#             data = {
+#                 "error": True,
+#                 "response_message": "User doesn't exist with this Email",
+#             }
+#         return HttpResponse(json.dumps(data))
+#     data = {"error": True, "response": form_valid.errors}
+#     return HttpResponse(json.dumps(data))
 
 
 @jobseeker_login_required

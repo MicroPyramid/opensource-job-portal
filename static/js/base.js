@@ -76,7 +76,8 @@ $(".send_mail").click(function (e) {
   }
   else {
     if (!logged) {
-      $('#login_register').modal('show');
+      // Redirect to login page instead of showing modal
+      window.location.href = '/login';
     }
     else if (!verified) {
       open_dialog('You need to verify your Email to apply For this Job', 'Info!')
@@ -91,27 +92,16 @@ $(".customGPlusSignIn").click(function (e) {
 })
 $('.job_apply_login').click(function (e) {
   e.preventDefault();
-  // $('#demo').plainModal('open');
+  // Redirect to login page instead of showing modal
   applying_for_job = true
   job_id = $(this).attr('id')
   job_apply_url = $(this).attr('data-href');
-  $('p.hint').remove();
-  $("#login_div").show()
-  $("#register_div").hide()
-  $('#login_register').modal('show');
-  $.post('/jobs/applied_for/', { 'job_id': $(this).attr('id') }, function (data) {
-  }, 'json')
+  window.location.href = '/login';
 })
 $('.job_apply_register').click(function (e) {
   e.preventDefault();
-  // $('#demo').plainModal('open');
-  $('p.hint').remove();
-  $("#login_div").hide()
-  $("#register_div").show()
-  $("#modal_head").show()
-  $('#login_register').modal('show');
-  $.post('/jobs/applied_for/', { 'job_id': $(this).attr('id') }, function (data) {
-  }, 'json')
+  // Redirect to register page instead of showing modal
+  window.location.href = '/register';
 })
 jQuery(document).ready(function ($) {
   // browser window scroll (in pixels) after which the "back to top" link is shown
@@ -1032,7 +1022,7 @@ $('body').on("click", ".refine_search", function (e) {
     window.location = '/Fresher-jobs/'
     return
   }
-  $('#login_register').block();
+  // Remove block call as modal no longer exists
   $('#refine-search').submit();
 });
 $('.skip').click(function (e) {
@@ -1071,7 +1061,8 @@ $('span.apply_job').click(function (e) {
   $.post('/jobs/applied_for/', { 'job_id': $(this).attr('id') }, function (data) {
     if (data.error) {
     } else {
-      $('#login_register').modal('show');
+      // Redirect to login page instead of showing modal
+      window.location.href = '/login';
     }
   }, 'json')
 });
@@ -1248,5 +1239,5 @@ $(".form_cancel").click(function (e) {
 });
 
 $(".form_submit").on("click", function () {
-  $('#login_register').scrollTop(0);
+  // Remove scrollTop call as modal no longer exists
 });
