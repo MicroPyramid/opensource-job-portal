@@ -2,8 +2,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from datetime import datetime
-import json
-import urllib
 import boto3
 import requests
 import os
@@ -12,22 +10,17 @@ from django.template import loader
 from django.shortcuts import render
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
-from django.template.defaultfilters import slugify
 from peeldb.models import (
     User,
     Google,
     Facebook,
     UserEmail,
     GitHub,
-    Linkedin,
     JobPost,
     AppliedJobs,
-    Industry,
-    EmploymentHistory,
 )
 from mpcomp.facebook import GraphAPI, get_access_token_from_code
 
@@ -117,7 +110,6 @@ def facebook_login(request):
                     "message": "Sorry, Your session has been expired",
                     "reason": "Please kindly try again login to update your profile",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
                 status=404,
             )
@@ -194,7 +186,6 @@ def facebook_login(request):
                     "message": "Sorry, We didnt find your email id through facebook",
                     "reason": "Please verify your email id in facebook and try again",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
                 status=404,
             )
@@ -257,7 +248,6 @@ def google_login(request):
                     "message": "Sorry, Your session has been expired",
                     "reason": "Please kindly try again to update your profile",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
                 status=404,
             )
@@ -411,7 +401,6 @@ def github_login(request):
                     "message": "Sorry, Your session has been expired",
                     "reason": "Please kindly try again to update your profile",
                     "email": settings.DEFAULT_FROM_EMAIL,
-                    "number": settings.CONTACT_NUMBER,
                 },
                 status=404,
             )
@@ -554,321 +543,6 @@ def github_login(request):
             + request.META["HTTP_HOST"]
             + reverse("social:github_login")
             + "&scope=read:user user:email&state=dia123456789ramya"
-        )
-        return HttpResponseRedirect(rty)
-
-
-# def linkedin(request):
-#     rty = "https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id="+LN_API_KEY
-#     rty += "&scope=r_fullprofile r_emailaddress r_network r_contactinfo w_messages rw_nus rw_groups&state=fdgyt5hj4fg54jhlt8a"
-#     rty += "&redirect_uri="+LN_REDIRECT_URI
-#     return HttpResponseRedirect(rty)
-
-
-def linkedin_login(request):
-    if "code" in request.GET:
-        params = {}
-        params["grant_type"] = "authorization_code"
-        params["code"] = request.GET.get("code")
-        params["redirect_uri"] = (
-            request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("social:linkedin_login")
-        )
-        params["client_id"] = settings.LN_API_KEY
-        params["client_secret"] = settings.LN_SECRET_KEY
-        from urllib.request import urlopen
-
-        args = {
-            "grant_type": "authorization_code",
-            "code": request.GET.get("code"),
-            "redirect_uri": request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("social:linkedin_login"),
-            "client_id": settings.LN_API_KEY,
-            "client_secret": settings.LN_SECRET_KEY,
-        }
-        response = requests.get(
-            "https://www.linkedin.com/uas/oauth2/accessToken?"
-            + urllib.parse.urlencode(args)
-        ).json()
-        if not response.get("access_token"):
-            return render(
-                request,
-                "404.html",
-                {
-                    "message": "Sorry, Your session has been expired",
-                    "reason": "Please kindly try again to update your profile",
-                },
-                status=404,
-            )
-        accesstoken = response["access_token"]
-        required_info = "id,first-name,last-name,email-address,location,positions,educations,industry,summary,public-profile-url,picture-urls::(original)"
-        rty = (
-            "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))&oauth2_access_token="
-            + accesstoken
-        )
-
-        details = urlopen(rty).read().decode("utf-8")
-        details = json.loads(details)
-        email_address = details["elements"][0]["handle~"]["emailAddress"]
-
-        profile_rty = (
-            "https://api.linkedin.com/v2/me?oauth2_access_token=" + accesstoken
-        )
-        profile_rty = urlopen(profile_rty).read().decode("utf-8")
-        profile_rty = json.loads(profile_rty)
-        if not email_address:
-            return render(
-                request,
-                "404.html",
-                {
-                    "message": "Sorry, Your session has been expired",
-                    "reason": "Please kindly try again to update your profile",
-                },
-                status=404,
-            )
-        email_matches = UserEmail.objects.filter(email__iexact=email_address)
-        employment = details.get("positions")
-        if "positions" in details.keys():
-            if details["positions"]["_total"] == 0:
-                positions = 0
-            else:
-                positions = details["positions"]["values"]
-        else:
-            positions = 0
-        profile_pic = ""
-        if "pictureUrls" in details:
-            pictureurl = details["pictureUrls"]
-            if pictureurl["_total"] != 0:
-                for i in pictureurl["values"]:
-                    profile_pic = i
-        if email_matches:
-            user = email_matches[0].user
-            if user.is_recruiter or user.is_agency_recruiter:
-                login(request, user)
-                return HttpResponseRedirect(reverse("recruiter:index"))
-            # Email associated with the user but Linkedin is not connected
-            if not user.is_ln_connected:
-                # TODO need to add education, industry details of user
-                Linkedin.objects.create(
-                    user=user,
-                    linkedin_id=profile_rty.get("id", ""),
-                    linkedin_url=details.get("publicProfileUrl", ""),
-                    first_name=profile_rty["firstName"]["localized"]["en_US"],
-                    last_name=profile_rty["lastName"]["localized"]["en_US"],
-                    workhistory=positions,
-                    email=email_address,
-                    accesstoken=accesstoken,
-                )
-            user = authenticate(username=user.username)
-        else:
-            user = User.objects.filter(email__iexact=email_address).first()
-            if user:
-                user.first_name = details.get("firstName", "")
-                user.last_name = details.get("lastName", "")
-                user.photo = profile_pic
-                user.profile_updated = datetime.now(timezone.utc)
-                user.is_active = True
-                user.save()
-            else:
-                user = User.objects.create(
-                    username=email_address,
-                    email=email_address,
-                    first_name=details.get("firstName", ""),
-                    last_name=details.get("lastName", ""),
-                    photo=profile_pic,
-                    user_type="JS",
-                    profile_updated=datetime.now(timezone.utc),
-                    is_active=True,
-                    registered_from="Social",
-                )
-            if details.get("summery"):
-                user.profile_description = details.get("summery")
-            if employment and details["positions"]["_total"] != 0:
-                for i in employment["values"]:
-                    if i.get("company"):
-                        exp = EmploymentHistory.objects.create(
-                            company=i["company"].get("name", ""),
-                            designation=i["title"],
-                            current_job=i["isCurrent"],
-                        )
-                        if i.get("startDate"):
-                            fromd = (
-                                str(i["startDate"]["year"])
-                                + "-"
-                                + str(i["startDate"]["month"])
-                                + "-01"
-                            )
-                            exp.from_date = fromd
-                            exp.save()
-                        user.employment_history.add(exp)
-            if details.get("industry"):
-                industry = Industry.objects.filter(name__iexact=details.get("industry"))
-                if industry:
-                    user.industry.add(industry[0])
-                else:
-                    industry = Industry.objects.create(
-                        name=details.get("industry"),
-                        status="InActive",
-                        slug=slugify(details.get("industry")),
-                    )
-                    user.industry.add(industry)
-            user.save()
-            Linkedin.objects.create(
-                user=user,
-                linkedin_id=details.get("id", ""),
-                linkedin_url=details.get("publicProfileUrl", ""),
-                first_name=details.get("firstName", ""),
-                last_name=details.get("lastName", ""),
-                workhistory=positions,
-                email=details.get("emailAddress", ""),
-                accesstoken=accesstoken,
-            )
-
-            UserEmail.objects.create(
-                user=user, email=details.get("emailAddress", ""), is_primary=True
-            )
-
-            login(request, user)
-            user.is_bounce = False
-            user.last_login = datetime.now()
-            user.referer = request.session.get("referer", "")
-            user.save()
-            login(request, user)
-            return HttpResponseRedirect("/social/user/update/")
-
-        user.is_bounce = False
-
-        user.last_login = datetime.now()
-        user.save()
-
-        login(request, user)
-
-        # TODO need to store User groups and frnds in the database
-
-        # lninfo(id_value,details,location,edu,positions,industry,accesstoken,pictureurl,"login")
-        # lngroups(id_value,details['id'],accesstoken)
-        # lnfrnds(id_value,details['id'],accesstoken)
-
-        # if request.is_mobile == "mobile":
-        #     return HttpResponseRedirect("/jobs/")
-
-        if request.session.get("job_id"):
-            log_apply = login_and_apply(request)
-            if log_apply:
-                return HttpResponseRedirect(
-                    log_apply[0].slug + "?job_apply=" + log_apply[1]
-                )
-        if user.profile_completion_percentage < 50:
-            return HttpResponseRedirect(reverse("my:profile"))
-        return HttpResponseRedirect("/")
-    else:
-        rty = (
-            "https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id="
-            + settings.LN_API_KEY
-        )
-        rty += (
-            "&scope=r_liteprofile r_emailaddress w_member_social&state=8897239179ramya"
-        )
-        rty += (
-            "&redirect_uri="
-            + request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("social:linkedin_login")
-        )
-        return HttpResponseRedirect(rty)
-
-
-@login_required
-def linkedin_connect(request):
-    if "code" in request.GET:
-        params = {}
-        params["grant_type"] = "authorization_code"
-        params["code"] = request.GET.get("code")
-        params["redirect_uri"] = (
-            request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("social:linkedin_connect")
-        )
-        params["client_id"] = settings.LN_API_KEY
-        params["client_secret"] = settings.LN_SECRET_KEY
-        # params = urllib.urlencode(params)
-        # params = params.encode('utf-8')
-        # import urllib.request as ur
-        # info = ur.urlopen("https://www.linkedin.com/uas/oauth2/accessToken", params)
-        params = urllib.parse.urlencode(params)
-        params = params.encode("utf-8")
-        import urllib.request as ur
-
-        info = ur.urlopen("https://www.linkedin.com/uas/oauth2/accessToken", params)
-        accesstoken = json.loads(info.readline().decode("utf8"))["access_token"]
-
-        rty = "https://api.linkedin.com/v2/me:"
-        rty += "(id,first-name,last-name,email-address,location,positions,educations,industry,public-profile-url,picture-urls::(original))"
-        rty += "?format=json&oauth2_access_token=" + accesstoken
-        details = ur.urlopen(rty).read().decode("utf8")
-        details = json.loads(details)
-        email_matches = UserEmail.objects.filter(email__iexact=details["emailAddress"])
-
-        if "positions" in details.keys():
-            if details["positions"]["_total"] == 0:
-                positions = 0
-            else:
-                positions = details["positions"]["values"]
-        else:
-            positions = 0
-        # purl = ""
-        # if 'pictureUrls' in details:
-        #     pictureurl = details['pictureUrls']
-        #     if pictureurl['_total'] != 0:
-        #             for i in pictureurl['values']:
-        #                 purl = i
-        if request.user.is_authenticated:
-            # TODO need to add education, industry details of user
-            Linkedin.objects.create(
-                user=request.user,
-                linkedin_id=details.get("id", ""),
-                linkedin_url=details.get("publicProfileUrl", ""),
-                first_name=details.get("firstName", ""),
-                last_name=details.get("lastName", ""),
-                location=details["location"]["name"],
-                workhistory=positions,
-                email=details.get("emailAddress", ""),
-                accesstoken=accesstoken,
-            )
-
-        email_matches = UserEmail.objects.filter(
-            user=request.user, email=details.get("emailAddress", "")
-        )
-        if not email_matches:
-            UserEmail.objects.create(
-                user=request.user, email=details.get("emailAddress", "")
-            )
-
-        # TODO need to store User groups and frnds in the database
-
-        # lninfo(id_value,details,location,edu,positions,industry,accesstoken,pictureurl,"login")
-        # lngroups(id_value,details['id'],accesstoken)
-        # lnfrnds(id_value,details['id'],accesstoken)
-
-        return HttpResponseRedirect(reverse("my:profile"))
-    else:
-        rty = (
-            "https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id="
-            + settings.LN_API_KEY
-        )
-        rty += "&scope=r_liteprofile r_emailaddress rw_company_admin w_member_social&state=8897239179ramya"
-        rty += (
-            "&redirect_uri="
-            + request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("social:linkedin_connect")
         )
         return HttpResponseRedirect(rty)
 

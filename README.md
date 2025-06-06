@@ -33,7 +33,6 @@ https://opensource-job-portal.readthedocs.io/en/latest/
 **For Recruiters**  
 - Register via email/password **or** Google OAuth  
 - Post, copy, deactivate, and manage job listings  
-- Share jobs to Facebook, Twitter, and LinkedIn  
 - Add “Walk-in” events with location via Google Maps integration  
 
 **For Job Seekers / Portal Users**  
@@ -193,6 +192,24 @@ For background job processing and periodic tasks, you need to run Celery alongsi
    celery -A jobsp flower
    # Access at http://localhost:5555
    ```
+
+
+## Development Workflow
+
+### 1. Start Development Server
+```bash
+# Terminal 1: Start Django
+python manage.py runserver
+
+# Terminal 2: Watch Tailwind changes
+npm run watch-css
+```
+
+### 2. Build for Production
+```bash
+npm run build
+python manage.py collectstatic
+```
 
 **Development workflow:**
 - Terminal 1: `python manage.py runserver`

@@ -151,9 +151,6 @@
       <span class='button fb linked' panelid='fb_friends'><i class="fa fa-facebook"></i>Friends</span>
       <span class='button fb' panelid='fb_pages'><i class="fa fa-facebook"></i>Pages</span>
       <span class='button fb' panelid='fb_groups'><i class="fa fa-facebook"></i>Groups</span>
-      <span class='button twit linked' panelid='twit_friends'><i class="fa fa-twitter"></i>Friends</span>
-      <span class='button twit' panelid='twit_pages'><i class="fa fa-twitter"></i>Followers</span>
-      <!-- <span class='button linked' panelid='gplus_friends'><i class="fa fa-google-plus"></i>Friends</span> -->
       <span class='button linked job_posts' panelid='job_posts'><i class="fa fa-building"></i>JobPosts</span>
       {% if recruiter.get_active_jobposts_count >= 100 %}
         <span class='button gplus linked' panelid='bank_details'><i class="icon-money"></i>Payment Details</span>
@@ -264,54 +261,6 @@
       {% endif %}
       </div>
       <!--/Agency Recruiter ends -->
-    
-      <!-- twit friends  -->
-      <div class="tab_content" id='twit_friends'>
-      {% if  recruiter.get_user_twitter_friends%}
-      {% for friend in recruiter.get_user_twitter_friends %}
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>First Name</label>
-              <span class="description">
-              <a href="{{ friend.screen_name }}" class="tw_friends"><span>{{ friend.screen_name }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        {% endfor %}
-        {% else %}
-          User not connected to Twitter
-        {% endif %}
-
-      </div>
-      <!--/ twit friends -->
-
-      <!-- twit pages  -->
-      <div class="tab_content" id='twit_pages'>
-      {% if recruiter.get_user_twitter_followers %}
-      {% for follower in recruiter.get_user_twitter_followers %}
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>First Name</label>
-              <span class="description">
-              <a href="{{ follower.screen_name }}" class="tw_friends"><span>{{ follower.screen_name }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        {% endfor %}
-        {% else %}
-          User not connected to Twitter
-        {% endif %}
-
-      </div>
-      <!--/ twit pages -->
 
       {% if recruiter.get_active_jobposts_count >= 100 %}
       <div class="tab_content"  id='bank_details'>

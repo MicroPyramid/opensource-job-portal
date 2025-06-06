@@ -1,0 +1,459 @@
+{% extends "base_with_tailwind.html" %}
+
+{% block title %}Login - PeelJobs{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-violet-50 via-sky-50 to-cyan-50 flex items-center justify-center p-2 relative overflow-hidden">
+    <!-- Background Elements -->
+    <div class="absolute inset-0">
+        <!-- Gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-blue-600/5 to-cyan-600/5"></div>
+        <!-- Geometric shapes -->
+        <div class="absolute top-20 left-20 w-24 h-24 bg-gradient-to-br from-violet-400/20 to-purple-600/20 rounded-full blur-2xl"></div>
+        <div class="absolute top-32 right-24 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-cyan-600/20 rounded-full blur-xl"></div>
+        <div class="absolute bottom-24 left-32 w-28 h-28 bg-gradient-to-br from-indigo-400/15 to-blue-600/15 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-16 right-16 w-20 h-20 bg-gradient-to-br from-cyan-400/20 to-teal-600/20 rounded-full blur-2xl"></div>
+        <!-- Grid pattern using Tailwind -->
+        <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 32px 32px;"></div>
+    </div>
+    
+    <div class="w-full max-w-md relative z-10">
+        <!-- Main Card Container -->
+        <div class="bg-white/95 backdrop-blur-2xl rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 px-6 py-6 relative overflow-hidden">
+                <!-- Background elements in header -->
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-cyan-600/20"></div>
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="absolute top-2 right-4 w-8 h-8 bg-white/10 rounded-full blur-lg"></div>
+                    <div class="absolute bottom-2 left-4 w-6 h-6 bg-white/5 rounded-full blur-md"></div>
+                </div>
+                
+                <div class="text-center relative z-10">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center justify-center mb-4">
+                        <span class="text-2xl font-bold text-white tracking-tight bg-gradient-to-r from-white to-blue-100 bg-clip-text">PeelJobs</span>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-blue-100/90 text-sm opacity-95 font-medium">Access your career dashboard</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Content -->
+            <div class="p-6 bg-gradient-to-b from-white/95 to-gray-50/95">
+                <!-- Tab Navigation -->
+                <div class="flex mb-6 bg-gray-100/80 rounded-xl p-1 backdrop-blur-sm">
+                    <button class="flex-1 text-center bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-lg py-2.5 px-3 group" 
+                            id="login-tab" type="button">
+                        <i data-lucide="log-in" class="w-4 h-4 inline mr-1.5"></i>
+                        <span class="text-sm font-semibold">Sign In</span>
+                    </button>
+                    <button class="flex-1 text-center bg-transparent text-gray-600 font-medium rounded-lg py-2.5 px-3 group" 
+                            id="register-tab" type="button">
+                        <i data-lucide="user-plus" class="w-4 h-4 inline mr-1.5"></i>
+                        <span class="text-sm font-semibold">Sign Up</span>
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <div class="block" id="login-pane">
+                    <form id="ApplicantForm" name="ApplicantForm" class="space-y-4" method="POST">
+                        {% csrf_token %}
+                        
+                        <div id="login-messages" class="hidden rounded-lg p-2 border-l-4"></div>
+                        
+                        <!-- Email Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Email Address</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+                                </div>
+                                <input type="email" 
+                                       class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                       id="userlogin_email" 
+                                       placeholder="Enter your email address" 
+                                       name="email" 
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <!-- Password Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Password</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
+                                </div>
+                                <input type="password" 
+                                       class="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                       id="userlogin_password" 
+                                       placeholder="Enter your password" 
+                                       name="password" 
+                                       required>
+                                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center z-10" id="toggle-password">
+                                    <i data-lucide="eye" class="w-4 h-4 text-gray-400" id="password-eye-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Options Row -->
+                        <div class="flex justify-between items-center">
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" id="remember_me" name="remember_me" 
+                                       class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-1 mr-2">
+                                <span class="text-sm text-gray-600 font-medium">Remember me</span>
+                            </label>
+                            <a href="#" class="text-blue-600 font-semibold text-sm" id="forgot-password-link">
+                                Forgot password?
+                            </a>
+                        </div>
+                        
+                        <input type="hidden" name="register_type" id="user_register_type" value="login">
+                        <input type="hidden" name="next" value="">
+                        
+                        <!-- Login Button -->
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group" id="login-button">
+                            <span class="button-text flex items-center justify-center relative z-10">
+                                <i data-lucide="log-in" class="w-4 h-4 mr-2"></i>
+                                Sign In to Your Account
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <!-- Social Login Section -->
+                    <div class="relative my-4">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-4 bg-gradient-to-r from-gray-50 to-white text-gray-600 font-medium">Or continue with</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <a href="/social/google_login/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-gray-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 group">
+                                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
+                                    <path fill="#ea4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"/>
+                                    <path fill="#34a853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z"/>
+                                    <path fill="#4285f4" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z"/>
+                                    <path fill="#fbbc05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"/>
+                                </svg>
+                                <span class="group-hover:text-gray-800 transition-colors duration-200">Google</span>
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <a href="/social/facebook_login/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-700/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 group">
+                                <i data-lucide="facebook" class="w-4 h-4 mr-2 text-blue-700 group-hover:scale-110 transition-transform duration-200"></i>
+                                <span class="group-hover:text-blue-800 transition-colors duration-200">Facebook</span>
+                            </a>
+                            <a href="/social/github/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-gray-800 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-800/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 group">
+                                <i data-lucide="github" class="w-4 h-4 mr-2 text-gray-800 group-hover:scale-110 transition-transform duration-200"></i>
+                                <span class="group-hover:text-gray-900 transition-colors duration-200">GitHub</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Register Form -->
+                <div class="hidden" id="register-pane">
+                    <form id="ApplicantFormRegister" name="ApplicantFormRegister" class="space-y-4" method="POST">
+                        {% csrf_token %}
+                        
+                        <div id="register-messages" class="hidden rounded-lg p-2 border-l-4"></div>
+                        
+                        <!-- Email Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Email Address</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+                                </div>
+                                <input type="email" 
+                                       class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                       id="user_register_email" 
+                                       placeholder="Enter your email address" 
+                                       name="email" 
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <!-- Password Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Password</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
+                                </div>
+                                <input type="password" 
+                                       class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                       id="user_register_password" 
+                                       placeholder="Password (min. 7 characters)" 
+                                       name="password" 
+                                       required 
+                                       minlength="7">
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile Input -->
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Mobile Number</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                    <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                                </div>
+                                <input type="tel" 
+                                       class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                       id="user_register_mobile" 
+                                       placeholder="Enter your mobile number" 
+                                       name="mobile" 
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="register_from" id="register_from" value="Email">
+                        <input type="hidden" name="register_type" value="register">
+                        
+                        <!-- Register Button -->
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group" id="register-button">
+                            <span class="button-text flex items-center justify-center relative z-10">
+                                <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
+                                Create Your Account
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <!-- Social Register Section -->
+                    <div class="relative my-4">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-3 bg-white text-gray-500 font-medium">Or sign up with</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="/social/google_login/" class="flex items-center justify-center px-2 py-1.5 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-xs font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-gray-300 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 sm:px-3 sm:py-2 sm:text-sm">
+                                <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
+                                    <path fill="#ea4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"/>
+                                    <path fill="#34a853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z"/>
+                                    <path fill="#4285f4" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z"/>
+                                    <path fill="#fbbc05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"/>
+                                </svg>
+                                Google
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="/social/facebook_login/" class="flex items-center justify-center px-2 py-1.5 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-xs font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-blue-700 hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-700/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 sm:px-3 sm:py-2 sm:text-sm">
+                                <i data-lucide="facebook" class="w-4 h-4 mr-2 text-blue-700"></i>
+                                Facebook
+                            </a>
+                            <a href="/social/github/" class="flex items-center justify-center px-2 py-1.5 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-xs font-medium backdrop-blur-sm hover:bg-gray-50 hover:border-gray-800 hover:-translate-y-0.5 hover:shadow-md hover:shadow-gray-800/25 focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all duration-300 sm:px-3 sm:py-2 sm:text-sm">
+                                <i data-lucide="github" class="w-4 h-4 mr-2 text-gray-800"></i>
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Auth Switch -->
+                <div class="text-center mt-4 pt-3 border-t border-gray-200">
+                    <span id="auth-switch-text" class="text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="#" id="auth-switch-link" class="text-blue-600 font-semibold">Create one</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-6">
+            <div class="inline-flex items-center justify-center space-x-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-white/50">
+                <i data-lucide="heart" class="w-3 h-3 text-blue-600"></i>
+                <p class="text-gray-600 text-xs font-medium">
+                    © 2025 PeelJobs. Building careers, one opportunity at a time.
+                </p>
+            </div>
+            <div class="mt-3 flex justify-center space-x-4 text-xs text-gray-500">
+                <a href="/page/privacy-policy/" class="text-gray-500">Privacy Policy</a>
+                <a href="/page/terms-conditions/" class="text-gray-500">Terms of Service</a>
+                <a href="/contact/" class="text-gray-500">Help & Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Minimal CSS for grid pattern only -->
+<style>
+/* Only keep what Tailwind cannot handle natively */
+.bg-grid-pattern {
+    background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+    
+    // Tab switching
+    function showLoginTab() {
+        const $loginTab = $('#login-tab');
+        const $registerTab = $('#register-tab');
+        const $loginPane = $('#login-pane');
+        const $registerPane = $('#register-pane');
+        
+        // Update tab styles
+        $loginTab.removeClass('bg-transparent text-gray-600').addClass('bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg');
+        $registerTab.removeClass('bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg').addClass('bg-transparent text-gray-600');
+        
+        // Switch content
+        $registerPane.hide();
+        $loginPane.show();
+        
+        // Update switch text
+        $('#auth-switch-text').html('Don\'t have an account? <a href="#" id="auth-switch-link" class="text-blue-600 font-semibold">Create one</a>');
+    }
+    
+    function showRegisterTab() {
+        const $loginTab = $('#login-tab');
+        const $registerTab = $('#register-tab');
+        const $loginPane = $('#login-pane');
+        const $registerPane = $('#register-pane');
+        
+        // Update tab styles
+        $registerTab.removeClass('bg-transparent text-gray-600').addClass('bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg');
+        $loginTab.removeClass('bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg').addClass('bg-transparent text-gray-600');
+        
+        // Switch content
+        $loginPane.hide();
+        $registerPane.show();
+        
+        // Update switch text
+        $('#auth-switch-text').html('Already have an account? <a href="#" id="auth-switch-link" class="text-blue-600 font-semibold">Sign in</a>');
+    }
+    
+    // Tab click handlers
+    $('#login-tab').on('click', function(e) {
+        e.preventDefault();
+        showLoginTab();
+    });
+    
+    $('#register-tab').on('click', function(e) {
+        e.preventDefault();
+        showRegisterTab();
+    });
+    
+    // Auth switch link
+    $(document).on('click', '#auth-switch-link', function(e) {
+        e.preventDefault();
+        if ($('#login-pane').is(':visible')) {
+            showRegisterTab();
+        } else {
+            showLoginTab();
+        }
+    });
+    
+    // Password toggle with Lucide icons
+    $('#toggle-password').on('click', function() {
+        const $passwordField = $('#userlogin_password');
+        const $icon = $('#password-eye-icon');
+        
+        if ($passwordField.attr('type') === 'password') {
+            $passwordField.attr('type', 'text');
+            $icon.attr('data-lucide', 'eye-off');
+        } else {
+            $passwordField.attr('type', 'password');
+            $icon.attr('data-lucide', 'eye');
+        }
+        
+        // Re-initialize the specific icon
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    });
+    
+    // Form submission with loading states
+    $('#ApplicantForm').on('submit', function(e) {
+        const $button = $('#login-button');
+        const $spinner = $('#login-spinner');
+        const $text = $button.find('.button-text');
+        
+        $button.prop('disabled', true).addClass('cursor-not-allowed');
+        $spinner.removeClass('hidden');
+        $text.text('Signing in...');
+        
+        // Reset after timeout (for demo purposes)
+        setTimeout(function() {
+            $button.prop('disabled', false).removeClass('cursor-not-allowed');
+            $spinner.addClass('hidden');
+            $text.html(`
+                <i data-lucide="log-in" class="w-4 h-4 mr-2"></i>
+                Sign In to Your Account
+            `);
+        }, 3000);
+    });
+    
+    $('#ApplicantFormRegister').on('submit', function(e) {
+        const $button = $('#register-button');
+        const $spinner = $('#register-spinner');
+        const $text = $button.find('.button-text');
+        
+        $button.prop('disabled', true).addClass('cursor-not-allowed');
+        $spinner.removeClass('hidden');
+        $text.text('Creating account...');
+        
+        // Reset after timeout (for demo purposes)
+        setTimeout(function() {
+            $button.prop('disabled', false).removeClass('cursor-not-allowed');
+            $spinner.addClass('hidden');
+            $text.html(`
+                <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
+                Create Your Account
+            `);
+        }, 3000);
+    });
+    
+    // Add input validation feedback
+    $('input[required]').on('blur', function() {
+        const $input = $(this);
+        const $group = $input.closest('.form-group');
+        
+        if (!this.checkValidity()) {
+            $input.addClass('border-red-300 focus:border-red-500 focus:ring-red-500/20');
+            $group.addClass('error');
+        } else {
+            $input.removeClass('border-red-300 focus:border-red-500 focus:ring-red-500/20');
+            $group.removeClass('error');
+        }
+    });
+    
+    // Social button click analytics (placeholder)
+    $('.social-btn').on('click', function() {
+        const provider = $(this).find('svg').next().text() || 'Unknown';
+        console.log(`Social login attempted: ${provider}`);
+    });
+    
+    // Re-initialize icons after dynamic content changes
+    function reinitializeLucideIcons() {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+    
+    // Call after tab switches
+    $('#login-tab, #register-tab').on('click', function() {
+        setTimeout(reinitializeLucideIcons, 100);
+    });
+});
+</script>
+{% endblock %}

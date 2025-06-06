@@ -13,18 +13,12 @@ TEMPLATE_DEBUG = DEBUG
 
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "support@peeljobs.com")
 
-CONTACT_NUMBER = os.getenv("CONTACT_NUMBER", "850 009 9499")
 
 PEEL_URL = os.getenv("PEEL_URL", "http://peeljobs.com/")
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 CELERY_IMPORTS = ("social.tasks", "dashboard.tasks", "recruiter.tasks")
-
-# stackoverflow app
-SOF_APP_ID = os.getenv("SOFAPPID")
-SOF_APP_SECRET = os.getenv("SOFAPPSECRET")
-SOF_APP_KEY = os.getenv("SOFAPPKEY")
 
 broker_api = os.getenv("BROKER_API", "http://guest:guest@localhost:15672/api/")
 
@@ -306,12 +300,6 @@ CELERY_BEAT_SCHEDULE = {
     #     "task": "dashboard.tasks.applicants_walkin_job_notifications",
     #     "schedule": crontab(hour="09", minute="00", day_of_week="thu"),
     # },
-    # "handling-sendgrid-bounces": {
-    #     "task": "dashboard.tasks.handle_sendgrid_bounces",
-    #     "schedule": crontab(
-    #         hour="03", minute="10", day_of_week="mon,tue,wed,thu,fri,sat"
-    #     ),
-    # },
     "daily-sitemap-generation": {
         "task": "dashboard.tasks.sitemap_generation",
         "schedule": crontab(
@@ -360,19 +348,12 @@ THUMBNAIL_CACHE_TIMEOUT = 3600 * 24 * 365 * 10
 TIMEZONE = "Asia/Calcutta"
 LOGO = "http://localhost:8000/logo.png"
 
-# BULK_SMS_USERNAME = os.getenv("BULKSMSUSERNAME")
-# BULK_SMS_PASSWORD = os.getenv("BULKSMSPASSWORD")
-# BULK_SMS_FROM = os.getenv("BULKSMSFROM")
-
-MINIFIED_URL = os.getenv("MINIFIED_URL")
-
 
 THUMBNAIL_BACKEND = "jobsp.thumbnailname.SEOThumbnailBackend"
 THUMBNAIL_DEBUG = True
 
 THUMBNAIL_FORCE_OVERWRITE = True
 
-# SMS_AUTH_KEY = os.getenv("SMSAUTHKEY")
 
 
 # AWS_ENABLED = os.getenv("AWSENABLED")
@@ -513,3 +494,6 @@ EMAIL_BACKEND = "django_ses.SESBackend"
 
 MP_CELERY_MONITOR_KEY = os.getenv("MP_CELERY_MONITOR_KEY")
 CELERY_MONITOR_URL = os.getenv("CELERY_MONITOR_URL")
+
+# Tailwind CSS Configuration
+TAILWIND_CSS_FILE = "css/tailwind-output.css"

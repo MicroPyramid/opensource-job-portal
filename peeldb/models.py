@@ -676,20 +676,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             return False
 
     @property
-    def is_tw_connected(self):
-        if self.twitter.all():
-            return True
-        else:
-            return False
-
-    @property
-    def is_ln_connected(self):
-        if self.linkedin.all():
-            return True
-        else:
-            return False
-
-    @property
     def is_gh_connected(self):
         if self.github.all():
             return True
@@ -707,20 +693,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         else:
             return False
 
-    @property
-    def is_so_connected(self):
-        if self.stackoverflow.all():
-            return True
-        else:
-            return False
 
     @property
     def is_connect_social_networks(self):
         if (
             self.facebook_user.all()
             and self.google_user.all()
-            and self.linkedin.all()
-            and self.twitter.all()
         ):
             return True
         else:
@@ -844,12 +822,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_user_emails(self):
         return UserEmail.objects.filter(user=self)
 
-    def get_user_twitter_friends(self):
-        return TwitterFriend.objects.filter(user=self)
-
-    def get_user_twitter_followers(self):
-        return TwitterFollower.objects.filter(user=self)
-
     def get_open_tickets(self):
         return Ticket.objects.filter(
             Q(user=self) & Q(status="Open") | Q(status="Ongoing")
@@ -867,26 +839,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_visited_jobs(self):
         return VisitedJobs.objects.filter(user=self)
 
-    def get_stack_overflow_object(self):
-        return self.stackoverflow.all().first()
-
     def get_facebook_object(self):
         return self.facebook_user.all().first()
-
-    def get_twitter_url(self):
-        screen_name = (
-            self.twitter.all().first().screen_name if self.twitter.all() else ""
-        )
-        return "http://twitter.com/" + str(screen_name) + "/"
 
     def get_google_object(self):
         return self.google_user.all().first()
 
     def get_github_object(self):
         return self.google_user.all().first()
-
-    def get_linkedin_object(self):
-        return self.linkedin.all().first()
 
     def get_subscribed_skills(self):
         user_emails = (
@@ -1069,28 +1029,6 @@ class UserEmail(models.Model):
     is_primary = models.BooleanField(default=False)
 
 
-class Twitter(models.Model):
-    user = models.ForeignKey(User, related_name="twitter", on_delete=models.CASCADE)
-    twitter_id = models.CharField(max_length=100, default="")
-    screen_name = models.CharField(max_length=100, default="")
-    oauth_token = models.CharField(max_length=200, default="")
-    oauth_secret = models.CharField(max_length=200, default="")
-
-
-class Linkedin(models.Model):
-    user = models.ForeignKey(User, related_name="linkedin", on_delete=models.CASCADE)
-    linkedin_id = models.CharField(max_length=200)
-    linkedin_url = models.CharField(max_length=1000, blank=True, null=True)
-    first_name = models.CharField(max_length=500)
-    last_name = models.CharField(max_length=500)
-    email = models.CharField(max_length=500, db_index=True)
-    location = models.CharField(max_length=500)
-    education = models.CharField(max_length=500, blank=True, null=True)
-    workhistory = models.TextField()
-    industry = models.CharField(max_length=500, blank=True, null=True)
-    accesstoken = models.TextField(max_length=500)
-
-
 class Facebook(models.Model):
     user = models.ForeignKey(
         User, related_name="facebook_user", on_delete=models.CASCADE
@@ -1141,77 +1079,6 @@ class GitHub(models.Model):
     company = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     user_from = models.DateTimeField()
-
-
-class StackOverFlow(models.Model):
-    user = models.ForeignKey(
-        User, related_name="stackoverflow", on_delete=models.CASCADE
-    )
-    account_id = models.CharField(max_length=100, default="")
-    stack_user_id = models.CharField(max_length=100, default="")
-    profile_image = models.CharField(max_length=1000, default="")
-    display_name = models.CharField(max_length=200, default="")
-    link = models.CharField(max_length=1000, default="")
-
-
-class TwitterFollower(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    twitter_id = models.CharField(max_length=100)
-    screen_name = models.CharField(max_length=100)
-
-
-class TwitterFriend(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    twitter_id = models.CharField(max_length=100)
-    screen_name = models.CharField(max_length=100)
-
-
-
-class FacebookFriend(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
-    facebook_id = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.name
-
-
-class FacebookPage(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
-    accesstoken = models.CharField(max_length=2000)
-    page_id = models.CharField(max_length=200)
-    permission = models.TextField(default="")
-    allow_post = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
-
-
-class FacebookGroup(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    group_id = models.CharField(max_length=500)
-    name = models.CharField(max_length=500)
-    allow_post = models.BooleanField(default=True)
-
-
-class LinkedinGroup(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    membership = models.CharField(max_length=200)
-    group_id = models.CharField(max_length=200)
-    group_name = models.CharField(max_length=200)
-    allow_post = models.BooleanField(default=True)
-
-
-class LinkedinFriend(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    linkedin_id = models.CharField(max_length=200)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    location = models.CharField(max_length=100)
-    workhistory = models.CharField(max_length=100)
-    industry = models.CharField(max_length=100)
 
 
 class InterviewLocation(models.Model):
@@ -1441,7 +1308,6 @@ class JobPost(models.Model):
         on_delete=models.CASCADE,
     )
     closed_date = models.DateTimeField(null=True, blank=True)
-    minified_url = models.URLField(blank=True, null=True)
 
     fb_groups = ArrayField(models.CharField(max_length=200), blank=True, null=True)
 
@@ -1479,10 +1345,6 @@ class JobPost(models.Model):
                 + "/"
             )
         return qs
-
-    def get_job_minified_url(self):
-        job_url = "https://peeljobs.com" + self.get_absolute_url()
-        return job_url
 
     def get_total_views_count(self):
         total_views = self.fb_views + self.tw_views + self.ln_views + self.other_views
@@ -1677,49 +1539,16 @@ POST_STATUS = (
     ("Deleted", "Deleted"),
 )
 
-
-class FacebookPost(models.Model):
-    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
-    # TODO this must be choice field
-    page_or_group = models.CharField(choices=POST, max_length=50)
-    page_or_group_id = models.CharField(max_length=500)
-    post_id = models.CharField(max_length=500)
-    # TODO this must be choice field
-    post_status = models.CharField(choices=POST_STATUS, max_length=50)
-    is_active = models.BooleanField(default=False)
-
-
 POST = (
     ("Page", "Page"),
     ("Profile", "Profile"),
-)
-
-
-class TwitterPost(models.Model):
-    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
-    # TODO this must be choice field
-    page_or_profile = models.CharField(choices=POST, max_length=50)
-    post_id = models.CharField(max_length=500)
-    post_status = models.CharField(choices=POST_STATUS, max_length=50)
-
-
-POST = (
     ("Group", "Group"),
     ("Profile", "Profile"),
 )
 
 
-class LinkedinPost(models.Model):
-    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
-    # TODO this must be choice field
-    profile_or_group = models.CharField(choices=POST, max_length=50)
-    post_id = models.CharField(max_length=500)
-    update_url = models.CharField(max_length=1000)
-    # TODO this must be choice field
-    post_status = models.CharField(choices=POST_STATUS, max_length=50)
 
-
-POST = (
+POST_STATUS = (
     ("Pending", "Pending"),
     ("Shortlisted", "Shortlisted"),
     ("Hired", "Hired"),

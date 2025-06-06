@@ -98,7 +98,6 @@
               <ul>
                 <li class="text-capitalize">login with social networks</li><br>
                 <li ><a href="{% url 'social:facebook_login' %}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a></li>
-                <li ><a href="{% url 'social:linkedin_login' %}"  target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
                 <li ><a href="{% url 'social:github_login' %}"  target="_blank"><i class="fa-brands fa-github"></i></a></li>
                 <li ><a href="{% url 'social:google_login' %}"><strong>G</strong></a></li>
 
@@ -280,7 +279,7 @@
                     <p>
                     {% if job.user.is_superuser %}
                       {% if job.company_emails %}
-                       <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
+                       <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_absolute_url }}" class="apply send_mail{% if request.user.is_active %} active{% endif %}{% if request.user.profile_completion_percentage > 50 %} completed{% endif %}{% if request.user.is_authenticated %} logged{% endif %}">Apply Now</a>
                       {% endif %}
                     {% else %}
                     {% if request.user.is_authenticated %}

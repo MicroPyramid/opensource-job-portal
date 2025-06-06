@@ -92,15 +92,5 @@ $("span.download").click(function(e) {
     window.location = $(this).attr('id');
   });
 
-$(document).ready(function() {
-    $('.fb_friends').click(function(e) {
-      e.preventDefault();
-      window.open('http://facebook.com/' + $(this).attr('href') + '/');
-    });
-    $('.tw_friends').click(function(e) {
-      e.preventDefault();
-      window.open('http://twitter.com/' + $(this).attr('href') + '/');
-    });
-  });
 </script>
 {% endblock %}

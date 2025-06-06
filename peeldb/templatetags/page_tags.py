@@ -77,10 +77,6 @@ def get_formatted_salary(value):
 @register.filter
 def get_social_connections_count(user):
     connected = 0
-    if user.twitter.all():
-        connected += 1
-    if user.linkedin.all():
-        connected += 1
     if user.github.all():
         connected += 1
     if user.facebook.all():

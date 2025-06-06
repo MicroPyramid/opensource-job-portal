@@ -81,12 +81,6 @@ Configuration of Peeljobs
 		create database peeldb;
 
 10. We have to use third party related keys. We have to had those keys in order to run the application.
-
-		**Sendgrid details**
-
-		SG_USER=<sendgrid username>
-		
-		SG_PWD=<sendgrid password>
 		
 		**Google developers account details**
 
@@ -115,12 +109,6 @@ Configuration of Peeljobs
 		GIT_APP_ID = <git api id>
 		
 		GIT_APP_SECRET = <git secret-key>
-
-		**LinkedIn account details**
-
-		LN_API_KEY = <linkedin api id>
-
-		LN_SECRET_KEY = <linkedin secret-key>
 
 
 11. Apply migrations to database using the following command

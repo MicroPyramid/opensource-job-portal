@@ -423,7 +423,7 @@ body{
 				}
 			}
 			.right_div{
-				.left_div;
+				.left_div();
 				.button_div{
 					margin-top:-30px;
 					margin-left:0px;
@@ -1122,18 +1122,18 @@ body{
 					  /*text-shadow:1px 1px 1px darken(@git,15%);*/
 					}
 					.gplus{
-					  color: $gplus!important;
-					  border: 1px solid $gplus;
+					  color: @gplus!important;
+					  border: 1px solid @gplus;
 					  /*text-shadow:1px 1px 1px darken(@gplus,15%);*/
 					}
 					.twit{
-					  background: $twit!important;
-					  border: 1px solid $twit;
+					  background: @twit!important;
+					  border: 1px solid @twit;
 					  /*text-shadow:1px 1px 1px darken(@twit,15%);*/
 					}
 					.stack{
-					  background: $stack!important;
-					  border: 1px solid $stack;
+					  background: @stack!important;
+					  border: 1px solid @stack;
 					  /*text-shadow:1px 1px 1px darken(@stack,15%);*/
 					}
 				  }
@@ -1247,9 +1247,8 @@ body{
 		   }
 		   form{
 			.control-label{
-			  font-weight:400;
-			  font-size:13px;
-			  color:$grey;
+			  font-weight:400;			font-size:13px;
+			  color:@grey;
 			}
 			.upload_file_btn{
 			  background:#004686;
@@ -1261,7 +1260,7 @@ body{
 			}
 			.help_text{
 			font-size:12px; 
-			color:$text;
+			color:@text;
 			display:inline;
 			}
 			.important{
@@ -1296,7 +1295,7 @@ body{
 			   border-radius: 3px;
 			}
 			.register_form_button{
-			   background-color: $green;
+			   background-color: @green;
 			   border-width: 0;
 			   color: #FFFFFF;
 			   display: inline-block;
@@ -1372,16 +1371,16 @@ body{
 				text-align: center;
 				  border-radius: 2px;
 				&.facebook{
-				  background: $fb;
+				  background: @fb;
 				}
 				&.google-plus{
-				  background: $gplus;
+				  background: @gplus;
 				}
 				&.linkedin{
-				  background: $in;
+				  background: @in;
 				}
 				&.twitter{
-				  background: $twit;
+				  background: @twit;
 				}
 			  }
 			}
@@ -1447,7 +1446,7 @@ body{
 			}
 			.help_text{
 			font-size:12px; 
-			color:$text;
+			color:@text;
 			// display:inline;
 			}
 			.text {
@@ -1510,7 +1509,7 @@ body{
 			   border-radius: 3px;
 			}
 			.register_form_button{
-			   background-color: $green;
+			   background-color: @green;
 			   border-width: 0;
 			   color: #FFFFFF;
 			   display: inline-block;
@@ -1586,16 +1585,16 @@ body{
 				text-align: center;
 				  border-radius: 2px;
 				&.facebook{
-				  background: $fb;
+				  background: @fb;
 				}
 				&.google-plus{
-				  background: $gplus;
+				  background: @gplus;
 				}
 				&.linkedin{
-				  background: $in;
+				  background: @in;
 				}
 				&.twitter{
-				  background: $twit;
+				  background: @twit;
 				}
 			  }
 			}

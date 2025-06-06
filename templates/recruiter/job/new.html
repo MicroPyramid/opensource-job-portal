@@ -679,52 +679,13 @@
                 </a>
               </div>
             </div>
-            <!-- <div class="social_links1">
-            <div class="panel panel-default content_fixed_block">
-              <div class="panel-content">
-                <p>Connect with social Networking sites to post jobs on your timeline</p>
-              <ul>
-               {% if fb_connected %}
-              <li class="facebook"><a href="{{ request.user.get_facebook_url }}" target="_blank"><i class="fa fa-facebook"></i><span>Connected</span> </a></li>
-              {% else %}
-               <li class="facebook"><a href="{% url 'recruiter:facebook_login' %}" target="_blank"><i class="fa fa-facebook"></i><span>Connect with facebookkkkkk</span> </a></li>
-              {% endif %}
-              {% if tw_connected %}
-               <li class="twitter"><a href="{{ request.user.get_twitter_url }}" target="_blank"><i class="fa fa-twitter"></i> <span>Connected</span> </a></li>
-              {% else %}
-                <li class="twitter"><a href="{% url 'recruiter:twitter_login' %}" target="_blank"><i class="fa fa-twitter"></i> <span>Connect with twitterrrrrrrrrr</span> </a></li>
-              {% endif %}
-                <br clear="all">
-              </ul>
-              </div>
-            </div>
-          </div> -->
+           
             <br clear="all">
             </nav>
             <br clear="all">
           <!--right div ends here-->
     </div></div>
-  <!-- <div class="bottom_connect_fixed text-capitalize">
-       Connect and post your job on your timeline -->
-        <!-- post on row -->
-                        <!-- <div class="post_details">
-                          <span class='button fb' onclick="location.href='{% url 'recruiter:facebook_login' %}'">
-                          {% if fb_connected %}
-                          <span class='name'><input type="checkbox" name="fb_post" id="fb_post" checked> facebook</span>
-                        {% else %}
-                          <span class='name' ><i class="fa fa-facebook"></i>facebook</span>
-                          {% endif %}
-                          </span>
-                          <span class='button twit' onclick="location.href='{% url 'recruiter:twitter_login' %}'">
-                          {% if tw_connected %}
-                       <span class='name'> <input type="checkbox" name="tw_post" id="tw_post" checked> twitter</span>
-                        {% else %}
-                          <span class='name'><i class="fa fa-twitter"></i> Twitter</span>
-                          {% endif %}
-                          </span> -->
-                             
-                        <!-- </div> -->
-                    <!--/ post on row -->
+ 
       {% endwith %}
       {% endwith %}
       {% else %}
@@ -734,12 +695,7 @@
           <strong>!</strong> No recruiters were added . click to add <a href="{% url "agency:company_recruiter_create" %}"><button type="button" class="btn btn-default"><strong>Recruiter</strong</button></a>
         </div>
         {% endif %}
-        {% if not show_clients %}
-        <!--<div class="alert alert-success alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert">x</button>
-          <strong>!</strong> No clients were added . click to add <a href="{% url "agency:add_client" %}"><button type="button" class="btn btn-default"><strong>Client</strong</button></a>
-        </div>-->
-        {% endif %}
+        
         {% endif %}
       </div>
       </form>

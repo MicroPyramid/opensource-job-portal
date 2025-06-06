@@ -35,7 +35,6 @@ from peeldb.models import (
     City,
     Company,
     Country,
-    FacebookPost,
     FunctionalArea,
     Google,
     Industry,
@@ -56,7 +55,6 @@ from peeldb.models import (
     Subscriber,
     TechnicalSkill,
     Ticket,
-    TwitterPost,
     User,
     UserEmail,
     Degree,
@@ -2082,23 +2080,11 @@ def recruiter_paid_status_change(request, user_id):
 def deactivate_job(request, job_post_id):
 
     job_post = get_object_or_404(JobPost, id=job_post_id)
-    # need to delete job post on fb, twitter and linkedin
-    posts = FacebookPost.objects.filter(job_post=job_post).exclude(
-        post_status="Deleted"
-    )
-    
-    posts = TwitterPost.objects.filter(job_post=job_post)
-
+   
     job_post.previous_status = job_post.status
     job_post.status = "Disabled"
     job_post.save()
 
-    data = {
-        "error": False,
-        "response": "Job Post deactivated",
-        "job_type": job_post.job_type,
-    }
-    # return HttpResponse(json.dumps(data))
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
@@ -2108,12 +2094,7 @@ def deactivate_job(request, job_post_id):
 def delete_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     job_type = job_post.job_type
-    posts = FacebookPost.objects.filter(job_post=job_post).exclude(
-        post_status="Deleted"
-    )
-    
-    posts = TwitterPost.objects.filter(job_post=job_post)
-    
+        
     job_post.delete()
 
     data = {
@@ -2130,43 +2111,13 @@ def publish_job(request, job_post_id):
     if job_post.status == "Pending":
         job_post.status = "Published"
         job_post.save()
-        # if job_post.post_on_fb:
-        #     # need to check this condition
-        # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
-        # for group in job_post.fb_groups:
-        #     fb_group = FacebookGroup.objects.get(user=job_post.user, group_id=group)
-        #     is_active = True
-        #     # need to get accetoken for peeljobs twitter page
         
-    # else:
-    #     job_post.status = "Published"
-
     else:
         job_post.status = "Pending"
         job_post.save()
-        # if job_post.post_on_fb:
-        #     # need to check this condition
-        # posts = FacebookPost.objects.filter(job_post=job_post, page_or_group='group', is_active=True, post_status='Deleted')
-        # for group in job_post.fb_groups:
-        #     fb_group = FacebookGroup.objects.get(user=job_post.user, group_id=group)
-        #     is_active = True
-        #     # need to get accetoken for peeljobs twitter page
-        
-    # else:
-    #     job_post.status = "Published"
-    posts = FacebookPost.objects.filter(job_post=job_post)
-    
-    posts = TwitterPost.objects.filter(job_post=job_post)
-    
+     
     job_post.save()
-    job_type = job_post.job_type
-    data = {
-        "error": False,
-        "response": "Job Post Published Successfully",
-        "job_type": job_type,
-        "status": job_post.status,
-    }
-    # return HttpResponse(json.dumps(data))
+    
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
@@ -2895,9 +2846,7 @@ def edit_govt_job(request, post_id):
                 FunctionalArea.objects.filter(status="Active").order_by("name")
             )
             functional_area.extend(job_post.functional_area.filter(status="InActive"))
-            fb_groups = FacebookPost.objects.filter(
-                job_post=job_post, page_or_group="group", post_status="Posted"
-            ).order_by("-id")
+            
             companies = Company.objects.filter(
                 company_type="Company", is_active=True
             ).order_by("name")
@@ -2905,7 +2854,7 @@ def edit_govt_job(request, post_id):
                 request,
                 "dashboard/jobpost/edit.html",
                 {
-                    "fb_groups": fb_groups,
+                    "fb_groups": "",
                     "job_types": JOB_TYPE,
                     "qualifications": qualifications,
                     "functional_area": functional_area,
@@ -3779,7 +3728,6 @@ def edit_job_title(request, post_id):
                     job_post.major_skill = skill[0]
             job_url = get_absolute_url(job_post)
             job_post.slug = job_url
-            # job_post.minified_url = ('https://peeljobs.com' + job_url, settings.MINIFIED_URL)
             job_post.save()
             if (
                 job_post.major_skill

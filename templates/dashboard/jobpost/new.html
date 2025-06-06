@@ -544,20 +544,8 @@
               <span class='button fb'>
                 <i class="fa-brands fa-facebook-f"></i>Get Connected With Facebook</span></a>
           {% endif %}
-          {% if request.user.is_tw_connected %}
-          <span class='button twit'>
-            <input type="checkbox" name="tw_post" id="tw_post" checked><span class='name'>twitter</span>
-            </span>
-          {% endif %}
           </span>
-          {% if request.user.is_ln_connected %}
-          <span class='button in'>
-            <input type="checkbox" name="ln_post" id="ln_post" checked><span class='name'>Linkedin</span></span>
-          {% else %}
-            <a href="{% url 'recruiter:linkedin_login' %}" class="in_btn unlink_button">
-              <span class='button in'>
-                <i class="fa-brands fa-linkedin-in"></i>Get Connected With LinkedIn</span></a>
-          {% endif %}
+          
           </span>
           </div>
           <!--/ post on row -->

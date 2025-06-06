@@ -26,7 +26,6 @@ from peeldb.models import (
     Industry,
     FunctionalArea,
     JobPost,
-    FacebookPost,
     Company,
     Menu,
     InterviewLocation,
@@ -519,21 +518,7 @@ class recruiter_get_views_test(TestCase):
             self.jobpost.industry.add(self.industry)
             self.jobpost.functional_area.add(self.functional_area)
             self.jobpost.location.add(self.city)
-            FacebookPost.objects.create(
-                job_post=self.jobpost,
-                page_or_group="Page",
-                page_or_group_id="1305678",
-                post_id="8764567",
-                post_status="Posted",
-            )
-            FacebookPost.objects.create(
-                job_post=self.jobpost,
-                page_or_group="Group",
-                page_or_group_id="1305678",
-                post_id="8764567",
-                post_status="Posted",
-            )
-            # TwitterPost.objects.create(job_post=self.jobpost, page_or_profile='Profile', post_id='126789', post_status='Posted')
+           
         self.other_edu = ['[{"other_edu_qualification_1":"h"}]']
         self.fa = ['[{"other_functional_area_1":"ot"}]']
         self.other_ind = ['[{"other_industry_name_1":"hello industry"}]']
@@ -2320,10 +2305,6 @@ class recruiter_get_views_test(TestCase):
 
     def test_facebook_login(self):
         response = self.client.post(reverse("recruiter:facebook_login"))
-        self.assertEqual(response.status_code, 302)
-
-    def test_linkedin_login(self):
-        response = self.client.post(reverse("recruiter:linkedin_login"))
         self.assertEqual(response.status_code, 302)
 
     def test_google_login(self):

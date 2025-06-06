@@ -243,7 +243,7 @@
       {% if job.user.is_superuser %}
         {% if job.company_emails %}
           <span class="pull-right apply_btn">
-            <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_job_minified_url }}" class="latest_job_type send_mail {% if request.user.is_active %}active{% endif %} {% if request.user.profile_completion_percentage > 50 %}completed{% endif %} {% if request.user.is_authenticated %}logged{% endif %}">Apply</a>
+            <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_absolute_url }}" class="latest_job_type send_mail {% if request.user.is_active %}active{% endif %} {% if request.user.profile_completion_percentage > 50 %}completed{% endif %} {% if request.user.is_authenticated %}logged{% endif %}">Apply</a>
           </span>
         {% endif %}
       {% else %}
@@ -482,22 +482,6 @@
           {% endif %}
         </div>
         {% endif %}
-        <!--
-          <div class="btn-group social_share_group">
-            <button class="btn btn-default btn-xs disabled">Share This Job:</button>
-            <a class="btn btn-default btn-xs" target="_blank" title="On Facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fostr.io/code/html-social-like-share-buttons-no-javascript.html&amp;t=Social%20Buttons%20in%20HTML%20only%20using%20Twitter%20Bootstrap%203%20and%20Font%20Awesome%20Icons">
-            <i class="fa fa-facebook fa-lg fb"></i>
-            </a>
-            <a class="btn btn-default btn-xs" target="_blank" title="On Twitter" href="http://twitter.com/share?url=http%3A%2F%2Fostr.io/code/html-social-like-share-buttons-no-javascript.html&amp;text=Social%20Buttons%20in%20HTML%20only%20using%20Twitter%20Bootstrap%203%20and%20Font%20Awesome%20Icons">
-            <i class="fa fa-twitter fa-lg tw"></i>
-            </a>
-            <a class="btn btn-default btn-xs" target="_blank" title="On Google Plus" href="https://plusone.google.com/_/+1/confirm?hl=en&amp;url=http%3A%2F%2Fostr.io/code/html-social-like-share-buttons-no-javascript.html">
-            <i class="fa fa-google-plus fa-lg google"></i>
-            </a>
-            <a class="btn btn-default btn-xs" target="_blank" title="On LinkedIn" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http%3A%2F%2Fostr.io/code/html-social-like-share-buttons-no-javascript.html">
-            <i class="fa fa-linkedin fa-lg linkin"></i>
-            </a>
-          </div> -->
       </div>
       <!-- description_block division ends-->
     </div>

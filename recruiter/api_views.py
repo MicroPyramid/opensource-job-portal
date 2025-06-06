@@ -845,7 +845,6 @@ def edit_profile(request):
             },
         )
     validate_user = UserUpdateSerializer(data=request.data, instance=request.user)
-    user_mobile = request.user.mobile
     if validate_user.is_valid():
         city = City.objects.get(id=request.data.get("city"))
         state = State.objects.get(id=request.data.get("state"))
@@ -868,51 +867,7 @@ def edit_profile(request):
         password_reset_diff = int(
             (datetime.now() - user.last_mobile_code_verified_on).seconds
         )
-        # if not user.mobile_verified:
-        #     if password_reset_diff > 600:
-        #         random_code = rand_string(size=6)
-        #         message = (
-        #             "Hello "
-        #             + request.user.username
-        #             + ", An OTP "
-        #             + random_code
-        #             + " for your Peeljobs recruiter account, Please Confirm and Proceed"
-        #         )
-        #         data = {
-        #             "username": settings.BULK_SMS_USERNAME,
-        #             "password": settings.BULK_SMS_PASSWORD,
-        #             "from": settings.BULK_SMS_FROM,
-        #             "to": request.POST.get("mobile"),
-        #             "message": message,
-        #         }
-        #         # requests.get("http://182.18.160.225/index.php/api/bulk-sms", params=data)
-        #         requests.get(
-        #             "http://sms.9sm.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY="
-        #             + str(settings.SMS_AUTH_KEY)
-        #             + "&message="
-        #             + str(message)
-        #             + "&senderId="
-        #             + str(settings.BULK_SMS_FROM)
-        #             + "&routeId=1&mobileNos="
-        #             + str(request.POST.get("mobile"))
-        #             + "&smsContentType=english"
-        #         )
-
-        #         user.mobile_verification_code = random_code
-        #         user.mobile_verified = False
-        #         user_login = True
-        #         user.mobile = request.data.get["mobile"]
-        #         user.last_mobile_code_verified_on = datetime.now(timezone.utc)
-        #         message = "Your Details Updated Successfully"
-        #     else:
-        #         user.mobile = user_mobile
-        #         message = "An otp has been sent to you in the past 1 week, Please Verify Your Mobile Number"
-        # else:
-        #     if user.mobile == user_mobile:
-        #         user.mobile = user_mobile
-        #         message = "Your Details Updated Successfully"
-        #     else:
-        #         message = "Mobile num can't be change within a week"
+      
         user.marital_status = request.data.get("marital_status", "")
         user.first_name = request.data.get("first_name")
         user.last_name = request.data.get("last_name", "")
@@ -926,7 +881,7 @@ def edit_profile(request):
         user.functional_area.add(*request.data.getlist("functional_area"))
         user.profile_completeness = user.profile_completion_percentage
         user.save()
-        data = {"error": False, "response": message, "is_login": user_login}
+        data = {"error": False, "response": '', "is_login": user_login}
         return JsonResponse(data, status=status.HTTP_200_OK)
     else:
         data = {"error": True, "response": validate_user.errors}
