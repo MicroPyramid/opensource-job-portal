@@ -1371,11 +1371,29 @@ def new_user(request):  # pragma: no mccabe
                     "meta_title": meta_title,
                     "meta_description": meta_description,
                     "h1_tag": h1_tag,
-                    "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY,
+                    "RECAPTCHA_SITE_KEY": settings.RECAPTCHA_SITE_KEY,
                 },
             )
 
     if request.method == "POST":
+
+        # check recaptcha v3 score
+        recaptcha_secret_key = settings.RECAPTCHA_SECRET_KEY
+        recaptcha_response = request.POST.get("g-recaptcha-response")
+        recaptcha_url = "https://www.google.com/recaptcha/api/siteverify"
+        recaptcha_data = {
+            "secret": recaptcha_secret_key,
+            "response": recaptcha_response,
+            "remoteip": request.META.get("REMOTE_ADDR"),
+        }
+        recaptcha_response = requests.post(
+            recaptcha_url, data=recaptcha_data
+        )
+        recaptcha_result = recaptcha_response.json()
+        if recaptcha_result.get('score', 0) < 0.6:
+            data = {"error": True, "captcha_response": "Choose Correct Captcha"}
+            return HttpResponse(json.dumps(data))
+
         show_errors = False
         companies = []
         company_form = ""
@@ -1393,21 +1411,9 @@ def new_user(request):  # pragma: no mccabe
             user_obj = User_Form(request.POST)
             show_errors = True if user_obj.is_valid() else False
         if show_errors:
-            payload = {
-                "secret": settings.RECAPTCHA_PRIVATE_KEY,
-                "response": request.POST.get("g-recaptcha-response"),
-                "remoteip": request.META.get("REMOTE_ADDR"),
-            }
-            response = ""
-            while response == "":
-                try:
-                    response = requests.get(
-                        "https://www.google.com/recaptcha/api/siteverify",
-                        params=payload,
-                    )
-                except:
-                    time.sleep(5)
-            if json.loads(response.text)["success"]:
+            
+                
+            if 1:
                 if request.POST.get("client_type") == "company":
                     if company_form.is_valid():
                         if companies:
@@ -1543,10 +1549,7 @@ def new_user(request):  # pragma: no mccabe
                 errors.update(company_form.errors)
             data = {"error": True, "message": errors}
             return HttpResponse(json.dumps(data))
-
-    else:
-        return HttpResponse("")
-
+    
 
 def account_activation(request, user_id):
     user = User.objects.filter(activation_code__iexact=user_id).first()

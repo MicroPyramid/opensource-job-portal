@@ -295,6 +295,7 @@
                     <h4 class="sub_heading">New Employer Registration</h4>
                     <!--<p>Please fill up the form with your valid details to get notifications frequently</p>-->
                     <form id="reg-form">
+                     {% csrf_token %}
                      <div class="form-group">
                         <label for="exampleInputEmail1">Username<span class="important">*</span></label>
                         <input type="text" id="register-username" name="username" class="form-control">
@@ -306,7 +307,6 @@
                       <div class="form-group">
                         <label for="exampleInputEmail1">Mobile Number<span class="important">*</span></label>
                         <input type="text" id="register-mobile" name="mobile" class="form-control">
-                        <input type="hidden" id="company_id" name="company_id" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="exampleInputPassword1">Password<span class="important">*</span></label>
@@ -324,13 +324,16 @@
                         <label for="exampleInputPassword1">Company Website</label>
                         <input type="text" id="register-website" name="website" class="form-control">
                       </div>
-                      <div class="captcha">
-                        <label>&nbsp;</label>
-                        <div class="button_div">
-                          <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}"></div>
-                        </div>
-                      </div>
-                      <button type="submit" class="btn btn-default">Create Account</button>
+                      
+
+                    
+                      <button type="button" class="g-recaptcha btn btn-primary" 
+        data-sitekey="{{ RECAPTCHA_SITE_KEY }}" 
+        data-callback='onSubmit' 
+        data-action='submit'>Create Account</button>
+                      
+                      <!-- Fallback button in case reCAPTCHA fails to load -->
+                      <button type="submit" class="btn btn-primary fallback-submit" style="display: none;">Create Account (Fallback)</button>
                     </form>
                   </div>
                 </div>
@@ -577,6 +580,54 @@
       <script type="text/javascript" src='{% static 'js/main.js' %}'></script>
       <script type="text/javascript" src='{% static 'js/recruiter_login.js' %}'></script>
     {% endcompress %}
+     <script>
+   function onSubmit(token) {
+     console.log('reCAPTCHA verified, token:', token);
+     
+     // Add reCAPTCHA token to form
+     var form = document.getElementById("reg-form");
+     
+     // Remove any existing reCAPTCHA token inputs
+     var existingTokens = form.querySelectorAll('input[name="g-recaptcha-response"]');
+     existingTokens.forEach(function(input) {
+       input.remove();
+     });
+     
+     // Add new reCAPTCHA token
+     var tokenInput = document.createElement("input");
+     tokenInput.type = "hidden";
+     tokenInput.name = "g-recaptcha-response";
+     tokenInput.value = token;
+     form.appendChild(tokenInput);
+     
+     console.log('Triggering form submission');
+     // Trigger the form submission which will be handled by the jQuery submit handler
+     $(form).trigger('submit');
+   }
+   
+   // Check if reCAPTCHA loaded properly and show fallback if needed
+   $(document).ready(function() {
+     // Add click handler for debugging
+     $('.g-recaptcha').on('click', function() {
+       console.log('reCAPTCHA button clicked');
+     });
+     
+     $('.fallback-submit').on('click', function() {
+       console.log('Fallback button clicked');
+     });
+     
+     // Wait a bit for reCAPTCHA to load
+     setTimeout(function() {
+       if (typeof grecaptcha === 'undefined') {
+         console.log('reCAPTCHA failed to load, showing fallback');
+         $('.g-recaptcha').hide();
+         $('.fallback-submit').show();
+       } else {
+         console.log('reCAPTCHA loaded successfully');
+       }
+     }, 3000);
+   });
+ </script>
 <script type="text/javascript">
       
     function csrfSafeMethod(method) {
