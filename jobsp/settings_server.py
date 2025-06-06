@@ -1,5 +1,5 @@
 from .settings import *
-# import sentry_sdk
+import sentry_sdk
 # from sentry_sdk.integrations.django import DjangoIntegration
 # from sentry_sdk.integrations.celery import CeleryIntegration
 
@@ -15,6 +15,12 @@ CELERY_IMPORTS = ("social.tasks", "dashboard.tasks")
 #     send_default_pii=True,
 # )
 
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    # Add data like request headers and IP for users;
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+)
 
 LOGGING = {
     "version": 1,
@@ -45,16 +51,16 @@ LOGGING = {
             "handlers": ["console"],
             "propagate": False,
         },
-        # "raven": {
-        #     "level": "DEBUG",
-        #     "handlers": ["console"],
-        #     "propagate": False,
-        # },
-        # "sentry.errors": {
-        #     "level": "DEBUG",
-        #     "handlers": ["console"],
-        #     "propagate": False,
-        # },
+        "raven": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "sentry.errors": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": False,
+        },
     },
 }
 

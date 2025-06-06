@@ -12,7 +12,7 @@ def login(request):
         if hasattr(request.user, 'user_type'):
             if request.user.user_type == 'JS':
                 return redirect('/')  # Job seeker dashboard
-            elif request.user.user_type == 'REC':
+            elif request.user.user_type == 'RR':  # TODO: handle all types RR or RA or AA or AR
                 return redirect('/recruiter/dashboard/')  # Recruiter dashboard
         return redirect('/')
     
