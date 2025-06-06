@@ -58,28 +58,15 @@ class UserEmailRegisterForm(forms.ModelForm):
             "email",
             "password",
             "mobile",
-            "technical_skills",
-            "current_city",
-            "year",
-            "month",
-            "resume",
         ]
 
     def __init__(self, *args, **kwargs):
         super(UserEmailRegisterForm, self).__init__(*args, **kwargs)
-        self.fields["current_city"].required = True
-        self.fields["current_city"].error_messages = {
-            "required": "Current location cannot be empty"
-        }
-        self.fields["technical_skills"].error_messages = {
-            "required": "Skills cannot be empty"
-        }
+        # Remove the required field checks for technical_skills and current_city
+        # since we're now only using email, password, and mobile
         if "social" in self.data.keys():
             self.fields.pop("password")
             self.fields["email"].required = False
-        if "other_loc" in self.data.keys():
-            self.fields["current_city"].required = False
-            self.fields["other_location"].required = True
 
     def clean_email(self):
         form_cleaned_data = self.cleaned_data

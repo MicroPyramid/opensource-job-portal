@@ -1,0 +1,302 @@
+{% extends "base_with_tailwind.html" %}
+{% load page_tags %}
+
+{% block title %}Register - PeelJobs{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-violet-50 via-sky-50 to-cyan-50 flex items-center justify-center p-2 relative overflow-hidden">
+    <!-- Background Elements -->
+    <div class="absolute inset-0">
+        <!-- Gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-blue-600/5 to-cyan-600/5"></div>
+        <!-- Geometric shapes -->
+        <div class="absolute top-20 left-20 w-24 h-24 bg-gradient-to-br from-violet-400/20 to-purple-600/20 rounded-full blur-2xl"></div>
+        <div class="absolute top-32 right-24 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-cyan-600/20 rounded-full blur-xl"></div>
+        <div class="absolute bottom-24 left-32 w-28 h-28 bg-gradient-to-br from-indigo-400/15 to-blue-600/15 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-16 right-16 w-20 h-20 bg-gradient-to-br from-cyan-400/20 to-teal-600/20 rounded-full blur-2xl"></div>
+        <!-- Grid pattern using Tailwind -->
+        <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 32px 32px;"></div>
+    </div>
+    
+    <div class="w-full max-w-2xl relative z-10">
+        <!-- Main Card Container -->
+        <div class="bg-white/95 backdrop-blur-2xl rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 px-6 py-6 relative overflow-hidden">
+                <!-- Background elements in header -->
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-cyan-600/20"></div>
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="absolute top-2 right-4 w-8 h-8 bg-white/10 rounded-full blur-lg"></div>
+                    <div class="absolute bottom-2 left-4 w-6 h-6 bg-white/5 rounded-full blur-md"></div>
+                </div>
+                
+                <div class="text-center relative z-10">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center justify-center mb-4">
+                        <span class="text-2xl font-bold text-white tracking-tight bg-gradient-to-r from-white to-blue-100 bg-clip-text">PeelJobs</span>
+                    </div>
+                    <div class="space-y-1">
+                        <h1 class="text-xl font-semibold text-white">Create Your Account</h1>
+                        <p class="text-blue-100/90 text-sm opacity-95 font-medium">Join thousands of job seekers finding their dream careers</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Content -->
+            <div class="p-6 bg-gradient-to-b from-white/95 to-gray-50/95">
+                <!-- Registration Form -->
+                <form id="ApplicantFormRegisterPage" name="ApplicantFormRegisterPage" class="space-y-6" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="register_from" value="Email">
+                    
+                    <!-- Email Input -->
+                    <div class="form-group">
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">Email Address <span class="text-red-500">*</span></label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+                            </div>
+                            <input type="email" 
+                                   class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                   id="user_register_email" 
+                                   placeholder="Enter your email address" 
+                                   name="email" 
+                                   required>
+                        </div>
+                        <p id="user_register_response_message" class="text-sm text-red-500 mt-1"></p>
+                    </div>
+                    
+                    <!-- Password Input -->
+                    <div class="form-group">
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">Password <span class="text-red-500">*</span></label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                <i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>
+                            </div>
+                            <input type="password" 
+                                   class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                   id="user_register_password" 
+                                   placeholder="Enter password (minimum 7 characters)" 
+                                   name="password" 
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Number Input -->
+                    <div class="form-group">
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">Mobile Number <span class="text-red-500">*</span></label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                            </div>
+                            <input type="text" 
+                                   class="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 focus:bg-white backdrop-blur-sm" 
+                                   id="user_register_mobile" 
+                                   placeholder="Enter your mobile number" 
+                                   name="mobile" 
+                                   required>
+                        </div>
+                    </div>
+                    
+
+                    
+                    <!-- Register Button -->
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all duration-200 register_form_button">
+                        <span class="flex items-center justify-center load_register" style="display:none;">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Creating Account...
+                        </span>
+                        <span class="flex items-center justify-center register_click">
+                            <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
+                            Create Account
+                        </span>
+                    </button>
+                    
+                    <!-- Login Link -->
+                    <div class="text-center">
+                        <span class="text-sm text-gray-600">
+                            Already have an account? 
+                            <a href="/login/" class="text-blue-600 font-semibold hover:text-blue-700">Sign In</a>
+                        </span>
+                    </div>
+                </form>
+                
+                <!-- Social Login Section -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-gradient-to-r from-gray-50 to-white text-gray-600 font-medium">Or continue with</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-3">
+                    <a href="/social/google_login/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">
+                        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
+                            <path fill="#ea4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"/>
+                            <path fill="#34a853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z"/>
+                            <path fill="#4285f4" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z"/>
+                            <path fill="#fbbc05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"/>
+                        </svg>
+                        Google
+                    </a>
+                    <a href="/social/facebook_login/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium hover:bg-gray-50 hover:border-blue-700 transition-all duration-200">
+                        <i data-lucide="facebook" class="w-4 h-4 mr-2 text-blue-700"></i>
+                        Facebook
+                    </a>
+                    <a href="/social/github/" class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg bg-white/95 text-gray-700 text-sm font-medium hover:bg-gray-50 hover:border-gray-800 transition-all duration-200">
+                        <i data-lucide="github" class="w-4 h-4 mr-2 text-gray-800"></i>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-6">
+            <div class="inline-flex items-center justify-center space-x-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-white/50">
+                <p class="text-gray-600 text-xs font-medium">
+                    © 2025 PeelJobs. Building careers, one opportunity at a time.
+                </p>
+            </div>
+            <div class="mt-3 flex justify-center space-x-4 text-xs text-gray-500">
+                <a href="/page/privacy-policy/" class="text-gray-500 hover:text-gray-700">Privacy Policy</a>
+                <a href="/page/terms-conditions/" class="text-gray-500 hover:text-gray-700">Terms of Service</a>
+                <a href="/contact/" class="text-gray-500 hover:text-gray-700">Help & Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Minimal CSS for custom styling -->
+<style>
+/* Custom file upload styling removed as no longer needed */
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+    
+    // Handle form submission
+    $('#ApplicantFormRegisterPage').submit(function(e) {
+        e.preventDefault();
+        
+        // Disable submit button and show loading
+        $('.register_form_button').prop('disabled', true);
+        $('.register_click').hide();
+        $('.load_register').show();
+        
+        // Clear previous error messages
+        $('p.hint, .text-red-500').remove();
+        $('#user_register_response_message').html('');
+        
+        // Create FormData for form submission
+        var formData = new FormData(this);
+        
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            url: '/register/',
+            success: function(data) {
+                $('.register_form_button').prop('disabled', false);
+                $('.load_register').hide();
+                $('.register_click').show();
+                
+                if (data.error === false) {
+                    // Success - show success message and redirect
+                    showMessage(data.message || 'Registration successful!', 'success');
+                    setTimeout(function() {
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            window.location.href = '/profile/';
+                        }
+                    }, 1500);
+                } else if (data.response) {
+                    // Handle field-specific errors (old format)
+                    for (var key in data.response) {
+                        var errorMessage = '<p class="text-sm text-red-500 mt-1">' + data.response[key] + '</p>';
+                        
+                        if (key === 'email') {
+                            $('#user_register_response_message').html(errorMessage);
+                        } else {
+                            $('#user_register_' + key).after(errorMessage);
+                        }
+                    }
+                } else if (data.message) {
+                    // Handle combined error message (new format)
+                    showMessage(data.message, 'error');
+                } else {
+                    // General error message
+                    showMessage('Registration failed. Please try again.', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                $('.register_form_button').prop('disabled', false);
+                $('.load_register').hide();
+                $('.register_click').show();
+                
+                let errorMessage = 'Network error. Please try again.';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.message) {
+                        errorMessage = response.message;
+                    }
+                } catch (e) {
+                    // Use default error message
+                }
+                showMessage(errorMessage, 'error');
+            }
+        });
+    });
+    
+    // Function to show messages
+    function showMessage(message, type) {
+        // Remove any existing messages
+        $('.message-container').remove();
+        
+        const messageClass = type === 'error' ? 'bg-red-50 border-red-200 text-red-800' : 'bg-green-50 border-green-200 text-green-800';
+        const iconClass = type === 'error' ? 'alert-circle' : 'check-circle';
+        
+        const messageHtml = `
+            <div class="message-container mb-4 p-4 rounded-lg border-2 ${messageClass}">
+                <div class="flex items-center">
+                    <i data-lucide="${iconClass}" class="w-4 h-4 mr-2"></i>
+                    <span class="text-sm font-medium">${message}</span>
+                </div>
+            </div>
+        `;
+        
+        // Insert message before the form
+        $('#ApplicantFormRegisterPage').before(messageHtml);
+        
+        // Initialize Lucide icons for the message
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+        
+        // Auto-remove success messages after 3 seconds
+        if (type === 'success') {
+            setTimeout(function() {
+                $('.message-container').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 3000);
+        }
+    }
+});
+</script>
+{% endblock %}

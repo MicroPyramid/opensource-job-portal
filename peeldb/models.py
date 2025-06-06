@@ -661,6 +661,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_full_username(self):
         return " ".join(re.findall("[a-zA-Z]+", self.username))
 
+    def get_user_type_display(self):
+        """Return human-readable user type for display purposes"""
+        user_type_dict = dict(USER_TYPE)
+        return user_type_dict.get(self.user_type, self.user_type)
+
     @property
     def is_fb_connected(self):
         if self.facebook_user.all():

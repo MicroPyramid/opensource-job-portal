@@ -72,11 +72,12 @@ from psite.views import (
 from pjob.views import index as job_list
 
 from django.contrib import admin
-from .views import login
+from .views import user_login, user_register
 
 
 urlpatterns = [
-    path("login/", login, name="login"),
+    path("login/", user_login, name="login"),
+    path("register/", user_register, name="register"),
     url(
         r"^(?P<job_title_slug>[a-z0-9-.,*?]+)-(?P<job_id>([0-9])+)/$",
         job_detail,
