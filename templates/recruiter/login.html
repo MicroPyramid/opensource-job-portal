@@ -33,13 +33,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     {% compress css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/feedback.min.css' %}">
-    <link rel="stylesheet" type="text/less" href="{% static 'css/select2.min.css' %}">
     <link rel="stylesheet" type="text/less" href="{% static 'r1/css/login.less' %}">
-    <link rel="stylesheet" type="text/less" href="{% static 'r1/css/mobile.less' %}">
-    {% endcompress %}
-    {% compress css %}
-    <link rel="stylesheet" type="text/less" href="{% static 'r1/css/responsive.less' %}">
     {% endcompress %}
        
   </head>
@@ -189,14 +183,8 @@
                       <a href="#" class="new_account" data-bs-toggle="modal" data-bs-target="#register-div">Register</a>
                      
                     </div> -->
-                    <div class="dropdown">
-                      <button class="item dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        Job Seeker
-                      </button>
-                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a href="#" class="login_modal" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
-                        <li><a href="#" class="new_account" data-bs-toggle="modal" data-bs-target="#register-div">Register</a></li>
-                      </ul>
+                    <div class="">
+                      <a href="/login/">Login</a>
                     </div>
                   </li>
 
@@ -342,198 +330,6 @@
       </section>
       <div class="push"></div>
     </div>
-     <!--Sample Login Register starts-->
-  <!-- Modal -->
-  <!-- Modal -->
-  <div class="modal fade modal-dialog-scrollable" id="register-div" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          
-            <h3 id="modal_head" class="my-2 mx-5">Not A Member? Register</h3>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          
-        </div>
-        <div class="modal-body">
-          
-
-          <div class="row g-3 align-items-center">
-            <div class="col-md-12">
-              <div class="form_panel form">
-                <form id="ApplicantFormRegister" name="ApplicantFormRegister" class="form-horizontal ApplicantForm" method="POST" enctype="multipart/form-data">
-                  <div class="row">
-                    <label for="colFormLabelSm" class="col-sm-4 control-label">Email ID<span class="important">*</span></label>
-                    <div class="col-sm-8">
-                      <input type="email" class="form-control" id="user_register_email" placeholder="Enter valid email address" name="email">
-                      <p id="user_register_response_message"></p>
-                      <input type="hidden" name="register_from" id='register_from' value="Email">
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <label for="colFormLabelSm" class="col-sm-4 control-label">Password<span class="important">*</span></label>
-                    <div class="col-sm-8">
-                      <input type="password" class="form-control" id="user_register_password" placeholder="Enter Password minimum of 7 characters" name="password">
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <label for="colFormLabelSm" class="col-sm-4 control-label">Mobile Number<span class="important">*</span></label>
-                    <div class="col-sm-8">
-                      <input type="text" class="form-control" id="user_register_mobile" placeholder="Recruiters will reach you on this number" name="mobile">
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <label for="colFormLabelSm" class="col-sm-4 control-label">Current Location<span class="important">*</span></label>
-                    <div class="col-sm-8">
-                      <select class="form-select select2" name="current_city" id="user_register_current_city">
-                        <option value="">Choose required location</option>
-                        {% get_all_cities as all_cities %}
-                        {% for city in all_cities %}
-                          {% if not 'India' in city.name %}
-                            <option value="{{ city.id }}">{{ city.name }}</option>
-                          {% endif %}
-                        {% endfor %}
-                      </select>
-                      <span class="city_err"></span>
-                      <input type="text" class="form-control pb-1" id="user_register_other_location" placeholder="Enter your Location" name="other_location" style="display:none">
-                      <input class="form-check-input" type="checkbox" name="other_loc" id="other_location"> <span class="text">Other Location</span>
-                    </div>
-                  </div>
-                  <div class="row  mb-3">
-                    <label for="colFormLabelSm" class="col-sm-4 control-label">Skills<span class="important">*</span></label>
-                    <div class="col-sm-8">
-                      <select class="form-select select2" name="technical_skills" id="user_register_technical_skills">
-                      {% get_all_skills as all_skills %}
-                        {% for skill in all_skills %}
-                            <option value="{{ skill.id }}">{{ skill.name }}</option>
-                        {% endfor %}
-                      </select>
-                      <span class="reg_skill_err"></span>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <label for="colFormLabelSm" class="col-sm-4 control-label">Experience</label>
-                    <div class="col-sm-8">
-                      <div class="row">
-                        <div class="col-md-6">
-                          <select class="form-select" name="year" id="user_register_year">
-                              <option value=''>Year</option>
-                            {% get_years as years %}
-                            {% for i in years %}
-                              <option value='{{i.0}}'>{{i.1}}</option>
-                            {% endfor %}
-                          </select>
-                        </div>
-                        <div class="col-md-6">
-                          <select class="form-select" name="month" id="user_register_month">
-                              <option value=''>Month</option>
-                            {% get_months as months %}
-                            {% for k in months %}
-                              <option value='{{k.0}}'>{{k.1}}</option>
-                            {% endfor %}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <label for="colFormLabelSm" class="col-sm-4 control-label">Resume</label>
-                    <div class="col-sm-8">
-                      <span class="resume_class">
-                        <input type="file" name="resume" id="user_register_resume" accept=".docx, .odt, .doc, .rtf, .text, .pdf">
-                      </span>
-                      <p class="help_text">doc, docx, pdf, odt - 300kb max</p>
-                      <div>
-                        <input class="form-check-input" type="checkbox" name="email_notifications"> <span class="text">I agree to receive notifications from PeelJobs</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-sm-4"></div>
-                    <div class="col-sm-7 d-flex">
-                      <button for="colFormLabelSm" type="submit" class="btn  register_form_button">
-                        <span class='load_register'>
-                          <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...
-                        </span>
-                        <span class='register_click'>Create Account</span>
-                      </button>
-                      <p><a id="login_but">Already a Member? Login</a></p>
-                    </div>
-                  </div>
-                </form>
-              
-                <div class="alternate_login">
-                  <span class="or_reg">
-                    <span class="text">Or Register With</span>
-                  </span>
-                  <div class="social_reg_logins">
-                    <ul>
-                      <li><a href="{% url 'social:facebook_login' %}" class="facebook" style="line-height: 32px; padding: 0; padding-left: 7px;"><i class="fa-brands fa-facebook-f fb"></i></a></li>
-                      <li><a href="{% url 'social:github_login' %}" class="github" style="line-height: 32px; padding: 0; padding-left: 7px;"><i class="fa-brands fa-github git"></i></a></li>
-                      <li><a href="{% url 'social:google_login' %}" class="gplus" style="line-height: 32px; padding: 0; padding-left: 7px;"><i style="color: white; font-style: normal; font-size: larger;"><strong>G</strong></i></a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Modal ends-->
-
-
-  <div class="modal fade modal-dialog-scrollable" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="login_reg" id="is_show_popup" value="False">
-          <input type="hidden" name="logged_usser" id="logged_user" value="{{request.user}}">
-          <div class="row marl" id="login_div">
-            <div class="social_panel">
-              <div class="icons_list">
-                <ul class="other_options clearfix">
-                  <li class="active" id="login_li"><a class="sign_in_li" target="_blank">Login</a></li>
-                  <li id="sign_up_li"><a class="sign_up_li" target="_blank">Create Account</a></li>
-                </ul>
-                <div class="or"><span>Or</span></div>
-                <ul>
-                  <li class="facebook_li"><a href="{% url 'social:facebook_login' %}" target="_blank"><i class="fa-brands fa-facebook-f fb"></i><span>Sign in with <span>FaceBook</span></span></a></li>
-                  <li class="github_li"><a href="{% url 'social:github_login' %}" target="_blank"><i class="fa-brands fa-github git"></i><span>Sign in with <span>GitHub</span></span></a></li>
-                </ul>
-                <div class="customGPlusSignIn" data-href="{% url 'social:google_login' %}">
-                  <span class="icon"></span>
-                  <span class="buttonText">Sign in With Google</span>
-                </div>
-              </div>
-            </div>
-            <div class="form_panel form">
-              <div class="login_box">
-                <h3 id="pop_up_header">Already a Member? Login</h3>
-                <form id="ApplicantForm" name="ApplicantForm" class="ApplicantForm" method="POST" enctype="multipart/form-data">
-                  <div class="form-group">
-                    <input type="email" class="form-control" id="userlogin_email" placeholder="Enter Email ID" name="email">
-                    <p id="userlogin_response_message"></p>
-                    <input type="hidden" name="register_type" id='user_register_type' value="login">
-                    <input type="hidden" name="next" value="{{request.GET.next}}">
-                    <input type="password" class="form-control" id="userlogin_password" placeholder="Enter Password" name="password">
-                    <button type="submit" class="btn btn-default login_form_button" id="button_value">Sign In</button>
-                    <div id="forgot_pass"><a>Forgot Password?</a></div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-    <!-- Modal -->
-<!--Sample Login Register ends -->
-        <div id="block_question" style="display: none">
 
     <footer class="row mt">
       <div class="container">
