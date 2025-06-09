@@ -1,87 +1,103 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 {% load compress %}
 {% load static %}
 {% load page_tags %}
 {% load thumbnail %}
 <html lang="en">
-  <head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-11720509-7"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'UA-11720509-7');
-</script>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-11720509-7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-    <title>{{ meta_title|safe }}</title>
+    gtag('config', 'UA-11720509-7');
+  </script>
 
-    <meta name="description" content="{{ meta_description|safe }}"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="utf-8">
-    <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
-    <meta property="og:title" content="{{ meta_title|safe }}"/>
-    <meta property="og:description" content="{{ meta_description|safe }}"/>
-    <meta property="og:image" content="{{jobopenings}}"/>
-    <meta property="og:image:width" content="200" />
-    <meta property="og:image:height" content="200" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@PeelJobs" />
-    <link rel="icon" type="image/x-icon" href="{{favicon}}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>{{ meta_title|safe }}</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    {% compress css %}
-    <link rel="stylesheet" type="text/less" href="{% static 'r1/css/login.less' %}">
-    {% endcompress %}
-    
-  </head>
-  <body class="login_bg">
-    <style type="text/css">
-      .inactive_form{
+  <meta name="description" content="{{ meta_description|safe }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+  <meta property="og:title" content="{{ meta_title|safe }}" />
+  <meta property="og:description" content="{{ meta_description|safe }}" />
+  <meta property="og:image" content="{{jobopenings}}" />
+  <meta property="og:image:width" content="200" />
+  <meta property="og:image:height" content="200" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@PeelJobs" />
+  <link rel="icon" type="image/x-icon" href="{{favicon}}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css"
+    integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  {% compress css %}
+  <link rel="stylesheet" type="text/less" href="{% static 'r1/css/login.less' %}">
+  {% endcompress %}
+
+</head>
+
+<body class="login_bg">
+  <style type="text/css">
+    .inactive_form {
       display: none;
-      }
-      .panel{
+    }
+
+    .panel {
       margin-bottom: 10px !important;
-      }
-      .vertical-right-aligned {
+    }
+
+    .vertical-right-aligned {
       transform: rotate(-90deg);
       transform-origin: 100% 100%;
       position: fixed;
       right: 0;
       top: 20%;
       z-index: 100;
-      }
-      .mar_lr_0{
-        margin-left: 0;
-        margin-right: 0;
-      }
-    </style>
-    <div class="wrapper">
-      <section class="mar_lr_0 header_banner">
-        <div class="icon_banner">
-         <div class="header_panel">
+    }
+
+    .mar_lr_0 {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  </style>
+  <div class="wrapper">
+    <section class="mar_lr_0 header_banner">
+      <div class="icon_banner">
+        <div class="header_panel">
           <nav class="navbar navbar-expand-lg megamenu py-3">
             <div class="container">
-               <a class="navbar-brand" href="/">Peeljobs</a>
+              <a class="navbar-brand" href="/">Peeljobs</a>
 
               <!-- Brand and toggle get grouped for better mobile display -->
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
               <!-- Collect the nav links, forms, and other content for toggling -->
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav main_menu">
-                
-        
-               
-                  <li class="nav-item {% if request.path == '/fresher-jobs-by-skills/' %}active{% endif %}"><a class="nav-link" href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher Jobs <span class="visually-hidden">(current)</span></a></li>
-                   <li class="nav-item {% if request.path == '/walkin-jobs-by-skills/' %}active{% endif %}"><a class="nav-link" href="{% url 'fresher_jobs_by_skills' 'walkin' %}">Walkin Jobs <span class="visually-hidden">(current)</span></a></li>
+
+
+
+                  <li class="nav-item {% if request.path == '/fresher-jobs-by-skills/' %}active{% endif %}"><a
+                      class="nav-link" href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher Jobs <span
+                        class="visually-hidden">(current)</span></a></li>
+                  <li class="nav-item {% if request.path == '/walkin-jobs-by-skills/' %}active{% endif %}"><a
+                      class="nav-link" href="{% url 'fresher_jobs_by_skills' 'walkin' %}">Walkin Jobs <span
+                        class="visually-hidden">(current)</span></a></li>
                   {% if request.user.user_type == 'JS' %}
                   <li class="nav-item"><a class="nav-link" href="{% url 'jobs:jobs_applied' %}">Applied Jobs</a></li>
                   {% endif %}
@@ -95,28 +111,36 @@
                     <a class="nav-link" href="{% url 'recruiters' %}">Recruiters</a>
                   </li>
                   {% if request.user.user_type == 'JS' %}
-                    {% get_unread_messages request.user '' '' as unread_messages %}
-                    <li class="nav-item {% if request.path == '/profile/' %}active{% endif %}" {% if unread_messages %} title="{{ unread_messages }} Messages From recruiters"{% endif %}>
-                      <a class="nav-link" href="{% url 'my:profile' %}">My Profile {% if unread_messages %}({{ unread_messages }}){% endif %}</a>
-                    </li>
-                    <li class="nav-item">
-                      <span class="navbar-text">
+                  {% get_unread_messages request.user '' '' as unread_messages %}
+                  <li class="nav-item {% if request.path == '/profile/' %}active{% endif %}" {% if unread_messages %}
+                    title="{{ unread_messages }} Messages From recruiters" {% endif %}>
+                    <a class="nav-link" href="{% url 'my:profile' %}">My Profile {% if unread_messages %}({{
+                      unread_messages }}){% endif %}</a>
+                  </li>
+                  <li class="nav-item">
+                    <span class="navbar-text">
                       {% if request.user.profile_pic|length > 0 %}
-                        <img class="profile_picture rounded-circle" src="{{request.user.profile_pic.url}}" width="40" height="40" alt="Profile picture">
+                      <img class="profile_picture rounded-circle" src="{{request.user.profile_pic.url}}" width="40"
+                        height="40" alt="Profile picture">
                       {% elif request.user.photo %}
-                        <img class="profile_picture rounded-circle" src="{{request.user.photo}}" width="40" height="40" alt="Profile picture">
+                      <img class="profile_picture rounded-circle" src="{{request.user.photo}}" width="40" height="40"
+                        alt="Profile picture">
                       {% else %}
-                        <img class="profile_picture rounded-circle" src="https://cdn.peeljobs.com/dummy.jpg" width="40" height="40" alt="Default profile picture">
+                      <img class="profile_picture rounded-circle" src="https://cdn.peeljobs.com/dummy.jpg" width="40"
+                        height="40" alt="Default profile picture">
                       {% endif %}
-                      </span>
-                    </li>
-                    <li class="nav-item"><a class="nav-link logout" href="/logout/?next={{ request.path }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
-                    {% elif request.user.is_superuser %}
-                    <li class="nav-item"><a class="nav-link" href="/dashboard/">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link logout" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
-                    {% elif request.user.is_recruiter or request.user.is_agency_recruiter %}
-                    <li class="nav-item"><a class="nav-link" href="/recruiter/">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link logout" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                    </span>
+                  </li>
+                  <li class="nav-item"><a class="nav-link logout" href="/logout/?next={{ request.path }}"><i
+                        class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                  {% elif request.user.is_superuser %}
+                  <li class="nav-item"><a class="nav-link" href="/dashboard/">Dashboard</a></li>
+                  <li class="nav-item"><a class="nav-link logout" href="/logout/"><i
+                        class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                  {% elif request.user.is_recruiter or request.user.is_agency_recruiter %}
+                  <li class="nav-item"><a class="nav-link" href="/recruiter/">Dashboard</a></li>
+                  <li class="nav-item"><a class="nav-link logout" href="/logout/"><i
+                        class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
                   {% endif %}
                 </ul>
                 {% if not request.user.is_authenticated %}
@@ -126,228 +150,240 @@
                   </li>
 
 
-                 
 
-                  <li class="nav-item log"><a class="nav-link" href="{% url 'post_job' %}">Recruiter Login | register</a></li>
+
+                  <li class="nav-item log"><a class="nav-link" href="{% url 'post_job' %}">Recruiter Login |
+                      register</a></li>
                 </ul>
                 {% endif %}
               </div>
               <!-- /.navbar-collapse -->
-              
+
             </div>
-        </nav>
-        
-         </div>
+          </nav>
 
         </div>
-      </section>
-      <section class="main_container">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-6 register_login_forgot contact_forum">
-              <div class="login_form common_authentic_form">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="sub_heading">Employer's Login</h4>
-                    <!--<p>Please enter your valid credentials to operate your account</p>-->
-                    <form id="frm_login" method="post">
-                      {% csrf_token %}
-                      <div class="mb-3">
-                        <label for="login-email">Email address</label>
-                        <input type="email" id="login-email" class="form-control" name="email" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" class="form-control" name="password" required>
-                        <input type="hidden" name="next" value="{{request.GET.next}}">
-                      </div>
-                      <button type="submit" class="btn btn-primary">Login</button>
-                       <a id="customBtn" class="btn btn-outline-danger customGPlusSignIn" href='{% url 'recruiter:google_login' %}' role="button">
-                        <i class="fa-brands fa-google"></i>
-                        <span class="buttonText">Sign in With Google</span>
-                      </a>
-                      <a href="#" class="forgot_form existed_account forgot_password_link show_form">Forgot Password</a>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <div class="forgot_form common_authentic_form inactive_form">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="sub_heading">Forgot Password</h4>
-                    <p>Please Enter your email address and we will send the change password link to your mail.</p>
-                    <form id="frm_forgot" method="post">
-                      {% csrf_token %}
-                      <div class="mb-3">
-                        <label for="forgot-email">Email address</label>
-                        <input type="email" class="form-control" name="email" id="forgot-email" required>
-                      </div>
-                      <button type="submit" class="btn btn-primary">Submit</button>
-                      <a href="#" class="login_form existed_account login_link login_link show_form">Already have an account? Login Here </a>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <div class="card contact_form">
+
+      </div>
+    </section>
+    <section class="main_container">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 register_login_forgot contact_forum">
+            <div class="login_form common_authentic_form">
+              <div class="card">
                 <div class="card-body">
-                  <h4 class="sub_heading">Contact Us</h4>
-                  <p>Talk to our experts if you have any queries</p>
-                  
-                  <div class="detail"><span><i class="fa-solid fa-envelope" aria-hidden="true"></i>   peeljobs@micropyramid.com</span>  </div>
+                  <h4 class="sub_heading">Employer's Login</h4>
+                  <!--<p>Please enter your valid credentials to operate your account</p>-->
+                  <form id="frm_login" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                      <label for="login-email">Email address</label>
+                      <input type="email" id="login-email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="login-password">Password</label>
+                      <input type="password" id="login-password" class="form-control" name="password" required>
+                      <input type="hidden" name="next" value="{{request.GET.next}}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <a id="customBtn" class="btn btn-outline-danger customGPlusSignIn" href='{% url '
+                      recruiter:google_login' %}' role="button">
+                      <i class="fa-brands fa-google"></i>
+                      <span class="buttonText">Sign in With Google</span>
+                    </a>
+                    <a href="#" class="forgot_form existed_account forgot_password_link show_form">Forgot Password</a>
+                  </form>
                 </div>
               </div>
             </div>
-            <div class="col-md-6 contact_forum register_login_forgot">
-              <div class="register_form common_authentic_form">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="sub_heading">New Employer Registration</h4>
-                    <!--<p>Please fill up the form with your valid details to get notifications frequently</p>-->
-                    <form id="reg-form" method="post">
-                     {% csrf_token %}
-                     <div class="form-group">
-                        <label for="register-username">Username<span class="important">*</span></label>
-                        <input type="text" id="register-username" name="username" class="form-control" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="register-email">Email address<span class="important">*</span></label>
-                        <input type="email" id="register-email" name="email" class="form-control" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="register-mobile">Mobile Number<span class="important">*</span></label>
-                        <input type="tel" id="register-mobile" name="mobile" class="form-control" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="register-password">Password<span class="important">*</span></label>
-                        <input type="password" name="password" id="register-password" class="form-control" required>
-                      </div>
-                      <div class="form-group">
-                        <label>Client Type<span class="important">*</span></label>
-                        <div class="form-check">
-                          <input type="radio" id="register-client_type-recruiter" name="client_type" class="form-check-input client_type" value="recruiter" required>
-                          <label class="form-check-label" for="register-client_type-recruiter">Recruiter</label>
-                        </div>
-                        <div class="form-check">
-                          <input type="radio" id="register-client_type-company" name="client_type" class="form-check-input client_type" value="company" required>
-                          <label class="form-check-label" for="register-client_type-company">Consultancy</label>
-                        </div>
-                      </div>
-                      <div class="form-group company company_type_hide">
-                        <label for="register-name">Company Name</label>
-                        <input type="text" id="register-name" name="name" class="form-control">
-                      </div>
-                      <div class="form-group company company_type_hide">
-                        <label for="register-website">Company Website</label>
-                        <input type="url" id="register-website" name="website" class="form-control">
-                      </div>
-                      
+            <div class="forgot_form common_authentic_form inactive_form">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="sub_heading">Forgot Password</h4>
+                  <p>Please Enter your email address and we will send the change password link to your mail.</p>
+                  <form id="frm_forgot" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                      <label for="forgot-email">Email address</label>
+                      <input type="email" class="form-control" name="email" id="forgot-email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <a href="#" class="login_form existed_account login_link login_link show_form">Already have an
+                      account? Login Here </a>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="card contact_form">
+              <div class="card-body">
+                <h4 class="sub_heading">Contact Us</h4>
+                <p>Talk to our experts if you have any queries</p>
 
-                    
-                      <button type="button" class="g-recaptcha btn btn-primary" 
-        data-sitekey="{{ RECAPTCHA_SITE_KEY }}" 
-        data-callback='onSubmit' 
-        data-action='submit'>Create Account</button>
-                      
-                      <!-- Fallback button in case reCAPTCHA fails to load -->
-                      <button type="submit" class="btn btn-primary fallback-submit" style="display: none;">Create Account (Fallback)</button>
-                    </form>
-                  </div>
+                <div class="detail"><span><i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    peeljobs@micropyramid.com</span> </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 contact_forum register_login_forgot">
+            <div class="register_form common_authentic_form">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="sub_heading">New Employer Registration</h4>
+                  <!--<p>Please fill up the form with your valid details to get notifications frequently</p>-->
+                  <form id="reg-form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="register-username">Username<span class="important">*</span></label>
+                      <input type="text" id="register-username" name="username" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="register-email">Email address<span class="important">*</span></label>
+                      <input type="email" id="register-email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="register-mobile">Mobile Number<span class="important">*</span></label>
+                      <input type="tel" id="register-mobile" name="mobile" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="register-password">Password<span class="important">*</span></label>
+                      <input type="password" name="password" id="register-password" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Client Type<span class="important">*</span></label>
+                      <div class="form-check">
+                        <input type="radio" id="register-client_type-recruiter" name="client_type"
+                          class="form-check-input client_type" value="recruiter" required>
+                        <label class="form-check-label" for="register-client_type-recruiter">Recruiter</label>
+                      </div>
+                      <div class="form-check">
+                        <input type="radio" id="register-client_type-company" name="client_type"
+                          class="form-check-input client_type" value="company" required>
+                        <label class="form-check-label" for="register-client_type-company">Consultancy</label>
+                      </div>
+                    </div>
+                    <div class="form-group company company_type_hide">
+                      <label for="register-name">Company Name</label>
+                      <input type="text" id="register-name" name="name" class="form-control">
+                    </div>
+                    <div class="form-group company company_type_hide">
+                      <label for="register-website">Company Website</label>
+                      <input type="url" id="register-website" name="website" class="form-control">
+                    </div>
+
+
+
+                    <button type="button" class="g-recaptcha btn btn-primary" data-sitekey="{{ RECAPTCHA_SITE_KEY }}"
+                      data-callback='onSubmit' data-action='submit'>Create Account</button>
+
+                    <!-- Fallback button in case reCAPTCHA fails to load -->
+                    <button type="submit" class="btn btn-primary fallback-submit" style="display: none;">Create Account
+                      (Fallback)</button>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-      </section>
-      <div class="push"></div>
-    </div>
-    
-    <footer class="row mt">
-      <div class="container">
-        <div class="col-md-2 contact text-left">
-          <ul>
-            <li><a class="btn btn-primary fb_footer social" target="_blank" href="https://facebook.com/peeljobs/" rel="noopener"><i class="fa-brands fa-facebook"></i></a></li>
-            <li><a href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home" class="btn btn-primary fb_footer social" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a></li>
-            <li><a class="btn btn-info twit_footer social" target="_blank" href="https://twitter.com/PeelJobs" rel="noopener"><i class="fa-brands fa-twitter"></i></a></li>
-          </ul>
-        </div>
-        <div class="footer_links col-md-10">
-          <!--<i class='fa fa-share-alt'></i>-->
-          <ul style="color:white">
-            <a style="color:white" href="/">Home</a> |
-            <a style="color:white" href="{% url 'pages' 'about-us' %}">About us</a> |
-            <a style="color:white" href="{% url 'pages' 'terms-conditions' %}">Terms & Conditions</a> |
-            <a style="color:white" href="{% url 'pages' 'privacy-policy' %}">Privacy Policy</a> |
-            <a style="color:white" href="{% url 'pages' 'recruiter-faq' %}">FAQ</a> |
-            <a style="color:white" href="{% url 'contact' %}">Contact Us</a> |
-            <a style="color:white" href="{% url "sitemap" %}">Sitemap</a>
-          </ul>
-        </div>
       </div>
-    </footer>
+
+    </section>
+    <div class="push"></div>
+  </div>
+
+  <footer class="row mt">
+    <div class="container">
+      <div class="col-md-2 contact text-left">
+        <ul>
+          <li><a class="btn btn-primary fb_footer social" target="_blank" href="https://facebook.com/peeljobs/"
+              rel="noopener"><i class="fa-brands fa-facebook"></i></a></li>
+          <li><a href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home"
+              class="btn btn-primary fb_footer social" target="_blank" rel="noopener"><i
+                class="fa-brands fa-linkedin"></i></a></li>
+          <li><a class="btn btn-info twit_footer social" target="_blank" href="https://twitter.com/PeelJobs"
+              rel="noopener"><i class="fa-brands fa-twitter"></i></a></li>
+        </ul>
+      </div>
+      <div class="footer_links col-md-10">
+        <!--<i class='fa fa-share-alt'></i>-->
+        <ul style="color:white">
+          <a style="color:white" href="/">Home</a> |
+          <a style="color:white" href="{% url 'pages' 'about-us' %}">About us</a> |
+          <a style="color:white" href="{% url 'pages' 'terms-conditions' %}">Terms & Conditions</a> |
+          <a style="color:white" href="{% url 'pages' 'privacy-policy' %}">Privacy Policy</a> |
+          <a style="color:white" href="{% url 'pages' 'recruiter-faq' %}">FAQ</a> |
+          <a style="color:white" href="{% url 'contact' %}">Contact Us</a> |
+          <a style="color:white" href="{% url 'sitemap' %}">Sitemap</a>
+        </ul>
+      </div>
+    </div>
+  </footer>
 
 
-    <script src='https://www.google.com/recaptcha/api.js'></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-     
-     {% compress js %}
-    <script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
-    <script type="text/javascript" src='{% static 'r1/js/jquery.form.js' %}'></script>
-    <script type="text/javascript" src='{% static 'js/main.js' %}'></script>
-  <script type="text/javascript" src='{% static 'r1/js/jquery.plainmodal.min.js' %}'></script>
-    <script type="text/javascript" src='{% static 'js/recruiter_login.js' %}'></script>
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-{% endcompress %}
-     <script>
+  {% compress js %}
+  <script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'r1/js/jquery.form.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+  <script type="text/javascript" src="{% static 'r1/js/jquery.plainmodal.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/recruiter_login.js' %}"></script>
 
-      
-   function onSubmit(token) {
-     console.log('reCAPTCHA verified, token:', token);
-     
-     // Add reCAPTCHA token to form
-     var form = document.getElementById("reg-form");
-     
-     // Remove any existing reCAPTCHA token inputs
-     var existingTokens = form.querySelectorAll('input[name="g-recaptcha-response"]');
-     existingTokens.forEach(function(input) {
-       input.remove();
-     });
-     
-     // Add new reCAPTCHA token
-     var tokenInput = document.createElement("input");
-     tokenInput.type = "hidden";
-     tokenInput.name = "g-recaptcha-response";
-     tokenInput.value = token;
-     form.appendChild(tokenInput);
-     
-     console.log('Triggering form submission');
-     // Trigger the form submission which will be handled by the jQuery submit handler
-     $(form).trigger('submit');
-   }
-   
-   // Check if reCAPTCHA loaded properly and show fallback if needed
-   $(document).ready(function() {
-     // Add click handler for debugging
-     $('.g-recaptcha').on('click', function() {
-       console.log('reCAPTCHA button clicked');
-     });
-     
-     $('.fallback-submit').on('click', function() {
-       console.log('Fallback button clicked');
-     });
-     
-     // Wait a bit for reCAPTCHA to load
-     setTimeout(function() {
-       if (typeof grecaptcha === 'undefined') {
-         console.log('reCAPTCHA failed to load, showing fallback');
-         $('.g-recaptcha').hide();
-         $('.fallback-submit').show();
-       } else {
-         console.log('reCAPTCHA loaded successfully');
-       }
-     }, 3000);
-   });
- </script>
+  {% endcompress %}
+  <script>
 
-  </body>
+
+    function onSubmit(token) {
+      console.log('reCAPTCHA verified, token:', token);
+
+      // Add reCAPTCHA token to form
+      var form = document.getElementById("reg-form");
+
+      // Remove any existing reCAPTCHA token inputs
+      var existingTokens = form.querySelectorAll('input[name="g-recaptcha-response"]');
+      existingTokens.forEach(function (input) {
+        input.remove();
+      });
+
+      // Add new reCAPTCHA token
+      var tokenInput = document.createElement("input");
+      tokenInput.type = "hidden";
+      tokenInput.name = "g-recaptcha-response";
+      tokenInput.value = token;
+      form.appendChild(tokenInput);
+
+      console.log('Triggering form submission');
+      // Trigger the form submission which will be handled by the jQuery submit handler
+      $(form).trigger('submit');
+    }
+
+    // Check if reCAPTCHA loaded properly and show fallback if needed
+    $(document).ready(function () {
+      // Add click handler for debugging
+      $('.g-recaptcha').on('click', function () {
+        console.log('reCAPTCHA button clicked');
+      });
+
+      $('.fallback-submit').on('click', function () {
+        console.log('Fallback button clicked');
+      });
+
+      // Wait a bit for reCAPTCHA to load
+      setTimeout(function () {
+        if (typeof grecaptcha === 'undefined') {
+          console.log('reCAPTCHA failed to load, showing fallback');
+          $('.g-recaptcha').hide();
+          $('.fallback-submit').show();
+        } else {
+          console.log('reCAPTCHA loaded successfully');
+        }
+      }, 3000);
+    });
+  </script>
+
+</body>
+
 </html>

@@ -134,15 +134,6 @@
             </div>
         </nav>
        
-        {% block page_search_block %}
-        {% endblock %}
-         </div>
-
-          <!-- search_login starts here -->
-          {% block search_block %}
-          {% endblock %}
-          <!-- search_login ends here -->
-        </div>
       </section>
 
     <section class="main_container">
@@ -261,13 +252,10 @@
           <ul>
             <li><a class="btn btn-primary fb_footer social" target="_blank" href="https://facebook.com/peeljobs/"><i class="fa fa-facebook"></i></a></li>
             <li><a href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home" class="btn btn-primary fb_footer social" target="_blank"><i class="fa fa-linkedin"></i></a></li>
-
-            <!-- <li><a class="btn btn-danger gplus_footer social" target="_blank" href="https://plus.google.com/b/105171863747311260917/105171863747311260917"><i class="fa fa-google-plus"></i></a></li> -->
             <li><a class="btn btn-info twit_footer social" target="_blank" href="https://twitter.com/PeelJobs"><i class="fa fa-twitter"></i></a></li>
           </ul>
         </div>
         <div class="footer_links col-md-10">
-          <!--<i class='fa fa-share-alt'></i>-->
           <ul style="color:white">
             <a style="color:white" href="/">Home</a> |
             <a style="color:white" href="{% url 'pages' 'about-us' %}">About us</a> |
@@ -275,13 +263,12 @@
             <a style="color:white" href="{% url 'pages' 'privacy-policy' %}">Privacy Policy</a> |
             <a style="color:white" href="{% url 'pages' 'recruiter-faq' %}">FAQ</a> |
             <a style="color:white" href="{% url 'contact' %}">Contact Us</a> |
-            <a style="color:white" href="{% url "sitemap" %}">Sitemap</a>
+            <a style="color:white" href="{% url 'sitemap' %}">Sitemap</a>
           </ul>
         </div>
       </div>
     </footer>
 
-<script src='https://www.google.com/recaptcha/api.js'></script>
 
   </body>
 </html>
