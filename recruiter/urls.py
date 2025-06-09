@@ -3,7 +3,6 @@ from django.urls import re_path as url
 from recruiter.views import (
     index,
     getout,
-    registration_success,
     how_it_works,
     dashboard,
     jobs_list,
@@ -69,7 +68,6 @@ app_name = "recruiter"
 urlpatterns = [
     url(r"^$", index, name="index"),
     url(r"^out/$", getout, name="getout"),
-    url(r"^thank-you-message/$", registration_success, name="registration_success"),
     url(r"^how-it-works/$", how_it_works, name="how_it_works"),
     url(r"^dashboard/$", dashboard, name="dashboard"),
     url(r"^job/list/$", jobs_list, name="list"),

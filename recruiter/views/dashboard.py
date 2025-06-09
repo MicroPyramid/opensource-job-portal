@@ -121,12 +121,6 @@ def dashboard(request):
 
 
 
-@recruiter_login_required
-def registration_success(request):
-   
-    return render(request, "recruiter/registration_success.html", {})
-
-
 
 
 def how_it_works(request):
