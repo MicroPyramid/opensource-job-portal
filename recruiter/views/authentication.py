@@ -114,7 +114,6 @@ from recruiter.views.dashboard import get_autocomplete
 # - google_login()
 # - google_connect()
 # - facebook_login()
-# - getout()
 
 
 def index(request):
@@ -923,11 +922,3 @@ def facebook_login(request):
             + ", user_website, email, user_likes, user_groups, publish_actions, publish_pages"
         )
         return HttpResponseRedirect(rty)
-
-
-
-
-@recruiter_login_required
-def getout(request):
-    logout(request)
-    return HttpResponseRedirect("/recruiter/login/")

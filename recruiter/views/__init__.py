@@ -48,7 +48,6 @@ from .authentication import (
     google_login,
     google_connect,
     facebook_login,
-    getout,
 )
 
 # Profile Management Views

@@ -2,7 +2,6 @@ from django.urls import re_path as url
 
 from recruiter.views import (
     index,
-    getout,
     how_it_works,
     verify_mobile,
     send_mobile_verification_code,
@@ -58,7 +57,6 @@ app_name = "agency"
 
 urlpatterns = [
     url(r"^$", index, name="index"),
-    url(r"^out/$", getout, name="getout"),
     url(r"^how-it-works/$", how_it_works, name="how_it_works"),
     url(r"^dashboard/$", dashboard, name="dashboard"),
     url(r"^mobile/verify/$", verify_mobile, name="verify_mobile"),
