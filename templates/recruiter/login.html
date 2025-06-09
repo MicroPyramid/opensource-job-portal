@@ -1,274 +1,731 @@
-<!DOCTYPE html>
+{% extends "base_with_tailwind.html" %}
 {% load thumbnail %}
 {% load static %}
-{% load compress %}
 {% load page_tags %}
-<html>
-  <head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
+
+{% block title %}{{ meta_title|safe }}{% endblock %}
+
+{% block extra_css %}
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-11720509-7"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
-
   gtag('config', 'UA-11720509-7');
 </script>
-    <title>{{ meta_title|safe }}</title>
-    <meta name="description" content="{{ meta_description|safe }}"/>
-    <meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
-   <meta property="og:title"  content="{{ meta_title|safe }}"/>
-  <meta property="og:description"  content="{{ meta_description|safe }}"/>
-  <meta property="og:image"  content="{{jobopenings}}"/>
-  <meta property="og:image:width" content="200" />
-  <meta property="og:image:height" content="200" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="{{favicon}}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- SEO Meta Tags -->
+<meta name="description" content="{{ meta_description|safe }}" />
+<meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
+<meta property="og:title" content="{{ meta_title|safe }}" />
+<meta property="og:description" content="{{ meta_description|safe }}" />
+<meta property="og:image" content="{{jobopenings}}" />
+<meta property="og:image:width" content="200" />
+<meta property="og:image:height" content="200" />
+<link rel="icon" type="image/x-icon" href="{{favicon}}" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- FontAwesome (keeping for now during migration) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+  integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    {% compress css %}
-    <link rel="stylesheet" type="text/less" href="{% static 'r1/css/login.less' %}">
-    {% endcompress %}
-       
-  </head>
+<style>
+  /* Custom gradients and specific styling */
+  .header-gradient {
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #2563eb 100%);
+  }
 
-  <body class="login_bg">
-<style type="text/css">
-  .vertical-right-aligned {
-    transform: rotate(-90deg);
-    transform-origin: 100% 100%;
-    position: fixed;
-    right: 0;
-    top: 20%;
+  .banner-icons-bg {
+    background: url('{% static "img/banner_icons.png" %}') no-repeat center bottom;
+    background-size: cover;
+    position: relative;
+  }
+
+  /* Ensure navbar has proper z-index and background */
+  .navbar-container {
+    position: relative;
     z-index: 100;
-  }
-  .mar_lr_0{
-    margin-left: 0;
-    margin-right: 0;
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #2563eb 100%);
+    backdrop-filter: blur(10px);
   }
 
+  /* Ensure links are always visible */
+  .navbar-container a {
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .navbar-container a:hover {
+    color: #f1f5f9 !important;
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+  }
+
+  /* Enhanced button animations with better visibility */
+  .btn-primary {
+    transform: translateY(0);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    background: #2563eb !important;
+    color: white !important;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+    background: #1d4ed8 !important;
+  }
+
+  .btn-secondary {
+    transform: translateY(0);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+    background: #16a34a !important;
+    color: white !important;
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+    background: #15803d !important;
+  }
+
+  /* Card hover effects with proper contrast */
+  .feature-card {
+    transition: all 0.3s ease;
+    background: white !important;
+    border: 1px solid #e5e7eb;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: #d1d5db;
+  }
+
+  /* Icon animations with better visibility */
+  .feature-icon {
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover .feature-icon {
+    transform: scale(1.1);
+  }
+
+  /* Company logo hover effects */
+  .company-logo {
+    transition: all 0.3s ease;
+    filter: grayscale(20%);
+    background: white !important;
+    border: 1px solid #f3f4f6 !important;
+  }
+
+  .company-logo:hover {
+    filter: grayscale(0%);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #e5e7eb !important;
+  }
+
+  /* Enhanced stats section with better contrast */
+  .stats-item {
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 0.5rem;
+  }
+
+  .stats-item:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  /* Override any conflicting styles */
+  .text-visible {
+    color: #1f2937 !important;
+  }
+
+  .text-visible-light {
+    color: #4b5563 !important;
+  }
+
+  .text-white-force {
+    color: white !important;
+  }
+
+  .bg-white-force {
+    background: white !important;
+  }
 </style>
-    <div class="wrapper">
-      <section class="mar_lr_0 header_banner">
-        <div class="icon_banner">
-         <div class="header_panel">
-          <nav class="navbar navbar-expand-lg megamenu py-3">
-            <div class="container">
-               <a class="navbar-brand" href="/">Peeljobs</a>
+{% endblock %}
 
-              <!-- Brand and toggle get grouped for better mobile display -->
-              <div class="navbar-header">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-                  <i class="fa-solid fa-bars"></i>
-                </button>
-              </div>
-              <!-- Collect the nav links, forms, and other content for toggling -->
-              <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav main_menu">
-               
-                
-                  <li {% if request.path == '/fresher-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher Jobs <span class="sr-only">(current)</span></a></li>
-                   <li {% if request.path == '/walkin-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'walkin' %}">Walkin Jobs <span class="sr-only">(current)</span></a></li>
-                  {% if request.user.user_type == 'JS' %}
-                  <li><a href="{% url 'jobs:jobs_applied' %}">Applied Jobs</a></li>
-                  {% endif %}
-                  <li {% if request.path == '/internship-jobs/' %}class="active"{% endif %}>
-                    <a href="{% url 'internship_jobs'%}">Internship</a>
-                  </li>
-                  <li {% if request.path == '/companies/' %}class="active"{% endif %}>
-                    <a href="{% url 'companies' %}">Companies</a>
-                  </li>
-                  <li {% if request.path == '/recruiters/' %}class="active"{% endif %}>
-                    <a href="{% url 'recruiters' %}">Recruiters</a>
-                  </li>
-                  {% if request.user.user_type == 'JS' %}
-                    {% get_unread_messages request.user '' '' as unread_messages %}
-                    <li {% if request.path == '/profile/' %}class="active"{% endif %} {% if unread_messages %} title="{{ unread_messages }} Messages From recruiters"{% endif %}>
-                      <a href="{% url 'my:profile' %}">My Profile {% if unread_messages %}({{ unread_messages }}){% endif %}</a>
-                    </li>
-                    <li>
-                      <span>
-                      {% if request.user.profile_pic|length > 0 %}
-                        <img class="profile_picture" src="{{request.user.profile_pic.url}}" width="40" height="40">
-                      {% elif request.user.photo %}
-                        <img class="profile_picture" src="{{request.user.photo}}" >
-                      {% else %}
-                        <img class="profile_picture" src="https://cdn.peeljobs.com/dummy.jpg">
-                      {% endif %}
-                      </span>
-                    </li>
-                    <li><a href="/logout/?next={{ request.path }}" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
-                    {% elif request.user.is_superuser %}
-                    <li><a href="/dashboard/">Dashboard</a></li>
-                    <li><a href="/logout/" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
-                    {% elif request.user.is_recruiter or request.user.is_agency_recruiter %}
-                    <li><a href="/recruiter/">Dashboard</a></li>
-                    <li><a href="/logout/" class='logout'><i class="fa fa-sign-out"></i> Logout</a></li>
-                  {% endif %}
-                </ul>
-                {% if not request.user.is_authenticated %}
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 navbar-right">
-                  <li class="jobseeker_auth">
-                    <div class="">
-                      <a href="/login/">Login</a>
-                    </div>
-                  </li>
+{% block body_class %}bg-gray-50 font-inter{% endblock %}
 
+{% block content %}
+<div class="min-h-screen flex flex-col">
+  <!-- Header Section with Navigation -->
+  <header class="relative">
+    <!-- Navigation Bar -->
+    <nav class="navbar-container relative z-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Brand -->
+          <div class="flex-shrink-0">
+            <a href="/" class="text-white font-bold text-xl hover:text-gray-200 transition-colors">
+              Peeljobs
+            </a>
+          </div>
 
-                 
-
-                  <li class="log"><a href="{% url 'post_job' %}">Recruiter Login | register</a></li>
-                  <!-- <li><a href="/post-job/" class="up_resume">Upload Resume</a></li> -->
-                </ul>
-                {% endif %}
-              </div>
-              <!-- /.navbar-collapse -->
-              
-            </div>
-        </nav>
-       
-      </section>
-
-    <section class="main_container">
-
-        <div class="container">
-          <!-- banner starts here -->
-          <div class="banner_container row mt">
-            <div class="card banner_panel">
-              <div class="card-body banner_block">
-                <h1>{{ h1_tag }}</h1>
-                <div class="row">
-                  <div class="col-md-8 banner-left">
-                    <h3 class="card-title">Recruit the best candidates </h3>
-                    <ul class="list-inline">
-                      <li>Post unlimited free jobs on peeljobs in distinct sectors to hire the best candidate</li>
-                      <li>Manage jobs in your social connections with one click</li>
-                      <li>Hire qualified candidates for your organization</li>
-                      <li>Monitor entire recruitment process</li>
-                      <li>Screen right candidates from your dashboard itself</li>
-                      <li>Know about your job views count of social networking sites</li>
-                    </ul>
-                    <h3 class="text register_text pt-4 mb-0"><a href="/recruiter/login/" class="register_banner_quote" target="_blank">Login / Register <!-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> --></a></h3>
-                  </div>
-                  <div class="col-md-4 banner-right">
-                    <img src="{% static 'hire-now.png' %}"></img>
-                    <br>
-                    <br>
-                    <a href="{% url "recruiter:new_user" %}" class="banner_quote" target="_blank">Post Unlimited Free Jobs <!-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> --></a>
-                  </div>
-                </div>
-
-                <br clear="all">
-              </div>
-            </div>
-            <div class="card latest_updates">
-              <div class="card-body p-0">
-                <ul class="text-center">
-                  <li>More than 2 million qualified candidates</li>
-                  <li>Daily 1000+ new profiles are registering into our site</li>
-                  <li>1 million+ active profiles from all the industries</li>
-                  <li>24/7 customer support to get in touch with you</li>
-                </ul>
-              </div>
+          <!-- Desktop Navigation -->
+          <div class="md:block">
+            <div class="ml-10 flex items-baseline space-x-6">
+              <a href="{% url 'fresher_jobs_by_skills' 'fresher' %}"
+                class="text-white hover:text-gray-200 px-3 py-2 text-sm font-medium transition-colors {% if request.path == '/fresher-jobs-by-skills/' %}bg-blue-800 rounded{% endif %}">
+                Fresher Jobs
+              </a>
+              <a href="{% url 'fresher_jobs_by_skills' 'walkin' %}"
+                class="text-white hover:text-gray-200 px-3 py-2 text-sm font-medium transition-colors {% if request.path == '/walkin-jobs-by-skills/' %}bg-blue-800 rounded{% endif %}">
+                Walkin Jobs
+              </a>
+              {% if request.user.user_type == 'JS' %}
+              <a href="{% url 'jobs:jobs_applied' %}"
+                class="text-white hover:text-gray-200 px-3 py-2 text-sm font-medium transition-colors">
+                Applied Jobs
+              </a>
+              {% endif %}
+              <a href="{% url 'internship_jobs' %}"
+                class="text-white hover:text-gray-200 px-3 py-2 text-sm font-medium transition-colors {% if request.path == '/internship-jobs/' %}bg-blue-800 rounded{% endif %}">
+                Internship
+              </a>
+              <a href="{% url 'companies' %}"
+                class="text-white hover:text-gray-200 px-3 py-2 text-sm font-medium transition-colors {% if request.path == '/companies/' %}bg-blue-800 rounded{% endif %}">
+                Companies
+              </a>
+              <a href="{% url 'recruiters' %}"
+                class="text-white hover:text-gray-200 px-3 py-2 text-sm font-medium transition-colors {% if request.path == '/recruiters/' %}bg-blue-800 rounded{% endif %}">
+                Recruiters
+              </a>
             </div>
           </div>
-          <!-- banner ends here -->
-          <!-- companies starts here -->
-            <section>
-              <div class="container">
-                <div class="companies_block row mt-3">
-                  <div class="card">
-                    <div class="card-body">
-                      <h4 class="sub_heading">Companies Hiring Through us</h4>
-                      <ul class="logo_list">
-                        <li><a href="/ibm-india-pvt-limited-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/76911fad9bcee03a5e0b5ec2906077bf/ibm-india-pvt-limited" alt="ibm-india-pvt-limited" /></a></li>
-                        <li><a href="/infosys-multinational-private-limited-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/fc8c15f8fb5f213c8de5efeb06f3e415/infosys-multinational-private-limited" alt="infosys-multinational-private-limited"/></a></li>
-                        <li><a href="/tcs-pvt-ltd-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/8e2f704ea031ed8598f76c83bcfd30d8/tcs-pvt-ltd" alt="tcs-pvt-ltd"/></a></li>
-                        <li><a href="/accenture-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/244348b91bdf2204f68b23c5f3d57847/accenture" alt="accenture"/></a></li>
-                        <li><a href="/tech-mahindra-private-limited-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/0d468c133458c052822139573dc149e4/tech-mahindra-private-limited" alt="tech-mahindra-private-limited"/></a></li>
-                        <li><a href="/cognizant-technology-solutions-india-ltd-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/01859d2fd7dc39960bfc8e5eac6d5647/cognizant-technology-solutions-india-ltd" alt="cognizant-technology-solutions-india-ltd" /></a></li>
-                        <li><a href="/dell-private-limited-job-openings/" target="_blank"><img src="https://peeljobs.s3.amazonaws.com/company/logo/c08568f1d9941ca6c11d0cae504ba059/dell-private-limited" alt="dell-private-limited"/></a></li>
-                        <br clear="all">
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          <!-- companies ends here -->
-          <!-- features starts here -->
-          <div class="features_block row">
-            <h3 class="my-3">How PeelJobs helps you in Recruitment</h3>
-            <div class="col-md-4 feature_item text-center">
-              <div class="card">
-                <div class="card-body">
-                  <div class="img">
-                    <i class="fa fa-envelope" aria-hidden="true"></i>
-                  </div>
-                  <h4 class="feature_heading">Post A Job</h4>
-                  <p>Post your required jobs to access our extensive job seeker database. Our Database consist of nearly 2 million job seekers; 1 million+ active profiles</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 feature_item text-center">
-              <div class="card">
-                <div class="card-body">
-                  <div class="img">
-                    <i class="fa fa-users" aria-hidden="true"></i>
-                  </div>
-                  <h4 class="feature_heading">Manage Candidates</h4>
-                  <p>Track qualified resumes from your dashboard itself. Automatically email notifications will be sent to your registered email if any candidate applied for your job post</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 feature_item text-center">
-              <div class="card">
-                <div class="card-body">
-                  <div class="img">
-                    <i class="fa fa-question" aria-hidden="true"></i>
-                  </div>
-                  <h4 class="feature_heading">Customer Support</h4>
-                  <p>There is a in built support in recruiter dashboard. You can raise tickets from there itself. Our experts will get in touch with you to provide the best solution for your queries</p>
-                </div>
-              </div>
+
+          <!-- Right side navigation -->
+          <div class="md:block">
+            <div class="ml-4 flex items-center space-x-4">
+              <a href="/login/"
+                class="text-white px-3 py-2 text-sm font-medium transition-colors hover:bg-white hover:text-blue-600">
+                Login
+              </a>
+              <a href="{% url 'post_job' %}"
+                class="text-blue-600 px-4 py-2 text-sm font-medium transition-colors">
+                Recruiter Login | Register
+              </a>
             </div>
           </div>
-          <!-- features ends here -->
-        </div>
-      </section>
-      <div class="push"></div>
-    </div>
 
-    <footer class="row mt">
-      <div class="container">
-        <div class="col-md-2 contact text-left">
-          <ul>
-            <li><a class="btn btn-primary fb_footer social" target="_blank" href="https://facebook.com/peeljobs/"><i class="fa fa-facebook"></i></a></li>
-            <li><a href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home" class="btn btn-primary fb_footer social" target="_blank"><i class="fa fa-linkedin"></i></a></li>
-            <li><a class="btn btn-info twit_footer social" target="_blank" href="https://twitter.com/PeelJobs"><i class="fa fa-twitter"></i></a></li>
-          </ul>
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button type="button" class="text-white hover:text-gray-200 focus:outline-none focus:text-gray-200 p-2"
+              id="mobile-menu-button">
+              <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+          </div>
         </div>
-        <div class="footer_links col-md-10">
-          <ul style="color:white">
-            <a style="color:white" href="/">Home</a> |
-            <a style="color:white" href="{% url 'pages' 'about-us' %}">About us</a> |
-            <a style="color:white" href="{% url 'pages' 'terms-conditions' %}">Terms & Conditions</a> |
-            <a style="color:white" href="{% url 'pages' 'privacy-policy' %}">Privacy Policy</a> |
-            <a style="color:white" href="{% url 'pages' 'recruiter-faq' %}">FAQ</a> |
-            <a style="color:white" href="{% url 'contact' %}">Contact Us</a> |
-            <a style="color:white" href="{% url 'sitemap' %}">Sitemap</a>
-          </ul>
+
+        <!-- Mobile Navigation Menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+          <div class="px-2 pt-2 pb-3 space-y-1 border-t border-blue-500">
+            <a href="{% url 'fresher_jobs_by_skills' 'fresher' %}"
+              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Fresher
+              Jobs</a>
+            <a href="{% url 'fresher_jobs_by_skills' 'walkin' %}"
+              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Walkin
+              Jobs</a>
+            {% if request.user.user_type == 'JS' %}
+            <a href="{% url 'jobs:jobs_applied' %}"
+              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Applied
+              Jobs</a>
+            {% endif %}
+            <a href="{% url 'internship_jobs' %}"
+              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Internship</a>
+            <a href="{% url 'companies' %}"
+              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Companies</a>
+            <a href="{% url 'recruiters' %}"
+              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Recruiters</a>
+
+            {% if not request.user.is_authenticated %}
+            <div class="border-t border-blue-500 pt-3 mt-3">
+              <a href="/login/"
+                class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Login</a>
+              <a href="{% url 'post_job' %}"
+                class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Recruiter
+                Login | Register</a>
+            </div>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </footer>
+    </nav>
 
+    <!-- Enhanced Banner Background Section -->
+    <div class="banner-icons-bg header-gradient py-12 md:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
+            Welcome to PeelJobs
+          </h1>
+          <p class="text-xl md:text-2xl opacity-95 drop-shadow-md">
+            Your Gateway to the Best Career Opportunities
+          </p>
+          <div class="mt-8">
+            <a href="#main-content"
+              class="inline-flex items-center bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
+              <span class="text-blue-600">Start Recruiting</span>
+              <i class="fa fa-arrow-down ml-2 text-blue-600"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-  </body>
-</html>
+  <!-- Main Content -->
+  <main class="flex-1 bg-gray-50" id="main-content">
+    <!-- Enhanced Banner Section -->
+    <section class="bg-gray-50 py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Main Banner -->
+        <div class="bg-white-force rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+          <div class="p-8 md:p-12 bg-white-force">
+            <div class="text-center mb-12">
+              <h1 class="text-3xl md:text-4xl font-bold text-visible mb-4">{{ h1_tag }}</h1>
+              <p class="text-lg text-visible-light max-w-2xl mx-auto">
+                Connect with top talent and streamline your hiring process with our comprehensive recruitment platform
+              </p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-12 items-center">
+              <!-- Enhanced Left Content -->
+              <div class="lg:col-span-2">
+                <h3 class="text-2xl font-semibold text-visible mb-8 flex items-center">
+                  <i class="fa fa-bullseye text-blue-600 mr-3"></i>
+                  Recruit the Best Candidates
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6 mb-10">
+                  <div class="space-y-4">
+                    <div class="flex items-start group">
+                      <div class="bg-blue-100 rounded-full p-2 mr-4 group-hover:bg-blue-200 transition-colors">
+                        <i class="fa fa-check text-blue-700 text-sm"></i>
+                      </div>
+                      <p class="text-visible leading-relaxed">Post unlimited free jobs across distinct sectors</p>
+                    </div>
+                    <div class="flex items-start group">
+                      <div class="bg-blue-100 rounded-full p-2 mr-4 group-hover:bg-blue-200 transition-colors">
+                        <i class="fa fa-share-alt text-blue-700 text-sm"></i>
+                      </div>
+                      <p class="text-visible leading-relaxed">Manage jobs in your social connections with one click</p>
+                    </div>
+                    <div class="flex items-start group">
+                      <div class="bg-blue-100 rounded-full p-2 mr-4 group-hover:bg-blue-200 transition-colors">
+                        <i class="fa fa-users text-blue-700 text-sm"></i>
+                      </div>
+                      <p class="text-visible leading-relaxed">Hire qualified candidates for your organization</p>
+                    </div>
+                  </div>
+                  <div class="space-y-4">
+                    <div class="flex items-start group">
+                      <div class="bg-blue-100 rounded-full p-2 mr-4 group-hover:bg-blue-200 transition-colors">
+                        <i class="fa fa-chart-line text-blue-700 text-sm"></i>
+                      </div>
+                      <p class="text-visible leading-relaxed">Monitor entire recruitment process</p>
+                    </div>
+                    <div class="flex items-start group">
+                      <div class="bg-blue-100 rounded-full p-2 mr-4 group-hover:bg-blue-200 transition-colors">
+                        <i class="fa fa-filter text-blue-700 text-sm"></i>
+                      </div>
+                      <p class="text-visible leading-relaxed">Screen right candidates from your dashboard</p>
+                    </div>
+                    <div class="flex items-start group">
+                      <div class="bg-blue-100 rounded-full p-2 mr-4 group-hover:bg-blue-200 transition-colors">
+                        <i class="fa fa-eye text-blue-700 text-sm"></i>
+                      </div>
+                      <p class="text-visible leading-relaxed">Track job views across social networks</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                  <a href="/recruiter/login/" target="_blank"
+                    class="btn-primary inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white-force font-semibold px-8 py-4 rounded-lg text-lg">
+                    <i class="fa fa-sign-in-alt mr-2 text-white-force"></i>
+                    <span class="text-white-force">Login / Register</span>
+                  </a>
+                  <a href="{% url 'recruiter:new_user' %}" target="_blank"
+                    class="btn-secondary inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white-force font-semibold px-8 py-4 rounded-lg text-lg">
+                    <i class="fa fa-plus-circle mr-2 text-white-force"></i>
+                    <span class="text-white-force">Start Free Trial</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Enhanced Right Content -->
+              <div class="text-center">
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 mb-8 border border-blue-200">
+                  <!-- Redesigned content area without image -->
+                  <div class="mb-8">
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-blue-100 mb-6">
+                      <h4 class="text-xl font-bold text-blue-700 mb-3">Ready to Start Hiring?</h4>
+                      <p class="text-gray-700 text-sm leading-relaxed">
+                        Join thousands of recruiters who trust PeelJobs to find the perfect candidates for their
+                        organizations.
+                      </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                      <div class="bg-white rounded-lg p-4 shadow-sm border border-blue-100">
+                        <div class="flex items-center justify-center mb-2">
+                          <i class="fa fa-clock text-blue-600 mr-2"></i>
+                          <span class="text-sm font-semibold text-gray-700">Quick Setup</span>
+                        </div>
+                        <p class="text-xs text-gray-600">Get started in just 5 minutes</p>
+                      </div>
+
+                      <div class="bg-white rounded-lg p-4 shadow-sm border border-green-100">
+                        <div class="flex items-center justify-center mb-2">
+                          <i class="fa fa-shield-alt text-green-600 mr-2"></i>
+                          <span class="text-sm font-semibold text-gray-700">100% Secure</span>
+                        </div>
+                        <p class="text-xs text-gray-600">Your data is completely protected</p>
+                      </div>
+
+                      <div class="bg-white rounded-lg p-4 shadow-sm border border-purple-100">
+                        <div class="flex items-center justify-center mb-2">
+                          <i class="fa fa-users text-purple-600 mr-2"></i>
+                          <span class="text-sm font-semibold text-gray-700">2M+ Candidates</span>
+                        </div>
+                        <p class="text-xs text-gray-600">Access to qualified professionals</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Call-to-action button -->
+                <a href="{% url 'recruiter:new_user' %}" target="_blank"
+                  class="btn-secondary inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white-force font-bold px-6 py-3 rounded-lg text-lg w-full transform hover:scale-105 transition-all duration-300">
+                  <i class="fa fa-rocket mr-2 text-white-force"></i>
+                  <span class="text-white-force">Start Recruiting Today</span>
+                </a>
+
+                <!-- Additional trust indicators -->
+                <div class="mt-4 text-xs text-gray-500">
+                  <div class="flex items-center justify-center space-x-4">
+                    <span class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-1"></i>
+                      No Credit Card Required
+                    </span>
+                    <span class="flex items-center">
+                      <i class="fa fa-star text-yellow-500 mr-1"></i>
+                      Trusted by 10,000+ Companies
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enhanced Stats Banner -->
+        <div class="bg-gradient-to-r from-slate-700 to-slate-800 rounded-xl mt-8 overflow-hidden shadow-lg">
+          <div class="p-8">
+            <h3 class="text-center text-xl font-semibold mb-8 text-white-force">Why Choose PeelJobs?</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div class="stats-item text-center p-4 rounded-lg">
+                <div class="text-3xl font-bold text-blue-200 mb-2">2M+</div>
+                <p class="text-sm uppercase font-medium leading-relaxed text-gray-100">Qualified Candidates</p>
+              </div>
+              <div class="stats-item text-center p-4 rounded-lg">
+                <div class="text-3xl font-bold text-green-200 mb-2">1000+</div>
+                <p class="text-sm uppercase font-medium leading-relaxed text-gray-100">Daily New Registrations</p>
+              </div>
+              <div class="stats-item text-center p-4 rounded-lg">
+                <div class="text-3xl font-bold text-yellow-200 mb-2">1M+</div>
+                <p class="text-sm uppercase font-medium leading-relaxed text-gray-100">Active Industry Profiles</p>
+              </div>
+              <div class="stats-item text-center p-4 rounded-lg">
+                <div class="text-3xl font-bold text-purple-200 mb-2">24/7</div>
+                <p class="text-sm uppercase font-medium leading-relaxed text-gray-100">Customer Support</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enhanced Companies Section -->
+    <section class="bg-white-force py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white-force rounded-2xl shadow-lg border border-gray-200">
+          <div class="p-8 bg-white-force">
+            <div class="text-center mb-10">
+              <h4 class="text-2xl font-bold text-visible mb-4">Trusted by Leading Companies</h4>
+              <p class="text-visible-light">Join thousands of companies that hire through our platform</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
+              <a href="/ibm-india-pvt-limited-job-openings/" target="_blank"
+                class="company-logo flex justify-center items-center p-6 hover:bg-gray-50 rounded-lg transition-all duration-300">
+                <img
+                  src="https://peeljobs.s3.amazonaws.com/company/logo/76911fad9bcee03a5e0b5ec2906077bf/ibm-india-pvt-limited"
+                  alt="IBM India" class="max-h-12 max-w-full object-contain">
+              </a>
+              <a href="/infosys-multinational-private-limited-job-openings/" target="_blank"
+                class="company-logo flex justify-center items-center p-6 hover:bg-gray-50 rounded-lg transition-all duration-300">
+                <img
+                  src="https://peeljobs.s3.amazonaws.com/company/logo/fc8c15f8fb5f213c8de5efeb06f3e415/infosys-multinational-private-limited"
+                  alt="Infosys" class="max-h-12 max-w-full object-contain">
+              </a>
+              <a href="/tcs-pvt-ltd-job-openings/" target="_blank"
+                class="company-logo flex justify-center items-center p-6 hover:bg-gray-50 rounded-lg transition-all duration-300">
+                <img src="https://peeljobs.s3.amazonaws.com/company/logo/8e2f704ea031ed8598f76c83bcfd30d8/tcs-pvt-ltd"
+                  alt="TCS" class="max-h-12 max-w-full object-contain">
+              </a>
+              <a href="/accenture-job-openings/" target="_blank"
+                class="company-logo flex justify-center items-center p-6 hover:bg-gray-50 rounded-lg transition-all duration-300">
+                <img src="https://peeljobs.s3.amazonaws.com/company/logo/244348b91bdf2204f68b23c5f3d57847/accenture"
+                  alt="Accenture" class="max-h-12 max-w-full object-contain">
+              </a>
+              <a href="/tech-mahindra-private-limited-job-openings/" target="_blank"
+                class="company-logo flex justify-center items-center p-6 hover:bg-gray-50 rounded-lg transition-all duration-300">
+                <img
+                  src="https://peeljobs.s3.amazonaws.com/company/logo/0d468c133458c052822139573dc149e4/tech-mahindra-private-limited"
+                  alt="Tech Mahindra" class="max-h-12 max-w-full object-contain">
+              </a>
+              <a href="/cognizant-technology-solutions-india-ltd-job-openings/" target="_blank"
+                class="company-logo flex justify-center items-center p-6 hover:bg-gray-50 rounded-lg transition-all duration-300">
+                <img
+                  src="https://peeljobs.s3.amazonaws.com/company/logo/01859d2fd7dc39960bfc8e5eac6d5647/cognizant-technology-solutions-india-ltd"
+                  alt="Cognizant" class="max-h-12 max-w-full object-contain">
+              </a>
+              <a href="/dell-private-limited-job-openings/" target="_blank"
+                class="company-logo flex justify-center items-center p-6 hover:bg-gray-50 rounded-lg transition-all duration-300">
+                <img
+                  src="https://peeljobs.s3.amazonaws.com/company/logo/c08568f1d9941ca6c11d0cae504ba059/dell-private-limited"
+                  alt="Dell" class="max-h-12 max-w-full object-contain">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enhanced Features Section -->
+    <section class="bg-gray-50 py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h3 class="text-3xl font-bold text-visible mb-4">How PeelJobs Transforms Your Recruitment</h3>
+          <p class="text-xl text-visible-light max-w-3xl mx-auto">Streamline your hiring process with our powerful tools
+            and extensive candidate database</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Enhanced Feature 1 -->
+          <div class="feature-card bg-white-force rounded-2xl shadow-lg border border-gray-200 text-center group">
+            <div class="p-8 bg-white-force">
+              <div class="mb-8">
+                <div
+                  class="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto group-hover:bg-blue-200 transition-colors">
+                  <i class="feature-icon fa fa-envelope text-3xl text-blue-600" aria-hidden="true"></i>
+                </div>
+              </div>
+              <h4 class="text-xl font-semibold text-visible mb-4">Post A Job</h4>
+              <p class="text-visible-light leading-relaxed mb-6">
+                Access our extensive database of 2 million job seekers with 1 million+ active profiles. Post jobs
+                instantly and reach qualified candidates.
+              </p>
+              <div class="text-sm text-blue-700 font-medium bg-blue-50 p-3 rounded">
+                ✓ Instant job posting ✓ Wide reach ✓ Active candidates
+              </div>
+            </div>
+          </div>
+
+          <!-- Enhanced Feature 2 -->
+          <div class="feature-card bg-white-force rounded-2xl shadow-lg border border-gray-200 text-center group">
+            <div class="p-8 bg-white-force">
+              <div class="mb-8">
+                <div
+                  class="bg-green-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto group-hover:bg-green-200 transition-colors">
+                  <i class="feature-icon fa fa-users text-3xl text-green-600" aria-hidden="true"></i>
+                </div>
+              </div>
+              <h4 class="text-xl font-semibold text-visible mb-4">Manage Candidates</h4>
+              <p class="text-visible-light leading-relaxed mb-6">
+                Track and manage qualified resumes from your dashboard. Get automatic email notifications when
+                candidates apply to your job posts.
+              </p>
+              <div class="text-sm text-green-700 font-medium bg-green-50 p-3 rounded">
+                ✓ Real-time tracking ✓ Auto notifications ✓ Easy management
+              </div>
+            </div>
+          </div>
+
+          <!-- Enhanced Feature 3 -->
+          <div class="feature-card bg-white-force rounded-2xl shadow-lg border border-gray-200 text-center group">
+            <div class="p-8 bg-white-force">
+              <div class="mb-8">
+                <div
+                  class="bg-purple-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto group-hover:bg-purple-200 transition-colors">
+                  <i class="feature-icon fa fa-headset text-3xl text-purple-600" aria-hidden="true"></i>
+                </div>
+              </div>
+              <h4 class="text-xl font-semibold text-visible mb-4">24/7 Support</h4>
+              <p class="text-visible-light leading-relaxed mb-6">
+                Built-in support system in your recruiter dashboard. Raise tickets directly and get expert assistance
+                for all your recruitment needs.
+              </p>
+              <div class="text-sm text-purple-700 font-medium bg-purple-50 p-3 rounded">
+                ✓ Built-in ticketing ✓ Expert assistance ✓ Quick resolution
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Enhanced Footer -->
+  <footer class="bg-gradient-to-r from-slate-800 to-slate-900 text-white-force py-12 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row justify-between items-center space-y-8 lg:space-y-0">
+        <!-- Enhanced Social Links -->
+        <div class="flex space-x-4">
+          <a href="https://facebook.com/peeljobs/" target="_blank"
+            class="group bg-blue-600 hover:bg-blue-700 text-white-force px-4 py-3 rounded-xl transition-all duration-300 flex items-center justify-center hover:scale-110">
+            <i class="fa fa-facebook text-lg group-hover:scale-110 transition-transform text-white-force"></i>
+          </a>
+          <a href="https://www.linkedin.com/company/peeljobs?trk=top_nav_home" target="_blank"
+            class="group bg-blue-600 hover:bg-blue-700 text-white-force px-4 py-3 rounded-xl transition-all duration-300 flex items-center justify-center hover:scale-110">
+            <i class="fa fa-linkedin text-lg group-hover:scale-110 transition-transform text-white-force"></i>
+          </a>
+          <a href="https://twitter.com/PeelJobs" target="_blank"
+            class="group bg-blue-400 hover:bg-blue-500 text-white-force px-4 py-3 rounded-xl transition-all duration-300 flex items-center justify-center hover:scale-110">
+            <i class="fa fa-twitter text-lg group-hover:scale-110 transition-transform text-white-force"></i>
+          </a>
+        </div>
+
+        <!-- Enhanced Footer Links -->
+        <div class="text-center lg:text-right">
+          <div class="flex flex-wrap justify-center lg:justify-end items-center gap-x-6 gap-y-3">
+            <a href="/"
+              class="text-gray-300 hover:text-white-force transition-colors duration-200 text-base font-medium hover:underline">Home</a>
+            <span class="text-gray-500 hidden lg:inline text-lg">|</span>
+            <a href="{% url 'pages' 'about-us' %}"
+              class="text-gray-300 hover:text-white-force transition-colors duration-200 text-base font-medium hover:underline">About
+              us</a>
+            <span class="text-gray-500 hidden lg:inline text-lg">|</span>
+            <a href="{% url 'pages' 'terms-conditions' %}"
+              class="text-gray-300 hover:text-white-force transition-colors duration-200 text-base font-medium hover:underline">Terms
+              & Conditions</a>
+            <span class="text-gray-500 hidden lg:inline text-lg">|</span>
+            <a href="{% url 'pages' 'privacy-policy' %}"
+              class="text-gray-300 hover:text-white-force transition-colors duration-200 text-base font-medium hover:underline">Privacy
+              Policy</a>
+            <span class="text-gray-500 hidden lg:inline text-lg">|</span>
+            <a href="{% url 'pages' 'recruiter-faq' %}"
+              class="text-gray-300 hover:text-white-force transition-colors duration-200 text-base font-medium hover:underline">FAQ</a>
+            <span class="text-gray-500 hidden lg:inline text-lg">|</span>
+            <a href="{% url 'contact' %}"
+              class="text-gray-300 hover:text-white-force transition-colors duration-200 text-base font-medium hover:underline">Contact
+              Us</a>
+            <span class="text-gray-500 hidden lg:inline text-lg">|</span>
+            <a href="{% url 'sitemap' %}"
+              class="text-gray-300 hover:text-white-force transition-colors duration-200 text-base font-medium hover:underline">Sitemap</a>
+          </div>
+          <div class="mt-6 text-sm text-gray-400">
+            © 2024 PeelJobs. All rights reserved.
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Enhanced mobile menu toggle with animation
+  document.getElementById('mobile-menu-button').addEventListener('click', function () {
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenu.classList.toggle('hidden');
+
+    // Animate menu items
+    if (!mobileMenu.classList.contains('hidden')) {
+      const menuItems = mobileMenu.querySelectorAll('a');
+      menuItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+          item.style.transition = 'all 0.3s ease';
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    }
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Add loading state to buttons
+  document.querySelectorAll('.btn-primary, .btn-secondary').forEach(button => {
+    button.addEventListener('click', function () {
+      const originalText = this.innerHTML;
+      this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Loading...';
+      this.disabled = true;
+
+      setTimeout(() => {
+        this.innerHTML = originalText;
+        this.disabled = false;
+      }, 2000);
+    });
+  });
+
+  // Initialize Lucide icons after content loads
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+
+    // Add entrance animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe feature cards and stats
+    document.querySelectorAll('.feature-card, .stats-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'all 0.6s ease';
+      observer.observe(el);
+    });
+  });
+</script>
+{% endblock %}
