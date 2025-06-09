@@ -882,6 +882,7 @@ def job_industries(request, industry, **kwargs):
     search_dict = QueryDict("", mutable=True)
     search_dict.setlist("refine_industry", [searched_industry[0].name])
 
+    print("searched_industry", searched_industry)
     if request.POST.get("refine_search") == "True":
         (
             job_list,

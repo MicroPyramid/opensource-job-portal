@@ -37,7 +37,6 @@ olefile = "==0.46"
 
 [dev-packages]
 behave-django = "==1.4.0"
-django-behave = "==0.1.6"
 black = "==25.1.0"
 bpython = "==0.23"
 coverage = "==7.6.12"
