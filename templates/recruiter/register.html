@@ -169,62 +169,7 @@
     <section class="main_container">
       <div class="container">
         <div class="row">
-          <div class="col-md-6 register_login_forgot contact_forum">
-            <div class="login_form common_authentic_form">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="sub_heading">Employer's Login</h4>
-                  <!--<p>Please enter your valid credentials to operate your account</p>-->
-                  <form id="frm_login" method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                      <label for="login-email">Email address</label>
-                      <input type="email" id="login-email" class="form-control" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                      <label for="login-password">Password</label>
-                      <input type="password" id="login-password" class="form-control" name="password" required>
-                      <input type="hidden" name="next" value="{{request.GET.next}}">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                    <a id="customBtn" class="btn btn-outline-danger customGPlusSignIn" href='{% url '
-                      recruiter:google_login' %}' role="button">
-                      <i class="fa-brands fa-google"></i>
-                      <span class="buttonText">Sign in With Google</span>
-                    </a>
-                    <a href="#" class="forgot_form existed_account forgot_password_link show_form">Forgot Password</a>
-                  </form>
-                </div>
-              </div>
-            </div>
-            <div class="forgot_form common_authentic_form inactive_form">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="sub_heading">Forgot Password</h4>
-                  <p>Please Enter your email address and we will send the change password link to your mail.</p>
-                  <form id="frm_forgot" method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                      <label for="forgot-email">Email address</label>
-                      <input type="email" class="form-control" name="email" id="forgot-email" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <a href="#" class="login_form existed_account login_link login_link show_form">Already have an
-                      account? Login Here </a>
-                  </form>
-                </div>
-              </div>
-            </div>
-            <div class="card contact_form">
-              <div class="card-body">
-                <h4 class="sub_heading">Contact Us</h4>
-                <p>Talk to our experts if you have any queries</p>
 
-                <div class="detail"><span><i class="fa-solid fa-envelope" aria-hidden="true"></i>
-                    peeljobs@micropyramid.com</span> </div>
-              </div>
-            </div>
-          </div>
           <div class="col-md-6 contact_forum register_login_forgot">
             <div class="register_form common_authentic_form">
               <div class="card">

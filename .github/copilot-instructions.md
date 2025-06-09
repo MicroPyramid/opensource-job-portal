@@ -2,7 +2,8 @@ Dear Copilot,
 
 ## Project Overview
 
-PeelJobs is a dynamic, user-centric job board platform designed to streamline the entire hiring process, from job posting to application management. Built with modern web technologies, it offers a seamless experience for job seekers, recruiters, and administrators through robust role-based access control (RBAC). Each user role is equipped with tailored functionalities to enhance efficiency, engagement, and management, ensuring a streamlined and secure recruitment process.
+PeelJobs is a dynamic, user-centric job board platform designed to streamline the entire hiring process, from job posting to application management. Built with modern web technologies, it offers a seamless experience for job seekers, recruiters, and administrators through robust role-based access control (RBAC).
+Each user role is equipped with tailored functionalities to enhance efficiency, engagement, and management, ensuring a streamlined and secure recruitment process.
 
 user types we have
     
@@ -25,3 +26,8 @@ PeelJobs is a modern job board application built with:
 Migrate from old packages to new packages, ensuring that the application remains functional and up-to-date with the latest standards.
 
 
+## Code Guidelines
+- Use clear, descriptive variable and function names.
+- Follow PEP 8 style guidelines for Python code.
+- Use consistent naming conventions for files and directories.
+- by default, don't use gradient or animations in tailwind css, use only solid colors.
