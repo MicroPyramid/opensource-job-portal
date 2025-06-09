@@ -1,75 +1,217 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% load searchtags %}
 
 {% block block_canonical %}
-<link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+<link rel="canonical" href="https://peeljobs.com{{ request.path }}" />
 {% endblock %}
 
 {% block block_title %}
-  <title>About US - Peeljobs</title>
-
-  <meta name="description" content="Online Jobs and Career site in India to build bright career. Read more about PeelJobs"/>
-
+<title>About US - Peeljobs</title>
+<meta name="description"
+  content="Online Jobs and Career site in India to build bright career. Read more about PeelJobs" />
 {% endblock %}
-{% block page_search_block %}
-{% show_search_filter %}
-{% endblock %}
+
 {% block base %}
 
-    <div class="content_div">
-      <!-- SEARCH PART -->
-      <section id='content_pages' class="main_container">
-        <div class="container">
-        <div class="breadcrumb_section">
-          <nav>
-            <ol class="cd-breadcrumb triangle">
-              <li>
-                <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
-                  <span class="name" >Home</span>
-                </a>
-              </li>
-              <li class="current">
-                <span class='job_detail'>
-                  <span class="name">About Us</span>
-                </span>
-              </li>
-            </ol>
-          </nav>
-        </div>
-          <div class="row mar_lr_0 content-page" style="margin-left:17px;margin-top: 12px;">
-            <!-- content starts here -->
-              <h3 class="title">About US</h3>
-                <div class="content">
-                   <p>Peeljobs.com is one of the leading jobs board now a days, attracting a lot of job seekers every month on the hunt of more than hundreds live job ads the site carries at any one time. What you want is what you get at right time with right information at right place is what the motto of this job board. Hundreds of recruiters from multinational to smaller company, consultants and advertising agencies use peeljobs.com to recruit individuals almost in every sector.It helps both IT and non IT companies to find the best fitting resumes open for a job, position or a project. We help thousands of tech professionals to find a job every day.</p>
-                   <p>Peeljobs.com is a comprehensive online service job portal which aims at providing one stop platform for all the participants of job market. Be it a job seeker, a recruiter or an employer all would find a worth of their search. Peeljobs.com with its user friendly interface, intends to make the work effortless and simple. </p>
-                   <p>Peeljobs.com is constantly working on improving the coverage of jobs and relevance of the results to help the users in finding their continuous and ever changing needs. Anyone visiting/logging onto this website is assured of finding the suitable fit. The essence of the entire functionality is based on the focused approach for focused people logging on to the job portal.</p>
-                   <p>Typically job hunt is also a job. Definitely, Peeljobs.com does it for you.</p><p>we provide a fast and better way to find a job for jobseeker according to location, skills, qualifications, experience etc. </p>
-                   <p>our online system helps recruiter finds the best available talent from its large continuously refreshed candidate database of active &nbsp;job seekers which includes indians, US citizens, Green card holders, H1B work permit holders etc.</p>
-                   <p>Our integrated technology greatly benefits the large staffing agencies with multiple recruiters by reducing over 99% &nbsp;of their sourcing time and effort in identifying resumes that most a fit a job requirement.</p>
-                   <p>Applying to jobs are completely free for candidates. Our site completely eliminates the need for search and connects them with the right job opportunity multiple times a day. </p>
-                   <p>Peeljobs.com provides the perfect platform for the young candidates to seize the best job opportunity suiting their backgrounds by screening them the huge of available job opportunities.</p>
-                   <p>The platform is provided for candidates from backgrounds like finance/accounts, IT/ITES, Pharmaceuticals, marketing, manufacturing and many other sectors.</p><p><b>In short Peeljobs.com is….</b></p>
-                   <ul>
-                   <li>Your source for employment information and inspiration</li>
-                   <li>The place to manage your career</li>
-                   <li>Your pathway to career success</li>
-                   <li>Tools to help job seekers, students and career professionals. </li></ul>
-                   <p>Peeljobs.com is the fastest online recruitment company which attracts huge amount of job seekers generating tremendous amount of applications. To enquire about advertising your job vacancies on peeljobs.com please contact the address mentioned below.</p>
-                
-                </div>
-                
-            <!-- content ends here -->
-             
-            
-              <!-- Tab panes -->
-              
-          </div>
-        </div>
-      </section>
-      <!-- content of job page -->
+<!-- Hero Section -->
+<div class="bg-blue-50 py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-8" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2 text-sm text-gray-600">
+        <li>
+          <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" 
+             class="hover:text-blue-600 transition-colors duration-200">
+            Home
+          </a>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          <span class="text-gray-900 font-medium">About Us</span>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Hero Content -->
+    <div class="text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        About <span class="text-blue-600">PeelJobs</span>
+      </h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        Your trusted partner in connecting talent with opportunity. We're revolutionizing the job search experience for both candidates and employers.
+      </p>
     </div>
-{% block pj_info %}
-  <div class="col-md-2 col-sm-8 col-xs-8 about">
   </div>
-{% endblock %}
+</div>
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  
+  <!-- Mission Statement Card -->
+  <div class="bg-white rounded-xl shadow-lg p-8 mb-12 border border-gray-100">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
+    </div>
+    
+    <div class="prose prose-lg max-w-none text-gray-600 leading-relaxed space-y-6">
+      <p class="text-center text-xl font-medium text-gray-700 mb-8">
+        "What you want is what you get at the right time with right information at the right place"
+      </p>
+      
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <p>Peeljobs.com is one of the leading job boards today, attracting thousands of job seekers every month searching through hundreds of live job opportunities. We serve as the bridge between talented professionals and leading companies across various industries.</p>
+          
+          <p>Our platform caters to both IT and non-IT sectors, helping companies find the perfect candidates while assisting professionals in discovering their ideal career opportunities. We're proud to help thousands of tech professionals find meaningful employment every day.</p>
+        </div>
+        
+        <div>
+          <p>As a comprehensive online job portal, Peeljobs.com provides a one-stop platform for all job market participants. Whether you're a job seeker, recruiter, or employer, our user-friendly interface makes your search effortless and simple.</p>
+          
+          <p>We continuously work on improving job coverage and result relevance to meet the ever-changing needs of our users. Every visitor to our platform is assured of finding their perfect match.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Grid -->
+  <div class="grid md:grid-cols-3 gap-8 mb-16">
+    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+      <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">For Job Seekers</h3>
+      <p class="text-gray-600">Fast and better way to find jobs according to location, skills, qualifications, and experience. Completely free application process.</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+      <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">For Recruiters</h3>
+      <p class="text-gray-600">Access to a large, continuously refreshed candidate database including Indians, US citizens, Green card holders, and H1B work permit holders.</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+      <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">For Agencies</h3>
+      <p class="text-gray-600">Integrated technology that reduces over 99% of sourcing time for staffing agencies with multiple recruiters.</p>
+    </div>
+  </div>
+
+  <!-- Industry Coverage -->
+  <div class="bg-gray-50 rounded-xl p-8 mb-12">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Industry Coverage</h2>
+    <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
+      We provide the perfect platform for candidates from diverse backgrounds to seize the best job opportunities by screening through our vast database of available positions.
+    </p>
+    
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div class="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-200">
+        <div class="text-blue-600 font-semibold">Finance</div>
+        <div class="text-sm text-gray-500">& Accounts</div>
+      </div>
+      <div class="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-200">
+        <div class="text-blue-600 font-semibold">IT</div>
+        <div class="text-sm text-gray-500">& ITES</div>
+      </div>
+      <div class="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-200">
+        <div class="text-blue-600 font-semibold">Pharma</div>
+        <div class="text-sm text-gray-500">& Healthcare</div>
+      </div>
+      <div class="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-200">
+        <div class="text-blue-600 font-semibold">Marketing</div>
+        <div class="text-sm text-gray-500">& Sales</div>
+      </div>
+      <div class="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-200">
+        <div class="text-blue-600 font-semibold">Manufacturing</div>
+        <div class="text-sm text-gray-500">& Production</div>
+      </div>
+      <div class="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-200">
+        <div class="text-blue-600 font-semibold">Many More</div>
+        <div class="text-sm text-gray-500">Sectors</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What Makes Us Special -->
+  <div class="text-center mb-12">
+    <h2 class="text-3xl font-bold text-gray-900 mb-8">In Short, PeelJobs.com is...</h2>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white rounded-lg p-6 shadow-md border border-gray-100">
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Information Source</h3>
+        <p class="text-sm text-gray-600">Your source for employment information and inspiration</p>
+      </div>
+
+      <div class="bg-white rounded-lg p-6 shadow-md border border-gray-100">
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+          </svg>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Career Management</h3>
+        <p class="text-sm text-gray-600">The place to manage your career effectively</p>
+      </div>
+
+      <div class="bg-white rounded-lg p-6 shadow-md border border-gray-100">
+        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Success Pathway</h3>
+        <p class="text-sm text-gray-600">Your pathway to career success and growth</p>
+      </div>
+
+      <div class="bg-white rounded-lg p-6 shadow-md border border-gray-100">
+        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+          </svg>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Professional Tools</h3>
+        <p class="text-sm text-gray-600">Tools to help job seekers and career professionals</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="bg-blue-600 rounded-xl p-8 text-center text-white">
+    <h2 class="text-2xl font-bold mb-4">Ready to Find Your Next Opportunity?</h2>
+    <p class="text-blue-100 mb-6 max-w-2xl mx-auto">
+      Peeljobs.com is the fastest online recruitment platform that attracts a huge number of job seekers, generating tremendous applications. Join thousands of professionals who have found their dream jobs through our platform.
+    </p>
+    <div class="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
+      <a href="/jobs/" class="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200">
+        Browse Jobs
+      </a>
+      <a href="/contact/" class="inline-block bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors duration-200">
+        Contact Us
+      </a>
+    </div>
+  </div>
+
+</div>
+
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% load searchtags %}
 
 {% block block_canonical %}
@@ -6,55 +6,125 @@
 {% endblock %}
 
 {% block block_title %}
-  <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
-
-  <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
-
+  <title>Report a Problem - Feedback - PeelJobs</title>
+  <meta name="description" content="Report issues, suggest features, or provide feedback to help us improve PeelJobs - India's leading job portal."/>
 {% endblock %}
-{% block page_search_block %}
-{% show_search_filter %}
-{% endblock %}
+
 {% block base %}
+<div class="bg-gray-50 min-h-screen">
+  <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm text-gray-600">
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" 
+               class="hover:text-blue-600 transition-colors" 
+               itemprop="item" rel="v:url" property="v:title">
+              <span itemprop="name">Home</span>
+            </a>
+          </li>
+          <li class="text-gray-400">/</li>
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name" class="text-gray-900 font-medium">Feedback</span>
+          </li>
+        </ol>
+      </nav>
 
-<div class="content_div">
-  <!-- SEARCH PART -->
-  <section id='content_pages'>
-    <div class="container">
-      <div class="breadcrumb flat">
-         <ul>
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name" itemprop="item" rel="v:url" property="v:title"><span itemprop="name" class="name" >Home</span></a></li>
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="." itemprop="item" rel="v:url" property="v:title"><span itemprop="name" class="name">Feedback</span></a></li>
-          </ul>
-      </div>
-      <div class="row mt content-page">
-        <!-- content starts here -->
-        <h3 class="title">Report A Problem</h3>
-        <div class="content">
-          <div class="report-row">
-            <div class="report-left">
-              Do you see missing or incorrect information?<br>
-              Do you want us to add a new feature or improve the existing one?<br>
-              Tell us about changes in the world around you that aren't reflected in peeljobs.<br>
-              We’ll confirm your report with other users, data providers, or existing jobs information. Due to the volume of reports, we may not be able             to respond to you directly. If approved, your change may take some time to appear on the site.<br>
-              You can report many types of issues with peeljobs, such as problems with job listings and also any queries regarding peeljobs.
-            </div>
-            <div class="report-right"><img src="{{ STATIC_URL }}img/report.png"></div>
-            <br clear="all"> 
+      <!-- Main Content -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="p-8">
+          <!-- Header -->
+          <div class="text-center mb-12">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Report A Problem</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+              Help us improve PeelJobs by reporting issues, suggesting features, or providing feedback
+            </p>
           </div>
-          <div class="report-blur"><img src="{{ STATIC_URL }}img/blur.jpg"></div>
-          <div class="report-desc">A problem statement is a clear concise description of the issue(s) that need(s) to be addressed by a problem solving team. It is used to center and focus the team at the beginning, keep the team on track during the effort, and is used to validate that the effort delivered an outcome that solves the problem statement. 
+
+          <!-- Main Content Grid -->
+          <div class="grid lg:grid-cols-2 gap-12 items-start mb-12">
+            <!-- Left Content -->
+            <div class="space-y-6">
+              <div class="space-y-4">
+                <div class="flex items-start space-x-3">
+                  <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-3"></div>
+                  <p class="text-gray-700 leading-relaxed">
+                    Do you see missing or incorrect information?
+                  </p>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                  <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-3"></div>
+                  <p class="text-gray-700 leading-relaxed">
+                    Do you want us to add a new feature or improve the existing one?
+                  </p>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                  <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-3"></div>
+                  <p class="text-gray-700 leading-relaxed">
+                    Tell us about changes in the world around you that aren't reflected in PeelJobs.
+                  </p>
+                </div>
+              </div>
+
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 class="font-semibold text-blue-900 mb-3">Response Policy</h3>
+                <p class="text-blue-800 text-sm leading-relaxed">
+                  We'll confirm your report with other users, data providers, or existing job information. 
+                  Due to the volume of reports, we may not be able to respond to you directly. 
+                  If approved, your change may take some time to appear on the site.
+                </p>
+              </div>
+
+              <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                <h3 class="font-semibold text-green-900 mb-3">What You Can Report</h3>
+                <p class="text-green-800 text-sm leading-relaxed">
+                  You can report many types of issues with PeelJobs, such as problems with job listings, 
+                  technical issues, feature requests, and any queries regarding our platform.
+                </p>
+              </div>
+            </div>
+
+            
+          </div>
+
+          <!-- Problem Statement Section -->
+          <div class="relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg opacity-50"></div>
+            <div class="relative p-8 rounded-lg">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                Writing an Effective Problem Statement
+              </h2>
+              <p class="text-gray-700 leading-relaxed">
+                A problem statement is a clear, concise description of the issue(s) that need(s) to be 
+                addressed by a problem-solving team. It is used to center and focus the team at the beginning, 
+                keep the team on track during the effort, and is used to validate that the effort delivered 
+                an outcome that solves the problem statement.
+              </p>
+            </div>
+          </div>
+
+          <!-- Contact Section -->
+          <div class="mt-12 text-center">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Ready to Submit Your Feedback?</h3>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <button class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                Submit Feedback
+              </button>
+              <button class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                Contact Support
+              </button>
+            </div>
           </div>
         </div>
-        <!-- content ends here -->
-        <!-- Tab panes -->
       </div>
     </div>
   </section>
-  <!-- content of job page -->
 </div>
+
 {% block pj_info %}
-  <div class="col-md-2 col-sm-8 col-xs-8 about">
-  </div>
+  <!-- Content moved to main section -->
 {% endblock %}
 {% endblock %}

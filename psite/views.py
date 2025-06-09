@@ -8,6 +8,7 @@ from django.http.response import HttpResponseRedirect, HttpResponse, JsonRespons
 from django.conf import settings
 from itertools import chain
 from django.template import loader
+from django.template.exceptions import TemplateDoesNotExist
 
 # from oauth2client.contrib import xsrfutil
 from django.urls import reverse
@@ -24,28 +25,22 @@ from dashboard.tasks import send_email
 
 
 def pages(request, page_name):
-    pages_slugs = [
-        "about-us",
-        "terms-conditions",
-        "privacy-policy",
-        "recruiter-faq",
-        "faq",
-    ]
-    if page_name in pages_slugs:
+    # if the page is not found in pages folder throw 404 error
+    try:
         return render(request, "pages/" + page_name + ".html")
-
-    message = "Sorry, the page you requested can not be found"
-    reason = "The URL may be misspelled or the page you're looking for is no longer available."
-    if request.user.is_authenticated and request.user.is_recruiter:
+    except TemplateDoesNotExist:
+        message = "Sorry, the page you requested can not be found"
+        reason = "The URL may be misspelled or the page you're looking for is no longer available."
+        if request.user.is_authenticated and request.user.is_recruiter:
+            return render(
+                request,
+                "recruiter/recruiter_404.html",
+                {"message": message, "reason": reason},
+                status=404,
+            )
         return render(
-            request,
-            "recruiter/recruiter_404.html",
-            {"message": message, "reason": reason},
-            status=404,
+            request, "404.html", {"message": message, "reason": reason}, status=404
         )
-    return render(
-        request, "404.html", {"message": message, "reason": reason}, status=404
-    )
 
 
 # def users_login(request):

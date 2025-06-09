@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% load searchtags %}
 
 {% block block_canonical %}
@@ -7,78 +7,185 @@
 
 {% block block_title %}
   <title>Recruiter FAQ - PeelJobs</title>
-
   <meta name="description" content="Recruiters frequently asked questions - Post jobs at free of cost with PeelJobs"/>
+{% endblock %}
 
-{% endblock %}
-{% block page_search_block %}
-{% show_search_filter %}
-{% endblock %}
 {% block base %}
 <!-- main_container starts here -->
-  <div id='content_pages' class="row mar_lr_0 main_container">
-    <div class="container">
+<div id='content_pages' class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- breadcrumb_section starts here -->
-    <div class="breadcrumb_section row mar_lr_0">
-      <nav>
-        <ol class="cd-breadcrumb triangle">
-          <li>
-            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
-              <span class="name" >Home</span>
-            </a>
-          </li>
-          <li>
-            <span href="." class="job_detail">
-              <span class="name">Recruiter FAQ</span>
-            </span>
-          </li>
-        </ol>
-      </nav>
-    </div>
+    <nav class="mb-8" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2 text-sm text-gray-600">
+        <li>
+          <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" 
+             class="text-blue-600 hover:text-blue-800 transition-colors">
+            Home
+          </a>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-gray-900 font-medium">Recruiter FAQ</span>
+        </li>
+      </ol>
+    </nav>
     <!-- breadcrumb_section ends here -->
-      <div class="row mar_lr_0 content-page" style="margin-left:17px;">
-      <!-- content starts here -->
-        <h3 class="title">FREQUENTLY ASKED QUESTIONS</h3>
-        <div class="content">
-          <p class="sub-head">RECRUITER : </p>
-          <p class="adv-head"><span class="que">Q : </span> How can i login to my account?<br>
-            A:  Please go to the homepage of peeljobs.com and select the recruiter menu to find login.
-            Enter your registered email id and password, then click Login to login into your account.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span> How can i post a job requirement ?<br>
-            <span class="ans">A : </span> If you are a consultancy or any job agency then you have to register your consultancy name in our company. Then you can post your jobs from there, no need to contact every time.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span>How can i search for resumes(profiles) at peeljobs.com ?<br>
-            <span class="ans">A : </span> Resume with title are available in our site. you can directly search for title it will show required profiles.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span> How can I see/view the application received for my job post ??<br>
-            <span class="ans">A : </span> After login,please go to home page, there you can see job list. In every job list there is a link Applied Jobs. It will show all the candidate list applied to job.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span> How can i edit job details ?<br>
-            <span class="ans">A : </span> Please go to home page, there you can find a link edit this job. You can edit that job there only.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span> I can’t remember the password to my account. How can I login again?<br>
-            <span class="ans">A : </span> You can provide your email id in reset password. one auto generated password will be send to you, using this password you can login again and change your password as you want.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span> How can i register in peeljobs.com?<br>
-            <span class="ans">A : </span> You can register online yourself along with your company details.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span> How will i know my application/job post is unsuccessful ??<br>
-            <span class="ans">A : </span> you will get a message that job is not posted successfully, later you can post your job again without any problems.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span>On what basis do you make your selection?<br>
-            <span class="ans">A : </span>Candidates are screened and shortlisted on the basis of job requirements, such as level of qualifications and experience related to position they are applying for.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span> What happens to the Resume posted?<br>
-            <span class="ans">A : </span> After posting the Resume, it will go to the Resume database of Peeljobs Job Portal where the team will review the resume and consider it for suitable jobs. The resumes will be given to the registered Employers who have been verified and approved by the Administrator of Company.These Employers will contact the suitable candidates.
-          </p>
+
+    <!-- content starts here -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div class="px-6 py-8 sm:px-8">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
+          <p class="text-lg text-gray-600">Everything you need to know as a recruiter on PeelJobs</p>
         </div>
-        <!-- content ends here -->
+
+        <div class="space-y-8">
+          <div class="border-l-4 border-blue-500 pl-6">
+            <h2 class="text-xl font-semibold text-blue-800 mb-6 uppercase tracking-wide">For Recruiters</h2>
+          </div>
+
+          <!-- FAQ Items -->
+          <div class="space-y-6">
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                How can I login to my account?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                Please go to the homepage of peeljobs.com and select the recruiter menu to find login. 
+                Enter your registered email ID and password, then click Login to access your account.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                How can I post a job requirement?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                If you are a consultancy or any job agency, you need to register your consultancy name with our company. 
+                Once registered, you can post jobs directly from your dashboard without needing to contact us each time.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                How can I search for resumes (profiles) on PeelJobs?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                Resumes with job titles are available on our site. You can directly search by job title, 
+                and it will display the relevant candidate profiles matching your requirements.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                How can I view applications received for my job posts?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                After logging in, go to your dashboard where you can see your job listings. 
+                Each job listing has an "Applied Jobs" link that will show you all candidates who have applied for that position.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                How can I edit job details?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                Go to your dashboard where you can find an "Edit this job" link for each of your job postings. 
+                You can modify job details directly from there.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                I can't remember my password. How can I login again?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                You can use the "Reset Password" feature by providing your email ID. 
+                An auto-generated password will be sent to you, which you can use to login and then change to your preferred password.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                How can I register on PeelJobs?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                You can register online by providing your company details and personal information through our registration form.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                How will I know if my job post is unsuccessful?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                You will receive a notification message if your job posting is unsuccessful. 
+                You can then repost your job without any issues.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                On what basis do you make candidate selections?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                Candidates are screened and shortlisted based on job requirements, including their level of qualifications 
+                and relevant experience for the positions they are applying for.
+              </p>
+            </div>
+
+            <div class="pb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+                <span class="text-blue-600 mr-2 font-bold">Q:</span>
+                What happens to posted resumes?
+              </h3>
+              <p class="text-gray-700 leading-relaxed ml-6">
+                <span class="text-blue-600 font-bold mr-2">A:</span>
+                After posting, resumes go into PeelJobs' database where our team reviews them and considers them for suitable positions. 
+                Resumes are shared with registered and verified employers who have been approved by our administrators. 
+                These employers will then contact suitable candidates directly.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Help Section -->
+        <div class="mt-12 p-6 bg-blue-50 rounded-lg border border-blue-200">
+          <h3 class="text-lg font-semibold text-blue-800 mb-3">Still have questions?</h3>
+          <p class="text-blue-700 mb-4">
+            If you can't find the answer you're looking for, please don't hesitate to contact our support team.
+          </p>
+          <a href="#" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Contact Support
+          </a>
+        </div>
       </div>
     </div>
+    <!-- content ends here -->
   </div>
-  {% block pj_info %}
-  <div class="col-md-2 col-sm-8 col-xs-8 about">
-  </div>
+</div>
+
+{% block pj_info %}
 {% endblock %}
 {% endblock %}

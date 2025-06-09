@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% load searchtags %}
 
 {% load page_tags %}
@@ -12,164 +12,233 @@
   <meta name="description" content="Peeljobs sitemap {{current_page}} to browse all the jobs by location, skills, industry etc."/>
 
 {% endblock %}
-{% block page_search_block %}
-{% show_search_filter %}
-{% endblock %}
 {% block base %}
 
-<div class='content_div'>
-<section class="content_wrap_list">
-        <div class="container">
-          <div class="row mt">
-            <!-- list -->
-            <div class="col-md-12 col-sm-12 sitemap">
-				<ul>
-				    {% if current_page == 1  %} 
-				    <li><a href='https://peeljobs.com/'>Home</a></li>
-				    <li><a href="{% url 'pages' 'about-us' %}">About</a></li>
-				    <li><a href="{% url 'pages' 'terms-conditions' %}">Terms & Conditions</a></li>
-				    <li><a href="{% url 'pages' 'privacy-policy' %}">Privacy Policy</a></li>
-				    <li><a href="{% url 'contact' %}">Contact Us</a></li>
-				    <li><a href="{% url 'pages' 'recruiter-faq' %}">Recruiter FAQ</a></li>
-				    <li><a href="{% url 'pages' 'faq' %}">Job Seeker FAQ</a></li>
-				    <li><a href="{% url 'jobs:index' %}">View All Jobs</a></li>
-				    <li><a href="{% url 'post_job' %}">Post Job</a></li>
-				    <li class="sitemap-parent"><a href="{% url 'jobs_by_location' 'jobs' %}">Locations</a></li>
-			        {% for location in locations %}
-				       <li class="sitemap-child"><a href="{{ location.get_job_url }}">Jobs in {{ location.name }}</a>
-				       </li>
-				    {% endfor %}
-				    {% elif current_page == 2  %}
-				    <li class="sitemap-parent"><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}" >Freshers Jobs</a></li>
-			        {% for skill in skills %}
-				       <li class="sitemap-child"><a href="{% url 'skill_fresher_jobs' skill.slug %}">{{ skill.name }} Fresher Jobs</a></li>
-				    {% endfor %}
-				    <li class="sitemap-parent"><a>Jobs by Education</a></li>
-			        {% for edu in educations %}
-				       <li class="sitemap-child"><a href="{% url 'job_skills' edu.slug %}">{{ edu.name }} Jobs</a></li>
-				    {% endfor %}
-				    <li class="sitemap-parent"><a href="#">State Wise Jobs</a></li>
-				    {% for state in states %}
-				    	<li class="sitemap-child"><a href="{% url 'job_locations' state.slug %}">Jobs in {{ state.name }}</a></li>
-				    {% endfor %}
-				    {% for state in states %}
-				    	<li class="sitemap-child"><a href="{% url 'location_walkin_jobs' state.slug %}">Walkins in {{ state.name }}</a></li>
-				    {% endfor %}
-				    {% for state in states %}
-				    	<li class="sitemap-child"><a href="{% url 'location_fresher_jobs' state.slug %}">Fresher Jobs in {{ state.name }}</a></li>
-				    {% endfor %}
-				    {% elif current_page == 3  %}
-				    <li class="sitemap-parent"><a href="{% url 'jobs_by_location' 'jobs' %}">Location Wise Jobs</a></li>
-				    {% for location in locations %}
-			        	{% for skill in skills %}
-					       <li class="sitemap-child">
-					       	<a href="{% url 'skill_location_wise_fresher_jobs' skill.slug location.slug %}">
-					       	{{ skill.name }} Fresher Jobs in {{ location.name }}</a></li>
-					       <li class="sitemap-child"><a href="{% url 'custome_search' skill.slug location.slug %}">{{ skill.name }} Jobs in {{ location.name }}</a></li>
-					    {% endfor %}
-				    {% endfor %}
-				    <li class="sitemap-parent"><a href="{% url 'jobs_by_location' 'fresher-jobs' %}">Fresher Jobs by Locations</a></li>
-				    {% for location in locations %}
-				       <li class="sitemap-child"><a href="{% url 'location_fresher_jobs' location.slug %}">Fresher Jobs in {{ location.name }}</a></li>
-				    {% endfor %}
-				    {% elif current_page == 4  %}
+<div class="min-h-screen bg-gray-50">
+  <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <!-- Header -->
+        <div class="border-b border-gray-200 px-6 py-4">
+          <h1 class="text-2xl font-bold text-gray-900">Site Map</h1>
+          <p class="mt-1 text-sm text-gray-600">Navigate through all sections of PeelJobs</p>
+        </div>
+        
+        <!-- Content -->
+        <div class="p-6">
+          <div class="sitemap-content">
+            <ul class="space-y-2">
+              {% if current_page == 1  %} 
+              <li><a href='https://peeljobs.com/' class="text-blue-600 hover:text-blue-800 font-medium">Home</a></li>
+              <li><a href="{% url 'pages' 'about-us' %}" class="text-blue-600 hover:text-blue-800">About</a></li>
+              <li><a href="{% url 'pages' 'terms-conditions' %}" class="text-blue-600 hover:text-blue-800">Terms & Conditions</a></li>
+              <li><a href="{% url 'pages' 'privacy-policy' %}" class="text-blue-600 hover:text-blue-800">Privacy Policy</a></li>
+              <li><a href="{% url 'contact' %}" class="text-blue-600 hover:text-blue-800">Contact Us</a></li>
+              <li><a href="{% url 'pages' 'recruiter-faq' %}" class="text-blue-600 hover:text-blue-800">Recruiter FAQ</a></li>
+              <li><a href="{% url 'pages' 'faq' %}" class="text-blue-600 hover:text-blue-800">Job Seeker FAQ</a></li>
+              <li><a href="{% url 'jobs:index' %}" class="text-blue-600 hover:text-blue-800">View All Jobs</a></li>
+              <li><a href="{% url 'post_job' %}" class="text-blue-600 hover:text-blue-800">Post Job</a></li>
+              
+              <li class="mt-6">
+                <a href="{% url 'jobs_by_location' 'jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Locations</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-gray-200 pl-4">
+                  {% for location in locations %}
+                  <li><a href="{{ location.get_job_url }}" class="text-blue-600 hover:text-blue-800 text-sm">Jobs in {{ location.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              {% elif current_page == 2  %}
+              <li class="mt-6">
+                <a href="{% url 'fresher_jobs_by_skills' 'fresher' %}" class="text-lg font-semibold text-gray-900 block mb-3">Freshers Jobs</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-green-200 pl-4">
+                  {% for skill in skills %}
+                  <li><a href="{% url 'skill_fresher_jobs' skill.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">{{ skill.name }} Fresher Jobs</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              <li class="mt-6">
+                <span class="text-lg font-semibold text-gray-900 block mb-3">Jobs by Education</span>
+                <ul class="ml-4 space-y-1 border-l-2 border-purple-200 pl-4">
+                  {% for edu in educations %}
+                  <li><a href="{% url 'job_skills' edu.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">{{ edu.name }} Jobs</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              <li class="mt-6">
+                <span class="text-lg font-semibold text-gray-900 block mb-3">State Wise Jobs</span>
+                <ul class="ml-4 space-y-1 border-l-2 border-orange-200 pl-4">
+                  {% for state in states %}
+                  <li><a href="{% url 'job_locations' state.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">Jobs in {{ state.name }}</a></li>
+                  {% endfor %}
+                  {% for state in states %}
+                  <li><a href="{% url 'location_walkin_jobs' state.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">Walkins in {{ state.name }}</a></li>
+                  {% endfor %}
+                  {% for state in states %}
+                  <li><a href="{% url 'location_fresher_jobs' state.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">Fresher Jobs in {{ state.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              {% elif current_page == 3  %}
+              <li class="mt-6">
+                <a href="{% url 'jobs_by_location' 'jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Location Wise Jobs</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-blue-200 pl-4">
+                  {% for location in locations %}
+                  {% for skill in skills %}
+                  <li><a href="{% url 'skill_location_wise_fresher_jobs' skill.slug location.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">{{ skill.name }} Fresher Jobs in {{ location.name }}</a></li>
+                  <li><a href="{% url 'custome_search' skill.slug location.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">{{ skill.name }} Jobs in {{ location.name }}</a></li>
+                  {% endfor %}
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              <li class="mt-6">
+                <a href="{% url 'jobs_by_location' 'fresher-jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Fresher Jobs by Locations</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-green-200 pl-4">
+                  {% for location in locations %}
+                  <li><a href="{% url 'location_fresher_jobs' location.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">Fresher Jobs in {{ location.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              {% elif current_page == 4  %}
+              <li class="mt-6">
+                <a href="{% url 'walkin_jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Walkins</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-red-200 pl-4">
+                  {% for skill in skills %}
+                  <li><a href="{% url 'skill_walkin_jobs' skill.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">{{ skill.name }} Walkins</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              <li class="mt-6">
+                <a href="{% url 'jobs_by_location' 'walkins' %}" class="text-lg font-semibold text-gray-900 block mb-3">Walkins by Locations</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-red-200 pl-4">
+                  {% for city in locations %}
+                  <li><a href="{% url 'location_walkin_jobs' city.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">{{ city.name }} Walkins</a></li>
+                  {% endfor %}
+                  {% for city in locations %}
+                  {% for skill in skills %}
+                  <li><a href="{% url 'custom_walkins' skill.slug city.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">{{ skill.name }} Walk-ins in {{ city.name }}</a></li>
+                  {% endfor %}
+                  {% endfor %}
+                </ul>
+              </li>
 
-				    <li class="sitemap-parent"><a href="{% url 'walkin_jobs' %}">Walkins</a></li>
-			        {% for skill in skills %}
-				       <li class="sitemap-child"><a href="{% url 'skill_walkin_jobs' skill.slug %}">{{ skill.name }} Walkins</a></li>
-				    {% endfor %}
-				    <li class="sitemap-parent"><a href="{% url 'jobs_by_location' 'walkins' %}">Walkins by Locations</a></li>
-				    {% for city in locations %}
-				       <li class="sitemap-child"><a href="{% url 'location_walkin_jobs' city.slug %}">{{ city.name }} Walkins</a></li>
-				    {% endfor %}
-				    {% for city in locations %}
-			        	{% for skill in skills %}
-					       <li class="sitemap-child"><a href="{% url 'custom_walkins' skill.slug city.slug %}">{{ skill.name }} Walk-ins in {{ city.name }}</a></li>
-					    {% endfor %}
-				    {% endfor %}
+              {% elif current_page == 5  %}
+              <li class="mt-6">
+                <a href="{% url 'jobs_by_skill' %}" class="text-lg font-semibold text-gray-900 block mb-3">Skills</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-indigo-200 pl-4">
+                  {% for skill in skills %}
+                  <li><a href="{{ skill.get_job_url }}" class="text-blue-600 hover:text-blue-800 text-sm">Jobs For {{ skill.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
 
-				    {% elif current_page == 5  %}
-					<li class="sitemap-parent"><a href="{% url 'jobs_by_skill' %}">Skills</a></li>
-			        {% for skill in skills %}
-				       <li class="sitemap-child"><a href="{{ skill.get_job_url }}">Jobs For {{ skill.name }}</a></li>
-				    {% endfor %}
+              {% elif current_page == 6 %}
+              <li class="mt-6">
+                <a href="{% url 'jobs_by_industry' %}" class="text-lg font-semibold text-gray-900 block mb-3">Industry</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-yellow-200 pl-4">
+                  {% get_all_industries as industries %}
+                  {% for industry in industries %}
+                  <li><a href="{% url 'job_industries' industry.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">Jobs For {{ industry.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              {% elif current_page == 7  %}
+              <li class="mt-6">
+                <a href="{% url 'internship_jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Internships</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-pink-200 pl-4">
+                  {%get_internships as all_internship_jobs%}
+                  {% for city in all_internship_jobs %}
+                  <li><a href="{% url 'city_internship_jobs' city.slug %}" title="{{ job.title}}" class="text-blue-600 hover:text-blue-800 text-sm">Internship in {{ city.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              {% else %}
 
-				    {% elif current_page == 6 %}
-					<li class="sitemap-parent"><a href="{% url 'jobs_by_industry' %}">Industry</a></li>
-				    {% get_all_industries as industries %}
-			        {% for industry in industries %}
-				       <li class="sitemap-child"><a href="{% url 'job_industries' industry.slug %}">Jobs For {{ industry.name }}</a></li>
-				    {% endfor %}
-				    {% elif current_page == 7  %}
-				    <li class="sitemap-parent"><a href="{% url 'internship_jobs' %}">Internships</a></li>
-				    {%get_internships as all_internship_jobs%}
-                      {% for city in all_internship_jobs %}
-                        <li class="sitemap-child"><a href="{% url 'city_internship_jobs' city.slug %}" title="{{ job.title}}">Internship in {{ city.name }}</a></li>
-                      {% endfor %}
-				    {% else %}
-
-				    {% if jobposts|get_object_list_type:"full-time" %}
-				       <li class="sitemap-parent"><a href="{% url 'full_time_jobs' %}">Full Time Jobs</a></li>
-				    {% endif %}
-				    {% for post in jobposts %}
-				    {% if post|get_job_type == 'full-time' %}
-				       <li class="sitemap-child"><a href='{{ post.slug }}'>{{ post.title }}</a></li>
-				    {% endif %}
-				    {% endfor %}
-
-
-				    {% if jobposts|get_object_list_type:"internship" %}
-				    <li class="sitemap-parent"><a href="{% url 'internship_jobs' %}">Internship Jobs</a></li>
-				    {% endif %}
-				    {% for post in jobposts %}
-				    {% if post|get_job_type == 'internship' %}
-				       <li class="sitemap-child"><a href='{{ post.slug }}'>{{ post.title }}</a></li>
-				    {% endif %}
-				    {% endfor %}
-
-				    {% if jobposts|get_object_list_type:"walk-in" %}
-				       <li class="sitemap-parent"><a href="{% url 'walkin_jobs' %}">Walk-in's</a></li>
-				    {% endif %}
-				    {% for post in jobposts %}
-				    {% if post|get_job_type == 'walk-in' %}
-				       <li class="sitemap-child"><a href='{{ post.slug }}'>{{ post.title }}</a></li>
-				    {% endif %}
-				    {% endfor %}
-
-				    {% if jobposts|get_object_list_type:"government" %}
-				       <li class="sitemap-parent"><a href="{% url 'government_jobs' %}">Government Jobs</a></li>
-				    {% endif %}
-				    {% for post in jobposts %}
-				    {% if post|get_job_type == 'government' %}
-				       <li class="sitemap-child"><a href='{{ post.slug }}'>{{ post.title }}</a></li>
-				    {% endif %}
-				    {% endfor %}
-				    {% endif %}
-
-				    <br>
-				{% get_page current_page last_page|add:'6' as pages %}
-				{% if current_page > 6 %}
-                	<li><a href="/sitemap/"> First Site map</a></li>
-				{% endif %}
-				{% for s in pages %}
-				  {% if current_page == s %}
-				  {% else %}
-                	<li><a href="/sitemap/{{ s }}/">Site map{{s}}</a></li>
+              {% if jobposts|get_object_list_type:"full-time" %}
+              <li class="mt-6">
+                <a href="{% url 'full_time_jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Full Time Jobs</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-blue-200 pl-4">
+                  {% for post in jobposts %}
+                  {% if post|get_job_type == 'full-time' %}
+                  <li><a href='{{ post.slug }}' class="text-blue-600 hover:text-blue-800 text-sm">{{ post.title }}</a></li>
                   {% endif %}
+                  {% endfor %}
+                </ul>
+              </li>
+              {% endif %}
+
+              {% if jobposts|get_object_list_type:"internship" %}
+              <li class="mt-6">
+                <a href="{% url 'internship_jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Internship Jobs</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-pink-200 pl-4">
+                  {% for post in jobposts %}
+                  {% if post|get_job_type == 'internship' %}
+                  <li><a href='{{ post.slug }}' class="text-blue-600 hover:text-blue-800 text-sm">{{ post.title }}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                </ul>
+              </li>
+              {% endif %}
+
+              {% if jobposts|get_object_list_type:"walk-in" %}
+              <li class="mt-6">
+                <a href="{% url 'walkin_jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Walk-in's</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-red-200 pl-4">
+                  {% for post in jobposts %}
+                  {% if post|get_job_type == 'walk-in' %}
+                  <li><a href='{{ post.slug }}' class="text-blue-600 hover:text-blue-800 text-sm">{{ post.title }}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                </ul>
+              </li>
+              {% endif %}
+
+              {% if jobposts|get_object_list_type:"government" %}
+              <li class="mt-6">
+                <a href="{% url 'government_jobs' %}" class="text-lg font-semibold text-gray-900 block mb-3">Government Jobs</a>
+                <ul class="ml-4 space-y-1 border-l-2 border-green-200 pl-4">
+                  {% for post in jobposts %}
+                  {% if post|get_job_type == 'government' %}
+                  <li><a href='{{ post.slug }}' class="text-blue-600 hover:text-blue-800 text-sm">{{ post.title }}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                </ul>
+              </li>
+              {% endif %}
+              {% endif %}
+            </ul>
+
+            <!-- Pagination -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+              <nav class="flex items-center justify-center space-x-2">
+                {% get_page current_page last_page|add:'6' as pages %}
+                {% if current_page > 6 %}
+                <a href="/sitemap/" class="px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">First Site map</a>
+                {% endif %}
+                {% for s in pages %}
+                {% if current_page == s %}
+                <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md">{{ s }}</span>
+                {% else %}
+                <a href="/sitemap/{{ s }}/" class="px-3 py-2 text-sm font-medium text-blue-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">{{ s }}</a>
+                {% endif %}
                 {% endfor %}
-                {% if current_page <  last_page|add:'-6' %}
-                	<li><a href="/sitemap/{{last_page|add:'6'}}/"> Last Site map</a></li>
-				{% endif %}
-
-
-				</ul>
-			</div>
-		</div>
-	</div>
-	</section>
+                {% if current_page < last_page|add:'-6' %}
+                <a href="/sitemap/{{last_page|add:'6'}}/" class="px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">Last Site map</a>
+                {% endif %}
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
-{% block pj_info %}
-  <div class="col-md-2 col-sm-8 col-xs-8 about">
-  </div>
-{% endblock %}
 {% endblock %}
