@@ -104,7 +104,7 @@
                     <ul class='sub_list'>
                        <li><a href="{% if request.user.is_agency_recruiter %}{% url 'agency:change_password' %}{% else %}{% url 'recruiter:change_password' %}{% endif %}">Change Password</a></li>
                        <li><a href="{% if request.user.is_agency_recruiter %}{% url 'agency:profile' %}{% else %}{% url 'recruiter:profile' %}{% endif %}">Profile</a></li>
-                       <li><a href="{% url 'recruiter:getout' %}">Logout</a></li>
+                       <li><a href="/logout/">Logout</a></li>
                     </ul>
                 </div>
                 <div class="clearfix"></div>
@@ -210,7 +210,7 @@
                 <input type="hidden" name="is_active" id="is_active" value="{{ request.user.is_active }}">
             </li>
             <li>
-                <a href="{% url 'recruiter:getout' %}">Logout</a>
+                <a href="/logout/">Logout</a>
             </li>
         </ul>
     </div>

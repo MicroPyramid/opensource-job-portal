@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% load searchtags %}
 
 {% block block_canonical %}
@@ -7,151 +7,250 @@
 
 {% block block_title %}
   <title>Contact Us - PeelJobs</title>
-
   <meta name="description" content="Peeljobs contact us information - Kindly contact us if you have any queries, we'll get back to you shortly."/>
+{% endblock %}
 
-{% endblock %}
-{% block page_search_block %}
-{% show_search_filter %}
-{% endblock %}
 {% block base %}
-<style type="text/css">
-  .error{
-    margin-left: 2px;
-  }
-</style>
-<div class="content_div">
-  <!-- SEARCH PART -->
-  <section id='content_pages' class="main_container">
-    <div class="container">
-      <div class="breadcrumb_section">
-        <nav>
-          <ol class="cd-breadcrumb triangle">
-            <li>
-              <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
-                <span class="name" >Home</span></a>
-            </li>
-            <li class="current">
-              <span class='job_detail'>
-                <span class="name">FAQ</span>
-              </span>
-            </li>
-          </ol>
-        </nav>
-      </div>
-      <div class="row mar_lr_0 content-page" style="margin-left:17px;margin-top: 12px;">
-        <!-- content starts here -->
-        <h3 class="title">CONTACT US</h3>
-        <div class="content">
-          <div class="col-md-8 contact-form">
-          <form name="personalform" id="personalform" method="post">
-            <div class="tile_deafult">
-              <div class="form_div">
-                <div class="form-group ">
-                  <label for="inputEmail3" class="control-label">First Name<span class="error">*</span></label>
-                  <div class="input_wrap">
-                    <input type="text" class="form-control" placeholder="First Name" name="first_name" id="first_name">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="control-label">Last Name</label>
-                  <div class="input_wrap">
-                    <input type="text" class="form-control" placeholder="Last Name" name="last_name" id="last_name">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="control-label">Email<span class="error">*</span>  </label>
-                  <div class="input_wrap">
-                    <input type="email" class="form-control" placeholder="Email" name="email" id="email">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="control-label">Type of Comment<span class="error">*</span></label>
-                  <div class="input_wrap">
-                    <select class="form-control" name="enquery_type" id="enquery_type">
-                      <option value="">Select A Comment</option>
-                      {% for enquery_type in enquery_types %}
-                      <option value="{{ enquery_type.0 }}">{{ enquery_type.1 }}</option>
-                      {% endfor%}
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="control-label">Mobile Number</label>
-                  <div class="input_wrap">
-                    <input type="text" class="form-control" placeholder="Mobile Number" id="phone" name="phone">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="control-label">Subject</label>
-                  <div class="input_wrap">
-                    <input type="text" class="form-control" placeholder="Subject" name="subject" id="subject" >
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputEmail3" class="control-label">Comment<span class="error">*</span></label>
-                  <div class="input_wrap">
-                    <textarea class="form-control" name="comment" id="comment" placeholder="Comment" rows="4"></textarea>
-                  </div>
-                </div>
-                <div  class="form-group col-xs-12 form-field wow fadeInUp animated captcha">
-                      <label>&nbsp;</label>
-                      <div class="button_div">
-                        <div class="g-recaptcha" data-sitekey="6LdZcgkTAAAAAD7-f9vAtRfoTsu1K7bnPfyB4i88"></div>
-                      </div>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="buttons">
-                  <button type="submit" class='submit'>Save</button>
-                  <button type="button" class="cancelbutton">Cancel</button></div>
-                </div>
-                <div class="clearfix"></div> 
-              </div>
-            </div>
-            </form>
-            </div>
+<div class="min-h-screen bg-gray-50">
+  <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm text-gray-600">
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="hover:text-blue-600 transition-colors">
+              Home
+            </a>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-4 h-4 mx-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-gray-900 font-medium">Contact Us</span>
+          </li>
+        </ol>
+      </nav>
 
-            <div class="col-md-4 contact-details">
-            <div class="contact-add">
-            <div class="contact-col">
-              <ul>
-                <li class="clist-head"> Contact Us :- </li>
-                <li> Email:<a href="#"> peeljobs@micropyramid.com</a> </li>
-              </ul>
-            </div>
-            <div class="contact-col">
-              <ul>
-                <li class="clist-head">  Address :-</li>
-                <li>Krishe Sapphire, 6th Floor, Madhapur, Hyderabad, India, 500081</li>
-              </ul>
-            </div>
-            <div class="contact-col">
-              <ul>
-                <li class="clist-head">  Business Hours :-</li>
-                <li> Monday - Friday : 10:00 - 19:00 </li>
-                <li> Saturday : 10:00 - 19:00 </li>
-              </ul>
-            </div>
-          </div>
+      <!-- Page Title -->
+      <div class="mb-12 text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Have questions or need assistance? We're here to help. Reach out to us and we'll get back to you as soon as possible.
+        </p>
+      </div>
+
+      <!-- Main Content -->
+      <div class="grid lg:grid-cols-3 gap-12">
+        <!-- Contact Form -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">Send us a Message</h2>
+            
+            <form name="personalform" id="personalform" method="post" class="space-y-6">
+              <!-- Name Fields -->
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                    First Name <span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                    placeholder="Enter your first name" 
+                    name="first_name" 
+                    id="first_name"
+                  >
+                </div>
+                <div>
+                  <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                    Last Name
+                  </label>
+                  <input 
+                    type="text" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                    placeholder="Enter your last name" 
+                    name="last_name" 
+                    id="last_name"
+                  >
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="email" 
+                  class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                  placeholder="Enter your email address" 
+                  name="email" 
+                  id="email"
+                >
+              </div>
+
+              <!-- Type of Comment -->
+              <div>
+                <label for="enquery_type" class="block text-sm font-medium text-gray-700 mb-2">
+                  Type of Inquiry <span class="text-red-500">*</span>
+                </label>
+                <select 
+                  class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white" 
+                  name="enquery_type" 
+                  id="enquery_type"
+                >
+                  <option value="">Select an inquiry type</option>
+                  {% for enquery_type in enquery_types %}
+                  <option value="{{ enquery_type.0 }}">{{ enquery_type.1 }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Phone and Subject -->
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                    Mobile Number
+                  </label>
+                  <input 
+                    type="text" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                    placeholder="Enter your mobile number" 
+                    id="phone" 
+                    name="phone"
+                  >
+                </div>
+                <div>
+                  <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                    Subject
+                  </label>
+                  <input 
+                    type="text" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                    placeholder="Enter subject" 
+                    name="subject" 
+                    id="subject"
+                  >
+                </div>
+              </div>
+
+              <!-- Comment -->
+              <div>
+                <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">
+                  Message <span class="text-red-500">*</span>
+                </label>
+                <textarea 
+                  class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical" 
+                  name="comment" 
+                  id="comment" 
+                  placeholder="Enter your message here..." 
+                  rows="5"
+                ></textarea>
+              </div>
+
+              <!-- Captcha -->
+              <div class="captcha">
+                <div class="g-recaptcha" data-sitekey="6LdZcgkTAAAAAD7-f9vAtRfoTsu1K7bnPfyB4i88"></div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                <button 
+                  type="submit" 
+                  class="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                >
+                  Send Message
+                </button>
+                <button 
+                  type="button" 
+                  class="cancelbutton px-8 py-3 bg-gray-100 text-gray-700 font-medium rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-        <!-- content ends here -->
-        <!-- Tab panes -->
+
+        <!-- Contact Information -->
+        <div class="space-y-8">
+          <!-- Contact Details Card -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">Get in Touch</h3>
+            
+            <div class="space-y-6">
+              <!-- Email -->
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                  <svg class="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900">Email</h4>
+                  <a href="mailto:peeljobs@micropyramid.com" class="text-blue-600 hover:text-blue-700 transition-colors">
+                    peeljobs@micropyramid.com
+                  </a>
+                </div>
+              </div>
+
+              <!-- Address -->
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                  <svg class="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900">Address</h4>
+                  <p class="text-gray-600">
+                    Krishe Sapphire, 6th Floor<br>
+                    Madhapur, Hyderabad<br>
+                    India, 500081
+                  </p>
+                </div>
+              </div>
+
+              <!-- Business Hours -->
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                  <svg class="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900">Business Hours</h4>
+                  <div class="text-gray-600 space-y-1">
+                    <p>Monday - Friday: 10:00 - 19:00</p>
+                    <p>Saturday: 10:00 - 19:00</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Info Card -->
+          <div class="bg-blue-50 rounded-lg border border-blue-200 p-6">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">Quick Response</h3>
+            <p class="text-blue-800 text-sm">
+              We typically respond to all inquiries within 24 hours during business days. For urgent matters, please include "URGENT" in your subject line.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
-  <!-- content of job page -->
 </div>
-  <script src='https://www.google.com/recaptcha/api.js'%}></script>
+
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
 {% block pj_info %}
-  <div class="col-md-2 col-sm-8 col-xs-8 about">
-  </div>
 {% endblock %}
 {% endblock %}
+
 {% block 'extra_js' %}
-
-  <script type="text/javascript">
-
+<script type="text/javascript">
   $(".cancelbutton").click(function(e){
       window.location="/";
     });
@@ -163,18 +262,16 @@
           open_dialog("Some content Missing", 'Error!')
           $('p.hint').remove();
           if(data.captcha_response){
-            $('.captcha').append('<p class="hint"><b>' + data.captcha_response + '</b></p>');
+            $('.captcha').append('<p class="hint text-red-600 text-sm mt-1"><b>' + data.captcha_response + '</b></p>');
           }
           for (var key in data.response) {
-            $('#'+key).after('<p class="hint">' + data.response[key] + '</p>');
+            $('#'+key).after('<p class="hint text-red-600 text-sm mt-1">' + data.response[key] + '</p>');
           }
         } else {
           open_dialog_with_url("Your request has been registered, we will reach you soon", 'Success!', '/')
         }
       }, 'json');
     });
-
 </script>
-
 {% endblock %}
-  
+

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% block block_canonical %}
 <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
 {% endblock %}
@@ -11,29 +11,121 @@
 {% endblock %}
 
 {% block base %}
-<div class="content_div">
-  <!-- SEARCH PART -->
-  <section id='content_pages'>
-    <div class="container">
-      <div class="row mt content-page">
-        <!-- content starts here -->
-        <h3 class="title">Access Database</h3>
-        <div class="content">
-          <p>Need data of course we can provide you with tons of them but in this fast moving who takes the pain to sort them out and hand pick the exact pickle needed for you. We take the effort to reduce the junk and inappropriate resumes, we pick the best suited for you. According to the job requirement we give you the exact match of qualities and the candidate qualified for your job.</p>
-          <p>We are providing all necessary and adequate data to our users in order to get the required information.</p>
-          <p>Users get information related to all active users list, their details etc. They see all the job post details and list without bothering or accessing database. They also get resume details, applied candidates information, even shortlisted and selected candidates also from their site only.</p>
-          <p>So, employers or recruiters don’t have to worry about their company data and resume related data, as they are in safe hands. No one is going to access or modified users personal data without their permission. No redundant data or duplicate data will be in database, as our professionals are designed the database in a sophisticated and in secured manner.</p>
-          <p>But, if you are having any doubt about accessing database or getting any data related issues, feel free to contact us.</p>
+<div class="min-h-screen bg-gray-50">
+  <!-- MAIN CONTENT SECTION -->
+  <section class="py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-lg shadow-sm p-8">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+          <h1 class="text-4xl font-bold text-gray-900 mb-4">Free Job Posting</h1>
+          <p class="text-xl text-gray-600">Post your job openings at zero cost and reach thousands of qualified candidates</p>
         </div>
-        <!-- content ends here -->
-        <!-- Tab panes -->
+
+        <!-- Benefits Section -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+          <div class="space-y-6">
+            <h2 class="text-2xl font-semibold text-gray-900">Why Choose Our Free Job Posting?</h2>
+            <div class="space-y-4">
+              <div class="flex items-start space-x-3">
+                <div class="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                <p class="text-gray-700">Reach thousands of active job seekers across India</p>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                <p class="text-gray-700">Zero posting fees - completely free for all employers</p>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                <p class="text-gray-700">Easy application management and candidate screening</p>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                <p class="text-gray-700">Advanced filtering to find the perfect match</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-blue-50 p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Ready to Post Your Job?</h3>
+            <p class="text-gray-700 mb-6">Start hiring today with our user-friendly job posting platform. Create your employer account and post unlimited jobs for free.</p>
+            <a href="#" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors">
+              Post a Job Now
+            </a>
+          </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="border-t border-gray-200 pt-12">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-8">Access Our Comprehensive Database</h2>
+          
+          <div class="space-y-6 text-gray-700">
+            <p class="text-lg leading-relaxed">
+              Need quality candidates? We provide you with access to thousands of pre-screened profiles. In this fast-moving world, who has time to sort through countless resumes? We take the effort to reduce junk and inappropriate applications, handpicking the best candidates suited for your requirements.
+            </p>
+            
+            <p class="leading-relaxed">
+              According to your job requirements, we provide exact matches of qualities and candidates qualified for your positions. Our advanced matching algorithm ensures you receive applications from the most suitable candidates.
+            </p>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">What You Get Access To:</h3>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                    <span class="text-sm">Active candidate profiles</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                    <span class="text-sm">Detailed resume information</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                    <span class="text-sm">Application tracking</span>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                    <span class="text-sm">Shortlisted candidates list</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                    <span class="text-sm">Interview scheduling tools</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                    <span class="text-sm">Hiring analytics</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <p class="leading-relaxed">
+              Employers and recruiters don't have to worry about data security. Your company information and candidate data are in safe hands. No one can access or modify personal data without proper authorization. Our database is designed by professionals in a sophisticated and secure manner, ensuring no redundant or duplicate data.
+            </p>
+          </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="border-t border-gray-200 pt-8 mt-12">
+          <div class="bg-yellow-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Need Help or Have Questions?</h3>
+            <p class="text-gray-700 mb-4">
+              If you have any doubts about accessing our database or encounter any data-related issues, feel free to contact our support team.
+            </p>
+            <a href="#" class="inline-block text-blue-600 hover:text-blue-800 font-medium">
+              Contact Support →
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
-  <!-- content of job page -->
 </div>
+
 {% block pj_info %}
-  <div class="col-md-2 col-sm-8 col-xs-8 about">
-  </div>
+  <!-- Remove or update this section as needed -->
 {% endblock %}
 {% endblock %}

@@ -76,7 +76,7 @@ from .views import user_login, user_register, forgot_password, set_password
 
 
 urlpatterns = [
-    path("login/", user_login, name="login"),
+    path("login/", user_login, name="login"), # convert to tailwind
     path("register/", user_register, name="register"),
     path("forgot-password/", forgot_password, name="forgot_password"),
     path("set-password/<int:user_id>/<str:passwd_reset_token>/", set_password, name="set_password"),

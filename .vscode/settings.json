@@ -3,5 +3,7 @@
         {
             "file": "requirements.txt"
         }
-    ]
+    ],
+    "git.autorefresh": true,
+    "git.autofetch": "all"
 }

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% load searchtags %}
 
 {% block block_canonical %}
@@ -7,67 +7,169 @@
 
 {% block block_title %}
   <title>FAQ - PeelJobs</title>
-  <meta name="description" content="Frequently asked questions for candidates to find solutions for all their queries during job search."/>
+  <meta name="description" content="Frequently asked questions for candidates, recruiters, and companies about using PeelJobs platform."/>
+{% endblock %}
 
-{% endblock %}
-{% block page_search_block %}
-{% show_search_filter %}
-{% endblock %}
 {% block base %}
-<div class="content_div">
-  <!-- SEARCH PART -->
-  <section id='content_pages' class="main_container">
-    <div class="container">
-      <div class="breadcrumb_section">
-        <nav>
-          <ol class="cd-breadcrumb triangle">
-            <li>
-              <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name">
-                <span class="name" >Home</span>
-              </a>
-            </li>
-            <li class="current">
-              <span class='job_detail'>
-                <span class="name">FAQ</span>
-              </span>
-            </li>
-          </ol>
-        </nav>
+<div class="min-h-screen bg-gray-50">
+  <section id='content_pages' class="py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm text-gray-600">
+          <li>
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="hover:text-blue-600 transition-colors">
+              Home
+            </a>
+          </li>
+          <li class="flex items-center">
+            <span class="mx-2">/</span>
+            <span class="text-gray-900 font-medium">FAQ</span>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Find answers to common questions about using PeelJobs platform</p>
       </div>
-      <div class="row mt content-page" style="margin-left:15px;margin-top: 5px;">
-        <!-- content starts here -->
-        <h3 class="title">FREQUENTLY ASKED QUESTIONS</h3>
-        <div class="content">
-          <p class="sub-head">CANDIDATE : </p>
-          <p class="adv-head"><span class="que">Q : </span>About peeljobs.com ?<br>
-            <span class="ans">A : </span>Peeljobs.com is a job portal site where you can find your suitable jobs easily and fastly.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span>How to apply for jobs?<br>
-            <span class="ans">A : </span>According to your requirement you can direct apply jobs from social sites. you can see similar jobs also, if you find relevant you can apply as you want.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span>How do i know i am being selected/shortlisted for a job ?<br>
-            <span class="ans">A : </span> If you are selected, you will get a notification via email or given contact number.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span> How do i submit my resume  ?<br>
-            <span class="ans">A : </span>When completing the details  of the online application form, you will be asked to attach your CV, so make sure you have it ready.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span>Can i apply more than one job ?<br>
-            <span class="ans">A : </span>If you meet qualifications and experience necessary for that position then you may apply for more than one vacancy by completing the application requirements.
-            Everyday new and active jobs are posted.
-          </p>
-          <p class="adv-head"><span class="que">Q : </span>If i do not find a suitable vacancy, what can i do ?<br>
-            <span class="ans">A : </span>If you do not find a suitable job, we encourage you to see job details every day.
-          </p>
-        </div>
-        <!-- content ends here -->
-        <!-- Tab panes -->
+
+      <!-- FAQ Sections -->
+      <div class="space-y-12">
+        
+        <!-- Job Seekers FAQ -->
+        <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:p-8">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+            <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium mr-3">Job Seekers</span>
+          </h2>
+          
+          <div class="space-y-6">
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">What is PeelJobs.com?</h3>
+              <p class="text-gray-700">PeelJobs.com is a comprehensive job portal platform where you can find suitable job opportunities quickly and efficiently. We connect talented job seekers with top employers across various industries.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How do I apply for jobs?</h3>
+              <p class="text-gray-700">You can apply for jobs directly through our platform. Browse jobs based on your requirements, view similar positions, and apply to multiple relevant opportunities with just a few clicks.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How will I know if I'm selected or shortlisted?</h3>
+              <p class="text-gray-700">If you are selected or shortlisted for a position, you will receive notifications via email or through your registered contact number. You can also check your application status in your dashboard.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How do I submit my resume?</h3>
+              <p class="text-gray-700">When completing your online application, you'll be prompted to upload your CV/resume. Make sure you have an updated resume ready in PDF or DOC format for easy submission.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">Can I apply for multiple jobs?</h3>
+              <p class="text-gray-700">Yes! If you meet the qualifications and experience requirements, you can apply for multiple positions. New and active job postings are added daily, giving you more opportunities.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">What if I don't find a suitable job?</h3>
+              <p class="text-gray-700">If you don't find a suitable position immediately, we encourage you to check our job listings regularly. You can also set up job alerts to be notified when relevant opportunities become available.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">Is creating an account free?</h3>
+              <p class="text-gray-700">Yes, creating a job seeker account on PeelJobs is completely free. You can browse jobs, apply for positions, and manage your applications at no cost.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recruiters FAQ -->
+        <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:p-8">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+            <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium mr-3">Recruiters</span>
+          </h2>
+          
+          <div class="space-y-6">
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How do I post a job on PeelJobs?</h3>
+              <p class="text-gray-700">Create a recruiter account, complete your company profile, and use our job posting interface to create detailed job listings. Your jobs will be reviewed and published within 24 hours.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How can I manage applications?</h3>
+              <p class="text-gray-700">Use your recruiter dashboard to view, filter, and manage all applications. You can shortlist candidates, schedule interviews, and communicate directly through our platform.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">What are the pricing plans?</h3>
+              <p class="text-gray-700">We offer flexible pricing plans based on your hiring needs. Contact our sales team for detailed information about our packages and enterprise solutions.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Companies FAQ -->
+        <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:p-8">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+            <span class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-medium mr-3">Companies</span>
+          </h2>
+          
+          <div class="space-y-6">
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How do I create a company profile?</h3>
+              <p class="text-gray-700">Register your company account, provide business details, upload your company logo, and create an engaging company description to attract top talent.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">Can I manage multiple recruiters?</h3>
+              <p class="text-gray-700">Yes, as a company admin, you can invite and manage multiple recruiters under your organization with different permission levels and access controls.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How do I track hiring metrics?</h3>
+              <p class="text-gray-700">Access comprehensive analytics and reports through your company dashboard to track job performance, application metrics, and hiring funnel statistics.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Technical FAQ -->
+        <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:p-8">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+            <span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium mr-3">Technical Support</span>
+          </h2>
+          
+          <div class="space-y-6">
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">I'm having trouble uploading my resume. What should I do?</h3>
+              <p class="text-gray-700">Ensure your resume is in PDF or DOC format and under 5MB. Clear your browser cache and try again. If issues persist, contact our support team.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How do I reset my password?</h3>
+              <p class="text-gray-700">Click "Forgot Password" on the login page, enter your email address, and follow the instructions sent to your email to reset your password.</p>
+            </div>
+
+            <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+              <h3 class="font-semibold text-gray-900 mb-2">How can I contact customer support?</h3>
+              <p class="text-gray-700">You can reach our support team through the contact form, email us directly, or use the live chat feature available on our website during business hours.</p>
+            </div>
+          </div>
+        </section>
+
       </div>
+
+      <!-- Contact CTA -->
+      <div class="mt-12 text-center bg-blue-50 rounded-lg p-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Still have questions?</h2>
+        <p class="text-gray-600 mb-6">Can't find the answer you're looking for? Our support team is here to help.</p>
+        <a href="/contact/" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+          Contact Support
+        </a>
+      </div>
+
     </div>
   </section>
-  <!-- content of job page -->
 </div>
+
 {% block pj_info %}
-  <div class="col-md-2 col-sm-8 col-xs-8 about">
-  </div>
+  <div></div>
 {% endblock %}
 {% endblock %}

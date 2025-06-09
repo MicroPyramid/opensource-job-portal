@@ -119,6 +119,7 @@ def user_register(request):
     GET: Display the registration page
     POST: Process registration via AJAX and return JSON response
     """
+    print("User Registration View Called")
     if request.user.is_authenticated:
         # Redirect authenticated users to appropriate dashboard
         if hasattr(request.user, 'user_type'):

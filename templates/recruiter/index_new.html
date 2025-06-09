@@ -96,7 +96,7 @@
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                 <a class="dropdown-item" href="{% if request.user.is_agency_recruiter %}{% url 'agency:change_password' %}{% else %}{% url 'recruiter:change_password' %}{% endif %}">Change Password</a>
                 <a class="dropdown-item" href="{% if request.user.is_agency_recruiter %}{% url 'agency:profile' %}{% else %}{% url 'recruiter:profile' %}{% endif %}">Profile</a>
-                <a class="dropdown-item" href="{% url 'recruiter:getout' %}">Logout</a>
+                <a class="dropdown-item" href="/logout/">Logout</a>
               </div>
             </li>
           </ul>

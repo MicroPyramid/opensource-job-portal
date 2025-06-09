@@ -74,7 +74,6 @@
               <!-- Collect the nav links, forms, and other content for toggling -->
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav main_menu">
-                {% cache 604800 latest_jobs_menu %}
         
                   {% get_skills as total_skills %}
                   {% get_industries as total_industries %}
@@ -97,7 +96,7 @@
                       <ul class="col-md-2 information industries_parts">
                         <li><a href="{% url 'jobs_by_industry' %}">Industry</a></li>
                         {% for industry in total_industries %}
-                        <li><a href="">{{ industry.name|get_industry_name }} Jobs</a></li>
+                        <li><a href="{{ industry.get_job_url }}">{{ industry.name|get_industry_name }} Jobs</a></li>
                         
                         {% endfor %}
                       </ul>
@@ -132,7 +131,6 @@
                       </li>
                     </ul>
                   </li>
-                  {% endcache %}
                   <li {% if request.path == '/fresher-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher Jobs <span class="sr-only">(current)</span></a></li>
                    <li {% if request.path == '/walkin-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'walkin' %}">Walkin Jobs <span class="sr-only">(current)</span></a></li>
                   {% if request.user.user_type == 'JS' %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% load searchtags %}
 
 {% block block_canonical %}
@@ -7,67 +7,214 @@
 
 {% block block_title %}
   <title>Free Job Posting - Job Vacancies - Job search in India - PeelJobs</title>
-
-  <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship,  Walk In Jobs."/>
-
+  <meta name="description" content="PeelJobs - Free Job posting. Search & Apply for Full Time, Internship, Walk In Jobs."/>
 {% endblock %}
-{% block page_search_block %}
-{% show_search_filter %}
-{% endblock %}
+
 {% block base %}
-<div class="content_div">
-  <!-- SEARCH PART -->
-  <section id='content_pages'>
-    <div class="container">
-      <div class="breadcrumb flat">
-         <ul>
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" class="name" itemprop="item" rel="v:url" property="v:title"><span itemprop="name" class="name" >Home</span></a></li>
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="item" class="job_detail" rel="v:url" property="v:title"><span itemprop="name" class="name">Advantages</span></span></li>
-          </ul>
-      </div>
-      <div class="row mt content-page">
-        <!-- content starts here -->
-        <h3 class="title">ADVANTAGES</h3>
-        <div class="content">
-          <p>Searching for a job in the classified ad section of a newspaper is becoming less of a necessity, as employers increasingly list job openings for free on sites and use websites to conduct the application process entirely online.</p>
-          <p><span class="adv-bold">Cost Effective: </span>Costs of posting jobs and/or searching for candidates on job portals can be up to 90% lower than the costs of using traditional search firms and/or advertising methods.The biggest advantage of Peeljobs.com is there is no fee for the job seeker. There are so many websites now a days charges huge amount from candidates. If a person wants to avail of other services like resume services then they have to pay extra amount. Here candidates upload and download their resumes without any cost.
-          </p>
-          <p><span class="adv-bold">Well procedure: </span>Peeljobs.com is Well organized. It has a  basic login procedure WHERE the candidate can upload the resume and fill out all the important details about Educational, their backgrounds, skills and work experience. Everything is done in orderly fashion. Our Candidate can customize the profiles and Site to Meet Their Needs.
-          </p>
-          <p><span class="adv-bold"> Peeljobs recruitment gives you a bigger audience
-            : </span>Many people new to online recruitment think that using job sites is only effective if you are looking for young net-savvy Facebook-type people. This simply isn't the case. Research consistently shows that the average age of candidates using job sites is around 35 years old. And the trend is up. Peeljobs.com recruitment is now a standard part of most people's job hunting no matter what level or age.
-          </p>
-          <p><span class="adv-bold">Peeljobs recruitment is easy
-            : </span>It really is. Posting a job on this site is straightforward enough. Peeljobs site and CV databases are very user-friendly and you don't need to have an in-depth knowledge of IT to post a vacancy advertisement. Usually, all you need is your job description, a bit of time, And, if you have any problems the Peeljobs team to help you.
-          </p>
-          <p><span class="adv-bold">2-4-7 access
-            : </span>You have 24 hour access to Peeljobs.com, this means that you still carry on your recruitment exercise anytime that is convenient for you.
-          </p>
-          <p><span class="adv-bold">Sophisticated management tools
-            : </span>The entire recruitment process is managed from one location which allows the employer to post vacancies, receive CVs, screen, prioritize and contact candidates individually or collectively and track all activities from the confines of a private and highly functional employer Workspace, job seekers similarly can track the progress of their application at every stage of the hiring process from their own functional Workspace. This allows for an enhanced user experience for both employer and job seeker.
-          </p>
-          <p><span class="adv-bold"> Allows for confidentiality :</span>Both employers and job seekers can elect to maintain their confidentiality. Employers can elect to search the databases without posting a job if the vacancy is sensitive in nature, or they can post a vacancy while keeping the company name confidential. Similarly, candidates can post their CVs online while keeping their present employer's name confidential.
-          </p>
-          <p><span class="adv-bold">Allows for database build-up
-            : </span>Employers can save high profile or particularly attractive CVs from an existing online search to build a priority database of pre-screened talent for future use.
-          </p>
-          <p><span class="adv-bold"> Allows for proactivity
-            : </span> employer/recruiter is in full control of the hiring process with online recruitment, can contact candidates real-time and directly and does not require a middleman to sift through, filter, assess or select the required candidates. By being in the driving seat the employer gains valuable insight into the nature of the marketplace and the competitive landscape for the position. He is also able to ensure a superior match and a better fit for the long term.
-          </p>
-          <p><span class="adv-bold"> Wider reach for candidates
-            :</span>Candidates benefit immensely from the wider scope they gain through Peeljobs.com site. They are able to access jobs in companies, industries and locations they may not otherwise have learned of and can apply immediately with the click of a mouse. By posting their CVs online they can be contacted by employers/recruiters directly for opportunities that may not even be advertised.
-          </p>
+<div class="min-h-screen bg-gray-50">
+  <section class="py-8 lg:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm text-gray-600">
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}" 
+               class="text-blue-600 hover:text-blue-800 transition-colors duration-200" 
+               itemprop="item" rel="v:url" property="v:title">
+              <span itemprop="name">Home</span>
+            </a>
+          </li>
+          <li class="text-gray-400">/</li>
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="item" rel="v:url" property="v:title">
+              <span itemprop="name" class="text-gray-900 font-medium">Advantages</span>
+            </span>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Main Content -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-8 sm:px-8 lg:px-12">
+          <!-- Page Title -->
+          <div class="mb-8">
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Why Choose PeelJobs?
+            </h1>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Discover the advantages that make PeelJobs the premier job portal for both employers and job seekers in India.
+            </p>
+          </div>
+
+          <!-- Introduction -->
+          <div class="mb-10">
+            <p class="text-gray-700 leading-relaxed mb-6">
+              The job market has evolved significantly in the digital age. Searching for opportunities in newspaper classifieds is becoming obsolete as employers increasingly leverage online platforms to post job openings and conduct entire application processes digitally. PeelJobs stands at the forefront of this transformation, offering unparalleled advantages to all stakeholders in the recruitment ecosystem.
+            </p>
+          </div>
+
+          <!-- Advantages Grid -->
+          <div class="space-y-8">
+            <!-- Cost Effective -->
+            <div class="border-l-4 border-blue-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                Cost Effective Solutions
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Experience up to 90% cost reduction compared to traditional search firms and advertising methods. 
+                PeelJobs offers completely free services for job seekers - no hidden charges for resume uploads, 
+                downloads, or basic job applications. While other platforms charge substantial fees, we believe 
+                in democratizing job search access for everyone.
+              </p>
+            </div>
+
+            <!-- Well Organized -->
+            <div class="border-l-4 border-green-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                Streamlined Process & Organization
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Our platform features an intuitive, well-structured system with a simple registration process. 
+                Candidates can effortlessly upload resumes and provide comprehensive details about their 
+                education, background, skills, and work experience. Everything follows a logical, organized 
+                workflow that allows users to customize their profiles to meet their specific needs.
+              </p>
+            </div>
+
+            <!-- Bigger Audience -->
+            <div class="border-l-4 border-purple-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                Extensive Reach & Diverse Audience
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Contrary to common misconceptions, online recruitment isn't limited to young, tech-savvy professionals. 
+                Research consistently shows that the average age of job portal users is around 35 years, with this 
+                trend continuing to rise. PeelJobs recruitment has become a standard component of job hunting across 
+                all experience levels and age groups.
+              </p>
+            </div>
+
+            <!-- Easy to Use -->
+            <div class="border-l-4 border-orange-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                User-Friendly Experience
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Posting jobs and managing recruitment is straightforward and accessible. Our platform and CV 
+                databases are designed with user experience in mind - no technical expertise required. Simply 
+                bring your job description and a few minutes of your time. Our dedicated support team is always 
+                available to assist with any questions or challenges.
+              </p>
+            </div>
+
+            <!-- 24/7 Access -->
+            <div class="border-l-4 border-red-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                24/7 Accessibility
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Round-the-clock platform access ensures you can manage your recruitment activities whenever 
+                it's convenient for you. Whether you're an early bird or a night owl, PeelJobs adapts to 
+                your schedule, not the other way around.
+              </p>
+            </div>
+
+            <!-- Management Tools -->
+            <div class="border-l-4 border-indigo-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-indigo-500 rounded-full mr-3"></span>
+                Advanced Management Tools
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Manage your entire recruitment process from one centralized location. Employers can post 
+                vacancies, receive CVs, screen candidates, set priorities, and communicate individually or 
+                collectively - all from a private, highly functional workspace. Job seekers enjoy similar 
+                benefits, tracking their application progress at every stage through their personalized dashboard.
+              </p>
+            </div>
+
+            <!-- Confidentiality -->
+            <div class="border-l-4 border-teal-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-teal-500 rounded-full mr-3"></span>
+                Privacy & Confidentiality Protection
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Both employers and job seekers can maintain complete confidentiality. Employers can search 
+                databases without posting public job listings for sensitive positions, or post vacancies 
+                while keeping company names private. Similarly, candidates can showcase their profiles 
+                while protecting their current employer's identity.
+              </p>
+            </div>
+
+            <!-- Database Building -->
+            <div class="border-l-4 border-pink-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-pink-500 rounded-full mr-3"></span>
+                Talent Database Development
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Build and maintain a priority database of pre-screened talent for future opportunities. 
+                Save impressive CVs from your searches to create a strategic talent pool, ensuring you're 
+                always prepared for upcoming hiring needs.
+              </p>
+            </div>
+
+            <!-- Proactive Control -->
+            <div class="border-l-4 border-yellow-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-yellow-500 rounded-full mr-3"></span>
+                Complete Hiring Process Control
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Take full control of your hiring process without intermediaries. Contact candidates directly 
+                and in real-time, gaining valuable insights into market dynamics and competitive landscapes. 
+                This direct approach ensures superior matches and better long-term fits for your organization.
+              </p>
+            </div>
+
+            <!-- Wider Reach for Candidates -->
+            <div class="border-l-4 border-cyan-500 pl-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                <span class="w-2 h-2 bg-cyan-500 rounded-full mr-3"></span>
+                Expanded Opportunities for Job Seekers
+              </h3>
+              <p class="text-gray-700 leading-relaxed">
+                Access opportunities across companies, industries, and locations you might never have 
+                discovered otherwise. Apply instantly with a single click, and by posting your CV online, 
+                you become visible to employers and recruiters for positions that may not even be publicly advertised.
+              </p>
+            </div>
+          </div>
+
+          <!-- Call to Action -->
+          <div class="mt-12 pt-8 border-t border-gray-200">
+            <div class="text-center">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">Ready to Experience These Advantages?</h3>
+              <p class="text-gray-600 mb-6">Join thousands of successful job seekers and employers who trust PeelJobs.</p>
+              <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/accounts/register/" 
+                   class="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors duration-200">
+                  Start Your Job Search
+                </a>
+                <a href="/employer/register/" 
+                   class="bg-white text-blue-600 border border-blue-600 px-6 py-3 rounded-md font-medium hover:bg-blue-50 transition-colors duration-200">
+                  Post a Job
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-        <!-- content ends here -->
-        <!-- Tab panes -->
       </div>
     </div>
   </section>
-  <!-- content of job page -->
 </div>
+
 {% block pj_info %}
-  <div class="col-md-2 col-sm-8 col-xs-8 about">
-  </div>
 {% endblock %}
 {% endblock %}
