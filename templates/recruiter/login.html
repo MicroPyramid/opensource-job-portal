@@ -1,195 +1,81 @@
-{% extends "base_with_tailwind.html" %}
+{% extends "auth_base.html" %}
 {% load thumbnail %}
 {% load static %}
 {% load page_tags %}
 
 {% block title %}{{ meta_title|safe }}{% endblock %}
 
-{% block extra_css %}
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-11720509-7"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  gtag('js', new Date());
-  gtag('config', 'UA-11720509-7');
-</script>
-
-<!-- SEO Meta Tags -->
-<meta name="description" content="{{ meta_description|safe }}" />
-<meta property="og:url" content="https://peeljobs.com{{ request.path }}" />
-<meta property="og:title" content="{{ meta_title|safe }}" />
-<meta property="og:description" content="{{ meta_description|safe }}" />
-<meta property="og:image" content="{{jobopenings}}" />
-<meta property="og:image:width" content="200" />
-<meta property="og:image:height" content="200" />
-<link rel="icon" type="image/x-icon" href="{{favicon}}" />
-
-<!-- Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
-<!-- FontAwesome (keeping for now during migration) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
-  integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
-  crossorigin="anonymous" referrerpolicy="no-referrer" />
-{% endblock %}
-
 {% block body_class %}bg-gray-50 font-inter{% endblock %}
 
 {% block content %}
-<div class="min-h-screen flex flex-col">
-  <!-- Compact Header with Navigation -->
-  <header class="bg-blue-600">
-    <!-- Navigation Bar -->
-    <nav class="relative z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-14">
-          <!-- Brand -->
-          <div class="flex-shrink-0">
-            <a href="/" class="text-white font-bold text-xl hover:text-blue-200">
-              Peeljobs
+
+
+  <!-- Hero Section -->
+  <section class="py-8 md:py-12 bg-blue-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-8 items-center">
+        <!-- Left: Hero Content -->
+        <div class="text-center lg:text-left">
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+            Find the Perfect Talent for Your Team
+          </h1>
+          <p class="text-lg md:text-xl text-blue-100 mb-6 leading-relaxed">
+            Access 100k+ qualified candidates. Post jobs for free and streamline your hiring process.
+          </p>
+          
+          <!-- Primary CTAs -->
+          <div class="flex flex-col sm:flex-row gap-4 mb-8">
+            <a href="/recruiter/login/" 
+              class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-4 rounded-xl inline-flex items-center justify-center text-lg">
+              <i data-lucide="log-in" class="w-5 h-5 mr-2"></i>
+              Login to Dashboard
+            </a>
+            <a href="{% url 'recruiter:new_user' %}" 
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 rounded-xl inline-flex items-center justify-center text-lg">
+              <i data-lucide="rocket" class="w-5 h-5 mr-2"></i>
+              Start Free Trial
             </a>
           </div>
 
-          <!-- Desktop Navigation -->
-          <div class="hidden md:block">
-            <div class="ml-10 flex items-center space-x-4">
-              <a href="{% url 'fresher_jobs_by_skills' 'fresher' %}"
-                class="text-white/90 hover:text-white px-2 py-1 text-sm font-medium">
-                Fresher Jobs
-              </a>
-              <a href="{% url 'fresher_jobs_by_skills' 'walkin' %}"
-                class="text-white/90 hover:text-white px-2 py-1 text-sm font-medium">
-                Walkins
-              </a>
-              <a href="{% url 'internship_jobs' %}"
-                class="text-white/90 hover:text-white px-2 py-1 text-sm font-medium">
-                Internships
-              </a>
-              <a href="{% url 'companies' %}"
-                class="text-white/90 hover:text-white px-2 py-1 text-sm font-medium">
-                Companies
-              </a>
+          <!-- Trust indicators -->
+          <div class="flex flex-wrap justify-center lg:justify-start items-center gap-6 text-sm text-blue-200">
+            <div class="flex items-center">
+              <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-green-300"></i>
+              No Credit Card Required
             </div>
-          </div>
-
-          <!-- Right side navigation -->
-          <div class="hidden md:flex items-center space-x-3">
-            <a href="/login/"
-              class="text-white/90 hover:text-white px-3 py-2 text-sm font-medium">
-              Login
-            </a>
-            <div class="h-4 w-px bg-white/30"></div>
-            <a href="{% url 'recruiter:new_user' %}"
-              class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium">
-              Recruiter Portal
-            </a>
-          </div>
-
-          <!-- Mobile menu button -->
-          <div class="md:hidden">
-            <button type="button" class="text-white p-2" id="mobile-menu-button">
-              <i data-lucide="menu" class="w-5 h-5"></i>
-            </button>
+            <div class="flex items-center">
+              <i data-lucide="users" class="w-4 h-4 mr-2 text-blue-300"></i>
+              10,000+ Companies Trust Us
+            </div>
+            <div class="flex items-center">
+              <i data-lucide="clock" class="w-4 h-4 mr-2 text-yellow-300"></i>
+              Setup in 5 Minutes
+            </div>
           </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
-        <div class="md:hidden hidden py-3 border-t border-blue-400/30" id="mobile-menu">
-          <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{% url 'fresher_jobs_by_skills' 'fresher' %}"
-              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Fresher
-              Jobs</a>
-            <a href="{% url 'fresher_jobs_by_skills' 'walkin' %}"
-              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Walkin
-              Jobs</a>
-            <a href="{% url 'internship_jobs' %}"
-              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Internship</a>
-            <a href="{% url 'companies' %}"
-              class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Companies</a>
-
-            {% if not request.user.is_authenticated %}
-            <div class="border-t border-blue-500 pt-3 mt-3">
-              <a href="/login/"
-                class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Login</a>
-              <a href="{% url 'post_job' %}"
-                class="text-white hover:text-gray-200 hover:bg-blue-700 block px-3 py-2 text-base font-medium rounded">Recruiter
-                Login | Register</a>
-            </div>
-            {% endif %}
+        <!-- Right: Benefits Grid -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-blue-500 rounded-xl p-4 text-center border border-blue-400">
+            <div class="text-3xl font-bold text-white mb-2">100k+</div>
+            <p class="text-blue-100 text-sm">Active Candidates</p>
           </div>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Compact Hero Section -->
-    <div class="py-8 md:py-12 bg-blue-600">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-8 items-center">
-          <!-- Left: Hero Content -->
-          <div class="text-center lg:text-left">
-            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Find the Perfect Talent for Your Team
-            </h1>
-            <p class="text-lg md:text-xl text-blue-100 mb-6 leading-relaxed">
-              Access 2M+ qualified candidates. Post jobs for free and streamline your hiring process.
-            </p>
-            
-            <!-- Primary CTAs -->
-            <div class="flex flex-col sm:flex-row gap-4 mb-8">
-              <a href="/recruiter/login/" 
-                class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-4 rounded-xl inline-flex items-center justify-center text-lg">
-                <i data-lucide="log-in" class="w-5 h-5 mr-2"></i>
-                Login to Dashboard
-              </a>
-              <a href="{% url 'recruiter:new_user' %}" 
-                class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 rounded-xl inline-flex items-center justify-center text-lg">
-                <i data-lucide="rocket" class="w-5 h-5 mr-2"></i>
-                Start Free Trial
-              </a>
-            </div>
-
-            <!-- Trust indicators -->
-            <div class="flex flex-wrap justify-center lg:justify-start items-center gap-6 text-sm text-blue-200">
-              <div class="flex items-center">
-                <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-green-300"></i>
-                No Credit Card Required
-              </div>
-              <div class="flex items-center">
-                <i data-lucide="users" class="w-4 h-4 mr-2 text-blue-300"></i>
-                10,000+ Companies Trust Us
-              </div>
-              <div class="flex items-center">
-                <i data-lucide="clock" class="w-4 h-4 mr-2 text-yellow-300"></i>
-                Setup in 5 Minutes
-              </div>
-            </div>
+          <div class="bg-blue-500 rounded-xl p-4 text-center border border-blue-400">
+            <div class="text-3xl font-bold text-white mb-2">1000+</div>
+            <p class="text-blue-100 text-sm">Daily Applications</p>
           </div>
-
-          <!-- Right: Benefits Grid -->
-          <div class="grid grid-cols-2 gap-4">
-            <div class="bg-blue-500 rounded-xl p-4 text-center border border-blue-400">
-              <div class="text-3xl font-bold text-white mb-2">2M+</div>
-              <p class="text-blue-100 text-sm">Active Candidates</p>
-            </div>
-            <div class="bg-blue-500 rounded-xl p-4 text-center border border-blue-400">
-              <div class="text-3xl font-bold text-white mb-2">1000+</div>
-              <p class="text-blue-100 text-sm">Daily Applications</p>
-            </div>
-            <div class="bg-blue-500 rounded-xl p-4 text-center border border-blue-400">
-              <div class="text-3xl font-bold text-white mb-2">24/7</div>
-              <p class="text-blue-100 text-sm">Expert Support</p>
-            </div>
-            <div class="bg-blue-500 rounded-xl p-4 text-center border border-blue-400">
-              <div class="text-3xl font-bold text-white mb-2">100%</div>
-              <p class="text-blue-100 text-sm">Free Job Posting</p>
-            </div>
+          <div class="bg-blue-500 rounded-xl p-4 text-center border border-blue-400">
+            <div class="text-3xl font-bold text-white mb-2">24/7</div>
+            <p class="text-blue-100 text-sm">Expert Support</p>
+          </div>
+          <div class="bg-blue-500 rounded-xl p-4 text-center border border-blue-400">
+            <div class="text-3xl font-bold text-white mb-2">100%</div>
+            <p class="text-blue-100 text-sm">Free Job Posting</p>
           </div>
         </div>
       </div>
     </div>
-  </header>
-
+  </section>
   <!-- Main Content -->
   <main class="flex-1 bg-white">
     <!-- Key Features Section -->
@@ -211,7 +97,7 @@
               </div>
               <h3 class="text-lg font-semibold text-gray-900 mb-2">Post Jobs Instantly</h3>
               <p class="text-gray-600 text-sm leading-relaxed">
-                Reach 2M+ candidates with unlimited free job postings. Get applications within hours.
+                Reach 100k+ candidates with unlimited free job postings. Get applications within hours.
               </p>
             </div>
 
@@ -328,37 +214,6 @@
     </section>
   </main>
 
-  <!-- Compact Footer -->
-  <footer class="bg-gray-900 text-white py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <div class="flex space-x-4">
-          <a href="https://facebook.com/peeljobs/" target="_blank"
-            class="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg">
-            <i data-lucide="facebook" class="w-4 h-4"></i>
-          </a>
-          <a href="https://www.linkedin.com/company/peeljobs" target="_blank"
-            class="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg">
-            <i data-lucide="linkedin" class="w-4 h-4"></i>
-          </a>
-          <a href="https://twitter.com/PeelJobs" target="_blank"
-            class="bg-blue-400 hover:bg-blue-500 p-2 rounded-lg">
-            <i data-lucide="twitter" class="w-4 h-4"></i>
-          </a>
-        </div>
-        <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
-          <a href="{% url 'pages' 'about-us' %}" class="hover:text-white">About</a>
-          <a href="{% url 'pages' 'terms-conditions' %}" class="hover:text-white">Terms</a>
-          <a href="{% url 'pages' 'privacy-policy' %}" class="hover:text-white">Privacy</a>
-          <a href="{% url 'contact' %}" class="hover:text-white">Contact</a>
-        </div>
-        <div class="text-sm text-gray-400">
-          © 2024 PeelJobs. All rights reserved.
-        </div>
-      </div>
-    </div>
-  </footer>
-</div>
 {% endblock %}
 
 {% block extra_js %}
