@@ -570,10 +570,6 @@ class recruiter_get_views_test(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "recruiter/user/change_password.html")
 
-        response = self.client.get("/recruiter/thank-you-message/")
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "recruiter/registration_success.html")
-
         response = self.client.get("/recruiter/how-it-works/")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "recruiter/how_it_works.html")

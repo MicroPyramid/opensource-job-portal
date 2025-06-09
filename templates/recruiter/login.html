@@ -105,16 +105,6 @@
                             <li><a href="{{ location.get_job_url }}">Jobs in {{ location.name }}</a></li>
                           {% endfor %}
                       </ul>
-                      <!--
-                      <div class="col-md-2 information government_parts">
-                        <ul>
-                          <li><a href="{% url 'government_jobs' %}">Government</a></li>
-                          {% for job in all_government_jobs %}
-                          <li><a href="{{ job.get_absolute_url }}" title="{{ job.title}}">{{ job.title|truncatewords:2 }}</a></li>
-                          {% endfor %}
-                        </ul>
-                      </div>
-                      <div class="col-md-3 information internship_parts" style="width:20.99% !important">-->
                       <ul class="col-md-3 information internship_parts" style="width: 19.99% !important;">
                         <li><a href="{% url 'internship_jobs' %}">Internship</a></li>
                         {% for city in all_internship_jobs %}
@@ -146,9 +136,6 @@
                     <a href="{% url 'recruiters' %}">Recruiters</a>
                   </li>
                   <li><a href="{% url 'my:alerts_list'%}">Job Alerts</a></li>
-                  <!-- <li {% if request.path == "/calendar/2017/" %}class="active"{% endif %}>
-                    <a href="/calendar/{% now "Y" %}/">Calendar</a>
-                  </li> -->
                   {% if request.user.user_type == 'JS' %}
                     {% get_unread_messages request.user '' '' as unread_messages %}
                     <li {% if request.path == '/profile/' %}class="active"{% endif %} {% if unread_messages %} title="{{ unread_messages }} Messages From recruiters"{% endif %}>
@@ -176,13 +163,7 @@
                 </ul>
                 {% if not request.user.is_authenticated %}
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 navbar-right">
-                  <li class="jobseeker_auth"><!-- <a href="" class="login_modal">Jobseeker Login</a> -->
-                    <!-- <span class="title">Job Seeker</span>
-                    <div class="items">
-                      <a href="#" class="login_modal" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
-                      <a href="#" class="new_account" data-bs-toggle="modal" data-bs-target="#register-div">Register</a>
-                     
-                    </div> -->
+                  <li class="jobseeker_auth">
                     <div class="">
                       <a href="/login/">Login</a>
                     </div>
@@ -234,19 +215,10 @@
                     <h3 class="text register_text pt-4 mb-0"><a href="/recruiter/login/" class="register_banner_quote" target="_blank">Login / Register <!-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> --></a></h3>
                   </div>
                   <div class="col-md-4 banner-right">
-                    <!--   <div class="latest_updates">
-                      <span class="">5 million candidates </span>
-                      <span class="">2 million active profiles from all industries </span>
-                      <span class="">5 million candidates </span>
-                      </div> -->
-                    <!--<h3>POST JOBS TO HIRE NOW</h3>-->
                     <img src="{% static 'hire-now.png' %}"></img>
                     <br>
                     <br>
                     <a href="{% url "recruiter:new_user" %}" class="banner_quote" target="_blank">Post Unlimited Free Jobs <!-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> --></a>
-                    <!--<br>
-                    <br>
-                    <a href="{% url "recruiter:new_user" %}" class="banner_quote">Employer Registration <!-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> </a>-->
                   </div>
                 </div>
 
@@ -356,33 +328,8 @@
         </div>
       </div>
     </footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha512-pax4MlgXjHEPfCwcJLQhigY7+N8rt6bVvWLFyUMuxShv170X53TRzGPmPkZmGBhk+jikR8WBM4yl7A9WMHHqvg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script src='https://www.google.com/recaptcha/api.js'></script>
 
-{% compress js %}
-    <script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
-    <script type="text/javascript" src='{% static 'r1/js/jquery.form.js' %}'></script>
-    <script type="text/javascript" src='{% static 'js/main.js' %}'></script>
-  <script type="text/javascript" src='{% static 'r1/js/jquery.plainmodal.min.js' %}'></script>
-    <script type="text/javascript" src='{% static 'js/recruiter_login.js' %}'></script>
-
-{% endcompress %}
-<script type="text/javascript">
-    
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-    $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", "4GGTffvfVTU9hD7LEl6N03yuZ7qO5XLJ");
-            }
-        }
-    });
-  </script>
   </body>
 </html>

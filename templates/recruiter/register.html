@@ -251,15 +251,7 @@
                 <div class="card-body">
                   <h4 class="sub_heading">Contact Us</h4>
                   <p>Talk to our experts if you have any queries</p>
-                  <!-- <form>
-                    <div class="form-group">
-                     <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email Address">
-                    </div>
-                    <div class="form-group">
-                     <input type="number" class="form-control" id="exampleInputEmail1" placeholder="Mobile Number">
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit Here</button>
-                    </form> -->
+                  
                   <div class="detail"><span><i class="fa-solid fa-envelope" aria-hidden="true"></i>   peeljobs@micropyramid.com</span>  </div>
                 </div>
               </div>
@@ -356,7 +348,18 @@
 
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+     
+     {% compress js %}
+    <script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
+    <script type="text/javascript" src='{% static 'r1/js/jquery.form.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/main.js' %}'></script>
+  <script type="text/javascript" src='{% static 'r1/js/jquery.plainmodal.min.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/recruiter_login.js' %}'></script>
+
+{% endcompress %}
      <script>
+
+      
    function onSubmit(token) {
      console.log('reCAPTCHA verified, token:', token);
      

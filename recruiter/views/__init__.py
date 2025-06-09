@@ -103,7 +103,6 @@ from .resume_management import (
 # Dashboard and Utility Views
 from .dashboard import (
     dashboard,
-    registration_success,
     how_it_works,
     interview_location,
     create_slug,

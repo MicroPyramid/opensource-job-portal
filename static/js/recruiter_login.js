@@ -61,13 +61,7 @@ $(document).ready(function () {
           $('#register-' + key).after('<div class="error">' + data.message[key] + '</div>');
         }
       } else {
-        if (data.is_company_recruiter) {
-          var url = "/recruiter/thank-you-message/";
-        }
-        else {
-          var url = "/agency/thank-you-message/";
-        }
-        open_dialog_with_url(data.message, 'Info!!', url);
+          window.location = "/recruiter/profile/";
       }
     }, 'json').fail(function (xhr, status, error) {
       console.log('AJAX request failed:', status, error);
