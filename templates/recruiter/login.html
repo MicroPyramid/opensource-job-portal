@@ -72,54 +72,7 @@
               <!-- Collect the nav links, forms, and other content for toggling -->
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav main_menu">
-                
-        
-                  {% get_skills as total_skills %}
-                  {% get_industries as total_industries %}
-                  {% get_locations as total_locations %}
-                  {% get_government_jobs as all_government_jobs %}
-                  {% get_internships as all_internship_jobs %}
-                  
-                  <li class="dropdown megamenu-fw">
-                    <a href="{% url 'jobs:index' %}" class="dropdown-toggle latest-jobs" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                    aria-expanded="false">Latest Jobs<span class="caret"></span></a>
-        
-                    <ul class="dropdown-menu megamenu-content" role="menu">
-                    <li>
-                      <ul class="col-md-2 information" style="width:19.99%">
-                        <li><a href="{% url 'jobs_by_skill' %}">Skills</a></li>
-                        {% for skill in total_skills %}
-                        <li><a href="{{ skill.get_job_url }}">{{ skill.name|truncatewords:2 }} Jobs</a></li>
-                        {% endfor %}
-                      </ul>
-                      <ul class="col-md-2 information industries_parts">
-                        <li><a href="{% url 'jobs_by_industry' %}">Industry</a></li>
-                        {% for industry in total_industries %}
-                        <li><a href="">{{ industry.name|get_industry_name }} Jobs</a></li>
-                        
-                        {% endfor %}
-                      </ul>
-                      <ul class="col-md-2 information location_parts">
-                        <li><a href="{% url 'jobs_by_location' 'jobs' %}">Location</a></li>
-                          {% for location in total_locations|slice:"17" %}
-                            <li><a href="{{ location.get_job_url }}">Jobs in {{ location.name }}</a></li>
-                          {% endfor %}
-                      </ul>
-                      <ul class="col-md-3 information internship_parts" style="width: 19.99% !important;">
-                        <li><a href="{% url 'internship_jobs' %}">Internship</a></li>
-                        {% for city in all_internship_jobs %}
-                        <li><a href="{% url 'city_internship_jobs' city.slug %}">Internship Jobs in {{ city.name }}</a></li>
-                        {% endfor %}
-                      </ul>
-                      <ul class="col-md-3 information fresher-jobs-part">
-                        <li><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher</a></li>
-                        {% for skill in total_skills %}
-                        <li><a href="/{{skill.slug}}-fresher-jobs/">{{ skill.name|truncatewords:2 }} Fresher Jobs</a></li>
-                        {% endfor %}
-                      </ul>
-                      </li>
-                    </ul>
-                  </li>
+               
                 
                   <li {% if request.path == '/fresher-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'fresher' %}">Fresher Jobs <span class="sr-only">(current)</span></a></li>
                    <li {% if request.path == '/walkin-jobs-by-skills/' %}class="active"{% endif %}><a href="{% url 'fresher_jobs_by_skills' 'walkin' %}">Walkin Jobs <span class="sr-only">(current)</span></a></li>
@@ -135,7 +88,6 @@
                   <li {% if request.path == '/recruiters/' %}class="active"{% endif %}>
                     <a href="{% url 'recruiters' %}">Recruiters</a>
                   </li>
-                  <li><a href="{% url 'my:alerts_list'%}">Job Alerts</a></li>
                   {% if request.user.user_type == 'JS' %}
                     {% get_unread_messages request.user '' '' as unread_messages %}
                     <li {% if request.path == '/profile/' %}class="active"{% endif %} {% if unread_messages %} title="{{ unread_messages }} Messages From recruiters"{% endif %}>
