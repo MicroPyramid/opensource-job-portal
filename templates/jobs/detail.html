@@ -323,28 +323,6 @@
               </div>
               <!-- similar_jobs ends here -->
 
-          <!-- Similar Links starts -->
-          <div class="popular_links clearfix">
-            <h2>Most Similar Links</h2>
-            <ul class="clear">
-              {% for loc in job.location.all %}
-                {% for search in job.skills.all %}
-                  {% if search.status == 'Active' and loc.status == 'Enabled' %}
-                    <li>
-                      <a href="{% url 'custome_search' search.slug loc.slug %}">&raquo; {{ search.name }} Jobs in {{ loc.name }}</a>
-                    </li>
-                    <li>
-                      <a href="{% url 'custom_walkins' search.slug loc.slug %}">&raquo; {{ search.name }} Walkins in {{ loc.name }}</a>
-                    </li>
-                    <li>
-                      <a href="{% url 'skill_location_wise_fresher_jobs' search.slug loc.slug %}">&raquo; {{ search.name }} Fresher Jobs in {{ loc.name }}</a>
-                    </li>
-                  {% endif %}
-                {% endfor %}
-              {% endfor %}
-            </ul>
-          </div>
-          <!-- Similar Links ends -->
 
             </div>
           </div>
@@ -356,50 +334,7 @@
       <!-- Left menu starts here-->
 <!-- walkin_jobs starts here -->
 <div class="col-md-3 right_container">
-  <!-- upload_btn_block starts here -->
-  <div class="similar_job_posts" style="margin-bottom:10px;">
-    <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fpeeljobs%2F&width=300&height=150&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=892560280818752" width="300" height="150" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
-  </div>
-  {% if request.user.is_authenticated %}
- {% if request.user.is_jobseeker and not request.user.resume %}
-  <div class="upload_btn_block">
-   <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
-    <div class="upload_btn" id="resume_upload_but"><a href="/profile/"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
-      <input type="file" name="resume" id="resume" style="display:none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt"></span>
-      <button type="submit" name="submit" class="submit" style="
-        display:none;"><span>Submit</span></button>
-      </form>
-  </div>
-  {% endif %} 
-  {% else %}
-  <div class="upload_btn_block">
-    <div class="upload_btn upload_btn_resume"><a href="#" data-toggle="modal" data-target="#login_register"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Your Resume </a></div>
-  </div>
-  {% endif %}
-  <!--subscribe_box form starts here -->
-  <div class="subscribe_box">
-    <div class="login_box">
-      <p class="head text-capitalize">SUBSCRIBE WITH US, TO GET JOBS INTO YOUR INBOX</p>
-      <form id="Jobsubscribeform" name="Jobsubscribeform" class="Jobsubscribeform" method = "POST">
-        <div class="form-group">
-          <select class="form-control" id="job_skills" name="skill" multiple>
-          </select>
-          <span class="skill_err"></span>
-          <p id="job_response_message"></p>
-        </div>
-        <div class="form-group">
-          {% if request.user.email %}
-          <input type="hidden" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address" value="{{ request.user.email }}" />
-          {% else %}
-          <input type="text" name="email" id="job_email" class="form-control" placeholder="Enter Your Email Address"/>
-          {% endif %}
-        </div>
-        <button type="submit" class="btn btn-default">Subscribe Here</button>
-      </form>
-    </div>
-  </div>
-  <!--subscribe_box form ends here -->
-
+  
 {% if job.get_similar_jobposts %}
   <div class="walkin_jobs">
     <div class="heading text-uppercase">Similar Jobs</div>
