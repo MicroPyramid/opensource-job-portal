@@ -551,24 +551,6 @@
               </a>
             </div>
           </div>
-
-          <!-- Newsletter Section -->
-          {% if not request.user.is_authenticated %}
-          <div class="mt-6">
-            <h4 class="font-semibold text-base mb-3 text-white">Stay Updated</h4>
-            <form name="BaseSubscribeform" id="BaseSubscribeform" method="POST" class="space-y-3">
-              <input type="text"
-                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md text-sm"
-                placeholder="Enter your email" name='email' id="subscribe_email" value="{{request.user.email}}">
-              <input type="hidden" name="subscribe_from" id="subscribe_from" value="All">
-              <button class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 transition-all duration-300 font-medium rounded-md text-sm"
-                type="submit">
-                Subscribe
-              </button>
-              <p id="subscribe_response_message" class="text-xs text-gray-400"></p>
-            </form>
-          </div>
-          {% endif %}
         </div>
 
         <!-- About Us Links -->

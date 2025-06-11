@@ -475,6 +475,7 @@ def city_auto_search(request):
     suggestions = [
         {"name": result.city_name, "jobs_count": result.no_of_jobposts, "id": result.pk}
         for result in sqs
+        if result.no_of_jobposts and int(result.no_of_jobposts or 0) > 0
     ]
     suggestions = sorted(suggestions, key=lambda k: len(k["name"]), reverse=False)
     if not request.GET.get("search") == "filter":
@@ -491,6 +492,7 @@ def city_auto_search(request):
         states = [
             {"name": result.state_name, "id": result.pk, "slug": result.state_slug}
             for result in state
+            if result.no_of_jobposts and int(result.no_of_jobposts or 0) > 0
         ]
         suggestions = suggestions + states
     the_data = json.dumps({"results": suggestions[:10]})

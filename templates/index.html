@@ -5,76 +5,77 @@
 {% load searchtags %}
 {% load cache %}
 
-    {% block block_canonical_tag %}
-      <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
-    {% endblock %}
+{% block block_canonical_tag %}
+  <link rel="canonical" href="https://peeljobs.com{{ request.path }}"/>
+{% endblock %}
 
 {% block meta_tags %}
 <meta name="google-site-verification" content="YRAH49iQBxqqgGD-ogtwLY3t39VcM_7NrhX0hyzirPY" />
 <meta name="msvalidate.01" content="7748852145A5ECD3CF9FD6D8EAA04EDE" />
 {% endblock %}
+
 {% block search_block %}
 <!-- Hero Section with Job Search -->
-<section class="bg-blue-50 min-h-[60vh] flex items-center">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<section class="relative bg-slate-900 min-h-[70vh] flex items-center overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 bg-slate-900">
+    <div class="absolute inset-0 bg-blue-600/10"></div>
+    <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]"></div>
+    <div class="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.1),transparent_50%)]"></div>
+  </div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
       <!-- Search Section -->
-      <div class="lg:col-span-8">
+      <div class="lg:col-span-7">
         <!-- Hero Text -->
-        <div class="text-center lg:text-left mb-8">
-          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
-            One step to change your career
+        <div class="text-center lg:text-left mb-10">
+          <div class="inline-flex items-center gap-2 bg-blue-600/20 backdrop-blur-sm border border-blue-500/30 text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            AI-Powered Job Matching
+          </div>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
+            Find Your Dream Job with 
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">Smart Precision</span>
           </h1>
-          <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0">
-            Better matching jobs for your bright career
+          <p class="text-lg md:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto lg:mx-0 leading-relaxed text-slate-300">
+            Join thousands of professionals who've accelerated their careers with our intelligent job matching platform. Your perfect opportunity is just one search away.
           </p>
         </div>
 
-        <!-- Job Type Tabs -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
-         
-
-          <!-- Search Form -->
+        <!-- Search Form -->
+        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-6 md:p-8">
           <form name="search-form" id="search-form" class="search-form autocomplete-me" method="POST" action="{% url 'jobs:index' %}">
             {% csrf_token %}
-            <div class="flex flex-col md:flex-row gap-3">
-              <!-- Location Select -->
+            <div class="flex flex-col md:flex-row gap-4">
+              <!-- Location Input -->
               <div class="flex-1">
                 <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i data-lucide="map-pin" class="w-5 h-5 text-gray-400"></i>
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-slate-400"></i>
                   </div>
-                  <select class="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 appearance-none" name="location" id="job_location">
-                    <option value="">Select Location</option>
-                    {% get_locations as total_locations %}
-                    {% for city in total_locations %}
-                      <option value="{{ city.name }}">{{ city.name }}</option>
-                    {% endfor %}
-                    {% for state in states %}
-                      <option value="{{ state.name }}">{{ state.name }}</option>
-                    {% endfor %}
-                  </select>
-                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400"></i>
+                  <input type="text" class="w-full pl-12 pr-4 py-4 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-900 placeholder-slate-500 shadow-sm" name="location" id="location_input" placeholder="Select Location" autocomplete="off">
+                  <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400"></i>
                   </div>
+                  <div id="location-autocomplete" class="absolute z-[9999] w-full bg-white border border-slate-200 rounded-2xl shadow-xl mt-2 hidden max-h-60 overflow-y-auto"></div>
                 </div>
               </div>
 
               <!-- Skills Input -->
               <div class="flex-1">
                 <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="w-5 h-5 text-slate-400"></i>
                   </div>
-                  <input type="text" class="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500" id="q-field" name="q" placeholder="Enter skills or job title" autocomplete="off">
-                  <!-- Autocomplete dropdown with enhanced styling -->
-                  <div id="skills-autocomplete" class="absolute z-[9999] w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-60 overflow-y-auto"></div>
+                  <input type="text" class="w-full pl-12 pr-4 py-4 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-900 placeholder-slate-500 shadow-sm" id="q-field" name="q" placeholder="Enter skills or job title" autocomplete="off">
+                  <div id="skills-autocomplete" class="absolute z-[9999] w-full bg-white border border-slate-200 rounded-2xl shadow-xl mt-2 hidden max-h-60 overflow-y-auto"></div>
                 </div>
               </div>
 
               <!-- Search Button -->
               <div class="flex-shrink-0">
-                <button type="submit" class="w-full md:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg flex items-center justify-center gap-2">
+                <button type="submit" class="w-full md:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-xl hover:scale-105">
                   <i data-lucide="search" class="w-5 h-5"></i>
                   <span>Search Jobs</span>
                 </button>
@@ -84,29 +85,29 @@
             </div>
           </form>
 
-          <!-- Job Type Tabs moved below -->
+          <!-- Job Type Tabs -->
           <div class="mt-6">
-            <ul class="flex flex-wrap gap-2 bg-gray-50 p-2 rounded-xl">
+            <ul class="flex flex-wrap gap-2 bg-slate-50 p-2 rounded-2xl">
               <li class="flex-1 min-w-0">
-                <button data-job-type="full-time" class="w-full px-4 py-3 text-sm font-medium rounded-lg bg-blue-600 text-white shadow-md" id="full-time">
+                <button data-job-type="full-time" class="w-full px-4 py-3 text-sm font-medium rounded-xl bg-blue-600 text-white shadow-md transition-all duration-200" id="full-time">
                   <i data-lucide="briefcase" class="w-4 h-4 inline mr-2"></i>
                   Full Time
                 </button>
               </li>
               <li class="flex-1 min-w-0">
-                <button data-job-type="internship" class="w-full px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50" id="internship">
+                <button data-job-type="internship" class="w-full px-4 py-3 text-sm font-medium rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200" id="internship">
                   <i data-lucide="graduation-cap" class="w-4 h-4 inline mr-2"></i>
                   Internship
                 </button>
               </li>
               <li class="flex-1 min-w-0">
-                <button data-job-type="walk-in" class="w-full px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50" id="walk-in">
+                <button data-job-type="walk-in" class="w-full px-4 py-3 text-sm font-medium rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200" id="walk-in">
                   <i data-lucide="users" class="w-4 h-4 inline mr-2"></i>
                   Walkin
                 </button>
               </li>
               <li class="flex-1 min-w-0">
-                <button data-job-type="fresher" class="w-full px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50" id="fresher">
+                <button data-job-type="fresher" class="w-full px-4 py-3 text-sm font-medium rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200" id="fresher">
                   <i data-lucide="star" class="w-4 h-4 inline mr-2"></i>
                   Fresher
                 </button>
@@ -116,85 +117,246 @@
         </div>
       </div>
 
-     
+      <!-- Hero Image/Illustration -->
+      <div class="lg:col-span-5 text-center lg:text-right">
+        <div class="relative">
+          <div class="inline-flex items-center justify-center w-80 h-80 md:w-96 md:h-96 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-sm border border-white/10">
+            <div class="grid grid-cols-2 gap-4 p-8">
+              <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+                <i data-lucide="briefcase" class="w-8 h-8 text-blue-600 mb-2"></i>
+                <div class="text-sm font-semibold text-slate-700">10K+</div>
+                <div class="text-xs text-slate-500">Jobs</div>
+              </div>
+              <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+                <i data-lucide="users" class="w-8 h-8 text-green-600 mb-2"></i>
+                <div class="text-sm font-semibold text-slate-700">50K+</div>
+                <div class="text-xs text-slate-500">Users</div>
+              </div>
+              <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+                <i data-lucide="building" class="w-8 h-8 text-purple-600 mb-2"></i>
+                <div class="text-sm font-semibold text-slate-700">5K+</div>
+                <div class="text-xs text-slate-500">Companies</div>
+              </div>
+              <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+                <i data-lucide="map-pin" class="w-8 h-8 text-orange-600 mb-2"></i>
+                <div class="text-sm font-semibold text-slate-700">100+</div>
+                <div class="text-xs text-slate-500">Cities</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 {% endblock %}
+
 {% block base %}
+<!-- Job Categories Section -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+        Explore Job Categories
+      </h2>
+      <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+        Discover opportunities across various industries and find your perfect career match
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+      <a href="/technology-jobs/" class="group bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:scale-105">
+        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-700 transition-colors">
+          <i data-lucide="code" class="w-6 h-6 text-white"></i>
+        </div>
+        <h3 class="font-semibold text-slate-900 mb-1">Technology</h3>
+        <p class="text-sm text-slate-600">2.5K+ Jobs</p>
+      </a>
+
+      <a href="/marketing-jobs/" class="group bg-green-50 hover:bg-green-100 border border-green-200 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:scale-105">
+        <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-green-700 transition-colors">
+          <i data-lucide="megaphone" class="w-6 h-6 text-white"></i>
+        </div>
+        <h3 class="font-semibold text-slate-900 mb-1">Marketing</h3>
+        <p class="text-sm text-slate-600">1.8K+ Jobs</p>
+      </a>
+
+      <a href="/finance-jobs/" class="group bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:scale-105">
+        <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-700 transition-colors">
+          <i data-lucide="coins" class="w-6 h-6 text-white"></i>
+        </div>
+        <h3 class="font-semibold text-slate-900 mb-1">Finance</h3>
+        <p class="text-sm text-slate-600">1.2K+ Jobs</p>
+      </a>
+
+      <a href="/healthcare-jobs/" class="group bg-red-50 hover:bg-red-100 border border-red-200 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:scale-105">
+        <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-red-700 transition-colors">
+          <i data-lucide="heart" class="w-6 h-6 text-white"></i>
+        </div>
+        <h3 class="font-semibold text-slate-900 mb-1">Healthcare</h3>
+        <p class="text-sm text-slate-600">900+ Jobs</p>
+      </a>
+
+      <a href="/education-jobs/" class="group bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:scale-105">
+        <div class="w-12 h-12 bg-yellow-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-700 transition-colors">
+          <i data-lucide="book-open" class="w-6 h-6 text-white"></i>
+        </div>
+        <h3 class="font-semibold text-slate-900 mb-1">Education</h3>
+        <p class="text-sm text-slate-600">750+ Jobs</p>
+      </a>
+
+      <a href="/design-jobs/" class="group bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:scale-105">
+        <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-700 transition-colors">
+          <i data-lucide="palette" class="w-6 h-6 text-white"></i>
+        </div>
+        <h3 class="font-semibold text-slate-900 mb-1">Design</h3>
+        <p class="text-sm text-slate-600">650+ Jobs</p>
+      </a>
+    </div>
+  </div>
+</section>
 
 <!-- Top Job Locations Section -->
-<section class="py-8 bg-white border-b border-gray-100">
+<section class="py-16 bg-slate-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="text-center mb-8">
-      <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
         Popular Job Locations
       </h2>
-      <p class="text-gray-600 text-sm">
+      <p class="text-lg text-slate-600">
         Discover career opportunities across India's top cities
       </p>
     </div>
 
-    <!-- Locations Grid -->
     {% get_locations as total_locations %}
     {% if total_locations %}
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
-        {% for location in total_locations|slice:"34" %}
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+        {% for location in total_locations|slice:"36" %}
           <a href="{{ location.get_job_url }}" 
-             class="block text-center py-3 px-2 bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 text-sm font-medium rounded-lg transition-all duration-200 border border-gray-100 hover:border-blue-200">
+             class="block text-center py-4 px-3 bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 text-sm font-medium rounded-2xl transition-all duration-200 border border-slate-200 hover:border-blue-200 shadow-sm hover:shadow-md">
+            <i data-lucide="map-pin" class="w-4 h-4 mx-auto mb-2 text-slate-400"></i>
             {{ location.name }}
           </a>
         {% endfor %}
       </div>
-     
     {% endif %}
   </div>
 </section>
 
 <!-- Stats Section -->
-<section class="py-12 md:py-16 bg-gray-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-12">
-      <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+<section class="py-20 bg-slate-900 relative overflow-hidden">
+  <div class="absolute inset-0 bg-slate-900">
+    <div class="absolute inset-0 bg-blue-600/5"></div>
+    <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]"></div>
+  </div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
         Join Thousands of Success Stories
       </h2>
-      <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-        Be part of India's fastest growing job platform
+      <p class="text-xl text-slate-300 max-w-3xl mx-auto">
+        Be part of India's fastest growing job platform trusted by professionals nationwide
       </p>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-      <div class="text-center p-6 md:p-8 rounded-2xl bg-blue-50 border border-blue-200 hover:shadow-lg group">
-        <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-          <i data-lucide="briefcase" class="w-8 h-8 md:w-10 md:h-10 text-white"></i>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center p-8 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 group">
+        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+          <i data-lucide="briefcase" class="w-10 h-10 text-white"></i>
         </div>
-        <h3 data-counter="10000" class="text-2xl md:text-3xl lg:text-4xl font-bold text-blue-600 mb-2">0+</h3>
-        <p class="text-blue-700 font-medium text-sm md:text-base">Active Jobs</p>
-        <p class="text-blue-600 text-xs md:text-sm mt-2 opacity-75">Updated daily</p>
+        <h3 data-counter="10000" class="text-4xl lg:text-5xl font-bold text-blue-400 mb-3">0+</h3>
+        <p class="text-white font-semibold text-lg mb-2">Active Jobs</p>
+        <p class="text-slate-400 text-sm">Updated daily across all industries</p>
       </div>
       
-      <div class="text-center p-6 md:p-8 rounded-2xl bg-green-50 border border-green-200 hover:shadow-lg group">
-        <div class="w-16 h-16 md:w-20 md:h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-          <i data-lucide="users" class="w-8 h-8 md:w-10 md:h-10 text-white"></i>
+      <div class="text-center p-8 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 group">
+        <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+          <i data-lucide="users" class="w-10 h-10 text-white"></i>
         </div>
-        <h3 data-counter="50000" class="text-2xl md:text-3xl lg:text-4xl font-bold text-green-600 mb-2">0+</h3>
-        <p class="text-green-700 font-medium text-sm md:text-base">Job Seekers</p>
-        <p class="text-green-600 text-xs md:text-sm mt-2 opacity-75">Verified profiles</p>
+        <h3 data-counter="50000" class="text-4xl lg:text-5xl font-bold text-green-400 mb-3">0+</h3>
+        <p class="text-white font-semibold text-lg mb-2">Job Seekers</p>
+        <p class="text-slate-400 text-sm">Verified profiles ready to hire</p>
       </div>
       
-      <div class="text-center p-6 md:p-8 rounded-2xl bg-purple-50 border border-purple-200 hover:shadow-lg group">
-        <div class="w-16 h-16 md:w-20 md:h-20 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-          <i data-lucide="building" class="w-8 h-8 md:w-10 md:h-10 text-white"></i>
+      <div class="text-center p-8 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 group">
+        <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+          <i data-lucide="building" class="w-10 h-10 text-white"></i>
         </div>
-        <h3 data-counter="5000" class="text-2xl md:text-3xl lg:text-4xl font-bold text-purple-600 mb-2">0+</h3>
-        <p class="text-purple-700 font-medium text-sm md:text-base">Companies</p>
-        <p class="text-purple-600 text-xs md:text-sm mt-2 opacity-75">Trusted brands</p>
+        <h3 data-counter="5000" class="text-4xl lg:text-5xl font-bold text-purple-400 mb-3">0+</h3>
+        <p class="text-white font-semibold text-lg mb-2">Companies</p>
+        <p class="text-slate-400 text-sm">Trusted brands and startups</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Companies Section -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+        Trusted by Leading Companies
+      </h2>
+      <p class="text-lg text-slate-600">
+        Join professionals working at India's top organizations
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center">
+      <div class="flex items-center justify-center p-6 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+            <i data-lucide="building" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-sm font-medium text-slate-600">TechCorp</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center p-6 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+            <i data-lucide="building" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-sm font-medium text-slate-600">FinanceHub</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center p-6 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+            <i data-lucide="building" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-sm font-medium text-slate-600">StartupX</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center p-6 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+            <i data-lucide="building" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-sm font-medium text-slate-600">HealthPlus</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center p-6 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-yellow-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+            <i data-lucide="building" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-sm font-medium text-slate-600">EduTech</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center p-6 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+            <i data-lucide="building" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-sm font-medium text-slate-600">DesignStudio</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 {% endblock %}
+
 {% block extra_js %}
 <script type="text/javascript">
   $(document).ready(function() {
@@ -203,7 +365,28 @@
       lucide.createIcons();
     }
 
-    // jQuery autocomplete
+    // Enhanced autocomplete styling
+    function createAutocompleteItem(item, type = 'skill') {
+      const jobsCount = item.jobs_count ? ` (${item.jobs_count} jobs)` : '';
+      const name = item.name || item.title || 'Unknown';
+      
+      return `
+        <div class="ac-result px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 last:border-b-0 flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <i data-lucide="${type === 'location' ? 'map-pin' : 'search'}" class="w-4 h-4 text-blue-600"></i>
+            </div>
+            <div>
+              <span class="text-slate-900 font-medium group-hover:text-blue-600">${name}</span>
+              <div class="text-xs text-slate-500">${jobsCount}</div>
+            </div>
+          </div>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        </div>
+      `;
+    }
+
+    // Skills autocomplete with enhanced styling
     var inputField = $('#q-field');
     var autocompleteDiv = $('#skills-autocomplete');
     
@@ -216,10 +399,13 @@
           return;
         }
         
-        // Show loading
-        autocompleteDiv.removeClass('hidden').html('<div class="px-4 py-3 text-gray-500">Loading...</div>');
+        autocompleteDiv.removeClass('hidden').html(`
+          <div class="px-4 py-3 text-slate-500 flex items-center gap-2">
+            <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            Loading...
+          </div>
+        `);
         
-        // Make AJAX request
         $.ajax({
           url: '/skill-auto/',
           type: 'GET',
@@ -229,22 +415,22 @@
             var results = data.results || [];
             
             if (results.length === 0) {
-              autocompleteDiv.html('<div class="px-4 py-3 text-gray-500">No results found</div>');
+              autocompleteDiv.html('<div class="px-4 py-3 text-slate-500 text-center">No results found</div>');
               return;
             }
             
             var html = '';
             $.each(results, function(i, item) {
-              var jobsCount = item.jobs_count ? ' (' + item.jobs_count + ' jobs)' : '';
-              html += '<div class="ac-result px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100">';
-              html += '<span class="text-gray-900 font-medium">' + (item.name || item.title || 'Unknown') + '</span>';
-              html += '<span class="text-sm text-gray-500">' + jobsCount + '</span>';
-              html += '</div>';
+              html += createAutocompleteItem(item, 'skill');
             });
             
             autocompleteDiv.html(html);
             
-            // Add click handlers to results
+            // Reinitialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+              lucide.createIcons();
+            }
+            
             autocompleteDiv.find('.ac-result').on('click', function(e) {
               e.preventDefault();
               var text = $(this).find('span').first().text();
@@ -253,30 +439,15 @@
             });
           },
           error: function() {
-            autocompleteDiv.html('<div class="px-4 py-3 text-red-500">Error loading suggestions</div>');
+            autocompleteDiv.html('<div class="px-4 py-3 text-red-500 text-center">Error loading suggestions</div>');
           }
         });
       });
-      
-      // Hide autocomplete when clicking outside
-      $(document).on('click', function(e) {
-        if (!$(e.target).closest('#q-field, #skills-autocomplete').length) {
-          autocompleteDiv.addClass('hidden').html('');
-        }
-      });
     }
 
-    // Location autocomplete
-    var locationField = $('#job_location');
-    var locationAutocompleteDiv = $('<div id="location-autocomplete" class="absolute z-[9999] w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-60 overflow-y-auto"></div>');
-    
-    // Insert the autocomplete div after the location select
-    locationField.parent().append(locationAutocompleteDiv);
-    
-    // Convert select to input for autocomplete
-    var locationInput = $('<input type="text" class="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500" name="location_input" id="location_input" placeholder="Select Location" autocomplete="off">');
-    locationField.hide();
-    locationField.after(locationInput);
+    // Location autocomplete with enhanced styling
+    var locationInput = $('#location_input');
+    var locationAutocompleteDiv = $('#location-autocomplete');
     
     if (locationInput.length && locationAutocompleteDiv.length) {
       locationInput.on('keyup', function() {
@@ -287,10 +458,13 @@
           return;
         }
         
-        // Show loading
-        locationAutocompleteDiv.removeClass('hidden').html('<div class="px-4 py-3 text-gray-500">Loading...</div>');
+        locationAutocompleteDiv.removeClass('hidden').html(`
+          <div class="px-4 py-3 text-slate-500 flex items-center gap-2">
+            <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            Loading...
+          </div>
+        `);
         
-        // Make AJAX request
         $.ajax({
           url: '/city-auto/',
           type: 'GET',
@@ -300,61 +474,56 @@
             var results = data.results || [];
             
             if (results.length === 0) {
-              locationAutocompleteDiv.html('<div class="px-4 py-3 text-gray-500">No results found</div>');
+              locationAutocompleteDiv.html('<div class="px-4 py-3 text-slate-500 text-center">No results found</div>');
               return;
             }
             
             var html = '';
             $.each(results, function(i, item) {
-              var jobsCount = item.jobs_count ? ' (' + item.jobs_count + ' jobs)' : '';
-              html += '<div class="ac-location-result px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100">';
-              html += '<span class="text-gray-900 font-medium">' + (item.name || 'Unknown') + '</span>';
-              html += '<span class="text-sm text-gray-500">' + jobsCount + '</span>';
-              html += '</div>';
+              html += createAutocompleteItem(item, 'location');
             });
             
             locationAutocompleteDiv.html(html);
             
-            // Add click handlers to results
-            locationAutocompleteDiv.find('.ac-location-result').on('click', function(e) {
+            // Reinitialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+              lucide.createIcons();
+            }
+            
+            locationAutocompleteDiv.find('.ac-result').on('click', function(e) {
               e.preventDefault();
               var text = $(this).find('span').first().text();
               locationInput.val(text);
-              locationField.val(text);
               locationAutocompleteDiv.addClass('hidden').html('');
             });
           },
           error: function() {
-            locationAutocompleteDiv.html('<div class="px-4 py-3 text-red-500">Error loading suggestions</div>');
+            locationAutocompleteDiv.html('<div class="px-4 py-3 text-red-500 text-center">Error loading suggestions</div>');
           }
         });
       });
-      
-      // Hide autocomplete when clicking outside
-      $(document).on('click', function(e) {
-        if (!$(e.target).closest('#location_input, #location-autocomplete').length) {
-          locationAutocompleteDiv.addClass('hidden').html('');
-        }
-      });
-      
-      // Update hidden select when input changes
-      locationInput.on('blur', function() {
-        locationField.val($(this).val());
-      });
     }
 
-    // Job type tab functionality
+    // Hide autocomplete when clicking outside
+    $(document).on('click', function(e) {
+      if (!$(e.target).closest('#q-field, #skills-autocomplete').length) {
+        autocompleteDiv.addClass('hidden').html('');
+      }
+      if (!$(e.target).closest('#location_input, #location-autocomplete').length) {
+        locationAutocompleteDiv.addClass('hidden').html('');
+      }
+    });
+
+    // Enhanced job type tab functionality
     $('[data-job-type]').click(function (e) {
       e.preventDefault();
-      // Remove active styles from all buttons
-      $('[data-job-type]').removeClass('bg-blue-600 text-white shadow-md');
-      $('[data-job-type]').addClass('text-gray-600 hover:text-blue-600 hover:bg-blue-50');
       
-      // Set the job type value
+      $('[data-job-type]').removeClass('bg-blue-600 text-white shadow-md');
+      $('[data-job-type]').addClass('text-slate-600 hover:text-blue-600 hover:bg-blue-50');
+      
       $('#job_type').val($(this).attr('id'));
       
-      // Add active styles to clicked button
-      $(this).removeClass('text-gray-600 hover:text-blue-600 hover:bg-blue-50');
+      $(this).removeClass('text-slate-600 hover:text-blue-600 hover:bg-blue-50');
       $(this).addClass('bg-blue-600 text-white shadow-md');
     });
 
@@ -383,69 +552,56 @@
       statsObserver.observe(this);
     });
 
-    // Popular search tag functionality
-    $('[data-search-term]').click(function() {
-      const searchText = $(this).attr('data-search-term');
-      $('#q-field').val(searchText);
-    });
-
-    // Search form submission
+    // Enhanced search form submission
     $('#search-form').on('submit', function(e) {
-      e.preventDefault(); // Prevent default form submission
+      e.preventDefault();
       
       const form = $(this);
       const skill = form.find('[name="q"]').val().trim();
-      const location = form.find('[name="location_input"]').length ? form.find('[name="location_input"]').val().trim() : form.find('[name="location"]').val().trim();
+      const location = form.find('[name="location"]').val().trim();
       const jobType = form.find('[name="job_type"]').val();
       
-      // Update hidden location field
-      if (form.find('[name="location_input"]').length) {
-        form.find('[name="location"]').val(location);
-      }
-      
-      // Check if at least one field has a value
       if (!skill && !location) {
-        // Show alert
         const alertDiv = $(`
-          <div class="fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg z-50">
+          <div class="fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-2xl shadow-2xl z-50 border border-red-400">
             <div class="flex items-center gap-3">
               <i data-lucide="alert-circle" class="w-5 h-5"></i>
-              <span>Please enter a skill or select a location</span>
+              <span class="font-medium">Please enter a skill or select a location</span>
             </div>
           </div>
         `);
         $('body').append(alertDiv);
         
+        // Reinitialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+        
         setTimeout(() => {
-          alertDiv.remove();
+          alertDiv.fadeOut(300, function() {
+            alertDiv.remove();
+          });
         }, 3000);
         return false;
       }
       
-      // Construct URL based on selection
       let targetUrl = '';
       
       if (skill && location) {
-        // Both skill and location: /<skill>-jobs-in-<location>/?job_type=<job-type>
         const slugifiedSkill = skill.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         const slugifiedLocation = location.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         targetUrl = `/${slugifiedSkill}-jobs-in-${slugifiedLocation}/?job_type=${encodeURIComponent(jobType)}`;
       } else if (skill && !location) {
-        // Only skill: /<skill>-jobs/?job_type=<job-type>
         const slugifiedSkill = skill.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         targetUrl = `/${slugifiedSkill}-jobs/?job_type=${encodeURIComponent(jobType)}`;
       } else if (!skill && location) {
-        // Only location: /jobs-in-<location>/?job_type=<job-type>
         const slugifiedLocation = location.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         targetUrl = `/jobs-in-${slugifiedLocation}/?job_type=${encodeURIComponent(jobType)}`;
       } else {
-        // Neither (fallback): /jobs/?job_type=<job-type>
         targetUrl = `/jobs/?job_type=${encodeURIComponent(jobType)}`;
       }
       
-      // Navigate to the constructed URL
       window.location.href = targetUrl;
-      
       return false;
     });
   });
