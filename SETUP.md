@@ -83,6 +83,8 @@ python manage.py createsuperuser
 ```bash
 npm install
 npm run build
+pnpm run watch-css
+pnpm run build-css
 ```
 
 ## Running the Application
