@@ -67,44 +67,7 @@
             <br clear="all">
           </div>
         </div>
-        {% if not request.user.is_authenticated %}
-        <div class="login_block col-md-4 col-sm-12">
-          <div class="login_box">
-            <p class="head text-capitalize login_text">Already a Member? Login</p>
-            <form id="ApplicantLoginForm" name="ApplicantLoginForm" class="ApplicantLoginForm" method="POST">
-              <div class="mb-3">
-                <input type="email" class="form-control form-control_opt" id="user_login_email" placeholder="Enter Email ID" name="email">
-                <p id="user_response_message"></p>
-                <input type="hidden" name="register_type" id='register_type' value="login">
-                <input type="hidden" name="next" value="{{request.GET.next}}">
-              </div>
-              <div class="mb-3">
-                <input type="password" class="form-control form-control_opt" id="user_login_password" placeholder="Enter Password" name="password">
-              </div>
-              <div class="forgot_right">
-                <button type="submit"  class="btn btn-default login_form_button" >Sign In</button>
-                <a href="#" class="forgot_password pull-right">Forgot Password?</a>
-                 <a href="#" class="new_user_login pull-right" style="display:none;">Already a Member? Login</a>
-              </div>
-
-              <div class="forgot_create-new">
-                 <a href="#" class="btn upload_btn_resume up_res">Upload Resume</a>
-                 <a href="#" class="btn new_account"> New Account?</a>
-              </div>
-            </form>
-            <div class="social_links">
-              <ul>
-                <li class="text-capitalize">login with social networks</li><br>
-                <li ><a href="{% url 'social:facebook_login' %}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a></li>
-                <li ><a href="{% url 'social:github_login' %}"  target="_blank"><i class="fa-brands fa-github"></i></a></li>
-                <li ><a href="{% url 'social:google_login' %}"><strong>G</strong></a></li>
-
-              </ul>
-            </div>
-
-          </div>
-        </div>
-        {% endif %}
+       
       </div>
     </div>
   </section>
