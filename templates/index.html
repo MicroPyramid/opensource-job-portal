@@ -1,6 +1,5 @@
-{% extends "base.html" %}
+{% extends "base_with_tailwind_megamenu.html" %}
 {% load page_tags %}
-{% load static %}
 {% load thumbnail %}
 {% load static %}
 {% load searchtags %}
@@ -15,129 +14,440 @@
 <meta name="msvalidate.01" content="7748852145A5ECD3CF9FD6D8EAA04EDE" />
 {% endblock %}
 {% block search_block %}
-<section>
-  <div class="container search_login_row">
-      <div class="row mar_lr_0 search_login_blocks">
-        <div class="search_block col-md-12 col-sm-12">
-          <p class="message">One step to change your career<br> Better matching jobs for your bright career</p>
-          <div class="tabs_block">
-            <ul class="tabs">
-              <li><button class="job_type active_button" id="full-time">Full Time</button></li>
-              <li><button class='job_type' id="internship">Internship</button></li>
-              <li><button class='job_type' id="walk-in">Walkin</button></li>
-              <li><button class='job_type' id="Fresher">Fresher</button></li>
-            </ul>
-            <div class="search_location_other_block">
-              <div class="job-location_other">
-                <form class="form-inline autocomplete-me search-form" name="search-form" id="search-form" method="POST">
-                  <div class="input-group">
-                    
-                      <label class="sr-only"></label>
-                      <select class="form-select form-control_opt" name="location" id="job_location ">
-                        <option value="">Location</option>
-                        {% get_locations as total_locations %}
-                        {% for city in total_locations %}
-                          <option value="{{ city.name }}">{{ city.name }}</option>
-                        {% endfor %}
-                        {% for state in states %}
-                          <option value="{{ state.name }}">{{ state.name }}</option>
-                        {% endfor %}
-                      </select>
-                    
-                    
-                      <label class="sr-only"></label>
-                      <input type="text" class="form-control form-control_opt content_wrap_list" id ="q-field" name="q" placeholder="Enter Any Skills, Qualifications" autocomplete="off">
-                      <input type="hidden" name="job_type" id='job_type'>
-                      <button type="submit" class="btn btn-default">Search Jobs</button>
-                      <!--<input type="hidden" name="search_slug" id='search_slug'>-->
-                    
+<!-- Hero Section with Job Search -->
+<section class="bg-blue-50 min-h-[60vh] flex items-center">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <!-- Search Section -->
+      <div class="lg:col-span-8">
+        <!-- Hero Text -->
+        <div class="text-center lg:text-left mb-8">
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
+            One step to change your career
+          </h1>
+          <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0">
+            Better matching jobs for your bright career
+          </p>
+        </div>
+
+        <!-- Job Type Tabs -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
+         
+
+          <!-- Search Form -->
+          <form name="search-form" id="search-form" class="search-form autocomplete-me" method="POST" action="{% url 'jobs:index' %}">
+            {% csrf_token %}
+            <div class="flex flex-col md:flex-row gap-3">
+              <!-- Location Select -->
+              <div class="flex-1">
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-gray-400"></i>
                   </div>
-                </form>
+                  <select class="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 appearance-none" name="location" id="job_location">
+                    <option value="">Select Location</option>
+                    {% get_locations as total_locations %}
+                    {% for city in total_locations %}
+                      <option value="{{ city.name }}">{{ city.name }}</option>
+                    {% endfor %}
+                    {% for state in states %}
+                      <option value="{{ state.name }}">{{ state.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400"></i>
+                  </div>
+                </div>
               </div>
-              <!--<span class="advanced_tag_div"><a href="#" class="adv_srch_link adv_search">Advanced Search</a></span>-->
+
+              <!-- Skills Input -->
+              <div class="flex-1">
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                  </div>
+                  <input type="text" class="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500" id="q-field" name="q" placeholder="Enter skills or job title" autocomplete="off">
+                  <!-- Autocomplete dropdown with enhanced styling -->
+                  <div id="skills-autocomplete" class="absolute z-[9999] w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-60 overflow-y-auto"></div>
+                </div>
+              </div>
+
+              <!-- Search Button -->
+              <div class="flex-shrink-0">
+                <button type="submit" class="w-full md:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg flex items-center justify-center gap-2">
+                  <i data-lucide="search" class="w-5 h-5"></i>
+                  <span>Search Jobs</span>
+                </button>
+              </div>
+
+              <input type="hidden" name="job_type" id="job_type" value="full-time">
             </div>
+          </form>
+
+          <!-- Job Type Tabs moved below -->
+          <div class="mt-6">
+            <ul class="flex flex-wrap gap-2 bg-gray-50 p-2 rounded-xl">
+              <li class="flex-1 min-w-0">
+                <button data-job-type="full-time" class="w-full px-4 py-3 text-sm font-medium rounded-lg bg-blue-600 text-white shadow-md" id="full-time">
+                  <i data-lucide="briefcase" class="w-4 h-4 inline mr-2"></i>
+                  Full Time
+                </button>
+              </li>
+              <li class="flex-1 min-w-0">
+                <button data-job-type="internship" class="w-full px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50" id="internship">
+                  <i data-lucide="graduation-cap" class="w-4 h-4 inline mr-2"></i>
+                  Internship
+                </button>
+              </li>
+              <li class="flex-1 min-w-0">
+                <button data-job-type="walk-in" class="w-full px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50" id="walk-in">
+                  <i data-lucide="users" class="w-4 h-4 inline mr-2"></i>
+                  Walkin
+                </button>
+              </li>
+              <li class="flex-1 min-w-0">
+                <button data-job-type="fresher" class="w-full px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50" id="fresher">
+                  <i data-lucide="star" class="w-4 h-4 inline mr-2"></i>
+                  Fresher
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
-        {% if request.user.is_authenticated %}
-          {% if request.user.user_type == 'JS' %}
-          <div class="login_block col-md-4 col-sm-12 text-center">
-            <div class="text-center head_profile">Your Profile Completeness </div>
-            <div class="count" id='circle'>
-              <span class="count_value"><small>{{ request.user.profile_completion_percentage }}%</small></span>
-              <a href="/profile/">Update Your Profile</a>
-            </div>
-          </div>
-          {% endif %}
-        {% endif %}
-        
       </div>
+
+     
     </div>
+  </div>
 </section>
 {% endblock %}
 {% block base %}
-<!-- main_container starts here -->
-  <section class="main_container">
-    <div class="container">
-      <div class="row mar_lr_0">
-        <div class="col-md-12 left_container">
-          <!-- register_block starts here -->
-          <div class="row mar_lr_0 register_block">
-            <div class="col-md-12 register_point border redirect_link" data-href="{% url 'my:alerts_list'%}">
-              <div class="text-center register_col">
-                <strong>Get Jobs Into your inbox</strong>
-                <p>Create Job Alert in your desired areas and get best-matched jobs into your inbox.</p>
-              </div>
-            </div>
-          </div>
-          <!-- register_block ends here -->
-          
-          <!-- top_locations starts here -->
-          {% cache 604800 top_job_locations_in_index %}
-          <div class="row mar_lr_0 top_locations">
-            <div class="heading text-uppercase">Top Job Locations</div>
-            <div class="locations">
-              <ul class="location_ul">
-              {% get_locations as total_locations %}
-              {% for location in total_locations|slice:"34" %}
-                <li><a href="{{ location.get_job_url }}">{{ location.name }}</a></li>
-                {% if forloop.counter|divisibleby:7 %}
-                  </ul>
-                  <ul class="location_ul">
-                {% endif %}
-              {% endfor %}
-              </ul>
-              <ul>
-                <li><a class="pull-right view-more" href="{% url 'jobs_by_location' 'jobs' %}">View More</a></li>
-              </ul>
-            </div>
-          </div>
-          {% endcache %}
 
-          <!-- top_locations edns here -->
-        
+<!-- Top Job Locations Section -->
+<section class="py-8 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+        Popular Job Locations
+      </h2>
+      <p class="text-gray-600 text-sm">
+        Discover career opportunities across India's top cities
+      </p>
+    </div>
+
+    <!-- Locations Grid -->
+    {% get_locations as total_locations %}
+    {% if total_locations %}
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
+        {% for location in total_locations|slice:"34" %}
+          <a href="{{ location.get_job_url }}" 
+             class="block text-center py-3 px-2 bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 text-sm font-medium rounded-lg transition-all duration-200 border border-gray-100 hover:border-blue-200">
+            {{ location.name }}
+          </a>
+        {% endfor %}
+      </div>
+     
+    {% endif %}
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-12 md:py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        Join Thousands of Success Stories
+      </h2>
+      <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+        Be part of India's fastest growing job platform
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+      <div class="text-center p-6 md:p-8 rounded-2xl bg-blue-50 border border-blue-200 hover:shadow-lg group">
+        <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+          <i data-lucide="briefcase" class="w-8 h-8 md:w-10 md:h-10 text-white"></i>
         </div>
-       
+        <h3 data-counter="10000" class="text-2xl md:text-3xl lg:text-4xl font-bold text-blue-600 mb-2">0+</h3>
+        <p class="text-blue-700 font-medium text-sm md:text-base">Active Jobs</p>
+        <p class="text-blue-600 text-xs md:text-sm mt-2 opacity-75">Updated daily</p>
+      </div>
+      
+      <div class="text-center p-6 md:p-8 rounded-2xl bg-green-50 border border-green-200 hover:shadow-lg group">
+        <div class="w-16 h-16 md:w-20 md:h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+          <i data-lucide="users" class="w-8 h-8 md:w-10 md:h-10 text-white"></i>
+        </div>
+        <h3 data-counter="50000" class="text-2xl md:text-3xl lg:text-4xl font-bold text-green-600 mb-2">0+</h3>
+        <p class="text-green-700 font-medium text-sm md:text-base">Job Seekers</p>
+        <p class="text-green-600 text-xs md:text-sm mt-2 opacity-75">Verified profiles</p>
+      </div>
+      
+      <div class="text-center p-6 md:p-8 rounded-2xl bg-purple-50 border border-purple-200 hover:shadow-lg group">
+        <div class="w-16 h-16 md:w-20 md:h-20 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+          <i data-lucide="building" class="w-8 h-8 md:w-10 md:h-10 text-white"></i>
+        </div>
+        <h3 data-counter="5000" class="text-2xl md:text-3xl lg:text-4xl font-bold text-purple-600 mb-2">0+</h3>
+        <p class="text-purple-700 font-medium text-sm md:text-base">Companies</p>
+        <p class="text-purple-600 text-xs md:text-sm mt-2 opacity-75">Trusted brands</p>
       </div>
     </div>
-  </section>
-  <!-- main_container ends here -->
-  
-{% endblock base %}
-{% block 'extra_js' %}
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
 <script type="text/javascript">
-  $('span.user_search').click(function(e){
-      $(window).scrollTop($('#banner').offset().top-$('.page-top').height()-100);
-  });
   $(document).ready(function() {
-    $('#myCarousel').carousel({
-      interval: 10000
-  })
-      $(".latest_jobs_class").click(function(){
-        window.location = $(this).attr('id')
-      })
-    $(".latest_jobs a").click(function(e){
-      e.stopPropagation()
-    })
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+
+    // jQuery autocomplete
+    var inputField = $('#q-field');
+    var autocompleteDiv = $('#skills-autocomplete');
+    
+    if (inputField.length && autocompleteDiv.length) {
+      inputField.on('keyup', function() {
+        var query = $(this).val().trim();
+        
+        if (query.length < 1) {
+          autocompleteDiv.addClass('hidden').html('');
+          return;
+        }
+        
+        // Show loading
+        autocompleteDiv.removeClass('hidden').html('<div class="px-4 py-3 text-gray-500">Loading...</div>');
+        
+        // Make AJAX request
+        $.ajax({
+          url: '/skill-auto/',
+          type: 'GET',
+          data: { q: query },
+          dataType: 'json',
+          success: function(data) {
+            var results = data.results || [];
+            
+            if (results.length === 0) {
+              autocompleteDiv.html('<div class="px-4 py-3 text-gray-500">No results found</div>');
+              return;
+            }
+            
+            var html = '';
+            $.each(results, function(i, item) {
+              var jobsCount = item.jobs_count ? ' (' + item.jobs_count + ' jobs)' : '';
+              html += '<div class="ac-result px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100">';
+              html += '<span class="text-gray-900 font-medium">' + (item.name || item.title || 'Unknown') + '</span>';
+              html += '<span class="text-sm text-gray-500">' + jobsCount + '</span>';
+              html += '</div>';
+            });
+            
+            autocompleteDiv.html(html);
+            
+            // Add click handlers to results
+            autocompleteDiv.find('.ac-result').on('click', function(e) {
+              e.preventDefault();
+              var text = $(this).find('span').first().text();
+              inputField.val(text);
+              autocompleteDiv.addClass('hidden').html('');
+            });
+          },
+          error: function() {
+            autocompleteDiv.html('<div class="px-4 py-3 text-red-500">Error loading suggestions</div>');
+          }
+        });
+      });
+      
+      // Hide autocomplete when clicking outside
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#q-field, #skills-autocomplete').length) {
+          autocompleteDiv.addClass('hidden').html('');
+        }
+      });
+    }
+
+    // Location autocomplete
+    var locationField = $('#job_location');
+    var locationAutocompleteDiv = $('<div id="location-autocomplete" class="absolute z-[9999] w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-60 overflow-y-auto"></div>');
+    
+    // Insert the autocomplete div after the location select
+    locationField.parent().append(locationAutocompleteDiv);
+    
+    // Convert select to input for autocomplete
+    var locationInput = $('<input type="text" class="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500" name="location_input" id="location_input" placeholder="Select Location" autocomplete="off">');
+    locationField.hide();
+    locationField.after(locationInput);
+    
+    if (locationInput.length && locationAutocompleteDiv.length) {
+      locationInput.on('keyup', function() {
+        var query = $(this).val().trim();
+        
+        if (query.length < 1) {
+          locationAutocompleteDiv.addClass('hidden').html('');
+          return;
+        }
+        
+        // Show loading
+        locationAutocompleteDiv.removeClass('hidden').html('<div class="px-4 py-3 text-gray-500">Loading...</div>');
+        
+        // Make AJAX request
+        $.ajax({
+          url: '/city-auto/',
+          type: 'GET',
+          data: { location: query },
+          dataType: 'json',
+          success: function(data) {
+            var results = data.results || [];
+            
+            if (results.length === 0) {
+              locationAutocompleteDiv.html('<div class="px-4 py-3 text-gray-500">No results found</div>');
+              return;
+            }
+            
+            var html = '';
+            $.each(results, function(i, item) {
+              var jobsCount = item.jobs_count ? ' (' + item.jobs_count + ' jobs)' : '';
+              html += '<div class="ac-location-result px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100">';
+              html += '<span class="text-gray-900 font-medium">' + (item.name || 'Unknown') + '</span>';
+              html += '<span class="text-sm text-gray-500">' + jobsCount + '</span>';
+              html += '</div>';
+            });
+            
+            locationAutocompleteDiv.html(html);
+            
+            // Add click handlers to results
+            locationAutocompleteDiv.find('.ac-location-result').on('click', function(e) {
+              e.preventDefault();
+              var text = $(this).find('span').first().text();
+              locationInput.val(text);
+              locationField.val(text);
+              locationAutocompleteDiv.addClass('hidden').html('');
+            });
+          },
+          error: function() {
+            locationAutocompleteDiv.html('<div class="px-4 py-3 text-red-500">Error loading suggestions</div>');
+          }
+        });
+      });
+      
+      // Hide autocomplete when clicking outside
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#location_input, #location-autocomplete').length) {
+          locationAutocompleteDiv.addClass('hidden').html('');
+        }
+      });
+      
+      // Update hidden select when input changes
+      locationInput.on('blur', function() {
+        locationField.val($(this).val());
+      });
+    }
+
+    // Job type tab functionality
+    $('[data-job-type]').click(function (e) {
+      e.preventDefault();
+      // Remove active styles from all buttons
+      $('[data-job-type]').removeClass('bg-blue-600 text-white shadow-md');
+      $('[data-job-type]').addClass('text-gray-600 hover:text-blue-600 hover:bg-blue-50');
+      
+      // Set the job type value
+      $('#job_type').val($(this).attr('id'));
+      
+      // Add active styles to clicked button
+      $(this).removeClass('text-gray-600 hover:text-blue-600 hover:bg-blue-50');
+      $(this).addClass('bg-blue-600 text-white shadow-md');
     });
+
+    // Animate stats on scroll with counter animation
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const counter = entry.target;
+          const target = parseInt(counter.getAttribute('data-counter'));
+          let current = 0;
+          const increment = target / 100;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              counter.textContent = target.toLocaleString() + '+';
+              clearInterval(timer);
+            } else {
+              counter.textContent = Math.floor(current).toLocaleString() + '+';
+            }
+          }, 20);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    $('[data-counter]').each(function() {
+      statsObserver.observe(this);
+    });
+
+    // Popular search tag functionality
+    $('[data-search-term]').click(function() {
+      const searchText = $(this).attr('data-search-term');
+      $('#q-field').val(searchText);
+    });
+
+    // Search form submission
+    $('#search-form').on('submit', function(e) {
+      e.preventDefault(); // Prevent default form submission
+      
+      const form = $(this);
+      const skill = form.find('[name="q"]').val().trim();
+      const location = form.find('[name="location_input"]').length ? form.find('[name="location_input"]').val().trim() : form.find('[name="location"]').val().trim();
+      const jobType = form.find('[name="job_type"]').val();
+      
+      // Update hidden location field
+      if (form.find('[name="location_input"]').length) {
+        form.find('[name="location"]').val(location);
+      }
+      
+      // Check if at least one field has a value
+      if (!skill && !location) {
+        // Show alert
+        const alertDiv = $(`
+          <div class="fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg z-50">
+            <div class="flex items-center gap-3">
+              <i data-lucide="alert-circle" class="w-5 h-5"></i>
+              <span>Please enter a skill or select a location</span>
+            </div>
+          </div>
+        `);
+        $('body').append(alertDiv);
+        
+        setTimeout(() => {
+          alertDiv.remove();
+        }, 3000);
+        return false;
+      }
+      
+      // Construct URL based on selection
+      let targetUrl = '';
+      
+      if (skill && location) {
+        // Both skill and location: /<skill>-jobs-in-<location>/?job_type=<job-type>
+        const slugifiedSkill = skill.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const slugifiedLocation = location.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        targetUrl = `/${slugifiedSkill}-jobs-in-${slugifiedLocation}/?job_type=${encodeURIComponent(jobType)}`;
+      } else if (skill && !location) {
+        // Only skill: /<skill>-jobs/?job_type=<job-type>
+        const slugifiedSkill = skill.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        targetUrl = `/${slugifiedSkill}-jobs/?job_type=${encodeURIComponent(jobType)}`;
+      } else if (!skill && location) {
+        // Only location: /jobs-in-<location>/?job_type=<job-type>
+        const slugifiedLocation = location.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        targetUrl = `/jobs-in-${slugifiedLocation}/?job_type=${encodeURIComponent(jobType)}`;
+      } else {
+        // Neither (fallback): /jobs/?job_type=<job-type>
+        targetUrl = `/jobs/?job_type=${encodeURIComponent(jobType)}`;
+      }
+      
+      // Navigate to the constructed URL
+      window.location.href = targetUrl;
+      
+      return false;
+    });
+  });
 </script>
 {% endblock %}

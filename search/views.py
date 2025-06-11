@@ -127,24 +127,24 @@ def custom_search(data, request):
     if data.get("walk-in"):
         jobs_list = jobs_list.filter(job_type="walk-in")
 
-    no_of_jobs = len(jobs_list)
+    no_of_jobs = jobs_list.count()
     items_per_page = 20
-    no_pages = int(math.ceil(float(jobs_list.count()) / items_per_page))
+    no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
     page = request.POST.get("page") or data.get("page")
     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
         if int(page) > (no_pages + 2):
             page = 1
         else:
-            page = int(data.get("page"))
+            page = int(page)
     else:
         page = 1
+    
+    jobs_list = jobs_list[(page - 1) * items_per_page : page * items_per_page]
     jobs_list = (
         jobs_list.select_related("company", "user")
         .prefetch_related("location", "skills", "industry")
         .distinct()
     )
-
-    jobs_list = jobs_list[(page - 1) * items_per_page : page * items_per_page]
 
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
         page, no_pages
@@ -485,7 +485,7 @@ def city_auto_search(request):
                 SQ(state_name__contains=search) | SQ(state_slug__contains=search)
             )
         )
-        state = state.exclude(is_duplicate__in=[True])
+        state = state.exclude(is_duplicate__in=["true"])
         if text:
             state = state.exclude(state_name__in=text)
         states = [
