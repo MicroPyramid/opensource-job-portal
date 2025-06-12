@@ -71,8 +71,6 @@
               {% include 'job_detail_tailwind.html' with job=job recruiter=False %}
               <!-- job_item ends here -->
 
-
-              </div>
               <!-- similar_jobs starts here -->
               <div class="similar_jobs_section mt-8">
                 <p class="text-lg font-semibold uppercase mb-4 text-gray-800">Recommended Jobs</p>
@@ -116,21 +114,20 @@
                 </div>
               </div>
               <!-- similar_jobs ends here -->
-
-
             </div>
           </div>
           <!-- job_list_section ends here -->
-          </div>
-          <!-- job_list_section ends here -->
         </div>
+        <!-- side_filter_section ends here -->
       </div>
-      <!-- Left menu starts here-->
-<!-- walkin_jobs starts here -->
-<div class="w-full lg:w-1/4 right_container">
-  
-{% if job.get_similar_jobposts %}
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6 walkin_jobs">
+      <!-- left_container ends here -->
+      
+      <!-- Right menu starts here-->
+      <!-- walkin_jobs starts here -->
+      <div class="w-full lg:w-1/4 right_container">
+        
+      {% if job.get_similar_jobposts %}
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6 walkin_jobs">
     <div class="flex items-center justify-between mb-6">
       <h3 class="text-xl font-bold text-gray-900 border-b-2 border-blue-500 pb-2">Similar Jobs</h3>
       <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{{ job.get_similar_jobposts|length }} job{{ job.get_similar_jobposts|length|pluralize }}</span>
@@ -200,217 +197,217 @@
       </a>
     </div>
   </div>
-  {% endif %}
-  <!-- walkin_jobs ends here -->
-  {% get_companies as latest_companies %}
-  {% if latest_companies %}
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6 top_recruiters">
-    <div class="flex items-center justify-between mb-6">
-      <h3 class="text-xl font-bold text-gray-900 border-b-2 border-blue-500 pb-2">Top Companies</h3>
-      <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Featured</span>
-    </div>
-    <div class="space-y-3 recruiter_blocks">
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/ibm-india-pvt-limited-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/ibm.png' "70x70" %}" alt="IBM-India-pvt-limited" class="w-full h-full object-contain p-1"/>
+      {% endif %}
+      <!-- walkin_jobs ends here -->
+      {% get_companies as latest_companies %}
+      {% if latest_companies %}
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6 top_recruiters">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-900 border-b-2 border-blue-500 pb-2">Top Companies</h3>
+          <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Featured</span>
+        </div>
+        <div class="space-y-3 recruiter_blocks">
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/ibm-india-pvt-limited-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/ibm.png' "70x70" %}" alt="IBM-India-pvt-limited" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">IBM India Private Limited</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">IBM India Private Limited</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/infosys-multinational-private-limited-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/infosys.png' "70x70" %}" alt="Infosys Private Limited" class="w-full h-full object-contain p-1"/>
+          
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/infosys-multinational-private-limited-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/infosys.png' "70x70" %}" alt="Infosys Private Limited" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">Infosys Private Limited</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">Infosys Private Limited</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/tcs-pvt-ltd-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/tcs.png' "70x70" %}" alt="TCS Pvt Ltd" class="w-full h-full object-contain p-1"/>
+          
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/tcs-pvt-ltd-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/tcs.png' "70x70" %}" alt="TCS Pvt Ltd" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">TCS Pvt Ltd</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">TCS Pvt Ltd</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/dell-private-limited-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/dell.png' "70x70" %}" alt="Dell Private Limited" class="w-full h-full object-contain p-1"/>
+          
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/dell-private-limited-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/dell.png' "70x70" %}" alt="Dell Private Limited" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">Dell Private Limited</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">Dell Private Limited</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/accenture-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/accenture.png' "70x70" %}" alt="Accenture" class="w-full h-full object-contain p-1"/>
+          
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/accenture-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/accenture.png' "70x70" %}" alt="Accenture" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">Accenture</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">Accenture</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/tech-mahindra-private-limited-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/mahindra.png' "70x70" %}" alt="Tech Mahindra Private Limited" class="w-full h-full object-contain p-1"/>
+          
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/tech-mahindra-private-limited-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/mahindra.png' "70x70" %}" alt="Tech Mahindra Private Limited" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">Tech Mahindra Private Limited</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">Tech Mahindra Private Limited</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/cognizant-technology-solutions-india-ltd-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/cts.png' "70x70" %}" alt="Cognizant Technology Solutions India Ltd" class="w-full h-full object-contain p-1"/>
+          
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/cognizant-technology-solutions-india-ltd-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/cts.png' "70x70" %}" alt="Cognizant Technology Solutions India Ltd" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">Cognizant Technology Solutions India Ltd</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">Cognizant Technology Solutions India Ltd</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/ravsoft-solutions-india-pvt-ltd-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/rav.png' "70x70" %}" alt="RAVSoft Solutions India Pvt Ltd" class="w-full h-full object-contain p-1"/>
+          
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/ravsoft-solutions-india-pvt-ltd-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/rav.png' "70x70" %}" alt="RAVSoft Solutions India Pvt Ltd" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">RAVSoft Solutions India Pvt Ltd</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">RAVSoft Solutions India Pvt Ltd</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/ace-group-private-limited-job-openings/">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 mr-4 img_part">
-            <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
-              <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/ace.png' "70x70" %}" alt="ACE Group Private Limited" class="w-full h-full object-contain p-1"/>
+          
+          <div class="group border border-gray-100 hover:border-blue-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer recruiter_block" id="/ace-group-private-limited-job-openings/">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 mr-4 img_part">
+                <div class="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group-hover:border-blue-200 transition-colors">
+                  <img src="{% thumbnail 'https://cdn.peeljobs.com/companies1/ace.png' "70x70" %}" alt="ACE Group Private Limited" class="w-full h-full object-contain p-1"/>
+                </div>
+              </div>
+              <div class="flex-1 content">
+                <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
+                  <a class="hover:underline">ACE Group Private Limited</a>
+                </h4>
+                <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
+                  <a class="flex items-center">
+                    <span>View Jobs</span>
+                    <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="flex-1 content">
-            <h4 class="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-1">
-              <a class="hover:underline">ACE Group Private Limited</a>
-            </h4>
-            <p class="text-sm text-blue-600 hover:text-blue-800 font-medium redirect">
-              <a class="flex items-center">
-                <span>View Jobs</span>
-                <i class="fa fa-arrow-right ml-2 text-xs"></i>
-              </a>
-            </p>
-          </div>
+        </div>
+        
+        <div class="mt-6 pt-4 border-t border-gray-100">
+          <a href="{% url 'companies' %}" target="_blank" class="inline-flex items-center justify-center w-full py-2.5 px-4 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 view_all">
+            <span>See More Companies</span>
+            <i class="fa fa-arrow-right ml-2 text-xs"></i>
+          </a>
         </div>
       </div>
-    </div>
-    
-    <div class="mt-6 pt-4 border-t border-gray-100">
-      <a href="{% url 'companies' %}" target="_blank" class="inline-flex items-center justify-center w-full py-2.5 px-4 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 view_all">
-        <span>See More Companies</span>
-        <i class="fa fa-arrow-right ml-2 text-xs"></i>
-      </a>
-    </div>
-  </div>
-  {% endif %}
+      {% endif %}
 
-</div>
-      <!-- Left menu ends here-->
+      </div>
+      <!-- Right menu ends here-->
     </div>
   </div>
 </div>

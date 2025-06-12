@@ -1,7 +1,6 @@
 {% load page_tags %}
 {% load thumbnail %}
 {% load tz %}
-{% load thumbnail %}
 {% if recruiter %}
 <div class="bg-white rounded-xl shadow-lg p-8 mb-8 border border-gray-100">
   <!-- job_item starts here -->
@@ -58,16 +57,19 @@
       </div>
       <div class="bg-gray-50 p-4 rounded-lg">
         <span class="text-sm font-medium text-gray-500 block mb-1">Salary</span>
-        <span class="text-lg font-semibold text-gray-900" itemprop="salaryCurrency"> 
-        {% if job.min_salary == 0 and job.max_salary == 0 %}
-        <span class="text-gray-500">Not Specified</span>
-        {% else %}
-        <span class="text-green-600">₹ {{ job.get_job_salary.0 }} - {{ job.get_job_salary.1 }} P.A</span>
-        {% endif %}</span>
+        <span class="text-lg font-semibold text-gray-900" itemprop="salaryCurrency">
+          {% if job.min_salary == 0 and job.max_salary == 0 %}
+            <span class="text-gray-500">Not Specified</span>
+          {% else %}
+            <span class="text-green-600">₹ {{ job.get_job_salary.0 }} - {{ job.get_job_salary.1 }} P.A</span>
+          {% endif %}
+        </span>
       </div>
       <div class="bg-gray-50 p-4 rounded-lg">
         <span class="text-sm font-medium text-gray-500 block mb-1">Job Type</span>
-        <span class="text-lg font-semibold text-gray-900" itemprop="employmentType"><a href="/{{ job.get_job_type }}-jobs/" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors"> {{ job.job_type|get_string }} </a></span>
+        <span class="text-lg font-semibold text-gray-900" itemprop="employmentType">
+          <a href="/{{ job.get_job_type }}-jobs/" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors">{{ job.job_type|get_string }}</a>
+        </span>
       </div>
       <div class="bg-gray-50 p-4 rounded-lg">
         <span class="text-sm font-medium text-gray-500 block mb-1">Status</span>
@@ -96,8 +98,9 @@
         <div class="{% if not recruiter %}pl-6{% endif %}">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-500 pl-4">Job Description</h2>
           <div class="prose max-w-none text-gray-700 leading-relaxed">
-            <p itemprop="description"></p>
-            {{ job.description|safe }}
+            <div itemprop="description">
+              {{ job.description|safe }}
+            </div>
           </div>
           
           <div class="mt-8 space-y-6">
@@ -231,55 +234,58 @@
               {% endif %}
               <div>
                 {% if location.venue_details %}
-                <span class="font-semibold text-gray-700">Venue Location:</span>
-                <div class="text-gray-600 mt-1" itemprop="description">
-                {{ location.venue_details|linebreaks }}
-                </div>
+                  <span class="font-semibold text-gray-700">Venue Location:</span>
+                  <div class="text-gray-600 mt-1" itemprop="description">
+                    {{ location.venue_details|linebreaks }}
+                  </div>
                 {% else %}
-                {% for location in job.job_interview_location.all %}
-                {% if location.venue_details %}
-                <span class="font-semibold text-gray-700">Venue Location {{ forloop.counter }}:</span>
-                <div class="text-gray-600 mt-1" itemprop="description">
-                  <p>{{ location.venue_details|linebreaks }}</p>
-                </div>
+                  {% for location in job.job_interview_location.all %}
+                    {% if location.venue_details %}
+                      <span class="font-semibold text-gray-700">Venue Location {{ forloop.counter }}:</span>
+                      <div class="text-gray-600 mt-1" itemprop="description">
+                        <p>{{ location.venue_details|linebreaks }}</p>
+                      </div>
+                    {% endif %}
+                  {% empty %}
+                    <span class="font-semibold text-gray-700">Venue Location:</span>
+                    <span class="text-gray-600 ml-2" itemprop="description">Not Specified</span>
+                  {% endfor %}
                 {% endif %}
-                {% empty %}
-                <span class="font-semibold text-gray-700">Venue Location:</span>
-                <span class="text-gray-600 ml-2" itemprop="description"> Not Specified</span>
-                {% endfor %}
-                {% endif  %}
               </div>
             </div>
           </div>
 
-        <!-- Agency details-->
-        {% if request.user.is_agency_recruiter or request.user.is_agency_admin %}
-        <div class="mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
-          <h3 class="text-lg font-bold text-gray-900 mb-4">Agency Details</h3>
-          <div class="space-y-3">
-            <div>
-              <span class="font-semibold text-gray-700">Assigned Recruiters:</span>
-              <p class="text-gray-600 mt-1">
-                {% for recruiter in job.agency_recruiters.all %}<a href="{% url 'agency:company_recruiter_profile' recruiter.id %}" class="hover:text-blue-600">
-                {{ recruiter.get_full_username }}</a>{% if forloop.last %}{% else %}, {% endif %}{% empty %} N/A {% endfor %}
-              </p>
+          <!-- Agency details-->
+          {% if request.user.is_agency_recruiter or request.user.is_agency_admin %}
+            <div class="mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
+              <h3 class="text-lg font-bold text-gray-900 mb-4">Agency Details</h3>
+              <div class="space-y-3">
+                <div>
+                  <span class="font-semibold text-gray-700">Assigned Recruiters:</span>
+                  <p class="text-gray-600 mt-1">
+                    {% for recruiter in job.agency_recruiters.all %}
+                      <a href="{% url 'agency:company_recruiter_profile' recruiter.id %}" class="hover:text-blue-600">{{ recruiter.get_full_username }}</a>{% if forloop.last %}{% else %}, {% endif %}
+                    {% empty %}
+                      N/A
+                    {% endfor %}
+                  </p>
+                </div>
+                {% if job.agency_invoice_type %}
+                  <div>
+                    <span class="font-semibold text-gray-700">Invoice type:</span>
+                    <p class="text-gray-600 mt-1">{{ job.agency_invoice_type }}</p>
+                  </div>
+                {% endif %}
+                {% if job.agency_client.name %}
+                  <div>
+                    <span class="font-semibold text-gray-700">Client:</span>
+                    <p class="text-gray-600 mt-1">{{ job.agency_client.name }}</p>
+                  </div>
+                {% endif %}
+              </div>
             </div>
-            {% if job.agency_invoice_type %}
-              <div>
-                <span class="font-semibold text-gray-700">Invoice type:</span>
-                <p class="text-gray-600 mt-1">{{ job.agency_invoice_type }}</p>
-              </div>
-            {% endif %}
-            {% if job.agency_client.name %}
-              <div>
-                <span class="font-semibold text-gray-700">Client:</span>
-                <p class="text-gray-600 mt-1">{{ job.agency_client.name }}</p>
-              </div>
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-        <!-- Agency details end -->
+          {% endif %}
+          <!-- Agency details end -->
         </div>
       </div>
     </div>
@@ -381,7 +387,9 @@
       {% endif %}
       <div class="bg-gray-50 p-4 rounded-lg">
         <span class="text-sm font-medium text-gray-500 block mb-1">Job Type</span>
-        <span class="text-lg font-semibold text-blue-600" itemprop="employmentType"><a href="/{{ job.get_job_type }}-jobs/" target="_blank" class="hover:text-blue-800 transition-colors"> {{ job.job_type|get_string }} </a></span>
+        <span class="text-lg font-semibold text-blue-600" itemprop="employmentType">
+          <a href="/{{ job.get_job_type }}-jobs/" target="_blank" class="hover:text-blue-800 transition-colors">{{ job.job_type|get_string }}</a>
+        </span>
       </div>
     </div>
 
@@ -406,8 +414,9 @@
         <div class="{% if not recruiter %}pl-6{% endif %}">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-500 pl-4">Job Description</h2>
           <div class="prose max-w-none text-gray-700 leading-relaxed">
-            <p itemprop="description"></p>
-            {{ job.description|safe }}
+            <div itemprop="description">
+              {{ job.description|safe }}
+            </div>
           </div>
           
           <!-- ...rest of the job description section follows the same improved styling pattern... -->
