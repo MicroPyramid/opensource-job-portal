@@ -1,0 +1,268 @@
+{% load page_tags %}
+<!-- inner_search_section starts here -->
+<section class="bg-gray-50" id='search_div'>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full">
+      <form autocomplete="off" name="job-search-form" class="w-full" id="elastic-search" method="POST">
+        <div class="p-6">
+          <div class="flex flex-wrap lg:flex-nowrap gap-4 items-center">
+            <div class="min-w-0 flex-1 relative">
+              <select class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 shadow-sm appearance-none pr-10 cursor-pointer hover:border-gray-400 transition-colors duration-200" name="job_type" id="job_type">
+                <option value="">Job Type</option>
+                {% for job_type in job_types %}
+                  <option value="{{ job_type.0 }}" {% if searched_job_type == job_type.0 %} selected {% endif %}>{{ job_type.1 }}</option>
+                {% endfor %}
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="min-w-0 flex-1 relative">
+              <input type="text" class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white placeholder-gray-500 shadow-sm hover:border-gray-400 transition-colors duration-200" id="q" name="q" placeholder="Skills" value="{% for text in searched_text %}{{ text }}, {% empty %}{% for skill in searched_skills %}{{ skill }}, {% endfor %}{% for edu in searched_edu %}{{ edu }}, {% endfor %}{% endfor %}">
+              <div id="skills-autocomplete" class="absolute z-[9999] w-full bg-white border border-slate-200 rounded-2xl shadow-xl mt-2 hidden max-h-60 overflow-y-auto"></div>
+            </div>
+            
+            <div class="min-w-0 flex-1 relative">
+              <input type="text" class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white placeholder-gray-500 shadow-sm hover:border-gray-400 transition-colors duration-200" id="location" name="location" placeholder="Enter Any Locations, States" value="{% for loc in searched_locations %}{{ loc }}, {% endfor %}{% for state in searched_states %}{{ state }}, {% endfor %}">
+              <div id="location-autocomplete" class="absolute z-[9999] w-full bg-white border border-slate-200 rounded-2xl shadow-xl mt-2 hidden max-h-60 overflow-y-auto"></div>
+            </div>
+            
+          
+            <div class="flex-shrink-0">
+              <button type="submit" class="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 whitespace-nowrap shadow-sm">
+                <i data-lucide="search" class="w-4 h-4 mr-2 inline"></i>
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script type="text/javascript">
+  // Search filter autocomplete functionality
+  if (typeof initializeSearchFilter === 'undefined') {
+    function initializeSearchFilter() {
+      // Initialize Lucide icons if available
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+
+      // Helper function to slugify text
+      function slugify(text) {
+        if (!text) return '';
+        return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      }
+
+      // Enhanced autocomplete item creation
+      function createAutocompleteItem(item, type = 'skill') {
+        const jobsCount = item.jobs_count ? ` (${item.jobs_count} jobs)` : '';
+        const name = item.name || item.title || 'Unknown';
+        
+        return `
+          <div class="ac-result px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 last:border-b-0 flex items-center justify-between group">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <i data-lucide="${type === 'location' ? 'map-pin' : 'search'}" class="w-4 h-4 text-blue-600"></i>
+              </div>
+              <div>
+                <span class="text-slate-900 font-medium group-hover:text-blue-600">${name}</span>
+                <div class="text-xs text-slate-500">${jobsCount}</div>
+              </div>
+            </div>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+          </div>
+        `;
+      }
+
+      // Skills autocomplete
+      var inputField = $('#q');
+      var autocompleteDiv = $('#skills-autocomplete');
+      
+      if (inputField.length && autocompleteDiv.length) {
+        inputField.on('keyup', function() {
+          var query = $(this).val().trim();
+          
+          if (query.length < 1) {
+            autocompleteDiv.addClass('hidden').html('');
+            return;
+          }
+          
+          autocompleteDiv.removeClass('hidden').html(`
+            <div class="px-4 py-3 text-slate-500 flex items-center gap-2">
+              <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              Loading...
+            </div>
+          `);
+          
+          $.ajax({
+            url: '/skill-auto/',
+            type: 'GET',
+            data: { q: query },
+            dataType: 'json',
+            success: function(data) {
+              var results = data.results || [];
+              
+              if (results.length === 0) {
+                autocompleteDiv.html('<div class="px-4 py-3 text-slate-500 text-center">No results found</div>');
+                return;
+              }
+              
+              var html = '';
+              $.each(results, function(i, item) {
+                html += createAutocompleteItem(item, 'skill');
+              });
+              
+              autocompleteDiv.html(html);
+              
+              // Reinitialize Lucide icons
+              if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+              }
+              
+              autocompleteDiv.find('.ac-result').on('click', function(e) {
+                e.preventDefault();
+                var text = $(this).find('span').first().text();
+                inputField.val(text);
+                autocompleteDiv.addClass('hidden').html('');
+              });
+            },
+            error: function() {
+              autocompleteDiv.html('<div class="px-4 py-3 text-red-500 text-center">Error loading suggestions</div>');
+            }
+          });
+        });
+      }
+
+      // Location autocomplete
+      var locationInput = $('#location');
+      var locationAutocompleteDiv = $('#location-autocomplete');
+      
+      if (locationInput.length && locationAutocompleteDiv.length) {
+        locationInput.on('keyup', function() {
+          var query = $(this).val().trim();
+          
+          if (query.length < 1) {
+            locationAutocompleteDiv.addClass('hidden').html('');
+            return;
+          }
+          
+          locationAutocompleteDiv.removeClass('hidden').html(`
+            <div class="px-4 py-3 text-slate-500 flex items-center gap-2">
+              <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              Loading...
+            </div>
+          `);
+          
+          $.ajax({
+            url: '/city-auto/',
+            type: 'GET',
+            data: { location: query },
+            dataType: 'json',
+            success: function(data) {
+              var results = data.results || [];
+              
+              if (results.length === 0) {
+                locationAutocompleteDiv.html('<div class="px-4 py-3 text-slate-500 text-center">No results found</div>');
+                return;
+              }
+              
+              var html = '';
+              $.each(results, function(i, item) {
+                html += createAutocompleteItem(item, 'location');
+              });
+              
+              locationAutocompleteDiv.html(html);
+              
+              // Reinitialize Lucide icons
+              if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+              }
+              
+              locationAutocompleteDiv.find('.ac-result').on('click', function(e) {
+                e.preventDefault();
+                var text = $(this).find('span').first().text();
+                locationInput.val(text);
+                locationAutocompleteDiv.addClass('hidden').html('');
+              });
+            },
+            error: function() {
+              locationAutocompleteDiv.html('<div class="px-4 py-3 text-red-500 text-center">Error loading suggestions</div>');
+            }
+          });
+        });
+      }
+
+      // Hide autocomplete when clicking outside
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#q, #skills-autocomplete').length) {
+          if (autocompleteDiv && autocompleteDiv.length) {
+            autocompleteDiv.addClass('hidden').html('');
+          }
+        }
+        if (!$(e.target).closest('#location, #location-autocomplete').length) {
+          if (locationAutocompleteDiv && locationAutocompleteDiv.length) {
+            locationAutocompleteDiv.addClass('hidden').html('');
+          }
+        }
+      });
+
+      // Handle form submission with special URL routing logic
+      $('#elastic-search').on('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+        
+        // Get form values
+        const skill = $('#q').val().trim();
+        const location = $('#location').val().trim();
+        const jobType = $('#job_type').val();
+        const experience = $('select[name="experience"]').val();
+        
+        let targetUrl = '';
+        let queryParams = [];
+        
+        // Add job_type to query params if selected
+        if (jobType) {
+          queryParams.push(`job_type=${encodeURIComponent(jobType)}`);
+        }
+        
+        // Add experience to query params if selected
+        if (experience) {
+          queryParams.push(`experience=${encodeURIComponent(experience)}`);
+        }
+        
+        // Construct URL based on skill and location combinations
+        if (skill && location) {
+          const slugifiedSkill = slugify(skill);
+          const slugifiedLocation = slugify(location);
+          targetUrl = `/${slugifiedSkill}-jobs-in-${slugifiedLocation}/`;
+        } else if (skill && !location) {
+          const slugifiedSkill = slugify(skill);
+          targetUrl = `/${slugifiedSkill}-jobs/`;
+        } else if (!skill && location) {
+          const slugifiedLocation = slugify(location);
+          targetUrl = `/jobs-in-${slugifiedLocation}/`;
+        } else {
+          targetUrl = `/jobs/`;
+        }
+        
+        // Append query parameters if any
+        if (queryParams.length > 0) {
+          targetUrl += `?${queryParams.join('&')}`;
+        }
+        
+        console.log('Redirecting to:', targetUrl);
+        
+        // Redirect to the constructed URL
+        window.location.href = targetUrl;
+      });
+    }
+    
+    // Initialize when DOM is ready
+    $(document).ready(function() {
+      initializeSearchFilter();
+    });
+  }
+</script>

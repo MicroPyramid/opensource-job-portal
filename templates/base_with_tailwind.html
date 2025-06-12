@@ -42,6 +42,13 @@
                 lucide.createIcons();
             }
         }
+        
+        // Initialize search filter if present
+        $(document).ready(function() {
+            if (typeof initializeSearchFilter === 'function') {
+                initializeSearchFilter();
+            }
+        });
     </script>
     
     {% block extra_js %}{% endblock %}
