@@ -18,14 +18,7 @@
   <div class="flex flex-wrap gap-6">
     <!-- Main Content -->
     <div class="flex-1 min-w-0">
-      <!-- Success Message -->
-      <div class="flex items-center bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-        <i class="fa fa-check text-green-500 mr-4"></i>
-        <div>
-          <h2 class="text-xl font-bold text-green-600">Congratulations</h2>
-          <p class="text-gray-700">You have successfully applied to this job, to get mails from recruiter you need to verify your email id. Check your inbox to verify your email ID</p>
-        </div>
-      </div>
+     
 
       <!-- Application Status Alerts -->
       {% if request.GET.job_apply == 'apply' %}
@@ -122,25 +115,25 @@
 {% block extra_js %}
 {{ block.super }}
 <script type="text/javascript">
-$('form#CreateSimilarAlert').ajaxForm({
-    type: 'POST',
-    dataType: 'json',
-    data: $('#CreateSimilarAlert').serialize(),
-    url: '{% url "my:job_alert" %}',
-    success: function (data) {
-        console.log(data.error, data.message)
-        if (data.error == false) {
-            $("#create_similarjob_alert").modal('hide')
-            open_dialog('Success, We will reach you with Jobs of this type', 'Success!')
-        }
-        else {
-            $('p.hint').remove();
-            for (var key in data.message) {
-                $('#alert_' + key).after('<p class="hint">' + data.message[key] + '</p>');
-            }
-        }
-    }
-})
+// $('form#CreateSimilarAlert').ajaxForm({
+//     type: 'POST',
+//     dataType: 'json',
+//     data: $('#CreateSimilarAlert').serialize(),
+//     url: '{% url "my:job_alert" %}',
+//     success: function (data) {
+//         console.log(data.error, data.message)
+//         if (data.error == false) {
+//             $("#create_similarjob_alert").modal('hide')
+//             open_dialog('Success, We will reach you with Jobs of this type', 'Success!')
+//         }
+//         else {
+//             $('p.hint').remove();
+//             for (var key in data.message) {
+//                 $('#alert_' + key).after('<p class="hint">' + data.message[key] + '</p>');
+//             }
+//         }
+//     }
+// })
 
 $('#similar_job_alert').click(function () {
   $('p.hint').remove();

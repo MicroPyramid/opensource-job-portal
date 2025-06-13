@@ -1,6 +1,17 @@
 {% load page_tags %}
 {% load thumbnail %}
 {% load tz %}
+
+<!-- Add CSRF token for AJAX requests -->
+<form style="display: none;">
+    {% csrf_token %}
+</form>
+
+<!-- Alert Container -->
+<div id="alert-container" class="fixed top-4 right-4 z-50 space-y-2">
+  <!-- Alerts will be dynamically inserted here -->
+</div>
+
 {% if recruiter %}
 <div class="bg-white rounded-xl shadow-lg p-8 mb-8 border border-gray-100">
   <!-- job_item starts here -->
@@ -328,21 +339,24 @@
         {% if job.user.is_superuser %}
           {% if job.company_emails %}
             <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_absolute_url }}" 
-               class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md {% if request.user.is_active %}active{% endif %} {% if request.user.profile_completion_percentage > 50 %}completed{% endif %} {% if request.user.is_authenticated %}logged{% endif %}">
+               class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md">
               Apply Now
             </a>
           {% endif %}
         {% else %}
           {% if request.user.id|is_applied_for_job:job.pk  %}
-            <span class="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-3 rounded-lg font-semibold shadow-md">
-              Applied ✓
+            <span class="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-3 rounded-lg font-semibold shadow-md inline-flex items-center">
+              <i class="fas fa-check-circle mr-2"></i>Applied ✓
             </span>
           {% else%}
-            <a href="{% if not request.user.is_authenticated %}#{% endif %}" 
-               class='bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md job_apply {% if not request.user.is_authenticated %}job_apply_login{% else %} applicant_apply {% endif %}' 
-               id="{{ job.pk }}" data-href="{{ job.slug }}?job_apply=applied">
-              Apply Now
-            </a>
+            <button type="button"
+               class='bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md {% if not request.user.is_authenticated %}job_apply_login{% else %}applicant_apply{% endif %}' 
+               id="{{ job.pk }}" 
+               data-href="{{ job.slug }}?job_apply=applied"
+               data-job-title="{{ job.title }}"
+               data-company-name="{{ job.company.name|default:job.company_name }}">
+              <i class="fas fa-paper-plane mr-2"></i>Apply Now
+            </button>
           {% endif %}
         {% endif %}
       </div>
@@ -419,8 +433,6 @@
             </div>
           </div>
           
-          <!-- ...rest of the job description section follows the same improved styling pattern... -->
-          
           <!-- Recruiter Details -->
           {% if not job.user.is_superuser %}
           <div class="mt-10 bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-xl border border-blue-200">
@@ -449,4 +461,201 @@
   </div>
 </div>
 {% endif %}
-<div id="block_job_apply" class="hidden"></div>
+
+<!-- Job Apply Block -->
+<div id="block_job_apply" class="hidden">
+  <!-- This div will be used for any additional job apply related content -->
+</div>
+
+<!-- Inline JavaScript for Job Apply functionality -->
+<script>
+(function($) {
+    'use strict';
+    
+    $(document).ready(function() {
+        // Alert Management Functions
+        function showAlert(message, type = 'info', duration = 5000) {
+            const alertId = 'alert-' + Date.now();
+            const alertClasses = {
+                'success': 'bg-green-50 border-green-200 text-green-800',
+                'error': 'bg-red-50 border-red-200 text-red-800',
+                'warning': 'bg-yellow-50 border-yellow-200 text-yellow-800',
+                'info': 'bg-blue-50 border-blue-200 text-blue-800'
+            };
+            
+            const iconClasses = {
+                'success': 'fas fa-check-circle text-green-600',
+                'error': 'fas fa-exclamation-circle text-red-600',
+                'warning': 'fas fa-exclamation-triangle text-yellow-600',
+                'info': 'fas fa-info-circle text-blue-600'
+            };
+            
+            const alertHtml = `
+                <div id="${alertId}" class="alert-item transform translate-x-full opacity-0 transition-all duration-300 ease-in-out ${alertClasses[type]} border rounded-lg p-4 shadow-lg max-w-md">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="${iconClasses[type]}"></i>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <p class="text-sm font-medium">${message}</p>
+                        </div>
+                        <div class="ml-4 flex-shrink-0">
+                            <button type="button" class="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none" onclick="hideAlert('${alertId}')">
+                                <span class="sr-only">Close</span>
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('#alert-container').append(alertHtml);
+            
+            // Trigger animation
+            setTimeout(() => {
+                $(`#${alertId}`).removeClass('translate-x-full opacity-0').addClass('translate-x-0 opacity-100');
+            }, 100);
+            
+            // Auto-hide after duration
+            if (duration > 0) {
+                setTimeout(() => {
+                    hideAlert(alertId);
+                }, duration);
+            }
+            
+            return alertId;
+        }
+        
+        function hideAlert(alertId) {
+            const $alert = $(`#${alertId}`);
+            $alert.removeClass('translate-x-0 opacity-100').addClass('translate-x-full opacity-0');
+            setTimeout(() => {
+                $alert.remove();
+            }, 300);
+        }
+        
+        // Make hideAlert globally accessible
+        window.hideAlert = hideAlert;
+        
+        // Confirmation Dialog
+        function showConfirmDialog(message, onConfirm, onCancel) {
+            const dialogHtml = `
+                <div id="confirm-dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div class="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-question-circle text-blue-600 text-xl mr-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-900">Confirmation</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6">${message}</p>
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="confirm-cancel" class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                Cancel
+                            </button>
+                            <button type="button" id="confirm-ok" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('body').append(dialogHtml);
+            
+            $('#confirm-ok').on('click', function() {
+                $('#confirm-dialog').remove();
+                if (onConfirm) onConfirm();
+            });
+            
+            $('#confirm-cancel').on('click', function() {
+                $('#confirm-dialog').remove();
+                if (onCancel) onCancel();
+            });
+            
+            // Close on backdrop click
+            $('#confirm-dialog').on('click', function(e) {
+                if (e.target === this) {
+                    $('#confirm-dialog').remove();
+                    if (onCancel) onCancel();
+                }
+            });
+        }
+        
+        // Get CSRF token
+        function getCSRFToken() {
+            return $('input[name=csrfmiddlewaretoken]').val();
+        }
+        
+        // Job Apply Logic
+        $(document).on('click', '.job_apply, .applicant_apply', function(e) {
+            e.preventDefault();
+            
+            const $button = $(this);
+            const jobId = $button.attr('id');
+            const originalText = $button.html();
+            
+            if (!jobId) {
+                showAlert('Invalid job ID', 'error');
+                return;
+            }
+            
+            // Show loading state
+            $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Applying...');
+            
+            // AJAX request
+            $.post('/jobs/apply/' + jobId + '/', {
+                'csrfmiddlewaretoken': getCSRFToken()
+            })
+            .done(function(response) {
+                const data = typeof response === 'string' ? JSON.parse(response) : response;
+                
+                if (!data.error) {
+                    // Success - Update button
+                    $button.removeClass('bg-gradient-to-r from-blue-600 to-blue-700')
+                           .addClass('bg-gradient-to-r from-green-600 to-green-700')
+                           .html('<i class="fas fa-check-circle mr-2"></i>Applied ✓');
+                    
+                    showAlert(data.response || 'Application submitted successfully!', 'success');
+                    
+                    if (data.url) {
+                        setTimeout(() => window.location.href = data.url, 1500);
+                    }
+                } else {
+                    // Error
+                    resetButton($button, originalText);
+                    showAlert(data.response || 'Application failed', 'error');
+                    
+                    if (data.url) {
+                        setTimeout(() => window.location.href = data.url, 2000);
+                    }
+                }
+            })
+            .fail(function(xhr) {
+                resetButton($button, originalText);
+                
+                let message = 'Something went wrong. Please try again.';
+                if (xhr.status === 403) message = 'Permission denied. Please login again.';
+                else if (xhr.status === 404) message = 'Job not found.';
+                
+                showAlert(message, 'error');
+            });
+        });
+        
+        // Login required for job application
+        $(document).on('click', '.job_apply_login', function(e) {
+            e.preventDefault();
+            showConfirmDialog(
+                'You need to login to apply for this job. Do you want to login now?',
+                function() {
+                    window.location.href = '/login/';
+                }
+            );
+        });
+        
+        // Reset button function
+        function resetButton($button, originalText) {
+            $button.prop('disabled', false).html(originalText);
+        }
+    });
+    
+})(jQuery);
+</script>
