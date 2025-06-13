@@ -17,7 +17,7 @@ user types we have
 ## Project Context
 
 PeelJobs is a modern job board application built with:
-- **Framework**: django
+- **Framework**: django 5.2
 - **Styling**: bootstrap and migrating to tailwind 4.1.x css one by one with a new base template
 - **Database**: postgresql
 - **Icons**: fontawesome, we are migrating to lucide icons
