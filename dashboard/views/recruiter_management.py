@@ -2,7 +2,6 @@ import math
 import re
 from datetime import datetime
 
-from django.contrib.auth.models import ContentType, Permission
 from django.urls import reverse
 from django.db.models import Count, Q
 from django.http.response import HttpResponseRedirect

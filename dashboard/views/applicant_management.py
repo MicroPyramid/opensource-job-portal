@@ -3,7 +3,7 @@ import math
 import re
 from datetime import datetime
 
-from django.contrib.auth.models import Q
+from django.db.models import Q
 from django.urls import reverse
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render

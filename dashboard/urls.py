@@ -2,7 +2,6 @@ from django.urls import re_path as url
 
 from .views import (
     index,
-    change_password,
     admin_user_list,
     new_admin_user,
     edit_user,
@@ -80,7 +79,6 @@ from .views import (
     delete_menu,
     menu_status,
     menu_order,
-    google_login,
     assessment_skills,
     new_question,
     skill_questions,
@@ -89,15 +87,11 @@ from .views import (
     clear_cache,
     mail_to_recruiter,
 )
-from django.urls import path
-from django.views.decorators.csrf import csrf_exempt
 
 app_name = "dashboard"
 
 urlpatterns = [
     url(r"^$", index, name="index"),
-    url(r"^change_password/$", change_password, name="change_password"),
-    url(r"^google_login/$", google_login, name="google_login"),
     # users
     url(r"^users/list/$", admin_user_list, name="admin_user_list"),
     url(r"^users/new-user/$", new_admin_user, name="new_admin_user"),

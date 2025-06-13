@@ -4,15 +4,11 @@ import re
 from datetime import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import ContentType, Permission
 from django.urls import reverse
-from django.db.models import Count, Q
+from django.db.models import Q
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
-from django.core.cache import cache
-from django.utils import timezone
-from django.shortcuts import redirect
 
 from mpcomp.views import (
     get_absolute_url,
@@ -45,7 +41,6 @@ from recruiter.views import (
 )
 
 from ..forms import (
-    CompanyForm,
     JobPostTitleForm,
 )
 from ..tasks import (

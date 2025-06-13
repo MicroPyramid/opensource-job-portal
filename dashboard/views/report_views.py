@@ -3,12 +3,10 @@ import math
 import re
 from datetime import datetime
 
-from django.contrib.auth.models import ContentType, Permission
 from django.urls import reverse
 from django.db.models import Count, Q
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils import timezone
 
 from mpcomp.views import (
     get_prev_after_pages_count,

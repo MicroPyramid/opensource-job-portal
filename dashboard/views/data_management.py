@@ -1,18 +1,14 @@
 import json
 import math
 import re
-from datetime import datetime
 
-from django.contrib.auth.models import ContentType, Permission
 from django.urls import reverse
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.http.response import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.template.defaultfilters import slugify
-from django.shortcuts import redirect
 
 from mpcomp.views import (
-    get_absolute_url,
     get_aws_file_path,
     get_prev_after_pages_count,
     permission_required,
@@ -29,7 +25,6 @@ from peeldb.models import (
     State,
     SKILL_TYPE,
 )
-from recruiter.forms import JobPostForm
 
 from ..forms import (
     CityForm,
@@ -41,11 +36,6 @@ from ..forms import (
     SkillForm,
     StateForm,
 )
-from ..tasks import (
-    sending_mail,
-    send_email,
-)
-from ..utils import get_paginated_results, handle_form_submission
 
 
 # Functions to move here from main views.py:
@@ -965,7 +955,6 @@ def qualification_status(request, qualification_id):
             "page": request.POST.get("page") if request.POST.get("page") else 1,
         }
     return HttpResponse(json.dumps(data))
-
 
 
 
