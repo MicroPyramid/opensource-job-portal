@@ -108,7 +108,7 @@ def index(request):
             current_date = datetime.strptime(
                 str(datetime.now().date()), "%Y-%m-%d"
             ).strftime("%Y-%m-%d")
-            today_admin_walkin_jobs_count = JobPost.objects.filter(
+            today_admin_walkin_jobs = JobPost.objects.filter(
                 job_type="walk-in",
                 user__is_superuser=True,
             )
@@ -223,7 +223,7 @@ def index(request):
                     published_on__icontains=current_date,
                     user__is_superuser=True,
                 )
-                today_admin_walkin_jobs_count = today_admin_walkin_jobs_count.filter(
+                today_admin_walkin_jobs = today_admin_walkin_jobs.filter(
                     published_on__icontains=current_date,
                 )
                 today_job_applications = AppliedJobs.objects.filter(
@@ -451,19 +451,6 @@ def index(request):
                 status="Disabled"
             ).count()
 
-            today_admin_walkin_pending_jobs = today_admin_walkin_jobs_count.filter(
-                status="Pending"
-            ).count()
-            today_admin_walkin_published_jobs = today_admin_walkin_jobs_count.filter(
-                status="Published"
-            ).count()
-            today_admin_walkin_live_jobs = today_admin_walkin_jobs_count.filter(
-                status="Live"
-            ).count()
-            today_admin_walkin_disabled_jobs = today_admin_walkin_jobs_count.filter(
-                status="Disabled"
-            ).count()
-
             today_govt_pending_jobs = today_govt_jobs_count.filter(
                 status="Pending"
             ).count()
@@ -663,10 +650,18 @@ def index(request):
                 "today_admin_internship_published_jobs": today_admin_internship_published_jobs,
                 "today_admin_internship_live_jobs": today_admin_internship_live_jobs,
                 "today_admin_internship_disabled_jobs": today_admin_internship_disabled_jobs,
-                "today_admin_walkin_pending_jobs": today_admin_walkin_pending_jobs,
-                "today_admin_walkin_published_jobs": today_admin_walkin_published_jobs,
-                "today_admin_walkin_live_jobs": today_admin_walkin_live_jobs,
-                "today_admin_walkin_disabled_jobs": today_admin_walkin_disabled_jobs,
+                "today_admin_walkin_pending_jobs": today_admin_walkin_jobs.filter(
+                    status="Pending"
+                ).count(),
+                "today_admin_walkin_published_jobs": today_admin_walkin_jobs.filter(
+                    status="Published"
+                ).count(),
+                "today_admin_walkin_live_jobs": today_admin_walkin_jobs.filter(
+                    status="Live"
+                ).count(),
+                "today_admin_walkin_disabled_jobs": today_admin_walkin_jobs.filter(
+                    status="Disabled"
+                ).count(),
                 "total_skills": total_skills.count(),
                 "total_active_skills": total_active_skills,
                 "total_inactive_skills": total_inactive_skills,
@@ -820,8 +815,10 @@ def new_admin_user(request):
 
 @permission_required("")
 def view_user(request, user_id):
-    user = User.objects.filter(id=user_id)
-    return render(request, "dashboard/users/view.html", {"user": user[0]})
+    user = User.objects.filter(id=user_id).first()
+    if not user:
+        return render(request, "dashboard/404.html", status=404)
+    return render(request, "dashboard/users/view.html", {"user": user})
 
 
 @permission_required("")
@@ -863,7 +860,7 @@ def edit_user(request, user_id):
 
 @permission_required("")
 def delete_user(request, user_id):
-    user = User.objects.get(id=user_id)
+    user = User.objects.filter(id=user_id).first()
     if user:
         permissions = Permission.objects.filter(user=user)
         permission_list = [
@@ -884,7 +881,7 @@ def delete_user(request, user_id):
         # user.delete()
         data = {"error": False, "response": "User Deleted"}
     else:
-        data = {"error": True, "response": "Unabe to delete user"}
+        data = {"error": True, "response": "Unable to delete user"}
     return HttpResponse(json.dumps(data))
 
 
@@ -935,7 +932,10 @@ def country(request):
         return HttpResponse(json.dumps(data))
 
     if request.POST.get("mode") == "get_states":
-        country = Country.objects.get(id=request.POST.get("c_id"))
+        country = Country.objects.filter(id=request.POST.get("c_id")).first()
+        if not country:
+            data = {"html": "", "slug": ""}
+            return HttpResponse(json.dumps(data))
         states = State.objects.filter(country=country).order_by("name")
         slist = ""
         for s in states:
@@ -1039,6 +1039,9 @@ def country(request):
 
     if request.POST.get("mode") == "get_cities":
         state = State.objects.filter(id=request.POST.get("s_id")).first()
+        if not state:
+            data = {"html": "", "country": "", "state_slug": ""}
+            return HttpResponse(json.dumps(data))
         country = state.country.id
         cities = City.objects.filter(state=state).order_by("name")
         clist = ""
@@ -1129,6 +1132,9 @@ def country(request):
                 "parent": city.parent_city.id if city.parent_city else "",
             }
             return HttpResponse(json.dumps(data))
+        else:
+            data = {}
+            return HttpResponse(json.dumps(data))
 
     if request.user.is_staff or request.user.has_perm("activity_edit"):
         if request.POST.get("mode") == "add_city":
@@ -1201,15 +1207,18 @@ def country(request):
                 city[0].delete()
                 data = {"error": False, "message": "City Removed Successfully"}
             else:
-                data = {"error": True, "message": "City Not found"}
+                data = {"error": True, "message": "City Not Found"}
             return HttpResponse(json.dumps(data))
     else:
         data = {"error": True, "message": "Only Admin Can create/edit country"}
         return HttpResponse(json.dumps(data))
 
     if request.POST.get("mode") == "country_status":
-        country = Country.objects.get(id=request.POST.get("id"))
-        if request.user.is_staff == "Admin" or request.user.has_perm("activity_edit"):
+        country = Country.objects.filter(id=request.POST.get("id")).first()
+        if not country:
+            data = {"error": True, "message": "Country Not Found"}
+            return HttpResponse(json.dumps(data))
+        if request.user.is_staff or request.user.has_perm("activity_edit"):
             if country.status == "Enabled":
                 country.status = "Disabled"
                 country.save()
@@ -1238,11 +1247,11 @@ def country(request):
 
     if request.POST.get("mode") == "state_status":
         country_status = False
-        state = State.objects.filter(id=request.POST.get("id")).prefetch_related(
-            "country", "state"
-        )
-        state = state[0]
-        if request.user.is_staff == "Admin" or request.user.has_perm("activity_edit"):
+        state = State.objects.filter(id=request.POST.get("id")).first()
+        if not state:
+            data = {"error": True, "message": "State Not Found"}
+            return HttpResponse(json.dumps(data))
+        if request.user.is_staff or request.user.has_perm("activity_edit"):
             if state.status == "Enabled":
                 state.status = "Disabled"
                 state.save()
@@ -1285,11 +1294,7 @@ def country(request):
     if request.POST.get("mode") == "city_status":
         state_status = False
         country_status = False
-        city = (
-            City.objects.filter(id=request.POST.get("id"))
-            .prefetch_related("state")
-            .first()
-        )
+        city = City.objects.filter(id=request.POST.get("id")).first()
         if not city:
             data = {"error": True, "message": "City Not Found"}
             return HttpResponse(json.dumps(data))
@@ -2285,7 +2290,7 @@ def skill_status(request, skill_id):
 
 @permission_required("activity_edit")
 def functional_area_status(request, functional_area_id):
-    functional_area = FunctionalArea.objects.filter(id=functional_area_id)
+    functional_area = FunctionalArea.objects.filter(id=functional_area_id).first()
     if functional_area:
         functional_area.status = (
             "InActive" if functional_area.status == "Active" else "Active"
@@ -3594,7 +3599,7 @@ def edit_company(request, company_id):
         validate_company = CompanyForm(request.POST, request.FILES, instance=company)
         if validate_company.is_valid():
             company_active = company.is_active
-            company = validate_company.save()
+            company = validate_company.save(commit=False)
             company.website = request.POST.get("website")
             company.slug = request.POST.get("slug")
             company.is_active = request.POST.get("is_active") == "on"
@@ -3770,7 +3775,7 @@ def edit_job_title(request, post_id):
     )
 
 
-@permission_required("activity_edit", "activity_view")
+@permission_required("activity_view", "activity_edit")
 def locations(request, status):
     if status == "active":
         locations = (
@@ -3858,7 +3863,7 @@ def locations(request, status):
     )
 
 
-@permission_required("activity_edit", "activity_view")
+@permission_required("activity_view", "activity_edit")
 def reports(request):
     cities = City.objects.filter()
     skills = [
@@ -3928,6 +3933,8 @@ def reports(request):
             start_date = datetime.strptime(date[0], "%b %d, %Y %H:%M")
             end_date = datetime.strptime(date[1], "%b %d, %Y %H:%M")
 
+           
+
             jobs_skills = jobs_skills.filter(published_on__range=(start_date, end_date))
         if jobs_skills:
             skills_names.append(skill[0].name)
@@ -3953,8 +3960,8 @@ def reports(request):
 
 
 def get_csv_reader(file_path):
-    file_data = file_path.read().decode("utf-8-sig").encode("utf-8")
-    csv_reader = csv.DictReader(file_data, delimiter=",", quotechar='"')
+    file_data = file_path.read().decode("utf-8-sig")
+    csv_reader = csv.DictReader(file_data.splitlines(), delimiter=",", quotechar='"')
     csv_reader.fieldnames = [header.strip() for header in csv_reader.fieldnames]
     csv_reader = list(csv_reader)
     return csv_reader
@@ -4687,5 +4694,5 @@ def moving_duplicates(request, value):
 
 @permission_required("activity_edit")
 def clear_cache(request):
-    cache._cache.flush_all()
+    cache.clear()
     return HttpResponseRedirect("/dashboard/")

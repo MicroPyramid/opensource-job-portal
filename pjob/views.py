@@ -469,9 +469,7 @@ def index(request, **kwargs):
     # jobs_list = JobPost.objects.filter(
     #     status='Live').select_related('company', 'user').prefetch_related(
     #     'location', 'skills', 'industry').distinct()
-    searched_locations = searched_skills = searched_industry = searched_edu = (
-        searched_states
-    ) = ""
+    searched_locations = searched_skills = searched_industry = searched_edu = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -479,7 +477,6 @@ def index(request, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     else:
         (
@@ -488,7 +485,6 @@ def index(request, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search({})
 
     no_of_jobs = jobs_list.count()
@@ -522,14 +518,13 @@ def index(request, **kwargs):
         "searched_industry": searched_industry,
         "searched_experience": request.POST.get("experience"),
         "searched_edu": searched_edu,
-        "searched_states": searched_states,
         "searched_job_type": request.POST.get("job_type"),
         "meta_title": meta_title,
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
 
-    template = "jobs/jobs_list.html"
+    template = "jobs/jobs_list_tailwind.html"
     return render(request, template, data)
 
 
@@ -876,7 +871,6 @@ def job_industries(request, industry, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     else:
         (
@@ -885,7 +879,6 @@ def job_industries(request, industry, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
 
     if job_list:
@@ -930,7 +923,6 @@ def job_industries(request, industry, **kwargs):
             "searched_locations": searched_locations,
             "searched_industry": searched_industry,
             "searched_edu": searched_edu,
-            "searched_states": searched_states,
             "searched_experience": request.POST.get("experience"),
             "searched_job_type": request.POST.get("job_type"),
             "searched_functional_area": request.POST.get("functional_area"),
@@ -1881,7 +1873,6 @@ def skill_fresher_jobs(request, skill_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     else:
         jobs_list = searched_skills = []
@@ -1932,7 +1923,6 @@ def skill_fresher_jobs(request, skill_name, **kwargs):
             "searched_locations": searched_locations,
             "searched_industry": searched_industry,
             "searched_edu": searched_edu,
-            "searched_states": searched_states,
             "searched_experience": request.POST.get("experience"),
             "searched_job_type": "Fresher",
             "meta_title": meta_title,

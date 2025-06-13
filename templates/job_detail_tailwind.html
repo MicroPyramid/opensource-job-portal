@@ -94,7 +94,7 @@
       <div class="flex flex-wrap gap-3" itemprop="skills">
       {%for skill in job.skills.all %}
         {% if skill.status == 'Active' %}
-          <a href="{{ skill.get_job_url }}" target="_blank" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105">{{ skill }}</a>
+          <a href="{{ skill.get_job_url }}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors">{{ skill }}</a>
         {% else %}
           <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-sm font-medium">{{ skill }}</span>
         {% endif %}
@@ -148,7 +148,7 @@
             </div>
 
             {% if job.walkin_contactinfo and job.walkin_show_contact_info %}
-            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 p-6 rounded-lg">
+            <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
               <div class="flex items-start gap-3 mb-4">
                 <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <i class="fa fa-info text-white text-xs"></i>
@@ -192,7 +192,7 @@
           </div>
 
           <!-- Company Details -->
-          <div class="mt-10 bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-xl border border-gray-200">
+          <div class="mt-10 bg-gray-50 p-8 rounded-xl border border-gray-200">
             <h3 class="text-xl font-bold text-gray-900 mb-6 border-l-4 border-green-500 pl-4">Company Details</h3>
             <div class="space-y-6">
               <div>
@@ -268,7 +268,7 @@
 
           <!-- Agency details-->
           {% if request.user.is_agency_recruiter or request.user.is_agency_admin %}
-            <div class="mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
+            <div class="mt-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
               <h3 class="text-lg font-bold text-gray-900 mb-4">Agency Details</h3>
               <div class="space-y-3">
                 <div>
@@ -339,18 +339,18 @@
         {% if job.user.is_superuser %}
           {% if job.company_emails %}
             <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_absolute_url }}" 
-               class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md">
+               class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-md">
               Apply Now
             </a>
           {% endif %}
         {% else %}
           {% if request.user.id|is_applied_for_job:job.pk  %}
-            <span class="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-3 rounded-lg font-semibold shadow-md inline-flex items-center">
+            <span class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md inline-flex items-center">
               <i class="fas fa-check-circle mr-2"></i>Applied ✓
             </span>
           {% else%}
             <button type="button"
-               class='bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md {% if not request.user.is_authenticated %}job_apply_login{% else %}applicant_apply{% endif %}' 
+               class='bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-md {% if not request.user.is_authenticated %}job_apply_login{% else %}applicant_apply{% endif %}' 
                id="{{ job.pk }}" 
                data-href="{{ job.slug }}?job_apply=applied"
                data-job-title="{{ job.title }}"
@@ -413,7 +413,7 @@
       <div class="flex flex-wrap gap-3" itemprop="skills">
       {%for skill in job.skills.all %}
         {% if skill.status == 'Active' %}
-          <a href="{{ skill.get_job_url }}" target="_blank" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105">{{ skill }}</a>
+          <a href="{{ skill.get_job_url }}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors">{{ skill }}</a>
         {% else %}
           <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-sm font-medium">{{ skill }}</span>
         {% endif %}
@@ -435,7 +435,7 @@
           
           <!-- Recruiter Details -->
           {% if not job.user.is_superuser %}
-          <div class="mt-10 bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-xl border border-blue-200">
+          <div class="mt-10 bg-blue-50 p-8 rounded-xl border border-blue-200">
             <h3 class="text-xl font-bold text-gray-900 mb-6 border-l-4 border-blue-500 pl-4">Recruiter Details</h3>
             <div class="space-y-4">
               <div>
@@ -610,8 +610,8 @@
                 
                 if (!data.error) {
                     // Success - Update button
-                    $button.removeClass('bg-gradient-to-r from-blue-600 to-blue-700')
-                           .addClass('bg-gradient-to-r from-green-600 to-green-700')
+                    $button.removeClass('bg-blue-600')
+                           .addClass('bg-green-600')
                            .html('<i class="fas fa-check-circle mr-2"></i>Applied ✓');
                     
                     showAlert(data.response || 'Application submitted successfully!', 'success');

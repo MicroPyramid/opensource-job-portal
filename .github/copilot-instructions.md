@@ -30,3 +30,4 @@ Migrate from old packages to new packages, ensuring that the application remains
 - Use clear, descriptive variable and function names.
 - Follow PEP 8 style guidelines for Python code.
 - Use consistent naming conventions for files and directories.
+- don't use gradients in tailwind css, use solid colors instead.
