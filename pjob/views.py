@@ -2415,20 +2415,8 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
 
 
 def add_other_location_to_user(user, request):
-    location = City.objects.filter(
-        name__iexact=request.POST.get("other_location").strip()
-    )
-    if location:
-        user.current_city = location[0]
-    else:
-        location = City.objects.create(
-            name=request.POST.get("other_location"),
-            status="Disabled",
-            slug=slugify(request.POST.get("other_location")),
-            state=State.objects.get(id=16),
-        )
-        user.current_city = location
-    user.save()
+    pass
+    
 
 
 def save_codes_and_send_mail(user, request, passwd):

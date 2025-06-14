@@ -3,10 +3,11 @@ import math
 import re
 
 from django.urls import reverse
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template.defaultfilters import slugify
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from mpcomp.views import (
     get_aws_file_path,
@@ -25,6 +26,7 @@ from peeldb.models import (
     Skill,
     State,
     SKILL_TYPE,
+    User,
 )
 
 from ..forms import (
@@ -507,90 +509,193 @@ def country(request):
 
 @permission_required("activity_view", "activity_edit")
 def locations(request, status):
+    # Get base queryset based on status
     if status == "active":
-        locations = (
+        locations_qs = (
             City.objects.filter(status="Enabled")
             .annotate(num_posts=Count("locations"))
             .prefetch_related("state")
-            .order_by("name")
         )
     else:
-        locations = (
+        locations_qs = (
             City.objects.filter(status="Disabled")
             .annotate(num_posts=Count("locations"))
             .prefetch_related("state")
-            .order_by("name")
         )
-    items_per_page = 100
-    if request.POST.get("search"):
-        locations = locations.filter(name__icontains=request.POST.get("search"))
-    no_pages = int(math.ceil(float(locations.count()) / items_per_page))
-    page = request.GET.get("page")
-    if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
-        if int(page) > (no_pages + 2):
-            return HttpResponseRedirect(reverse("dashboard:locations"))
-        page = int(page)
-    else:
-        page = 1
-    if request.POST.get("mode") == "remove_city":
-        city = City.objects.filter(id=request.POST.get("id"))
-        if city:
-            city.delete()
-            data = {"error": False, "message": "City Removed Successfully"}
-        else:
-            data = {"error": True, "message": "City Not Found"}
-        return HttpResponse(json.dumps(data))
-    if request.POST.get("mode") == "edit":
-        city = City.objects.filter(id=int(request.POST.get("id"))).first()
-        if city:
-            new_city = CityForm(request.POST, instance=city)
-            try:
-                if request.POST.get("meta"):
-                    json.loads(request.POST.get("meta"))
-                valid = True
-            except BaseException as e:
-                new_city.errors["meta"] = "Enter Valid Json Format - " + str(e)
-                valid = False
-            if new_city.is_valid() and valid:
-                new_city.save()
-                if request.POST.get("page_content"):
-                    city.page_content = request.POST.get("page_content")
-                if request.POST.get("internship_page_content"):
-                    city.page_content = request.POST.get("page_content")
-                if request.POST.get("meta"):
-                    city.meta = json.loads(request.POST.get("meta"))
-                city.save()
-                data = {"error": False, "message": "City Updated Successfully"}
+    
+    # Handle search from both GET and POST
+    search_term = ""
+    sort_by = request.GET.get("sort", "name")  # Default sort by name
+    
+    if request.method == "POST":
+        if request.POST.get("mode") == "remove_city":
+            if request.user.is_staff or request.user.has_perm("activity_edit"):
+                city_id = request.POST.get("id")
+                if city_id:
+                    city = City.objects.filter(id=city_id).first()
+                    if city:
+                        # Check for active job posts using this city
+                        active_job_count = JobPost.objects.filter(
+                            location=city, 
+                            status__in=["Live", "Published"]
+                        ).count()
+                        
+                        if active_job_count > 0:
+                            data = {
+                                "error": True, 
+                                "message": f"Cannot delete city. {active_job_count} active job post(s) are using this location. Please reassign or deactivate these jobs first."
+                            }
+                        else:
+                            city.delete()
+                            data = {"error": False, "message": "City Removed Successfully"}
+                    else:
+                        data = {"error": True, "message": "City Not Found"}
+                else:
+                    data = {"error": True, "message": "Invalid city ID"}
             else:
-                data = {
-                    "error": True,
-                    "message": new_city.errors,
-                    "id": request.POST.get("id"),
-                }
+                data = {"error": True, "message": "Permission denied"}
             return HttpResponse(json.dumps(data))
-        else:
-            data = {"error": True, "message": "City Not Found"}
+            
+        elif request.POST.get("mode") == "edit":
+            if request.user.is_staff or request.user.has_perm("activity_edit"):
+                city_id = request.POST.get("id")
+                if not city_id:
+                    data = {"error": True, "message": "City ID is required"}
+                    return HttpResponse(json.dumps(data))
+                
+                city = City.objects.filter(id=int(city_id)).first()
+                if not city:
+                    data = {"error": True, "message": "City Not Found"}
+                    return HttpResponse(json.dumps(data))
+                
+                form = CityForm(request.POST, instance=city)
+                is_valid = True
+                
+                # Validate JSON meta field if provided
+                if request.POST.get("meta"):
+                    try:
+                        json.loads(request.POST.get("meta"))
+                    except (json.JSONDecodeError, ValueError) as e:
+                        form.add_error("meta", f"Enter Valid JSON Format - {str(e)}")
+                        is_valid = False
+                
+                if form.is_valid() and is_valid:
+                    form.save()
+                    
+                    # Update additional fields
+                    if request.POST.get("page_content"):
+                        city.page_content = request.POST.get("page_content")
+                    if request.POST.get("internship_page_content"):
+                        city.internship_page_content = request.POST.get("internship_page_content")
+                    if request.POST.get("meta"):
+                        city.meta = json.loads(request.POST.get("meta"))
+                    
+                    city.save()
+                    data = {"error": False, "message": "City Updated Successfully"}
+                else:
+                    data = {
+                        "error": True,
+                        "message": form.errors,
+                        "id": city_id,
+                    }
+            else:
+                data = {"error": True, "message": "Permission denied"}
             return HttpResponse(json.dumps(data))
-    locations = locations[(page - 1) * items_per_page : page * items_per_page]
+        
+        elif request.POST.get("mode") == "move_jobs":
+            if request.user.is_staff or request.user.has_perm("activity_edit"):
+                from_city_id = request.POST.get("from_city_id")
+                to_city_id = request.POST.get("to_city_id")
+
+                try:
+                    from_city = City.objects.get(id=from_city_id)
+                    to_city = City.objects.get(id=to_city_id)
+
+                    # Get all job posts that have the source city
+                    job_posts = JobPost.objects.filter(location=from_city)
+                    moved_count = 0
+
+                    for job_post in job_posts:
+                        # Remove the old city and add the new one
+                        job_post.location.remove(from_city)
+                        job_post.location.add(to_city)
+                        moved_count += 1
+
+                    data = {
+                        "error": False,
+                        "message": f"Successfully moved {moved_count} jobs from '{from_city.name}' to '{to_city.name}'",
+                        "moved_count": moved_count,
+                    }
+                except City.DoesNotExist:
+                    data = {
+                        "error": True,
+                        "message": "Invalid city selected",
+                    }
+                except Exception as e:
+                    data = {
+                        "error": True,
+                        "message": f"Error moving jobs: {str(e)}",
+                    }
+            else:
+                data = {"error": True, "message": "Permission denied"}
+            return HttpResponse(json.dumps(data))
+        
+        # Handle search via POST
+        elif request.POST.get("search"):
+            search_term = request.POST.get("search").strip()
+    
+    # Handle search via GET (for pagination links)
+    if not search_term:
+        search_term = request.GET.get("search", "").strip()
+    
+    # Apply search filter
+    if search_term:
+        locations_qs = locations_qs.filter(name__icontains=search_term)
+    
+    # Apply sorting
+    if sort_by == "name":
+        locations_qs = locations_qs.order_by("name")
+    elif sort_by == "job_posts_asc":
+        locations_qs = locations_qs.order_by("num_posts", "name")
+    elif sort_by == "job_posts_desc":
+        locations_qs = locations_qs.order_by("-num_posts", "name")
+    else:
+        locations_qs = locations_qs.order_by("name")
+    
+    # Pagination
+    items_per_page = 100
+    paginator = Paginator(locations_qs, items_per_page)
+    page_number = request.GET.get("page", 1)
+    
+    try:
+        page_obj = paginator.get_page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        page_obj = paginator.get_page(1)
+    
+    # Get pagination context
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
-        page, no_pages
+        page_obj.number, paginator.num_pages
     )
-    cities = City.objects.filter(status="Enabled", parent_city=None)
-    return render(
-        request,
-        "dashboard/locations.html",
-        {
-            "locations": locations,
-            "cities": cities,
-            "aft_page": aft_page,
-            "after_page": after_page,
-            "prev_page": prev_page,
-            "previous_page": previous_page,
-            "current_page": page,
-            "last_page": no_pages,
-            "status": status,
-        },
-    )
+    
+    # Get enabled cities for dropdown
+    cities = City.objects.filter(status="Enabled", parent_city=None).order_by("name")
+    
+    context = {
+        "locations": page_obj,
+        "cities": cities,
+        "aft_page": aft_page,
+        "after_page": after_page,
+        "prev_page": prev_page,
+        "previous_page": previous_page,
+        "current_page": page_obj.number,
+        "last_page": paginator.num_pages,
+        "status": status,
+        "search_term": search_term,
+        "search_value": search_term,  # For backward compatibility
+        "sort_by": sort_by,
+    }
+    
+    return render(request, "dashboard/locations.html", context)
 
 
 

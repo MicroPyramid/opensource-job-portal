@@ -300,33 +300,8 @@ def add_other_functional_area(job_post, data, user):
 
 
 def add_other_locations(post, data, user):
-    temp = loader.get_template("recruiter/email/add_other_fields.html")
-    subject = "PeelJobs New JobPost"
-    mto = [settings.DEFAULT_FROM_EMAIL]
-    for location in data.getlist("other_location"):
-        locations = [loc.strip() for loc in location.split(",") if loc.strip()]
-        for location in locations:
-            locations = City.objects.filter(name__iexact=location)
-            if locations:
-                post.location.add(locations[0])
-            else:
-                location = City.objects.create(
-                    name=location,
-                    status="Disabled",
-                    slug=slugify(location),
-                    state=State.objects.get(id=16),
-                )
-                post.location.add(location)
-                c = {
-                    "job_post": post,
-                    "user": user,
-                    "item": "Location",
-                    "type": "Location",
-                    "value": location.name,
-                }
-                rendered = temp.render(c)
-                send_email.delay(mto, subject, rendered)
-
+    pass
+    
 
 def add_interview_location(data, job_post, no_of_locations):
     for i in range(1, no_of_locations):
