@@ -37,6 +37,7 @@
            <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div class="p-4">
               <form name="refine-search" id="refine-search" method="POST" class='refine-autocomplete-me' action=".">
+                {% csrf_token %}
                 <div class="space-y-4">
                   
                   <div class="border border-gray-200 rounded-lg">
@@ -201,20 +202,49 @@
           {% get_page current_page last_page as pages %}
 
           <nav aria-label="Page navigation" class="flex justify-center">
-            <ul class="flex space-x-1">
+            <ul class="pagination flex space-x-1">
+              {% if current_page != 1 %}
               <li>
-                <a class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700" href="#" aria-label="Previous">
+                <a data-href="{{ current_url }}{% if previous_page == 1 %}{% else %}{{ previous_page }}/{% endif %}" 
+                   data-page="{{ previous_page }}"
+                   class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700" 
+                   href="{{ current_url }}{% if previous_page == 1 %}{% else %}{{ previous_page }}/{% endif %}" aria-label="Previous">
                   <span aria-hidden="true">&laquo;</span>
                 </a>
               </li>
-              <li><a class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700" href="#">1</a></li>
-              <li><a class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 hover:bg.gray-100 hover:text-gray-700" href="#">2</a></li>
-              <li><a class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700" href="#">3</a></li>
               <li>
-                <a class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700" href="#" aria-label="Next">
+                <a data-href="{{ current_url }}" 
+                   data-page="1"
+                   class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700" 
+                   href="{{ current_url }}">first</a>
+              </li>
+              {% endif %}
+              {% for s in pages %}
+              <li>
+                <a data-href="{{ current_url }}{% if s == 1 %}{% else %}{{ s }}/{% endif %}" 
+                   data-page="{{ s }}"
+                   class="flex items-center justify-center px-3 py-2 text-sm leading-tight {% if s == current_page %}text-blue-600 bg-blue-50 border-blue-300{% else %}text-gray-500 bg-white border-gray-300{% endif %} border hover:bg-gray-100 hover:text-gray-700"
+                   href="{{ current_url }}{% if s == 1 %}{% else %}{{ s }}/{% endif %}">
+                  {{ s }}
+                </a>
+              </li>
+              {% endfor %}
+              {% if current_page != last_page %}
+              <li>
+                <a data-href="{{ current_url }}{{ last_page }}/" 
+                   data-page="{{ last_page }}"
+                   class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700" 
+                   href="{{ current_url }}{{ last_page }}/">last</a>
+              </li>
+              <li>
+                <a data-href="{{ current_url }}{{ aft_page }}/" 
+                   data-page="{{ aft_page }}"
+                   class="flex items-center justify-center px-3 py-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700" 
+                   href="{{ current_url }}{{ aft_page }}/" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>
                 </a>
               </li>
+              {% endif %}
             </ul>
           </nav>
 </div>
@@ -346,11 +376,32 @@ $(window).on('load', function() {
 
 
   $('ul.pagination li a').click(function(e){
-    href = $(this).attr('data-href');
-    $('#page').val($(this).attr('class'));
+    e.preventDefault();
+    
+    var href = $(this).attr('data-href');
+    var page = $(this).attr('data-page');
+    
+    console.log('Pagination clicked:', {
+      href: href,
+      page: page,
+      element: this
+    });
+    
+    if (!href || !page) {
+      console.error('Missing href or page data attributes');
+      return false;
+    }
+    
+    $('#page').val(page);
     $('#refine_search').val('True');
-    $('#refine-search').attr("action", href)
+    $('#refine-search').attr("action", href);
+    
+    console.log('Form action set to:', href);
+    console.log('Page value set to:', page);
+    
     $('#refine-search').submit();
+    
+    return false;
   });
 
 </script>
@@ -379,17 +430,5 @@ $(window).on('load', function() {
       $('#' + panel).addClass('active');
     })
 
-    {% comment %} $(document).ready(function(){
-      $(".collapse.show").each(function(){
-        $(this).prev(".accordion-header").find(".far").addClass("fa-solid fa-minus").removeClass("fa-solid fa-plus");
-      });
-
-      $(".collapse").on('show.bs.collapse', function(){
-        $(this).prev(".accordion-header").find(".far").addClass("fa-solid fa-plus").removeClass("fa-solid fa-minus");
-
-      }).on('hide.bs.collapse',function(){
-        $(this).prev(".accordion-header").find(".far").addClass("fa-solid fa-plus").removeClass("fa-solid fa-plus");
-      });
-    }); {% endcomment %}
   </script>
 {% endblock %}
