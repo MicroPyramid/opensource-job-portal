@@ -840,34 +840,3 @@ def mail_to_recruiter(request, job_post_id):
     )
 
 
-
-
-def post_on_all_fb_groups(request, post_id):
-    job_post = JobPost.objects.filter(id=post_id)
-    
-    return HttpResponse(
-        json.dumps(
-            {"errors": False, "response": "Sucessfully Published Job Post In Fb Groups"}
-        )
-    )
-
-
-
-def adding_existing_candidates_to_jobposts(request, post_id):
-    job_post = get_object_or_404(JobPost, id=post_id)
-    user_technical_skills = TechnicalSkill.objects.filter(
-        skill__in=job_post.skills.all().values_list("id", flat=True)
-    )
-    users = User.objects.filter(user_type="JS", skills__in=user_technical_skills)
-    for user in users:
-        if not AppliedJobs.objects.filter(user=user, job_post=job_post):
-            AppliedJobs.objects.create(
-                user=user,
-                job_post=job_post,
-                status="Pending",
-                ip_address=request.META["REMOTE_ADDR"],
-                user_agent=request.META["HTTP_USER_AGENT"],
-            )
-    return HttpResponse(
-        json.dumps({"errors": False, "response": "Sucessfully Added Users to Jobposts"})
-    )

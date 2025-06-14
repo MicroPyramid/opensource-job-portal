@@ -19,6 +19,7 @@ from peeldb.models import (
     Country,
     FunctionalArea,
     Industry,
+    JobPost,
     Language,
     Qualification,
     Skill,
@@ -966,10 +967,10 @@ def industries(request):
             industries = industries.filter(name__icontains=request.GET.get("search"))
         if request.GET.get("status") == "active":
             industries = industries.filter(status="Active")
-        elif request.GET.get("status") == "inctive":
+        elif request.GET.get("status") == "inactive":
             industries = industries.filter(status="InActive")
 
-        items_per_page = 10
+        items_per_page = 15
         no_pages = int(math.ceil(float(industries.count()) / items_per_page))
 
         if (
@@ -989,6 +990,10 @@ def industries(request):
         )
         status = request.GET.get("status") if request.GET.get("status") else None
         search = request.GET.get("search") if request.GET.get("search") else None
+
+        # Get all active industries for the transfer dropdown
+        all_active_industries = Industry.objects.filter(status="Active").order_by("name")
+
         return render(
             request,
             "dashboard/base_data/industry.html",
@@ -996,6 +1001,7 @@ def industries(request):
                 "status": status,
                 "search": search,
                 "industries": industries,
+                "all_active_industries": all_active_industries,
                 "aft_page": aft_page,
                 "after_page": after_page,
                 "prev_page": prev_page,
@@ -1036,6 +1042,43 @@ def industries(request):
                 data = {
                     "error": True,
                     "message": new_industry.errors,
+                    "page": request.POST.get("page") if request.POST.get("page") else 1,
+                }
+            return HttpResponse(json.dumps(data))
+        if request.POST.get("mode") == "move_jobs":
+            from_industry_id = request.POST.get("from_industry_id")
+            to_industry_id = request.POST.get("to_industry_id")
+
+            try:
+                from_industry = Industry.objects.get(id=from_industry_id)
+                to_industry = Industry.objects.get(id=to_industry_id)
+
+                # Get all job posts that have the source industry
+                job_posts = JobPost.objects.filter(industry=from_industry)
+                moved_count = 0
+
+                for job_post in job_posts:
+                    # Remove the old industry and add the new one
+                    job_post.industry.remove(from_industry)
+                    job_post.industry.add(to_industry)
+                    moved_count += 1
+
+                data = {
+                    "error": False,
+                    "message": f"Successfully moved {moved_count} jobs from '{from_industry.name}' to '{to_industry.name}'",
+                    "moved_count": moved_count,
+                    "page": request.POST.get("page") if request.POST.get("page") else 1,
+                }
+            except Industry.DoesNotExist:
+                data = {
+                    "error": True,
+                    "message": "Invalid industry selected",
+                    "page": request.POST.get("page") if request.POST.get("page") else 1,
+                }
+            except Exception as e:
+                data = {
+                    "error": True,
+                    "message": f"Error moving jobs: {str(e)}",
                     "page": request.POST.get("page") if request.POST.get("page") else 1,
                 }
             return HttpResponse(json.dumps(data))

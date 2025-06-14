@@ -41,8 +41,6 @@ from .views import (
     edit_govt_job,
     preview_job,
     edit_job_title,
-    post_on_all_fb_groups,
-    adding_existing_candidates_to_jobposts,
     applicants,
     view_applicant,
     applicant_actions,
@@ -201,16 +199,6 @@ urlpatterns = [
         r"^jobpost/title/edit/(?P<post_id>[-\w]+)/$",
         edit_job_title,
         name="edit_job_title",
-    ),
-    url(
-        r"^jobpost/fb-groups/post/(?P<post_id>[-\w]+)/$",
-        post_on_all_fb_groups,
-        name="post_on_all_fb_groups",
-    ),
-    url(
-        r"^jobpost/candidates-add/(?P<post_id>[-\w]+)/$",
-        adding_existing_candidates_to_jobposts,
-        name="adding_existing_candidates_to_jobposts",
     ),
     url(
         r"^jobpost/mail_to_recruiter/(?P<job_post_id>[-\w]+)/$",

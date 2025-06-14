@@ -43,10 +43,6 @@ def pages(request, page_name):
         )
 
 
-# def users_login(request):
-# return render(request, "login.html")
-
-
 def get_out(request):
     url = request.GET.get("next")
     logout(request)
