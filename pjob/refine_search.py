@@ -29,8 +29,7 @@ def refined_search(data):
             SQ(location__in=india.values_list("state__state__name", flat=True))
         )
     elif location:
-        other_cities = searched_locations.values_list("parent_city__name", flat=True)
-        sqs = sqs.filter_and(SQ(location__in=location) | SQ(location__in=other_cities))
+        sqs = sqs.filter_and(SQ(location__in=location))
 
     if data.get("job_type"):
         if data["job_type"] == "Fresher":

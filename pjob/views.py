@@ -1260,7 +1260,7 @@ def jobs_by_location(request, job_type):
         .prefetch_related(
             Prefetch(
                 "state",
-                queryset=City.objects.filter(status="Enabled", parent_city=None),
+                queryset=City.objects.filter(status="Enabled"),
                 to_attr="active_cities",
             )
         )

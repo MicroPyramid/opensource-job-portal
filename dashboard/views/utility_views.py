@@ -252,7 +252,6 @@ def moving_duplicates(request, value):
                     id__in=request.POST.getlist("duplicates")
                 )
                 original = City.objects.filter(id=request.POST.get("original")).first()
-                duplicates.update(parent_city=original)
                 users = User.objects.filter(city__in=duplicates)
                 users.update(city=original)
                 current_users = User.objects.filter(current_city__in=duplicates)

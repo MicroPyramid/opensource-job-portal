@@ -110,12 +110,6 @@
                                     <option value="{{ state.id }}" class="hide" id="city_{{ state.country.id }}">{{ state.name }}</option>
                                 {% endfor %}
                                 </select>
-                                <select id="city_parent" class="form-control" name="parent_city">
-                                    <option value=""  >Select Parent City</option>
-                                 {% for city in cities %}
-                                    <option value="{{ city.id }}">{{ city.name }}</option>
-                                {% endfor %}
-                                </select>
                                 <input type="text" class="form-control city-form-control" placeholder="Slug" id="slug" name="slug">
                                 <input type="hidden" id="city_id">
                                 <textarea class="form-control city-form-control meta_title" name='meta_title' id='meta_title'
@@ -141,7 +135,6 @@
                         <div class="form-inline">
                           <input type="text" class="form-control" name="name" id="city">
                           <input type="hidden" class="form-control" name="state" id="state">
-                          <input type="hidden" class="form-control" name="parent_city" id="parent_city">
                           <input type="hidden" class="form-control" name="mode" value="add_other_city">
                           <button type="submit"><i class="fa fa-plus"></i>Add</button>
                         </div>
@@ -546,7 +539,6 @@
                                 id: $('#city_id').val(),
                                 name: $('#editcity').val(),
                                 slug : $('#slug').val(),
-                                parent_city : $('#city_parent').val(),
                                 'meta_title': meta_title,
                                 'meta_description': meta_description,
                                 'internship_meta_description': internship_meta_description,
@@ -594,7 +586,6 @@
             $.post('.', {mode: 'get_city_info', city: $(this).attr('href')}, function (data) {
                 $('#city_country').val(data.country)
                 $('#city_state').val(data.state)
-                $('#city_parent').val(data.parent)
                 $('#slug').val(data.slug)
                 $('select#city_state option[id="city_'+ data.country + '"]').removeClass('hide');
             }, 'json');
@@ -714,7 +705,6 @@
       if ($(this).find('.fa').hasClass('fa-plus')){
       var other_form = $('#add_other_id').show().detach();
       $(this).parent().append(other_form)
-      $(this).parent().find('#parent_city').val($(this).attr('id'))
       $(this).parent().find('#state').val($(this).attr('data-state'))
     }else{
       $(this).parent().find('#add_other_id').hide()

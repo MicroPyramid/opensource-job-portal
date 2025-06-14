@@ -48,7 +48,7 @@ def country(request):
     if request.method == "GET":
         countries = Country.objects.all().order_by("name")
         states = State.objects.all().order_by("name")
-        cities = City.objects.filter(status="Enabled", parent_city=None).order_by(
+        cities = City.objects.filter(status="Enabled").order_by(
             "name"
         )
         return render(
@@ -287,7 +287,6 @@ def country(request):
                 "country": city.state.country.id,
                 "state": city.state.id,
                 "slug": city.slug,
-                "parent": city.parent_city.id if city.parent_city else "",
             }
             return HttpResponse(json.dumps(data))
         else:
@@ -317,8 +316,6 @@ def country(request):
             if new_city.is_valid():
                 c = new_city.save()
                 c.slug = slugify(c.name)
-                if request.POST.get("parent_city"):
-                    c.parent_city_id = request.POST.get("parent_city")
                 c.save()
                 data = {
                     "error": False,
@@ -352,8 +349,6 @@ def country(request):
                     )
                 if request.POST.get("page_content"):
                     city.page_content = request.POST.get("page_content")
-                if request.POST.get("parent_city"):
-                    city.parent_city_id = request.POST.get("parent_city")
                 city.save()
                 data = {"error": False, "message": "City Updated Successfully"}
             else:
@@ -678,7 +673,7 @@ def locations(request, status):
     )
     
     # Get enabled cities for dropdown
-    cities = City.objects.filter(status="Enabled", parent_city=None).order_by("name")
+    cities = City.objects.filter(status="Enabled").order_by("name")
     
     context = {
         "locations": page_obj,

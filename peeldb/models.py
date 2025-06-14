@@ -230,13 +230,6 @@ class City(models.Model):
     page_content = models.TextField(default="")
     internship_content = models.TextField(default="")
     meta = JSONField(null=True)
-    parent_city = models.ForeignKey(
-        "self",
-        related_name="child_cities",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-    )
 
     def __str__(self):
         return self.name

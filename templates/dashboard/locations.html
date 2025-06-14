@@ -42,9 +42,6 @@
                               {{ location.name }}( {{ location.num_posts }} )
                           </div>
                           <div class="icon_div">
-                            {% if location.child_cities.all %}
-                              <a><i class="fa fa-chevron-down other_city" title='View Other Cities'></i></a>
-                            {% endif %}
                               <a><i class="fa-solid fa-pen-to-square edit"></i></a>
                               <a><i class="fa-solid fa-arrow-right-arrow-left move-jobs" data-id='{{ location.id }}' data-name='{{ location.name }}' title="Move Jobs"></i></a>
                               <a><i class="fa-solid fa-trash-can delete" data-id='{{ location.id }}'></i></a>
@@ -70,15 +67,6 @@
                             </form>
                           </div>
                           <div class="clearfix"></div>
-                          <div class="other_cities">
-                            <h4>Child Cities</h4>
-                            {% for loc in location.child_cities.all %}
-                              <div>
-                                <span class="">Name: {{ loc.name }}</span>
-                                <span class="">Slug: {{ loc.slug }}</span>
-                              </div>
-                            {% endfor %}
-                          </div>
                         </div>
                     </li>
                 {% endfor %}
