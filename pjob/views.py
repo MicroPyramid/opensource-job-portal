@@ -545,11 +545,8 @@ def job_locations(request, location, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
-        final_location = final_location + list(
-            searched_states.values_list("name", flat=True)
-        )
+        
     elif state:
         final_location = [state[0].name]
         search_dict = QueryDict("", mutable=True)
@@ -560,7 +557,6 @@ def job_locations(request, location, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     elif final_location:
         search_dict = QueryDict("", mutable=True)
@@ -575,7 +571,6 @@ def job_locations(request, location, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     else:
         job_list = []
@@ -625,7 +620,6 @@ def job_locations(request, location, **kwargs):
             "show_pop_up": show_pop,
             "searched_skills": searched_skills,
             "searched_locations": searched_locations,
-            "searched_states": searched_states,
             "searched_industry": searched_industry,
             "searched_experience": request.POST.get("experience"),
             "searched_edu": searched_edu,
@@ -636,7 +630,7 @@ def job_locations(request, location, **kwargs):
             "h1_tag": h1_tag,
             "state": state.first(),
         }
-        template = "jobs/jobs_list.html"
+        template = "jobs/jobs_list_tailwind.html"
         return render(request, template, data)
     else:
         if final_location:
@@ -709,7 +703,6 @@ def job_skills(request, skill, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     else:
         search_dict = QueryDict("", mutable=True)
@@ -730,7 +723,6 @@ def job_skills(request, skill, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     searched_text = get_ordered_skill_degrees(
         skill,
@@ -813,7 +805,6 @@ def job_skills(request, skill, **kwargs):
             "searched_locations": searched_locations,
             "searched_industry": searched_industry,
             "searched_edu": searched_edu,
-            "searched_states": searched_states,
             "experience": request.POST.get("experience"),
             "searched_job_type": request.POST.get("job_type")
             or request.GET.get("job_type"),
@@ -822,7 +813,7 @@ def job_skills(request, skill, **kwargs):
             "h1_tag": h1_tag,
             "searched_text": searched_text,
         }
-        template = "jobs/jobs_list.html"
+        template = "jobs/jobs_list_tailwind.html"
         return render(request, template, data)
     else:
         if final_skill or final_edu:
@@ -858,7 +849,7 @@ def job_industries(request, industry, **kwargs):
     if "page" in request.GET:
         url = current_url + request.GET.get("page") + "/"
         return redirect(url, permanent=True)
-    searched_locations = searched_skills = searched_edu = searched_states = ""
+    searched_locations = searched_skills = searched_edu = ""
     searched_industry = Industry.objects.filter(slug=industry)
     search_dict = QueryDict("", mutable=True)
     search_dict.setlist("refine_industry", [searched_industry[0].name])
@@ -930,7 +921,7 @@ def job_industries(request, industry, **kwargs):
             "meta_description": meta_description,
             "h1_tag": h1_tag,
         }
-        template = "jobs/jobs_list.html"
+        template = "jobs/jobs_list_tailwind.html"
         return render(request, template, data)
     else:
         if searched_industry:
@@ -1407,9 +1398,7 @@ def full_time_jobs(request, **kwargs):
         return redirect(url, permanent=True)
     request.session["formdata"] = ""
 
-    searched_locations = searched_industry = searched_skills = searched_edu = (
-        searched_states
-    ) = ""
+    searched_locations = searched_industry = searched_skills = searched_edu = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -1417,7 +1406,6 @@ def full_time_jobs(request, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     else:
         search_dict = QueryDict("", mutable=True)
@@ -1428,7 +1416,6 @@ def full_time_jobs(request, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
 
     no_of_jobs = jobs_list.count()
@@ -1460,7 +1447,6 @@ def full_time_jobs(request, **kwargs):
         "searched_locations": searched_locations,
         "searched_industry": searched_industry,
         "searched_edu": searched_edu,
-        "searched_states": searched_states,
         "experience": request.POST.get("experience"),
         "searched_job_type": "full-time",
         "meta_title": meta_title,
@@ -1468,7 +1454,7 @@ def full_time_jobs(request, **kwargs):
         "h1_tag": h1_tag,
     }
 
-    template = "jobs/jobs_list.html"
+    template = "jobs/jobs_list_tailwind.html"
     return render(request, template, data)
 
 
@@ -1514,9 +1500,7 @@ def city_internship_jobs(request, location, **kwargs):
         return redirect(url, permanent=True)
     request.session["formdata"] = ""
     location = City.objects.filter(slug=location)
-    searched_locations = searched_industry = searched_skills = searched_edu = (
-        searched_states
-    ) = ""
+    searched_locations = searched_industry = searched_skills = searched_edu = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -1524,7 +1508,6 @@ def city_internship_jobs(request, location, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     else:
         search_dict = QueryDict("", mutable=True)
@@ -1537,7 +1520,6 @@ def city_internship_jobs(request, location, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
 
     no_of_jobs = jobs_list.count()
@@ -1577,7 +1559,6 @@ def city_internship_jobs(request, location, **kwargs):
         "searched_locations": searched_locations,
         "searched_industry": searched_industry,
         "searched_edu": searched_edu,
-        "searched_states": searched_states,
         "searched_experience": request.POST.get("experience"),
         "searched_job_type": "internship",
         "meta_title": meta_title,
@@ -1585,7 +1566,7 @@ def city_internship_jobs(request, location, **kwargs):
         "h1_tag": h1_tag,
     }
 
-    template = "jobs/jobs_list.html"
+    template = "jobs/jobs_list_tailwind.html"
     return render(request, template, data)
 
 
@@ -1602,9 +1583,7 @@ def walkin_jobs(request, **kwargs):
         .prefetch_related("location", "skills", "industry")
     )
 
-    searched_locations = searched_industry = searched_skills = searched_edu = (
-        searched_states
-    ) = ""
+    searched_locations = searched_industry = searched_skills = searched_edu = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -1612,7 +1591,6 @@ def walkin_jobs(request, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
 
     no_of_jobs = jobs_list.count()
@@ -1646,7 +1624,6 @@ def walkin_jobs(request, **kwargs):
         "searched_locations": searched_locations,
         "searched_industry": searched_industry,
         "searched_edu": searched_edu,
-        "searched_states": searched_states,
         "searched_experience": request.POST.get("experience"),
         "searched_job_type": "walk-in",
         "meta_title": meta_title,
@@ -1654,7 +1631,7 @@ def walkin_jobs(request, **kwargs):
         "h1_tag": h1_tag,
     }
 
-    template = "jobs/jobs_list.html"
+    template = "jobs/jobs_list_tailwind.html"
     return render(request, template, data)
 
 
@@ -1700,7 +1677,7 @@ def government_jobs(request, **kwargs):
         "meta_description": meta_description,
         "h1_tag": h1_tag,
     }
-    template = "jobs/jobs_list.html"
+    template = "jobs/jobs_list_tailwind.html"
     return render(request, template, data)
 
 
@@ -1861,7 +1838,6 @@ def skill_fresher_jobs(request, skill_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     elif final_skill:
         search_dict = QueryDict("", mutable=True)
@@ -1929,7 +1905,7 @@ def skill_fresher_jobs(request, skill_name, **kwargs):
             "meta_description": meta_description,
             "h1_tag": h1_tag,
         }
-        template = "jobs/jobs_list.html"
+        template = "jobs/jobs_list_tailwind.html"
         return render(request, template, data)
     else:
         meta_title = meta_description = ""
@@ -1980,11 +1956,8 @@ def location_fresher_jobs(request, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
-        final_locations = final_locations + list(
-            searched_states.values_list("name", flat=True)
-        )
+        
     elif state:
         final_locations = [state[0].name]
         search_dict = QueryDict("", mutable=True)
@@ -1996,7 +1969,6 @@ def location_fresher_jobs(request, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     elif final_locations:
         search_dict = QueryDict("", mutable=True)
@@ -2008,7 +1980,6 @@ def location_fresher_jobs(request, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-                       searched_states,
         ) = refined_search(search_dict)
     else:
         jobs_list = searched_locations = []
@@ -2060,7 +2031,6 @@ def location_fresher_jobs(request, city_name, **kwargs):
             "searched_locations": searched_locations,
             "searched_industry": searched_industry,
             "searched_edu": searched_edu,
-            "searched_states": searched_states,
             "searched_experience": request.POST.get("experience"),
             "searched_job_type": "Fresher",
             "meta_title": meta_title,
@@ -2068,7 +2038,7 @@ def location_fresher_jobs(request, city_name, **kwargs):
             "h1_tag": h1_tag,
             "state": state.first(),
         }
-        template = "jobs/jobs_list.html"
+        template = "jobs/jobs_list_tailwind.html"
         return render(request, template, data)
     else:
         if final_locations:
@@ -2123,11 +2093,8 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
-        final_locations = final_locations + list(
-            searched_states.values_list("name", flat=True)
-        )
+        
     elif state:
         searched_locations = state
         final_locations = [state[0].name]
@@ -2140,7 +2107,6 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     elif final_locations or final_skill:
         search_dict = QueryDict("", mutable=True)
@@ -2157,7 +2123,6 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     else:
         jobs_list = []
@@ -2220,7 +2185,6 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
             "searched_locations": searched_locations,
             "searched_industry": searched_industry,
             "searched_edu": searched_edu,
-            "searched_states": searched_states,
             "experience": request.POST.get("experience"),
             "searched_job_type": "walk-in",
             "meta_title": meta_title,
@@ -2228,7 +2192,7 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
             "h1_tag": h1_tag,
             "state": state.first(),
         }
-        template = "jobs/jobs_list.html"
+        template = "jobs/jobs_list_tailwind.html"
         return render(request, template, data)
 
     else:
@@ -2301,7 +2265,6 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     elif final_skill and final_location:
         search_dict = QueryDict("", mutable=True)
@@ -2314,7 +2277,6 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     else:
         jobs_list = []
@@ -2365,7 +2327,6 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
             "searched_locations": searched_locations,
             "searched_industry": searched_industry,
             "searched_edu": searched_edu,
-            "searched_states": searched_states,
             "searched_experience": request.POST.get("experience"),
             "searched_job_type": "Fresher",
             "fresher": True,
@@ -2373,7 +2334,7 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
             "meta_description": meta_description,
             "h1_tag": h1_tag,
         }
-        template = "jobs/jobs_list.html"
+        template = "jobs/jobs_list_tailwind.html"
         return render(request, template, data)
     else:
         status = 200 if final_skill and final_location else 404

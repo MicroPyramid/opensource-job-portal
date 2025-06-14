@@ -28,27 +28,7 @@
 <!-- main_container starts here -->
 <div class="w-full">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="py-6">
-     {% include "meta_data/jobs_list_data.html" with page_h1=True%}
-      <!--<span class="last-date"> - Last Update On {{current_date }}</span>-->
-    </div>
-    {% if searched_skills.0 and searched_skills.0.page_content %}
-    <div class="mb-6">
-      {{ searched_skills.0.page_content|safe}}
-    </div>
-    {% elif searched_industry.0 and searched_industry.0.page_content %}
-    <div class="mb-6">
-      {{ searched_industry.page_content|safe}}
-    </div>
-    {% elif searched_locations.0 and searched_locations.0.page_content %}
-    <div class="mb-6">
-      {{ searched_locations.0.page_content|safe}}
-    </div>
-    {% elif searched_locations.0 and searched_locations.0.internship_content %}
-    <div class="mb-6">
-      {{ searched_locations.0.internship_content|safe}}
-    </div>
-    {% endif %}
+    
     <div class="flex flex-col lg:flex-row gap-6">
       <div class="lg:w-3/4">
         <!-- side_filter_section starts here -->
@@ -248,10 +228,7 @@
     </div>
   </div>
 </div>
-{% block pj_info %}
-  <div class="lg:w-1/4">
-  </div>
-{% endblock %}
+
 <!-- main_container ends here -->
 {% endblock %}
 {% block 'extra_js' %}
