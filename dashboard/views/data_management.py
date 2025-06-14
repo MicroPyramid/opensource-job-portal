@@ -1,6 +1,7 @@
 import json
 import math
 import re
+import json
 
 from django.urls import reverse
 from django.db.models import Count, Q
@@ -28,6 +29,7 @@ from peeldb.models import (
     SKILL_TYPE,
     User,
 )
+from dashboard.forms import CityForm
 
 from ..forms import (
     CityForm,
@@ -509,13 +511,13 @@ def locations(request, status):
         locations_qs = (
             City.objects.filter(status="Enabled")
             .annotate(num_posts=Count("locations"))
-            .prefetch_related("state")
+            .prefetch_related("state", "state__country")
         )
     else:
         locations_qs = (
             City.objects.filter(status="Disabled")
             .annotate(num_posts=Count("locations"))
-            .prefetch_related("state")
+            .prefetch_related("state", "state__country")
         )
     
     # Handle search from both GET and POST
@@ -575,6 +577,15 @@ def locations(request, status):
                         is_valid = False
                 
                 if form.is_valid() and is_valid:
+                    # Check if state change is valid
+                    if request.POST.get("state"):
+                        try:
+                            new_state = State.objects.get(id=request.POST.get("state"), status="Enabled")
+                            city.state = new_state
+                        except State.DoesNotExist:
+                            data = {"error": True, "message": "Invalid state selected", "id": city_id}
+                            return HttpResponse(json.dumps(data))
+                    
                     form.save()
                     
                     # Update additional fields
@@ -673,11 +684,15 @@ def locations(request, status):
     )
     
     # Get enabled cities for dropdown
-    cities = City.objects.filter(status="Enabled").order_by("name")
+    cities = City.objects.filter(status="Enabled").prefetch_related("state", "state__country").order_by("name")
+    
+    # Get all states for the state dropdown in edit form
+    states = State.objects.filter(status="Enabled").prefetch_related("country").order_by("country__name", "name")
     
     context = {
         "locations": page_obj,
         "cities": cities,
+        "states": states,
         "aft_page": aft_page,
         "after_page": after_page,
         "prev_page": prev_page,

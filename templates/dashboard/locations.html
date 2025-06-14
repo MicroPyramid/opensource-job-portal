@@ -1,6 +1,35 @@
 {% extends 'dashboard/base.html' %}
 {% load page_tags %}
 {% block stage %}
+    <style>
+        .edit_panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .edit_panel label {
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .edit_panel .form-control {
+            margin-bottom: 10px;
+        }
+        .edit_panel .update_btn {
+            background: #5cb85c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .edit_panel .update_btn:hover {
+            background: #449d44;
+        }
+    </style>
     <section id='tech_skills'>
         <div class="title">
             <h3>Location(No Of Job Posts)
@@ -39,11 +68,11 @@
                     <li>
                         <div class="description">
                           <div class="content">
-                              {{ location.name }}( {{ location.num_posts }} )
+                              {{ location.name }} - {{ location.state.name }} - {{ location.state.country.name }} ({{ location.num_posts }})
                           </div>
                           <div class="icon_div">
                               <a><i class="fa-solid fa-pen-to-square edit"></i></a>
-                              <a><i class="fa-solid fa-arrow-right-arrow-left move-jobs" data-id='{{ location.id }}' data-name='{{ location.name }}' title="Move Jobs"></i></a>
+                              <a><i class="fa-solid fa-arrow-right-arrow-left move-jobs" data-id='{{ location.id }}' data-name='{{ location.name }} - {{ location.state.name }} - {{ location.state.country.name }}' title="Move Jobs"></i></a>
                               <a><i class="fa-solid fa-trash-can delete" data-id='{{ location.id }}'></i></a>
                           </div>
                           <div class="clearfix"></div>
@@ -51,11 +80,27 @@
                             <form id="editform{{ location.id }}" method="post" action=".">
                               <input type="hidden" name="id" value="{{ location.id }}">
                               <input type="hidden" name="mode" value="edit">
-                              <input type="hidden" name="state" value="{{ location.state.id }}">
+                              <label for="state_{{ location.id }}">State:</label>
+                              <select class="form-control" name="state" id="state_{{ location.id }}">
+                                {% for state in states %}
+                                  <option value="{{ state.id }}" {% if state.id == location.state.id %}selected{% endif %}>
+                                    {{ state.name }} - {{ state.country.name }}
+                                  </option>
+                                {% endfor %}
+                              </select>
+                              <label for="name_{{ location.id }}">City Name:</label>
                               <textarea class="form-control" name="name" id='name_{{location.id}}'>{{ location.name }}</textarea>
+                              <label for="slug_{{ location.id }}">Slug:</label>
                               <input type="text" class="form-control" name="slug" id="slug_{{location.id}}" value="{{ location.slug }}" title="slug">
+                              <label for="status_{{ location.id }}">Status:</label>
+                              <select class="form-control" name="status" id="status_{{ location.id }}">
+                                <option value="Enabled" {% if location.status == "Enabled" %}selected{% endif %}>Enabled</option>
+                                <option value="Disabled" {% if location.status == "Disabled" %}selected{% endif %}>Disabled</option>
+                              </select>
+                              <label for="meta_{{ location.id }}">Meta Data (JSON):</label>
                               <textarea class="form-control" name='meta' id='meta_{{location.id}}'
                                         placeholder='Meta Data in Json Format'>{{ location.get_meta_data }}</textarea>
+                              <label for="ckeditor_page_content_{{ location.id }}">Page Content:</label>
                               <textarea class="form-control ckeditor_page_content"
                                         name='ckeditor_page_content_{{ location.id }}'
                                         id='ckeditor_page_content_{{ location.id }}'
@@ -99,7 +144,7 @@
                             <select id="toCitySelect" name="to_city_id" class="form-control" required>
                                 <option value="">Select destination city</option>
                                 {% for city in cities %}
-                                    <option value="{{ city.id }}">{{ city.name }}, {{ city.state.name }}</option>
+                                    <option value="{{ city.id }}">{{ city.name }} - {{ city.state.name }} - {{ city.state.country.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -191,15 +236,21 @@
 
             $.post('.', $("#editform" + $(this).attr('id')).serialize(), function (data) {
                 if (data.error == false) {
-                    open_dialog_with_url(data.message, 'Success!!!', ".")
+                    alert(data.message);
+                    location.reload(); // Reload page to reflect changes
                 } else {
-                    $('p.error').remove()
-                for (var key in data.message) {
-                    $('#'+key + '_' + data.id).after("<p class='error'>"+data.message[key]+"</p>")
+                    $('p.error').remove();
+                    if (typeof data.message === 'object') {
+                        for (var key in data.message) {
+                            $('#' + key + '_' + data.id).after("<p class='error'>" + data.message[key] + "</p>");
+                        }
+                    } else {
+                        alert('Error: ' + data.message);
                     }
-                open_dialog("Some Content Missing!", "Alert!")
                 }
-            }, 'json');
+            }, 'json').fail(function() {
+                alert('An error occurred while processing your request.');
+            });
         });
         
         $('#tech_skills').on('click', '.delete', function (e) {
