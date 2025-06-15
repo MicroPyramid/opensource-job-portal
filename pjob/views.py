@@ -10,7 +10,7 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.utils import timezone
-from datetime import date, datetime
+from datetime import date
 from django.db.models import Q, F, Case, When, Value
 from django.urls import reverse
 from django.template import loader, Template, Context
@@ -438,7 +438,7 @@ def recruiters(request, **kwargs):
     recruiters_list = recruiters_list[
         (page - 1) * items_per_page : page * items_per_page
     ]
-    meta_title, meta_description, h1_tag = get_meta("recruiters_list", {"page": page})
+    meta_title, meta_description, h1_tag = get_meta("recruiters_list", {"page": 1})
     template = "jobs/recruiters_list.html"
     return render(
         request,
@@ -1573,8 +1573,8 @@ def city_internship_jobs(request, location, **kwargs):
 def walkin_jobs(request, **kwargs):
     if kwargs.get("page_num") == "1" or request.GET.get("page") == "1":
         return redirect(reverse("walkin_jobs"), permanent=True)
-    if "page" in request.POST:
-        url = reverse("walkin_jobs") + request.POST.get("page") + "/"
+    if "page" in request.GET:
+        url = reverse("walkin_jobs") + request.GET.get("page") + "/"
         return redirect(url, permanent=True)
     request.session["formdata"] = ""
     jobs_list = (
@@ -1604,7 +1604,7 @@ def walkin_jobs(request, **kwargs):
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
         page, no_pages
     )
-    current_date = datetime.now()
+    current_date = timezone.now()
     field = get_social_referer(request)
     show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
     meta_title, meta_description, h1_tag = get_meta("walkin_jobs", {"page": page})
@@ -2465,8 +2465,8 @@ def register_using_email(request):
                 if "resume" in request.FILES:
                     s3_client = boto3.client(
                         's3',
-                        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+                        aws_access_key_id=getattr(settings, 'AWS_ACCESS_KEY_ID', settings.AM_ACCESS_KEY),
+                        aws_secret_access_key=getattr(settings, 'AWS_SECRET_ACCESS_KEY', settings.AM_PASS_KEY)
                     )
                     random_string = "".join(
                         random.choice("0123456789ABCDEF") for i in range(3)
@@ -2488,7 +2488,7 @@ def register_using_email(request):
                         ACL='public-read'
                     )
                     user.resume = path
-                    user.profile_updated = datetime.now(timezone.utc)
+                    user.profile_updated = timezone.now()
                     user.save()
                 registered_user = authenticate(username=user.username)
                 if registered_user:
@@ -2531,7 +2531,7 @@ def user_activation(request, user_id):
         url = "/profile/" if user.is_active else "/profile/?verify=true"
         user.is_active = True
         user.email_verified = True
-        user.last_login = datetime.now()
+        user.last_login = timezone.now()
         user.activation_code = ""
         user.save()
         return HttpResponseRedirect(url)
@@ -2552,7 +2552,7 @@ def login_user_email(request):
             password = request.POST.get("password")
             usr = authenticate(username=email, password=password)
             if usr:
-                usr.last_login = datetime.now()
+                usr.last_login = timezone.now()
                 usr.save()
                 login(request, usr)
                 data = {"error": False, "response": "Logged In Successfully"}
@@ -2628,8 +2628,8 @@ def user_reg_success(request):
             if "resume" in request.FILES:
                 s3_client = boto3.client(
                     's3',
-                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+                    aws_access_key_id=getattr(settings, 'AWS_ACCESS_KEY_ID', settings.AM_ACCESS_KEY),
+                    aws_secret_access_key=getattr(settings, 'AWS_SECRET_ACCESS_KEY', settings.AM_PASS_KEY)
                 )
                 random_string = "".join(
                     random.choice("0123456789ABCDEF") for i in range(3)
@@ -2651,7 +2651,7 @@ def user_reg_success(request):
                     ACL='public-read'
                 )
                 user.resume = path
-            user.profile_updated = datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
             data = {"error": False, "response": "Profile Updated Successfully"}
             return HttpResponse(json.dumps(data))

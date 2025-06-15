@@ -32,6 +32,7 @@ from .views import (
     delete_resume,
     user_password_change,
     messages,
+    my_home
 )
 
 app_name = "candidate"
@@ -40,6 +41,9 @@ urlpatterns = [
     # url(r'^home/$','home'),
     url(r"^$", index, name="index"),
     url(r"^profile/$", profile, name="profile"),
+
+    url(r"^my/home/$", my_home, name="my_home"),
+
     url(r"personalinfo/edit/$", edit_personalinfo, name="edit_personalinfo"),
     url(
         r"profile_description/edit/$",
