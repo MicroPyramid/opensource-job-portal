@@ -43,10 +43,6 @@ def pages(request, page_name):
         )
 
 
-# def users_login(request):
-# return render(request, "login.html")
-
-
 def get_out(request):
     url = request.GET.get("next")
     logout(request)
@@ -167,7 +163,7 @@ def sitemap(request, **kwargs):
 
     locations = (
         City.objects.annotate(num_posts=Count("locations"))
-        .filter(status="Enabled", parent_city=None)
+        .filter(status="Enabled")
         .order_by("-num_posts")
     )
     skills = (

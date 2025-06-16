@@ -769,3 +769,37 @@ def get_all_qualifications():
 @register.simple_tag
 def get_degree_type():
     return DEGREE_TYPES
+
+
+@register.filter
+def is_recent_job(published_date, days=7):
+    """
+    Check if a job was published within the specified number of days.
+    Default is 7 days.
+    """
+    if not published_date:
+        return False
+    
+    try:
+        # Calculate the difference between now and the published date
+        now = datetime.datetime.now()
+        if hasattr(published_date, 'date'):
+            # If it's a datetime object
+            published_datetime = published_date
+        else:
+            # If it's a date object, convert to datetime
+            published_datetime = datetime.datetime.combine(published_date, datetime.datetime.min.time())
+        
+        # Make both timezone-aware or timezone-naive
+        if hasattr(published_datetime, 'tzinfo') and published_datetime.tzinfo:
+            # If published_datetime is timezone-aware, make now timezone-aware too
+            from django.utils import timezone
+            now = timezone.now()
+        elif hasattr(now, 'tzinfo') and now.tzinfo:
+            # If now is timezone-aware but published_datetime is not, make now naive
+            now = now.replace(tzinfo=None)
+        
+        difference = now - published_datetime
+        return difference.days <= days
+    except (AttributeError, TypeError, ValueError):
+        return False

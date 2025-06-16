@@ -92,7 +92,7 @@ class CityForm(ModelForm):
 
     class Meta:
         model = City
-        fields = ["name", "state", "slug"]
+        fields = ["name", "state", "slug", "status"]
 
     def clean_name(self):
         return validation_name(self, "City")

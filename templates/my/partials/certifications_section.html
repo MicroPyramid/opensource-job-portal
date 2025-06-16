@@ -1,0 +1,560 @@
+<!-- Certifications Section -->
+<div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-900">Certifications</h2>
+    <button id="addCertificationBtn" class="text-blue-600 hover:text-blue-700 font-medium text-sm">
+      <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
+      Add Certification
+    </button>
+  </div>
+  
+  <!-- Certifications Content -->
+  <div id="certificationsContainer">
+    {% if user_certifications %}
+      {% for certification in user_certifications %}
+        <div class="certification-item border border-gray-200 rounded-lg p-4 mb-4 last:mb-0" data-certification-id="{{ certification.id }}">
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <h3 class="text-lg font-medium text-gray-900 mb-1">{{ certification.name }}</h3>
+              <p class="text-blue-600 font-medium">{{ certification.organization }}</p>
+            </div>
+            <div class="flex items-center space-x-2 ml-4">
+              <button class="text-blue-600 hover:text-blue-700 p-1 editCertificationBtn" data-certification-id="{{ certification.id }}" title="Edit Certification">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button class="text-red-600 hover:text-red-700 p-1 deleteCertificationBtn" data-certification-id="{{ certification.id }}" title="Delete Certification">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Details -->
+          <div class="space-y-2">
+            {% if certification.credential_id %}
+              <div class="flex items-center text-sm text-gray-600">
+                <i data-lucide="hash" class="w-4 h-4 mr-2 text-gray-400"></i>
+                <span class="font-medium mr-2">Credential ID:</span>
+                <span>{{ certification.credential_id }}</span>
+              </div>
+            {% endif %}
+            
+            {% if certification.issued_date %}
+              <div class="flex items-center text-sm text-gray-600">
+                <i data-lucide="calendar" class="w-4 h-4 mr-2 text-gray-400"></i>
+                <span class="font-medium mr-2">Issued:</span>
+                <span>{{ certification.issued_date|date:"M Y" }}</span>
+                {% if certification.expiry_date %}
+                  <span class="mx-2">•</span>
+                  <span class="font-medium mr-2">Expires:</span>
+                  <span>{{ certification.expiry_date|date:"M Y" }}</span>
+                {% elif certification.does_not_expire %}
+                  <span class="mx-2">•</span>
+                  <span class="text-green-600 font-medium">No Expiration Date</span>
+                {% endif %}
+              </div>
+            {% endif %}
+            
+            {% if certification.credential_url %}
+              <div class="flex items-center text-sm text-gray-600">
+                <i data-lucide="external-link" class="w-4 h-4 mr-2 text-gray-400"></i>
+                <a href="{{ certification.credential_url }}" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">
+                  View Credential
+                </a>
+              </div>
+            {% endif %}
+            
+            {% if certification.description %}
+              <div class="mt-3 text-sm text-gray-700">
+                <p>{{ certification.description|linebreaksbr }}</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center py-8" id="emptyCertificationsState">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+          <i data-lucide="award" class="w-6 h-6 text-gray-400"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No certifications added yet</h3>
+        <p class="text-gray-500 text-sm mb-4">Showcase your professional certifications and achievements</p>
+        <button id="addFirstCertificationBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+          <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
+          Add Your First Certification
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Certification Modal -->
+<div id="certificationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900" id="certificationModalTitle">Add Certification</h3>
+        <button id="closeCertificationModal" class="text-gray-400 hover:text-gray-600">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <form id="certificationForm" class="py-6">
+        <div class="space-y-4">
+          <!-- Certification Name -->
+          <div>
+            <label for="certificationName" class="block text-sm font-medium text-gray-700 mb-1">
+              Certification Name <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="certificationName" name="name" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="e.g., AWS Certified Solutions Architect">
+          </div>
+
+          <!-- Organization -->
+          <div>
+            <label for="certificationOrganization" class="block text-sm font-medium text-gray-700 mb-1">
+              Issuing Organization <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="certificationOrganization" name="organization" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="e.g., Amazon Web Services">
+          </div>
+
+          <!-- Credential ID -->
+          <div>
+            <label for="certificationCredentialId" class="block text-sm font-medium text-gray-700 mb-1">
+              Credential ID
+            </label>
+            <input type="text" id="certificationCredentialId" name="credential_id"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="e.g., ABC123XYZ">
+          </div>
+
+          <!-- Credential URL -->
+          <div>
+            <label for="certificationCredentialUrl" class="block text-sm font-medium text-gray-700 mb-1">
+              Credential URL
+            </label>
+            <input type="url" id="certificationCredentialUrl" name="credential_url"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="https://www.credly.com/badges/...">
+          </div>
+
+          <!-- Issue Date -->
+          <div>
+            <label for="certificationIssuedDate" class="block text-sm font-medium text-gray-700 mb-1">
+              Issue Date
+            </label>
+            <input type="date" id="certificationIssuedDate" name="issued_date"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+
+          <!-- Expiry Date -->
+          <div>
+            <label for="certificationExpiryDate" class="block text-sm font-medium text-gray-700 mb-1">
+              Expiry Date
+            </label>
+            <input type="date" id="certificationExpiryDate" name="expiry_date"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   disabled>
+            
+            <div class="mt-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="certificationDoesNotExpire" name="does_not_expire"
+                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <span class="ml-2 text-sm text-gray-700">This certification does not expire</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label for="certificationDescription" class="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea id="certificationDescription" name="description" rows="3"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Describe what this certification covers..."></textarea>
+          </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200 mt-6">
+          <button type="button" id="cancelCertification" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
+            Cancel
+          </button>
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center">
+            <span id="certificationSubmitSpinner" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white hidden">
+              <i data-lucide="loader-2" class="w-4 h-4"></i>
+            </span>
+            <span id="certificationSubmitText">Save Certification</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('certificationModal');
+    const addBtn = document.getElementById('addCertificationBtn');
+    const addFirstBtn = document.getElementById('addFirstCertificationBtn');
+    const closeBtn = document.getElementById('closeCertificationModal');
+    const cancelBtn = document.getElementById('cancelCertification');
+    const form = document.getElementById('certificationForm');
+    const modalTitle = document.getElementById('certificationModalTitle');
+    const doesNotExpireCheckbox = document.getElementById('certificationDoesNotExpire');
+    const expiryDateInput = document.getElementById('certificationExpiryDate');
+    
+    let currentCertificationId = null;
+    let isEditMode = false;
+
+    // Open modal for adding
+    function openAddModal() {
+        isEditMode = false;
+        currentCertificationId = null;
+        modalTitle.textContent = 'Add Certification';
+        form.reset();
+        modal.classList.remove('hidden');
+        
+        // Reset expiry date field state
+        expiryDateInput.disabled = false;
+        doesNotExpireCheckbox.checked = false;
+    }
+
+    // Event listeners for add buttons
+    if (addBtn) addBtn.addEventListener('click', openAddModal);
+    if (addFirstBtn) addFirstBtn.addEventListener('click', openAddModal);
+
+    // Close modal
+    function closeModal() {
+        modal.classList.add('hidden');
+        form.reset();
+        currentCertificationId = null;
+        isEditMode = false;
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Handle does not expire checkbox
+    doesNotExpireCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            expiryDateInput.disabled = true;
+            expiryDateInput.value = '';
+        } else {
+            expiryDateInput.disabled = false;
+        }
+    });
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('certificationSubmitText');
+        const spinner = document.getElementById('certificationSubmitSpinner');
+        
+        submitBtn.textContent = isEditMode ? 'Updating...' : 'Saving...';
+        spinner.classList.remove('hidden');
+
+        const formData = {
+            name: document.getElementById('certificationName').value,
+            organization: document.getElementById('certificationOrganization').value,
+            credential_id: document.getElementById('certificationCredentialId').value,
+            credential_url: document.getElementById('certificationCredentialUrl').value,
+            issued_date: document.getElementById('certificationIssuedDate').value,
+            expiry_date: document.getElementById('certificationExpiryDate').value,
+            does_not_expire: document.getElementById('certificationDoesNotExpire').checked,
+            description: document.getElementById('certificationDescription').value,
+        };
+
+        const url = isEditMode 
+            ? `/certification/edit-modal/${currentCertificationId}/`
+            : '/certification/add-modal/';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                closeModal();
+                
+                if (isEditMode) {
+                    updateCertificationDisplay(data.certification);
+                } else {
+                    addCertificationToDisplay(data.certification);
+                }
+                
+                // Hide empty state if it exists
+                const emptyState = document.getElementById('emptyCertificationsState');
+                if (emptyState) {
+                    emptyState.style.display = 'none';
+                }
+            } else {
+                showNotification(data.error || 'An error occurred', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while saving the certification', 'error');
+        })
+        .finally(() => {
+            submitBtn.textContent = 'Save Certification';
+            spinner.classList.add('hidden');
+        });
+    });
+
+    // Edit certification
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.editCertificationBtn')) {
+            const btn = e.target.closest('.editCertificationBtn');
+            const certificationId = btn.dataset.certificationId;
+            editCertification(certificationId);
+        }
+    });
+
+    function editCertification(certificationId) {
+        fetch(`/certification/edit-modal/${certificationId}/`, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const cert = data.data.certification;
+                
+                isEditMode = true;
+                currentCertificationId = certificationId;
+                modalTitle.textContent = 'Edit Certification';
+                
+                // Populate form
+                document.getElementById('certificationName').value = cert.name;
+                document.getElementById('certificationOrganization').value = cert.organization;
+                document.getElementById('certificationCredentialId').value = cert.credential_id;
+                document.getElementById('certificationCredentialUrl').value = cert.credential_url;
+                document.getElementById('certificationIssuedDate').value = cert.issued_date;
+                document.getElementById('certificationExpiryDate').value = cert.expiry_date;
+                document.getElementById('certificationDoesNotExpire').checked = cert.does_not_expire;
+                document.getElementById('certificationDescription').value = cert.description;
+                
+                // Handle expiry date field state
+                if (cert.does_not_expire) {
+                    expiryDateInput.disabled = true;
+                } else {
+                    expiryDateInput.disabled = false;
+                }
+                
+                modal.classList.remove('hidden');
+            } else {
+                showNotification('Failed to load certification data', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while loading certification data', 'error');
+        });
+    }
+
+    // Delete certification
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.deleteCertificationBtn')) {
+            const btn = e.target.closest('.deleteCertificationBtn');
+            const certificationId = btn.dataset.certificationId;
+            
+            if (confirm('Are you sure you want to delete this certification?')) {
+                deleteCertification(certificationId);
+            }
+        }
+    });
+
+    function deleteCertification(certificationId) {
+        fetch(`/certification/delete-modal/${certificationId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                
+                // Remove certification from display
+                const certificationElement = document.querySelector(`[data-certification-id="${certificationId}"]`);
+                if (certificationElement) {
+                    certificationElement.remove();
+                }
+                
+                // Check if no certifications left, show empty state
+                const remainingCertifications = document.querySelectorAll('.certification-item');
+                if (remainingCertifications.length === 0) {
+                    showEmptyState();
+                }
+            } else {
+                showNotification(data.error || 'Failed to delete certification', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while deleting the certification', 'error');
+        });
+    }
+
+    // Helper functions
+    function addCertificationToDisplay(certification) {
+        const container = document.getElementById('certificationsContainer');
+        const certificationHtml = createCertificationHTML(certification);
+        container.insertAdjacentHTML('beforeend', certificationHtml);
+        
+        // Re-initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    function updateCertificationDisplay(certification) {
+        const certificationElement = document.querySelector(`[data-certification-id="${certification.id}"]`);
+        if (certificationElement) {
+            const newHtml = createCertificationHTML(certification);
+            certificationElement.outerHTML = newHtml;
+            
+            // Re-initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+    }
+
+    function createCertificationHTML(certification) {
+        const issuedDateFormatted = certification.issued_date ? new Date(certification.issued_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '';
+        const expiryDateFormatted = certification.expiry_date ? new Date(certification.expiry_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '';
+        
+        return `
+            <div class="certification-item border border-gray-200 rounded-lg p-4 mb-4 last:mb-0" data-certification-id="${certification.id}">
+                <!-- Header -->
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">${certification.name}</h3>
+                        <p class="text-blue-600 font-medium">${certification.organization}</p>
+                    </div>
+                    <div class="flex items-center space-x-2 ml-4">
+                        <button class="text-blue-600 hover:text-blue-700 p-1 editCertificationBtn" data-certification-id="${certification.id}" title="Edit Certification">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        </button>
+                        <button class="text-red-600 hover:text-red-700 p-1 deleteCertificationBtn" data-certification-id="${certification.id}" title="Delete Certification">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="space-y-2">
+                    ${certification.credential_id ? `
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i data-lucide="hash" class="w-4 h-4 mr-2 text-gray-400"></i>
+                            <span class="font-medium mr-2">Credential ID:</span>
+                            <span>${certification.credential_id}</span>
+                        </div>
+                    ` : ''}
+                    
+                    ${issuedDateFormatted ? `
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i data-lucide="calendar" class="w-4 h-4 mr-2 text-gray-400"></i>
+                            <span class="font-medium mr-2">Issued:</span>
+                            <span>${issuedDateFormatted}</span>
+                            ${expiryDateFormatted ? `
+                                <span class="mx-2">•</span>
+                                <span class="font-medium mr-2">Expires:</span>
+                                <span>${expiryDateFormatted}</span>
+                            ` : certification.does_not_expire ? `
+                                <span class="mx-2">•</span>
+                                <span class="text-green-600 font-medium">No Expiration Date</span>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    ${certification.credential_url ? `
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i data-lucide="external-link" class="w-4 h-4 mr-2 text-gray-400"></i>
+                            <a href="${certification.credential_url}" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">
+                                View Credential
+                            </a>
+                        </div>
+                    ` : ''}
+                    
+                    ${certification.description ? `
+                        <div class="mt-3 text-sm text-gray-700">
+                            <p>${certification.description.replace(/\n/g, '<br>')}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    function showEmptyState() {
+        const container = document.getElementById('certificationsContainer');
+        container.innerHTML = `
+            <div class="text-center py-8" id="emptyCertificationsState">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+                    <i data-lucide="award" class="w-6 h-6 text-gray-400"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No certifications added yet</h3>
+                <p class="text-gray-500 text-sm mb-4">Showcase your professional certifications and achievements</p>
+                <button id="addFirstCertificationBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                    <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
+                    Add Your First Certification
+                </button>
+            </div>
+        `;
+        
+        // Re-bind event listener for the new add button
+        const newAddFirstBtn = document.getElementById('addFirstCertificationBtn');
+        if (newAddFirstBtn) {
+            newAddFirstBtn.addEventListener('click', openAddModal);
+        }
+        
+        // Re-initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    // Show notification
+    function showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium z-50 ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+});
+</script>

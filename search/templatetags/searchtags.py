@@ -23,6 +23,25 @@ def show_search_filter(context):
     }
 
 
+
+@register.inclusion_tag("search/search_filter_tailwind.html", takes_context=True)
+def show_search_filter_tailwind(context):
+    search_form = JobSearchForm()
+    return {
+        "request": context["request"],
+        "search_form": search_form,
+        "job_types": JOB_TYPE,
+        "searched_skills": context.get("searched_skills"),
+        "searched_edu": context.get("searched_edu"),
+        "searched_locations": context.get("searched_locations"),
+        "searched_states": context.get("searched_states"),
+        "searched_experience": context.get("searched_experience"),
+        "searched_job_type": context.get("searched_job_type"),
+        "searched_text": context.get("searched_text"),
+    }
+
+
+
 @register.inclusion_tag("search/adv_search_filter.html", takes_context=True)
 def show_adv_search_filter(context):
     search_form = JobSearchForm()

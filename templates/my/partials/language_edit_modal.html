@@ -1,0 +1,250 @@
+<!-- Language Edit Modal -->
+<div id="languageEditModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 p-4" style="display: none; align-items: center; justify-content: center;">
+  <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto">
+    <form id="languageEditForm" method="post">
+      {% csrf_token %}
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 id="modalTitle" class="text-lg font-semibold text-gray-900">Edit Language</h3>
+        <button type="button" id="closeLanguageModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 space-y-6">
+        <!-- Language Selection -->
+        <div>
+          <label for="language" class="block text-sm font-medium text-gray-700 mb-2">
+            Language <span class="text-red-500">*</span>
+          </label>
+          <select id="language" name="language" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+            <option value="">Select a language</option>
+            {% for lang in languages %}
+              <option value="{{ lang.id }}">{{ lang.name }}</option>
+            {% endfor %}
+          </select>
+          <div id="languageError" class="text-red-500 text-sm mt-1 hidden"></div>
+        </div>
+        
+        <!-- Proficiency Level -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            Proficiency <span class="text-red-500">*</span>
+          </label>
+          <div class="space-y-3">
+            <div class="flex items-center">
+              <input type="checkbox" id="read" name="read" value="1" 
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+              <label for="read" class="ml-2 text-sm text-gray-700">Read</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="write" name="write" value="1"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+              <label for="write" class="ml-2 text-sm text-gray-700">Write</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="speak" name="speak" value="1"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+              <label for="speak" class="ml-2 text-sm text-gray-700">Speak</label>
+            </div>
+          </div>
+          <div id="proficiencyError" class="text-red-500 text-sm mt-2 hidden"></div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+        <button type="button" id="cancelLanguageEdit" 
+                class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
+          Cancel
+        </button>
+        <button type="submit" id="saveLanguageBtn"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <span id="saveLanguageBtnText">Save Changes</span>
+          <div id="saveLanguageSpinner" class="hidden">
+            <i data-lucide="loader-2" class="w-4 h-4 animate-spin inline"></i>
+            Saving...
+          </div>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('languageEditModal');
+  const form = document.getElementById('languageEditForm');
+  const closeBtn = document.getElementById('closeLanguageModal');
+  const cancelBtn = document.getElementById('cancelLanguageEdit');
+  const saveBtn = document.getElementById('saveLanguageBtn');
+  const saveBtnText = document.getElementById('saveLanguageBtnText');
+  const saveSpinner = document.getElementById('saveLanguageSpinner');
+  const modalTitle = document.getElementById('modalTitle');
+  
+  let currentLanguageId = null;
+  let isEditMode = false;
+  
+  // Close modal functionality
+  function closeModal() {
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+    form.reset();
+    clearErrors();
+    currentLanguageId = null;
+    isEditMode = false;
+  }
+  
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  
+  // Close modal when clicking outside
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  
+  // Clear error messages
+  function clearErrors() {
+    document.getElementById('languageError').classList.add('hidden');
+    document.getElementById('proficiencyError').classList.add('hidden');
+  }
+  
+  // Show error message
+  function showError(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+  }
+  
+  // Set loading state
+  function setLoading(loading) {
+    saveBtn.disabled = loading;
+    if (loading) {
+      saveBtnText.classList.add('hidden');
+      saveSpinner.classList.remove('hidden');
+    } else {
+      saveBtnText.classList.remove('hidden');
+      saveSpinner.classList.add('hidden');
+    }
+  }
+  
+  // Open modal for editing
+  window.editLanguage = function(languageId) {
+    currentLanguageId = languageId;
+    isEditMode = true;
+    modalTitle.textContent = 'Edit Language';
+    saveBtnText.textContent = 'Save Changes';
+    
+    // Fetch language data
+    fetch(`/language/edit-modal/${languageId}/`, {
+      method: 'GET',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Populate form with language data
+        document.getElementById('language').value = data.language.language_id;
+        document.getElementById('read').checked = data.language.read;
+        document.getElementById('write').checked = data.language.write;
+        document.getElementById('speak').checked = data.language.speak;
+        
+        // Show modal
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+      } else {
+        alert('Error loading language data: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error loading language data');
+    });
+  };
+  
+  // Open modal for adding new language
+  window.addLanguage = function() {
+    currentLanguageId = null;
+    isEditMode = false;
+    modalTitle.textContent = 'Add Language';
+    saveBtnText.textContent = 'Add Language';
+    form.reset();
+    clearErrors();
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+  };
+  
+  // Form submission
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    clearErrors();
+    
+    const formData = new FormData(form);
+    const language = formData.get('language');
+    const read = formData.get('read');
+    const write = formData.get('write');
+    const speak = formData.get('speak');
+    
+    // Validation
+    let hasError = false;
+    
+    if (!language) {
+      showError('languageError', 'Please select a language');
+      hasError = true;
+    }
+    
+    if (!read && !write && !speak) {
+      showError('proficiencyError', 'Please select at least one proficiency level');
+      hasError = true;
+    }
+    
+    if (hasError) return;
+    
+    setLoading(true);
+    
+    const url = isEditMode 
+      ? `/language/edit-modal/${currentLanguageId}/`
+      : '/language/add-modal/';
+    
+    fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      setLoading(false);
+      
+      if (data.success) {
+        closeModal();
+        // Reload the page to show updated languages
+        window.location.reload();
+      } else {
+        if (data.errors) {
+          for (const [field, message] of Object.entries(data.errors)) {
+            const errorElementId = field + 'Error';
+            showError(errorElementId, message);
+          }
+        } else {
+          alert('Error: ' + (data.error || 'Unknown error occurred'));
+        }
+      }
+    })
+    .catch(error => {
+      setLoading(false);
+      console.error('Error:', error);
+      alert('An error occurred while saving the language');
+    });
+  });
+});
+</script>

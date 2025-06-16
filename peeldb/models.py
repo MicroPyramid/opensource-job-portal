@@ -125,7 +125,7 @@ class Country(models.Model):
 
 
 class State(models.Model):
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.PROTECT)
     name = models.CharField(max_length=500)
     status = models.CharField(choices=STATUS_TYPES, max_length=10, default="Enabled")
     slug = models.SlugField(max_length=500, default="")
@@ -219,7 +219,7 @@ class UserLanguage(models.Model):
 
 class City(models.Model):
     name = models.CharField(max_length=500)
-    state = models.ForeignKey(State, related_name="state", on_delete=models.CASCADE)
+    state = models.ForeignKey(State, related_name="state", on_delete=models.PROTECT)
     status = models.CharField(choices=STATUS_TYPES, max_length=10, default="Enabled")
     slug = models.SlugField(max_length=500)
     internship_text = models.CharField(max_length=1000)
@@ -230,13 +230,6 @@ class City(models.Model):
     page_content = models.TextField(default="")
     internship_content = models.TextField(default="")
     meta = JSONField(null=True)
-    parent_city = models.ForeignKey(
-        "self",
-        related_name="child_cities",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-    )
 
     def __str__(self):
         return self.name
@@ -373,22 +366,20 @@ class Company(models.Model):
 class EducationInstitue(models.Model):
     name = models.CharField(max_length=500)
     address = models.CharField(max_length=2000, default="")
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.PROTECT)
 
 
 class EmploymentHistory(models.Model):
     company = models.CharField(max_length=500)
     from_date = models.DateField(null=True)
     to_date = models.DateField(null=True, blank=True)
-    # TODO: this need to be be sorted as standard designation at some point in future
     designation = models.CharField(max_length=500)
-    salary = models.CharField(max_length=100)
     current_job = models.BooleanField(default=False)
     job_profile = models.TextField()
 
 
 class Degree(models.Model):
-    degree_name = models.ForeignKey(Qualification, on_delete=models.CASCADE)
+    degree_name = models.ForeignKey(Qualification, on_delete=models.PROTECT)
     degree_type = models.CharField(choices=DEGREE_TYPES, max_length=50)
     specialization = models.CharField(max_length=500)
 
@@ -408,7 +399,7 @@ class Project(models.Model):
     to_date = models.DateField(null=True, blank=True)
     skills = models.ManyToManyField(Skill)
     description = models.TextField(max_length=2000, default="")
-    location = models.ForeignKey(City, null=True, blank=True, on_delete=models.CASCADE)
+    location = models.ForeignKey(City, null=True, blank=True, on_delete=models.SET_NULL)
     role = models.CharField(max_length=500, null=True, blank=True)
     size = models.IntegerField(null=True, blank=True)
 
@@ -422,7 +413,7 @@ TechnicalSkill_STATUS = (
 
 
 class TechnicalSkill(models.Model):
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.PROTECT)
     year = models.IntegerField(null=True, blank=True)
     month = models.IntegerField(null=True, blank=True)
     last_used = models.DateField(null=True, blank=True)
@@ -431,6 +422,26 @@ class TechnicalSkill(models.Model):
         choices=TechnicalSkill_STATUS, max_length=100, null=True, blank=True
     )
     is_major = models.BooleanField(default=False)
+
+
+class Certification(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_certifications')
+    name = models.CharField(max_length=500)
+    organization = models.CharField(max_length=500)
+    credential_id = models.CharField(max_length=200, null=True, blank=True)
+    credential_url = models.URLField(max_length=1000, null=True, blank=True)
+    issued_date = models.DateField(null=True, blank=True)
+    expiry_date = models.DateField(null=True, blank=True)
+    does_not_expire = models.BooleanField(default=False)
+    description = models.TextField(max_length=2000, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.organization}"
+
+    class Meta:
+        ordering = ['-issued_date', '-created_at']
 
 
 MARTIAL_STATUS = (
@@ -454,7 +465,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=255, unique=True, db_index=True)
     company = models.ForeignKey(
-        Company, blank=True, null=True, on_delete=models.CASCADE
+        Company, blank=True, null=True, on_delete=models.SET_NULL
     )
     profile_pic = models.FileField(
         max_length=1000, upload_to=img_url, null=True, blank=True
@@ -474,12 +485,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     email_verified = models.BooleanField(default=False)
     city = models.ForeignKey(
-        City, null=True, blank=True, related_name="user_city", on_delete=models.CASCADE
-    )
-    state = models.ForeignKey(State, null=True, blank=True, on_delete=models.CASCADE)
+        City, null=True, blank=True, related_name="user_city", on_delete=models.SET_NULL)
+
+    state = models.ForeignKey(State, null=True, blank=True, on_delete=models.SET_NULL)
     country = models.ForeignKey(
-        Country, null=True, blank=True, on_delete=models.CASCADE
-    )
+        Country, null=True, blank=True, on_delete=models.SET_NULL)
+
     pincode = models.IntegerField(null=True, blank=True)
     last_password_reset_on = models.DateTimeField(auto_now_add=True)
     photo = models.CharField(max_length=500)
@@ -489,11 +500,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     employment_history = models.ManyToManyField(EmploymentHistory)
     current_city = models.ForeignKey(
-        City,
-        blank=True,
-        null=True,
-        related_name="current_city",
-        on_delete=models.CASCADE,
+        'City', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
     )
     preferred_city = models.ManyToManyField(City, related_name="preferred_city")
     functional_area = models.ManyToManyField(FunctionalArea)
@@ -505,12 +515,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     current_salary = models.CharField(max_length=50, blank=True, null=True)
     expected_salary = models.CharField(max_length=500, blank=True, null=True)
     prefered_industry = models.ForeignKey(
-        Industry, blank=True, null=True, on_delete=models.CASCADE
-    )
+        Industry, blank=True, null=True, on_delete=models.SET_NULL)
+    
     industry = models.ManyToManyField(Industry, related_name="recruiter_industries")
     technical_skills = models.ManyToManyField(Skill, related_name="recruiter_skill")
     dob = models.DateField(blank=True, null=True)
-    profile_description = models.CharField(max_length=2000, default="")
+    profile_description = models.CharField(max_length=5000, default="")
     # this must be s3 file key
     resume = models.CharField(max_length=2000, default="")
     relocation = models.BooleanField(default=False)
@@ -540,6 +550,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     agency_admin = models.BooleanField(default=False)
     referer = models.TextField(null=True, blank=True)
     unsubscribe_reason = models.TextField(default="")
+    is_looking_for_job = models.BooleanField(default=False)
+    is_open_to_offers = models.BooleanField(default=False)
 
     # Password reset fields
     password_reset_token = models.CharField(max_length=100, null=True, blank=True)
@@ -1083,7 +1095,7 @@ MONTHS = (
 
 
 class AgencyCompanyBranch(models.Model):
-    location = models.ForeignKey(City, on_delete=models.CASCADE)
+    location = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
     address = models.TextField()
     contact_details = models.TextField()
     is_major = models.BooleanField(default=False)
@@ -1107,9 +1119,9 @@ class AgencyCompany(models.Model):
     logo = models.FileField(upload_to=img_url, null=True, blank=True)
     branch_details = models.ManyToManyField(AgencyCompanyBranch)
     company = models.ForeignKey(
-        Company, null=True, blank=True, on_delete=models.CASCADE
+        Company, null=True, blank=True, on_delete=models.RESTRICT
     )
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.RESTRICT, null=True, blank=True)
     company_categories = models.ManyToManyField(
         AgencyCompanyCatogery, related_name="categories"
     )
@@ -1148,8 +1160,8 @@ class JobPost(models.Model):
     industry = models.ManyToManyField(Industry)
     job_interview_location = models.ManyToManyField(InterviewLocation)
     country = models.ForeignKey(
-        Country, null=True, related_name="job_country", on_delete=models.CASCADE
-    )
+        Country, null=True, related_name="job_country", on_delete=models.SET_NULL)
+    
     functional_area = models.ManyToManyField(FunctionalArea)
     keywords = models.ManyToManyField(Keyword)
     description = models.TextField()
@@ -1159,7 +1171,7 @@ class JobPost(models.Model):
     max_month = models.IntegerField(default=0)
     fresher = models.BooleanField(default=False)
     edu_qualification = models.ManyToManyField(Qualification)
-    company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, null=True, on_delete=models.SET_NULL)
     pincode = models.CharField(max_length=50, blank=True, null=True)
     # tech_qualification =
 
@@ -1192,17 +1204,17 @@ class JobPost(models.Model):
     agency_amount = models.CharField(max_length=1000, default="")
     agency_recruiters = models.ManyToManyField(User, related_name="recruiters")
     agency_client = models.ForeignKey(
-        AgencyCompany, null=True, on_delete=models.CASCADE
-    )
+        AgencyCompany, null=True, on_delete=models.SET_NULL)
+
     send_email_notifications = models.BooleanField(default=False)
     agency_category = models.ForeignKey(
-        AgencyCompanyCatogery, null=True, on_delete=models.CASCADE
-    )
+        AgencyCompanyCatogery, null=True, on_delete=models.SET_NULL)
+    
 
     visa_required = models.BooleanField(default=False)
     visa_country = models.ForeignKey(
-        Country, null=True, related_name="visa_country", on_delete=models.CASCADE
-    )
+        Country, null=True, related_name="visa_country", on_delete=models.SET_NULL)
+    
     visa_type = models.CharField(max_length=50, default="")
     skills = models.ManyToManyField(Skill)
     salary_type = models.CharField(
@@ -1240,8 +1252,8 @@ class JobPost(models.Model):
         null=True,
         blank=True,
         related_name="major_skill",
-        on_delete=models.CASCADE,
-    )
+        on_delete=models.SET_NULL)
+    
     closed_date = models.DateTimeField(null=True, blank=True)
 
     fb_groups = ArrayField(models.CharField(max_length=200), blank=True, null=True)
@@ -1498,10 +1510,10 @@ class AgencyResume(models.Model):
     mobile = models.CharField(max_length=100, blank=True, null=True)
     experience = models.IntegerField(blank=True, null=True)
     skill = models.ManyToManyField(Skill)
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=20, choices=POST, default="Pending")
     user = models.ForeignKey(
-        User, blank=True, null=True, related_name="Applicant", on_delete=models.CASCADE
+        User, blank=True, null=True, related_name="Applicant", on_delete=models.SET_NULL
     )
     created_on = models.DateTimeField(auto_now=True)
 
@@ -1611,7 +1623,7 @@ class Subscriber(models.Model):
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     job_post = models.ForeignKey(
-        JobPost, blank=True, null=True, on_delete=models.CASCADE
+        JobPost, blank=True, null=True, on_delete=models.SET_NULL
     )
     is_verified = models.BooleanField(default=False)
     unsubscribe_code = models.CharField(max_length=100, null=True, blank=True)
@@ -1813,5 +1825,5 @@ class UserMessage(models.Model):
         User, on_delete=models.CASCADE, related_name="user_message_to"
     )
     created_on = models.DateTimeField(auto_now_add=True)
-    job = models.ForeignKey(JobPost, null=True, on_delete=models.SET_NULL)
+    job = models.ForeignKey(JobPost, null=True, on_delete=models.CASCADE)
     is_read = models.BooleanField(default=False)

@@ -933,7 +933,7 @@ def sitemap_generation():
     # locations
     locations_xml_cont = xml_cont
     no_job_locations_xml_cont = xml_cont
-    locations = City.objects.filter(status="Enabled", parent_city=None)
+    locations = City.objects.filter(status="Enabled")
 
     for location in locations:
         jobs = JobPost.objects.filter(status="Live", location=location).count()
@@ -1179,7 +1179,7 @@ def sitemap_generation():
     locations_fresher_jobs_xml_cont = xml_cont
     no_job_locations_walkin_xml_cont = xml_cont
     no_job_locations_fresher_jobs_xml_cont = xml_cont
-    locations = City.objects.filter(status="Enabled", parent_city=None)
+    locations = City.objects.filter(status="Enabled")
     for each in locations:
         walkins = JobPost.objects.filter(
             status="Live", location=each, job_type="walk-in"

@@ -6,7 +6,7 @@ valid_time_formats = ["%Y-%m-%d 00:00:00"]
 
 
 def refined_search(data):
-    searched_skills = searched_locations = searched_industry = searched_edu = state = (
+    searched_skills = searched_locations = searched_industry = searched_edu = (
         Skill.objects.none()
     )
     sqs = SearchQuerySet().models(JobPost).filter_and(status="Live")
@@ -29,12 +29,7 @@ def refined_search(data):
             SQ(location__in=india.values_list("state__state__name", flat=True))
         )
     elif location:
-        other_cities = searched_locations.values_list("parent_city__name", flat=True)
-        sqs = sqs.filter_and(SQ(location__in=location) | SQ(location__in=other_cities))
-
-    if "refine_state" in data and data.getlist("refine_state"):
-        state = State.objects.filter(name__in=data.getlist("refine_state"))
-        sqs = sqs.filter_and(location__in=state.values_list("state__name", flat=True))
+        sqs = sqs.filter_and(SQ(location__in=location))
 
     if data.get("job_type"):
         if data["job_type"] == "Fresher":
@@ -72,5 +67,4 @@ def refined_search(data):
         searched_locations,
         searched_industry,
         searched_edu,
-        state,
     )

@@ -1,0 +1,108 @@
+<!-- Education Section -->
+<div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-900">Education</h2>
+    <button onclick="openEducationModal()" class="text-blue-600 hover:text-blue-700 font-medium text-sm">
+      <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
+      Add Education
+    </button>
+  </div>
+  
+  {% if user_education %}
+    <div class="space-y-6">
+      {% for education in user_education %}
+        <div class="flex group">
+          <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+            <i data-lucide="graduation-cap" class="w-6 h-6 text-purple-600"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900">
+                  {{ education.degree.degree_name.name }}
+                  {% if education.degree.specialization %}
+                    in {{ education.degree.specialization }}
+                  {% endif %}
+                </h3>
+                <p class="text-purple-600 font-medium">{{ education.institute.name }}</p>
+                <p class="text-sm text-gray-500 mb-2">
+                  {{ education.from_date|date:"M Y" }}
+                  {% if education.current_education %}
+                    - Present
+                  {% elif education.to_date %}
+                    - {{ education.to_date|date:"M Y" }}
+                  {% endif %}
+                </p>
+                <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                  {% if education.score %}
+                    <span class="flex items-center">
+                      <i data-lucide="award" class="w-4 h-4 mr-1"></i>
+                      {{ education.score }}
+                    </span>
+                  {% endif %}
+                  <span class="flex items-center">
+                    <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i>
+                    {{ education.institute.city.name }}
+                  </span>
+                  <span class="flex items-center">
+                    <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                    {{ education.degree.degree_type }}
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Action buttons -->
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2 ml-4">
+                <button onclick="openEducationModal({{ education.id }})" class="text-blue-600 hover:text-blue-700 p-1 rounded" title="Edit Education">
+                  <i data-lucide="edit-2" class="w-4 h-4"></i>
+                </button>
+                <button onclick="deleteEducation({{ education.id }})" class="text-red-600 hover:text-red-700 p-1 rounded" title="Delete Education">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Empty state -->
+    <div class="text-center py-12">
+      <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="graduation-cap" class="w-8 h-8 text-gray-400"></i>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No education added yet</h3>
+      <p class="text-gray-500 mb-4">Add your educational background to strengthen your profile</p>
+      <button onclick="openEducationModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+        <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+        Add Education
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+function deleteEducation(educationId) {
+  if (confirm('Are you sure you want to delete this education record?')) {
+    fetch(`/education/delete-modal/${educationId}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Reload the page to show updated education list
+        window.location.reload();
+      } else {
+        alert(data.error || 'Failed to delete education');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Failed to delete education');
+    });
+  }
+}
+</script>

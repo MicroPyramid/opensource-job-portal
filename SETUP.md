@@ -33,7 +33,11 @@ or
 docker run -d --name elasticsearch \
   -p 127.0.0.1:9200:9200 \
   -e "discovery.type=single-node" \
-  docker.elastic.co/elasticsearch/elasticsearch:7.17.28
+  -e "ES_JAVA_OPTS=-Xms2g -Xmx2g" \
+  --memory=8g \
+  --memory-swap=8g \
+  docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+
 
 ```
 

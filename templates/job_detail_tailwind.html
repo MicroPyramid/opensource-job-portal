@@ -1,0 +1,661 @@
+{% load page_tags %}
+{% load thumbnail %}
+{% load tz %}
+
+<!-- Add CSRF token for AJAX requests -->
+<form style="display: none;">
+    {% csrf_token %}
+</form>
+
+<!-- Alert Container -->
+<div id="alert-container" class="fixed top-4 right-4 z-50 space-y-2">
+  <!-- Alerts will be dynamically inserted here -->
+</div>
+
+{% if recruiter %}
+<div class="bg-white rounded-xl shadow-lg p-8 mb-8 border border-gray-100">
+  <!-- job_item starts here -->
+  <div class="space-y-6">
+    <div class="border-b border-gray-200 pb-6">
+      <h1 class="text-2xl font-bold text-gray-900 mb-3 leading-tight">
+        <a href="#" class="hover:text-blue-600 transition-colors">{{ job.title }}</a>
+      </h1>
+      <div class="inline-flex items-center bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium mb-4">
+        {{ job.min_year }}-{{ job.max_year }} Year(s) Experience
+      </div>
+      
+      <div class="text-xl font-semibold text-blue-600 mb-4" itemprop="experienceRequirements">
+        {% if job.company or job.company_name %}
+        {% if job.company.is_active and job.company.slug %}
+          <a href="{% url 'company_jobs' job.company.slug %}" target="_blank" class="hover:underline transition-colors">{{ job.company.name|capfirst }}</a>
+        {% elif job.company %}
+          {{ job.company.name|capfirst }}
+        {% elif job.company_name %}
+        {{ job.company_name|capfirst }}
+        {% endif %}
+        {% endif %}
+      </div>
+      
+      <div class="flex flex-wrap items-center gap-6 text-sm text-gray-600">
+        {% if job.industry.all %}
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+          <span class="font-medium">Industry:</span>
+          {%for industry in job.industry.all %}
+          <a href="{% url 'job_industries' industry.slug %}" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors">{{ industry.name|get_industry_name }}</a>
+          {% if forloop.last %}{% else %}, {% endif%}
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="flex items-center gap-2" itemprop="jobLocation">
+          <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+          <span class="font-medium">Location:</span>
+          {%for location in job.location.all %}
+          {% if location.status == 'Enabled' %}
+            <a href="{{ location.get_job_url }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors">{{ location.name }}</a>
+            {% else %}
+            <span class="cursor-default text-gray-500">{{ location.name }}</span>{% endif %}{% if forloop.last %}{% else %}, {% endif%}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Details Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <span class="text-sm font-medium text-gray-500 block mb-1">Experience</span>
+        <span class="text-lg font-semibold text-gray-900" itemprop="experienceRequirements">{{ job.min_year }}-{{ job.max_year }} Years</span>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <span class="text-sm font-medium text-gray-500 block mb-1">Salary</span>
+        <span class="text-lg font-semibold text-gray-900" itemprop="salaryCurrency">
+          {% if job.min_salary == 0 and job.max_salary == 0 %}
+            <span class="text-gray-500">Not Specified</span>
+          {% else %}
+            <span class="text-green-600">₹ {{ job.get_job_salary.0 }} - {{ job.get_job_salary.1 }} P.A</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <span class="text-sm font-medium text-gray-500 block mb-1">Job Type</span>
+        <span class="text-lg font-semibold text-gray-900" itemprop="employmentType">
+          <a href="/{{ job.get_job_type }}-jobs/" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors">{{ job.job_type|get_string }}</a>
+        </span>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <span class="text-sm font-medium text-gray-500 block mb-1">Status</span>
+        <span class="text-lg font-semibold text-green-600">{{ job.status }}</span>
+      </div>
+    </div>
+
+    {% if job.skills.all %}
+    <div class="border-t border-gray-200 pt-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Key Skills</h3>
+      <div class="flex flex-wrap gap-3" itemprop="skills">
+      {%for skill in job.skills.all %}
+        {% if skill.status == 'Active' %}
+          <a href="{{ skill.get_job_url }}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors">{{ skill }}</a>
+        {% else %}
+          <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-sm font-medium">{{ skill }}</span>
+        {% endif %}
+      {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Job Description Section -->
+    <div class="mt-8 border-t border-gray-200 pt-8" id="job_detail_id">
+      <div class="space-y-8">
+        <div class="{% if not recruiter %}pl-6{% endif %}">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-500 pl-4">Job Description</h2>
+          <div class="prose max-w-none text-gray-700 leading-relaxed">
+            <div itemprop="description">
+              {{ job.description|safe }}
+            </div>
+          </div>
+          
+          <div class="mt-8 space-y-6">
+            <!-- Additional Details Grid -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Additional Details</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex justify-between items-start">
+                  <span class="font-medium text-gray-700">Role Category:</span>
+                  <span class="text-gray-600 text-right" itemprop="occupationalCategory">{% if job.job_role %}{{ job.job_role }}{% else %}<span class="text-gray-400">Not Specified</span>{% endif %}</span>
+                </div>
+                <div class="flex justify-between items-start">
+                  <span class="font-medium text-gray-700">Education:</span>
+                  <span class="text-gray-600 text-right">{%for qualification in job.edu_qualification.all %}{{ qualification.name }} {% if forloop.last %}{% else %}, {% endif%}{% empty %}<span class="text-gray-400">Not Specified</span>{% endfor %}</span>
+                </div>
+                <div class="flex justify-between items-start">
+                  <span class="font-medium text-gray-700">Functional Area:</span>
+                  <span class="text-gray-600 text-right" itemprop="qualifications">
+                  {% if job.functional_area.all %}
+                  {%for functional_area in job.functional_area.all %}
+                  {{ functional_area.name }} {% if forloop.last %}{% else %}, {% endif%}{% endfor %}
+                  {% else %}
+                  <span class="text-gray-400">Not Specified</span>
+                  {% endif %}
+                  </span>
+                </div>
+                {% if job.vacancies > 0 %}
+                <div class="flex justify-between items-start">
+                  <span class="font-medium text-gray-700">Vacancies:</span>
+                  <span class="text-gray-600 font-semibold">{{ job.vacancies }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            {% if job.walkin_contactinfo and job.walkin_show_contact_info %}
+            <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+              <div class="flex items-start gap-3 mb-4">
+                <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa fa-info text-white text-xs"></i>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-900 mb-2">Walk-in Interview Information</h4>
+                  <div class="text-gray-700">{{ job.walkin_contactinfo|safe }}</div>
+                </div>
+              </div>
+              {% if job.walkin_time %}
+              <div class="border-t border-yellow-200 pt-4">
+                <span class="font-medium text-gray-700">Timing:</span>
+                <span class="text-gray-600 ml-2">{{ job.walkin_time }}</span>
+              </div>
+              {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <i class="fa fa-calendar text-blue-600"></i>
+                </div>
+                <div>
+                  <span class="text-sm font-medium text-gray-500 block">Posted On</span>
+                  <span class="text-gray-900 font-semibold">{{job.published_date|date:"M. d, Y"}}</span>
+                </div>
+              </div>
+              {% if job.last_date %}
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <i class="fa fa-clock-o text-red-600"></i>
+                </div>
+                <div>
+                  <span class="text-sm font-medium text-gray-500 block">Apply Before</span>
+                  <span class="text-gray-900 font-semibold">{{ job.last_date }}</span>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Company Details -->
+          <div class="mt-10 bg-gray-50 p-8 rounded-xl border border-gray-200">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 border-l-4 border-green-500 pl-4">Company Details</h3>
+            <div class="space-y-6">
+              <div>
+                <span class="font-semibold text-gray-700">Company Name:</span>
+                <p class="text-gray-600 mt-1">
+                  {% if job.company.is_active and job.company.slug %}
+                  <a href="{% url 'company_jobs' job.company.slug %}" target="_blank" class="hover:text-blue-600">{{ job.company.name|capfirst }}</a>
+                {% elif job.company %}
+                  {{ job.company.name|capfirst }}
+                {% elif job.company_name %}
+                {{ job.company_name|capfirst }}
+                {% endif %}
+                </p>
+              </div>
+              <div>
+                <span class="font-semibold text-gray-700">Company Address:</span>
+                <p class="text-gray-600 mt-1">{{ job.company_address|linebreaks }}</p>
+              </div>
+              {% if job.company.website %}
+              <div>
+                <span class="font-semibold text-gray-700">Company Website:</span>
+                <span class="text-gray-600 ml-2" itemprop="description">
+                {{ job.company.website }}
+                </span>
+              </div>
+              {% endif %}
+              {% if job.company_links %}
+              <div>
+                <span class="font-semibold text-gray-700">Company Links:</span>
+                <span class="text-gray-600 ml-2" itemprop="description">
+                {{ job.company_links }}
+                </span>
+              </div>
+              {% endif %}
+              {% if job.company_emails %}
+              <div>
+                <span class="font-semibold text-gray-700">Company Emails:</span>
+                <span class="text-gray-600 ml-2" itemprop="description">
+                {{ job.company_emails }}
+                </span>
+              </div>
+              {% endif %}
+              {% if job.company.is_active and job.company.profile %}
+              <div>
+                <span class="font-semibold text-gray-700">Company Profile:</span>
+                <div class="text-gray-600 mt-1 prose max-w-none" itemprop="description">
+                {{ job.company.profile|safe }}
+                </div>
+              </div>
+              {% endif %}
+              <div>
+                {% if location.venue_details %}
+                  <span class="font-semibold text-gray-700">Venue Location:</span>
+                  <div class="text-gray-600 mt-1" itemprop="description">
+                    {{ location.venue_details|linebreaks }}
+                  </div>
+                {% else %}
+                  {% for location in job.job_interview_location.all %}
+                    {% if location.venue_details %}
+                      <span class="font-semibold text-gray-700">Venue Location {{ forloop.counter }}:</span>
+                      <div class="text-gray-600 mt-1" itemprop="description">
+                        <p>{{ location.venue_details|linebreaks }}</p>
+                      </div>
+                    {% endif %}
+                  {% empty %}
+                    <span class="font-semibold text-gray-700">Venue Location:</span>
+                    <span class="text-gray-600 ml-2" itemprop="description">Not Specified</span>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Agency details-->
+          {% if request.user.is_agency_recruiter or request.user.is_agency_admin %}
+            <div class="mt-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
+              <h3 class="text-lg font-bold text-gray-900 mb-4">Agency Details</h3>
+              <div class="space-y-3">
+                <div>
+                  <span class="font-semibold text-gray-700">Assigned Recruiters:</span>
+                  <p class="text-gray-600 mt-1">
+                    {% for recruiter in job.agency_recruiters.all %}
+                      <a href="{% url 'agency:company_recruiter_profile' recruiter.id %}" class="hover:text-blue-600">{{ recruiter.get_full_username }}</a>{% if forloop.last %}{% else %}, {% endif %}
+                    {% empty %}
+                      N/A
+                    {% endfor %}
+                  </p>
+                </div>
+                {% if job.agency_invoice_type %}
+                  <div>
+                    <span class="font-semibold text-gray-700">Invoice type:</span>
+                    <p class="text-gray-600 mt-1">{{ job.agency_invoice_type }}</p>
+                  </div>
+                {% endif %}
+                {% if job.agency_client.name %}
+                  <div>
+                    <span class="font-semibold text-gray-700">Client:</span>
+                    <p class="text-gray-600 mt-1">{{ job.agency_client.name }}</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+          <!-- Agency details end -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div class="bg-white rounded-xl shadow-lg p-8 mb-8 border border-gray-100">
+  <div class="space-y-6">
+    <div class="flex justify-between items-start mb-6">
+      <div class="flex-1">
+        {% if job.company.profile_pic %}
+          <div class="flex items-start gap-6">
+            <div class="w-20 h-20 flex-shrink-0">
+              {% thumbnail job.company.get_logo_url "80x80" as im %}
+                <img src="{{ im.url }}" alt="{{ job.company.name|capfirst}} Job Openings" class="w-full h-full object-cover rounded-xl shadow-md border border-gray-200"/>
+              {% endthumbnail %}
+            </div>
+            <div class="flex-1">
+        {% endif %}
+              <div class="text-xl font-semibold text-blue-600 mb-3" itemprop="experienceRequirements">
+              {% if job.company or job.company_name %}
+              {% if job.company.is_active and job.company.slug %}
+                <a href="{% url 'company_jobs' job.company.slug %}" target="_blank" class="hover:underline transition-colors">{{ job.company.name|capfirst }}</a>
+              {% elif job.company %}
+                {{ job.company.name|capfirst }}
+              {% elif job.company_name %}
+              {{ job.company_name|capfirst }}
+              {% endif %}
+              {% endif %}
+              </div>
+              <h1 class="text-2xl font-bold text-gray-900 mb-2 leading-tight">{{ job.title }}</h1>
+        {% if job.company.profile_pic %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="ml-6">
+        {% if job.user.is_superuser %}
+          {% if job.company_emails %}
+            <a href="mailto:{{ job.get_company_emails }}?subject={{ job.title }}%20-%20PeelJobs&body={{ job.get_absolute_url }}" 
+               class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-md">
+              Apply Now
+            </a>
+          {% endif %}
+        {% else %}
+          {% if request.user.id|is_applied_for_job:job.pk  %}
+            <span class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md inline-flex items-center">
+              <i class="fas fa-check-circle mr-2"></i>Applied ✓
+            </span>
+          {% else%}
+            <button type="button"
+               class='bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-md {% if not request.user.is_authenticated %}job_apply_login{% else %}applicant_apply{% endif %}' 
+               id="{{ job.pk }}" 
+               data-href="{{ job.slug }}?job_apply=applied"
+               data-job-title="{{ job.title }}"
+               data-company-name="{{ job.company.name|default:job.company_name }}">
+              <i class="fas fa-paper-plane mr-2"></i>Apply Now
+            </button>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Job Meta Information -->
+    <div class="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6 pb-6 border-b border-gray-200">
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+        <span class="font-medium">Industry:</span>
+        {%for industry in job.industry.all %}
+        <a href="{{ industry.get_job_url }}" class="text-blue-600 hover:text-blue-800 transition-colors">{{ industry.name|get_industry_name }}</a>
+        {% if forloop.last %}{% else %}, {% endif%}
+        {% endfor %}
+      </div>
+      <div class="flex items-center gap-2" itemprop="jobLocation">
+        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+        <span class="font-medium">Location:</span>
+        {%for location in job.location.all %}
+          {% if location.status == 'Enabled' %}
+          <a href="{{ location.get_job_url }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors">{{ location.name }}</a>
+          {% else %}
+          <span class="cursor-default text-gray-500">{{ location.name }}</span>
+          {% endif %}{% if forloop.last %}{% else %}, {% endif%}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Key Details -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-6 border-b border-gray-200">
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <span class="text-sm font-medium text-gray-500 block mb-1">Experience</span>
+        <span class="text-lg font-semibold text-gray-900" itemprop="experienceRequirements">{{ job.min_year }}-{{ job.max_year }} Years</span>
+      </div>
+      {% if job.min_salary != 0 and job.max_salary != 0 %}
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <span class="text-sm font-medium text-gray-500 block mb-1">Salary</span>
+          <span class="text-lg font-semibold text-green-600" itemprop="salaryCurrency">
+            ₹ {{ job.get_job_salary.0 }} - {{ job.get_job_salary.1 }} P.A
+          </span>
+        </div>
+      {% endif %}
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <span class="text-sm font-medium text-gray-500 block mb-1">Job Type</span>
+        <span class="text-lg font-semibold text-blue-600" itemprop="employmentType">
+          <a href="/{{ job.get_job_type }}-jobs/" target="_blank" class="hover:text-blue-800 transition-colors">{{ job.job_type|get_string }}</a>
+        </span>
+      </div>
+    </div>
+
+    {% if job.skills.all %}
+    <div class="py-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Key Skills</h3>
+      <div class="flex flex-wrap gap-3" itemprop="skills">
+      {%for skill in job.skills.all %}
+        {% if skill.status == 'Active' %}
+          <a href="{{ skill.get_job_url }}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors">{{ skill }}</a>
+        {% else %}
+          <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-sm font-medium">{{ skill }}</span>
+        {% endif %}
+      {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Job Description Section -->
+    <div class="mt-8 border-t border-gray-200 pt-8" id="job_detail_id">
+      <div class="space-y-8">
+        <div class="{% if not recruiter %}pl-6{% endif %}">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-500 pl-4">Job Description</h2>
+          <div class="prose max-w-none text-gray-700 leading-relaxed">
+            <div itemprop="description">
+              {{ job.description|safe }}
+            </div>
+          </div>
+          
+          <!-- Recruiter Details -->
+          {% if not job.user.is_superuser %}
+          <div class="mt-10 bg-blue-50 p-8 rounded-xl border border-blue-200">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 border-l-4 border-blue-500 pl-4">Recruiter Details</h3>
+            <div class="space-y-4">
+              <div>
+                <a href="{% url 'recruiter_profile' job.user.username %}" class="block hover:text-blue-600 transition-colors" target="_blank">
+                  <span class="font-semibold text-gray-700">Recruiter:</span>
+                  <p class="text-gray-600 mt-1">{{ job.user.get_full_username }}</p>
+                </a>
+              </div>
+              {% if job.user.show_email %}
+              <div>
+                <a href="{% url 'recruiter_profile' job.user.username %}" class="block hover:text-blue-600 transition-colors" target="_blank">
+                  <span class="font-semibold text-gray-700">Email:</span>
+                  <p class="text-gray-600 mt-1">{{ job.user.email }}</p>
+                </a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Job Apply Block -->
+<div id="block_job_apply" class="hidden">
+  <!-- This div will be used for any additional job apply related content -->
+</div>
+
+<!-- Inline JavaScript for Job Apply functionality -->
+<script>
+(function($) {
+    'use strict';
+    
+    $(document).ready(function() {
+        // Alert Management Functions
+        function showAlert(message, type = 'info', duration = 5000) {
+            const alertId = 'alert-' + Date.now();
+            const alertClasses = {
+                'success': 'bg-green-50 border-green-200 text-green-800',
+                'error': 'bg-red-50 border-red-200 text-red-800',
+                'warning': 'bg-yellow-50 border-yellow-200 text-yellow-800',
+                'info': 'bg-blue-50 border-blue-200 text-blue-800'
+            };
+            
+            const iconClasses = {
+                'success': 'fas fa-check-circle text-green-600',
+                'error': 'fas fa-exclamation-circle text-red-600',
+                'warning': 'fas fa-exclamation-triangle text-yellow-600',
+                'info': 'fas fa-info-circle text-blue-600'
+            };
+            
+            const alertHtml = `
+                <div id="${alertId}" class="alert-item transform translate-x-full opacity-0 transition-all duration-300 ease-in-out ${alertClasses[type]} border rounded-lg p-4 shadow-lg max-w-md">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="${iconClasses[type]}"></i>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <p class="text-sm font-medium">${message}</p>
+                        </div>
+                        <div class="ml-4 flex-shrink-0">
+                            <button type="button" class="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none" onclick="hideAlert('${alertId}')">
+                                <span class="sr-only">Close</span>
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('#alert-container').append(alertHtml);
+            
+            // Trigger animation
+            setTimeout(() => {
+                $(`#${alertId}`).removeClass('translate-x-full opacity-0').addClass('translate-x-0 opacity-100');
+            }, 100);
+            
+            // Auto-hide after duration
+            if (duration > 0) {
+                setTimeout(() => {
+                    hideAlert(alertId);
+                }, duration);
+            }
+            
+            return alertId;
+        }
+        
+        function hideAlert(alertId) {
+            const $alert = $(`#${alertId}`);
+            $alert.removeClass('translate-x-0 opacity-100').addClass('translate-x-full opacity-0');
+            setTimeout(() => {
+                $alert.remove();
+            }, 300);
+        }
+        
+        // Make hideAlert globally accessible
+        window.hideAlert = hideAlert;
+        
+        // Confirmation Dialog
+        function showConfirmDialog(message, onConfirm, onCancel) {
+            const dialogHtml = `
+                <div id="confirm-dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div class="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-question-circle text-blue-600 text-xl mr-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-900">Confirmation</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6">${message}</p>
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="confirm-cancel" class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                Cancel
+                            </button>
+                            <button type="button" id="confirm-ok" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('body').append(dialogHtml);
+            
+            $('#confirm-ok').on('click', function() {
+                $('#confirm-dialog').remove();
+                if (onConfirm) onConfirm();
+            });
+            
+            $('#confirm-cancel').on('click', function() {
+                $('#confirm-dialog').remove();
+                if (onCancel) onCancel();
+            });
+            
+            // Close on backdrop click
+            $('#confirm-dialog').on('click', function(e) {
+                if (e.target === this) {
+                    $('#confirm-dialog').remove();
+                    if (onCancel) onCancel();
+                }
+            });
+        }
+        
+        // Get CSRF token
+        function getCSRFToken() {
+            return $('input[name=csrfmiddlewaretoken]').val();
+        }
+        
+        // Job Apply Logic
+        $(document).on('click', '.job_apply, .applicant_apply', function(e) {
+            e.preventDefault();
+            
+            const $button = $(this);
+            const jobId = $button.attr('id');
+            const originalText = $button.html();
+            
+            if (!jobId) {
+                showAlert('Invalid job ID', 'error');
+                return;
+            }
+            
+            // Show loading state
+            $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Applying...');
+            
+            // AJAX request
+            $.post('/jobs/apply/' + jobId + '/', {
+                'csrfmiddlewaretoken': getCSRFToken()
+            })
+            .done(function(response) {
+                const data = typeof response === 'string' ? JSON.parse(response) : response;
+                
+                if (!data.error) {
+                    // Success - Update button
+                    $button.removeClass('bg-blue-600')
+                           .addClass('bg-green-600')
+                           .html('<i class="fas fa-check-circle mr-2"></i>Applied ✓');
+                    
+                    showAlert(data.response || 'Application submitted successfully!', 'success');
+                    
+                    if (data.url) {
+                        setTimeout(() => window.location.href = data.url, 1500);
+                    }
+                } else {
+                    // Error
+                    resetButton($button, originalText);
+                    showAlert(data.response || 'Application failed', 'error');
+                    
+                    if (data.url) {
+                        setTimeout(() => window.location.href = data.url, 2000);
+                    }
+                }
+            })
+            .fail(function(xhr) {
+                resetButton($button, originalText);
+                
+                let message = 'Something went wrong. Please try again.';
+                if (xhr.status === 403) message = 'Permission denied. Please login again.';
+                else if (xhr.status === 404) message = 'Job not found.';
+                
+                showAlert(message, 'error');
+            });
+        });
+        
+        // Login required for job application
+        $(document).on('click', '.job_apply_login', function(e) {
+            e.preventDefault();
+            showConfirmDialog(
+                'You need to login to apply for this job. Do you want to login now?',
+                function() {
+                    window.location.href = '/login/';
+                }
+            );
+        });
+        
+        // Reset button function
+        function resetButton($button, originalText) {
+            $button.prop('disabled', false).html(originalText);
+        }
+    });
+    
+})(jQuery);
+</script>

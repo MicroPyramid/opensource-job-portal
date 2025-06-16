@@ -1,0 +1,119 @@
+<!-- Languages Section -->
+<div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-900">Languages</h2>
+    <button onclick="addLanguage()" class="text-blue-600 hover:text-blue-700 font-medium text-sm">
+      <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
+      Add Language
+    </button>
+  </div>
+  
+  {% if user_languages %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for user_lang in user_languages %}
+        <div class="p-4 border border-gray-200 rounded-lg relative group">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+              <i data-lucide="globe" class="w-5 h-5 text-gray-600 mr-2"></i>
+              <span class="font-medium text-gray-900">{{ user_lang.language.name }}</span>
+            </div>
+            
+            <!-- Proficiency Badge -->
+            {% if user_lang.read and user_lang.write and user_lang.speak %}
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Fluent</span>
+            {% elif user_lang.read and user_lang.write %}
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Proficient</span>
+            {% elif user_lang.speak %}
+              <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">Conversational</span>
+            {% else %}
+              <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">Basic</span>
+            {% endif %}
+            
+            <!-- Action buttons -->
+            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+              <button onclick="editLanguage({{ user_lang.id }})" 
+                      class="p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                      title="Edit Language">
+                <i data-lucide="edit-3" class="w-3 h-3"></i>
+              </button>
+              <button onclick="deleteLanguage({{ user_lang.id }}, '{{ user_lang.language.name }}')" 
+                      class="p-1 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                      title="Delete Language">
+                <i data-lucide="trash-2" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Skills breakdown -->
+          <div class="flex gap-4 text-sm">
+            <div class="flex items-center gap-1">
+              {% if user_lang.read %}
+                <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
+              {% else %}
+                <i data-lucide="x" class="w-3 h-3 text-red-600"></i>
+              {% endif %}
+              <span class="text-gray-600">Read</span>
+            </div>
+            <div class="flex items-center gap-1">
+              {% if user_lang.write %}
+                <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
+              {% else %}
+                <i data-lucide="x" class="w-3 h-3 text-red-600"></i>
+              {% endif %}
+              <span class="text-gray-600">Write</span>
+            </div>
+            <div class="flex items-center gap-1">
+              {% if user_lang.speak %}
+                <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
+              {% else %}
+                <i data-lucide="x" class="w-3 h-3 text-red-600"></i>
+              {% endif %}
+              <span class="text-gray-600">Speak</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Empty state -->
+    <div class="text-center py-8">
+      <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+        <i data-lucide="globe" class="w-8 h-8 text-gray-400"></i>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No languages added yet</h3>
+      <p class="text-gray-600 mb-4">Add languages you can speak, read, or write to showcase your communication skills.</p>
+      <button onclick="addLanguage()" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+        Add Your First Language
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+// Delete language function
+function deleteLanguage(languageId, languageName) {
+  if (confirm(`Are you sure you want to delete "${languageName}" from your languages?`)) {
+    fetch(`/language/delete-modal/${languageId}/`, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Reload the page to show updated languages
+        window.location.reload();
+      } else {
+        alert('Error deleting language: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while deleting the language');
+    });
+  }
+}
+</script>

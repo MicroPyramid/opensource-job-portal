@@ -1,0 +1,66 @@
+<!-- Experience Section -->
+<div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-900">Experience</h2>
+    <button class="text-blue-600 hover:text-blue-700 font-medium text-sm" onclick="addExperience()">
+      <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
+      Add Experience
+    </button>
+  </div>
+  
+  {% if user_employment %}
+    <div class="space-y-6">
+      {% for experience in user_employment %}
+        <div class="flex group" id="experience-{{ experience.id }}">
+          <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+            <i data-lucide="building" class="w-6 h-6 text-blue-600"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900">{{ experience.designation }}</h3>
+                <p class="text-blue-600 font-medium">{{ experience.company }}</p>
+                <p class="text-sm text-gray-500 mb-2">
+                  {{ experience.from_date|date:"M Y" }} - 
+                  {% if experience.current_job %}Present{% else %}{{ experience.to_date|date:"M Y" }}{% endif %}
+                  {% if experience.current_job %}
+                    • Current
+                  {% endif %}
+                </p>
+                {% if experience.job_profile %}
+                  <p class="text-gray-700 text-sm leading-relaxed">
+                    {{ experience.job_profile|truncatewords:30 }}
+                  </p>
+                {% endif %}
+              </div>
+              <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="text-gray-400 hover:text-blue-600 p-1" 
+                        onclick="editExperience({{ experience.id }})" 
+                        title="Edit Experience">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i>
+                </button>
+                <button class="text-gray-400 hover:text-red-600 p-1" 
+                        onclick="deleteExperience({{ experience.id }})" 
+                        title="Delete Experience">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-12">
+      <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="briefcase" class="w-8 h-8 text-gray-400"></i>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No work experience added</h3>
+      <p class="text-gray-500 mb-6">Add your work experience to showcase your career journey.</p>
+      <button class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors" onclick="addExperience()">
+        <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+        Add Your First Experience
+      </button>
+    </div>
+  {% endif %}
+</div>

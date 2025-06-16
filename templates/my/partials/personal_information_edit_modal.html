@@ -1,0 +1,440 @@
+<!-- Personal Information Edit Modal -->
+<div id="editPersonalInfoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+  <div class="relative top-4 mx-auto p-4 border w-11/12 md:w-4/5 lg:w-3/5 xl:w-1/2 shadow-lg rounded-lg bg-white">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between pb-3 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-900">Edit Personal Information</h3>
+      <button type="button" id="closePersonalInfoModal" class="text-gray-400 hover:text-gray-600">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="py-4">
+      <form id="editPersonalInfoForm" class="space-y-4">
+        {% csrf_token %}
+        
+        <!-- Name Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">
+              First Name <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="first_name" 
+              name="first_name" 
+              value="{{ user.first_name }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+          </div>
+          
+          <div>
+            <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">
+              Last Name
+            </label>
+            <input 
+              type="text" 
+              id="last_name" 
+              name="last_name" 
+              value="{{ user.last_name|default_if_none:'' }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label for="mobile" class="block text-sm font-medium text-gray-700 mb-1">
+              Mobile Number <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="tel" 
+              id="mobile" 
+              name="mobile" 
+              value="{{ user.mobile|default_if_none:'' }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              pattern="[0-9]{10}"
+              title="Please enter a valid 10-digit mobile number"
+              required
+            >
+            <div class="text-red-500 text-xs mt-1 hidden" id="mobile-error">Please enter a valid 10-digit mobile number</div>
+          </div>
+          
+          <div>
+            <label for="alternate_mobile" class="block text-sm font-medium text-gray-700 mb-1">
+              Alternate Mobile
+            </label>
+            <input 
+              type="tel" 
+              id="alternate_mobile" 
+              name="alternate_mobile" 
+              value="{{ user.alternate_mobile|default_if_none:'' }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              pattern="[0-9]{10}"
+              title="Please enter a valid 10-digit mobile number"
+            >
+            <div class="text-red-500 text-xs mt-1 hidden" id="alternate-mobile-error">Please enter a valid 10-digit mobile number</div>
+          </div>
+        </div>
+
+        <!-- Date of Birth, Gender, and Marital Status -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label for="dob" class="block text-sm font-medium text-gray-700 mb-1">
+              Date of Birth
+            </label>
+            <input 
+              type="date" 
+              id="dob" 
+              name="dob" 
+              value="{{ user.dob|date:'Y-m-d'|default_if_none:'' }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+          </div>
+          
+          <div>
+            <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">
+              Gender
+            </label>
+            <select 
+              id="gender" 
+              name="gender" 
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select Gender</option>
+              <option value="M" {% if user.gender == 'M' %}selected{% endif %}>Male</option>
+              <option value="F" {% if user.gender == 'F' %}selected{% endif %}>Female</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="marital_status" class="block text-sm font-medium text-gray-700 mb-1">
+              Marital Status
+            </label>
+            <select 
+              id="marital_status" 
+              name="marital_status" 
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select Status</option>
+              <option value="Single" {% if user.marital_status == 'Single' %}selected{% endif %}>Single</option>
+              <option value="Married" {% if user.marital_status == 'Married' %}selected{% endif %}>Married</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Nationality, Pincode, and Notice Period -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label for="nationality" class="block text-sm font-medium text-gray-700 mb-1">
+              Nationality
+            </label>
+            <input 
+              type="text" 
+              id="nationality" 
+              name="nationality" 
+              value="{{ user.nationality|default_if_none:'' }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+          </div>
+
+          <div>
+            <label for="pincode" class="block text-sm font-medium text-gray-700 mb-1">
+              Pincode
+            </label>
+            <input 
+              type="text" 
+              id="pincode" 
+              name="pincode" 
+              value="{{ user.pincode|default_if_none:'' }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter pincode"
+            >
+          </div>
+          
+          <div>
+            <label for="notice_period" class="block text-sm font-medium text-gray-700 mb-1">
+              Notice Period
+            </label>
+            <select 
+              id="notice_period" 
+              name="notice_period" 
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select Period</option>
+              <option value="Immediate" {% if user.notice_period == 'Immediate' %}selected{% endif %}>Immediate</option>
+              <option value="15 days" {% if user.notice_period == '15 days' %}selected{% endif %}>15 days</option>
+              <option value="1 month" {% if user.notice_period == '1 month' %}selected{% endif %}>1 month</option>
+              <option value="2 months" {% if user.notice_period == '2 months' %}selected{% endif %}>2 months</option>
+              <option value="3 months" {% if user.notice_period == '3 months' %}selected{% endif %}>3 months</option>
+              <option value="More than 3 months" {% if user.notice_period == 'More than 3 months' %}selected{% endif %}>More than 3 months</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Salary Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label for="current_salary" class="block text-sm font-medium text-gray-700 mb-1">
+              Current Salary
+            </label>
+            <input 
+              type="text" 
+              id="current_salary" 
+              name="current_salary" 
+              value="{{ user.current_salary|default_if_none:'' }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="e.g., 5,00,000 per annum"
+            >
+          </div>
+          
+          <div>
+            <label for="expected_salary" class="block text-sm font-medium text-gray-700 mb-1">
+              Expected Salary
+            </label>
+            <input 
+              type="text" 
+              id="expected_salary" 
+              name="expected_salary" 
+              value="{{ user.expected_salary|default_if_none:'' }}"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="e.g., 7,00,000 per annum"
+            >
+          </div>
+        </div>
+
+        <!-- Address Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">
+              Current Address
+            </label>
+            <textarea 
+              id="address" 
+              name="address" 
+              rows="2"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              placeholder="Enter your current address"
+            >{{ user.address|default_if_none:'' }}</textarea>
+          </div>
+          
+          <div>
+            <label for="permanent_address" class="block text-sm font-medium text-gray-700 mb-1">
+              Permanent Address
+            </label>
+            <div class="flex items-center mb-1">
+              <input 
+                type="checkbox" 
+                id="same_as_current" 
+                name="same_as_current" 
+                class="mr-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              >
+              <label for="same_as_current" class="text-xs text-gray-600">Same as current</label>
+            </div>
+            <textarea 
+              id="permanent_address" 
+              name="permanent_address" 
+              rows="2"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              placeholder="Enter your permanent address"
+            >{{ user.permanent_address|default_if_none:'' }}</textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex items-center justify-end pt-3 border-t border-gray-200 space-x-3">
+      <button 
+        type="button" 
+        id="cancelPersonalInfoEdit" 
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        Cancel
+      </button>
+      <button 
+        type="submit" 
+        form="editPersonalInfoForm"
+        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        <span class="submit-text">Save Changes</span>
+        <span class="submit-loading hidden">
+          <i data-lucide="loader-2" class="w-4 h-4 animate-spin inline mr-1"></i>
+          Saving...
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Personal Info Modal -->
+<script>
+// Personal Information Modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('editPersonalInfoModal');
+    const openButton = document.querySelector('[data-open-personal-info-modal]');
+    const closeButton = document.getElementById('closePersonalInfoModal');
+    const cancelButton = document.getElementById('cancelPersonalInfoEdit');
+    const form = document.getElementById('editPersonalInfoForm');
+    const sameAsCurrentCheckbox = document.getElementById('same_as_current');
+    const currentAddressField = document.getElementById('address');
+    const permanentAddressField = document.getElementById('permanent_address');
+
+    // Open modal
+    if (openButton) {
+        openButton.addEventListener('click', function() {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+
+    // Close modal function
+    function closeModal() {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal events
+    closeButton.addEventListener('click', closeModal);
+    cancelButton.addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Same as current address functionality
+    sameAsCurrentCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            permanentAddressField.value = currentAddressField.value;
+        }
+    });
+
+    // Update permanent address when current address changes if checkbox is checked
+    currentAddressField.addEventListener('input', function() {
+        if (sameAsCurrentCheckbox.checked) {
+            permanentAddressField.value = this.value;
+        }
+    });
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Basic validation
+        const mobileInput = document.getElementById('mobile');
+        const alternateMobileInput = document.getElementById('alternate_mobile');
+        const mobileError = document.getElementById('mobile-error');
+        const alternateMobileError = document.getElementById('alternate-mobile-error');
+        
+        let isValid = true;
+        
+        // Validate mobile number
+        if (mobileInput.value.trim()) {
+            const mobilePattern = /^[0-9]{10}$/;
+            if (!mobilePattern.test(mobileInput.value.trim())) {
+                mobileError.classList.remove('hidden');
+                mobileInput.classList.add('border-red-500');
+                isValid = false;
+            } else {
+                mobileError.classList.add('hidden');
+                mobileInput.classList.remove('border-red-500');
+            }
+        }
+        
+        // Validate alternate mobile number
+        if (alternateMobileInput.value.trim()) {
+            const mobilePattern = /^[0-9]{10}$/;
+            if (!mobilePattern.test(alternateMobileInput.value.trim())) {
+                alternateMobileError.classList.remove('hidden');
+                alternateMobileInput.classList.add('border-red-500');
+                isValid = false;
+            } else {
+                alternateMobileError.classList.add('hidden');
+                alternateMobileInput.classList.remove('border-red-500');
+            }
+        }
+        
+        if (!isValid) {
+            return;
+        }
+        
+        const submitButton = document.querySelector('button[form="editPersonalInfoForm"]');
+        const submitText = submitButton.querySelector('.submit-text');
+        const submitLoading = submitButton.querySelector('.submit-loading');
+        
+        // Show loading state
+        submitButton.disabled = true;
+        submitText.classList.add('hidden');
+        submitLoading.classList.remove('hidden');
+
+        // Collect form data
+        const formData = new FormData(form);
+        const data = {};
+        
+        // Convert FormData to object
+        for (let [key, value] of formData.entries()) {
+            data[key] = value;
+        }
+
+        // Send AJAX request
+        fetch('{% url "candidate:edit_personal_info" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                showNotification('Personal information updated successfully!', 'success');
+                
+                // Close modal after a short delay
+                setTimeout(() => {
+                    closeModal();
+                    // Reload page to reflect changes
+                    window.location.reload();
+                }, 1000);
+            } else {
+                // Show error message
+                showNotification(data.error || 'An error occurred while updating your information.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while updating your information.', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            submitButton.disabled = false;
+            submitText.classList.remove('hidden');
+            submitLoading.classList.add('hidden');
+        });
+    });
+
+    // Simple notification function
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            type === 'success' ? 'bg-green-500 text-white' : 
+            type === 'error' ? 'bg-red-500 text-white' : 
+            'bg-blue-500 text-white'
+        }`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+});
+</script>

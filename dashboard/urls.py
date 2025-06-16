@@ -2,7 +2,6 @@ from django.urls import re_path as url
 
 from .views import (
     index,
-    change_password,
     admin_user_list,
     new_admin_user,
     edit_user,
@@ -42,8 +41,6 @@ from .views import (
     edit_govt_job,
     preview_job,
     edit_job_title,
-    post_on_all_fb_groups,
-    adding_existing_candidates_to_jobposts,
     applicants,
     view_applicant,
     applicant_actions,
@@ -80,7 +77,6 @@ from .views import (
     delete_menu,
     menu_status,
     menu_order,
-    google_login,
     assessment_skills,
     new_question,
     skill_questions,
@@ -89,15 +85,11 @@ from .views import (
     clear_cache,
     mail_to_recruiter,
 )
-from django.urls import path
-from django.views.decorators.csrf import csrf_exempt
 
 app_name = "dashboard"
 
 urlpatterns = [
     url(r"^$", index, name="index"),
-    url(r"^change_password/$", change_password, name="change_password"),
-    url(r"^google_login/$", google_login, name="google_login"),
     # users
     url(r"^users/list/$", admin_user_list, name="admin_user_list"),
     url(r"^users/new-user/$", new_admin_user, name="new_admin_user"),
@@ -207,16 +199,6 @@ urlpatterns = [
         r"^jobpost/title/edit/(?P<post_id>[-\w]+)/$",
         edit_job_title,
         name="edit_job_title",
-    ),
-    url(
-        r"^jobpost/fb-groups/post/(?P<post_id>[-\w]+)/$",
-        post_on_all_fb_groups,
-        name="post_on_all_fb_groups",
-    ),
-    url(
-        r"^jobpost/candidates-add/(?P<post_id>[-\w]+)/$",
-        adding_existing_candidates_to_jobposts,
-        name="adding_existing_candidates_to_jobposts",
     ),
     url(
         r"^jobpost/mail_to_recruiter/(?P<job_post_id>[-\w]+)/$",

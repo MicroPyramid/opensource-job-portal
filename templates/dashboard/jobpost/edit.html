@@ -65,7 +65,7 @@
                     <select class="input select2" multiple name="location" id="location">
                       <option>Job Location</option>
                         {% for city in cities %}
-                        <option value="{% firstof city.parent_city.id city.id %}" {% if city in job_post.location.all %} selected {% endif %} {% ifnotequal country.id job_post.country.id %} disabled {% endifnotequal %}>{{city.name}}</option>
+                        <option value="{{ city.id }}" {% if city in job_post.location.all %} selected {% endif %} {% ifnotequal country.id job_post.country.id %} disabled {% endifnotequal %}>{{city.name}}</option>
                       {% endfor %}
                       <option value="other_location">Other Location</option>
                     </select>

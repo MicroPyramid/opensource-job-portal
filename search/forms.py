@@ -49,13 +49,9 @@ class JobSearchForm(SearchForm):
 
             loc = location_field.replace("[", "").replace("]", "").replace("'", "")
             locations = [t.strip() for t in loc.split(",") if t.strip()]
-            other_cities = City.objects.filter(name__in=locations).values_list(
-                "parent_city__name", flat=True
-            )
             sqs = sqs.filter_and(
                 SQ(location__in=locations)
                 | SQ(location__startswith=location_field)
-                | SQ(location__in=other_cities)
             )
 
             if self.cleaned_data.get("job_type"):

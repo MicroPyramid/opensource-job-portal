@@ -106,7 +106,6 @@ from mpcomp.views import (
 # TODO: Move the following functions from the main views.py:
 # - add_other_skills()
 # - add_other_qualifications()
-# - add_other_industry()
 # - add_other_functional_area()
 # - adding_keywords()
 # - add_interview_location()
@@ -179,36 +178,6 @@ def add_other_qualifications(job_post, data, user):
                         rendered = temp.render(c)
                         send_email.delay(mto, subject, rendered)
 
-
-
-
-def add_other_industry(job_post, data, user):
-    temp = loader.get_template("recruiter/email/add_other_fields.html")
-    subject = "PeelJobs New JobPost"
-    mto = [settings.DEFAULT_FROM_EMAIL]
-
-    for industry in data:
-        for value in industry.values():
-            o_industries = value.replace(" ", "").split(",")
-            for value in o_industries:
-                if value != "":
-                    industry = Industry.objects.filter(name__iexact=value)
-                    if industry:
-                        job_post.industry.add(industry[0])
-                    else:
-                        industry = Industry.objects.create(
-                            name=value, status="InActive", slug=slugify(value)
-                        )
-                        job_post.industry.add(industry)
-                        c = {
-                            "job_post": job_post,
-                            "user": user,
-                            "item": value,
-                            "type": "Industry",
-                            "value": industry.name,
-                        }
-                        rendered = temp.render(c)
-                        send_email.delay(mto, subject, rendered)
 
 
 
@@ -294,34 +263,7 @@ def add_interview_location(data, job_post, no_of_locations):
 
 
 def add_other_locations(post, data, user):
-    temp = loader.get_template("recruiter/email/add_other_fields.html")
-    subject = "PeelJobs New JobPost"
-    mto = [settings.DEFAULT_FROM_EMAIL]
-    for location in data.getlist("other_location"):
-        locations = [loc.strip() for loc in location.split(",") if loc.strip()]
-        for location in locations:
-            locations = City.objects.filter(name__iexact=location)
-            if locations:
-                post.location.add(locations[0])
-            else:
-                location = City.objects.create(
-                    name=location,
-                    status="Disabled",
-                    slug=slugify(location),
-                    state=State.objects.get(id=16),
-                )
-                post.location.add(location)
-                c = {
-                    "job_post": post,
-                    "user": user,
-                    "item": "Location",
-                    "type": "Location",
-                    "value": location.name,
-                }
-                rendered = temp.render(c)
-                send_email.delay(mto, subject, rendered)
-
-
+    pass
 
 
 def set_other_fields(post, data, user):
@@ -409,8 +351,6 @@ def adding_other_fields_data(data, post, user):
         add_other_qualifications(
             post, json.loads(data["final_edu_qualification"]), user
         )
-    if "final_industry" in data.keys():
-        add_other_industry(post, json.loads(data["final_industry"]), user)
     if "final_functional_area" in data.keys():
         add_other_functional_area(post, json.loads(data["final_functional_area"]), user)
     if "other_location" in data.keys():

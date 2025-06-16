@@ -17,7 +17,7 @@ user types we have
 ## Project Context
 
 PeelJobs is a modern job board application built with:
-- **Framework**: django
+- **Framework**: django 5.2
 - **Styling**: bootstrap and migrating to tailwind 4.1.x css one by one with a new base template
 - **Database**: postgresql
 - **Icons**: fontawesome, we are migrating to lucide icons
@@ -30,3 +30,4 @@ Migrate from old packages to new packages, ensuring that the application remains
 - Use clear, descriptive variable and function names.
 - Follow PEP 8 style guidelines for Python code.
 - Use consistent naming conventions for files and directories.
+- don't use gradients in tailwind css, use solid colors instead.

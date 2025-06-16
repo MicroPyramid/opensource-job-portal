@@ -79,7 +79,7 @@
                       <label>Job Location<span class="error">*</span></label>
                       <select class="input select2" multiple name="location" id="location">
                           {% for city in cities %}
-                          <option value="{% firstof city.parent_city.id city.id %}">{{ city.name }}</option>
+                          <option value="{{ city.id }}">{{ city.name }}</option>
                         {% endfor %}
                         <option value="other_location">Other Location</option>
   

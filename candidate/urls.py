@@ -32,6 +32,31 @@ from .views import (
     delete_resume,
     user_password_change,
     messages,
+    my_home,
+    edit_personal_info,
+)
+from .views.my_views import (
+    edit_job_preferences,
+    edit_project_modal,
+    add_project_modal,
+    delete_project_modal,
+    edit_language_modal,
+    add_language_modal,
+    delete_language_modal,
+    edit_experience_modal,
+    add_experience_modal,
+    delete_experience_modal,
+    test_experience_view,
+    edit_education_modal,
+    add_education_modal,
+    delete_education_modal,
+    add_skill_modal,
+    edit_skill_modal,
+    delete_skill_modal,
+    edit_account_settings,
+    add_certification_modal,
+    edit_certification_modal,
+    delete_certification_modal,
 )
 
 app_name = "candidate"
@@ -40,11 +65,24 @@ urlpatterns = [
     # url(r'^home/$','home'),
     url(r"^$", index, name="index"),
     url(r"^profile/$", profile, name="profile"),
+
+    url(r"^my/home/$", my_home, name="my_home"),
+
     url(r"personalinfo/edit/$", edit_personalinfo, name="edit_personalinfo"),
     url(
         r"profile_description/edit/$",
         edit_profile_description,
         name="edit_profile_description",
+    ),
+    url(
+        r"profile/personal_info/edit/$",
+        edit_personal_info,
+        name="edit_personal_info",
+    ),
+    url(
+        r"job-preferences/edit/$",
+        edit_job_preferences,
+        name="edit_job_preferences",
     ),
     url(r"email/edit/$", edit_email, name="edit_email"),
     url(
@@ -113,6 +151,69 @@ urlpatterns = [
         delete_project,
         name="delete_project",
     ),
+    url(
+        r"project/edit-modal/(?P<project_id>[a-zA-Z0-9_-]+)/$",
+        edit_project_modal,
+        name="edit_project_modal",
+    ),
+    url(
+        r"project/add-modal/$",
+        add_project_modal,
+        name="add_project_modal",
+    ),
+    url(
+        r"project/delete-modal/(?P<project_id>[a-zA-Z0-9_-]+)/$",
+        delete_project_modal,
+        name="delete_project_modal",
+    ),
+    # experience modal urls
+    url(
+        r"experience/edit-modal/(?P<experience_id>[a-zA-Z0-9_-]+)/$",
+        edit_experience_modal,
+        name="edit_experience_modal",
+    ),
+    url(
+        r"experience/add-modal/$",
+        add_experience_modal,
+        name="add_experience_modal",
+    ),
+    url(
+        r"experience/delete-modal/(?P<experience_id>[a-zA-Z0-9_-]+)/$",
+        delete_experience_modal,
+        name="delete_experience_modal",
+    ),
+    # language modal urls
+    url(
+        r"language/edit-modal/(?P<language_id>[a-zA-Z0-9_-]+)/$",
+        edit_language_modal,
+        name="edit_language_modal",
+    ),
+    url(
+        r"language/add-modal/$",
+        add_language_modal,
+        name="add_language_modal",
+    ),
+    url(
+        r"language/delete-modal/(?P<language_id>[a-zA-Z0-9_-]+)/$",
+        delete_language_modal,
+        name="delete_language_modal",
+    ),
+    # education modal urls
+    url(
+        r"education/edit-modal/(?P<education_id>[a-zA-Z0-9_-]+)/$",
+        edit_education_modal,
+        name="edit_education_modal",
+    ),
+    url(
+        r"education/add-modal/$",
+        add_education_modal,
+        name="add_education_modal",
+    ),
+    url(
+        r"education/delete-modal/(?P<education_id>[a-zA-Z0-9_-]+)/$",
+        delete_education_modal,
+        name="delete_education_modal",
+    ),
     # resume urls
     url(r"upload_resume/$", upload_resume, name="upload_resume"),
     url(r"delete-resume/$", delete_resume, name="delete_resume"),
@@ -143,4 +244,48 @@ urlpatterns = [
     ),
     url(r"user/password/change/", user_password_change, name="user_password_change"),
     url(r"^messages/$", messages, name="messages"),
+    
+    # skills modal urls
+    url(
+        r"skill/add-modal/$",
+        add_skill_modal,
+        name="add_skill_modal",
+    ),
+    url(
+        r"skill/edit-modal/(?P<skill_id>[a-zA-Z0-9_-]+)/$",
+        edit_skill_modal,
+        name="edit_skill_modal",
+    ),
+    url(
+        r"skill/delete-modal/(?P<skill_id>[a-zA-Z0-9_-]+)/$",
+        delete_skill_modal,
+        name="delete_skill_modal",
+    ),
+    
+    # test url (temporary)
+    url(r"test/experience/$", test_experience_view, name="test_experience_view"),
+    
+    # account settings
+    url(
+        r"account-settings/edit/$",
+        edit_account_settings,
+        name="edit_account_settings",
+    ),
+    
+    # certification modal urls
+    url(
+        r"certification/add-modal/$",
+        add_certification_modal,
+        name="add_certification_modal",
+    ),
+    url(
+        r"certification/edit-modal/(?P<certification_id>[a-zA-Z0-9_-]+)/$",
+        edit_certification_modal,
+        name="edit_certification_modal",
+    ),
+    url(
+        r"certification/delete-modal/(?P<certification_id>[a-zA-Z0-9_-]+)/$",
+        delete_certification_modal,
+        name="delete_certification_modal",
+    ),
 ]

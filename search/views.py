@@ -500,11 +500,27 @@ def city_auto_search(request):
 
 
 def industry_auto_search(request):
+    search_term = request.GET.get("industry", "")
+    print(f"Debug: Search term: '{search_term}'")
+    
+    # Check total industries in database
+    total_industries = Industry.objects.count()
+    print(f"Debug: Total industries in database: {total_industries}")
+    
+    # Get all industries from SearchQuerySet without filter
+    all_sqs = SearchQuerySet().models(Industry)
+    print(f"Debug: All SearchQuerySet industries count: {all_sqs.count()}")
+    print(f"Debug: All SearchQuerySet industries (first 10): {[result.industry_name for result in all_sqs]}")
+    
+    # Now apply the filter
     sqs = (
         SearchQuerySet()
         .models(Industry)
-        .filter(industry_name__icontains=request.GET.get("industry", ""))
+        .filter(industry_name__icontains=search_term)
     )
+    print(f"Debug: Filtered SearchQuerySet count: {sqs.count()}")
+    print(f"Debug: Filtered SearchQuerySet results: {list(sqs)}")
+    
     suggestions = [
         {
             "name": result.industry_name.split("/")[0],
@@ -514,8 +530,12 @@ def industry_auto_search(request):
         }
         for result in sqs
     ]
+    print(f"Debug: Suggestions count: {len(suggestions)}")
+    print(f"Debug: First 5 suggestions: {suggestions[:5]}")
+    
     # suggestions = sorted(suggestions, key=lambda k: int(k['jobs_count']), reverse=True)
     the_data = json.dumps({"results": suggestions[:10]})
+    print(f"Debug: Final results count: {len(json.loads(the_data)['results'])}")
     return HttpResponse(the_data, content_type="application/json")
 
 
