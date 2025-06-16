@@ -9,6 +9,9 @@ from peeldb.models import (
     Project,
     TechnicalSkill,
     JobAlert,
+    City,
+    Qualification,
+    Certification,
 )
 
 SAL_TYPES = (
@@ -45,6 +48,24 @@ YEARS = (
     ("8", "8"),
     ("9", "9"),
     ("10", "10"),
+    ("11", "11"),
+    ("12", "12"),
+    ("13", "13"),
+    ("14", "14"),
+    ("15", "15"),
+    ("16", "16"),
+    ("17", "17"),
+    ("18", "18"),
+    ("19", "19"),
+    ("20", "20"),
+    ("21", "21"),
+    ("22", "22"),
+    ("23", "23"),
+    ("24", "24"),
+    ("25", "25"),
+    ("30", "30"),
+    ("35", "35"),
+    ("40", "40"),
 )
 
 
@@ -199,9 +220,122 @@ class EducationInstitueForm(forms.ModelForm):
         fields = ["name", "city"]
 
 
+class ComprehensiveEducationForm(forms.Form):
+    """Form for handling complete education details including institute and degree"""
+
+    # Institute fields
+    institute_name = forms.CharField(
+        max_length=500,
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Enter institution name",
+                "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+            }
+        ),
+    )
+    institute_city = forms.ModelChoiceField(
+        queryset=City.objects.filter(status="Enabled").order_by("name"),
+        required=True,
+        empty_label="Select City",
+        widget=forms.Select(
+            attrs={
+                "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            }
+        ),
+    )
+
+    # Degree fields
+    degree_name = forms.ModelChoiceField(
+        queryset=Qualification.objects.filter(status="Active").order_by("name"),
+        required=True,
+        empty_label="Select Degree",
+        widget=forms.Select(
+            attrs={
+                "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            }
+        ),
+    )
+    degree_type = forms.ChoiceField(
+        choices=DEGREE_TYPES,
+        required=True,
+        widget=forms.Select(
+            attrs={
+                "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            }
+        ),
+    )
+    specialization = forms.CharField(
+        max_length=500,
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Enter specialization",
+                "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+            }
+        ),
+    )
+
+    # Education details fields
+    from_date = forms.DateField(
+        required=True,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(
+            attrs={
+                "type": "date",
+                "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+            }
+        ),
+    )
+    to_date = forms.DateField(
+        required=False,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(
+            attrs={
+                "type": "date",
+                "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+            }
+        ),
+    )
+    current_education = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+            }
+        ),
+    )
+    score = forms.CharField(
+        max_length=50,
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Enter score or grade (e.g., 8.5 CGPA, 85%)",
+                "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+            }
+        ),
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        from_date = cleaned_data.get("from_date")
+        to_date = cleaned_data.get("to_date")
+        current_education = cleaned_data.get("current_education")
+
+        # If not current education, to_date is required
+        if not current_education and not to_date:
+            raise forms.ValidationError("To date is required if not currently studying")
+
+        # If to_date is provided, it should be after from_date
+        if from_date and to_date and to_date < from_date:
+            raise forms.ValidationError("To date cannot be earlier than from date")
+
+        return cleaned_data
+
+
 class ProjectForm(forms.ModelForm):
-    from_date = forms.DateField(required=True, input_formats=("%m/%d/%Y",))
-    to_date = forms.DateField(input_formats=("%m/%d/%Y",))
+    from_date = forms.DateField(required=True, input_formats=("%m/%d/%Y", "%Y-%m-%d"))
+    to_date = forms.DateField(required=False, input_formats=("%m/%d/%Y", "%Y-%m-%d"))
 
     class Meta:
         model = Project
@@ -295,3 +429,94 @@ class JobAlertForm(forms.ModelForm):
                 )
             return max_salary
         return max_salary
+
+
+class CertificationForm(forms.ModelForm):
+    class Meta:
+        model = Certification
+        fields = [
+            "name",
+            "organization",
+            "credential_id",
+            "credential_url",
+            "issued_date",
+            "expiry_date",
+            "does_not_expire",
+            "description",
+        ]
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                    "placeholder": "Certification Name",
+                }
+            ),
+            "organization": forms.TextInput(
+                attrs={
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                    "placeholder": "Issuing Organization",
+                }
+            ),
+            "credential_id": forms.TextInput(
+                attrs={
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                    "placeholder": "Credential ID (Optional)",
+                }
+            ),
+            "credential_url": forms.URLInput(
+                attrs={
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                    "placeholder": "Credential URL (Optional)",
+                }
+            ),
+            "issued_date": forms.DateInput(
+                attrs={
+                    "type": "date",
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                }
+            ),
+            "expiry_date": forms.DateInput(
+                attrs={
+                    "type": "date",
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                }
+            ),
+            "does_not_expire": forms.CheckboxInput(
+                attrs={
+                    "class": "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                    "rows": 3,
+                    "placeholder": "Description (Optional)",
+                }
+            ),
+        }
+        labels = {
+            "name": "Certification Name",
+            "organization": "Issuing Organization",
+            "credential_id": "Credential ID",
+            "credential_url": "Credential URL",
+            "issued_date": "Issue Date",
+            "expiry_date": "Expiry Date",
+            "does_not_expire": "This certification does not expire",
+            "description": "Description",
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        does_not_expire = cleaned_data.get("does_not_expire")
+        expiry_date = cleaned_data.get("expiry_date")
+        issued_date = cleaned_data.get("issued_date")
+
+        if not does_not_expire and not expiry_date:
+            raise forms.ValidationError(
+                "Please provide an expiry date or check 'This certification does not expire'"
+            )
+
+        if issued_date and expiry_date and issued_date > expiry_date:
+            raise forms.ValidationError("Issue date cannot be later than expiry date")
+
+        return cleaned_data

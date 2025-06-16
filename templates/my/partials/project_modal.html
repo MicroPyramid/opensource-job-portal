@@ -1,0 +1,541 @@
+<!-- Project Modal (Add/Edit) -->
+<div id="projectModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 id="projectModalTitle" class="text-lg font-semibold text-gray-900">Add Project</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeProjectModal()">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6">
+        <form id="projectForm" class="space-y-6">
+          {% csrf_token %}
+          <input type="hidden" id="project_id" name="project_id">
+          
+          <!-- Project Name -->
+          <div>
+            <label for="project_name" class="block text-sm font-medium text-gray-700 mb-2">
+              Project Name <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="project_name" name="name" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Project Role -->
+          <div>
+            <label for="project_role" class="block text-sm font-medium text-gray-700 mb-2">
+              Your Role
+            </label>
+            <input type="text" id="project_role" name="role"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                   placeholder="e.g., Frontend Developer, Project Manager">
+          </div>
+
+          <!-- Duration -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="project_from_date" class="block text-sm font-medium text-gray-700 mb-2">
+                Start Date <span class="text-red-500">*</span>
+              </label>
+              <input type="date" id="project_from_date" name="from_date" required
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label for="project_to_date" class="block text-sm font-medium text-gray-700 mb-2">
+                End Date
+              </label>
+              <input type="date" id="project_to_date" name="to_date"
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <p class="text-xs text-gray-500 mt-1">Leave blank if ongoing</p>
+            </div>
+          </div>
+
+          <!-- Team Size and Location -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="project_size" class="block text-sm font-medium text-gray-700 mb-2">
+                Team Size
+              </label>
+              <input type="number" id="project_size" name="size" min="1"
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                     placeholder="e.g., 5">
+            </div>
+            <div>
+              <label for="project_location" class="block text-sm font-medium text-gray-700 mb-2">
+                Location
+              </label>
+              <select id="project_location" name="location"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select Location</option>
+                <!-- Cities will be populated via JavaScript -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Skills -->
+          <div>
+            <label for="project_skills" class="block text-sm font-medium text-gray-700 mb-2">
+              Technologies/Skills Used
+            </label>
+            <select id="project_skills" name="skills" multiple
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    style="height: 120px;">
+              <!-- Skills will be populated via JavaScript -->
+            </select>
+            <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple skills</p>
+          </div>
+
+          <!-- Project Description -->
+          <div>
+            <label for="project_description" class="block text-sm font-medium text-gray-700 mb-2">
+              Project Description <span class="text-red-500">*</span>
+            </label>
+            <textarea id="project_description" name="description" rows="4" required
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Describe your project, your contributions, and key achievements..."></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <button type="button" onclick="closeProjectModal()"
+                class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+          Cancel
+        </button>
+        <button type="button" onclick="saveProject()"
+                class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors">
+          <span id="saveProjectBtn">Save Project</span>
+          <i data-lucide="loader-2" class="w-4 h-4 ml-2 animate-spin hidden" id="saveProjectSpinner"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Project Modal Functions
+let projectModal = document.getElementById('projectModal');
+let currentProjectData = null;
+let isEditMode = false;
+
+// Open add project modal
+function openAddProjectModal() {
+  isEditMode = false;
+  document.getElementById('projectModalTitle').textContent = 'Add Project';
+  document.getElementById('saveProjectBtn').textContent = 'Save Project';
+  
+  // Clear form
+  document.getElementById('projectForm').reset();
+  document.getElementById('project_id').value = '';
+  
+  // Show modal
+  projectModal.classList.remove('hidden');
+  
+  // Load form data (skills and cities)
+  fetch('/project/add-modal/', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      populateFormOptions(data.data);
+    } else {
+      console.error('Error loading form data:', data.message);
+      closeProjectModal();
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    closeProjectModal();
+  });
+}
+
+// Open edit project modal
+function openEditProjectModal(projectId) {
+  isEditMode = true;
+  document.getElementById('projectModalTitle').textContent = 'Edit Project';
+  document.getElementById('saveProjectBtn').textContent = 'Save Changes';
+  
+  // Show modal
+  projectModal.classList.remove('hidden');
+  
+  // Fetch project data
+  fetch(`/project/edit-modal/${projectId}/`, {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      currentProjectData = data.data;
+      populateEditForm(data.data);
+    } else {
+      console.error('Error loading project:', data.message);
+      closeProjectModal();
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    closeProjectModal();
+  });
+}
+
+// Populate form options (skills and cities)
+function populateFormOptions(data) {
+  // Populate cities dropdown
+  const locationSelect = document.getElementById('project_location');
+  locationSelect.innerHTML = '<option value="">Select Location</option>';
+  data.cities.forEach(city => {
+    const option = document.createElement('option');
+    option.value = city.id;
+    option.textContent = city.name;
+    locationSelect.appendChild(option);
+  });
+  
+  // Populate skills dropdown
+  const skillsSelect = document.getElementById('project_skills');
+  skillsSelect.innerHTML = '';
+  data.skills.forEach(skill => {
+    const option = document.createElement('option');
+    option.value = skill.id;
+    option.textContent = skill.name;
+    skillsSelect.appendChild(option);
+  });
+}
+
+// Populate edit form with project data
+function populateEditForm(data) {
+  const project = data.project;
+  
+  // Set form values
+  document.getElementById('project_id').value = project.id;
+  document.getElementById('project_name').value = project.name || '';
+  document.getElementById('project_role').value = project.role || '';
+  document.getElementById('project_from_date').value = project.from_date || '';
+  document.getElementById('project_to_date').value = project.to_date || '';
+  document.getElementById('project_size').value = project.size || '';
+  document.getElementById('project_description').value = project.description || '';
+  
+  // Populate and set form options
+  populateFormOptions(data);
+  
+  // Set selected location
+  if (project.location) {
+    document.getElementById('project_location').value = project.location;
+  }
+  
+  // Set selected skills
+  if (project.skills && project.skills.length > 0) {
+    const skillsSelect = document.getElementById('project_skills');
+    Array.from(skillsSelect.options).forEach(option => {
+      option.selected = project.skills.includes(parseInt(option.value));
+    });
+  }
+}
+
+// Close project modal
+function closeProjectModal() {
+  projectModal.classList.add('hidden');
+  document.getElementById('projectForm').reset();
+  currentProjectData = null;
+  isEditMode = false;
+}
+
+// Save project (add or edit)
+function saveProject() {
+  const form = document.getElementById('projectForm');
+  const formData = new FormData(form);
+  
+  // Handle empty to_date - remove it from form data if empty
+  const toDate = document.getElementById('project_to_date').value;
+  if (!toDate || toDate.trim() === '') {
+    formData.delete('to_date');
+  }
+  
+  // Debug: Log what we're sending
+  console.log('Sending data:', Object.fromEntries(formData));
+  
+  // Show loading state
+  const saveBtn = document.getElementById('saveProjectBtn');
+  const spinner = document.getElementById('saveProjectSpinner');
+  const originalText = saveBtn.textContent;
+  saveBtn.textContent = isEditMode ? 'Saving...' : 'Adding...';
+  spinner.classList.remove('hidden');
+  
+  // Determine URL and method
+  let url, method;
+  if (isEditMode) {
+    const projectId = document.getElementById('project_id').value;
+    url = `/project/edit-modal/${projectId}/`;
+    method = 'POST';
+  } else {
+    url = '/project/add-modal/';
+    method = 'POST';
+  }
+  
+  fetch(url, {
+    method: method,
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      if (isEditMode) {
+        // Update existing project card
+        updateProjectCard(data.project);
+        showNotification('Project updated successfully!', 'success');
+      } else {
+        // Add new project card or refresh page
+        addProjectCard(data.project);
+        showNotification('Project added successfully!', 'success');
+      }
+      closeProjectModal();
+    } else {
+      console.error('Error saving project:', data.message, data);
+      showNotification(data.message || 'Error saving project', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showNotification('Error saving project', 'error');
+  })
+  .finally(() => {
+    // Reset button state
+    saveBtn.textContent = originalText;
+    spinner.classList.add('hidden');
+  });
+}
+
+// Add new project card to the UI
+function addProjectCard(project) {
+  const projectsContainer = document.getElementById('projects-container');
+  
+  // If no projects container exists, reload the page to show the new structure
+  if (!projectsContainer) {
+    window.location.reload();
+    return;
+  }
+  
+  // Create new project card
+  const projectCard = document.createElement('div');
+  projectCard.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow';
+  projectCard.id = `project-${project.id}`;
+  
+  projectCard.innerHTML = `
+    <div class="flex items-start justify-between mb-3">
+      <div class="flex-1">
+        <h3 class="font-semibold text-gray-900">${project.name}</h3>
+        ${project.role ? `<p class="text-sm text-gray-600 mt-1">${project.role}</p>` : ''}
+        <p class="text-xs text-gray-500 mt-1">
+          ${project.from_date} - ${project.to_date}
+        </p>
+        ${project.location ? `<p class="text-xs text-gray-500 flex items-center mt-1">
+          <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i>
+          ${project.location}
+        </p>` : ''}
+        ${project.size ? `<p class="text-xs text-gray-500 flex items-center mt-1">
+          <i data-lucide="users" class="w-3 h-3 mr-1"></i>
+          Team Size: ${project.size}
+        </p>` : ''}
+      </div>
+      <div class="flex space-x-2 ml-4">
+        <button data-project-id="${project.id}" class="edit-project-btn text-gray-400 hover:text-blue-600" title="Edit Project">
+          <i data-lucide="edit-3" class="w-4 h-4"></i>
+        </button>
+        <button data-project-id="${project.id}" class="delete-project-btn text-gray-400 hover:text-red-600" title="Delete Project">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+    
+    ${project.description ? `<p class="text-gray-600 text-sm mb-3">${project.description.substring(0, 150)}${project.description.length > 150 ? '...' : ''}</p>` : ''}
+    
+    ${project.skills.length > 0 ? `<div class="flex flex-wrap gap-2">
+      ${project.skills.map(skill => `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">${skill.name}</span>`).join('')}
+    </div>` : ''}
+  `;
+  
+  projectsContainer.appendChild(projectCard);
+  
+  // Add event listeners to new buttons
+  const editBtn = projectCard.querySelector('.edit-project-btn');
+  const deleteBtn = projectCard.querySelector('.delete-project-btn');
+  
+  editBtn.addEventListener('click', function() {
+    openEditProjectModal(this.getAttribute('data-project-id'));
+  });
+  
+  deleteBtn.addEventListener('click', function() {
+    const projectId = this.getAttribute('data-project-id');
+    if (confirm('Are you sure you want to delete this project?')) {
+      deleteProject(projectId);
+    }
+  });
+  
+  // Re-initialize Lucide icons for the new card
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+}
+
+// Update project card in the UI
+function updateProjectCard(project) {
+  const projectCard = document.getElementById(`project-${project.id}`);
+  if (projectCard) {
+    // Update project name
+    const nameElement = projectCard.querySelector('h3');
+    if (nameElement) {
+      nameElement.textContent = project.name;
+    }
+    
+    // Update role
+    const roleElement = projectCard.querySelector('.text-sm.text-gray-600');
+    if (roleElement && project.role) {
+      roleElement.textContent = project.role;
+    }
+    
+    // Update description
+    const descriptionElement = projectCard.querySelector('.text-gray-600.text-sm.mb-3');
+    if (descriptionElement && project.description) {
+      descriptionElement.textContent = project.description.substring(0, 150) + (project.description.length > 150 ? '...' : '');
+    }
+    
+    // Update skills
+    const skillsContainer = projectCard.querySelector('.flex.flex-wrap.gap-2');
+    if (skillsContainer && project.skills.length > 0) {
+      skillsContainer.innerHTML = '';
+      project.skills.forEach(skill => {
+        const skillSpan = document.createElement('span');
+        skillSpan.className = 'px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs';
+        skillSpan.textContent = skill.name;
+        skillsContainer.appendChild(skillSpan);
+      });
+    }
+  }
+}
+
+// Event listeners for project actions
+document.addEventListener('DOMContentLoaded', function() {
+  // Add project buttons
+  document.querySelectorAll('.add-project-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      openAddProjectModal();
+    });
+  });
+  
+  // Edit project buttons
+  document.querySelectorAll('.edit-project-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const projectId = this.getAttribute('data-project-id');
+      openEditProjectModal(projectId);
+    });
+  });
+  
+  // Delete project buttons
+  document.querySelectorAll('.delete-project-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const projectId = this.getAttribute('data-project-id');
+      if (confirm('Are you sure you want to delete this project?')) {
+        deleteProject(projectId);
+      }
+    });
+  });
+  
+  // Close modal when clicking outside
+  projectModal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeProjectModal();
+    }
+  });
+});
+
+// Utility function to show notifications
+function showNotification(message, type = 'info') {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-white ${
+    type === 'success' ? 'bg-green-500' : 
+    type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+  }`;
+  notification.textContent = message;
+  
+  // Add to page
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+// Function to delete a project
+function deleteProject(projectId) {
+  fetch(`/project/delete-modal/${projectId}/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Remove the project card from the DOM
+      const projectCard = document.getElementById(`project-${projectId}`);
+      if (projectCard) {
+        projectCard.remove();
+      }
+      
+      // Check if there are no projects left
+      const projectsContainer = document.getElementById('projects-container');
+      if (projectsContainer && projectsContainer.children.length === 0) {
+        // Show the empty state
+        const emptyState = `
+          <div class="text-center py-12">
+            <div class="w-16 h-16 mx-auto mb-4 text-gray-300">
+              <i data-lucide="folder-plus" class="w-full h-full"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No projects added yet</h3>
+            <p class="text-gray-500 mb-4">Showcase your projects to stand out to potential employers</p>
+            <button class="add-project-btn bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+              Add Your First Project
+            </button>
+          </div>
+        `;
+        projectsContainer.parentElement.innerHTML = emptyState;
+        
+        // Re-initialize the add project button
+        document.querySelector('.add-project-btn').addEventListener('click', function() {
+          openAddProjectModal();
+        });
+        
+        // Re-initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      }
+      
+      showNotification(data.message || 'Project deleted successfully', 'success');
+    } else {
+      showNotification(data.message || 'Failed to delete project', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showNotification('An error occurred while deleting the project', 'error');
+  });
+}
+</script>

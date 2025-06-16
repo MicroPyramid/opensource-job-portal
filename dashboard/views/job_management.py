@@ -35,7 +35,6 @@ from recruiter.forms import MONTHS, YEARS, JobPostForm
 from recruiter.views import (
     add_interview_location,
     add_other_functional_area,
-    add_other_industry,
     add_other_qualifications,
     add_other_skills,
 )
@@ -374,10 +373,6 @@ def new_govt_job(request, job_type):
                 json.loads(request.POST["final_edu_qualification"]),
                 request.user,
             )
-        if "final_industry" in request.POST.keys():
-            add_other_industry(
-                validate_post, json.loads(request.POST["final_industry"]), request.user
-            )
         if "final_functional_area" in request.POST.keys():
             add_other_functional_area(
                 validate_post,
@@ -634,10 +629,6 @@ def edit_govt_job(request, post_id):
         if "final_edu_qualification" in request.POST.keys():
             add_other_qualifications(
                 post, json.loads(request.POST["final_edu_qualification"]), request.user
-            )
-        if "final_industry" in request.POST.keys():
-            add_other_industry(
-                post, json.loads(request.POST["final_industry"]), request.user
             )
         if "final_functional_area" in request.POST.keys():
             add_other_functional_area(

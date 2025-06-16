@@ -1,0 +1,226 @@
+<!-- About Section -->
+<div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-semibold text-gray-900">About</h2>
+    <button class="text-blue-600 hover:text-blue-700 font-medium text-sm" onclick="openDescriptionModal()">
+      <i data-lucide="edit-3" class="w-4 h-4 inline mr-1"></i>
+      Edit
+    </button>
+  </div>
+  {% if user.profile_description %}
+    <p class="text-gray-700 leading-relaxed" id="profile-description-text">
+      {{ user.profile_description }}
+    </p>
+  {% else %}
+    <div class="text-center py-8" id="no-description-placeholder">
+      <i data-lucide="file-text" class="w-12 h-12 text-gray-300 mx-auto mb-3"></i>
+      <p class="text-gray-500 mb-2">No description added yet</p>
+      <p class="text-xs text-gray-400 mb-4">Add a brief description about yourself to help recruiters understand your background</p>
+      <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors" onclick="openDescriptionModal()">
+        Add Description
+      </button>
+    </div>
+    <div class="hidden" id="profile-description-content">
+      <p class="text-gray-700 leading-relaxed" id="profile-description-text"></p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Profile Description Edit Modal -->
+<div id="descriptionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Edit Profile Description</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeDescriptionModal()">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6">
+        <form id="descriptionForm">
+          <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+              About Yourself
+            </label>
+            <textarea 
+              id="description" 
+              name="description" 
+              rows="8" 
+              maxlength="5000"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              placeholder="Write a brief description about yourself, your experience, skills, and career objectives..."
+            >{{ user.profile_description|default:'' }}</textarea>
+            <div class="flex justify-between mt-2">
+              <p class="text-xs text-gray-500">Help recruiters understand your background and career goals</p>
+              <span class="text-xs text-gray-500">
+                <span id="charCount">0</span>/5000 characters
+              </span>
+            </div>
+          </div>
+          
+          <!-- Error/Success Messages -->
+          <div id="modalMessage" class="hidden mb-4"></div>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <button type="button" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors" onclick="closeDescriptionModal()">
+          Cancel
+        </button>
+        <button type="button" id="saveDescriptionBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" onclick="saveDescription()">
+          <span class="btn-text">Save Changes</span>
+          <span class="btn-spinner hidden">
+            <i data-lucide="loader-2" class="w-4 h-4 animate-spin inline mr-1"></i>
+            Saving...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Profile Description Modal Functions
+function openDescriptionModal() {
+  const modal = document.getElementById('descriptionModal');
+  const textarea = document.getElementById('description');
+  
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+  
+  // Focus on textarea and update character count
+  setTimeout(() => {
+    textarea.focus();
+    updateCharCount();
+  }, 100);
+}
+
+function closeDescriptionModal() {
+  const modal = document.getElementById('descriptionModal');
+  modal.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+  
+  // Reset form
+  document.getElementById('descriptionForm').reset();
+  document.getElementById('description').value = '{{ user.profile_description|default:""|escapejs }}';
+  hideModalMessage();
+}
+
+function updateCharCount() {
+  const textarea = document.getElementById('description');
+  const charCount = document.getElementById('charCount');
+  charCount.textContent = textarea.value.length;
+}
+
+function showModalMessage(message, type = 'success') {
+  const messageDiv = document.getElementById('modalMessage');
+  messageDiv.className = `p-3 rounded-lg text-sm ${type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`;
+  messageDiv.textContent = message;
+  messageDiv.classList.remove('hidden');
+}
+
+function hideModalMessage() {
+  document.getElementById('modalMessage').classList.add('hidden');
+}
+
+function toggleSaveButton(loading = false) {
+  const btn = document.getElementById('saveDescriptionBtn');
+  const btnText = btn.querySelector('.btn-text');
+  const btnSpinner = btn.querySelector('.btn-spinner');
+  
+  if (loading) {
+    btn.disabled = true;
+    btnText.classList.add('hidden');
+    btnSpinner.classList.remove('hidden');
+  } else {
+    btn.disabled = false;
+    btnText.classList.remove('hidden');
+    btnSpinner.classList.add('hidden');
+  }
+}
+
+function saveDescription() {
+  const description = document.getElementById('description').value.trim();
+  
+  hideModalMessage();
+  toggleSaveButton(true);
+  
+  $.ajax({
+    url: '{% url "candidate:edit_profile_description" %}',
+    type: 'POST',
+    headers: {
+      'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val() || '{{ csrf_token }}',
+      'Content-Type': 'application/json',
+    },
+    data: JSON.stringify({
+      description: description
+    }),
+    success: function(response) {
+      if (response.success) {
+        // Update the UI
+        const descriptionText = document.getElementById('profile-description-text');
+        const noDescriptionPlaceholder = document.getElementById('no-description-placeholder');
+        const profileDescriptionContent = document.getElementById('profile-description-content');
+        
+        if (description) {
+          descriptionText.textContent = description;
+          if (noDescriptionPlaceholder) {
+            noDescriptionPlaceholder.classList.add('hidden');
+            profileDescriptionContent.classList.remove('hidden');
+          }
+        } else {
+          if (noDescriptionPlaceholder) {
+            noDescriptionPlaceholder.classList.remove('hidden');
+            profileDescriptionContent.classList.add('hidden');
+          }
+        }
+        
+        showModalMessage(response.message, 'success');
+        
+        // Close modal after short delay
+        setTimeout(() => {
+          closeDescriptionModal();
+        }, 1500);
+      } else {
+        showModalMessage(response.error || 'Failed to update profile description', 'error');
+      }
+    },
+    error: function() {
+      showModalMessage('Network error. Please try again.', 'error');
+    },
+    complete: function() {
+      toggleSaveButton(false);
+    }
+  });
+}
+
+// Initialize profile description functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const textarea = document.getElementById('description');
+  if (textarea) {
+    textarea.addEventListener('input', updateCharCount);
+    updateCharCount(); // Initial count
+  }
+  
+  // Close modal when clicking outside
+  const descriptionModal = document.getElementById('descriptionModal');
+  if (descriptionModal) {
+    descriptionModal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeDescriptionModal();
+      }
+    });
+  }
+  
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && descriptionModal && !descriptionModal.classList.contains('hidden')) {
+      closeDescriptionModal();
+    }
+  });
+});
+</script>

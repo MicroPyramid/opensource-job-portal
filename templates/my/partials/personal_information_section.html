@@ -1,0 +1,155 @@
+<!-- Personal Information Section -->
+<div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-900">Personal Information</h2>
+    <button class="text-blue-600 hover:text-blue-700 font-medium text-sm" data-open-personal-info-modal>
+      <i data-lucide="edit-3" class="w-4 h-4 inline mr-1"></i>
+      Edit
+    </button>
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Left Column -->
+    <div class="space-y-4">
+      {% if user.mobile %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="phone" class="w-5 h-5 text-blue-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Mobile</p>
+            <p class="text-sm text-gray-600">{{ user.mobile }}</p>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if user.dob %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="calendar" class="w-5 h-5 text-purple-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Date of Birth</p>
+            <p class="text-sm text-gray-600">{{ user.dob|date:"F d, Y" }}</p>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if user.gender %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Gender</p>
+            <p class="text-sm text-gray-600">{{ user.get_gender_display }}</p>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if user.marital_status %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-pink-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="heart" class="w-5 h-5 text-pink-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Marital Status</p>
+            <p class="text-sm text-gray-600">{{ user.get_marital_status_display }}</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Right Column -->
+    <div class="space-y-4">
+      {% if nationality %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="flag" class="w-5 h-5 text-indigo-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Nationality</p>
+            <p class="text-sm text-gray-600">{{ nationality.name }}</p>
+          </div>
+        </div>
+      {% elif user.nationality %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="flag" class="w-5 h-5 text-indigo-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Nationality</p>
+            <p class="text-sm text-gray-600">{{ user.nationality }}</p>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if user.current_salary %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="dollar-sign" class="w-5 h-5 text-yellow-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Current Salary</p>
+            <p class="text-sm text-gray-600">{{ user.current_salary }}</p>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if user.expected_salary %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="target" class="w-5 h-5 text-emerald-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Expected Salary</p>
+            <p class="text-sm text-gray-600">{{ user.expected_salary }}</p>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if user.notice_period %}
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center mr-3">
+            <i data-lucide="clock" class="w-5 h-5 text-orange-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Notice Period</p>
+            <p class="text-sm text-gray-600">{{ user.notice_period }}</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <!-- Address Section -->
+  {% if user.address or user.permanent_address %}
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% if user.address %}
+          <div>
+            <div class="flex items-center mb-3">
+              <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mr-2">
+                <i data-lucide="map-pin" class="w-4 h-4 text-blue-600"></i>
+              </div>
+              <h3 class="text-sm font-medium text-gray-900">Current Address</h3>
+            </div>
+            <p class="text-sm text-gray-600 ml-10">{{ user.address }}</p>
+          </div>
+        {% endif %}
+        
+        {% if user.permanent_address %}
+          <div>
+            <div class="flex items-center mb-3">
+              <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mr-2">
+                <i data-lucide="home" class="w-4 h-4 text-green-600"></i>
+              </div>
+              <h3 class="text-sm font-medium text-gray-900">Permanent Address</h3>
+            </div>
+            <p class="text-sm text-gray-600 ml-10">{{ user.permanent_address }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>

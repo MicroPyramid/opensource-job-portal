@@ -12,6 +12,9 @@ from django.template import loader, Template, Context
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from peeldb.models import (
+    AgencyApplicants,
+    InterviewLocation,
+    Keyword,
     User,
     JobPost,
     Company,
@@ -241,35 +244,6 @@ def add_other_qualifications(job_post, data, user):
                         send_email.delay(mto, subject, rendered)
 
 
-def add_other_industry(job_post, data, user):
-    temp = loader.get_template("recruiter/email/add_other_fields.html")
-    subject = "PeelJobs New JobPost"
-    mto = [settings.DEFAULT_FROM_EMAIL]
-
-    for industry in data:
-        for value in industry.values():
-            o_industries = value.replace(" ", "").split(",")
-            for value in o_industries:
-                if value != "":
-                    industry = Industry.objects.filter(name__iexact=value)
-                    if industry:
-                        job_post.industry.add(industry[0])
-                    else:
-                        industry = Industry.objects.create(
-                            name=value, status="InActive", slug=slugify(value)
-                        )
-                        job_post.industry.add(industry)
-                        c = {
-                            "job_post": job_post,
-                            "user": user,
-                            "item": value,
-                            "type": "Industry",
-                            "value": industry.name,
-                        }
-                        rendered = temp.render(c)
-                        send_email.delay(mto, subject, rendered)
-
-
 def add_other_functional_area(job_post, data, user):
     temp = loader.get_template("recruiter/email/add_other_fields.html")
     subject = "PeelJobs New JobPost"
@@ -430,8 +404,6 @@ def adding_other_fields_data(data, post, user):
         add_other_qualifications(
             post, json.loads(data["final_edu_qualification"]), user
         )
-    if "final_industry" in data.keys():
-        add_other_industry(post, json.loads(data["final_industry"]), user)
     if "final_functional_area" in data.keys():
         add_other_functional_area(post, json.loads(data["final_functional_area"]), user)
     if "other_location" in data.keys():

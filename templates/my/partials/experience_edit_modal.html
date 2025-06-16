@@ -1,0 +1,333 @@
+<!-- Experience Edit Modal -->
+<div id="experienceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-xl">
+    <!-- Modal Header -->
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900" id="experienceModalTitle">Edit Experience</h3>
+        <button type="button" 
+                class="text-gray-400 hover:text-gray-600 transition-colors" 
+                onclick="closeExperienceModal()">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+      <form id="experienceForm" onsubmit="submitExperienceForm(event)" class="space-y-6">
+        <input type="hidden" id="experienceId" name="experience_id">
+        
+        <!-- Job Title -->
+        <div>
+          <label for="designation" class="block text-sm font-medium text-gray-700 mb-2">
+            Job Title <span class="text-red-500">*</span>
+          </label>
+          <input type="text" 
+                 id="designation" 
+                 name="designation" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                 placeholder="e.g. Senior Software Engineer"
+                 required>
+        </div>
+
+        <!-- Company Name -->
+        <div>
+          <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+            Company Name <span class="text-red-500">*</span>
+          </label>
+          <input type="text" 
+                 id="company" 
+                 name="company" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                 placeholder="e.g. Google"
+                 required>
+        </div>
+
+        <!-- Employment Duration -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="from_date" class="block text-sm font-medium text-gray-700 mb-2">
+              Start Date <span class="text-red-500">*</span>
+            </label>
+            <input type="date" 
+                   id="from_date" 
+                   name="from_date" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   required>
+          </div>
+          <div>
+            <label for="to_date" class="block text-sm font-medium text-gray-700 mb-2">
+              End Date
+            </label>
+            <input type="date" 
+                   id="to_date" 
+                   name="to_date" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+        </div>
+
+        <!-- Current Job Checkbox -->
+        <div class="flex items-center">
+          <input type="checkbox" 
+                 id="current_job" 
+                 name="current_job" 
+                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                 onchange="toggleEndDate()">
+          <label for="current_job" class="ml-2 text-sm text-gray-700">
+            I currently work here
+          </label>
+        </div>
+
+        <!-- Job Description -->
+        <div>
+          <label for="job_profile" class="block text-sm font-medium text-gray-700 mb-2">
+            Job Description <span class="text-gray-500 text-xs">(Optional)</span>
+          </label>
+          <textarea id="job_profile" 
+                    name="job_profile" 
+                    rows="4"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    placeholder="Describe your role and responsibilities..."></textarea>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-end space-x-3">
+      <button type="button" 
+              class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              onclick="closeExperienceModal()">
+        Cancel
+      </button>
+      <button type="submit" 
+              form="experienceForm"
+              class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              id="submitExperienceBtn">
+        Save Experience
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+// Experience Modal Functions
+function openExperienceModal() {
+  document.getElementById('experienceModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeExperienceModal() {
+  document.getElementById('experienceModal').classList.add('hidden');
+  document.body.style.overflow = 'auto';
+  document.getElementById('experienceForm').reset();
+  document.getElementById('experienceId').value = '';
+  document.getElementById('experienceModalTitle').textContent = 'Add Experience';
+  document.getElementById('submitExperienceBtn').textContent = 'Save Experience';
+  // Re-enable end date field
+  document.getElementById('to_date').disabled = false;
+  document.getElementById('to_date').required = false;
+}
+
+function addExperience() {
+  document.getElementById('experienceModalTitle').textContent = 'Add Experience';
+  document.getElementById('submitExperienceBtn').textContent = 'Add Experience';
+  openExperienceModal();
+}
+
+function editExperience(experienceId) {
+  document.getElementById('experienceModalTitle').textContent = 'Edit Experience';
+  document.getElementById('submitExperienceBtn').textContent = 'Update Experience';
+  
+  // Fetch experience data via AJAX
+  fetch(`/experience/edit-modal/${experienceId}/`, {
+    method: 'GET',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const exp = data.data.experience;
+      document.getElementById('experienceId').value = exp.id;
+      document.getElementById('designation').value = exp.designation || '';
+      document.getElementById('company').value = exp.company || '';
+      document.getElementById('from_date').value = exp.from_date || '';
+      document.getElementById('to_date').value = exp.to_date || '';
+      document.getElementById('current_job').checked = exp.current_job || false;
+      document.getElementById('job_profile').value = exp.job_profile || '';
+      
+      // Toggle end date if current job
+      toggleEndDate();
+      
+      openExperienceModal();
+    } else {
+      showNotification('Error loading experience data: ' + (data.message || 'Unknown error'), 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showNotification('Error loading experience data', 'error');
+  });
+}
+
+function deleteExperience(experienceId) {
+  if (confirm('Are you sure you want to delete this experience?')) {
+    fetch(`/experience/delete-modal/${experienceId}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCsrfToken(),
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById(`experience-${experienceId}`).remove();
+        showNotification(data.message, 'success');
+        
+        // Check if no experiences left and show empty state
+        const experienceSection = document.querySelector('[id^="experience-"]');
+        if (!experienceSection) {
+          location.reload(); // Reload to show empty state
+        }
+      } else {
+        showNotification(data.message || 'Error deleting experience', 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('Error deleting experience', 'error');
+    });
+  }
+}
+
+function toggleEndDate() {
+  const currentJobCheckbox = document.getElementById('current_job');
+  const endDateInput = document.getElementById('to_date');
+  
+  if (currentJobCheckbox.checked) {
+    endDateInput.disabled = true;
+    endDateInput.required = false;
+    endDateInput.value = '';
+  } else {
+    endDateInput.disabled = false;
+    endDateInput.required = false;
+  }
+}
+
+function submitExperienceForm(event) {
+  event.preventDefault();
+  
+  const form = document.getElementById('experienceForm');
+  const formData = new FormData(form);
+  const experienceId = document.getElementById('experienceId').value;
+  
+  // Convert to JSON
+  const data = {};
+  formData.forEach((value, key) => {
+    if (key === 'current_job') {
+      data[key] = document.getElementById('current_job').checked;
+    } else {
+      data[key] = value;
+    }
+  });
+  // Remove salary from data if present
+  delete data.salary;
+  
+  const url = experienceId ? 
+    `/experience/edit-modal/${experienceId}/` : 
+    '/experience/add-modal/';
+  
+  const submitBtn = document.getElementById('submitExperienceBtn');
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Saving...';
+  submitBtn.disabled = true;
+  
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      showNotification(data.message, 'success');
+      closeExperienceModal();
+      location.reload();
+    } else {
+      let errorMessage = data.message || 'Error saving experience';
+      if (data.errors) {
+        errorMessage += '\n\nErrors:\n';
+        for (const [field, message] of Object.entries(data.errors)) {
+          errorMessage += `- ${field}: ${message}\n`;
+        }
+      }
+      showNotification(errorMessage, 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Network Error:', error);
+    showNotification('Network error occurred. Please check your connection and try again.', 'error');
+  })
+  .finally(() => {
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  });
+}
+
+// Helper function to get CSRF token
+function getCsrfToken() {
+  const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+  if (tokenElement) {
+    return tokenElement.value;
+  }
+  // Fallback: try to get from meta tag or cookies
+  const metaToken = document.querySelector('meta[name="csrf-token"]');
+  if (metaToken) {
+    return metaToken.getAttribute('content');
+  }
+  // Last resort: get from cookies (if you have Django's CSRF cookie)
+  const cookieValue = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return cookieValue || '';
+}
+
+// Helper function to show notifications
+function showNotification(message, type = 'info') {
+  // Create a simple toast notification
+  const toast = document.createElement('div');
+  toast.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm ${
+    type === 'success' ? 'bg-green-500 text-white' : 
+    type === 'error' ? 'bg-red-500 text-white' : 
+    'bg-blue-500 text-white'
+  }`;
+  
+  toast.innerHTML = `
+    <div class="flex items-start">
+      <i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'info'}" class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"></i>
+      <div class="text-sm" style="white-space: pre-line;">${message}</div>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    if (toast.parentNode) {
+      toast.parentNode.removeChild(toast);
+    }
+  }, 5000);
+}
+</script>

@@ -19,7 +19,6 @@ from .job_management import (
 from .job_helpers import (
     add_other_skills,
     add_other_qualifications,
-    add_other_industry,
     add_other_functional_area,
     adding_keywords,
     add_interview_location,

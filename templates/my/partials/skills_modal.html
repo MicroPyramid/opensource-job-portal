@@ -1,0 +1,126 @@
+<!-- Skills Modal -->
+<div id="skillModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeSkillModal()"></div>
+
+    <!-- This element is to trick the browser into centering the modal contents. -->
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+    <!-- Modal panel -->
+    <div class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="w-full">
+          <!-- Modal header -->
+          <div class="flex items-center justify-between mb-6">
+            <h3 id="skillModalTitle" class="text-lg leading-6 font-medium text-gray-900">
+              Add Technical Skill
+            </h3>
+            <button type="button" onclick="closeSkillModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition ease-in-out duration-150">
+              <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+          </div>
+
+          <!-- Error messages -->
+          <div id="skillFormErrors" class="mb-4"></div>
+
+          <!-- Modal form -->
+          <form id="skillForm" onsubmit="submitSkillForm(event)" method="post">
+            {% csrf_token %}
+            
+            <!-- Skill selection -->
+            <div class="mb-4">
+              <label for="skillSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                Skill <span class="text-red-500">*</span>
+              </label>
+              <select id="skillSelect" name="skill" required 
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select a skill</option>
+              </select>
+            </div>
+
+            <!-- Proficiency level -->
+            <div class="mb-4">
+              <label for="proficiency" class="block text-sm font-medium text-gray-700 mb-2">
+                Proficiency Level
+              </label>
+              <select id="proficiency" name="proficiency" 
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select proficiency</option>
+                <option value="Poor">Poor</option>
+                <option value="Average">Average</option>
+                <option value="Good">Good</option>
+                <option value="Expert">Expert</option>
+              </select>
+            </div>
+
+            <!-- Experience duration -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="year" class="block text-sm font-medium text-gray-700 mb-2">
+                  Years <span class="text-red-500">*</span>
+                </label>
+                <select id="year" name="year" required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Select years</option>
+                </select>
+              </div>
+              <div>
+                <label for="month" class="block text-sm font-medium text-gray-700 mb-2">
+                  Months <span class="text-red-500">*</span>
+                </label>
+                <select id="month" name="month" required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Select months</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Version -->
+            <div class="mb-4">
+              <label for="version" class="block text-sm font-medium text-gray-700 mb-2">
+                Version (Optional)
+              </label>
+              <input type="text" id="version" name="version" 
+                     placeholder="e.g., Python 3.9, React 18"
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Last used -->
+            <div class="mb-4">
+              <label for="last_used" class="block text-sm font-medium text-gray-700 mb-2">
+                Last Used (Optional)
+              </label>
+              <input type="date" id="last_used" name="last_used" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Major skill checkbox -->
+            <div class="mb-6">
+              <label class="flex items-center">
+                <input type="checkbox" id="is_major" name="is_major" value="1" 
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">
+                  This is one of my major skills
+                  <span class="text-gray-500">(max 2 allowed)</span>
+                </span>
+              </label>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="flex justify-end space-x-3">
+              <button type="button" onclick="closeSkillModal()" 
+                      class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Cancel
+              </button>
+              <button type="submit" id="skillSubmitBtn"
+                      class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Add Skill
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
