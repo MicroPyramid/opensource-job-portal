@@ -61,6 +61,7 @@ from .views.my_views import (
     update_resume_modal,
     delete_resume_modal,
     get_resume_info,
+    edit_basic_profile,
 )
 
 app_name = "candidate"
@@ -82,6 +83,11 @@ urlpatterns = [
         r"profile/personal_info/edit/$",
         edit_personal_info,
         name="edit_personal_info",
+    ),
+    url(
+        r"profile/basic_profile/edit/$",
+        edit_basic_profile,
+        name="edit_basic_profile",
     ),
     url(
         r"job-preferences/edit/$",

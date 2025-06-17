@@ -1,0 +1,254 @@
+<!-- Basic Profile Edit Modal -->
+<div id="basicProfileEditModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-auto" onclick="event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">Edit Profile Details</h3>
+          <button type="button" onclick="closeBasicProfileEditModal()" class="text-gray-400 hover:text-gray-600">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="basicProfileEditForm" class="px-6 py-4">
+        {% csrf_token %}
+        <div class="space-y-4">
+          
+          <!-- Job Role -->
+          <div>
+            <label for="edit_job_role" class="block text-sm font-medium text-gray-700 mb-2">
+              Job Role <span class="text-red-500">*</span>
+            </label>
+            <input type="text" 
+                   id="edit_job_role" 
+                   name="job_role" 
+                   value="{{ user.job_role }}"
+                   placeholder="e.g., Software Engineer, Marketing Manager"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   required>
+          </div>
+
+          <!-- Current City -->
+          <div>
+            <label for="edit_current_city" class="block text-sm font-medium text-gray-700 mb-2">
+              Current Location <span class="text-red-500">*</span>
+            </label>
+            <select id="edit_current_city" 
+                    name="current_city" 
+                    data-current-city-id="{% if user.current_city %}{{ user.current_city.id }}{% endif %}"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required>
+              <option value="">Select a location</option>
+              <!-- Cities will be loaded via JavaScript -->
+            </select>
+          </div>
+
+          <!-- Experience -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Total Experience
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="edit_years" class="block text-xs text-gray-600 mb-1">Years</label>
+                <select id="edit_years" 
+                        name="year" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Years</option>
+                  <option value="0" {% if user.year == "0" %}selected{% endif %}>0</option>
+                  <option value="1" {% if user.year == "1" %}selected{% endif %}>1</option>
+                  <option value="2" {% if user.year == "2" %}selected{% endif %}>2</option>
+                  <option value="3" {% if user.year == "3" %}selected{% endif %}>3</option>
+                  <option value="4" {% if user.year == "4" %}selected{% endif %}>4</option>
+                  <option value="5" {% if user.year == "5" %}selected{% endif %}>5</option>
+                  <option value="6" {% if user.year == "6" %}selected{% endif %}>6</option>
+                  <option value="7" {% if user.year == "7" %}selected{% endif %}>7</option>
+                  <option value="8" {% if user.year == "8" %}selected{% endif %}>8</option>
+                  <option value="9" {% if user.year == "9" %}selected{% endif %}>9</option>
+                  <option value="10" {% if user.year == "10" %}selected{% endif %}>10</option>
+                  <option value="11" {% if user.year == "11" %}selected{% endif %}>11</option>
+                  <option value="12" {% if user.year == "12" %}selected{% endif %}>12</option>
+                  <option value="13" {% if user.year == "13" %}selected{% endif %}>13</option>
+                  <option value="14" {% if user.year == "14" %}selected{% endif %}>14</option>
+                  <option value="15" {% if user.year == "15" %}selected{% endif %}>15</option>
+                  <option value="16" {% if user.year == "16" %}selected{% endif %}>16</option>
+                  <option value="17" {% if user.year == "17" %}selected{% endif %}>17</option>
+                  <option value="18" {% if user.year == "18" %}selected{% endif %}>18</option>
+                  <option value="19" {% if user.year == "19" %}selected{% endif %}>19</option>
+                  <option value="20" {% if user.year == "20" %}selected{% endif %}>20+</option>
+                </select>
+              </div>
+              <div>
+                <label for="edit_months" class="block text-xs text-gray-600 mb-1">Months</label>
+                <select id="edit_months" 
+                        name="month" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Months</option>
+                  <option value="0" {% if user.month == "0" %}selected{% endif %}>0</option>
+                  <option value="1" {% if user.month == "1" %}selected{% endif %}>1</option>
+                  <option value="2" {% if user.month == "2" %}selected{% endif %}>2</option>
+                  <option value="3" {% if user.month == "3" %}selected{% endif %}>3</option>
+                  <option value="4" {% if user.month == "4" %}selected{% endif %}>4</option>
+                  <option value="5" {% if user.month == "5" %}selected{% endif %}>5</option>
+                  <option value="6" {% if user.month == "6" %}selected{% endif %}>6</option>
+                  <option value="7" {% if user.month == "7" %}selected{% endif %}>7</option>
+                  <option value="8" {% if user.month == "8" %}selected{% endif %}>8</option>
+                  <option value="9" {% if user.month == "9" %}selected{% endif %}>9</option>
+                  <option value="10" {% if user.month == "10" %}selected{% endif %}>10</option>
+                  <option value="11" {% if user.month == "11" %}selected{% endif %}>11</option>
+                </select>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Leave blank if you're a fresher</p>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200 mt-6">
+          <button type="button" 
+                  onclick="closeBasicProfileEditModal()" 
+                  class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+            Cancel
+          </button>
+          <button type="submit" 
+                  class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function openBasicProfileEditModal() {
+  loadCitiesForBasicProfile();
+  document.getElementById('basicProfileEditModal').classList.remove('hidden');
+}
+
+function closeBasicProfileEditModal() {
+  document.getElementById('basicProfileEditModal').classList.add('hidden');
+}
+
+function loadCitiesForBasicProfile() {
+  const citySelect = document.getElementById('edit_current_city');
+  const currentCityId = citySelect.getAttribute('data-current-city-id');
+  
+  // Clear existing options except the first one
+  citySelect.innerHTML = '<option value="">Select a location</option>';
+  
+  // Use cities from context instead of API call
+  try {
+    const cities = JSON.parse('{{ cities_json|escapejs }}');
+    
+    cities.forEach(city => {
+      const option = document.createElement('option');
+      option.value = city.id;
+      option.textContent = city.name + ', ' + city.state;
+      if (currentCityId && currentCityId == city.id) {
+        option.selected = true;
+      }
+      citySelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error loading cities:', error);
+  }
+}
+
+// Handle form submission
+document.getElementById('basicProfileEditForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  
+  // Convert FormData to JSON
+  const data = {};
+  for (let [key, value] of formData.entries()) {
+    data[key] = value;
+  }
+  
+  fetch('{% url "candidate:edit_basic_profile" %}', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update the page content
+      updateBasicProfileDisplay(data.data);
+      closeBasicProfileEditModal();
+      
+      // Show success message
+      showNotification('Profile updated successfully!', 'success');
+      
+      // Optionally reload the page to reflect all changes
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } else {
+      showNotification(data.error || 'Failed to update profile', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showNotification('An error occurred while updating profile', 'error');
+  });
+});
+
+function updateBasicProfileDisplay(data) {
+  // Update job role
+  const jobRoleElements = document.querySelectorAll('[data-profile-job-role]');
+  jobRoleElements.forEach(el => {
+    el.textContent = data.job_role || 'Add Job Role';
+  });
+  
+  // Update current city
+  const cityElements = document.querySelectorAll('[data-profile-city]');
+  cityElements.forEach(el => {
+    el.textContent = data.current_city || '';
+  });
+  
+  // Update experience
+  const expElements = document.querySelectorAll('[data-profile-experience]');
+  expElements.forEach(el => {
+    if (data.year && data.month) {
+      el.textContent = `${data.year} years ${data.month} months experience`;
+    } else if (data.year) {
+      el.textContent = `${data.year} years experience`;
+    } else {
+      el.textContent = '';
+    }
+  });
+}
+
+function showNotification(message, type = 'success') {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+    type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+  }`;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+// Close modal when clicking outside
+document.getElementById('basicProfileEditModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeBasicProfileEditModal();
+  }
+});
+</script>

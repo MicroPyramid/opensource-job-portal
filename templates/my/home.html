@@ -35,34 +35,46 @@
               <div class="flex-1 mb-6 lg:mb-0">
                 <!-- Name and Title -->
                 <div class="mb-4">
-                  <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight tracking-tight mb-2">
-                    {{ user.get_full_name|default:"Complete Your Profile" }}
-                  </h1>
-                    <p class="text-xl sm:text-2xl text-gray-600 font-medium mb-3">{{ user.job_role }}</p>
-                  <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                    {% if user.current_city %}
-                      <div class="flex items-center">
-                        <i data-lucide="map-pin" class="w-4 h-4 mr-1.5 text-gray-400"></i>
-                        <span class="font-medium">{{ user.current_city.name }}, {{ user.current_city.state.name }}</span>
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight tracking-tight mb-2">
+                        {{ user.get_full_name|default:"Complete Your Profile" }}
+                      </h1>
+                      <p class="text-xl sm:text-2xl text-gray-600 font-medium mb-3">{{ user.job_role|default:"Add Job Role" }}</p>
+                      <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                        {% if user.current_city %}
+                          <div class="flex items-center">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-1.5 text-gray-400"></i>
+                            <span class="font-medium">{{ user.current_city.name }}, {{ user.current_city.state.name }}</span>
+                          </div>
+                        {% endif %}
+                        {% if user.year and user.month %}
+                          <div class="flex items-center">
+                            <i data-lucide="briefcase" class="w-4 h-4 mr-1.5 text-gray-400"></i>
+                            <span class="font-medium">{{ user.year }} years {{ user.month }} months experience</span>
+                          </div>
+                        {% elif user.year %}
+                          <div class="flex items-center">
+                            <i data-lucide="briefcase" class="w-4 h-4 mr-1.5 text-gray-400"></i>
+                            <span class="font-medium">{{ user.year }} years experience</span>
+                          </div>
+                        {% endif %}
+                        {% if user.email %}
+                          <div class="flex items-center">
+                            <i data-lucide="mail" class="w-4 h-4 mr-1.5 text-gray-400"></i>
+                            <span class="font-medium">{{ user.email }}</span>
+                          </div>
+                        {% endif %}
                       </div>
-                    {% endif %}
-                    {% if user.year and user.month %}
-                      <div class="flex items-center">
-                        <i data-lucide="briefcase" class="w-4 h-4 mr-1.5 text-gray-400"></i>
-                        <span class="font-medium">{{ user.year }} years {{ user.month }} months experience</span>
-                      </div>
-                    {% elif user.year %}
-                      <div class="flex items-center">
-                        <i data-lucide="briefcase" class="w-4 h-4 mr-1.5 text-gray-400"></i>
-                        <span class="font-medium">{{ user.year }} years experience</span>
-                      </div>
-                    {% endif %}
-                    {% if user.email %}
-                      <div class="flex items-center">
-                        <i data-lucide="mail" class="w-4 h-4 mr-1.5 text-gray-400"></i>
-                        <span class="font-medium">{{ user.email }}</span>
-                      </div>
-                    {% endif %}
+                    </div>
+                    <!-- Edit Profile Button -->
+                    <button 
+                      onclick="openBasicProfileEditModal()" 
+                      class="ml-4 flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all duration-200"
+                      title="Edit Profile Details">
+                      <i data-lucide="edit-3" class="w-4 h-4 mr-1.5"></i>
+                      Edit
+                    </button>
                   </div>
                 </div>
                 
@@ -434,6 +446,7 @@
 
 <!-- Include modals -->
 {% include "my/partials/personal_information_edit_modal.html" %}
+{% include "my/partials/basic_profile_edit_modal.html" %}
 {% include "my/partials/project_modal.html" %}
 {% include "my/partials/language_edit_modal.html" %}
 {% include "my/partials/experience_edit_modal.html" %}
@@ -441,4 +454,5 @@
 {% include "my/partials/skills_modal.html" %}
 {% include "my/partials/account_settings_modal.html" %}
 {% include "my/partials/resume_modal.html" %}
+{% include "my/partials/basic_profile_edit_modal.html" %}
 {% endblock %}

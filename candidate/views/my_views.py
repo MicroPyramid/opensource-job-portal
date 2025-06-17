@@ -76,12 +76,23 @@ def my_home(request):
     # Get qualifications for education form
     qualifications = Qualification.objects.filter(status="Active").order_by("name")
     
+    # Prepare cities as JSON for the basic profile edit modal
+    cities_json = json.dumps([
+        {
+            'id': city.id,
+            'name': city.name,
+            'state': city.state.name if city.state else ''
+        }
+        for city in cities
+    ])
+    
     return render(
         request,
         "my/home.html",
         {
             "nationality": nationality,
             "cities": cities,
+            "cities_json": cities_json,
             "skills": skills,
             "years": YEARS,
             "months": MONTHS,
@@ -2037,4 +2048,71 @@ def update_resume_modal(request):
         return JsonResponse({
             'success': False,
             'error': f'An error occurred while updating your resume: {str(e)}'
+        })
+
+
+@jobseeker_login_required
+@require_http_methods(["POST"])
+def edit_basic_profile(request):
+    """AJAX view to update basic profile information (job_role, current_city, experience)"""
+    try:
+        data = json.loads(request.body)
+        user = request.user
+        
+        with transaction.atomic():
+            # Update job role
+            job_role = data.get('job_role', '').strip()
+            user.job_role = job_role
+            
+            # Update current city
+            current_city_id = data.get('current_city', '').strip()
+            if current_city_id:
+                try:
+                    current_city = City.objects.get(id=current_city_id, status='Enabled')
+                    user.current_city = current_city
+                except City.DoesNotExist:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Invalid city selected.'
+                    })
+            else:
+                user.current_city = None
+            
+            # Update experience (year and month)
+            year = data.get('year', '').strip()
+            month = data.get('month', '').strip()
+            
+            user.year = year if year else ''
+            user.month = month if month else ''
+            
+            # Update profile completeness
+            user.profile_completeness = user.profile_completion_percentage
+            user.profile_updated = timezone.now()
+            
+            user.save()
+            
+            # Prepare response data
+            response_data = {
+                'job_role': user.job_role,
+                'current_city': f"{user.current_city.name}, {user.current_city.state.name}" if user.current_city else '',
+                'year': user.year,
+                'month': user.month,
+                'profile_completion': user.profile_completion_percentage
+            }
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Profile updated successfully!',
+                'data': response_data
+            })
+            
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid JSON data provided.'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred while updating your profile: {str(e)}'
         })
