@@ -20,6 +20,11 @@ if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
         path('__debug__/', include(debug_toolbar.urls)),
     ]
 
+# Add media file serving for local development
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    local_urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 # Add django-extensions URLs if installed (for local development)
 # if 'django_extensions' in settings.INSTALLED_APPS:
 #     local_urlpatterns += [

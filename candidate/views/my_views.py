@@ -1,4 +1,6 @@
 import json
+import random
+import os
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -7,10 +9,12 @@ from django.utils.decorators import method_decorator
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.conf import settings
+from django.core.files.storage import default_storage
 from datetime import datetime
-import json
 
 from mpcomp.views import jobseeker_login_required
+from mpcomp.views import get_resume_data, handle_uploaded_file
 from peeldb.models import City, Country, FunctionalArea, Industry, Language, Skill, UserMessage, Project, UserLanguage, EmploymentHistory, EducationDetails, EducationInstitue, Degree, Qualification, TechnicalSkill, Certification
 
 from candidate.forms import (
@@ -1757,3 +1761,280 @@ def delete_certification_modal(request, certification_id):
         'success': True,
         'message': 'Certification deleted successfully'
     })
+
+# Resume Management Functions
+
+@jobseeker_login_required
+@require_http_methods(["POST"])
+def upload_resume_modal(request):
+    """Upload resume via AJAX modal form using django-storages"""
+    try:
+        if 'resume' not in request.FILES:
+            return JsonResponse({
+                'success': False,
+                'error': 'No resume file provided'
+            })
+        
+        resume_file = request.FILES['resume']
+        
+        # Validate file format
+        supported_formats = [
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # .docx
+            'application/pdf',  # .pdf
+            'application/rtf',  # .rtf
+            'application/x-rtf',  # .rtf
+            'text/richtext',  # .rtf
+            'application/msword',  # .doc
+            'application/vnd.oasis.opendocument.text',  # .odt
+            'application/x-vnd.oasis.opendocument.text',  # .odt
+        ]
+        
+        file_type = resume_file.content_type
+        file_size_kb = resume_file.size / 1024
+        
+        # Validate file type
+        if file_type not in supported_formats:
+            return JsonResponse({
+                'success': False,
+                'error': 'Please upload a valid file format (DOC, DOCX, PDF, RTF, ODT)'
+            })
+        
+        # Validate file size (max 1000KB)
+        if file_size_kb > 1000 or file_size_kb <= 0:
+            return JsonResponse({
+                'success': False,
+                'error': 'File size must be between 1KB and 1000KB'
+            })
+        
+        try:
+            # Delete old resume if exists
+            if request.user.resume:
+                request.user.resume.delete(save=False)
+            
+            # Save new resume using FileField - django-storages handles S3 automatically
+            request.user.resume = resume_file
+            request.user.profile_updated = timezone.now()
+            
+            # Extract resume data (optional - keep existing functionality)
+            try:
+                handle_uploaded_file(resume_file, resume_file.name)
+                email, mobile, text = get_resume_data(resume_file)
+                request.user.resume_text = text
+                
+                # Update mobile if not set
+                if not request.user.mobile and mobile:
+                    request.user.mobile = mobile
+                    
+            except Exception as e:
+                # Continue even if text extraction fails
+                pass
+            
+            request.user.save()
+            
+            # Get resume URL directly from FileField
+            resume_url = request.user.resume.url if request.user.resume else None
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Resume uploaded successfully!',
+                'data': {
+                    'resume_name': resume_file.name,
+                    'resume_url': resume_url,
+                    'file_size': f"{file_size_kb:.1f} KB",
+                    'upload_date': timezone.now().strftime('%B %d, %Y'),
+                    'profile_completion': request.user.profile_completion_percentage
+                }
+            })
+            
+        except Exception as upload_error:
+            return JsonResponse({
+                'success': False,
+                'error': f'Failed to upload resume: {str(upload_error)}'
+            })
+            
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred while uploading your resume: {str(e)}'
+        })
+
+
+@jobseeker_login_required
+@require_http_methods(["POST"])
+def delete_resume_modal(request):
+    """Delete resume via AJAX"""
+    try:
+        if not request.user.resume:
+            return JsonResponse({
+                'success': False,
+                'error': 'No resume found to delete'
+            })
+        
+        # Delete resume file
+        request.user.resume.delete(save=False)
+        
+        # Clear resume-related fields
+        request.user.resume_text = ""
+        request.user.resume_title = ""
+        request.user.profile_updated = timezone.now()
+        request.user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Resume deleted successfully!',
+            'data': {
+                'profile_completion': request.user.profile_completion_percentage
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred while deleting your resume: {str(e)}'
+        })
+
+
+@jobseeker_login_required
+@require_http_methods(["GET"])
+def get_resume_info(request):
+    """Get current resume information"""
+    try:
+        if not request.user.resume:
+            return JsonResponse({
+                'success': True,
+                'has_resume': False,
+                'data': None
+            })
+        
+        # Get resume URL and filename directly from FileField
+        try:            
+            # Check if we have a resume file
+            if not request.user.resume or not request.user.resume.name:
+                return JsonResponse({
+                    'success': True,
+                    'has_resume': False,
+                    'data': None
+                })
+            
+            resume_url = request.user.resume.url
+            resume_filename = os.path.basename(request.user.resume.name)
+        except Exception as file_error:
+            # If there's an issue accessing the file (e.g., file doesn't exist in storage)
+            # This commonly happens in development when S3 is not properly configured
+            return JsonResponse({
+                'success': False,
+                'error': f'Resume file not accessible. This may be due to storage configuration. Error: {str(file_error)}'
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'has_resume': True,
+            'data': {
+                'resume_name': resume_filename,
+                'resume_url': resume_url,
+                'upload_date': request.user.profile_updated.strftime('%B %d, %Y') if request.user.profile_updated else 'Unknown',
+                'profile_completion': request.user.profile_completion_percentage
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred while getting resume information: {str(e)}'
+        })
+
+
+@jobseeker_login_required
+@require_http_methods(["POST"])
+def update_resume_modal(request):
+    """Update existing resume via AJAX modal form"""
+    try:
+        if 'resume' not in request.FILES:
+            return JsonResponse({
+                'success': False,
+                'error': 'No resume file provided'
+            })
+        
+        resume_file = request.FILES['resume']
+        
+        # Validate file format
+        supported_formats = [
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # .docx
+            'application/pdf',  # .pdf
+            'application/rtf',  # .rtf
+            'application/x-rtf',  # .rtf
+            'text/richtext',  # .rtf
+            'application/msword',  # .doc
+            'application/vnd.oasis.opendocument.text',  # .odt
+            'application/x-vnd.oasis.opendocument.text',  # .odt
+        ]
+        
+        file_type = resume_file.content_type
+        file_size_kb = resume_file.size / 1024
+        
+        # Validate file type
+        if file_type not in supported_formats:
+            return JsonResponse({
+                'success': False,
+                'error': 'Please upload a valid file format (DOC, DOCX, PDF, RTF, ODT)'
+            })
+        
+        # Validate file size (max 1000KB)
+        if file_size_kb > 1000 or file_size_kb <= 0:
+            return JsonResponse({
+                'success': False,
+                'error': 'File size must be between 1KB and 1000KB'
+            })
+        
+        # Upload new resume using the FileField
+        try:
+            # Delete old resume if exists
+            if request.user.resume:
+                request.user.resume.delete(save=False)
+            
+            # Save new resume using FileField - django-storages handles S3 automatically
+            request.user.resume = resume_file
+            request.user.profile_updated = timezone.now()
+            
+            # Extract resume data
+            try:
+                handle_uploaded_file(resume_file, resume_file.name)
+                email, mobile, text = get_resume_data(resume_file)
+                request.user.resume_text = text
+                
+                # Update mobile if not set
+                if not request.user.mobile and mobile:
+                    request.user.mobile = mobile
+                    
+            except Exception as e:
+                # Continue even if text extraction fails
+                pass
+            
+            request.user.save()
+            
+            # Get resume URL directly from FileField
+            resume_url = request.user.resume.url if request.user.resume else None
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Resume updated successfully!',
+                'data': {
+                    'resume_name': resume_file.name,
+                    'resume_url': resume_url,
+                    'file_size': f"{file_size_kb:.1f} KB",
+                    'upload_date': timezone.now().strftime('%B %d, %Y'),
+                    'profile_completion': request.user.profile_completion_percentage
+                }
+            })
+            
+        except Exception as upload_error:
+            return JsonResponse({
+                'success': False,
+                'error': f'Failed to update resume: {str(upload_error)}'
+            })
+            
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred while updating your resume: {str(e)}'
+        })

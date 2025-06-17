@@ -1,0 +1,503 @@
+<!-- Resume Upload/Update Modal -->
+<div id="resumeModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 id="resumeModalTitle" class="text-lg font-semibold text-gray-900">Upload Resume</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeResumeModal()">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6">
+        <form id="resumeForm" class="space-y-6" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <!-- File Upload Area -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Choose Resume File <span class="text-red-500">*</span>
+            </label>
+            
+            <!-- Drag and Drop Area -->
+            <div id="resumeDropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer">
+              <div id="resumeDropContent">
+                <i data-lucide="upload-cloud" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                <p class="text-gray-600 mb-2">
+                  <span class="font-medium text-blue-600">Click to upload</span> or drag and drop
+                </p>
+                <p class="text-sm text-gray-500">
+                  DOC, DOCX, PDF, RTF, ODT (max 1MB)
+                </p>
+              </div>
+              
+              <!-- Selected File Display -->
+              <div id="resumeFileDisplay" class="hidden">
+                <div class="flex items-center justify-center space-x-3">
+                  <i data-lucide="file-text" class="w-8 h-8 text-blue-600"></i>
+                  <div class="text-left">
+                    <p id="resumeFileName" class="font-medium text-gray-900"></p>
+                    <p id="resumeFileSize" class="text-sm text-gray-500"></p>
+                  </div>
+                  <button type="button" onclick="clearResumeFile()" class="text-red-500 hover:text-red-700">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <input type="file" id="resumeFileInput" name="resume" accept=".doc,.docx,.pdf,.rtf,.odt" class="hidden">
+          </div>
+
+          <!-- Current Resume Info (for update mode) -->
+          <div id="currentResumeInfo" class="hidden bg-blue-50 p-4 rounded-lg">
+            <h4 class="font-medium text-blue-900 mb-2">Current Resume</h4>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                <div>
+                  <p id="currentResumeName" class="text-sm font-medium text-blue-900"></p>
+                  <p id="currentResumeDate" class="text-xs text-blue-700"></p>
+                </div>
+              </div>
+              <a id="currentResumeLink" href="#" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                View
+              </a>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <div id="resumeErrorMessage" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 mr-2"></i>
+              <p id="resumeErrorText" class="text-sm text-red-700"></p>
+            </div>
+          </div>
+
+          <!-- Success Message -->
+          <div id="resumeSuccessMessage" class="hidden bg-green-50 border border-green-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>
+              <p id="resumeSuccessText" class="text-sm text-green-700"></p>
+            </div>
+          </div>
+
+          <!-- Upload Progress -->
+          <div id="resumeUploadProgress" class="hidden">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-600">Uploading...</span>
+              <span id="resumeProgressPercent" class="text-sm text-gray-600">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="resumeProgressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <button type="button" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors" onclick="closeResumeModal()">
+          Cancel
+        </button>
+        <button type="button" id="resumeSubmitBtn" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onclick="submitResumeForm()">
+          <span id="resumeSubmitText">Upload Resume</span>
+          <i id="resumeSubmitSpinner" data-lucide="loader-2" class="w-4 h-4 ml-2 animate-spin hidden"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Resume Delete Confirmation Modal -->
+<div id="resumeDeleteModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Delete Resume</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeResumeDeleteModal()">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6">
+        <div class="flex items-center mb-4">
+          <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500 mr-3"></i>
+          <div>
+            <h4 class="font-medium text-gray-900">Are you sure?</h4>
+            <p class="text-sm text-gray-600">This action cannot be undone. Your resume will be permanently deleted.</p>
+          </div>
+        </div>
+        
+        <!-- Error Message -->
+        <div id="resumeDeleteErrorMessage" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <div class="flex items-center">
+            <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 mr-2"></i>
+            <p id="resumeDeleteErrorText" class="text-sm text-red-700"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <button type="button" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors" onclick="closeResumeDeleteModal()">
+          Cancel
+        </button>
+        <button type="button" id="resumeDeleteBtn" class="px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onclick="confirmResumeDelete()">
+          <span id="resumeDeleteText">Delete Resume</span>
+          <i id="resumeDeleteSpinner" data-lucide="loader-2" class="w-4 h-4 ml-2 animate-spin hidden"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Resume Modal JavaScript Functions
+let resumeModalMode = 'upload'; // 'upload' or 'update'
+
+function openResumeModal(mode = 'upload') {
+    resumeModalMode = mode;
+    const modal = document.getElementById('resumeModal');
+    const title = document.getElementById('resumeModalTitle');
+    const submitText = document.getElementById('resumeSubmitText');
+    const currentInfo = document.getElementById('currentResumeInfo');
+    
+    // Clear previous state
+    clearResumeFile();
+    hideResumeMessages();
+    
+    if (mode === 'update') {
+        title.textContent = 'Update Resume';
+        submitText.textContent = 'Update Resume';
+        loadCurrentResumeInfo();
+        currentInfo.classList.remove('hidden');
+    } else {
+        title.textContent = 'Upload Resume';
+        submitText.textContent = 'Upload Resume';
+        currentInfo.classList.add('hidden');
+    }
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeResumeModal() {
+    const modal = document.getElementById('resumeModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    
+    // Reset form
+    document.getElementById('resumeForm').reset();
+    clearResumeFile();
+    hideResumeMessages();
+    hideResumeProgress();
+}
+
+function loadCurrentResumeInfo() {
+    fetch('/resume/info/', {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.has_resume) {
+            document.getElementById('currentResumeName').textContent = data.data.resume_name;
+            document.getElementById('currentResumeDate').textContent = `Uploaded on ${data.data.upload_date}`;
+            document.getElementById('currentResumeLink').href = data.data.resume_url;
+        }
+    })
+    .catch(error => {
+        console.error('Error loading resume info:', error);
+    });
+}
+
+// Drag and Drop Functionality
+const resumeDropZone = document.getElementById('resumeDropZone');
+const resumeFileInput = document.getElementById('resumeFileInput');
+
+resumeDropZone.addEventListener('click', () => {
+    resumeFileInput.click();
+});
+
+resumeDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    resumeDropZone.classList.add('border-blue-400', 'bg-blue-50');
+});
+
+resumeDropZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    resumeDropZone.classList.remove('border-blue-400', 'bg-blue-50');
+});
+
+resumeDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    resumeDropZone.classList.remove('border-blue-400', 'bg-blue-50');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        resumeFileInput.files = files;
+        displayResumeFile(files[0]);
+    }
+});
+
+resumeFileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        displayResumeFile(e.target.files[0]);
+    }
+});
+
+function displayResumeFile(file) {
+    const dropContent = document.getElementById('resumeDropContent');
+    const fileDisplay = document.getElementById('resumeFileDisplay');
+    const fileName = document.getElementById('resumeFileName');
+    const fileSize = document.getElementById('resumeFileSize');
+    
+    // Validate file
+    const validTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/rtf',
+        'application/x-rtf',
+        'text/richtext',
+        'application/vnd.oasis.opendocument.text',
+        'application/x-vnd.oasis.opendocument.text'
+    ];
+    
+    if (!validTypes.includes(file.type)) {
+        showResumeError('Please select a valid file format (DOC, DOCX, PDF, RTF, ODT)');
+        return;
+    }
+    
+    if (file.size > 1000 * 1024) { // 1MB (1000KB)
+        showResumeError('File size must be less than 1MB');
+        return;
+    }
+    
+    // Display file info
+    fileName.textContent = file.name;
+    fileSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+    
+    dropContent.classList.add('hidden');
+    fileDisplay.classList.remove('hidden');
+    
+    hideResumeMessages();
+}
+
+function clearResumeFile() {
+    const dropContent = document.getElementById('resumeDropContent');
+    const fileDisplay = document.getElementById('resumeFileDisplay');
+    
+    resumeFileInput.value = '';
+    dropContent.classList.remove('hidden');
+    fileDisplay.classList.add('hidden');
+    
+    hideResumeMessages();
+}
+
+function submitResumeForm() {
+    const fileInput = document.getElementById('resumeFileInput');
+    
+    if (!fileInput.files.length) {
+        showResumeError('Please select a resume file');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('resume', fileInput.files[0]);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    const url = resumeModalMode === 'update' ? '/resume/update-modal/' : '/resume/upload-modal/';
+    
+    // Show loading state
+    showResumeLoading();
+    hideResumeMessages();
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideResumeLoading();
+        
+        if (data.success) {
+            showResumeSuccess(data.message);
+            
+            // Update UI after successful upload
+            setTimeout(() => {
+                closeResumeModal();
+                // Refresh the page to show updated resume info
+                window.location.reload();
+            }, 1500);
+        } else {
+            showResumeError(data.error);
+        }
+    })
+    .catch(error => {
+        hideResumeLoading();
+        showResumeError('An error occurred while uploading your resume. Please try again.');
+        console.error('Error:', error);
+    });
+}
+
+function showResumeError(message) {
+    const errorDiv = document.getElementById('resumeErrorMessage');
+    const errorText = document.getElementById('resumeErrorText');
+    
+    errorText.textContent = message;
+    errorDiv.classList.remove('hidden');
+    
+    document.getElementById('resumeSuccessMessage').classList.add('hidden');
+}
+
+function showResumeSuccess(message) {
+    const successDiv = document.getElementById('resumeSuccessMessage');
+    const successText = document.getElementById('resumeSuccessText');
+    
+    successText.textContent = message;
+    successDiv.classList.remove('hidden');
+    
+    document.getElementById('resumeErrorMessage').classList.add('hidden');
+}
+
+function hideResumeMessages() {
+    document.getElementById('resumeErrorMessage').classList.add('hidden');
+    document.getElementById('resumeSuccessMessage').classList.add('hidden');
+}
+
+function showResumeLoading() {
+    const submitBtn = document.getElementById('resumeSubmitBtn');
+    const submitText = document.getElementById('resumeSubmitText');
+    const submitSpinner = document.getElementById('resumeSubmitSpinner');
+    
+    submitBtn.disabled = true;
+    submitText.textContent = resumeModalMode === 'update' ? 'Updating...' : 'Uploading...';
+    submitSpinner.classList.remove('hidden');
+}
+
+function hideResumeLoading() {
+    const submitBtn = document.getElementById('resumeSubmitBtn');
+    const submitText = document.getElementById('resumeSubmitText');
+    const submitSpinner = document.getElementById('resumeSubmitSpinner');
+    
+    submitBtn.disabled = false;
+    submitText.textContent = resumeModalMode === 'update' ? 'Update Resume' : 'Upload Resume';
+    submitSpinner.classList.add('hidden');
+}
+
+function showResumeProgress(percent) {
+    const progressDiv = document.getElementById('resumeUploadProgress');
+    const progressBar = document.getElementById('resumeProgressBar');
+    const progressPercent = document.getElementById('resumeProgressPercent');
+    
+    progressDiv.classList.remove('hidden');
+    progressBar.style.width = `${percent}%`;
+    progressPercent.textContent = `${percent}%`;
+}
+
+function hideResumeProgress() {
+    document.getElementById('resumeUploadProgress').classList.add('hidden');
+}
+
+// Resume Delete Modal Functions
+function openResumeDeleteModal() {
+    const modal = document.getElementById('resumeDeleteModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Hide any previous error messages
+    document.getElementById('resumeDeleteErrorMessage').classList.add('hidden');
+}
+
+function closeResumeDeleteModal() {
+    const modal = document.getElementById('resumeDeleteModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function confirmResumeDelete() {
+    const deleteBtn = document.getElementById('resumeDeleteBtn');
+    const deleteText = document.getElementById('resumeDeleteText');
+    const deleteSpinner = document.getElementById('resumeDeleteSpinner');
+    const errorDiv = document.getElementById('resumeDeleteErrorMessage');
+    const errorText = document.getElementById('resumeDeleteErrorText');
+    
+    // Show loading state
+    deleteBtn.disabled = true;
+    deleteText.textContent = 'Deleting...';
+    deleteSpinner.classList.remove('hidden');
+    errorDiv.classList.add('hidden');
+    
+    fetch('/resume/delete-modal/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        deleteBtn.disabled = false;
+        deleteText.textContent = 'Delete Resume';
+        deleteSpinner.classList.add('hidden');
+        
+        if (data.success) {
+            closeResumeDeleteModal();
+            // Refresh the page to show updated resume status
+            window.location.reload();
+        } else {
+            errorText.textContent = data.error;
+            errorDiv.classList.remove('hidden');
+        }
+    })
+    .catch(error => {
+        deleteBtn.disabled = false;
+        deleteText.textContent = 'Delete Resume';
+        deleteSpinner.classList.add('hidden');
+        
+        errorText.textContent = 'An error occurred while deleting your resume. Please try again.';
+        errorDiv.classList.remove('hidden');
+        console.error('Error:', error);
+    });
+}
+
+// Function to view resume
+function viewResume() {
+    fetch('/resume/info/', {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Resume info response:', data); // Debug log
+        if (data.success && data.has_resume && data.data && data.data.resume_url) {
+            window.open(data.data.resume_url, '_blank');
+        } else if (data.success && !data.has_resume) {
+            alert('No resume found. Please upload a resume first.');
+        } else if (!data.success) {
+            alert(`Error: ${data.error || 'Unable to load resume information'}`);
+        } else {
+            alert('Resume URL not available. Please try re-uploading your resume.');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading resume:', error);
+        alert(`Error loading resume: ${error.message}. Please try again.`);
+    });
+}
+</script>
