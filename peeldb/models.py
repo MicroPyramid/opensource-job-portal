@@ -1,5 +1,7 @@
 import hashlib
 import json
+import uuid
+import os
 from datetime import datetime
 import re
 import arrow
@@ -458,6 +460,33 @@ REGISTERED_FROM = (
 )
 
 
+def resume_upload_path(instance, filename):
+    """
+    Generate a secure upload path for resume files using UUID for better randomness.
+    Path format: resume/user_{user_id}/{year}/{month}/{uuid}_{original_filename}
+    """
+    # Get file extension
+    file_extension = os.path.splitext(filename)[1].lower()
+    
+    # Generate UUID for uniqueness
+    unique_id = uuid.uuid4().hex
+    
+    # Get current date for organization
+    now = datetime.now()
+    year = now.strftime('%Y')
+    month = now.strftime('%m')
+    
+    # Clean the original filename (remove spaces, special chars)
+    clean_filename = re.sub(r'[^\w\-_\.]', '_', filename)
+    clean_filename = re.sub(r'_+', '_', clean_filename)  # Replace multiple underscores with single
+    
+    # Create new filename with UUID prefix
+    new_filename = f"{unique_id}_{clean_filename}"
+    
+    # Return the full path
+    return f"resume/user_{instance.id}/{year}/{month}/{new_filename}"
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     file_prepend = "user/img/"
     username = models.CharField(max_length=100, unique=True)
@@ -521,8 +550,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     technical_skills = models.ManyToManyField(Skill, related_name="recruiter_skill")
     dob = models.DateField(blank=True, null=True)
     profile_description = models.CharField(max_length=5000, default="")
-    # this must be s3 file key
-    resume = models.CharField(max_length=2000, default="")
+    # Resume file with UUID-based upload path for secure storage
+    resume = models.FileField(
+        upload_to=resume_upload_path,
+        max_length=2000,
+        null=True,
+        blank=True,
+        help_text='Upload your resume in PDF, DOC, DOCX, RTF, or ODT format (max 1MB)'
+    )
     relocation = models.BooleanField(default=False)
     notice_period = models.CharField(max_length=50, blank=True, null=True)
     year = models.CharField(max_length=50, blank=True, null=True)
@@ -692,7 +727,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_active:
             complete += 10
         if self.user_type == "JS":
-            if len(self.resume):
+            if self.resume:
                 complete += 15
             if len(self.profile_description):
                 complete += 5
@@ -1827,3 +1862,4 @@ class UserMessage(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     job = models.ForeignKey(JobPost, null=True, on_delete=models.CASCADE)
     is_read = models.BooleanField(default=False)
+

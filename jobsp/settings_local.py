@@ -121,6 +121,13 @@ LOGGING = {
 # }
 
 # Development-specific static/media settings
+# Use local file storage instead of S3 for development
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
+# Override S3 storage settings for local development
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
 # Uncomment if you want different paths for local development
 # STATIC_ROOT = os.path.join(BASE_DIR, "local_static")
 # MEDIA_ROOT = os.path.join(BASE_DIR, "local_media")

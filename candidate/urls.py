@@ -57,6 +57,11 @@ from .views.my_views import (
     add_certification_modal,
     edit_certification_modal,
     delete_certification_modal,
+    upload_resume_modal,
+    update_resume_modal,
+    delete_resume_modal,
+    get_resume_info,
+    edit_basic_profile,
 )
 
 app_name = "candidate"
@@ -78,6 +83,11 @@ urlpatterns = [
         r"profile/personal_info/edit/$",
         edit_personal_info,
         name="edit_personal_info",
+    ),
+    url(
+        r"profile/basic_profile/edit/$",
+        edit_basic_profile,
+        name="edit_basic_profile",
     ),
     url(
         r"job-preferences/edit/$",
@@ -287,5 +297,27 @@ urlpatterns = [
         r"certification/delete-modal/(?P<certification_id>[a-zA-Z0-9_-]+)/$",
         delete_certification_modal,
         name="delete_certification_modal",
+    ),
+    
+    # resume modal urls
+    url(
+        r"resume/upload-modal/$",
+        upload_resume_modal,
+        name="upload_resume_modal",
+    ),
+    url(
+        r"resume/update-modal/$",
+        update_resume_modal,
+        name="update_resume_modal",
+    ),
+    url(
+        r"resume/delete-modal/$",
+        delete_resume_modal,
+        name="delete_resume_modal",
+    ),
+    url(
+        r"resume/info/$",
+        get_resume_info,
+        name="get_resume_info",
     ),
 ]
