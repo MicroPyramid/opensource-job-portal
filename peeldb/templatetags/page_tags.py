@@ -313,7 +313,7 @@ def get_refine_locations(locations):
                 all_refine_locations.insert(0, each)
             except:
                 pass
-    return all_refine_locations[:8]
+    return all_refine_locations
 
 
 @register.simple_tag

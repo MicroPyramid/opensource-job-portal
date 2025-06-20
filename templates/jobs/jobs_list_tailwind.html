@@ -34,24 +34,17 @@
         <!-- side_filter_section starts here -->
         <div class="flex flex-col md:flex-row gap-6">
           <div class="md:w-1/4">
-           <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+           <div>
             <div class="p-4">
               <form name="refine-search" id="refine-search" method="POST" class='refine-autocomplete-me' action=".">
                 {% csrf_token %}
                 <div class="space-y-4">
                   
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseOne')">
-                      <span class="font-medium text-gray-800">Location</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseOne" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseOne" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
-                        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3" placeholder="Enter Any Location" name="location" id="refine_location" autocomplete="off">
-                        <input type="hidden" name="refine_search" id="refine_search" value="">
-                        
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Location</h3>
+                    </div>
+                    <div class="p-4 bg-white">
                         {% if state %}
                           {% get_refine_locations searched_location as total_refine_locations %}
                         {% else %}
@@ -67,26 +60,19 @@
                         </div>
                       </div>
                     </div>
-                  </div>
 
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseThree')">
-                      <span class="font-medium text-gray-800">Skills</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseThree" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseThree" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
-                        <div class="mb-3">
-                          <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Any Skill" name="q" autocomplete="off">
-                          <input type="hidden" name="page" id="page" value="1">
-                          {% if not searched_skills %}
-                            {% for text in searched_text %}
-                            <input type="hidden" name="refine_skill" value="{{ text }}">
-                            {% endfor %}
-                          {% endif  %}
-                        </div>
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Skills</h3>
+                    </div>
+                    <div class="p-4 bg-white">
+                        <input type="hidden" name="refine_search" id="refine_search" value="">
+                        <input type="hidden" name="page" id="page" value="1">
+                        {% if not searched_skills %}
+                          {% for text in searched_text %}
+                          <input type="hidden" name="refine_skill" value="{{ text }}">
+                          {% endfor %}
+                        {% endif  %}
                         <div class="space-y-2 max-h-48 overflow-y-auto">
                         {% get_refine_skills searched_skills as total_refine_skills %}
                           {% for skill in total_refine_skills %}
@@ -98,20 +84,12 @@
                         </div>
                       </div>
                     </div>
-                  </div>
 
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseFour')">
-                      <span class="font-medium text-gray-800">Industry</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseFour" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseFour" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
-                        <div class="mb-3">
-                          <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Any Industry" name="industry" autocomplete="off">
-                        </div>
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Industry</h3>
+                    </div>
+                    <div class="p-4 bg-white">
                         <div class="space-y-2 max-h-48 overflow-y-auto">
                           {% get_refine_industries searched_industry as total_refine_industries %}
                           {% for industry in total_refine_industries %}
@@ -123,20 +101,12 @@
                         </div>
                       </div>
                     </div>
-                  </div>
 
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseFive')">
-                      <span class="font-medium text-gray-800">Degrees</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseFive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseFive" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
-                        <div class="mb-3">
-                          <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Any Degree" name="education" autocomplete="off">
-                        </div>
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Degrees</h3>
+                    </div>
+                    <div class="p-4 bg-white">
                         <div class="space-y-2 max-h-48 overflow-y-auto">
                         {% get_refine_educations searched_edu as total_refine_edu %}
                           {% for edu in total_refine_edu %}
@@ -148,17 +118,12 @@
                         </div>
                       </div>
                     </div>
-                  </div>
 
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseSix')">
-                      <span class="font-medium text-gray-800">Job Type</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseSix" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseSix" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Job Type</h3>
+                    </div>
+                    <div class="p-4 bg-white">
                         <div class="space-y-2">
                           <label class="flex items-center space-x-2 text-sm">
                             <input type="checkbox" class="refine_search refine-functional-area text-blue-600 rounded focus:ring-blue-500" name="job_type" value="full-time" {% if searched_job_type == 'full-time' %}checked{% endif %}{% if job_type == 'full-time' %}checked{% endif %}>
@@ -179,7 +144,6 @@
                         </div>
                       </div>
                     </div>
-                  </div>
 
                 </div>
               </form>
@@ -262,40 +226,6 @@
 <!-- main_container ends here -->
 {% endblock %}
 {% block 'extra_js' %}
-<script>
-// Custom accordion functionality
-function toggleAccordion(targetId) {
-    const content = document.getElementById(targetId);
-    const icon = document.getElementById('icon-' + targetId);
-    
-    if (content.classList.contains('hidden')) {
-        // Show content
-        content.classList.remove('hidden');
-        // Rotate icon to indicate expanded state
-        icon.style.transform = 'rotate(180deg)';
-    } else {
-        // Hide content
-        content.classList.add('hidden');
-        // Reset icon rotation
-        icon.style.transform = 'rotate(0deg)';
-    }
-}
-
-// Initialize accordion states on page load
-document.addEventListener('DOMContentLoaded', function() {
-    // Set default expanded states
-    const defaultExpanded = ['collapseOne', 'collapseThree', 'collapseFour', 'collapseFive', 'collapseSix', 'collapseSeven'];
-    
-    defaultExpanded.forEach(function(id) {
-        const content = document.getElementById(id);
-        const icon = document.getElementById('icon-' + id);
-        if (content && icon) {
-            content.classList.remove('hidden');
-            icon.style.transform = 'rotate(180deg)';
-        }
-    });
-});
-</script>
 <script type="text/javascript">
 $(window).on('load', function() {
     // Animate loader off screen
