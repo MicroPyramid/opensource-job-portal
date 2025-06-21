@@ -7,6 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PeelJobs{% endblock %}</title>
     
+    <!-- Favicon and Logo -->
+    <link rel="icon" type="image/x-icon" href="{{logo}}" />
+    <link rel="shortcut icon" href="{{favicon}}">
+    
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:image" content="{{logo}}" />
+    <meta property="og:site_name" content="PeelJobs" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="copyright" content="Copyright (c) PeelJobs, All rights reserved"/>
+    {% block robot_tag %}
+    <meta name="ROBOTS" content="index, follow, ALL"/>
+    {% endblock %}
+    {% block meta_tags %}{% endblock %}
+    {% block block_canonical_tag %}{% endblock %}
+    
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
