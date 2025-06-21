@@ -523,7 +523,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     pincode = models.IntegerField(null=True, blank=True)
     last_password_reset_on = models.DateTimeField(auto_now_add=True)
     photo = models.CharField(max_length=500)
-    # TODO: this needs to be choice field
     marital_status = models.CharField(
         choices=MARTIAL_STATUS, max_length=50, blank=True, null=True
     )

@@ -290,7 +290,7 @@ def get_refine_skills(skills):
                 all_refine_skills.insert(0, each)
             except:
                 pass
-    return all_refine_skills[:8]
+    return all_refine_skills
 
 
 @register.simple_tag
@@ -313,7 +313,7 @@ def get_refine_locations(locations):
                 all_refine_locations.insert(0, each)
             except:
                 pass
-    return all_refine_locations[:8]
+    return all_refine_locations
 
 
 @register.simple_tag
@@ -359,7 +359,7 @@ def get_refine_industries(industry):
                 all_refine_industries.insert(0, each)
             except:
                 pass
-    return all_refine_industries[:8]
+    return all_refine_industries
 
 
 @register.simple_tag
@@ -380,7 +380,7 @@ def get_refine_educations(education):
                 all_refine_educations.insert(0, each)
             except:
                 pass
-    return all_refine_educations[:8]
+    return all_refine_educations
 
 
 @register.simple_tag

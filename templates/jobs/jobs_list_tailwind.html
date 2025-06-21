@@ -24,7 +24,176 @@
 {% show_search_filter_tailwind %}
 {% endblock %}
 {% block base %}
-<div class="se-pre-con"></div>
+<style>
+  .location-item {
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  .skill-item {
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  .industry-item {
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  .degree-item {
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  #show-more-locations {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  #show-more-locations:hover {
+    transform: translateY(-1px);
+  }
+  
+  #show-more-skills {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  #show-more-skills:hover {
+    transform: translateY(-1px);
+  }
+  
+  #show-more-industries {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  #show-more-industries:hover {
+    transform: translateY(-1px);
+  }
+  
+  #show-more-degrees {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  #show-more-degrees:hover {
+    transform: translateY(-1px);
+  }
+  
+  .modal-location-item {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .modal-location-item:hover {
+    background-color: #f9fafb;
+  }
+  
+  .modal-skill-item {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .modal-skill-item:hover {
+    background-color: #f9fafb;
+  }
+  
+  .modal-industry-item {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .modal-industry-item:hover {
+    background-color: #f9fafb;
+  }
+  
+  .modal-degree-item {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .modal-degree-item:hover {
+    background-color: #f9fafb;
+  }
+  
+  /* Responsive grid adjustments for modal */
+  @media (max-width: 640px) {
+    #modal-location-list, #modal-skill-list, #modal-industry-list, #modal-degree-list {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+  
+  @media (min-width: 641px) and (max-width: 768px) {
+    #modal-location-list, #modal-skill-list, #modal-industry-list, #modal-degree-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    #modal-location-list, #modal-skill-list, #modal-industry-list, #modal-degree-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    #modal-location-list, #modal-skill-list, #modal-industry-list, #modal-degree-list {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  #location-modal, #skills-modal, #industry-modal, #degrees-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Custom range slider styles */
+  .range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  
+  .range-slider::-webkit-slider-track {
+    background: #e5e7eb;
+    height: 6px;
+    border-radius: 3px;
+  }
+  
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #3b82f6;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .range-slider::-moz-range-track {
+    background: #e5e7eb;
+    height: 6px;
+    border-radius: 3px;
+    border: none;
+  }
+  
+  .range-slider::-moz-range-thumb {
+    background: #3b82f6;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .range-slider:focus {
+    outline: none;
+  }
+  
+  .range-slider:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+  
+  .range-slider:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+</style>
 <!-- main_container starts here -->
 <div class="w-full">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,131 +203,124 @@
         <!-- side_filter_section starts here -->
         <div class="flex flex-col md:flex-row gap-6">
           <div class="md:w-1/4">
-           <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+           <div>
             <div class="p-4">
               <form name="refine-search" id="refine-search" method="POST" class='refine-autocomplete-me' action=".">
                 {% csrf_token %}
                 <div class="space-y-4">
                   
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseOne')">
-                      <span class="font-medium text-gray-800">Location</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseOne" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseOne" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
-                        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3" placeholder="Enter Any Location" name="location" id="refine_location" autocomplete="off">
-                        <input type="hidden" name="refine_search" id="refine_search" value="">
-                        
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Location</h3>
+                    </div>
+                    <div class="p-4 bg-white">
                         {% if state %}
                           {% get_refine_locations searched_location as total_refine_locations %}
                         {% else %}
                           {% get_refine_locations searched_locations as total_refine_locations %}
                         {% endif %}
-                        <div class="space-y-2 max-h-48 overflow-y-auto">
+                        <div class="space-y-2" id="location-list-container">
                           {% for location in total_refine_locations %}
-                          <label class="flex items-center space-x-2 text-sm">
+                          <label class="flex items-center space-x-2 text-sm location-item" data-location-name="{{ location.name|lower }}" {% if forloop.counter > 5 %}style="display: none;"{% endif %}>
                             <input type="checkbox" {% for each in searched_locations %}{% if location == each %}checked{% else %}{% endif %}{% endfor %} class="refine_search refine-skill refine_location text-blue-600 rounded focus:ring-blue-500" name="refine_location" value="{{ location.name }}">
                             <span class="text-gray-700">{{ location.name }}({{ location.num_posts }})</span>
                           </label>
                           {% endfor %}
                         </div>
+                        {% if total_refine_locations|length > 5 %}
+                        <div class="mt-3">
+                          <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-medium" id="show-more-locations">
+                            Show more locations
+                          </button>
+                        </div>
+                        {% endif %}
                       </div>
                     </div>
-                  </div>
 
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseThree')">
-                      <span class="font-medium text-gray-800">Skills</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseThree" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseThree" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
-                        <div class="mb-3">
-                          <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Any Skill" name="q" autocomplete="off">
-                          <input type="hidden" name="page" id="page" value="1">
-                          {% if not searched_skills %}
-                            {% for text in searched_text %}
-                            <input type="hidden" name="refine_skill" value="{{ text }}">
-                            {% endfor %}
-                          {% endif  %}
-                        </div>
-                        <div class="space-y-2 max-h-48 overflow-y-auto">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Skills</h3>
+                    </div>
+                    <div class="p-4 bg-white">
+                        <input type="hidden" name="refine_search" id="refine_search" value="">
+                        <input type="hidden" name="page" id="page" value="1">
+                        {% if not searched_skills %}
+                          {% for text in searched_text %}
+                          <input type="hidden" name="refine_skill" value="{{ text }}">
+                          {% endfor %}
+                        {% endif  %}
                         {% get_refine_skills searched_skills as total_refine_skills %}
+                        <div class="space-y-2" id="skills-list-container">
                           {% for skill in total_refine_skills %}
-                          <label class="flex items-center space-x-2 text-sm">
+                          <label class="flex items-center space-x-2 text-sm skill-item" data-skill-name="{{ skill.name|lower }}" {% if forloop.counter > 5 %}style="display: none;"{% endif %}>
                             <input type="checkbox" {% for each in searched_skills %}{% if skill == each %}checked{% else %}{% endif %}{% endfor %} class="refine_search refine-skill refine_skill text-blue-600 rounded focus:ring-blue-500" name="refine_skill" value="{{ skill.name }}">
                             <span class="text-gray-700">{{ skill.name }}({{ skill.num_posts }})</span>
                           </label>
                           {% endfor %}
                         </div>
+                        {% if total_refine_skills|length > 5 %}
+                        <div class="mt-3">
+                          <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-medium" id="show-more-skills">
+                            Show more skills
+                          </button>
+                        </div>
+                        {% endif %}
                       </div>
                     </div>
-                  </div>
 
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseFour')">
-                      <span class="font-medium text-gray-800">Industry</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseFour" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseFour" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
-                        <div class="mb-3">
-                          <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Any Industry" name="industry" autocomplete="off">
-                        </div>
-                        <div class="space-y-2 max-h-48 overflow-y-auto">
-                          {% get_refine_industries searched_industry as total_refine_industries %}
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Industry</h3>
+                    </div>
+                    <div class="p-4 bg-white">
+                        {% get_refine_industries searched_industry as total_refine_industries %}
+                        <div class="space-y-2" id="industry-list-container">
                           {% for industry in total_refine_industries %}
-                          <label class="flex items-center space-x-2 text-sm">
+                          <label class="flex items-center space-x-2 text-sm industry-item" data-industry-name="{{ industry.name|get_industry_name|default_if_none:''|lower }}" {% if forloop.counter > 5 %}style="display: none;"{% endif %}>
                             <input type="checkbox" class="refine_search refine-industry refine_industry text-blue-600 rounded focus:ring-blue-500" name="refine_industry" value="{{ industry.name }}" {% if industry in searched_industry %}checked{% else %}{% endif %}>
                             <span class="text-gray-700">{{ industry.name|get_industry_name }}({{ industry.num_posts }})</span>
                           </label>
                           {% endfor %}
                         </div>
+                        {% if total_refine_industries|length > 5 %}
+                        <div class="mt-3">
+                          <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-medium" id="show-more-industries">
+                            Show more industries
+                          </button>
+                        </div>
+                        {% endif %}
                       </div>
                     </div>
-                  </div>
 
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseFive')">
-                      <span class="font-medium text-gray-800">Degrees</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseFive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseFive" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
-                        <div class="mb-3">
-                          <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Any Degree" name="education" autocomplete="off">
-                        </div>
-                        <div class="space-y-2 max-h-48 overflow-y-auto">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Degrees</h3>
+                    </div>
+                    <div class="p-4 bg-white">
                         {% get_refine_educations searched_edu as total_refine_edu %}
+                        <div class="space-y-2" id="degrees-list-container">
                           {% for edu in total_refine_edu %}
-                          <label class="flex items-center space-x-2 text-sm">
+                          <label class="flex items-center space-x-2 text-sm degree-item" data-degree-name="{{ edu.name|lower }}" {% if forloop.counter > 5 %}style="display: none;"{% endif %}>
                             <input type="checkbox" class="refine_search refine-edu refine_edu text-blue-600 rounded focus:ring-blue-500" name="refine_education" value="{{ edu.name }}" {% for each in searched_edu %}{% if edu == each %}checked{% endif %}{% endfor %}>
                             <span class="text-gray-700">{{ edu.name }}({{ edu.num_posts }})</span>
                           </label>
                           {% endfor %}
                         </div>
+                        {% if total_refine_edu|length > 5 %}
+                        <div class="mt-3">
+                          <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-medium" id="show-more-degrees">
+                            Show more degrees
+                          </button>
+                        </div>
+                        {% endif %}
                       </div>
                     </div>
-                  </div>
 
                   <div class="border border-gray-200 rounded-lg">
-                    <button class="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg accordion-toggle" type="button" onclick="toggleAccordion('collapseSix')">
-                      <span class="font-medium text-gray-800">Job Type</span>
-                      <svg class="h-4 w-4 text-gray-600 transform transition-transform duration-200" id="icon-collapseSix" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </button>
-                    <div id="collapseSix" class="accordion-content">
-                      <div class="p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Job Type</h3>
+                    </div>
+                    <div class="p-4 bg-white">
                         <div class="space-y-2">
                           <label class="flex items-center space-x-2 text-sm">
                             <input type="checkbox" class="refine_search refine-functional-area text-blue-600 rounded focus:ring-blue-500" name="job_type" value="full-time" {% if searched_job_type == 'full-time' %}checked{% endif %}{% if job_type == 'full-time' %}checked{% endif %}>
@@ -179,7 +341,53 @@
                         </div>
                       </div>
                     </div>
-                  </div>
+
+                  <div class="border border-gray-200 rounded-lg">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                      <h3 class="font-medium text-gray-800">Experience</h3>
+                    </div>
+                    <div class="p-4 bg-white">
+                        <div class="space-y-4">
+                          <input type="hidden" name="refine_experience_min" id="refine_experience_min" value="{{ request.POST.refine_experience_min|default:'0' }}">
+                          <input type="hidden" name="refine_experience_max" id="refine_experience_max" value="{{ request.POST.refine_experience_max|default:'20' }}">
+                          
+                          <div class="space-y-3">
+                            <div class="flex justify-between text-sm text-gray-600">
+                              <span>Min: <span id="min-experience-display">{{ request.POST.refine_experience_min|default:'0' }}</span> years</span>
+                              <span>Max: <span id="max-experience-display">{{ request.POST.refine_experience_max|default:'20' }}</span> years</span>
+                            </div>
+                            
+                            <div class="relative">
+                              <div class="flex space-x-4">
+                                <div class="flex-1">
+                                  <label class="block text-xs text-gray-500 mb-1">Min Experience</label>
+                                  <input type="range" 
+                                         id="min-experience-range" 
+                                         min="0" 
+                                         max="20" 
+                                         value="{{ request.POST.refine_experience_min|default:'0' }}"
+                                         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-slider">
+                                </div>
+                                <div class="flex-1">
+                                  <label class="block text-xs text-gray-500 mb-1">Max Experience</label>
+                                  <input type="range" 
+                                         id="max-experience-range" 
+                                         min="0" 
+                                         max="20" 
+                                         value="{{ request.POST.refine_experience_max|default:'20' }}"
+                                         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-slider">
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div class="flex justify-between text-xs text-gray-400">
+                              <span>0 years</span>
+                              <span>20+ years</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                 </div>
               </form>
@@ -259,176 +467,385 @@
   </div>
 </div>
 
+{% include "jobs/partials/_location_filter_modal.html" %}
+{% include "jobs/partials/_skills_filter_modal.html" %}
+{% include "jobs/partials/_industry_filter_modal.html" %}
+{% include "jobs/partials/_degrees_filter_modal.html" %}
+
 <!-- main_container ends here -->
 {% endblock %}
-{% block 'extra_js' %}
-<script>
-// Custom accordion functionality
-function toggleAccordion(targetId) {
-    const content = document.getElementById(targetId);
-    const icon = document.getElementById('icon-' + targetId);
-    
-    if (content.classList.contains('hidden')) {
-        // Show content
-        content.classList.remove('hidden');
-        // Rotate icon to indicate expanded state
-        icon.style.transform = 'rotate(180deg)';
-    } else {
-        // Hide content
-        content.classList.add('hidden');
-        // Reset icon rotation
-        icon.style.transform = 'rotate(0deg)';
-    }
-}
+{% block extra_js %}
+{{ block.super }}
+<script type="text/javascript">
+$(document).ready(function () {
+    // Location Modal Functionality
+    $(document).on('click', '#show-more-locations', function(e) {
+        e.preventDefault();
+        $('#location-modal').show();
+        
+        // Sync modal checkboxes with current selections
+        $('.refine_location:checked').each(function() {
+            var value = $(this).val();
+            $('.modal-location-checkbox[data-value="' + value + '"]').prop('checked', true);
+        });
+        
+        // Update counter when modal opens
+        updateSelectedLocationsCounter();
+    });
 
-// Initialize accordion states on page load
-document.addEventListener('DOMContentLoaded', function() {
-    // Set default expanded states
-    const defaultExpanded = ['collapseOne', 'collapseThree', 'collapseFour', 'collapseFive', 'collapseSix', 'collapseSeven'];
+    // Skills Modal Functionality
+    $(document).on('click', '#show-more-skills', function(e) {
+        e.preventDefault();
+        $('#skills-modal').show();
+        
+        // Sync modal checkboxes with current selections
+        $('.refine_skill:checked').each(function() {
+            var value = $(this).val();
+            $('.modal-skill-checkbox[data-value="' + value + '"]').prop('checked', true);
+        });
+        
+        // Update counter when modal opens
+        updateSelectedSkillsCounter();
+    });
+
+    // Industry Modal Functionality
+    $(document).on('click', '#show-more-industries', function(e) {
+        e.preventDefault();
+        $('#industry-modal').show();
+        
+        // Sync modal checkboxes with current selections
+        $('.refine_industry:checked').each(function() {
+            var value = $(this).val();
+            $('.modal-industry-checkbox[data-value="' + value + '"]').prop('checked', true);
+        });
+        
+        // Update counter when modal opens
+        updateSelectedIndustriesCounter();
+    });
+
+    // Degrees Modal Functionality
+    $(document).on('click', '#show-more-degrees', function(e) {
+        e.preventDefault();
+        $('#degrees-modal').show();
+        
+        // Sync modal checkboxes with current selections
+        $('.refine_edu:checked').each(function() {
+            var value = $(this).val();
+            $('.modal-degree-checkbox[data-value="' + value + '"]').prop('checked', true);
+        });
+        
+        // Update counter when modal opens
+        updateSelectedDegreesCounter();
+    });
+
+    // Update selected locations counter
+    function updateSelectedLocationsCounter() {
+        var count = $('.modal-location-checkbox:checked').length;
+        $('#selected-locations-count').text(count);
+    }
+
+    // Update selected skills counter
+    function updateSelectedSkillsCounter() {
+        var count = $('.modal-skill-checkbox:checked').length;
+        $('#selected-skills-count').text(count);
+    }
+
+    // Update selected industries counter
+    function updateSelectedIndustriesCounter() {
+        var count = $('.modal-industry-checkbox:checked').length;
+        $('#selected-industries-count').text(count);
+    }
+
+    // Update selected degrees counter
+    function updateSelectedDegreesCounter() {
+        var count = $('.modal-degree-checkbox:checked').length;
+        $('#selected-degrees-count').text(count);
+    }
+
+    // Handle location checkbox changes
+    $(document).on('change', '.modal-location-checkbox', function() {
+        updateSelectedLocationsCounter();
+    });
+
+    // Handle skill checkbox changes
+    $(document).on('change', '.modal-skill-checkbox', function() {
+        updateSelectedSkillsCounter();
+    });
+
+    // Handle industry checkbox changes
+    $(document).on('change', '.modal-industry-checkbox', function() {
+        updateSelectedIndustriesCounter();
+    });
+
+    // Handle degree checkbox changes
+    $(document).on('change', '.modal-degree-checkbox', function() {
+        updateSelectedDegreesCounter();
+    });
+
+    // Close location modal
+    $(document).on('click', '#close-location-modal, #cancel-location-modal', function() {
+        $('#location-modal').hide();
+    });
+
+    // Close skills modal
+    $(document).on('click', '#close-skills-modal, #cancel-skills-modal', function() {
+        $('#skills-modal').hide();
+    });
+
+    // Close industry modal
+    $(document).on('click', '#close-industry-modal, #cancel-industry-modal', function() {
+        $('#industry-modal').hide();
+    });
+
+    // Close degrees modal
+    $(document).on('click', '#close-degrees-modal, #cancel-degrees-modal', function() {
+        $('#degrees-modal').hide();
+    });
+
+    // Close modal when clicking outside
+    $(document).on('click', '#location-modal', function(e) {
+        if (e.target === this) {
+            $('#location-modal').hide();
+        }
+    });
+
+    // Close skills modal when clicking outside
+    $(document).on('click', '#skills-modal', function(e) {
+        if (e.target === this) {
+            $('#skills-modal').hide();
+        }
+    });
+
+    // Close industry modal when clicking outside
+    $(document).on('click', '#industry-modal', function(e) {
+        if (e.target === this) {
+            $('#industry-modal').hide();
+        }
+    });
+
+    // Close degrees modal when clicking outside
+    $(document).on('click', '#degrees-modal', function(e) {
+        if (e.target === this) {
+            $('#degrees-modal').hide();
+        }
+    });
+
+    // Location search functionality
+    $(document).on('input', '#location-search', function() {
+        var searchTerm = $(this).val().toLowerCase();
+        $('.modal-location-item').each(function() {
+            var locationName = $(this).data('location-name');
+            $(this).toggle(locationName.includes(searchTerm));
+        });
+    });
+
+    // Skills search functionality
+    $(document).on('input', '#skills-search', function() {
+        var searchTerm = $(this).val().toLowerCase();
+        $('.modal-skill-item').each(function() {
+            var skillName = $(this).data('skill-name');
+            $(this).toggle(skillName.includes(searchTerm));
+        });
+    });
+
+    // Industry search functionality
+    $(document).on('input', '#industry-search', function() {
+        var searchTerm = $(this).val().toLowerCase();
+        $('.modal-industry-item').each(function() {
+            var industryName = $(this).data('industry-name');
+            $(this).toggle(industryName.includes(searchTerm));
+        });
+    });
+
+    // Degrees search functionality
+    $(document).on('input', '#degrees-search', function() {
+        var searchTerm = $(this).val().toLowerCase();
+        $('.modal-degree-item').each(function() {
+            var degreeName = $(this).data('degree-name');
+            $(this).toggle(degreeName.includes(searchTerm));
+        });
+    });
+
+    // Apply location filters
+    $(document).on('click', '#apply-location-filters', function() {
+        $('.refine_location').prop('checked', false);
+        
+        $('.modal-location-checkbox:checked').each(function() {
+            var value = $(this).data('value');
+            $('.refine_location[value="' + value + '"]').prop('checked', true);
+        });
+        
+        $('#location-modal').hide();
+        $('#refine_search').val('True');
+        $('#refine-search').submit();
+    });
+
+    // Apply skills filters
+    $(document).on('click', '#apply-skills-filters', function() {
+        $('.refine_skill').prop('checked', false);
+        
+        $('.modal-skill-checkbox:checked').each(function() {
+            var value = $(this).data('value');
+            $('.refine_skill[value="' + value + '"]').prop('checked', true);
+        });
+        
+        $('#skills-modal').hide();
+        $('#refine_search').val('True');
+        $('#refine-search').submit();
+    });
+
+    // Apply industry filters
+    $(document).on('click', '#apply-industry-filters', function() {
+        $('.refine_industry').prop('checked', false);
+        
+        $('.modal-industry-checkbox:checked').each(function() {
+            var value = $(this).data('value');
+            $('.refine_industry[value="' + value + '"]').prop('checked', true);
+        });
+        
+        $('#industry-modal').hide();
+        $('#refine_search').val('True');
+        $('#refine-search').submit();
+    });
+
+    // Apply degrees filters
+    $(document).on('click', '#apply-degrees-filters', function() {
+        $('.refine_edu').prop('checked', false);
+        
+        $('.modal-degree-checkbox:checked').each(function() {
+            var value = $(this).data('value');
+            $('.refine_edu[value="' + value + '"]').prop('checked', true);
+        });
+        
+        $('#degrees-modal').hide();
+        $('#refine_search').val('True');
+        $('#refine-search').submit();
+    });
     
-    defaultExpanded.forEach(function(id) {
-        const content = document.getElementById(id);
-        const icon = document.getElementById('icon-' + id);
-        if (content && icon) {
-            content.classList.remove('hidden');
-            icon.style.transform = 'rotate(180deg)';
+    // Pagination handler
+    $('ul.pagination li a').click(function(e){
+        e.preventDefault();
+        
+        var href = $(this).attr('data-href');
+        var page = $(this).attr('data-page');
+        
+        if (!href || !page) return false;
+        
+        $('#page').val(page);
+        $('#refine_search').val('True');
+        $('#refine-search').attr("action", href);
+        $('#refine-search').submit();
+        
+        return false;
+    });
+    
+    // Text expand/collapse functionality
+    var showChar = 130;
+    var ellipsestext = "...";
+    var moretext = "more";
+    var lesstext = "less";
+    
+    $('.more').each(function () {
+        var content = $(this).children('p').html();
+        if (content && content.length > showChar) {
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar);
+            var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="moretext">' + h + '</span><span class="morelink">' + moretext + '</span></span>';
+            $(this).children('p').html(html);
+        }
+    });
+    
+    $('body').on("click", ".morelink", function (e) {
+        e.preventDefault();
+        var isLess = $(this).hasClass("less");
+        $(this).toggleClass("less").html(isLess ? moretext : lesstext);
+        $(this).parent().prev().toggle();
+        $(this).prev().toggle();
+        return false;
+    });
+
+    // Skills dropdown
+    if ($('#job_skills').length) {
+        $('#job_skills').empty().append(new Option('Select a Skill', ''));
+        $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
+            $.each(JSON.parse(data.response), function (key, field) {
+                $('#job_skills').append(new Option(field.fields.name, field.pk));
+            });
+        });
+    }
+
+    // Scroll-based positioning (simplified)
+    $(window).scroll(function(){
+        var scrollTop = $(this).scrollTop();
+        var rightHeight = $(".right_container").height();
+        var mainHeight = $('.main_container').height();
+        var $elements = $('.inner_login_box, .upload_btn_block, .subscribe_box');
+        
+        if (scrollTop > rightHeight && scrollTop < (mainHeight - 650)) {
+            $elements.each(function() {
+                if (!$(this).hasClass('scroll-positioned')) {
+                    $(this).addClass('scroll-positioned');
+                    if ($(this).hasClass('subscribe_box')) {
+                        $(this).css({'position': 'fixed', 'top': '181px'});
+                    } else if ($(this).hasClass('upload_btn_block')) {
+                        $(this).css({'position': 'fixed', 'top': '121px'});
+                    } else if ($(this).hasClass('inner_login_box')) {
+                        $(this).css({'position': 'fixed', 'top': '426px'});
+                    }
+                }
+            });
+        } else {
+            $elements.removeClass('scroll-positioned').css({'position': 'static', 'top': '0px'});
         }
     });
 });
-</script>
-<script type="text/javascript">
-$(window).on('load', function() {
-    // Animate loader off screen
-    $(".se-pre-con").fadeOut("slow");;
-  });
-  $(document).ready(function () {
-      // Configure/customize these variables.
-      var showChar = 130;  // How many characters are shown by default
-      var ellipsestext = "...";
-      var moretext = "more";
-      var lesstext = "less";
-      $('.more').each(function () {
-          var content = $(this).children('p').html();
-          if (content && content.length > showChar) {
-              var c = content.substr(0, showChar);
-              var h = content.substr(showChar, content.length - showChar);
-              var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="moretext">' + h + '</span><span class="morelink">' + moretext + '</span></span>';
-              $(this).children('p').html(html);
-          }
-      });
-      $('body').on("click", ".morelink", function (e) {
-          e.preventDefault();
-          if ($(this).hasClass("less")) {
-              $(this).removeClass("less");
-              $(this).html(moretext);
-          } else {
-              $(this).addClass("less");
-              $(this).html(lesstext);
-          }
-          $(this).parent().prev().toggle();
-          $(this).prev().toggle();
-          return false;
-      });
-  });
-  $(document).ready(function () {
-      $('#job_skills').empty()
-      $('#job_skills').append(new Option('Select a Skill', ''))
-      $.getJSON("{% url 'jobs:get_skills' %}", function (data) {
-          $.each(JSON.parse(data.response), function (key, field) {
-              $('#job_skills').append(new Option(field.fields.name, field.pk))
-          })
-      });
-      $(window).scroll(function(e){
-        var $el = $('.inner_login_box, .upload_btn_block, .subscribe_box');
-        $('.inner_login_box, .upload_btn_block, .subscribe_box').css({'position': 'static', 'top': '0px'});
-        var isPositionFixed = ($el.css('position') == 'fixed');
-        job_height = $('.main_container').height()
-        if ($(this).scrollTop() < $(".right_container").height() && isPositionFixed)
-        {
-          $('.inner_login_box, .upload_btn_block, .subscribe_box').css({'position': 'static', 'top': '0px'});
+
+// Experience range functionality
+$(function() {
+    var minRange = $('#min-experience-range')[0];
+    var maxRange = $('#max-experience-range')[0];
+    var minDisplay = $('#min-experience-display');
+    var maxDisplay = $('#max-experience-display');
+    var minHidden = $('#refine_experience_min');
+    var maxHidden = $('#refine_experience_max');
+    
+    if (minRange && maxRange) {
+        function updateExperienceRange() {
+            var minVal = parseInt(minRange.value);
+            var maxVal = parseInt(maxRange.value);
+            
+            if (minVal > maxVal) {
+                if (this === minRange) {
+                    maxVal = minVal;
+                    maxRange.value = maxVal;
+                } else {
+                    minVal = maxVal;
+                    minRange.value = minVal;
+                }
+            }
+            
+            minDisplay.text(minVal);
+            maxDisplay.text(maxVal);
+            minHidden.val(minVal);
+            maxHidden.val(maxVal);
+            
+            $('#refine_search').val('True');
+            $('#refine-search').submit();
         }
-        // if ($(this).scrollTop() > 4015 && isPositionFixed)
-        // {
-        //   $('.inner_login_box, .upload_btn_block, .subscribe_box').css({'position': 'static', 'top': '0px'});
-        // }
-
-        if ($(this).scrollTop() > $(".right_container").height() && $(this).scrollTop() < (job_height-650) && !isPositionFixed){
-          $('.subscribe_box').css({'position': 'fixed', 'top': '181px'});
-          $('.subscribe_box').addClass('scroll_subscribe');
-          $('.upload_btn_block').css({'position': 'fixed', 'top': '121px'});
-          $('.upload_btn_block').addClass('scroll_upload')
-
-          $('#left_register_type').val('login')
-          $('.left_new_user_login').hide()
-          $('.left_new_account').show()
-          $('p.hint').remove();
-          $('.left_login_form_button').text('Login Here')
-          $('#mail_password').show()
-          $('.left_forgot_password').show();
-
-          $('.inner_login_box').css({'position': 'fixed', 'top': '426px'});
-          $('.inner_login_box').addClass('scroll_loginbox');
-
-        }
-      });
-
-  });
-
-
-  $('ul.pagination li a').click(function(e){
-    e.preventDefault();
-    
-    var href = $(this).attr('data-href');
-    var page = $(this).attr('data-page');
-    
-    console.log('Pagination clicked:', {
-      href: href,
-      page: page,
-      element: this
-    });
-    
-    if (!href || !page) {
-      console.error('Missing href or page data attributes');
-      return false;
+        
+        $(minRange).on('input', updateExperienceRange);
+        $(maxRange).on('input', updateExperienceRange);
     }
     
-    $('#page').val(page);
-    $('#refine_search').val('True');
-    $('#refine-search').attr("action", href);
-    
-    console.log('Form action set to:', href);
-    console.log('Page value set to:', page);
-    
-    $('#refine-search').submit();
-    
-    return false;
-  });
-
+    // Tab functionality
+    $('.tab_button').click(function (e) {
+        e.preventDefault();
+        $('.tab_button').removeClass('active');
+        $(this).addClass('active');
+        var panel = $(this).attr('data-url');
+        $('.tab_block').removeClass('active');
+        $('#' + panel).addClass('active');
+    });
+});
 </script>
-<script>
-  $( function() {
-    $( "#slider-range").slider({
-      range: true,
-      min: 0,
-      max: 20,
-      values: [$('#refine_experience_min').val(), $('#refine_experience_max').val()],
-      slide: function( event, ui ) {
-        $('#refine_experience_min').val(ui.values[0]);
-        $('#refine_experience_max').val(ui.values[1]);
-        $('#refine_search').val('True');
-        $('#refine-search').submit();
-      }
-    }).slider("pips").slider("float");
-  } );
-
-  $('.tab_button').click(function (e) {
-      e.preventDefault();
-      $('.tab_button').removeClass('active');
-      $(this).addClass('active')
-      var panel = $(this).attr('data-url');
-      $('.tab_block').removeClass('active')
-      $('#' + panel).addClass('active');
-    })
-
-  </script>
 {% endblock %}

@@ -99,9 +99,7 @@ from dashboard.tasks import save_search_results
 
 def custom_search(data, request):
     form = JobSearchForm(data)
-    searched_locations = searched_skills = searched_edu = searched_industry = (
-        searched_states
-    ) = ""
+    searched_locations = searched_skills = searched_edu = searched_industry = ""
     if request.POST.get("refine_search") == "True":
         (
             jobs_list,
@@ -109,7 +107,6 @@ def custom_search(data, request):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     else:
         jobs_list = form.search()
@@ -215,7 +212,6 @@ def custome_search(request, skill_name, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     else:
         search_dict = QueryDict("", mutable=True)
@@ -233,7 +229,6 @@ def custome_search(request, skill_name, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     if job_list:
         no_of_jobs = job_list.count()
@@ -268,7 +263,6 @@ def custome_search(request, skill_name, city_name, **kwargs):
             "is_job_list": False,
             "current_url": current_url,
             "searched_skills": searched_skills,
-            "searched_states": searched_states,
             "searched_locations": searched_locations,
             "searched_industry": searched_industry,
             "searched_edu": searched_edu,
@@ -343,7 +337,6 @@ def custom_walkins(request, skill_name, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(request.POST)
     else:
         search_dict = QueryDict("", mutable=True)
@@ -360,7 +353,6 @@ def custom_walkins(request, skill_name, city_name, **kwargs):
             searched_locations,
             searched_industry,
             searched_edu,
-            searched_states,
         ) = refined_search(search_dict)
     if job_list:
         no_of_jobs = job_list.count()
@@ -395,7 +387,6 @@ def custom_walkins(request, skill_name, city_name, **kwargs):
             "is_job_list": False,
             "current_url": current_url,
             "searched_skills": searched_skills,
-            "searched_states": searched_states,
             "searched_locations": searched_locations,
             "searched_industry": searched_industry,
             "searched_edu": searched_edu,
