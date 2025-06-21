@@ -1,0 +1,48 @@
+<!-- Location Filter Modal -->
+<div id="location-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-[9999]" style="display: none;">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] relative z-[10000]">
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-medium text-gray-900">Select Locations</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" id="close-location-modal">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="mt-3">
+          <input type="text" id="location-search" placeholder="Search locations..." 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+      <div class="p-4 max-h-96 overflow-y-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2" id="modal-location-list">
+          {% for location in total_refine_locations %}
+          <label class="flex items-center space-x-2 text-sm modal-location-item p-2 rounded hover:bg-gray-50 cursor-pointer" data-location-name="{{ location.name|lower }}">
+            <input type="checkbox" {% for each in searched_locations %}{% if location == each %}checked{% else %}{% endif %}{% endfor %} 
+                   class="modal-location-checkbox text-blue-600 rounded focus:ring-blue-500 flex-shrink-0" 
+                   data-value="{{ location.name }}">
+            <span class="text-gray-700 text-xs sm:text-sm truncate">{{ location.name }} ({{ location.num_posts }})</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-200">
+        <div class="flex justify-between items-center">
+          <div class="text-sm text-gray-500">
+            <span id="selected-locations-count">0</span> location(s) selected
+          </div>
+          <div class="flex space-x-2">
+            <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300" id="cancel-location-modal">
+              Cancel
+            </button>
+            <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700" id="apply-location-filters">
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
