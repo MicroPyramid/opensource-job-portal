@@ -128,21 +128,6 @@
             <!-- Registration Form -->
             <form id="reg-form" method="post" class="space-y-6">
               {% csrf_token %}
-              
-              <!-- Username Field -->
-              <div>
-                <label for="register-username" class="block text-sm font-semibold text-gray-700 mb-2">
-                  Username <span class="text-red-500">*</span>
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
-                  </div>
-                  <input type="text" id="register-username" name="username" 
-                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                    placeholder="Enter your username" required>
-                </div>
-              </div>
 
               <!-- Email Field -->
               <div>
