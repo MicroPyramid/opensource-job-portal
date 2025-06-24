@@ -97,17 +97,31 @@
 
         </div>
 
-        <!-- Right Column: Registration Form -->
+        <!-- Right Column: Login/Registration Form -->
         <div class="lg:sticky lg:top-8">
           <div class="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 md:p-8">
-            <!-- Header -->
-            <div class="text-center mb-6">
-              <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="user-plus" class="w-8 h-8 text-blue-600"></i>
-              </div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Start Your Free Account</h2>
-              <p class="text-gray-600">Join thousands of recruiters already using PeelJobs</p>
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-gray-200 mb-6">
+              <button type="button" id="register-tab" class="flex-1 py-3 px-4 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 tab-button active">
+                <i data-lucide="user-plus" class="w-4 h-4 mr-2 inline"></i>
+                Register
+              </button>
+              <button type="button" id="login-tab" class="flex-1 py-3 px-4 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 tab-button">
+                <i data-lucide="log-in" class="w-4 h-4 mr-2 inline"></i>
+                Login
+              </button>
             </div>
+
+            <!-- Registration Section -->
+            <div id="register-section" class="tab-content">
+              <!-- Header -->
+              <div class="text-center mb-6">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <i data-lucide="user-plus" class="w-8 h-8 text-blue-600"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Start Your Free Account</h2>
+                <p class="text-gray-600">Join thousands of recruiters already using PeelJobs</p>
+              </div>
 
             <!-- Trust Indicators -->
             <div class="flex justify-center space-x-6 mb-6 text-sm text-gray-600">
@@ -296,24 +310,141 @@
                 </button>
               </div>
             </form>
-
-            <!-- Login Link -->
-            <div class="mt-6 text-center">
-              <p class="text-sm text-gray-600">
-                Already have an account? 
-                <a href="/recruiter/login/" class="font-medium text-blue-600 hover:text-blue-500">
-                  Sign in here
-                </a>
-              </p>
-              <p class="text-sm text-gray-600 mt-2">
-                Or 
-                <a href="/recruiter/google_login/" class="font-medium text-blue-600 hover:text-blue-500">
-                  sign in with Google
-                </a>
-              </p>
             </div>
 
-            <!-- Additional Trust Indicators -->
+            <!-- Login Section -->
+            <div id="login-section" class="tab-content hidden">
+              <!-- Header -->
+              <div class="text-center mb-6">
+                <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <i data-lucide="log-in" class="w-8 h-8 text-green-600"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+                <p class="text-gray-600">Sign in to your recruiter account</p>
+              </div>
+
+              <!-- Trust Indicators -->
+              <div class="flex justify-center space-x-6 mb-6 text-sm text-gray-600">
+                <div class="flex items-center">
+                  <i data-lucide="check-circle" class="w-4 h-4 mr-1 text-green-500"></i>
+                  Secure Login
+                </div>
+                <div class="flex items-center">
+                  <i data-lucide="shield-check" class="w-4 h-4 mr-1 text-blue-500"></i>
+                  Protected
+                </div>
+                <div class="flex items-center">
+                  <i data-lucide="zap" class="w-4 h-4 mr-1 text-purple-500"></i>
+                  Fast Access
+                </div>
+              </div>
+
+              <!-- Google Login Button -->
+              <div class="mb-6">
+                <button type="button" id="google-login-btn" 
+                  class="w-full bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold py-3 px-4 rounded-lg flex items-center justify-center transition-all duration-200 hover:shadow-md">
+                  <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  Continue with Google
+                </button>
+              </div>
+
+              <!-- Divider -->
+              <div class="relative mb-6">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                  <span class="px-4 bg-white text-gray-500 font-medium">Or sign in with email</span>
+                </div>
+              </div>
+
+              <!-- Login Form -->
+              <form id="login-form" method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Error/Success Messages for Login -->
+                <div id="login-message-container" class="hidden">
+                  <div id="login-error-message" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg hidden">
+                    <span id="login-error-text"></span>
+                  </div>
+                  <div id="login-success-message" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg hidden">
+                    <span id="login-success-text"></span>
+                  </div>
+                </div>
+
+                <!-- Email Field -->
+                <div>
+                  <label for="login-email" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Email Address <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                    <input type="email" id="login-email" name="username" 
+                      class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      placeholder="Enter your email" required>
+                  </div>
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                  <label for="login-password" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Password <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                    <input type="password" name="password" id="login-password" 
+                      class="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      placeholder="Enter your password" required>
+                    <button type="button" id="toggle-login-password" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                      <i data-lucide="eye" class="w-5 h-5 text-gray-400 hover:text-gray-600" id="login-eye-icon"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <input type="checkbox" id="remember-me" name="remember_me" 
+                      class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="remember-me" class="ml-2 text-sm text-gray-700">
+                      Remember me
+                    </label>
+                  </div>
+                  <a href="/recruiter/forgot_password/" class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                    Forgot password?
+                  </a>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                  <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center transition-colors">
+                    <i data-lucide="log-in" class="w-5 h-5 mr-2"></i>
+                    Sign In
+                  </button>
+                </div>
+              </form>
+
+              <!-- Registration Link -->
+              <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                  Don't have an account? 
+                  <button type="button" id="switch-to-register" class="font-medium text-blue-600 hover:text-blue-500">
+                    Create one here
+                  </button>
+                </p>
+              </div>
+            </div>
+
+            <!-- Common Links and Trust Indicators (shown for both tabs) -->
             <div class="mt-6 pt-6 border-t border-gray-200">
               <div class="flex justify-center space-x-4 text-xs text-gray-500">
                 <div class="flex items-center">
@@ -445,15 +576,142 @@
 
 {% block extra_js %}
 
+<style>
+  /* Tab styling */
+  .tab-button.active {
+    color: #2563eb;
+    border-color: #2563eb;
+  }
+  
+  .tab-content {
+    display: block;
+  }
+  
+  .tab-content.hidden {
+    display: none;
+  }
+</style>
+
 <script>
   // Initialize Lucide icons
   lucide.createIcons();
 
-  // Mobile menu toggle
-  document.getElementById('mobile-menu-button').addEventListener('click', function () {
-    const mobileMenu = document.getElementById('mobile-menu');
-    mobileMenu.classList.toggle('hidden');
+  // Debug: Log URL parameters for troubleshooting
+  console.log('Current URL:', window.location.href);
+  const currentUrlParams = new URLSearchParams(window.location.search);
+  console.log('URL Parameters:', currentUrlParams.toString());
+  
+  // Check for specific URL patterns that indicate Google authentication return
+  if (currentUrlParams.get('code')) {
+    console.log('OAuth code detected in URL - might be returning from Google auth');
+    console.log('Current path:', window.location.pathname);
+    
+    // If we're on the login page with a code, it means Google auth completed
+    if (window.location.pathname.includes('/login/')) {
+      console.log('Detected return from Google auth on login page');
+      // Switch to login tab to show any messages
+      switchToLogin();
+      showLoginSuccess('Google authentication completed. Processing login...');
+      
+      // Auto-redirect to dashboard after a short delay
+      setTimeout(function() {
+        window.location.href = '/recruiter/dashboard/';
+      }, 2000);
+    }
+  }
+  if (currentUrlParams.get('state')) {
+    console.log('OAuth state detected:', currentUrlParams.get('state'));
+  }
+  if (currentUrlParams.get('error')) {
+    console.log('Error parameter detected:', currentUrlParams.get('error'));
+  }
+
+  // Tab switching functionality
+  document.getElementById('login-tab').addEventListener('click', function() {
+    switchToLogin();
   });
+
+  document.getElementById('register-tab').addEventListener('click', function() {
+    switchToRegister();
+  });
+
+  document.getElementById('switch-to-register').addEventListener('click', function() {
+    switchToRegister();
+  });
+
+  function switchToLogin() {
+    // Update tab buttons
+    document.getElementById('login-tab').classList.add('active', 'text-blue-600', 'border-blue-600');
+    document.getElementById('login-tab').classList.remove('text-gray-500', 'border-transparent');
+    document.getElementById('register-tab').classList.remove('active', 'text-blue-600', 'border-blue-600');
+    document.getElementById('register-tab').classList.add('text-gray-500', 'border-transparent');
+    
+    // Switch content sections
+    document.getElementById('login-section').classList.remove('hidden');
+    document.getElementById('register-section').classList.add('hidden');
+    
+    // Clear any messages
+    clearMessages();
+    
+    // Update page title
+    document.title = 'Login - PeelJobs';
+  }
+
+  function switchToRegister() {
+    // Update tab buttons
+    document.getElementById('register-tab').classList.add('active', 'text-blue-600', 'border-blue-600');
+    document.getElementById('register-tab').classList.remove('text-gray-500', 'border-transparent');
+    document.getElementById('login-tab').classList.remove('active', 'text-blue-600', 'border-blue-600');
+    document.getElementById('login-tab').classList.add('text-gray-500', 'border-transparent');
+    
+    // Switch content sections
+    document.getElementById('register-section').classList.remove('hidden');
+    document.getElementById('login-section').classList.add('hidden');
+    
+    // Clear any messages
+    clearMessages();
+    
+    // Update page title
+    document.title = 'Register - PeelJobs';
+  }
+
+  function clearMessages() {
+    // Clear registration messages
+    document.getElementById('message-container').classList.add('hidden');
+    document.getElementById('error-message').classList.add('hidden');
+    document.getElementById('success-message').classList.add('hidden');
+    
+    // Clear login messages
+    document.getElementById('login-message-container').classList.add('hidden');
+    document.getElementById('login-error-message').classList.add('hidden');
+    document.getElementById('login-success-message').classList.add('hidden');
+  }
+
+  // Password toggle for login form
+  document.getElementById('toggle-login-password').addEventListener('click', function() {
+    const passwordInput = document.getElementById('login-password');
+    const eyeIcon = document.getElementById('login-eye-icon');
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      eyeIcon.setAttribute('data-lucide', 'eye-off');
+    } else {
+      passwordInput.type = 'password';
+      eyeIcon.setAttribute('data-lucide', 'eye');
+    }
+    lucide.createIcons();
+  });
+
+  // Mobile menu toggle (check if element exists)
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  if (mobileMenuButton) {
+    mobileMenuButton.addEventListener('click', function () {
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenu) {
+        mobileMenu.classList.toggle('hidden');
+      }
+    });
+  }
 
   // Show/hide company fields based on client type selection
   document.querySelectorAll('.client_type').forEach(function(radio) {
@@ -472,6 +730,13 @@
     const modal = document.getElementById('google-modal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+  });
+
+  // Google login handling
+  document.getElementById('google-login-btn').addEventListener('click', function() {
+    console.log('Google login button clicked');
+    // Use the recruiter-specific Google login endpoint
+    window.location.href = '/recruiter/google_login/';
   });
 
   // Google modal cancel
@@ -497,7 +762,15 @@
   document.getElementById('google-registration-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const clientType = document.querySelector('input[name="google_client_type"]:checked').value;
+    console.log('Google registration form submitted');
+    
+    const clientTypeElement = document.querySelector('input[name="google_client_type"]:checked');
+    if (!clientTypeElement) {
+      showError('Please select an account type');
+      return;
+    }
+    
+    const clientType = clientTypeElement.value;
     const mobile = document.getElementById('google-mobile').value;
     const companyName = document.getElementById('google-company-name').value;
     const companyWebsite = document.getElementById('google-company-website').value;
@@ -513,15 +786,26 @@
       return;
     }
 
+    // Show loading state
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 mr-2 animate-spin"></i>Processing...';
+    submitButton.disabled = true;
+
     // Prepare form data
     const formData = new FormData();
-    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrfToken) {
+      formData.append('csrfmiddlewaretoken', csrfToken.value);
+    }
     formData.append('client_type', clientType);
     formData.append('mobile', mobile);
     if (clientType === 'company') {
       formData.append('company_name', companyName);
       formData.append('company_website', companyWebsite);
     }
+
+    console.log('Sending Google registration request');
 
     // Send AJAX request to store data and get OAuth URL
     fetch('/recruiter/google_register/', {
@@ -531,18 +815,34 @@
         'X-Requested-With': 'XMLHttpRequest'
       }
     })
-    .then(response => response.json())
+    .then(response => {
+      console.log('Google registration response received:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(data => {
+      console.log('Google registration data:', data);
       if (data.error) {
         showError(data.message || 'An error occurred');
-      } else {
+      } else if (data.oauth_url) {
+        console.log('Redirecting to Google OAuth:', data.oauth_url);
         // Redirect to Google OAuth
         window.location.href = data.oauth_url;
+      } else {
+        showError('Invalid response from server');
       }
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.error('Google registration error:', error);
       showError('An error occurred. Please try again.');
+    })
+    .finally(() => {
+      // Reset button state
+      submitButton.innerHTML = originalText;
+      submitButton.disabled = false;
+      lucide.createIcons();
     });
   });
 
@@ -602,6 +902,79 @@
     });
   });
 
+  // Handle login form submission
+  $('#login-form').on('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    // Clear previous messages
+    $('#login-message-container').addClass('hidden');
+    $('#login-error-message').addClass('hidden');
+    $('#login-success-message').addClass('hidden');
+    
+    // Show loading state
+    const submitButton = $(this).find('button[type="submit"]');
+    const originalText = submitButton.html();
+    submitButton.html('<i data-lucide="loader-2" class="w-5 h-5 mr-2 animate-spin"></i>Signing In...').prop('disabled', true);
+    
+    $.ajax({
+      url: '/recruiter/',
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(response) {
+        try {
+          const data = JSON.parse(response);
+          if (data.error) {
+            showLoginError(data.message);
+          } else {
+            showLoginSuccess(data.message || 'Login successful!');
+            // Redirect after a delay
+            if (data.redirect_url) {
+              setTimeout(function() {
+                window.location.href = data.redirect_url;
+              }, 1000);
+            } else {
+              // Default redirect to job list (dashboard)
+              setTimeout(function() {
+                window.location.href = '/recruiter/job/list/';
+              }, 1000);
+            }
+          }
+        } catch (e) {
+          // If response is not JSON, it might be a redirect response
+          // In case of successful login, Django might redirect directly
+          if (response.includes('dashboard') || response.includes('redirect')) {
+            showLoginSuccess('Login successful!');
+            setTimeout(function() {
+              window.location.href = '/recruiter/job/list/';
+            }, 1000);
+          } else {
+            showLoginError('Invalid email or password.');
+          }
+        }
+      },
+      error: function(xhr) {
+        if (xhr.status === 302) {
+          // Redirect response - login successful
+          showLoginSuccess('Login successful!');
+          setTimeout(function() {
+            window.location.href = '/recruiter/job/list/';
+          }, 1000);
+        } else {
+          showLoginError('An error occurred. Please try again.');
+        }
+      },
+      complete: function() {
+        // Reset button state
+        submitButton.html(originalText).prop('disabled', false);
+        lucide.createIcons(); // Reinitialize icons
+      }
+    });
+  });
+
   // Utility functions for showing messages
   function showError(message) {
     const errorDiv = document.getElementById('error-message');
@@ -633,13 +1006,108 @@
     window.scrollTo(0, 0);
   }
 
+  function showLoginError(message) {
+    const errorDiv = document.getElementById('login-error-message');
+    const errorText = document.getElementById('login-error-text');
+    const successDiv = document.getElementById('login-success-message');
+    const messageContainer = document.getElementById('login-message-container');
+    
+    successDiv.classList.add('hidden');
+    errorText.textContent = message;
+    errorDiv.classList.remove('hidden');
+    messageContainer.classList.remove('hidden');
+    
+    // Scroll to top to show error
+    window.scrollTo(0, 0);
+  }
+
+  function showLoginSuccess(message) {
+    const errorDiv = document.getElementById('login-error-message');
+    const successDiv = document.getElementById('login-success-message');
+    const successText = document.getElementById('login-success-text');
+    const messageContainer = document.getElementById('login-message-container');
+    
+    errorDiv.classList.add('hidden');
+    successText.textContent = message;
+    successDiv.classList.remove('hidden');
+    messageContainer.classList.remove('hidden');
+    
+    // Scroll to top to show success
+    window.scrollTo(0, 0);
+  }
+
   // Check for URL parameters and show messages
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('error')) {
-    showError(urlParams.get('error'));
+  
+  // Auto-redirect to dashboard if Google OAuth code is present (successful login)
+  if (urlParams.get('code') && window.location.pathname.includes('login')) {
+    console.log('OAuth code detected in login URL - redirecting to dashboard');
+    // The Google OAuth should have already authenticated the user
+    // Redirect to the main recruiter dashboard
+    window.location.href = '/recruiter/job/list/';
+    // Don't execute the rest of the initialization by using an early exit pattern
+  } else {
+  
+  // Check if we should show the login tab by default
+  if (urlParams.get('tab') === 'login' || 
+      window.location.pathname.includes('login') || 
+      urlParams.get('google_login') === 'true' ||
+      urlParams.get('oauth_error') ||
+      urlParams.get('google_error')) {
+    switchToLogin();
   }
+  
+  // Handle Google OAuth specific messages
+  if (urlParams.get('google_success')) {
+    switchToLogin();
+    showLoginSuccess(decodeURIComponent(urlParams.get('google_success')));
+    // Redirect to dashboard after showing success message
+    setTimeout(function() {
+      window.location.href = '/recruiter/job/list/';
+    }, 2000);
+  }
+  
+  if (urlParams.get('google_error') || urlParams.get('oauth_error')) {
+    switchToLogin();
+    const errorMsg = urlParams.get('google_error') || urlParams.get('oauth_error');
+    showLoginError(decodeURIComponent(errorMsg));
+  }
+  
+  // Handle general URL messages
+  if (urlParams.get('error')) {
+    const currentTab = document.getElementById('login-section').classList.contains('hidden') ? 'register' : 'login';
+    if (currentTab === 'register') {
+      showError(decodeURIComponent(urlParams.get('error')));
+    } else {
+      showLoginError(decodeURIComponent(urlParams.get('error')));
+    }
+  }
+  
   if (urlParams.get('success')) {
-    showSuccess(urlParams.get('success'));
+    const currentTab = document.getElementById('login-section').classList.contains('hidden') ? 'register' : 'login';
+    if (currentTab === 'register') {
+      showSuccess(decodeURIComponent(urlParams.get('success')));
+    } else {
+      showLoginSuccess(decodeURIComponent(urlParams.get('success')));
+    }
+  }
+  
+  // Handle login-specific messages
+  if (urlParams.get('login_error')) {
+    switchToLogin();
+    showLoginError(decodeURIComponent(urlParams.get('login_error')));
+  }
+  if (urlParams.get('login_success')) {
+    switchToLogin();
+    showLoginSuccess(decodeURIComponent(urlParams.get('login_success')));
+  }
+
+  // Clean up URL after showing messages (optional)
+  if (urlParams.toString()) {
+    setTimeout(function() {
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }, 5000); // Clear URL params after 5 seconds
   }
 
   // reCAPTCHA handling
@@ -689,5 +1157,7 @@
       }
     }, 3000);
   });
+  
+  } // End of else block for OAuth code check
 </script>
 {% endblock %}

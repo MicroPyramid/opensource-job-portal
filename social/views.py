@@ -266,10 +266,44 @@ def google_login(request):
         if email_matches:
             user = email_matches[0].user
             if user.is_recruiter or user.is_agency_recruiter:
-                return HttpResponseRedirect(
-                    reverse("recruiter:new_user")
-                    + "?invalid=Recruiters and Agencies can login in this page"
+                # Handle recruiter login properly instead of redirecting to registration
+                google, created = Google.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'google_url': link,
+                        'verified_email': user_document.get("verified_email", ""),
+                        'google_id': user_document.get("id", ""),
+                        'family_name': user_document.get("family_name", ""),
+                        'name': user_document.get("name", ""),
+                        'given_name': user_document.get("given_name", ""),
+                        'dob': dob,
+                        'email': user_document.get("email", ""),
+                        'gender': gender,
+                        'picture': picture,
+                    }
                 )
+                if not created:
+                    # Update existing Google record
+                    google.google_url = link
+                    google.verified_email = user_document.get("verified_email", "")
+                    google.google_id = user_document.get("id", "")
+                    google.family_name = user_document.get("family_name", "")
+                    google.name = user_document.get("name", "")
+                    google.given_name = user_document.get("given_name", "")
+                    google.dob = dob
+                    google.email = user_document.get("email", "")
+                    google.gender = gender
+                    google.picture = picture
+                    google.save()
+                
+                # Authenticate and login the recruiter
+                user = authenticate(username=user.username)
+                user.is_active = True
+                user.save()
+                login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+                
+                # Redirect to recruiter dashboard
+                return HttpResponseRedirect(reverse("recruiter:index"))
 
             # Email associated with the user but Google is not connected
             if not user.is_gp_connected:
