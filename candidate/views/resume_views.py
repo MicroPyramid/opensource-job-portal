@@ -6,6 +6,7 @@ from django.http.response import HttpResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 from mpcomp.s3_utils import S3Connection
 from mpcomp.views import (
@@ -58,7 +59,7 @@ def upload_resume(request):
                     expires="max",
                 )
                 request.user.resume = path
-                request.user.profile_updated = datetime.datetime.now(timezone.utc)
+                request.user.profile_updated = timezone.now()
                 handle_uploaded_file(
                     request.FILES["resume"], request.FILES["resume"].name
                 )
@@ -108,7 +109,7 @@ def upload_profilepic(request):
         ftype = pic.content_type
         if str(ftype) in sup_formates:
             request.user.profile_pic = request.FILES["profile_pic"]
-            request.user.profile_updated = datetime.datetime.now(timezone.utc)
+            request.user.profile_updated = timezone.now()
             request.user.save()
             data = {"error": False, "data": "Profile Pic Uploaded Successfully"}
         else:

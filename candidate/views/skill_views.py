@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 from candidate.forms import (
     TechnicalSkillForm,
@@ -42,7 +43,7 @@ def add_language(request):
             )
             user = request.user
             request.user.language.add(language)
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             request.user.save()
             data = {"error": False, "response": "language added"}
         else:
@@ -94,7 +95,7 @@ def edit_language(request, language_id):
             language.speak = speak
             language.save()
             user = request.user
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
             data = {"error": False, "response": "language updated"}
         else:
@@ -115,7 +116,7 @@ def delete_language(request, language_id):
         language = user_language[0]
         language.delete()
         user = request.user
-        user.profile_updated = datetime.datetime.now(timezone.utc)
+        user.profile_updated = timezone.now()
         user.save()
 
         data = {"error": False, "message": "language deleted successfully"}
@@ -161,7 +162,7 @@ def add_technicalskill(request):
         skill.version = request.POST.get("version")
         skill.proficiency = request.POST.get("proficiency")
         user = request.user
-        user.profile_updated = datetime.datetime.now(timezone.utc)
+        user.profile_updated = timezone.now()
         skill.is_major = True if request.POST.get("is_major") else False
         skill.save()
         user.save()
@@ -216,7 +217,7 @@ def edit_technicalskill(request, technical_skill_id):
             technical_skill.version = request.POST.get("version")
             technical_skill.proficiency = request.POST.get("proficiency")
             user = request.user
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
             technical_skill.is_major = True if request.POST.get("is_major") else False
             technical_skill.save()
@@ -236,7 +237,7 @@ def delete_technicalskill(request, technical_skill_id):
     if skill:
         skill.delete()
         user = request.user
-        user.profile_updated = datetime.datetime.now(timezone.utc)
+        user.profile_updated = timezone.now()
         user.save()
         data = {"error": False, "response": "tech skill deleted successfully"}
     else:

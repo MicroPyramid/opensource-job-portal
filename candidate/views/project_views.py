@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 from candidate.forms import ProjectForm
 from peeldb.models import Project, Skill, City, User
@@ -37,7 +38,7 @@ def add_project(request):
             project.location_id = request.POST.get("location")
         project.save()
         user = request.user
-        user.profile_updated = datetime.datetime.now(timezone.utc)
+        user.profile_updated = timezone.now()
         user.save()
         user.project.add(project)
         data = {"error": False, "response": "project added"}
@@ -77,7 +78,7 @@ def edit_project(request, project_id):
                 project.location_id = request.POST.get("location")
             project.save()
             user = request.user
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
 
             data = {"error": False, "response": "project added"}
@@ -96,7 +97,7 @@ def delete_project(request, project_id):
     if projects:
         projects.delete()
         user = request.user
-        user.profile_updated = datetime.datetime.now(timezone.utc)
+        user.profile_updated = timezone.now()
         user.save()
         data = {"error": False, "response": "Project deleted successfully"}
     else:

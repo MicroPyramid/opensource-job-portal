@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Welcome to PeelJobs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2563eb;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: #f9fafb;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .welcome-message {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2563eb;
+        }
+        .features {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .feature-item {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        .cta-button {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Welcome to PeelJobs!</h1>
+        <p>Your account has been successfully created with Google</p>
+    </div>
+    
+    <div class="content">
+        <div class="welcome-message">
+            <h2>Hello {{ user.first_name|default:"there" }}!</h2>
+            <p>Thank you for joining PeelJobs{% if is_company_user %} with {{ company.name }}{% endif %}. Your account has been successfully created and you're now part of India's fastest-growing recruitment platform.</p>
+            
+            {% if is_company_user %}
+            <p><strong>Company:</strong> {{ company.name }}</p>
+            <p><strong>Account Type:</strong> Agency/Consultancy</p>
+            {% else %}
+            <p><strong>Account Type:</strong> Individual Recruiter</p>
+            {% endif %}
+            
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">100k+</div>
+                <div class="stat-label">Active Job Seekers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">Daily Applications</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Companies Trust Us</div>
+            </div>
+        </div>
+
+        <div class="features">
+            <h3>🚀 What you can do now:</h3>
+            <div class="feature-item">Post unlimited jobs for free</div>
+            <div class="feature-item">Access to 100k+ verified job seekers</div>
+            <div class="feature-item">AI-powered candidate matching</div>
+            <div class="feature-item">Advanced search and filtering tools</div>
+            <div class="feature-item">Real-time application notifications</div>
+            <div class="feature-item">24/7 customer support</div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="https://peeljobs.com/recruiter/job/new/" class="cta-button">
+                🎯 Post Your First Job
+            </a>
+        </div>
+
+        <div class="welcome-message">
+            <h3>📱 Next Steps:</h3>
+            <ol>
+                <li><strong>Verify your mobile number</strong> - You'll be prompted to do this when you first log in</li>
+                <li><strong>Complete your profile</strong> - Add more details about yourself{% if is_company_user %} and your company{% endif %}</li>
+                <li><strong>Post your first job</strong> - Start receiving applications within hours</li>
+                <li><strong>Explore candidate database</strong> - Search through our extensive talent pool</li>
+            </ol>
+        </div>
+
+        <div class="features">
+            <h3>💡 Pro Tips:</h3>
+            <div class="feature-item">Use detailed job descriptions to attract quality candidates</div>
+            <div class="feature-item">Set up email notifications to never miss an application</div>
+            <div class="feature-item">Use our advanced filters to find the perfect match</div>
+            <div class="feature-item">Respond quickly to applications for better results</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Need help? Contact our support team at <a href="mailto:support@peeljobs.com">support@peeljobs.com</a></p>
+        <p>Visit our <a href="https://peeljobs.com/help">Help Center</a> for guides and tutorials</p>
+        <p>
+            <a href="https://peeljobs.com">PeelJobs.com</a> | 
+            <a href="https://peeljobs.com/privacy">Privacy Policy</a> | 
+            <a href="https://peeljobs.com/terms">Terms of Service</a>
+        </p>
+        <p style="margin-top: 20px;">
+            <small>This email was sent to {{ user.email }}. You received this because you created an account on PeelJobs.</small>
+        </p>
+    </div>
+</body>
+</html>

@@ -22,7 +22,6 @@ from recruiter.views import (
     user_password_reset,
     change_password,
     user_profile,
-    facebook_login,
     resume_view,
 
     verify_mobile,
@@ -46,7 +45,6 @@ from recruiter.views import (
     menu_order,
     interview_location,
     enable_email_notifications,
-    google_login,
 
     company_recruiter_create,
     edit_company_recruiter,
@@ -54,6 +52,12 @@ from recruiter.views import (
     activate_company_recruiter,
     company_recruiter_profile,
     download_applicants,
+)
+
+from recruiter.views.authentication import (
+    google_login,
+    google_register,
+    google_register_callback,
 )
 
 app_name = "recruiter"
@@ -104,7 +108,8 @@ urlpatterns = [
         name="account_activation",
     ),
     url(r"^google_login/$", google_login, name="google_login"),
-    url(r"^facebook_login/$", facebook_login, name="facebook_login"),
+    url(r"^google_register/$", google_register, name="google_register"),
+    url(r"^google_register_callback/$", google_register_callback, name="google_register_callback"),
     url(r"^microsite-page/$", view_company, name="view_company"),
     url(r"^company/edit/$", edit_company, name="edit_company"),
     url(r"^company/profile-pic/$", upload_profilepic, name="upload_profilepic"),

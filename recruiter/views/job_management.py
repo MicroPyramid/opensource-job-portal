@@ -21,6 +21,7 @@ from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.hashers import check_password
 from django.db.models import Q, Count
@@ -825,7 +826,7 @@ def deactivate_job(request, job_post_id):
     if request.user.is_agency_admin or request.user == job_post.user:
                
         job_post.previous_status = job_post.status
-        job_post.closed_date = datetime.now(timezone.utc)
+        job_post.closed_date = timezone.now()
         job_post.status = "Disabled"
         job_post.save()
         data = {"error": False, "response": "Job Post Deactivated"}
@@ -840,7 +841,7 @@ def delete_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id, user=request.user)
     
     job_post.status = "Disabled"
-    job_post.closed_date = datetime.now(timezone.utc)
+    job_post.closed_date = timezone.now()
     job_post.save()
 
     data = {"error": False, "response": "Job Post deleted Successfully"}

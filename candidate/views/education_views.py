@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 from candidate.forms import (
     EducationForm,
@@ -82,7 +83,7 @@ def add_education(request):
             to_date=to,
             current_education=request.POST.get("current_education") == "on",
         )
-        request.user.profile_updated = datetime.datetime.now(timezone.utc)
+        request.user.profile_updated = timezone.now()
         request.user.save()
         request.user.education.add(education)
         return HttpResponse(
@@ -166,7 +167,7 @@ def edit_education(request, education_id):
             education.current_education = request.POST.get("current_education") == "on"
             education.save()
             user = request.user
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
 
             return HttpResponse(
@@ -200,7 +201,7 @@ def delete_education(request, education_id):
     if educations:
         educations[0].delete()
         user = request.user
-        user.profile_updated = datetime.datetime.now(timezone.utc)
+        user.profile_updated = timezone.now()
         user.save()
         data = {"error": False, "response": "education deleted successfully"}
     else:

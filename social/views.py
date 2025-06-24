@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 from django.urls import reverse
 from django.conf import settings
 from peeldb.models import (
@@ -147,7 +148,7 @@ def facebook_login(request):
                 ).first()
                 if user:
                     user.first_name = profile.get("name", "")
-                    user.profile_updated = datetime.now(timezone.utc)
+                    user.profile_updated = timezone.now()
                     user.is_active = True
                     user.save()
                 else:
@@ -157,7 +158,7 @@ def facebook_login(request):
                         first_name=profile.get("name", ""),
                         last_name=profile.get("name", ""),
                         user_type="JS",
-                        profile_updated=datetime.now(timezone.utc),
+                        profile_updated=timezone.now(),
                         is_active=True,
                         registered_from="Social",
                     )
@@ -295,7 +296,7 @@ def google_login(request):
                 user.last_name = user_document.get("family_name", "")
                 user.photo = picture
                 user.profile_pic = picture
-                user.profile_updated = datetime.now(timezone.utc)
+                user.profile_updated = timezone.now()
                 user.is_active = True
                 user.save()
             else:
@@ -306,7 +307,7 @@ def google_login(request):
                     last_name=user_document.get("family_name", ""),
                     photo=picture,
                     user_type="JS",
-                    profile_updated=datetime.now(timezone.utc),
+                    profile_updated=timezone.now(),
                     is_active=True,
                     registered_from="Social",
                 )
@@ -472,7 +473,7 @@ def github_login(request):
                 if user:
                     user.photo = picture
                     user.profile_pic = picture
-                    user.profile_updated = datetime.now(timezone.utc)
+                    user.profile_updated = timezone.now()
                     user.is_active = True
                     user.save()
                 else:
@@ -481,7 +482,7 @@ def github_login(request):
                         email=emails[0],
                         user_type="JS",
                         photo=picture,
-                        profile_updated=datetime.now(timezone.utc),
+                        profile_updated=timezone.now(),
                         is_active=True,
                         registered_from="Social",
                     )
