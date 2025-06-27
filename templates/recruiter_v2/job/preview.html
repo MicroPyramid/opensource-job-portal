@@ -1,0 +1,179 @@
+{% extends 'recruiter_v2/recruiter_base_with_menu.html' %}
+{% load page_tags %}
+{% load tz %}
+{% load static %}
+{% load thumbnail %}
+
+{% block title %}Job Preview - {{ jobpost.title }} - PeelJobs{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+  <!-- Header Section -->
+  <div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Job Preview</h1>
+            <p class="mt-2 text-gray-600">Review your job posting before publishing</p>
+          </div>
+          <div class="flex space-x-3">
+            <a href="{% url 'recruiter:edit' jobpost.id %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+              <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+              Edit Job
+            </a>
+            {% if jobpost.status != 'Disabled' %}
+            <button type="button" class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors deactivate-job" data-href="{% url 'recruiter:deactivate_job' jobpost.id %}">
+              <i data-lucide="x" class="w-4 h-4 mr-2"></i>
+              Close Job
+            </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content -->
+      <div class="lg:col-span-2">
+        {% include 'job_detail_tailwind.html' with job=jobpost recruiter=True %}
+      </div>
+
+      <!-- Sidebar -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-8 space-y-6">
+          <!-- Job Status Card -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <i data-lucide="info" class="w-5 h-5 text-blue-500 mr-2"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Job Status</h3>
+              </div>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Status:</span>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                    {% if jobpost.status == 'Live' %}bg-green-100 text-green-800
+                    {% elif jobpost.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                    {% elif jobpost.status == 'Disabled' %}bg-red-100 text-red-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ jobpost.status }}
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Posted:</span>
+                  <span class="text-sm text-gray-900">{{ jobpost.published_date|date:"M d, Y" }}</span>
+                </div>
+                {% if jobpost.last_date %}
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Expires:</span>
+                  <span class="text-sm text-gray-900">{{ jobpost.last_date|date:"M d, Y" }}</span>
+                </div>
+                {% endif %}
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Applications:</span>
+                  <span class="text-sm font-medium text-blue-600">{{ jobpost.job_applied_users.count }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions Card -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <i data-lucide="settings" class="w-5 h-5 text-green-500 mr-2"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Quick Actions</h3>
+              </div>
+              <div class="space-y-3">
+                {% if jobpost.status != 'Disabled' %}
+                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:enable_email_notifications' jobpost.id %}{% else %}{% url 'recruiter:enable_email_notifications' jobpost.id %}{% endif %}" class="flex items-center w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
+                  <i data-lucide="bell" class="w-4 h-4 mr-2"></i>
+                  {% if jobpost.send_email_notifications %}Disable{% else %}Enable{% endif %} Email Notifications
+                </a>
+                {% endif %}
+                
+                {% if request.user.is_agency_recruiter %}
+                <a href="{% url 'agency:candidates_applied' jobpost.id %}" class="flex items-center w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
+                  <i data-lucide="users" class="w-4 h-4 mr-2"></i>
+                  View Applications
+                </a>
+                {% else %}
+                <a href="{% url 'recruiter:candidates_applied' jobpost.id %}" class="flex items-center w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
+                  <i data-lucide="users" class="w-4 h-4 mr-2"></i>
+                  View Applications
+                </a>
+                {% endif %}
+
+                <a href="{% url 'recruiter:new' jobpost.job_type %}" class="flex items-center w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
+                  <i data-lucide="copy" class="w-4 h-4 mr-2"></i>
+                  Copy This Job
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Deactivation Confirmation Modal -->
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden" id="deactivateModal">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Confirm Job Closure</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeDeactivateModal()">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="p-4">
+        <p class="text-sm text-gray-700">Are you sure you want to close this job? This action cannot be undone and the job will no longer be visible to candidates.</p>
+      </div>
+      <div class="flex justify-end p-4 border-t border-gray-200 space-x-2">
+        <button type="button" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors" onclick="closeDeactivateModal()">Cancel</button>
+        <button type="button" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors" id="confirmDeactivate">Close Job</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Initialize Lucide Icons -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  });
+</script>
+
+<!-- Job Deactivation Handler -->
+<script>
+  let deactivateUrl = '';
+  
+  function closeDeactivateModal() {
+    document.getElementById('deactivateModal').classList.add('hidden');
+  }
+  
+  // Handle deactivate job button
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.deactivate-job')) {
+      e.preventDefault();
+      deactivateUrl = e.target.closest('.deactivate-job').getAttribute('data-href');
+      document.getElementById('deactivateModal').classList.remove('hidden');
+    }
+  });
+  
+  // Confirm deactivation
+  document.getElementById('confirmDeactivate').addEventListener('click', function() {
+    if (deactivateUrl) {
+      window.location.href = deactivateUrl;
+    }
+  });
+</script>
+{% endblock %}

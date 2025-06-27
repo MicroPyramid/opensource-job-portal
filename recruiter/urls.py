@@ -64,10 +64,9 @@ app_name = "recruiter"
 
 urlpatterns = [
     url(r"^$", index, name="index"),
-    # url(r"^out/$", getout, name="getout"),
     url(r"^how-it-works/$", how_it_works, name="how_it_works"),
     url(r"^dashboard/$", dashboard, name="dashboard"),
-    url(r"^job/list/$", jobs_list, name="list"),
+    url(r"^job/list/$", jobs_list, name="list"), # v2
     url(r"^job/inactive/list/$", inactive_jobs, name="inactive_jobs"),
     url(r"^job/(?P<status>[-\w]+)/new/$", new_job, name="new"),
     url(r"^job/(?P<status>[-\w]+)/copy/$", copy_job, name="copy"),

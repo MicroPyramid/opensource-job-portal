@@ -246,7 +246,7 @@ def new_job(request, status):
                 show_recruiters = False if not recruiters else True
             return render(
                 request,
-                "recruiter/job/new.html",
+                "recruiter_v2/jobs/new.html",
                 {
                     "job_types": JOB_TYPE,
                     "functional_area": functional_area,

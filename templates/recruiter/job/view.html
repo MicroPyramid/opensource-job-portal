@@ -147,7 +147,6 @@
     <!--<div id="time">00</div>-->
     <div class="tab_content" id='job_post'>
       <div class="col-md-9">
-        {% include 'job_detail.html' with job=jobpost recruiter=True %}
       </div>
     </div>
     <div class="col-md-3 right_menu">
@@ -160,7 +159,7 @@
             <!--<li ><a title='Edit' href="#" class="start_worklog start">
               Start Worklog</a>
             </li>-->
-            {% ifnotequal jobpost.status 'Disabled'  %}
+            {% if jobpost.status != 'Disabled' %}
             <li>{% if request.user.is_agency_recruiter %}
               <a title='Applicants' href="{% url 'agency:enable_email_notifications' jobpost.id %}">
               {% else %}
@@ -184,12 +183,11 @@
             <li ><a title='Activate' href="{% url 'recruiter:edit' jobpost.id%}">
               <i class='fa fa-check edit'></i>Activate this job</a>
             </li>
-            {% endifnotequal %}
+            {% endif %}
             {% if request.user.is_fb_connected %}
             <li> <a><i class="fa fa-facebook" aria-hidden="true"></i> Total Facebook Views: {{ jobpost.fb_views }} </a></li>
             {% else %}
             <li>
-              <a href="{% url 'recruiter:facebook_login' %}" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i> Connect with Facebook</a></span>
             </li>
             {% endif %}
             
@@ -946,7 +944,7 @@ $('.resume-detail').click(function (e) {
           $('.right_list_container').css({'position': 'static', 'margin-top': '10px'});
           if ($(this).scrollTop() > 70)
           {
-            {% ifnotequal job.status 'Disabled' %}
+            {% if job.status != 'Disabled' %}
               if($('.enable_email_notifications').size() > 0){
               $('.right_list_container').css({'position': 'fixed', 'margin-top': '-55px', 'width':'275px'});
               }
@@ -956,7 +954,7 @@ $('.resume-detail').click(function (e) {
 
             {% else %}
               $('.right_list_container').css({'position': 'fixed', 'margin-top': '-80px', 'width':'275px'});
-            {% endifnotequal %}
+            {% endif %}
           }
         });
      $('.deactivate-job').click(function (e) {

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TinyMCE Test</title>
+    <!-- TinyMCE 6 - Community version from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"></script>
+</head>
+<body>
+    <h1>TinyMCE Loading Test</h1>
+    <textarea id="test-editor">Hello, World!</textarea>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('TinyMCE version:', typeof tinymce !== 'undefined' ? tinymce.majorVersion : 'Not loaded');
+            
+            if (typeof tinymce !== 'undefined') {
+                tinymce.init({
+                    selector: '#test-editor',
+                    height: 300,
+                    menubar: false,
+                    plugins: [
+                        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+                    ],
+                    toolbar: 'undo redo | blocks | ' +
+                        'bold italic forecolor | alignleft aligncenter ' +
+                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                        'removeformat | help',
+                    content_style: 'body { font-family: Inter, sans-serif; font-size: 14px }',
+                    branding: false,
+                    promotion: false,
+                    paste_as_text: true,
+                    paste_auto_cleanup_on_paste: true,
+                    paste_remove_styles: true,
+                    paste_remove_styles_if_webkit: true,
+                    paste_strip_class_attributes: 'all',
+                    init_instance_callback: function (editor) {
+                        console.log('TinyMCE editor initialized:', editor.id);
+                    }
+                });
+            } else {
+                console.error('TinyMCE is not loaded');
+            }
+        });
+    </script>
+</body>
+</html>
