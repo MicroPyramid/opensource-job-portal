@@ -1,0 +1,569 @@
+{% extends 'recruiter_v2/recruiter_base_with_menu.html' %}
+{% load page_tags %}
+{% load tz %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 p-4 md:p-6">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Header Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <h1 class="text-2xl font-bold text-gray-900">Job Management</h1>
+        <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:new' 'full-time' %}{% else %}{% url 'recruiter:new' 'full-time' %}{% endif %}" 
+           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Post New Job
+        </a>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if not request.user.email_notifications %}
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+        </svg>
+        <div class="flex-1">
+          <h3 class="text-sm font-medium text-red-800">Enable Email Notifications</h3>
+          <p class="mt-1 text-sm text-red-700">
+            Enable email notifications in your 
+            <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:profile' %}{% else %}{% url 'recruiter:profile' %}{% endif %}" 
+               class="font-medium underline hover:text-red-900">Profile</a> 
+            to receive job post updates.
+          </p>
+        </div>
+        <button type="button" class="ml-3 text-red-400 hover:text-red-600" onclick="this.parentElement.parentElement.remove()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if not request.user.is_active %}
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+        </svg>
+        <div class="flex-1">
+          <h3 class="text-sm font-medium text-red-800">Account Activation Required</h3>
+          <p class="mt-1 text-sm text-red-700">
+            A confirmation email has been sent to you. Please click on the Activation Link to activate your account.
+          </p>
+        </div>
+        <button type="button" class="ml-3 text-red-400 hover:text-red-600" onclick="this.parentElement.parentElement.remove()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Content Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      
+      <!-- Tabs and Filters -->
+      <div class="border-b border-gray-200 bg-gray-50">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between p-6 gap-4">
+          
+          <!-- Tabs -->
+          <div class="flex space-x-1 bg-white rounded-lg p-1 border border-gray-200">
+            <a href="{% url 'recruiter:list' %}" class="{% if not 'inactive' in request.path %}bg-blue-600 text-white{% else %}text-gray-600 hover:text-gray-900{% endif %} px-4 py-2 rounded-md text-sm font-medium transition-colors">
+              Active Jobs
+            </a>
+            <a href="{% url 'recruiter:inactive_jobs' %}" class="{% if 'inactive' in request.path %}bg-blue-600 text-white{% else %}text-gray-600 hover:text-gray-900{% endif %} px-4 py-2 rounded-md text-sm font-medium transition-colors">
+              Inactive Jobs
+            </a>
+          </div>
+
+          <!-- Job Type Filters -->
+          <form name="jobtypeform" id="jobtypeform" method="post" class="flex flex-wrap gap-2">
+            <input type="hidden" name="page" id="page" value="{{ current_page }}"/>
+            
+            <label class="inline-flex items-center">
+              <input type="radio" name="search_value" value="all" class="job_type text-blue-600 focus:ring-blue-500" {% if search_value|slugify == 'all' %}checked{% endif %}>
+              <span class="ml-2 text-sm text-gray-700">All</span>
+            </label>
+            
+            <label class="inline-flex items-center">
+              <input type="radio" name="search_value" value="full-time" class="job_type text-blue-600 focus:ring-blue-500" {% if search_value|slugify == 'full-time' %}checked{% endif %}>
+              <span class="ml-2 text-sm text-gray-700">Full Time</span>
+            </label>
+            
+            <label class="inline-flex items-center">
+              <input type="radio" name="search_value" value="internship" class="job_type text-blue-600 focus:ring-blue-500" {% if search_value|slugify == 'internship' %}checked{% endif %}>
+              <span class="ml-2 text-sm text-gray-700">Internship</span>
+            </label>
+            
+            <label class="inline-flex items-center">
+              <input type="radio" name="search_value" value="walk-in" class="job_type text-blue-600 focus:ring-blue-500" {% if search_value|slugify == 'walk-in' %}checked{% endif %}>
+              <span class="ml-2 text-sm text-gray-700">Walk-in</span>
+            </label>
+          </form>
+        </div>
+      </div>
+
+      <!-- Jobs List -->
+      {% if not jobs_list %}
+      <div class="p-12 text-center">
+        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 002 2H6a2 2 0 002-2V6"/>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">
+          {% if not 'inactive' in request.path %}
+            No Active Jobs Found
+          {% else %}
+            No Inactive Jobs Found
+          {% endif %}
+        </h3>
+        <p class="text-gray-500 mb-6">
+          {% if not 'inactive' in request.path %}
+            You don't have any active jobs. Start by posting your first job requirement.
+          {% else %}
+            You don't have any inactive jobs yet.
+          {% endif %}
+        </p>
+        {% if not 'inactive' in request.path %}
+        <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:new' 'full-time' %}{% else %}{% url 'recruiter:new' 'full-time' %}{% endif %}" 
+           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Create Your First Job
+        </a>
+        {% endif %}
+      </div>
+      {% else %}
+      
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Details</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry</th>
+              {% if 'inactive' in request.path %}
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Closed Date</th>
+              {% endif %}
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responses</th>
+              {% if request.user.user_type == 'AA' %}
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recruiters</th>
+              {% endif %}
+              {% if not 'inactive' in request.path %}
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Share</th>
+              {% endif %}
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for post in jobs_list %}
+            <tr class="hover:bg-gray-50 cursor-pointer job_detail {% if post.status == 'Draft' %}bg-yellow-50{% elif post.status == 'Pending' %}bg-blue-50{% elif post.status == 'Published' %}bg-green-50{% elif post.status == 'Disabled' or post.status == 'Expired' %}bg-red-50{% endif %}" 
+                data-href='{% url 'recruiter:view' post.id%}'>
+              
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 002 2H6a2 2 0 002-2V6"/>
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">{{ post.title }}</div>
+                    <div class="text-sm text-gray-500">{{ post.job_type|get_string }}</div>
+                  </div>
+                </div>
+              </td>
+              
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {% for location in post.location.all %}
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mr-1 mb-1">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    {{ location.name }}
+                  </span>
+                {% empty %}
+                  <span class="text-gray-400">N/A</span>
+                {% endfor %}
+              </td>
+              
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  {{ post.last_date }}
+                </div>
+              </td>
+              
+              {% if 'inactive' in request.path %}
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ post.closed_date }}</td>
+              {% endif %}
+              
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ post.job_type|get_string }}</td>
+              
+              <td class="px-6 py-4 whitespace-nowrap applicants cursor-pointer" data-href="{% url 'recruiter:view' post.id%}?applicants=True">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                  </svg>
+                  {{ post.responses }}
+                </span>
+              </td>
+
+              {% if request.user.user_type == 'AA' %}
+              <td class="px-6 py-4 text-sm text-gray-900">
+                <!-- ...existing code... -->
+              </td>
+              {% endif %}
+
+              {% if not 'inactive' in request.path %}
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <div class="flex space-x-2">
+                  {% if post.status == 'Live' %}
+                  <button class="social_share text-blue-600 hover:text-blue-800 transition-colors" data-href="https://www.facebook.com/sharer/sharer.php?u={{ post.get_absolute_url }}&t={{ post.title }}">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </button>
+                  <button class="social_share text-blue-700 hover:text-blue-900 transition-colors" data-href="https://www.linkedin.com/cws/share?url={{ post.get_absolute_url }}&token=&isFramed=true">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </button>
+                  <button class="social_share text-blue-400 hover:text-blue-600 transition-colors" data-href="https://twitter.com/intent/tweet?text={{ post.title }}&url={{ post.get_absolute_url }}&via=PeelJobs">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                  </button>
+                  {% else %}
+                  <span class="text-gray-300">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </span>
+                  <!-- ...existing code... -->
+                  {% endif %}
+                </div>
+              </td>
+              {% endif %}
+
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <div class="flex items-center justify-center space-x-2">
+                  <a href="{% url 'recruiter:edit' post.id%}" class="text-blue-600 hover:text-blue-900 transition-colors" title="Edit">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                  </a>
+                  {% if not 'inactive' in request.path %}
+                  <button class="delete-job text-red-600 hover:text-red-900 transition-colors" id="{{ post.id }}" title="Delete">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                  {% endif %}
+                </div>
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                  {% if post.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                  {% elif post.status == 'Published' %}bg-green-100 text-green-800
+                  {% elif post.status == 'Disabled' %}bg-red-100 text-red-800
+                  {% elif post.status == 'Expired' %}bg-red-100 text-red-800
+                  {% else %}bg-blue-100 text-blue-800{% endif %}">
+                  {% if post.status == 'Pending' %}
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Pending
+                  {% elif post.status == 'Published' %}
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+                    Published
+                  {% elif post.status == 'Disabled' %}
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                    </svg>
+                    Disabled
+                  {% elif post.status == 'Expired' %}
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                    </svg>
+                    Expired
+                  {% else %}
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Live
+                  {% endif %}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="lg:hidden">
+        {% for post in jobs_list %}
+        <div class="border-b border-gray-200 p-4 job_detail cursor-pointer hover:bg-gray-50 
+                    {% if post.status == 'Draft' %}bg-yellow-50{% elif post.status == 'Pending' %}bg-blue-50{% elif post.status == 'Published' %}bg-green-50{% elif post.status == 'Disabled' or post.status == 'Expired' %}bg-red-50{% endif %}" 
+             data-href='{% url 'recruiter:view' post.id%}'>
+          
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <h3 class="text-lg font-medium text-gray-900">{{ post.title }}</h3>
+              <p class="text-sm text-gray-500">{{ post.job_type|get_string }}</p>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2
+              {% if post.status == 'Pending' %}bg-yellow-100 text-yellow-800
+              {% elif post.status == 'Published' %}bg-green-100 text-green-800
+              {% elif post.status == 'Disabled' %}bg-red-100 text-red-800
+              {% elif post.status == 'Expired' %}bg-red-100 text-red-800
+              {% else %}bg-blue-100 text-blue-800{% endif %}">
+              {{ post.status }}
+            </span>
+          </div>
+
+          <div class="space-y-2 mb-4">
+            <div class="flex items-center text-sm text-gray-600">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              </svg>
+              {% for location in post.location.all %}
+                {{ location.name }}{% if not forloop.last %}, {% endif %}
+              {% empty %}
+                N/A
+              {% endfor %}
+            </div>
+            
+            <div class="flex items-center text-sm text-gray-600">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              Expires: {{ post.last_date }}
+            </div>
+
+            <div class="flex items-center text-sm text-gray-600 applicants cursor-pointer" data-href="{% url 'recruiter:view' post.id%}?applicants=True">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              {{ post.responses }} Responses
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex space-x-3">
+              {% if not 'inactive' in request.path and post.status == 'Live' %}
+              <div class="flex space-x-2">
+                <!-- ...existing code... -->
+              </div>
+              {% endif %}
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <a href="{% url 'recruiter:edit' post.id%}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </a>
+              {% if not 'inactive' in request.path %}
+              <button class="delete-job text-red-600 hover:text-red-800 transition-colors" id="{{ post.id }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Pagination -->
+      {% if jobs_list %}
+      {% get_page current_page last_page as pages %}
+      <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center text-sm text-gray-700">
+            <span>Page <strong>{{ current_page }}</strong> of <strong>{{ pages|length }}</strong></span>
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            <!-- First Page -->
+            <a href="#" class="{{previous_page}} relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+              </svg>
+            </a>
+            
+            <!-- Previous Page -->
+            <a href="#" class="{{prev_page}} relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </a>
+
+            <!-- Page Numbers -->
+            {% for s in pages %}
+            <a href="#" class="{{s}} relative inline-flex items-center px-4 py-2 text-sm font-medium border hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 
+               {% if s == current_page %}bg-blue-50 border-blue-500 text-blue-600{% else %}text-gray-700 bg-white border-gray-300{% endif %}">
+              {{s}}
+            </a>
+            {% endfor %}
+
+            <!-- Next Page -->
+            <a href="#" class="{{ aft_page }} relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+            
+            <!-- Last Page -->
+            <a href="#" class="{{ after_page }} relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div class="p-6">
+        <div class="flex items-center mb-4">
+          <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900">Confirm Deletion</h3>
+        </div>
+        <p class="text-sm text-gray-500 mb-6">Do you want to delete this job post? This action cannot be undone.</p>
+        <div class="flex space-x-3">
+          <button id="confirmDelete" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">Yes, Delete</button>
+          <button id="cancelDelete" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+// ...existing code...
+
+// Social sharing
+document.querySelectorAll('.social_share').forEach(function(element) {
+  element.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (this.classList.contains('not_live')) {
+      // Show alert for non-live posts
+      alert('JobPost cannot be Shared until it goes live!');
+    } else {
+      window.open(this.getAttribute('data-href'), '_blank');
+    }
+  });
+});
+
+// Delete job functionality
+let jobToDelete = null;
+const deleteModal = document.getElementById('deleteModal');
+
+document.querySelectorAll('.delete-job').forEach(function(element) {
+  element.addEventListener('click', function(e) {
+    e.stopPropagation();
+    jobToDelete = this.getAttribute('id');
+    deleteModal.classList.remove('hidden');
+  });
+});
+
+document.getElementById('confirmDelete').addEventListener('click', function() {
+  if (jobToDelete) {
+    const url = '/recruiter/job/delete/' + jobToDelete + '/';
+    const formData = new FormData(document.getElementById('jobtypeform'));
+    
+    fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert(data.response);
+      } else {
+        alert('Job Post Deleted Successfully');
+        window.location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while deleting the job post.');
+    });
+  }
+  deleteModal.classList.add('hidden');
+  jobToDelete = null;
+});
+
+document.getElementById('cancelDelete').addEventListener('click', function() {
+  deleteModal.classList.add('hidden');
+  jobToDelete = null;
+});
+
+// Job detail click
+document.querySelectorAll('.job_detail').forEach(function(element) {
+  element.addEventListener('click', function(e) {
+    if (!e.target.closest('a') && !e.target.closest('button') && !e.target.closest('.applicants')) {
+      window.location.href = this.getAttribute('data-href');
+    }
+  });
+});
+
+// Applicants click
+document.querySelectorAll('.applicants').forEach(function(element) {
+  element.addEventListener('click', function(e) {
+    e.stopPropagation();
+    window.location.href = this.getAttribute('data-href');
+  });
+});
+
+// Job type filter
+document.querySelectorAll('.job_type').forEach(function(element) {
+  element.addEventListener('click', function() {
+    document.getElementById('jobtypeform').submit();
+  });
+});
+
+// Pagination
+document.querySelectorAll('.pagination a').forEach(function(element) {
+  element.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('page').value = this.getAttribute('class').split(' ')[0];
+    document.getElementById('jobtypeform').submit();
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,613 @@
+{% extends 'recruiter_v2/recruiter_base_with_menu.html' %}
+{% load page_tags %}
+{% load tz %}
+{% load static %}
+
+{% block title %}Post New Job - PeelJobs{% endblock %}
+
+{% block extra_css %}
+<!-- All styling handled by Tailwind CSS classes -->
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+  <!-- Header Section -->
+  <div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-6">
+        <h1 class="text-2xl font-bold text-gray-900">Post a New Job</h1>
+        <p class="mt-2 text-gray-600">Create unlimited job postings and reach qualified candidates instantly</p>
+      </div>
+      
+      <!-- Tab Navigation -->
+      <div class="flex space-x-1 border-b border-gray-200">
+        <a href="{% url 'recruiter:new' 'full-time' %}" 
+           class="px-6 py-3 text-sm font-medium rounded-t-lg {% if status == 'full-time' %}bg-blue-500 text-white border-b-2 border-blue-500{% else %}text-gray-500 hover:text-gray-700 hover:bg-gray-50{% endif %}">
+          <i data-lucide="briefcase" class="w-4 h-4 inline mr-2"></i>
+          Full-Time
+        </a>
+        <a href="{% url 'recruiter:new' 'internship' %}" 
+           class="px-6 py-3 text-sm font-medium rounded-t-lg {% if status == 'internship' %}bg-blue-500 text-white border-b-2 border-blue-500{% else %}text-gray-500 hover:text-gray-700 hover:bg-gray-50{% endif %}">
+          <i data-lucide="graduation-cap" class="w-4 h-4 inline mr-2"></i>
+          Internship
+        </a>
+        <a href="{% url 'recruiter:new' 'walk-in' %}" 
+           class="px-6 py-3 text-sm font-medium rounded-t-lg {% if status == 'walk-in' %}bg-blue-500 text-white border-b-2 border-blue-500{% else %}text-gray-500 hover:text-gray-700 hover:bg-gray-50{% endif %}">
+          <i data-lucide="map-pin" class="w-4 h-4 inline mr-2"></i>
+          Walk-In
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Form Column -->
+      <div class="lg:col-span-2">
+        
+        {% if show_recruiters %}
+        <!-- Copy Existing Job Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Copy from Existing Job</h3>
+            
+            <!-- Job Type Toggle -->
+            <div class="flex space-x-4 mb-4">
+              <button type="button" id="active" class="px-4 py-2 text-sm font-medium rounded-md bg-blue-500 text-white active_job active_class jobpost">
+                Active Jobs
+              </button>
+              <button type="button" id="inactive" class="px-4 py-2 text-sm font-medium rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 active_job jobpost">
+                Inactive Jobs
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Select from existing jobs</label>
+              <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" name="jobpost" id="jobpost">
+                <option id="empty" value="">Select From Active Jobs To Autofill</option>
+                {% for jobpost in jobposts %}
+                <option value="{{jobpost.id}}" id="{% if jobpost.status == 'Disabled' %}inactive{% elif jobpost.status == 'Expired' %}inactive{% else %}active{% endif %}" {% if jobpost.status == 'Disabled' %}class="hidden"{% elif jobpost.status == 'Expired' %}class="hidden"{% endif %}>
+                  {{jobpost.title}}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Error Display -->
+        <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6 hidden" id="errors_display">
+          <div class="flex">
+            <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 mr-2 mt-0.5"></i>
+            <div>
+              <p class="text-sm text-red-800" id="error_count"></p>
+              <p class="text-sm text-red-600 mt-1">Please fill the details which are highlighted in red and re-submit</p>
+            </div>
+            <button type="button" class="ml-auto text-red-400 hover:text-red-600" data-dismiss="alert">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <form id="jobform" name="jobform" method="post" enctype="multipart/form-data" class="space-y-6">
+          
+          {% if request.user.is_agency_recruiter or request.user.is_agency_admin %}
+          <!-- Agency Options -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Agency Options</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Job Type <span class="text-red-500">*</span>
+                  </label>
+                  <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="agency_job_type" id="agency_job_type">
+                    <option value="">Select A Job Type</option>
+                    {% for agency_job_type in agency_job_types %}
+                    <option value="{{ agency_job_type.0 }}">{{ agency_job_type.1 }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Invoice</label>
+                  <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="agency_invoice_type" id="agency_invoice_type">
+                    <option value="">Select Invoice Type</option>
+                    {% for invoice in agency_invoice_types %}
+                    <option value="{{ invoice.0 }}">{{ invoice.1 }}</option>
+                    {% endfor %}
+                  </select>
+                  <p class="text-xs text-gray-500 mt-1">If you are a consultancy choose your invoice type</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="agency_amount" id="agency_amount">
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Recruiter <span class="text-red-500">*</span>
+                  </label>
+                  <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 select2" multiple name="agency_recruiters" id="agency_recruiters">
+                    <option value="">Select Recruiter</option>
+                    {% for recruiter in recruiters %}
+                      {% if recruiter.agency_admin or recruiter|check_recruiter_perm:"jobposts_edit" %}
+                        <option value="{{recruiter.id}}" {% if request.user.email == recruiter.email %}selected{% endif %}>{{ recruiter.email }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Client</label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="agency_client" id="agency_client">
+                  <option value="">Select A Client</option>
+                  {% for client in clients %}
+                  <option value="{{ client.id }}">{{ client.name }}</option>
+                  {% endfor %}
+                </select>
+                <p class="text-xs text-gray-500 mt-1">
+                  If you are a consultancy please select your client 
+                  {% if not clients %}
+                    <a href="{% url 'agency:add_client' %}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">Create Clients Here</a>
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Job Details -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Job Details</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Job Title <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="title" id="title" placeholder="e.g. Senior Software Developer">
+                  <p class="text-xs text-gray-500 mt-1">Be specific with your Job Title</p>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Job Role <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="job_role" id="job_role" placeholder="e.g. Full Stack Developer">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Number of Vacancies</label>
+                  <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="0" name="vacancies" id="vacancies" placeholder="1">
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Pincode</label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="pincode" id="pincode" placeholder="500001">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Job Location <span class="text-red-500">*</span>
+                </label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 select2" multiple name="location" id="location">
+                  {% for city in cities %}
+                  <option value="{{ city.id }}">{{city.name}}</option>
+                  {% endfor %}
+                  <option value="other_location">Other Location</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Keywords</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="keywords" id="keywords" placeholder="Python, Django, React, AWS">
+                <p class="text-xs text-gray-500 mt-1">Add certifications, special skills, or relevant keywords</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Industry <span class="text-red-500">*</span>
+                  </label>
+                  <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 select2" multiple name="industry" id="industry">
+                    {% for industry in industries %}
+                    <option value="{{industry.id}}">{{industry.name}}</option>
+                    {% endfor %}
+                    <option value="other_industry">Other Industry</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Functional Area <span class="text-red-500">*</span>
+                  </label>
+                  <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 select2" multiple name="functional_area" id="functional_area">
+                    {% for fa in functional_area %}
+                    <option value="{{ fa.id }}">{{ fa.name }}</option>
+                    {% endfor %}
+                    <option value="other_functional_area">Other Functional Area</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Job Description <span class="text-red-500">*</span>
+                </label>
+                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="textareacontents" id="textareacontents" rows="6" placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+                <input type="hidden" name="description" id="description">
+              </div>
+            </div>
+          </div>
+
+          <!-- Eligibility Details -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Eligibility Details</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Experience <span class="text-red-500">*</span>
+                </label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <select class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="min_year" id="min_year">
+                    <option value="">Min Year</option>
+                    {% for year in years %}
+                    <option value="{{ year.0 }}" id="{{ forloop.counter }}">{{ year.1}}</option>
+                    {% endfor %}
+                  </select>
+                  <select class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="min_month" id="min_month">
+                    <option value="">Min Month</option>
+                    {% for month in months %}
+                    <option value="{{ month.0 }}" id="{{ forloop.counter }}">{{ month.1 }}</option>
+                    {% endfor %}
+                  </select>
+                  <select class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="max_year" id="max_year">
+                    <option value="">Max Year</option>
+                    {% for year in years %}
+                    <option value="{{ year.0 }}" class="hidden" id="{{ forloop.counter }}">{{ year.1}}</option>
+                    {% endfor %}
+                  </select>
+                  <select class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="max_month" id="max_month">
+                    <option value="">Max Month</option>
+                    {% for month in months %}
+                    <option value="{{ month.0 }}" class="hidden" id="{{ forloop.counter }}">{{ month.1 }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Educational Qualification</label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 select2" multiple name="edu_qualification" id="edu_qualification">
+                  {% for qualification in qualifications %}
+                  <option value="{{ qualification.id }}">{{ qualification.name }}</option>
+                  {% endfor %}
+                  <option value="other_edu_qualification">Other Educational Qualification</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Technical Skills <span class="text-red-500">*</span>
+                </label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 select2" multiple name="skills" id="skills">
+                  {% for skill in skills %}
+                  <option value="{{skill.id}}">{{skill.name}}</option>
+                  {% endfor %}
+                  <option value="other_skills">Other Technical Skill</option>
+                </select>
+                <select style="display:none" name="major_skill" id="major_skill"></select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Company Details -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Company Details</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <input type="hidden" name="job_interview_location" id="job_interview_location">
+              <input type="hidden" name="status" id="status">
+              <input type="hidden" name="company_description" id="company_description">
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Company Name <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="company_name" id="company_name" value="{{ request.user.company.name }}">
+                  <input type="hidden" name="company_id" id="company_id" value="{{ request.user.company.id }}">
+                  <div id="company_results" class="mt-2"></div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Company Website</label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="company_website" id="company_website" value="{{ request.user.company.website }}" placeholder="https://www.company.com">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+                <input type="file" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" accept="image/*" name="company_logo" id="company_logo">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Company Address <span class="text-red-500">*</span>
+                </label>
+                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="company_address" id="company_address" rows="4" placeholder="Enter complete company address..."></textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Company Description <span class="text-red-500">*</span>
+                </label>
+                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="contents" id="contents" rows="6" placeholder="Describe your company, culture, and values..."></textarea>
+              </div>
+
+              <div class="flex items-center">
+                <input type="checkbox" name="send_email_notifications" id="send_email_notifications" checked value="True" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label class="ml-2 text-sm text-gray-700">Send notification email when job seekers apply</label>
+              </div>
+            </div>
+          </div>
+
+          {% if status == 'walk-in' %}
+          <!-- Walk-in Details -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Walk-In Details</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Contact Person <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="walkin_contactinfo" id="walkin_contactinfo" placeholder="HR Manager Name">
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Interview Time</label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="walkin_time" id="walkin_time" placeholder="10:00 AM">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Walk-in Start Date <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="walkin_from_date" id="walkin_from_date">
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Walk-in End Date <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="walkin_to_date" id="walkin_to_date">
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Interview Location -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Interview Location</h3>
+            </div>
+            <div class="p-6">
+              <div class="interview_location border border-gray-200 rounded-md p-4 relative" id="interview_location_1">
+                <button type="button" class="absolute top-2 right-2 text-red-500 hover:text-red-700 delete-interview">
+                  <i data-lucide="trash-2" class="w-4 h-4 delete_location"></i>
+                </button>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Venue Details</label>
+                  <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="venue_details_1" id="venue_details_1" rows="4" placeholder="Enter interview venue details, address, and directions..."></textarea>
+                </div>
+              </div>
+              
+              <button type="button" class="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" id="another_location">
+                <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                Add Another Location
+              </button>
+            </div>
+          </div>
+
+          <!-- Offering Details -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Salary Details</h3>
+            </div>
+            <div class="p-6">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Salary Type</label>
+                  <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="salary_type" id="salary_type">
+                    <option value="">Select Salary Type</option>
+                    <option value="Month">Per Month</option>
+                    <option value="Year">Per Year</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Salary</label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="min_salary" id="min_salary" placeholder="50000">
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Maximum Salary</label>
+                  <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="max_salary" id="max_salary" placeholder="80000">
+                </div>
+              </div>
+
+              <!-- Hidden fields -->
+              <input type="hidden" name="location_name" id="location_name" value="location_1">
+              <input type="hidden" name="searchbox_name" id="searchbox_name" value="search_1">
+              <input type="hidden" name="job_type" id="job_type" value="{{ status }}">
+            </div>
+          </div>
+
+          <!-- Deadline Details -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Publication Details</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              {% if not status == 'walk-in' %}
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Post Validity</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="last_date" id="last_date" placeholder="Select expiry date">
+              </div>
+              {% endif %}
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Publish On</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="published_date" id="published_date" placeholder="Select publish date">
+                <input type="hidden" name="no_of_interview_location" id="no_of_interview_location">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Social Media Message</label>
+                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="published_message" id="published_message" rows="3" placeholder="Message to be displayed on social networking sites..."></textarea>
+                <p class="text-xs text-gray-500 mt-1">This message will be displayed on PeelJobs social media platforms to reach more candidates</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+              <div class="flex flex-col sm:flex-row gap-4 justify-end">
+                <button type="button" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors" id="preview">
+                  <i data-lucide="eye" class="w-4 h-4 inline mr-2"></i>
+                  Post &amp; Preview
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-8 space-y-6">
+          <!-- Company Profile Card -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <i data-lucide="building-2" class="w-5 h-5 text-blue-500 mr-2"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Company Profile</h3>
+              </div>
+              <p class="text-sm text-gray-600 mb-4">Update your company profile to attract the best candidates</p>
+              <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+                <i data-lucide="external-link" class="w-4 h-4 mr-2"></i>
+                Update Profile
+              </a>
+            </div>
+          </div>
+
+          <!-- Profile Update Card -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <i data-lucide="user" class="w-5 h-5 text-green-500 mr-2"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Your Profile</h3>
+              </div>
+              <p class="text-sm text-gray-600 mb-4">Keep your recruiter profile updated for better visibility</p>
+              <a href="{% url 'recruiter:profile' %}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
+                <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+                Update Profile
+              </a>
+            </div>
+          </div>
+
+          {% if not show_recruiters %}
+          <!-- Alert for missing recruiters -->
+          <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+            <div class="flex">
+              <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-400 mr-2"></i>
+              <div>
+                <p class="text-sm text-yellow-800 font-medium">No Recruiters Added</p>
+                <p class="text-sm text-yellow-700 mt-1">Add recruiters to your agency to manage jobs effectively</p>
+                <a href="{% url 'agency:company_recruiter_create' %}" class="inline-flex items-center px-3 py-1 mt-2 bg-yellow-600 text-white text-xs font-medium rounded hover:bg-yellow-700 transition-colors">
+                  <i data-lucide="plus" class="w-3 h-3 mr-1"></i>
+                  Add Recruiter
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Instructions -->
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden" id="myModal">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900" id="myModalLabel">Instructions</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" data-dismiss="modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="p-4">
+        <div id="target_list" class="text-sm text-gray-700"></div>
+      </div>
+      <div class="flex justify-end p-4 border-t border-gray-200">
+        <button type="button" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Job Form Configuration -->
+<script type="text/javascript">
+  // Dynamic configuration based on user type
+  window.jobFormConfig = {
+    {% if request.user.is_agency_recruiter %}
+    newJobUrl: '/agency/job/full-time/new/',
+    copyJobBaseUrl: '/agency/job/',
+    previewUrl: '/agency/job/preview/'
+    {% else %}
+    newJobUrl: '/recruiter/job/full-time/new/',
+    copyJobBaseUrl: '/recruiter/job/',
+    previewUrl: '/recruiter/job/preview/'
+    {% endif %}
+  };
+</script>
+
+<!-- Job Form Handler -->
+<script type="text/javascript" src="{% static 'js/job-post-form.js' %}"></script>
+
+<!-- Initialize Job Form -->
+<script type="text/javascript">
+  $(document).ready(function() {
+    // Initialize the job form handler
+    jobFormHandler.init();
+  });
+</script>
+{% endblock %}

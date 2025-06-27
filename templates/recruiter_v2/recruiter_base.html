@@ -18,11 +18,67 @@
     
     <!-- Tailwind CSS - Using compiled version with all utilities -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/tailwind-output.css' %}">
+    
+    <!-- Select2 Tailwind Integration Styles -->
+    <style>
+        /* Select2 styling to match Tailwind forms */
+        .select2-container .select2-selection--single {
+            height: 42px !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+            background-color: white !important;
+        }
+        .select2-container .select2-selection--single .select2-selection__rendered {
+            line-height: 40px !important;
+            padding-left: 12px !important;
+            color: #374151 !important;
+        }
+        .select2-container .select2-selection--multiple {
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+            min-height: 42px !important;
+            background-color: white !important;
+        }
+        .select2-dropdown {
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+        }
+        .select2-container--default .select2-selection--single:focus,
+        .select2-container--default .select2-selection--multiple:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+        /* TinyMCE integration */
+        .tox .tox-editor-container {
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+        }
+        .tox.tox-tinymce {
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+        }
+        .tox.tox-tinymce.border-red-500 {
+            border-color: #ef4444 !important;
+        }
+    </style>
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- jQuery and required plugins -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- CSS for plugins -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/ui-lightness/jquery-ui.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css">
+    
+    <!-- JavaScript plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <!-- TinyMCE 6 - Community version from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"></script>
     
     {% block extra_css %}{% endblock %}
 </head>
