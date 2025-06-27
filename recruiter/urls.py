@@ -8,8 +8,7 @@ from recruiter.views import (
     inactive_jobs,
     new_job,
     copy_job,
-)
-from recruiter.views import (
+
     edit_job,
     view_job,
     preview_job,
@@ -18,23 +17,19 @@ from recruiter.views import (
     delete_job,
     applicants,
     multiple_resume_upload,
-)
-from recruiter.views import (
+
     new_user,
     user_password_reset,
     change_password,
     user_profile,
-    facebook_login,
     resume_view,
-)
-from recruiter.views import (
+
     verify_mobile,
     send_mobile_verification_code,
     edit_profile,
     account_activation,
     resume_edit,
-)
-from recruiter.views import (
+
     view_company,
     edit_company,
     upload_profilepic,
@@ -42,8 +37,7 @@ from recruiter.views import (
     messages,
     resume_upload,
     resume_pool,
-)
-from recruiter.views import (
+
     add_menu,
     edit_menu,
     delete_menu,
@@ -51,15 +45,19 @@ from recruiter.views import (
     menu_order,
     interview_location,
     enable_email_notifications,
-    google_login,
-)
-from recruiter.views import (
+
     company_recruiter_create,
     edit_company_recruiter,
     delete_company_recruiter,
     activate_company_recruiter,
     company_recruiter_profile,
     download_applicants,
+)
+
+from recruiter.views.authentication import (
+    google_login,
+    google_register,
+    google_register_callback,
 )
 
 app_name = "recruiter"
@@ -110,7 +108,8 @@ urlpatterns = [
         name="account_activation",
     ),
     url(r"^google_login/$", google_login, name="google_login"),
-    url(r"^facebook_login/$", facebook_login, name="facebook_login"),
+    url(r"^google_register/$", google_register, name="google_register"),
+    url(r"^google_register_callback/$", google_register_callback, name="google_register_callback"),
     url(r"^microsite-page/$", view_company, name="view_company"),
     url(r"^company/edit/$", edit_company, name="edit_company"),
     url(r"^company/profile-pic/$", upload_profilepic, name="upload_profilepic"),

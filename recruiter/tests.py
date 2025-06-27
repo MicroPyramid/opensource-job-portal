@@ -2302,7 +2302,3 @@ class recruiter_get_views_test(TestCase):
     def test_facebook_login(self):
         response = self.client.post(reverse("recruiter:facebook_login"))
         self.assertEqual(response.status_code, 302)
-
-    def test_google_login(self):
-        response = self.client.post(reverse("recruiter:google_connect"))
-        self.assertEqual(response.status_code, 302)

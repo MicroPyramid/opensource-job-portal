@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.views.decorators.http import require_http_methods
 from datetime import datetime
+from django.utils import timezone
+from zoneinfo import ZoneInfo
 from dashboard.tasks import send_email
 from psite.forms import AuthenticationForm, ForgotPassForm, UserEmailRegisterForm, UserPassChangeForm
 from django.http import HttpResponse
@@ -12,7 +14,6 @@ import json
 import logging
 import boto3
 import random
-from datetime import timezone
 from peeldb.models import User, UserEmail
 from django.template import loader
 from pjob.views import save_codes_and_send_mail, add_other_location_to_user
@@ -202,7 +203,7 @@ def user_register(request):
                                 ACL='public-read'
                             )
                             user.resume = path
-                            user.profile_updated = datetime.now(timezone.utc)
+                            user.profile_updated = timezone.now()
                             user.save()
                         except Exception as e:
                             logger.error(f"Resume upload failed: {str(e)}", exc_info=True)
@@ -285,7 +286,7 @@ def forgot_password(request):
                 if user:
                     # Generate new temporary password
                     user.password_reset_token = get_random_string(length=32)
-                    user.password_reset_token_created_at = datetime.now(timezone.utc)
+                    user.password_reset_token_created_at = timezone.now()
                     user.save()
                     
                     # Prepare email content
@@ -364,7 +365,7 @@ def set_password(request, user_id, passwd_reset_token):
     # Check if token has expired (add token expiry validation)
     from datetime import timedelta
     if user.password_reset_token_created_at:
-        token_age = datetime.now(timezone.utc) - user.password_reset_token_created_at
+        token_age = timezone.now() - user.password_reset_token_created_at
         if token_age > timedelta(hours=24):  # Token expires after 24 hours
             template = "404.html"
             return render(
@@ -407,7 +408,7 @@ def set_password(request, user_id, passwd_reset_token):
                 # Authenticate and login user
                 usr = authenticate(username=user.email, password=new_password)
                 if usr:
-                    usr.last_login = datetime.now(timezone.utc)
+                    usr.last_login = timezone.now()
                     usr.save()
                     auth_login(request, usr)
                 

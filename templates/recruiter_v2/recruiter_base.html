@@ -11,19 +11,6 @@
     <link rel="icon" type="image/x-icon" href="{{logo}}" />
     <link rel="shortcut icon" href="{{favicon}}">
     
-    <!-- Open Graph Meta Tags for Social Sharing -->
-    <meta property="og:image" content="{{logo}}" />
-    <meta property="og:site_name" content="PeelJobs" />
-    <meta property="og:type" content="website" />
-    
-    <!-- Additional Meta Tags -->
-    <meta name="copyright" content="Copyright (c) PeelJobs, All rights reserved"/>
-    {% block robot_tag %}
-    <meta name="ROBOTS" content="index, follow, ALL"/>
-    {% endblock %}
-    {% block meta_tags %}{% endblock %}
-    {% block block_canonical_tag %}{% endblock %}
-    
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
@@ -32,8 +19,10 @@
     <!-- Tailwind CSS - Using compiled version with all utilities -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/tailwind-output.css' %}">
 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -41,11 +30,6 @@
     {% block base_content %}{% endblock %}
     
 
-    
-    <!-- Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
     <!-- Initialize Lucide Icons -->
     <script>
         // Initialize Lucide icons when DOM is ready
@@ -61,13 +45,6 @@
                 lucide.createIcons();
             }
         }
-        
-        // Initialize search filter if present
-        $(document).ready(function() {
-            if (typeof initializeSearchFilter === 'function') {
-                initializeSearchFilter();
-            }
-        });
     </script>
     
     {% block extra_js %}{% endblock %}

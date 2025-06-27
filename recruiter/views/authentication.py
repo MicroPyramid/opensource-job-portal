@@ -1,122 +1,46 @@
-"""
-Authentication Views
-Handles user authentication, registration, and account management
-"""
 import json
-import urllib
 import requests
-import math
-import random
-import time
-from mpcomp.s3_utils import S3Connection
-import csv
-from collections import OrderedDict
 
 from django.http.response import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.conf import settings
 from django.urls import reverse
 from django.template import loader, Template, Context
-from django.template.loader import render_to_string
-from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 from django.contrib.auth import logout, authenticate, login
-from django.contrib.auth.hashers import check_password
-from django.db.models import Q, Count
 from django.contrib.auth import update_session_auth_hash
 from django.template.defaultfilters import slugify
-from django.contrib.auth.models import Permission, ContentType
-from django.db.models import Case, When
-import boto3
 from django.contrib.auth import load_backend
-
-
-from mpcomp.aws import AWS
-from dashboard.tasks import sending_mail, send_email
-from django.utils.crypto import get_random_string
 from mpcomp.facebook import GraphAPI, get_access_token_from_code
-from mpcomp.views import get_absolute_url
-from pjob.views import save_codes_and_send_mail
+
+from dashboard.tasks import send_email
+from django.utils.crypto import get_random_string
 from peeldb.models import (
-    Country,
-    JobPost,
     MetaData,
-    State,
-    City,
-    Skill,
-    Industry,
-    Qualification,
-    AppliedJobs,
     User,
-    JOB_TYPE,
-    FunctionalArea,
-    Keyword,
-    UserEmail,
-    MARTIAL_STATUS,
-    Google,
-    Facebook,
     Company,
-    MailTemplate,
-    SentMail,
-    InterviewLocation,
-    COMPANY_TYPES,
-    Menu,
-    Ticket,
-    AGENCY_INVOICE_TYPE,
-    AGENCY_JOB_TYPE,
-    AgencyCompany,
-    AgencyRecruiterJobposts,
-    AGENCY_RECRUITER_JOB_TYPE,
-    AgencyApplicants,
-    AgencyResume,
-    POST,
-    UserMessage,
+    UserEmail,
+    Google,
+    Facebook
 )
 from recruiter.forms import (
-    JobPostForm,
-    YEARS,
-    MONTHS,
     Company_Form,
     User_Form,
     ChangePasswordForm,
-    PersonalInfoForm,
     MobileVerifyForm,
-    MailTemplateForm,
-    EditCompanyForm,
-    RecruiterForm,
-    MenuForm,
-    ApplicantResumeForm,
-    ResumeUploadForm,
 )
 
 from mpcomp.views import (
     rand_string,
     recruiter_login_required,
-    get_prev_after_pages_count,
-    agency_admin_login_required,
-    get_next_month,
-    get_aws_file_path,
-    get_resume_data,
-    handle_uploaded_file,
 )
 from recruiter.views.dashboard import get_autocomplete
 
-# Authentication Views will be moved here
-# TODO: Move the following functions from the main views.py:
-# - index()
-# - new_user()
-# - account_activation()
-# - user_password_reset()
-# - change_password()
-# - verify_mobile()
-# - send_mobile_verification_code()
-# - google_login()
-# - google_connect()
-# - facebook_login()
-
 
 def index(request):
+    pass
     if request.user.is_authenticated:
         if request.user.is_staff:
             return HttpResponseRedirect("/dashboard/")
@@ -198,7 +122,7 @@ def index(request):
         h1_tag = Template(meta[0].h1_tag).render(Context({}))
     return render(
         request,
-        "recruiter/login.html",
+        "recruiter_v2/register.html",
         {
             "meta_title": meta_title,
             "meta_description": meta_description,
@@ -234,7 +158,7 @@ def new_user(request):  # pragma: no mccabe
                 h1_tag = Template(meta[0].h1_tag).render(Context({}))
             return render(
                 request,
-                "recruiter/register.html",
+                "recruiter_v2/register.html",
                 {
                     "meta_title": meta_title,
                     "meta_description": meta_description,
@@ -312,17 +236,17 @@ def new_user(request):  # pragma: no mccabe
                     # username = create_slug(request.POST['email'])
                     user_obj = User.objects.create(
                         first_name=username,
-                        email=request.POST["email"],
+                        email=request.POST.get("email"),
                         username=username,
                         mobile=request.POST["mobile"],
-                        profile_updated=datetime.now(timezone.utc),
+                        profile_updated=timezone.now(),
                     )
                     user_obj.user_type = "RR"
                     user_obj.set_password(request.POST["password"])
                     user_obj.is_active = False
                     user_obj.email_notifications = True
                     user_obj.mobile_verified = True
-                    user_obj.profile_updated = datetime.now(timezone.utc)
+                    user_obj.profile_updated = timezone.now()
                     if (
                         "client_type" in request.POST
                         and request.POST["client_type"] == "company"
@@ -521,7 +445,7 @@ def user_password_reset(request):
                 user_active = True if usr.is_active else False
                 send_email.delay(mto, subject, rendered)
 
-                usr.last_password_reset_on = datetime.now(timezone.utc)
+                usr.last_password_reset_on = timezone.now()
                 usr.save()
 
                 data = {
@@ -639,7 +563,7 @@ def send_mobile_verification_code(request):
         user = request.user
         random_code = rand_string(size=6)
         user.mobile_verification_code = random_code
-        user.last_mobile_code_verified_on = datetime.now(timezone.utc)
+        user.last_mobile_code_verified_on = timezone.now()
         user.save()
         return HttpResponse(
             json.dumps(
@@ -648,6 +572,211 @@ def send_mobile_verification_code(request):
         )
 
 
+
+
+def google_register(request):
+    """Handle Google registration flow - store form data in session and redirect to OAuth"""
+    if request.method == "POST":
+        # Store form data in session for later use
+        request.session['google_registration_data'] = {
+            'client_type': request.POST.get('client_type'),
+            'mobile': request.POST.get('mobile'),
+            'company_name': request.POST.get('company_name', ''),
+            'company_website': request.POST.get('company_website', ''),
+        }
+        
+        # Generate OAuth URL for registration
+        oauth_url = (
+            "https://accounts.google.com/o/oauth2/auth?client_id="
+            + settings.GOOGLE_CLIENT_ID
+            + "&response_type=code&scope="
+        )
+        oauth_url += (
+            "https://www.googleapis.com/auth/userinfo.profile"
+            + " https://www.googleapis.com/auth/userinfo.email"
+        )
+        oauth_url += (
+            "&redirect_uri="
+            + settings.GOOGLE_LOGIN_HOST
+            + reverse("recruiter:google_register_callback")
+            + "&state=register"
+        )
+        
+        return HttpResponse(json.dumps({
+            "error": False,
+            "oauth_url": oauth_url
+        }))
+    
+    return HttpResponse(json.dumps({
+        "error": True,
+        "message": "Invalid request method"
+    }))
+
+
+def google_register_callback(request):
+    """Handle Google OAuth callback and complete registration"""
+    if "code" not in request.GET:
+        return HttpResponseRedirect(
+            reverse("recruiter:new_user") + "?error=OAuth authorization failed"
+        )
+    
+    # Get stored registration data from session
+    registration_data = request.session.get('google_registration_data', {})
+    if not registration_data:
+        return HttpResponseRedirect(
+            reverse("recruiter:new_user") + "?error=Registration session expired"
+        )
+    
+    # Exchange authorization code for access token
+    params = {
+        "grant_type": "authorization_code",
+        "code": request.GET.get("code"),
+        "redirect_uri": settings.GOOGLE_LOGIN_HOST + reverse("recruiter:google_register_callback"),
+        "client_id": settings.GOOGLE_CLIENT_ID,
+        "client_secret": settings.GOOGLE_CLIENT_SECRET,
+    }
+    
+    try:
+        token_response = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
+        token_info = token_response.json()
+        
+        if not token_info.get("access_token"):
+            return HttpResponseRedirect(
+                reverse("recruiter:new_user") + "?error=Failed to obtain access token"
+            )
+        
+        # Get user info from Google
+        user_info_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+        user_info_params = {"access_token": token_info["access_token"]}
+        user_info_response = requests.get(user_info_url, params=user_info_params, timeout=60)
+        user_document = user_info_response.json()
+        
+        # Check if user already exists
+        email_matches = UserEmail.objects.filter(email__iexact=user_document["email"])
+        if email_matches:
+            return HttpResponseRedirect(
+                reverse("recruiter:new_user") + "?error=User with this email already exists"
+            )
+        
+        # Create company if client_type is company
+        company = None
+        if registration_data.get('client_type') == 'company':
+            company = Company.objects.create(
+                name=registration_data.get('company_name', user_document.get('name', 'Unknown Company')),
+                website=registration_data.get('company_website', ''),
+                company_type="Consultant",
+                slug=slugify(registration_data.get('company_name', user_document.get('name', 'unknown-company'))),
+                email=user_document.get('email'),
+                created_from="google_register",
+            )
+        
+        # Create user
+        username = user_document.get('given_name', user_document.get('name', ''))[:30]  # Ensure username is not too long
+        if not username:
+            username = user_document.get('email', '').split('@')[0][:30]
+        
+        # Make sure username is unique
+        base_username = username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}_{counter}"[:30]
+            counter += 1
+        
+        user = User.objects.create(
+            first_name=user_document.get('given_name', ''),
+            last_name=user_document.get('family_name', ''),
+            email=user_document.get('email'),
+            username=username,
+            mobile=registration_data.get('mobile', ''),
+            profile_updated=timezone.now(),
+        )
+        
+        # Set user type based on client_type
+        if registration_data.get('client_type') == 'company':
+            user.user_type = "AA"  # Agency Admin
+            user.company = company
+            user.agency_admin = True
+        else:
+            user.user_type = "RR"  # Recruiter
+        
+        # Set user properties
+        user.is_active = True  # Google users are automatically activated
+        user.email_veified = True
+        user.email_notifications = True
+        user.mobile_verified = False  # Will need to verify mobile separately
+        user.is_admin = True
+        
+        # Generate random codes
+        while True:
+            random_code = get_random_string(length=10)
+            if not User.objects.filter(activation_code__iexact=random_code).exists():
+                break
+        
+        while True:
+            unsub_code = get_random_string(length=10)
+            if not User.objects.filter(unsubscribe_code__iexact=unsub_code).exists():
+                break
+        
+        user.activation_code = random_code
+        user.unsubscribe_code = unsub_code
+        user.save()
+        
+        # Create UserEmail record
+        UserEmail.objects.create(
+            user=user, email=user_document.get('email'), is_primary=True
+        )
+        
+        # Create Google record
+        Google.objects.create(
+            user=user,
+            google_url=user_document.get('link', f"https://plus.google.com/{user_document.get('id', '')}"),
+            verified_email=user_document.get('verified_email', True),
+            google_id=user_document.get('id', ''),
+            family_name=user_document.get('family_name', ''),
+            name=user_document.get('name', ''),
+            given_name=user_document.get('given_name', ''),
+            email=user_document.get('email', ''),
+            picture=user_document.get('picture', ''),
+        )
+        
+        # Send welcome email
+        temp = loader.get_template("recruiter/email/google_registration_welcome.html")
+        subject = "Welcome to PeelJobs - Registration Successful"
+        mto = user_document.get('email')
+        c = {
+            'user': user,
+            'company': company,
+            'is_company_user': registration_data.get('client_type') == 'company',
+        }
+        rendered = temp.render(c)
+        send_email.delay(mto, subject, rendered)
+        
+        # Log in the user
+        if not hasattr(user, "backend"):
+            for backend in settings.AUTHENTICATION_BACKENDS:
+                if user == load_backend(backend).get_user(user.id):
+                    user.backend = backend
+                    break
+        if hasattr(user, "backend"):
+            login(request, user)
+        
+        # Clear session data
+        if 'google_registration_data' in request.session:
+            del request.session['google_registration_data']
+        
+        # Redirect based on user type
+        if user.mobile_verified:
+            if user.is_agency_recruiter:
+                return HttpResponseRedirect(reverse("agency:index"))
+            else:
+                return HttpResponseRedirect(reverse("recruiter:index"))
+        else:
+            return render(request, "recruiter/user/mobile_verify.html")
+            
+    except Exception as e:
+        return HttpResponseRedirect(
+            reverse("recruiter:new_user") + f"?error=Registration failed: {str(e)}"
+        )
 
 
 def google_login(request):
@@ -744,181 +873,5 @@ def google_login(request):
             + settings.GOOGLE_LOGIN_HOST
             + reverse("social:google_login")
             + "&state=1235dfghjkf123"
-        )
-        return HttpResponseRedirect(rty)
-
-
-
-
-@recruiter_login_required
-def google_connect(request):
-    if "code" in request.GET:
-        code = request.GET.get("code")
-        params = {
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:google_connect"),
-            "client_id": settings.GOOGLE_CLIENT_ID,
-            "client_secret": settings.GOOGLE_CLIENT_SECRET,
-        }
-        info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
-        info = info.json()
-        if info.get("access_token"):
-            url = "https://www.googleapis.com/oauth2/v1/userinfo"
-            params = {"access_token": info["access_token"]}
-            headers = {}
-            args = dict(params=params, headers=headers, timeout=60)
-            response = requests.request("GET", url, **args)
-            user_document = response.json()
-            link = "https://plus.google.com/" + user_document.get("id", "")
-            picture = user_document.get("picture", "")
-            dob = user_document.get("birthday", "")
-            gender = user_document.get("gender", "")
-            link = user_document.get("link", link)
-
-            request.session["google"] = user_document("id", "")
-
-            if not request.user.is_gp_connected:
-                Google.objects.create(
-                    user=request.user,
-                    google_url=link,
-                    verified_email=user_document["verified_email"],
-                    google_id=user_document["id"],
-                    family_name=user_document["family_name"],
-                    name=user_document["name"],
-                    given_name=user_document["given_name"],
-                    dob=dob,
-                    email=user_document["email"],
-                    gender=gender,
-                    picture=picture,
-                )
-
-            return HttpResponseRedirect(reverse("recruiter:index"))
-        message_type = "Sorry,"
-        message = "We didnt find your Account"
-        reason = "Please verify your details and try again"
-        email = settings.DEFAULT_FROM_EMAIL
-        return render(
-            request,
-            "recruiter/recruiter_404.html",
-            {
-                "message_type": message_type,
-                "message": message,
-                "reason": reason,
-                "email": email,
-            },
-            status=404,
-        )
-    else:
-        rty = (
-            "https://accounts.google.com/o/oauth2/auth?client_id="
-            + settings.GOOGLE_CLIENT_ID
-            + "&response_type=code&scope="
-        )
-        rty += (
-            "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email "
-            + "https://www.googleapis.com/auth/contacts.readonly"
-        )
-        rty += (
-            "&redirect_uri="
-            + request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:google_connect")
-            + "&state=1235dfghjkf123"
-        )
-        return HttpResponseRedirect(rty)
-
-
-
-@recruiter_login_required
-def facebook_login(request):
-    if "code" in request.GET:
-        accesstoken = get_access_token_from_code(
-            request.GET["code"],
-            request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:facebook_login"),
-            settings.FB_APP_ID,
-            settings.FB_SECRET,
-        )
-        if accesstoken.get("access_token"):
-            graph = GraphAPI(accesstoken["access_token"])
-            accesstoken = graph.extend_access_token(
-                settings.FB_APP_ID, settings.FB_SECRET
-            )["accesstoken"]
-            profile = graph.get_object(
-                "me",
-                fields="id, name, email, birthday, hometown, location, link, locale, gender, timezone",
-            )
-            # print profile
-            if profile.get("email"):
-                email = profile.get("email")
-                hometown = (
-                    profile["hometown"]["name"] if "hometown" in profile.keys() else ""
-                )
-                location = (
-                    profile["location"]["name"] if "location" in profile.keys() else ""
-                )
-                bday = (
-                    datetime.strptime(profile["birthday"], "%m/%d/%Y").strftime(
-                        "%Y-%m-%d"
-                    )
-                    if profile.get("birthday")
-                    else "1970-09-09"
-                )
-                if not request.user.is_fb_connected:
-                    Facebook.objects.create(
-                        user=request.user,
-                        facebook_url=profile.get("link", ""),
-                        facebook_id=profile.get("id"),
-                        first_name=profile.get("first_name", ""),
-                        last_name=profile.get("last_name", ""),
-                        verified=profile.get("verified", ""),
-                        name=profile.get("name", ""),
-                        language=profile.get("locale", ""),
-                        hometown=hometown,
-                        email=profile.get("email", ""),
-                        gender=profile.get("gender", ""),
-                        dob=bday,
-                        location=location,
-                        timezone=profile.get("timezone", ""),
-                        accesstoken=accesstoken,
-                    )
-                
-                return HttpResponseRedirect(reverse("recruiter:index"))
-        message_type = "Sorry,"
-        message = "We didnt find your email id through facebook"
-        reason = "Please verify your email id in facebook and try again"
-        email = settings.DEFAULT_FROM_EMAIL
-        return render(
-            request,
-            "recruiter/recruiter_404.html",
-            {
-                "message_type": message_type,
-                "message": message,
-                "reason": reason,
-                "email": email,
-            },
-            status=404,
-        )
-    else:
-        # publish_stream, friends_groups
-        # the above are depricated as part of graphapi 2.3 we need to update
-        # our code to fix it
-        rty = (
-            "https://graph.facebook.com/oauth/authorize?client_id="
-            + settings.FB_APP_ID
-            + "&redirect_uri="
-            + request.scheme
-            + "://"
-            + request.META["HTTP_HOST"]
-            + reverse("recruiter:facebook_login")
-            + "&scope=manage_pages,read_stream, user_about_me, user_birthday, user_location, user_work_history, user_hometown"
-            + ", user_website, email, user_likes, user_groups, publish_actions, publish_pages"
         )
         return HttpResponseRedirect(rty)

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to PeelJobs</title>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        .content {
+            padding: 30px;
+            background: #f9f9f9;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .footer {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to PeelJobs!</h1>
+            <p>Your account has been created successfully</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hello {{ user.first_name }}{% if user.last_name %} {{ user.last_name }}{% endif %}!</h2>
+            
+            <p>Welcome to PeelJobs! Your Google account has been successfully linked and your recruiter profile has been created.</p>
+            
+            <h3>Account Details:</h3>
+            <ul>
+                <li><strong>Email:</strong> {{ user.email }}</li>
+                <li><strong>Account Type:</strong> {% if client_type == 'company' %}Consultancy{% else %}Recruiter{% endif %}</li>
+                {% if company %}
+                <li><strong>Company:</strong> {{ company.name }}</li>
+                {% if company.website %}
+                <li><strong>Website:</strong> {{ company.website }}</li>
+                {% endif %}
+                {% endif %}
+                <li><strong>Mobile:</strong> {{ user.mobile }}</li>
+            </ul>
+            
+            <p>You can now start posting jobs and finding the perfect candidates for your organization.</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://peeljobs.com/recruiter/" class="button">Go to Dashboard</a>
+            </div>
+            
+            <h3>What's Next?</h3>
+            <ul>
+                <li>Complete your profile information</li>
+                <li>Post your first job</li>
+                <li>Browse our candidate database</li>
+                <li>Start receiving applications</li>
+            </ul>
+            
+            <p>If you have any questions or need assistance, our support team is here to help. You can reach us at <a href="mailto:support@peeljobs.com">support@peeljobs.com</a>.</p>
+            
+            <p>Thank you for choosing PeelJobs!</p>
+            
+            <p>Best regards,<br>
+            The PeelJobs Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>This email was sent to {{ user.email }}. If you didn't create this account, please contact our support team.</p>
+            <p>&copy; 2025 PeelJobs. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

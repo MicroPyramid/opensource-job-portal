@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 from candidate.forms import WorkExperienceForm
 from peeldb.models import EmploymentHistory
@@ -44,7 +45,7 @@ def add_experience(request):
         experience.save()
         user = request.user
         user.employment_history.add(experience)
-        user.profile_updated = datetime.datetime.now(timezone.utc)
+        user.profile_updated = timezone.now()
         user.save()
 
         request.user.save()
@@ -103,7 +104,7 @@ def edit_experience(request, experience_id):
 
             experience.save()
             user = request.user
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
 
             data = {"error": False, "response": "work history updated successfully"}
@@ -118,7 +119,7 @@ def delete_experience(request, experience_id):
     if experiences:
         experiences[0].delete()
         user = request.user
-        user.profile_updated = datetime.datetime.now(timezone.utc)
+        user.profile_updated = timezone.now()
         user.save()
         data = {"error": False, "response": "work history deleted successfully"}
     else:

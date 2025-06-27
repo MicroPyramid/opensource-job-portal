@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 from django.urls import reverse
 from django.conf import settings
 from peeldb.models import (
@@ -147,7 +148,7 @@ def facebook_login(request):
                 ).first()
                 if user:
                     user.first_name = profile.get("name", "")
-                    user.profile_updated = datetime.now(timezone.utc)
+                    user.profile_updated = timezone.now()
                     user.is_active = True
                     user.save()
                 else:
@@ -157,7 +158,7 @@ def facebook_login(request):
                         first_name=profile.get("name", ""),
                         last_name=profile.get("name", ""),
                         user_type="JS",
-                        profile_updated=datetime.now(timezone.utc),
+                        profile_updated=timezone.now(),
                         is_active=True,
                         registered_from="Social",
                     )
@@ -265,10 +266,44 @@ def google_login(request):
         if email_matches:
             user = email_matches[0].user
             if user.is_recruiter or user.is_agency_recruiter:
-                return HttpResponseRedirect(
-                    reverse("recruiter:new_user")
-                    + "?invalid=Recruiters and Agencies can login in this page"
+                # Handle recruiter login properly instead of redirecting to registration
+                google, created = Google.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'google_url': link,
+                        'verified_email': user_document.get("verified_email", ""),
+                        'google_id': user_document.get("id", ""),
+                        'family_name': user_document.get("family_name", ""),
+                        'name': user_document.get("name", ""),
+                        'given_name': user_document.get("given_name", ""),
+                        'dob': dob,
+                        'email': user_document.get("email", ""),
+                        'gender': gender,
+                        'picture': picture,
+                    }
                 )
+                if not created:
+                    # Update existing Google record
+                    google.google_url = link
+                    google.verified_email = user_document.get("verified_email", "")
+                    google.google_id = user_document.get("id", "")
+                    google.family_name = user_document.get("family_name", "")
+                    google.name = user_document.get("name", "")
+                    google.given_name = user_document.get("given_name", "")
+                    google.dob = dob
+                    google.email = user_document.get("email", "")
+                    google.gender = gender
+                    google.picture = picture
+                    google.save()
+                
+                # Authenticate and login the recruiter
+                user = authenticate(username=user.username)
+                user.is_active = True
+                user.save()
+                login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+                
+                # Redirect to recruiter dashboard
+                return HttpResponseRedirect(reverse("recruiter:index"))
 
             # Email associated with the user but Google is not connected
             if not user.is_gp_connected:
@@ -295,7 +330,7 @@ def google_login(request):
                 user.last_name = user_document.get("family_name", "")
                 user.photo = picture
                 user.profile_pic = picture
-                user.profile_updated = datetime.now(timezone.utc)
+                user.profile_updated = timezone.now()
                 user.is_active = True
                 user.save()
             else:
@@ -306,7 +341,7 @@ def google_login(request):
                     last_name=user_document.get("family_name", ""),
                     photo=picture,
                     user_type="JS",
-                    profile_updated=datetime.now(timezone.utc),
+                    profile_updated=timezone.now(),
                     is_active=True,
                     registered_from="Social",
                 )
@@ -472,7 +507,7 @@ def github_login(request):
                 if user:
                     user.photo = picture
                     user.profile_pic = picture
-                    user.profile_updated = datetime.now(timezone.utc)
+                    user.profile_updated = timezone.now()
                     user.is_active = True
                     user.save()
                 else:
@@ -481,7 +516,7 @@ def github_login(request):
                         email=emails[0],
                         user_type="JS",
                         photo=picture,
-                        profile_updated=datetime.now(timezone.utc),
+                        profile_updated=timezone.now(),
                         is_active=True,
                         registered_from="Social",
                     )

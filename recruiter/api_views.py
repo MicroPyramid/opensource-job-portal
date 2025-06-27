@@ -1,6 +1,7 @@
 import json
 import math
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 from datetime import datetime
 from django.http.response import JsonResponse
 from django.db.models import Q, Count
@@ -728,7 +729,7 @@ def edit_job(request, job_post_id):
 def delete_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id, user=request.user)
     job_post.status = "Disabled"
-    job_post.closed_date = datetime.now(timezone.utc)
+    job_post.closed_date = timezone.now()
     job_post.save()
     data = {"error": False, "response": "Job Post deleted Successfully"}
     return JsonResponse(data, status=status.HTTP_200_OK)

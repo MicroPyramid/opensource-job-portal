@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 from mpcomp.views import jobseeker_login_required
 from candidate.forms import (
@@ -116,8 +117,8 @@ def edit_personalinfo(request):
                     id=int(request.POST.get("current_city"))
                 )
             user.mobile_verified = True
-            user.last_mobile_code_verified_on = datetime.datetime.now(timezone.utc)
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.last_mobile_code_verified_on = timezone.now()
+            user.profile_updated = timezone.now()
             user.save()
             if request.POST.get("other_loc"):
                 add_other_location_to_user(user, request)
@@ -174,7 +175,7 @@ def edit_profile_description(request):
         )
         if validate_personalform.is_valid():
             user = validate_personalform.save()
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
             data = {"error": False, "response": "Presonal Info edited successfully"}
         else:
@@ -198,7 +199,7 @@ def edit_professionalinfo(request):
             user.expected_salary = request.POST.get("expected_salary")
             user.notice_period = request.POST.get("notice_period")
             user.relocation = str(request.POST.get("relocation")) == "on"
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
             data = {
                 "error": False,
@@ -238,7 +239,7 @@ def edit_email(request):
             requested_email.save()
             user.save()
             user = request.user
-            user.profile_updated = datetime.datetime.now(timezone.utc)
+            user.profile_updated = timezone.now()
             user.save()
             data = {"error": False, "message": "changed successfully"}
         else:

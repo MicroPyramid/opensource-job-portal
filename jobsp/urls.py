@@ -57,7 +57,7 @@ from candidate.views import (
     assessments_questions,
     alert_subscribe_verification,
 )
-from recruiter.views import index
+from recruiter.views import post_job
 from psite.views import (
     contact,
     sitemap,
@@ -178,7 +178,7 @@ urlpatterns = [
     url(r"^dashboard/", include("dashboard.urls", namespace="dashboard")),
     url(r"^recruiter/", include("recruiter.urls", namespace="recruiter")),
     url(r"^agency/", include("agency.urls", namespace="agency")),
-    url(r"^post-job/$", index, name="post_job"),
+    url(r"^post-job/$", post_job, name="post_job"),
     url(r"^bounces/$", bounces),
     url(r"registration/using_email/$", register_using_email, name="register_email"),
     url(r"applicant/login/$", login_user_email, name="login_user"),
