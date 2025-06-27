@@ -1,0 +1,448 @@
+{% extends "recruiter_v2/recruiter_base.html" %}
+
+{% load static %}
+{% load compress %}
+{% load page_tags %}
+
+{% block title %}PeelJobs - Recruiter Dashboard{% endblock %}
+
+{% block body_class %}bg-gray-50{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Minimal custom styles using Tailwind classes and necessary overrides */
+  /* Smooth transitions for mobile menu */
+  nav {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  nav::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  nav::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  nav::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  nav::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Ensure proper spacing for main content */
+  @media (min-width: 1024px) {
+    .sidebar-mobile {
+      position: static;
+      transform: translateX(0);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .sidebar-mobile {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      transform: translateX(-100%);
+      z-index: 50;
+    }
+
+    .sidebar-mobile.translate-x-0 {
+      transform: translateX(0);
+    }
+
+    main {
+      margin-left: 0 !important;
+    }
+
+    body {
+      padding-top: 0;
+    }
+  }
+
+  /* Prevent body scroll when sidebar is open */
+  body.sidebar-open {
+    overflow: hidden;
+  }
+</style>
+{% endblock %}
+
+{% block base_content %}
+<div class="min-h-screen bg-gray-50">
+  <!-- Mobile Header -->
+  <header class="lg:hidden bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+    <div class="flex items-center justify-between px-4 py-3">
+      <h1 class="text-xl font-bold text-blue-600">PeelJobs</h1>
+      <button id="mobile-menu-toggle"
+        class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar Navigation -->
+    <nav
+      class="w-64 bg-white shadow-sm min-h-screen fixed lg:static -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 flex flex-col sidebar-mobile top-0 lg:top-0"
+      style="top: 0;">
+      <!-- Logo Section -->
+      <div class="hidden lg:block p-4 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-blue-600">PeelJobs</h1>
+      </div>
+
+      <!-- Mobile Header inside Sidebar -->
+      <div class="lg:hidden p-4 border-b border-gray-200 flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-blue-600">PeelJobs</h1>
+        <button id="mobile-menu-close"
+          class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Main Navigation -->
+      <div class="p-4 flex-1 overflow-y-auto">
+        <ul class="space-y-2">
+          {% if request.user.is_agency_recruiter %}
+          <li>
+            <a href="{% url " agency:dashboard" %}"
+              class="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+              <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
+              Dashboard
+            </a>
+          </li>
+          {% endif %}
+
+          <li>
+            <a href="{% if request.user.is_agency_recruiter %}{% url " agency:list" %}{% else %}{% url "recruiter:list"
+              %}{% endif %}"
+              class="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-all duration-200">
+              <i data-lucide="briefcase" class="w-5 h-5 mr-3"></i>
+              Jobs List
+            </a>
+          </li>
+
+          {% if request.user.is_agency_admin or request.user.is_company_recruiter or request.user|check_recruiter_perm:"jobposts_edit" %}
+          <li>
+            <a href="#"
+              class="post-new flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
+              <i data-lucide="plus" class="w-5 h-5 mr-3"></i>
+              Post A Job
+            </a>
+          </li>
+          {% endif %}
+
+          <li>
+            <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:view_company' %}{% else %}{% url 'recruiter:view_company' %}{% endif %}"
+              class="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-all duration-200">
+              <i data-lucide="building" class="w-5 h-5 mr-3"></i>
+              Company Profile
+            </a>
+          </li>
+
+          {% if request.user.is_agency_recruiter %}
+          <li>
+            <div class="px-4 py-2">
+              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Recruiters</span>
+            </div>
+            <ul class="ml-4 space-y-1">
+              {% if request.user.is_agency_admin %}
+              <li>
+                <a href="{% url " agency:company_recruiter_create" %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="user-plus" class="w-4 h-4 mr-3"></i>
+                  New Recruiter
+                </a>
+              </li>
+              {% endif %}
+              <li>
+                <a href="{% url 'agency:company_recruiter_list' %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="users" class="w-4 h-4 mr-3"></i>
+                  Recruiter List
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          {% if request.user.is_agency_admin %}
+          <li>
+            <div class="px-4 py-2">
+              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Clients</span>
+            </div>
+            <ul class="ml-4 space-y-1">
+              <li>
+                <a href="{% url 'agency:add_client' %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="user-plus" class="w-4 h-4 mr-3"></i>
+                  New Client
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'agency:client_list' %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="users" class="w-4 h-4 mr-3"></i>
+                  Client List
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+          {% endif %}
+
+          <li>
+            <div class="px-4 py-2">
+              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resume
+                Pool</span>
+            </div>
+            <ul class="ml-4 space-y-1">
+              <li>
+                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:resume_pool' %}{% else %}{% url 'recruiter:resume_pool' %}{% endif %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="database" class="w-4 h-4 mr-3"></i>
+                  Resume Pool
+                </a>
+              </li>
+              <li>
+                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:resume_upload' %}{% else %}{% url 'recruiter:resume_upload' %}{% endif %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="upload" class="w-4 h-4 mr-3"></i>
+                  Resume Upload
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="{% url 'tickets:index' %}"
+              class="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+              <i data-lucide="help-circle" class="w-5 h-5 mr-3"></i>
+              Support
+            </a>
+          </li>
+
+          <!-- Quick Actions Section -->
+          <li>
+            <div class="px-4 py-2 mt-4">
+              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Quick
+                Actions</span>
+            </div>
+            <ul class="ml-4 space-y-1">
+              <li>
+                <a href="#"
+                  class="post-new flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="plus" class="w-4 h-4 mr-3"></i>
+                  Post New Job
+                </a>
+              </li>
+              <li>
+                <a href="{% if request.user.is_agency_recruiter %}{% url " agency:list" %}{% else %}{%
+                  url "recruiter:list" %}{% endif %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="list" class="w-4 h-4 mr-3"></i>
+                  View All Jobs
+                </a>
+              </li>
+              <li>
+                <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:resume_pool' %}{% else %}{% url 'recruiter:resume_pool' %}{% endif %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="database" class="w-4 h-4 mr-3"></i>
+                  Browse Resumes
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'recruiter:messages' %}"
+                  class="flex items-center px-4 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700">
+                  <i data-lucide="message-square" class="w-4 h-4 mr-3"></i>
+                  Messages
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Profile Status Section -->
+          <li>
+            <div class="px-4 py-2 mt-4">
+              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Profile
+                Status</span>
+            </div>
+            <ul class="ml-4 space-y-1">
+              <li class="px-4 py-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs text-gray-600">Mobile</span>
+                  {% if request.user.mobile_verified %}
+
+                  {% else %}
+                  <span
+                    class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <i data-lucide="x" class="w-2.5 h-2.5 mr-1"></i>
+                    Not Verified
+                  </span>
+                  {% endif %}
+                </div>
+              </li>
+
+              {% if request.user.is_active %}
+
+              {% else %}
+              <li class="px-4 py-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs text-gray-600">Account</span>
+                  <span
+                    class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <i data-lucide="x" class="w-2.5 h-2.5 mr-1"></i>
+                    Inactive
+                  </span>
+                </div>
+              </li>
+              {% endif %}
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Profile Section at Bottom -->
+      <div class="p-4 border-t border-gray-200">
+        <div class="flex items-center space-x-3 mb-3">
+          <img
+            src="{% if request.user.profile_pic %}{{ request.user.profile_pic.url }}{% else %}{% static 'dummy.jpg' %}{% endif %}"
+            alt="Profile" class="w-10 h-10 rounded-full">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900 truncate">{{ request.user.get_full_name|default:request.user.username }}</p>
+            <p class="text-xs text-gray-500">Recruiter</p>
+          </div>
+        </div>
+
+        <!-- Notifications and Messages -->
+        <div class="flex items-center justify-center space-x-2 mb-3">
+          <button
+            class="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span class="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-400"></span>
+          </button>
+          <a href="{% url 'recruiter:messages' %}"
+            class="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+            {% get_unread_messages request.user '' '' as unread_messages %}
+            {% if unread_messages > 0 %}
+            <span
+              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{{
+              unread_messages }}</span>
+            {% endif %}
+          </a>
+        </div>
+
+        <!-- Account Menu Items -->
+        <div class="space-y-1">
+          <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:profile' %}{% else %}{% url 'recruiter:profile' %}{% endif %}"
+            class="flex items-center px-3 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700 text-sm">
+            <i data-lucide="user" class="w-4 h-4 mr-3"></i>
+            Profile
+          </a>
+          <a href="{% if request.user.is_agency_recruiter %}{% url 'agency:change_password' %}{% else %}{% url 'recruiter:change_password' %}{% endif %}"
+            class="flex items-center px-3 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700 text-sm">
+            <i data-lucide="lock" class="w-4 h-4 mr-3"></i>
+            Change Password
+          </a>
+          <a href="/logout/"
+            class="flex items-center px-3 py-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-700 text-sm">
+            <i data-lucide="log-out" class="w-4 h-4 mr-3"></i>
+            Logout
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 lg:p-6 pt-20 lg:pt-6 lg:ml-0">
+      {% block content %}
+
+      {% endblock content %}
+    </main>
+  </div>
+</div>
+
+<!-- Mobile Sidebar Overlay -->
+<div id="mobile-sidebar-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+<!-- Hidden inputs for verification status -->
+<input type="hidden" name="is_mobile_verified" id="is_mobile_verified" value="{{ request.user.mobile_verified }}">
+<input type="hidden" name="is_active" id="is_active" value="{{ request.user.is_active }}">
+{% if request.user.is_agency_recruiter %}
+<input type="hidden" id="new_job_url" value="{% url 'agency:new' 'full-time' %}">
+<input type="hidden" id="verify_mobile_url" value="{% url 'agency:verify_mobile' %}">
+{% else %}
+<input type="hidden" id="new_job_url" value="{% url 'recruiter:new' 'full-time' %}">
+<input type="hidden" id="verify_mobile_url" value="{% url 'recruiter:verify_mobile' %}">
+{% endif %}
+
+<script>
+  // Post job functionality
+  $('.post-new').click(function (e) {
+    e.preventDefault();
+    const is_mobile_verified = $('#is_mobile_verified').val();
+    const is_active = $('#is_active').val();
+
+    if (is_mobile_verified === 'True' && is_active === 'True') {
+      window.location = $('#new_job_url').val();
+    } else {
+      if (is_mobile_verified === 'False') {
+        // You can implement your modal/dialog here
+        alert('Please verify your mobile number first');
+        // window.location = $('#verify_mobile_url').val();
+      } else if (is_active === 'False') {
+        alert('Please activate your account');
+      }
+    }
+  });
+
+  // Mobile menu toggle
+  document.addEventListener('DOMContentLoaded', function () {
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const nav = document.querySelector('nav.sidebar-mobile');
+    const overlay = document.getElementById('mobile-sidebar-overlay');
+    const body = document.body;
+
+    function openSidebar() {
+      nav.classList.remove('-translate-x-full');
+      nav.classList.add('translate-x-0');
+      overlay.classList.remove('hidden');
+      body.classList.add('sidebar-open');
+    }
+
+    function closeSidebar() {
+      nav.classList.add('-translate-x-full');
+      nav.classList.remove('translate-x-0');
+      overlay.classList.add('hidden');
+      body.classList.remove('sidebar-open');
+    }
+
+    if (mobileMenuToggle) {
+      mobileMenuToggle.addEventListener('click', openSidebar);
+    }
+
+    if (mobileMenuClose) {
+      mobileMenuClose.addEventListener('click', closeSidebar);
+    }
+
+    if (overlay) {
+      overlay.addEventListener('click', closeSidebar);
+    }
+
+    // Close sidebar when clicking on a link (mobile only)
+    const sidebarLinks = nav.querySelectorAll('a');
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', function () {
+        if (window.innerWidth < 1024) {
+          closeSidebar();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

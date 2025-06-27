@@ -1,49 +1,21 @@
-"""
-Job Management Views
-Handles CRUD operations for job posts
-"""
 import json
-import urllib
-import requests
 import math
-import random
-import time
-from mpcomp.s3_utils import S3Connection
-import csv
-from collections import OrderedDict
 
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
-from django.urls import reverse
 from django.template import loader, Template, Context
 from django.template.loader import render_to_string
-from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from django.utils import timezone
-from zoneinfo import ZoneInfo
-from django.contrib.auth import logout, authenticate, login
-from django.contrib.auth.hashers import check_password
 from django.db.models import Q, Count
-from django.contrib.auth import update_session_auth_hash
-from django.template.defaultfilters import slugify
-from django.contrib.auth.models import Permission, ContentType
-from django.db.models import Case, When
-import boto3
-from django.contrib.auth import load_backend
 
 
-from mpcomp.aws import AWS
-from dashboard.tasks import sending_mail, send_email
-from django.utils.crypto import get_random_string
-from mpcomp.facebook import GraphAPI, get_access_token_from_code
-from mpcomp.views import get_absolute_url
-from pjob.views import save_codes_and_send_mail
+from dashboard.tasks import send_email
 from peeldb.models import (
     Country,
     JobPost,
     MetaData,
-    State,
     City,
     Skill,
     Industry,
@@ -52,24 +24,11 @@ from peeldb.models import (
     User,
     JOB_TYPE,
     FunctionalArea,
-    Keyword,
-    UserEmail,
-    MARTIAL_STATUS,
-    Google,
-    Facebook,
     Company,
-    MailTemplate,
-    SentMail,
-    InterviewLocation,
-    COMPANY_TYPES,
-    Menu,
-    Ticket,
     AGENCY_INVOICE_TYPE,
     AGENCY_JOB_TYPE,
     AgencyCompany,
-    AgencyRecruiterJobposts,
     AGENCY_RECRUITER_JOB_TYPE,
-    AgencyApplicants,
     AgencyResume,
     POST,
     UserMessage,
@@ -78,44 +37,16 @@ from recruiter.forms import (
     JobPostForm,
     YEARS,
     MONTHS,
-    Company_Form,
-    User_Form,
-    ChangePasswordForm,
-    PersonalInfoForm,
-    MobileVerifyForm,
-    MailTemplateForm,
-    EditCompanyForm,
-    RecruiterForm,
-    MenuForm,
     ApplicantResumeForm,
-    ResumeUploadForm,
 )
 
 from mpcomp.views import (
-    rand_string,
     recruiter_login_required,
     get_prev_after_pages_count,
-    agency_admin_login_required,
-    get_next_month,
-    get_aws_file_path,
-    get_resume_data,
-    handle_uploaded_file,
 )
 from recruiter.views.job_helpers import adding_other_fields_data, retreving_form_errors, save_job_post
 
 
-# Job Management Views will be moved here
-# TODO: Move the following functions from the main views.py:
-# - jobs_list()
-# - inactive_jobs()
-# - new_job()
-# - edit_job()
-# - copy_job()
-# - view_job()
-# - preview_job()
-# - deactivate_job()
-# - delete_job()
-# - enable_job()
 
 
 @recruiter_login_required
@@ -174,7 +105,8 @@ def jobs_list(request):
 
     return render(
         request,
-        "recruiter/job/list.html",
+        # "recruiter/job/list.html",
+        'recruiter_v2/jobs/list.html',
         {
             "jobs_list": active_jobs_list,
             "aft_page": aft_page,
