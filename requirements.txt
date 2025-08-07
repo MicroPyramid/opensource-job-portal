@@ -31,7 +31,7 @@ pillow==11.3.0
 django-storages==1.14.6
 lxml==5.4.0
 django-schema-viewer==0.5.3
-uv==0.7.12
+uv==0.8.6
 pymemcache==4.0.0
 
 #suspense
