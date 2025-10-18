@@ -26,7 +26,6 @@ from peeldb.models import (
 )
 from candidate.forms import YEARS, MONTHS
 from recruiter.forms import UserStatus
-from pjob.calendar_events import get_calendar_events_list
 
 register = template.Library()
 
@@ -707,9 +706,8 @@ def get_related_skills(search_skills):
 
 @register.filter()
 def is_events_created(request, job):
-    events = get_calendar_events_list(request)
-    titles = [i["summary"] for i in events]
-    if job.title in titles or not job.last_date or date.today() >= job.last_date:
+    """Google Calendar integration removed - only check job last_date"""
+    if not job.last_date or date.today() >= job.last_date:
         return True
     return False
 

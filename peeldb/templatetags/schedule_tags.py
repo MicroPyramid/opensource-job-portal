@@ -26,7 +26,6 @@ def month_table(context, request, month, size="regular"):
     each["pp_action_points"] = []
     each["year"] = context["year"]
     each["jobs_list"] = context["jobs_list"]
-    each["calendar_events"] = context["calendar_events"]
     # each['week'] = each['week']
     if size == "regular":
         template_name = "calendar/partials/_month_table.html"
@@ -91,13 +90,5 @@ def get_per_day_jobposts(context, year, month, date):
 
 @register.simple_tag(takes_context=True)
 def get_per_day_events(context, year, month, date):
-    import datetime
-
-    if context["calendar_events"]:
-        day = datetime.date(int(year), int(month), int(date))
-        date_events = []
-        for i in context["calendar_events"]:
-            if str(day) >= str(i["start_date"]) and str(day) <= str(i["end_date"]):
-                date_events.append(i)
-        return date_events
-    return ""
+    """Google Calendar integration removed - always returns empty list"""
+    return []

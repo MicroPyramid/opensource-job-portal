@@ -10,17 +10,12 @@ from itertools import chain
 from django.template import loader
 from django.template.exceptions import TemplateDoesNotExist
 
-# from oauth2client.contrib import xsrfutil
 from django.urls import reverse
 
 from peeldb.models import JobPost, ENQUERY_TYPES, Skill, City, Qualification, State
 from .forms import SimpleContactForm
 from mpcomp.views import get_prev_after_pages_count
 from django.db.models import Count, F
-
-# from pjob.calendar_events import FLOW
-# from oauth2client.contrib.django_util.storage import DjangoORMStorage
-# from peeldb.models import CredentialsModel
 from dashboard.tasks import send_email
 
 
@@ -211,13 +206,5 @@ def sitemap(request, **kwargs):
 
 
 def auth_return(request):
-    state = str(request.GET.get("state"))
-    token_valid = xsrfutil.validate_token(
-        settings.SECRET_KEY, bytearray(state, "utf-8"), request.user
-    )
-    if not token_valid or not state:
-        return HttpResponseRedirect("/jobs/")
-    credential = FLOW.step2_exchange(request.GET)
-    storage = DjangoORMStorage(CredentialsModel, "id", request.user, "credential")
-    storage.put(credential)
-    return HttpResponseRedirect(reverse("pjob:job_add_event"))
+    """Google Calendar OAuth callback - feature removed"""
+    return HttpResponseRedirect("/jobs/")
