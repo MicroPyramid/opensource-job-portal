@@ -71,8 +71,6 @@
     <!-- Modal Content -->
     <div
       class="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl"
-      onclick={(e) => e.stopPropagation()}
-      onkeydown={(e) => e.stopPropagation()}
       role="document"
     >
       <!-- Header -->

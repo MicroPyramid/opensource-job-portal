@@ -40,7 +40,6 @@
 
   // Search and filter state
   let searchTerm = $state('');
-  let locationSearchTerm = $state('');
   let showFiltersMobile = $state(false);
 
   // Modal states
@@ -333,7 +332,6 @@
   const hasActiveFilters = $derived(
     Boolean(
       searchTerm ||
-        locationSearchTerm ||
         locationOptions.some(opt => opt.checked) ||
         skillOptions.some(opt => opt.checked) ||
         industryOptions.some(opt => opt.checked) ||
@@ -409,18 +407,6 @@
     return chips;
   })());
 
-  // Filter jobs locally by location search term
-  let filteredJobs = $derived<Job[]>(
-    (() => {
-      if (!locationSearchTerm) return jobs;
-
-      const term = locationSearchTerm.toLowerCase();
-      return jobs.filter(job =>
-        job.location_display.toLowerCase().includes(term)
-      );
-    })()
-  );
-
   // Functions
   function toggleFiltersMobile(): void {
     showFiltersMobile = !showFiltersMobile;
@@ -428,7 +414,6 @@
 
   function resetFilters(): void {
     searchTerm = '';
-    locationSearchTerm = '';
     locationOptions.forEach(opt => opt.checked = false);
     skillOptions.forEach(opt => opt.checked = false);
     industryOptions.forEach(opt => opt.checked = false);
@@ -568,47 +553,6 @@
   </header>
 
   <div class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Search Section -->
-    <section class="mb-8">
-      <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Keywords Search -->
-          <div class="relative">
-            <label for="search-keywords" class="block text-sm font-medium text-gray-700 mb-2">
-              Keywords
-            </label>
-            <div class="relative">
-              <input
-                id="search-keywords"
-                type="text"
-                bind:value={searchTerm}
-                placeholder="Job title, company, skills..."
-                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 transition-all"
-              />
-              <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            </div>
-          </div>
-
-          <!-- Location Search -->
-          <div class="relative">
-            <label for="search-location" class="block text-sm font-medium text-gray-700 mb-2">
-              Location
-            </label>
-            <div class="relative">
-              <input
-                id="search-location"
-                type="text"
-                bind:value={locationSearchTerm}
-                placeholder="Filter displayed results by location..."
-                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 transition-all"
-              />
-              <MapPin class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Mobile Filter Toggle -->
     <div class="md:hidden mb-6 flex justify-between items-center">
       <button
@@ -835,9 +779,9 @@
               Retry
             </button>
           </div>
-        {:else if filteredJobs.length > 0}
+        {:else if jobs.length > 0}
           <div class="space-y-4">
-            {#each filteredJobs as job (job.id)}
+            {#each jobs as job (job.id)}
               <article class="relative bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 group hover:shadow-lg hover:shadow-blue-100">
                 <a
                   href="/jobs/{job.slug.replace(/^\/+/, '')}"
