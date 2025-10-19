@@ -37,6 +37,7 @@
   let showLoginPrompt = $state(false);
   let isApplying = $state(false);
   let isSaving = $state(false);
+  let isCheckingSavedState = $state(false);
 
   // Check if user is authenticated
   let isAuthenticated = $derived($authStore.isAuthenticated);
@@ -64,9 +65,17 @@
         isJobSaved = true;
         toast.success('Job saved successfully');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving job:', error);
-      toast.error('Failed to save job. Please try again.');
+      // Handle specific error cases
+      const errorMessage = error?.message || error?.error || String(error);
+      if (errorMessage.includes('already saved')) {
+        // Update UI state to match reality
+        isJobSaved = true;
+        toast.info('Job is already saved');
+      } else {
+        toast.error('Failed to save job. Please try again.');
+      }
     } finally {
       isSaving = false;
     }
@@ -110,8 +119,7 @@
   async function submitApplication(): Promise<void> {
     isApplying = true;
     try {
-      // TODO: Call apply API endpoint when it's implemented
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await jobsApi.apply(job.id);
       toast.success('Application submitted successfully!');
       showApplyModal = false;
     } catch (error) {

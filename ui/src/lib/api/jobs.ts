@@ -86,7 +86,8 @@ export const jobsApi = {
     const queryString = queryParams.toString();
     const url = queryString ? `/jobs/?${queryString}` : '/jobs/';
 
-    const response = await apiClient.get<JobListResponse>(url, true);
+    // Don't skip auth - we need it to check if jobs are saved
+    const response = await apiClient.get<JobListResponse>(url, false);
     return response;
   },
 
@@ -96,7 +97,8 @@ export const jobsApi = {
    * @returns Detailed job information
    */
   async get(idOrSlug: string | number): Promise<JobDetail> {
-    const response = await apiClient.get<JobDetail>(`/jobs/${idOrSlug}/`, true);
+    // Don't skip auth - we need it to check if job is saved
+    const response = await apiClient.get<JobDetail>(`/jobs/${idOrSlug}/`, false);
     return response;
   },
 
@@ -122,7 +124,7 @@ export const jobsApi = {
    * @param jobId - Job ID to unsave
    */
   async unsave(jobId: number): Promise<void> {
-    await apiClient.delete(`/jobs/saved/${jobId}/`);
+    await apiClient.delete(`/jobs/${jobId}/saved/`);
   },
 
   /**
@@ -131,6 +133,19 @@ export const jobsApi = {
    */
   async getSaved(): Promise<Job[]> {
     const response = await apiClient.get<Job[]>('/jobs/saved/');
+    return response;
+  },
+
+  /**
+   * Apply for a job (requires authentication)
+   * @param jobId - Job ID to apply for
+   * @param remarks - Optional cover letter or remarks
+   */
+  async apply(jobId: number, remarks?: string): Promise<{ message: string; application_id: number }> {
+    const response = await apiClient.post<{ message: string; application_id: number }>(
+      `/jobs/${jobId}/apply/`,
+      remarks ? { remarks } : {}
+    );
     return response;
   },
 };

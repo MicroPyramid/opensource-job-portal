@@ -10,10 +10,9 @@ const config = {
 			out: 'build',
 			precompress: false,
 			envPrefix: ''
-		}),
-		// Enforce trailing slashes for consistency with Django URLs
-		// This ensures all routes have trailing slashes (e.g., /jobs/slug/)
-		trailingSlash: 'always'
+		})
+		// Note: trailingSlash option removed - not supported in current SvelteKit version
+		// Django backend handles URL normalization (adds trailing slashes)
 	}
 };
 

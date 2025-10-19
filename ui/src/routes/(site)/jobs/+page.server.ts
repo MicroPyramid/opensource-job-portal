@@ -113,7 +113,7 @@ function buildQueryString(params: JobSearchParams): string {
  * Server-side load function
  * Fetches initial job data and filter options
  */
-export const load: PageServerLoad = async ({ url, fetch }) => {
+export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
   const searchParams = url.searchParams;
   const params = parseSearchParams(searchParams);
 
@@ -121,6 +121,13 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
   params.page_size = 20;
 
   try {
+    // Get auth token from cookies if available
+    const accessToken = cookies.get('access_token');
+    const headers: HeadersInit = {};
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
     // Build API URLs
     const jobsQueryString = buildQueryString(params);
     const jobsUrl = jobsQueryString
@@ -130,7 +137,7 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
 
     // Fetch data in parallel
     const [jobsResponse, filterOptionsResponse] = await Promise.all([
-      fetch(jobsUrl),
+      fetch(jobsUrl, { headers }),
       fetch(filterOptionsUrl),
     ]);
 

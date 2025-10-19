@@ -9,12 +9,19 @@ import type { JobDetail, Job, JobListResponse } from '$lib/types/jobs';
 
 const API_BASE = '/api/v1';
 
-export const load: PageServerLoad = async ({ params, fetch }) => {
+export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
   const { id } = params;
 
   try {
+    // Get auth token from cookies if available
+    const accessToken = cookies.get('access_token');
+    const headers: HeadersInit = {};
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
     // Fetch job detail using slug or ID
-    const jobResponse = await fetch(`${API_BASE}/jobs/${id}/`);
+    const jobResponse = await fetch(`${API_BASE}/jobs/${id}/`, { headers });
 
     if (!jobResponse.ok) {
       throw error(jobResponse.status === 404 ? 404 : 500, {

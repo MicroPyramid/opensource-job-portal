@@ -1675,6 +1675,22 @@ class VisitedJobs(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
+class SavedJobs(models.Model):
+    """Model to track saved/bookmarked jobs by users"""
+    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name='saved_by')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_jobs')
+    saved_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('job_post', 'user')
+        verbose_name = 'Saved Job'
+        verbose_name_plural = 'Saved Jobs'
+        ordering = ['-saved_on']
+
+    def __str__(self):
+        return f"{self.user.email} - {self.job_post.title}"
+
+
 class Menu(models.Model):
     title = models.CharField(max_length=255)
     url = models.URLField(max_length=255)

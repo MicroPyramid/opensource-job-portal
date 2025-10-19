@@ -36,6 +36,10 @@ function createAuthStore() {
 
 		if (storedUser && storedAccessToken && storedRefreshToken) {
 			try {
+				// Sync to cookies for SSR (in case user logged in before cookie implementation)
+				document.cookie = `access_token=${storedAccessToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+				document.cookie = `refresh_token=${storedRefreshToken}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+
 				set({
 					user: JSON.parse(storedUser),
 					accessToken: storedAccessToken,
@@ -68,6 +72,11 @@ function createAuthStore() {
 				localStorage.setItem('user', JSON.stringify(user));
 				localStorage.setItem('access_token', accessToken);
 				localStorage.setItem('refresh_token', refreshToken);
+
+				// Also store in cookies for SSR
+				// Set cookies with proper expiration (7 days for access, 30 days for refresh)
+				document.cookie = `access_token=${accessToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+				document.cookie = `refresh_token=${refreshToken}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
 			}
 
 			// Update store
@@ -105,6 +114,10 @@ function createAuthStore() {
 				localStorage.removeItem('user');
 				localStorage.removeItem('access_token');
 				localStorage.removeItem('refresh_token');
+
+				// Clear cookies
+				document.cookie = 'access_token=; path=/; max-age=0';
+				document.cookie = 'refresh_token=; path=/; max-age=0';
 			}
 
 			// Reset store

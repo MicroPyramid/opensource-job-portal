@@ -6,6 +6,7 @@
   import FilterSection from '$lib/components/FilterSection.svelte';
   import FilterModal from '$lib/components/FilterModal.svelte';
   import { toast } from '$lib/stores/toast';
+  import { authStore } from '$lib/stores/auth';
   import { jobsApi } from '$lib/api/jobs';
   import type { Job, FilterOption, JobFilterOptions, JobSearchParams } from '$lib/types/jobs';
   import type { PageData } from './$types';
@@ -16,14 +17,18 @@
 
   let { data }: Props = $props();
 
-  // Initialize from server data
+  // Initialize from server data (reactive to changes)
   let jobs = $state<Job[]>(data.jobs || []);
-  let totalJobs = $state(data.totalJobs || 0);
-  let totalPages = $state(data.totalPages || 0);
+  let totalJobs = $derived(data.totalJobs || 0);
+  let totalPages = $derived(data.totalPages || 0);
   let currentPage = $state(data.currentPage || 1);
   let filterOptions = $state<JobFilterOptions | null>(data.filterOptions);
-  let isLoading = $state(false);
-  let error = $state<string | null>(data.error);
+  let error = $derived(data.error);
+
+  // Sync jobs when server data changes
+  $effect(() => {
+    jobs = data.jobs || [];
+  });
 
   // Search and filter state
   let searchTerm = $state('');
@@ -47,8 +52,10 @@
   // Remote filter
   let isRemote = $state(false);
 
-  // Track if we've mounted (to prevent fetch on initial SSR)
+  // Track if we've mounted (to prevent navigation on initial SSR)
   let hasMounted = $state(false);
+  // Track if we're syncing from URL (to prevent triggering navigation)
+  let isSyncingFromUrl = $state(false);
 
   // Filter options with job counts
   let locationOptions = $state<FilterOption[]>([]);
@@ -56,6 +63,11 @@
   let industryOptions = $state<FilterOption[]>([]);
   let educationOptions = $state<FilterOption[]>([]);
   let jobTypeOptions = $state<{ name: string; value: string; count: number; checked: boolean }[]>([]);
+
+  // Sync currentPage when data changes
+  $effect(() => {
+    currentPage = data.currentPage || 1;
+  });
 
   // Initialize filter options from server data
   onMount(() => {
@@ -92,8 +104,25 @@
       }));
     }
 
-    // Parse URL params to set initial filter state
+    // Mark as mounted
+    hasMounted = true;
+  });
+
+  // Sync filter state with URL params whenever they change
+  $effect(() => {
     const urlParams = $page.url.searchParams;
+
+    // Prevent infinite loop - don't sync if we're already syncing
+    isSyncingFromUrl = true;
+
+    // Clear all filters first
+    locationOptions.forEach(opt => opt.checked = false);
+    skillOptions.forEach(opt => opt.checked = false);
+    industryOptions.forEach(opt => opt.checked = false);
+    educationOptions.forEach(opt => opt.checked = false);
+    jobTypeOptions.forEach(opt => opt.checked = false);
+
+    // Reset search
     searchTerm = urlParams.get('search') || '';
 
     // Parse multi-select filters
@@ -129,23 +158,23 @@
 
     // Parse numeric filters
     const minSal = urlParams.get('min_salary');
-    if (minSal) salaryMin = parseFloat(minSal);
+    salaryMin = minSal ? parseFloat(minSal) : null;
 
     const maxSal = urlParams.get('max_salary');
-    if (maxSal) salaryMax = parseFloat(maxSal);
+    salaryMax = maxSal ? parseFloat(maxSal) : null;
 
     const minExp = urlParams.get('min_experience');
-    if (minExp) experienceMin = parseInt(minExp, 10);
+    experienceMin = minExp ? parseInt(minExp, 10) : 0;
 
     const maxExp = urlParams.get('max_experience');
-    if (maxExp) experienceMax = parseInt(maxExp, 10);
+    experienceMax = maxExp ? parseInt(maxExp, 10) : 20;
 
     // Parse boolean filters
     const remote = urlParams.get('is_remote');
-    if (remote) isRemote = remote === 'true';
+    isRemote = remote === 'true';
 
-    // Mark as mounted
-    hasMounted = true;
+    // Done syncing
+    isSyncingFromUrl = false;
   });
 
   // Filter toggle handlers
@@ -216,36 +245,48 @@
     goto(url, { replaceState: true, noScroll: true, keepFocus: true });
   }
 
-  // Fetch jobs from API
-  async function fetchJobs() {
-    isLoading = true;
-    error = null;
+  // Navigate to new URL with filters (triggers SSR reload)
+  let navigationTimeout: ReturnType<typeof setTimeout>;
+  function navigateWithFilters(delay: number = 500) {
+    clearTimeout(navigationTimeout);
+    navigationTimeout = setTimeout(() => {
+      // Only navigate if we're still on the jobs page
+      if (!$page.url.pathname.startsWith('/jobs')) {
+        return;
+      }
 
-    try {
-      const params = buildApiParams();
-      const response = await jobsApi.list(params);
+      const params = new URLSearchParams();
 
-      jobs = response.results;
-      totalJobs = response.count;
-      totalPages = Math.ceil(response.count / 20);
+      // Add search
+      if (searchTerm) params.set('search', searchTerm);
 
-      // Update URL
-      updateURL();
-    } catch (err) {
-      console.error('Failed to fetch jobs:', err);
-      error = 'Failed to load jobs. Please try again.';
-      toast.error('Failed to load jobs');
-    } finally {
-      isLoading = false;
-    }
-  }
+      // Add filters
+      locationOptions.filter(opt => opt.checked).forEach(opt => params.append('location', opt.slug));
+      skillOptions.filter(opt => opt.checked).forEach(opt => params.append('skills', opt.slug));
+      industryOptions.filter(opt => opt.checked).forEach(opt => params.append('industry', opt.slug));
+      educationOptions.filter(opt => opt.checked).forEach(opt => params.append('education', opt.slug));
+      jobTypeOptions.filter(opt => opt.checked).forEach(opt => params.append('job_type', opt.value));
 
-  // Debounced fetch
-  let fetchTimeout: ReturnType<typeof setTimeout>;
-  function debouncedFetch(delay: number = 500) {
-    clearTimeout(fetchTimeout);
-    fetchTimeout = setTimeout(() => {
-      fetchJobs();
+      // Add numeric filters
+      if (salaryMin !== null && salaryMin > 0) params.set('min_salary', salaryMin.toString());
+      if (salaryMax !== null && salaryMax > 0) params.set('max_salary', salaryMax.toString());
+      if (experienceMin > 0) params.set('min_experience', experienceMin.toString());
+      if (experienceMax < 20) params.set('max_experience', experienceMax.toString());
+
+      // Add boolean filters
+      if (isRemote) params.set('is_remote', 'true');
+
+      // Add pagination
+      if (currentPage > 1) params.set('page', currentPage.toString());
+
+      // Navigate to new URL (triggers SSR)
+      const queryString = params.toString();
+      const newUrl = queryString ? `/jobs?${queryString}` : '/jobs';
+
+      // Only navigate if URL actually changed
+      if ($page.url.pathname + ($page.url.search || '') !== newUrl) {
+        goto(newUrl);
+      }
     }, delay);
   }
 
@@ -273,9 +314,11 @@
       currentPage,
     ];
 
-    // Don't fetch on initial mount (we have server data)
-    if (hasMounted) {
-      debouncedFetch();
+    // Don't navigate if:
+    // 1. Not mounted yet (initial SSR)
+    // 2. Currently syncing from URL (would cause infinite loop)
+    if (hasMounted && !isSyncingFromUrl) {
+      navigateWithFilters();
     }
   });
 
@@ -344,21 +387,23 @@
   }
 
   async function saveJob(jobId: number): Promise<void> {
-    const jobIndex = jobs.findIndex(job => job.id === jobId);
-    if (jobIndex === -1) return;
+    const job = jobs.find(j => j.id === jobId);
+    if (!job) return;
 
-    const job = jobs[jobIndex];
+    const wasSaved = job.is_saved;
 
     try {
-      if (job.is_saved) {
+      if (wasSaved) {
         await jobsApi.unsave(jobId);
-        job.is_saved = false;
         toast.success('Job removed from saved');
       } else {
         await jobsApi.save(jobId);
-        job.is_saved = true;
         toast.success('Job saved!');
       }
+
+      // Update the job in the data (trigger reactivity)
+      // Create a new array with the updated job
+      jobs = jobs.map(j => j.id === jobId ? { ...j, is_saved: !wasSaved } : j);
     } catch (err) {
       console.error('Failed to save job:', err);
       toast.error('Please login to save jobs');
@@ -699,16 +744,11 @@
           </div>
         </div>
 
-        {#if isLoading}
-          <div class="text-center py-16">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p class="mt-4 text-gray-600">Loading jobs...</p>
-          </div>
-        {:else if error}
+        {#if error}
           <div class="text-center py-16">
             <p class="text-red-600 mb-4">{error}</p>
             <button
-              onclick={() => fetchJobs()}
+              onclick={() => window.location.reload()}
               class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
               Retry
@@ -769,6 +809,7 @@
                   type="button"
                   onclick={(event) => {
                     event.preventDefault();
+                    event.stopPropagation();
                     saveJob(job.id);
                   }}
                   class="absolute top-6 right-6 z-10 p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-all {job.is_saved ? 'text-blue-600 bg-gray-100' : ''}"

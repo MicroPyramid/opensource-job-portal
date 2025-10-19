@@ -10,6 +10,7 @@ from peeldb.models import (
     Qualification,
     Company,
     AppliedJobs,
+    SavedJobs,
     FunctionalArea,
 )
 from django.utils import timezone
@@ -212,9 +213,7 @@ class JobListSerializer(serializers.ModelSerializer):
         """Check if job is saved by current user"""
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            # TODO: Implement SavedJobs model or use VisitedJobs
-            # For now, return False
-            return False
+            return SavedJobs.objects.filter(job_post=obj, user=request.user).exists()
         return False
 
 

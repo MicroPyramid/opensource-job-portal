@@ -14,7 +14,7 @@ from django.db.models import Count, Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 
-from peeldb.models import JobPost, City, Skill, Industry, Qualification
+from peeldb.models import JobPost, City, Skill, Industry, Qualification, SavedJobs, AppliedJobs
 from .serializers import JobListSerializer, JobDetailSerializer
 from .filters import JobFilter
 
@@ -227,6 +227,176 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Manage saved jobs",
+        description="Save, unsave, or get saved jobs (requires authentication)",
+        request={
+            'application/json': {
+                'type': 'object',
+                'properties': {
+                    'job_id': {
+                        'type': 'integer',
+                        'description': 'ID of the job to save (required for POST)'
+                    }
+                }
+            }
+        },
+        responses={
+            200: {'description': 'Success - GET returns list of saved jobs'},
+            201: {'description': 'Job saved successfully'},
+            400: {'description': 'Bad request'},
+            404: {'description': 'Job not found'}
+        },
+        tags=['Jobs'],
+    )
+    @action(detail=False, methods=['get', 'post'], permission_classes=[IsAuthenticated], url_path='saved')
+    def saved_jobs(self, request):
+        """
+        GET: Get all saved jobs for the authenticated user
+        POST: Save a job for the authenticated user
+        """
+        if request.method == 'GET':
+            # Get all saved jobs
+            saved_jobs = SavedJobs.objects.filter(user=request.user).select_related('job_post')
+            jobs = [saved.job_post for saved in saved_jobs if saved.job_post.status == 'Live']
+            serializer = JobListSerializer(jobs, many=True, context={'request': request})
+            return Response(serializer.data)
+
+        elif request.method == 'POST':
+            # Save a job
+            job_id = request.data.get('job_id')
+
+            if not job_id:
+                return Response(
+                    {'error': 'job_id is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            try:
+                job = JobPost.objects.get(id=job_id, status='Live')
+            except JobPost.DoesNotExist:
+                return Response(
+                    {'error': 'Job not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Check if already saved
+            if SavedJobs.objects.filter(job_post=job, user=request.user).exists():
+                return Response(
+                    {'error': 'Job already saved'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Save the job
+            SavedJobs.objects.create(job_post=job, user=request.user)
+
+            return Response(
+                {'message': 'Job saved successfully', 'job_id': job_id},
+                status=status.HTTP_201_CREATED
+            )
+
+    @extend_schema(
+        summary="Unsave job",
+        description="Remove a saved/bookmarked job (requires authentication)",
+        responses={
+            200: {'description': 'Job unsaved successfully'},
+            404: {'description': 'Saved job not found'}
+        },
+        tags=['Jobs'],
+    )
+    @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated], url_path='saved')
+    def unsave_job(self, request, id=None):
+        """Remove a saved job for the authenticated user"""
+        try:
+            job = JobPost.objects.get(id=id)
+        except JobPost.DoesNotExist:
+            return Response(
+                {'error': 'Job not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            saved_job = SavedJobs.objects.get(job_post=job, user=request.user)
+            saved_job.delete()
+            return Response(
+                {'message': 'Job unsaved successfully'},
+                status=status.HTTP_200_OK
+            )
+        except SavedJobs.DoesNotExist:
+            return Response(
+                {'error': 'Saved job not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    @extend_schema(
+        summary="Apply for job",
+        description="Submit an application for a job (requires authentication)",
+        request={
+            'application/json': {
+                'type': 'object',
+                'properties': {
+                    'remarks': {
+                        'type': 'string',
+                        'description': 'Optional remarks or cover letter',
+                        'nullable': True
+                    }
+                }
+            }
+        },
+        responses={
+            201: {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'},
+                    'application_id': {'type': 'integer'}
+                }
+            },
+            400: {'description': 'Already applied or invalid request'},
+            404: {'description': 'Job not found'}
+        },
+        tags=['Jobs'],
+    )
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated], url_path='apply')
+    def apply_for_job(self, request, id=None):
+        """Apply for a job"""
+        try:
+            job = JobPost.objects.get(id=id, status='Live')
+        except JobPost.DoesNotExist:
+            return Response(
+                {'error': 'Job not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Check if already applied
+        if AppliedJobs.objects.filter(job_post=job, user=request.user).exists():
+            return Response(
+                {'error': 'You have already applied for this job'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get request metadata
+        ip_address = request.META.get('REMOTE_ADDR', '')
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        remarks = request.data.get('remarks', '')
+
+        # Create application
+        application = AppliedJobs.objects.create(
+            job_post=job,
+            user=request.user,
+            status='Applied',
+            remarks=remarks,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+
+        return Response(
+            {
+                'message': 'Application submitted successfully',
+                'application_id': application.id
+            },
+            status=status.HTTP_201_CREATED
+        )
 
 
 class JobFilterOptionsView(APIView):
