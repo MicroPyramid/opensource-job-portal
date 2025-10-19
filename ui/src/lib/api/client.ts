@@ -10,6 +10,18 @@ export interface ApiError {
 	detail?: string;
 }
 
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function subscribeTokenRefresh(callback: (token: string) => void) {
+	refreshSubscribers.push(callback);
+}
+
+function onTokenRefreshed(token: string) {
+	refreshSubscribers.forEach(callback => callback(token));
+	refreshSubscribers = [];
+}
+
 export class ApiClient {
 	/**
 	 * Make authenticated request with JWT token
@@ -18,7 +30,8 @@ export class ApiClient {
 		endpoint: string,
 		options: RequestInit = {},
 		skipAuth = false,
-		isFormData = false
+		isFormData = false,
+		retryCount = 0
 	): Promise<T> {
 		const url = `${API_BASE}${endpoint}`;
 
@@ -41,7 +54,75 @@ export class ApiClient {
 			headers
 		});
 
-		// Handle errors
+		// Handle 401 Unauthorized - try to refresh token
+		if (response.status === 401 && !skipAuth && retryCount === 0) {
+			const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+
+			if (refreshToken) {
+				try {
+					if (!isRefreshing) {
+						isRefreshing = true;
+
+						// Try to refresh the token
+						const refreshResponse = await fetch(`${API_BASE}/auth/token/refresh/`, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ refresh: refreshToken })
+						});
+
+						if (refreshResponse.ok) {
+							const { access, refresh } = await refreshResponse.json();
+
+							// Update localStorage
+							if (typeof window !== 'undefined') {
+								localStorage.setItem('access_token', access);
+								localStorage.setItem('refresh_token', refresh);
+							}
+
+							isRefreshing = false;
+							onTokenRefreshed(access);
+
+							// Retry the original request with new token
+							return this.request<T>(endpoint, options, skipAuth, isFormData, 1);
+						} else {
+							// Refresh failed, clear auth and redirect to login
+							isRefreshing = false;
+							if (typeof window !== 'undefined') {
+								localStorage.removeItem('user');
+								localStorage.removeItem('access_token');
+								localStorage.removeItem('refresh_token');
+								window.location.href = '/login';
+							}
+							throw new Error('Session expired. Please login again.');
+						}
+					} else {
+						// Wait for the ongoing refresh to complete
+						return new Promise((resolve, reject) => {
+							subscribeTokenRefresh((token: string) => {
+								// Retry request with new token
+								this.request<T>(endpoint, options, skipAuth, isFormData, 1)
+									.then(resolve)
+									.catch(reject);
+							});
+						});
+					}
+				} catch (error) {
+					isRefreshing = false;
+					throw error;
+				}
+			} else {
+				// No refresh token, clear everything and redirect to login
+				if (typeof window !== 'undefined') {
+					localStorage.removeItem('user');
+					localStorage.removeItem('access_token');
+					localStorage.removeItem('refresh_token');
+					window.location.href = '/login';
+				}
+				throw new Error('Session expired. Please login again.');
+			}
+		}
+
+		// Handle other errors
 		if (!response.ok) {
 			const error: ApiError = await response.json().catch(() => ({
 				error: 'Request failed',

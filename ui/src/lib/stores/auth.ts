@@ -35,13 +35,22 @@ function createAuthStore() {
 		const storedRefreshToken = localStorage.getItem('refresh_token');
 
 		if (storedUser && storedAccessToken && storedRefreshToken) {
-			set({
-				user: JSON.parse(storedUser),
-				accessToken: storedAccessToken,
-				refreshToken: storedRefreshToken,
-				isAuthenticated: true,
-				isLoading: false
-			});
+			try {
+				set({
+					user: JSON.parse(storedUser),
+					accessToken: storedAccessToken,
+					refreshToken: storedRefreshToken,
+					isAuthenticated: true,
+					isLoading: false
+				});
+			} catch (error) {
+				// Invalid stored data, clear everything
+				console.error('Error parsing stored user data:', error);
+				localStorage.removeItem('user');
+				localStorage.removeItem('access_token');
+				localStorage.removeItem('refresh_token');
+				update(state => ({ ...state, isLoading: false }));
+			}
 		} else {
 			update(state => ({ ...state, isLoading: false }));
 		}

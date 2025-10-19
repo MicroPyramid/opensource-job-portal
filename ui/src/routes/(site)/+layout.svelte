@@ -1,5 +1,6 @@
 <script>
   import '../../app.css';
+  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { Menu, X, Phone, Mail, MapPin, User, LogOut, ChevronDown } from '@lucide/svelte';
   import { authStore } from '$lib/stores/auth';
@@ -7,6 +8,7 @@
 
   let mobileMenuOpen = false;
   let userMenuOpen = false;
+  let latestJobsDropdownOpen = false;
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -16,100 +18,309 @@
     userMenuOpen = !userMenuOpen;
   }
 
+  function toggleLatestJobsDropdown() {
+    latestJobsDropdownOpen = !latestJobsDropdownOpen;
+  }
+
   async function handleLogout() {
     await authStore.logout();
     userMenuOpen = false;
   }
 
-  // Close user menu when clicking outside
+  // Close dropdowns when clicking outside
   function handleClickOutside(event) {
     if (userMenuOpen && !event.target.closest('.user-menu-container')) {
       userMenuOpen = false;
     }
+    if (latestJobsDropdownOpen && !event.target.closest('.latest-jobs-menu')) {
+      latestJobsDropdownOpen = false;
+    }
   }
+
+  // Validate auth state on mount
+  onMount(() => {
+    // If tokens exist but user is not in store, it means tokens might be invalid
+    // The API client will handle token refresh automatically on next request
+    if (typeof window !== 'undefined') {
+      const hasTokens = localStorage.getItem('access_token') && localStorage.getItem('refresh_token');
+      const hasUser = localStorage.getItem('user');
+
+      // If we have tokens but no user data, clear everything to prevent errors
+      if (hasTokens && !hasUser) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+      }
+    }
+  });
+
+  // Sample data - in production, this would come from API
+  const skills = [
+    { name: 'Basic Computer Knowledge', slug: 'basic-computer-knowledge' },
+    { name: 'Basic Computer Skills', slug: 'basic-computer-skills' },
+    { name: 'Sales', slug: 'sales' },
+    { name: 'Communication Skills', slug: 'communication-skills' },
+    { name: 'Java', slug: 'java' },
+    { name: 'JavaScript', slug: 'javascript' },
+    { name: 'BPO', slug: 'bpo' },
+    { name: 'PHP', slug: 'php' },
+    { name: 'HTML', slug: 'html' },
+    { name: 'Good Communication', slug: 'good-communication' },
+    { name: 'ASP.NET', slug: 'asp-dot-net' },
+    { name: 'jQuery', slug: 'jquery' },
+    { name: 'Accounting', slug: 'accounting' },
+    { name: 'CSS', slug: 'css' },
+    { name: 'Marketing', slug: 'marketing' },
+    { name: 'Business Development', slug: 'business-development' },
+    { name: 'English Communication', slug: 'english-communication' }
+  ];
+
+  const industries = [
+    { name: 'IT Services', slug: 'it-services-consulting-industry' },
+    { name: 'BPO', slug: 'bpo-call-centre-industry' },
+    { name: 'Advertising', slug: 'advertising-marketing-industry' },
+    { name: 'Other', slug: 'other-industry' },
+    { name: 'Education', slug: 'education-teaching-industry' },
+    { name: 'Banking', slug: 'banking-industry' },
+    { name: 'Hotels', slug: 'hotels-restaurants-travel-industry' },
+    { name: 'Aerospace', slug: 'aerospace-aviation-industry' },
+    { name: 'Healthcare', slug: 'healthcare-industry' },
+    { name: 'Financial Services', slug: 'financial-services-industry' },
+    { name: 'Consumer Goods', slug: 'consumer-goods-fmcg-industry' },
+    { name: 'Engineering', slug: 'engineering-construction-industry' },
+    { name: 'E-commerce', slug: 'e-commerce-internet-industry' },
+    { name: 'Recruitment', slug: 'recruitment-industry' },
+    { name: 'Automobile', slug: 'automobile-industry' },
+    { name: 'IT-Hardware', slug: 'it-hardware-industry' },
+    { name: 'Manufacturing Company', slug: 'manufacturing-company-industry' }
+  ];
+
+  const locations = [
+    { name: 'Chennai', slug: 'chennai' },
+    { name: 'Bangalore', slug: 'bangalore' },
+    { name: 'Mumbai', slug: 'mumbai' },
+    { name: 'Kolkata', slug: 'kolkata' },
+    { name: 'Delhi', slug: 'delhi' },
+    { name: 'Hyderabad', slug: 'hyderabad' },
+    { name: 'Noida', slug: 'noida' },
+    { name: 'Gurgaon', slug: 'gurgaon' },
+    { name: 'Pune', slug: 'pune' },
+    { name: 'Ahmedabad', slug: 'ahmedabad' },
+    { name: 'Odisha', slug: 'odisha' },
+    { name: 'Coimbatore', slug: 'coimbatore' },
+    { name: 'Jaipur', slug: 'jaipur' },
+    { name: 'Indore', slug: 'indore' },
+    { name: 'Thane', slug: 'thane' },
+    { name: 'Gujarat', slug: 'gujarat' },
+    { name: 'Kochi', slug: 'kochi' }
+  ];
+
+  const internshipCities = [
+    { name: 'Hyderabad', slug: 'hyderabad' },
+    { name: 'Bangalore', slug: 'bangalore' },
+    { name: 'Chennai', slug: 'chennai' },
+    { name: 'Pune', slug: 'pune' },
+    { name: 'Delhi', slug: 'delhi' },
+    { name: 'Mumbai', slug: 'mumbai' },
+    { name: 'Coimbatore', slug: 'coimbatore' },
+    { name: 'Goa', slug: 'goa' },
+    { name: 'Kanchipuram', slug: 'kanchipuram' },
+    { name: 'Kerala', slug: 'kerala' },
+    { name: 'Kochi', slug: 'kochi' },
+    { name: 'Trivandrum', slug: 'trivandrum' },
+    { name: 'Gujarat', slug: 'gujarat' },
+    { name: 'Nasik', slug: 'nasik' },
+    { name: 'Noida', slug: 'noida' },
+    { name: 'Kolkata', slug: 'kolkata' },
+    { name: 'Gurgaon', slug: 'gurgaon' }
+  ];
+
+  const companies = [
+    { name: 'Sumukh Multigrains', slug: 'sumukh-multigrains' },
+    { name: 'DIPS', slug: 'dips' },
+    { name: 'MAC Technologies', slug: 'mac-technologies-pvt-ltd' },
+    { name: 'Maximus Human Resources', slug: 'maximus-human-resources-pvt-ltd' },
+    { name: 'Exovy Job Search', slug: 'exovy-job-search' },
+    { name: 'Grape Services', slug: 'grape-services-pvt-ltd' },
+    { name: 'TFG Vacations', slug: 'tfg-vacations-india-pvt-ltd' },
+    { name: 'MAVEN INFOTECH', slug: 'maven-infotech-pvt-ltd' },
+    { name: 'Alenam Technologies', slug: 'alenam-technologies-pvt-ltd' },
+    { name: 'Tech Mahindra', slug: 'tech-mahindra-private-limited' },
+    { name: 'Symplocos Solutions', slug: 'symplocos-solutions-limited' },
+    { name: 'PRO HUNTERS', slug: 'pro-hunters' },
+    { name: 'Regatta Recruiters', slug: 'regatta-recruiters' },
+    { name: 'One Stop Career', slug: 'one-stop-career' },
+    { name: 'HCL Technologies', slug: 'hcl-technologies-limited' },
+    { name: 'ReadMind Info', slug: 'readmind-info-services' },
+    { name: 'Human Life Consultancy', slug: 'human-life-consultancy' }
+  ];
 </script>
 
 <svelte:window onclick={handleClickOutside} />
 
 <div class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
   <!-- Header -->
-  <header class="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
-    <nav class="container mx-auto px-4 lg:px-6 py-4">
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-3">
       <div class="flex justify-between items-center">
         <!-- Logo -->
-        <a href="/" class="text-2xl lg:text-3xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-200">
-          PeelJobs
+        <a href="/" class="text-xl md:text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-200">
+          Peeljobs
         </a>
 
         <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center space-x-8">
-          <a href="/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium {$page.url.pathname === '/' ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : ''}">
-            Home
+        <div class="hidden lg:flex items-center space-x-1">
+          <!-- Latest Jobs Dropdown -->
+          <div class="relative latest-jobs-menu">
+            <button
+              onclick={toggleLatestJobsDropdown}
+              class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm flex items-center space-x-1"
+            >
+              <span>Latest Jobs</span>
+              <ChevronDown size={14} class="transition-transform {latestJobsDropdownOpen ? 'rotate-180' : ''}" />
+            </button>
+
+            {#if latestJobsDropdownOpen}
+              <div class="absolute left-0 top-full mt-0 bg-white shadow-lg border border-gray-200 z-50 w-max">
+                <div class="flex p-4 gap-6 max-w-6xl">
+                  <!-- Skills Column -->
+                  <div class="w-48">
+                    <a href="/jobs-by-skill/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Skills</a>
+                    <ul class="space-y-1.5">
+                      {#each skills as skill}
+                        <li>
+                          <a href="/{skill.slug}-jobs/" class="text-gray-600 hover:text-blue-600 text-xs block">
+                            Jobs For {skill.name}
+                          </a>
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+
+                  <!-- Industry Column -->
+                  <div class="w-48">
+                    <a href="/jobs-by-industry/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Industry</a>
+                    <ul class="space-y-1.5">
+                      {#each industries as industry}
+                        <li>
+                          <a href="/{industry.slug}-jobs/" class="text-gray-600 hover:text-blue-600 text-xs block">
+                            Jobs For {industry.name}
+                          </a>
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+
+                  <!-- Location Column -->
+                  <div class="w-48">
+                    <a href="/jobs-by-location/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Location</a>
+                    <ul class="space-y-1.5">
+                      {#each locations as location}
+                        <li>
+                          <a href="/jobs-in-{location.slug}/" class="text-gray-600 hover:text-blue-600 text-xs block">
+                            Jobs in {location.name}
+                          </a>
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+
+                  <!-- Internship Column -->
+                  <div class="w-48">
+                    <a href="/internship-jobs/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Internship</a>
+                    <ul class="space-y-1.5">
+                      {#each internshipCities as city}
+                        <li>
+                          <a href="/internship-jobs-in-{city.slug}/" class="text-gray-600 hover:text-blue-600 text-xs block">
+                            Internship Jobs in {city.name}
+                          </a>
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+
+                  <!-- Fresher Column -->
+                  <div class="w-48">
+                    <a href="/fresher-jobs/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Fresher</a>
+                    <ul class="space-y-1.5">
+                      {#each skills as skill}
+                        <li>
+                          <a href="/{skill.slug}-fresher-jobs/" class="text-gray-600 hover:text-blue-600 text-xs block">
+                            {skill.name} Fresher Jobs
+                          </a>
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            {/if}
+          </div>
+
+          <a href="/fresher-jobs/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
+            Fresher Jobs
           </a>
-          <a href="/jobs" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium {$page.url.pathname === '/jobs' ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : ''}">
-            Find Jobs
+          <a href="/walkin-jobs/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
+            Walkin Jobs
           </a>
-          <a href="/post-job" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium {$page.url.pathname === '/post-job' ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : ''}">
-            Post a Job
+          {#if $authStore.isAuthenticated && $authStore.user && $authStore.user.user_type === 'JS'}
+            <a href="/applied-jobs/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
+              Applied Jobs
+            </a>
+          {/if}
+          <a href="/internship-jobs/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
+            Internship
           </a>
-          <a href="/companies" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium {$page.url.pathname === '/companies' ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : ''}">
+          <a href="/companies/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
             Companies
           </a>
+          <a href="/recruiters/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
+            Recruiters
+          </a>
+          <a href="/job-alerts/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
+            Job Alerts
+          </a>
+        </div>
 
+        <!-- Auth Section -->
+        <div class="hidden lg:flex items-center space-x-3">
           {#if $authStore.isAuthenticated && $authStore.user}
-            <!-- User Menu Dropdown -->
-            <div class="relative user-menu-container">
-              <button
-                onclick={toggleUserMenu}
-                class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
-              >
-                {#if $authStore.user.photo || $authStore.user.profile_pic}
-                  <img
-                    src={$authStore.user.photo || $authStore.user.profile_pic}
-                    alt={$authStore.user.first_name}
-                    class="w-8 h-8 rounded-full border-2 border-blue-600"
-                  />
-                {:else}
-                  <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                    {$authStore.user.first_name?.charAt(0) || $authStore.user.email?.charAt(0) || 'U'}
-                  </div>
-                {/if}
-                <span class="max-w-[100px] truncate">{$authStore.user.first_name || $authStore.user.email}</span>
-                <ChevronDown size={16} class="transition-transform {userMenuOpen ? 'rotate-180' : ''}" />
-              </button>
+            <!-- User Profile Picture -->
+            {#if $authStore.user.photo || $authStore.user.profile_pic}
+              <img
+                src={$authStore.user.photo || $authStore.user.profile_pic}
+                alt={$authStore.user.first_name}
+                class="w-10 h-10 rounded-full border-2 border-gray-300"
+              />
+            {:else}
+              <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                {$authStore.user.first_name?.charAt(0) || $authStore.user.email?.charAt(0) || 'U'}
+              </div>
+            {/if}
 
-              {#if userMenuOpen}
-                <div class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
-                  <div class="px-4 py-3 border-b border-gray-100">
-                    <p class="text-sm font-semibold text-gray-900">{$authStore.user.first_name} {$authStore.user.last_name}</p>
-                    <p class="text-xs text-gray-500 truncate">{$authStore.user.email}</p>
-                  </div>
-
-                  <a href="/profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                    <User size={16} class="mr-3" />
-                    My Profile
-                  </a>
-
-                  <button
-                    onclick={handleLogout}
-                    class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <LogOut size={16} class="mr-3" />
-                    Logout
-                  </button>
-                </div>
-              {/if}
-            </div>
+            <!-- Logout Button -->
+            <button
+              onclick={handleLogout}
+              class="text-gray-700 hover:text-red-600 transition-colors duration-200 px-3 py-2 text-sm flex items-center space-x-1"
+            >
+              <LogOut size={16} />
+              <span>Logout</span>
+            </button>
           {:else}
-            <a href="/login" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium shadow-md hover:shadow-lg">
-              Sign In
+            <a href="/login" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
+              Login
+            </a>
+            <a href="/register" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">
+              Register
+            </a>
+            <a href="/employer" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-200 text-sm font-medium">
+              Employer
             </a>
           {/if}
         </div>
-        
+
         <!-- Mobile Menu Button -->
-        <button 
-          class="md:hidden p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
+        <button
+          class="lg:hidden p-2 rounded text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
           onclick={toggleMobileMenu}
         >
           {#if mobileMenuOpen}
@@ -119,19 +330,19 @@
           {/if}
         </button>
       </div>
-      
+
       <!-- Mobile Navigation -->
       {#if mobileMenuOpen}
-        <div class="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
+        <div class="lg:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
           {#if $authStore.isAuthenticated && $authStore.user}
             <!-- User Info (Mobile) -->
-            <div class="px-3 py-3 mb-3 bg-blue-50 rounded-lg">
+            <div class="px-3 py-3 mb-3 bg-gray-100 rounded">
               <div class="flex items-center space-x-3">
                 {#if $authStore.user.photo || $authStore.user.profile_pic}
                   <img
                     src={$authStore.user.photo || $authStore.user.profile_pic}
                     alt={$authStore.user.first_name}
-                    class="w-10 h-10 rounded-full border-2 border-blue-600"
+                    class="w-10 h-10 rounded-full border-2 border-gray-300"
                   />
                 {:else}
                   <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
@@ -146,36 +357,61 @@
             </div>
           {/if}
 
-          <div class="flex flex-col space-y-3">
-            <a href="/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 {$page.url.pathname === '/' ? 'text-blue-600 bg-blue-50' : ''}">
-              Home
+          <div class="flex flex-col space-y-2">
+            <!-- Mobile Latest Jobs with simple list -->
+            <div>
+              <a href="/jobs/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm block font-medium">
+                Latest Jobs
+              </a>
+            </div>
+
+            <a href="/fresher-jobs/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+              Fresher Jobs
             </a>
-            <a href="/jobs" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 {$page.url.pathname === '/jobs' ? 'text-blue-600 bg-blue-50' : ''}">
-              Find Jobs
+            <a href="/walkin-jobs/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+              Walkin Jobs
             </a>
-            <a href="/post-job" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 {$page.url.pathname === '/post-job' ? 'text-blue-600 bg-blue-50' : ''}">
-              Post a Job
+            {#if $authStore.isAuthenticated && $authStore.user && $authStore.user.user_type === 'JS'}
+              <a href="/applied-jobs/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                Applied Jobs
+              </a>
+            {/if}
+            <a href="/internship-jobs/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+              Internship
             </a>
-            <a href="/companies" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 {$page.url.pathname === '/companies' ? 'text-blue-600 bg-blue-50' : ''}">
+            <a href="/companies/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
               Companies
+            </a>
+            <a href="/recruiters/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+              Recruiters
+            </a>
+            <a href="/job-alerts/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+              Job Alerts
             </a>
 
             {#if $authStore.isAuthenticated && $authStore.user}
-              <a href="/profile" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center">
-                <User size={16} class="mr-2" />
+              <a href="/profile/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
                 My Profile
               </a>
               <button
                 onclick={handleLogout}
-                class="text-red-600 hover:bg-red-50 py-2 px-3 rounded-lg transition-colors duration-200 flex items-center text-left"
+                class="text-red-600 hover:bg-red-50 py-2 px-3 rounded transition-colors duration-200 flex items-center space-x-2 text-left text-sm mt-2"
               >
-                <LogOut size={16} class="mr-2" />
-                Logout
+                <LogOut size={16} />
+                <span>Logout</span>
               </button>
             {:else}
-              <a href="/login" class="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-center mt-2">
-                Sign In
-              </a>
+              <div class="pt-3 space-y-2 border-t border-gray-200 mt-2">
+                <a href="/login" class="block text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  Login
+                </a>
+                <a href="/register" class="block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200 text-sm font-medium text-center">
+                  Register
+                </a>
+                <a href="/employer" class="block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-200 text-sm font-medium text-center">
+                  Employer
+                </a>
+              </div>
             {/if}
           </div>
         </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import {
 		User,
 		GraduationCap,
@@ -66,6 +67,12 @@
 	function isActive(href: string) {
 		return $page.url.pathname === href;
 	}
+
+	// Handle tab change in mobile dropdown
+	function handleTabChange(event: Event) {
+		const target = event.target as HTMLSelectElement;
+		goto(target.value);
+	}
 </script>
 
 <div class="min-h-screen bg-gray-50">
@@ -77,10 +84,7 @@
 				<label for="profile-tab-select" class="sr-only">Select a tab</label>
 				<select
 					id="profile-tab-select"
-					onchange={(e) => {
-						const target = e.target as HTMLSelectElement;
-						window.location.href = target.value;
-					}}
+					onchange={handleTabChange}
 					class="block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
 				>
 					{#each tabs as tab}
