@@ -168,8 +168,9 @@
     <nav class="container mx-auto px-4 py-3">
       <div class="flex justify-between items-center">
         <!-- Logo -->
-        <a href="/" class="text-xl md:text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-200">
-          Peeljobs
+        <a href="/" class="flex items-center space-x-2 hover:opacity-90 transition-opacity duration-200">
+          <img src="/logo.png" alt="PeelJobs" class="h-8 md:h-10 w-auto" />
+          <span class="text-xl md:text-2xl font-bold text-blue-600">PeelJobs</span>
         </a>
 
         <!-- Desktop Navigation -->
