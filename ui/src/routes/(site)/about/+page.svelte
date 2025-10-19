@@ -1,413 +1,313 @@
-<script>
-  import { Target, Users, Zap, Heart, Award, Globe, TrendingUp, Shield, CheckCircle } from '@lucide/svelte';
+<script lang="ts">
+	import {
+		Zap,
+		Briefcase,
+		Users,
+		Building2,
+		Target,
+		TrendingUp,
+		Shield,
+		Award,
+		Clock,
+		CheckCircle2,
+		ChevronRight,
+		Heart,
+		DollarSign,
+		Lightbulb,
+		Search
+	} from '@lucide/svelte';
 
-  const stats = [
-    { label: 'Active Jobs', value: '50,000+', icon: TrendingUp },
-    { label: 'Companies', value: '5,000+', icon: Globe },
-    { label: 'Job Seekers', value: '100,000+', icon: Users },
-    { label: 'Success Stories', value: '25,000+', icon: Award }
-  ];
+	const features = [
+		{
+			icon: Briefcase,
+			title: 'For Job Seekers',
+			description:
+				'Fast and better way to find jobs according to location, skills, qualifications, and experience. Completely free application process.',
+			color: 'blue'
+		},
+		{
+			icon: Users,
+			title: 'For Recruiters',
+			description:
+				'Access to a large, continuously refreshed candidate database including Indians, US citizens, Green card holders, and H1B work permit holders.',
+			color: 'green'
+		},
+		{
+			icon: Building2,
+			title: 'For Agencies',
+			description:
+				'Integrated technology that reduces over 99% of sourcing time for staffing agencies with multiple recruiters.',
+			color: 'purple'
+		}
+	];
 
-  const values = [
-    {
-      icon: Target,
-      title: 'Mission-Driven',
-      description: 'We\'re committed to connecting talented individuals with opportunities that align with their career goals and aspirations.'
-    },
-    {
-      icon: Users,
-      title: 'People-First',
-      description: 'Both job seekers and employers are at the heart of everything we do. We prioritize user experience and satisfaction above all.'
-    },
-    {
-      icon: Shield,
-      title: 'Trust & Transparency',
-      description: 'We maintain the highest standards of integrity, ensuring a safe and transparent platform for all users.'
-    },
-    {
-      icon: Zap,
-      title: 'Innovation',
-      description: 'We leverage cutting-edge technology to streamline the hiring process and deliver exceptional results.'
-    }
-  ];
+	const industries = [
+		{ name: 'Finance', subtitle: '& Accounts' },
+		{ name: 'IT', subtitle: '& ITES' },
+		{ name: 'Pharma', subtitle: '& Healthcare' },
+		{ name: 'Marketing', subtitle: '& Sales' },
+		{ name: 'Manufacturing', subtitle: '& Production' },
+		{ name: 'Many More', subtitle: 'Sectors' }
+	];
 
-  const howItWorks = {
-    jobSeekers: [
-      {
-        step: 1,
-        title: 'Create Your Profile',
-        description: 'Build a comprehensive profile showcasing your skills, experience, and career goals.'
-      },
-      {
-        step: 2,
-        title: 'Discover Opportunities',
-        description: 'Browse thousands of jobs or let our smart algorithms match you with the perfect positions.'
-      },
-      {
-        step: 3,
-        title: 'Apply with Confidence',
-        description: 'Submit applications with your tailored resume and track your progress in real-time.'
-      },
-      {
-        step: 4,
-        title: 'Land Your Dream Job',
-        description: 'Connect with recruiters, ace your interviews, and start your next career chapter.'
-      }
-    ],
-    employers: [
-      {
-        step: 1,
-        title: 'Post Your Job',
-        description: 'Create detailed job listings that attract the right candidates for your organization.'
-      },
-      {
-        step: 2,
-        title: 'Find Top Talent',
-        description: 'Access a pool of qualified candidates and use our tools to identify the best matches.'
-      },
-      {
-        step: 3,
-        title: 'Review Applications',
-        description: 'Efficiently review applications, communicate with candidates, and schedule interviews.'
-      },
-      {
-        step: 4,
-        title: 'Hire the Best',
-        description: 'Make informed hiring decisions and welcome exceptional talent to your team.'
-      }
-    ]
-  };
+	const values = [
+		{
+			icon: Search,
+			title: 'Information Source',
+			description: 'Your source for employment information and inspiration'
+		},
+		{
+			icon: TrendingUp,
+			title: 'Career Management',
+			description: 'The place to manage your career effectively'
+		},
+		{
+			icon: Award,
+			title: 'Success Pathway',
+			description: 'Your pathway to career success and growth'
+		},
+		{
+			icon: Lightbulb,
+			title: 'Professional Tools',
+			description: 'Tools to help job seekers and career professionals'
+		}
+	];
 
-  let activeTab = 'jobSeekers'; // jobSeekers or employers
+	const stats = [
+		{
+			number: '10,000+',
+			label: 'Active Jobs',
+			icon: Briefcase
+		},
+		{
+			number: '50,000+',
+			label: 'Job Seekers',
+			icon: Users
+		},
+		{
+			number: '5,000+',
+			label: 'Companies',
+			icon: Building2
+		},
+		{
+			number: '99%',
+			label: 'Time Saved',
+			icon: Clock
+		}
+	];
+
+	function getColorClasses(color: string) {
+		const colors = {
+			blue: 'bg-blue-50 border-blue-200',
+			green: 'bg-green-50 border-green-200',
+			purple: 'bg-purple-50 border-purple-200'
+		};
+		return colors[color as keyof typeof colors] || colors.blue;
+	}
+
+	function getIconBgColor(color: string) {
+		const colors = {
+			blue: 'bg-blue-600',
+			green: 'bg-green-600',
+			purple: 'bg-purple-600'
+		};
+		return colors[color as keyof typeof colors] || colors.blue;
+	}
 </script>
 
 <svelte:head>
-  <title>About Us - HirePulse.in</title>
-  <meta name="description" content="Learn about HirePulse's mission to connect talented professionals with their dream careers" />
+	<title>About Us - PeelJobs</title>
+	<meta
+		name="description"
+		content="Online Jobs and Career site in India to build bright career. Read more about PeelJobs - connecting talent with opportunity across diverse industries."
+	/>
+	<link rel="canonical" href="https://peeljobs.com/about" />
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white py-20 md:py-32">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-down">
-        Empowering Careers,<br />Transforming Lives
-      </h1>
-      <p class="text-xl md:text-2xl text-blue-100 mb-8 animate-fade-in-up">
-        HirePulse is India's leading job portal, connecting talented professionals with opportunities that matter.
-      </p>
-      <div class="flex flex-wrap justify-center gap-4 animate-fade-in">
-        <a
-          href="/jobs"
-          class="bg-white text-blue-700 hover:bg-blue-50 font-semibold px-8 py-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-        >
-          Explore Jobs
-        </a>
-        <a
-          href="/contact"
-          class="border-2 border-white text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-4 rounded-lg transition duration-200"
-        >
-          Get in Touch
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+<div class="bg-blue-50 py-12 md:py-16">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<!-- Breadcrumb -->
+		<nav class="mb-6 md:mb-8" aria-label="Breadcrumb">
+			<ol class="flex items-center space-x-2 text-sm text-gray-600">
+				<li>
+					<a href="/" class="hover:text-blue-600 transition-colors duration-200"> Home </a>
+				</li>
+				<li class="flex items-center">
+					<ChevronRight class="w-4 h-4 mx-1 md:mx-2 text-gray-400" />
+					<span class="text-gray-900 font-medium">About Us</span>
+				</li>
+			</ol>
+		</nav>
+
+		<!-- Hero Content -->
+		<div class="text-center">
+			<h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6">
+				About <span class="text-blue-600">PeelJobs</span>
+			</h1>
+			<p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+				Your trusted partner in connecting talent with opportunity. We're revolutionizing the job
+				search experience for both candidates and employers.
+			</p>
+		</div>
+	</div>
+</div>
 
 <!-- Stats Section -->
-<section class="py-16 bg-white">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-      {#each stats as stat}
-        <div class="text-center">
-          <div class="flex justify-center mb-4">
-            <div class="p-4 bg-blue-100 rounded-full">
-              <stat.icon class="text-blue-600" size={32} />
-            </div>
-          </div>
-          <div class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{stat.value}</div>
-          <div class="text-gray-600 font-medium">{stat.label}</div>
-        </div>
-      {/each}
-    </div>
-  </div>
-</section>
+<div class="bg-white py-8 md:py-12 border-b border-gray-100">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+			{#each stats as stat}
+				<div class="text-center p-4 md:p-6 bg-gray-50 rounded-lg">
+					<div
+						class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full mb-3"
+					>
+						<svelte:component this={stat.icon} class="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+					</div>
+					<div class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{stat.number}</div>
+					<div class="text-xs md:text-sm text-gray-600">{stat.label}</div>
+				</div>
+			{/each}
+		</div>
+	</div>
+</div>
 
-<!-- Mission & Vision -->
-<section class="py-20 bg-gray-50">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Our Story</h2>
-        <p class="text-lg text-gray-600">Building bridges between talent and opportunity</p>
-      </div>
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+	<!-- Mission Statement Card -->
+	<div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-12 border border-gray-100">
+		<div class="text-center mb-6 md:mb-8">
+			<div
+				class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-blue-100 rounded-full mb-4"
+			>
+				<Zap class="w-7 h-7 md:w-8 md:h-8 text-blue-600" />
+			</div>
+			<h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
+		</div>
 
-      <div class="bg-white rounded-xl shadow-lg p-8 md:p-12 border border-gray-100 mb-8">
-        <div class="flex items-start gap-4 mb-6">
-          <div class="p-3 bg-blue-100 rounded-lg flex-shrink-0">
-            <Target class="text-blue-600" size={28} />
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-4">Our Mission</h3>
-            <p class="text-gray-700 leading-relaxed mb-4">
-              At HirePulse, we believe that everyone deserves access to meaningful career opportunities. Our mission is to revolutionize the job search experience by creating a platform that's intuitive, transparent, and effective for both job seekers and employers.
-            </p>
-            <p class="text-gray-700 leading-relaxed">
-              We're committed to leveraging technology to break down barriers in the hiring process, making it easier for talented professionals to find roles where they can thrive and for companies to discover exceptional talent that drives their success.
-            </p>
-          </div>
-        </div>
-      </div>
+		<div class="prose prose-lg max-w-none text-gray-600 leading-relaxed space-y-6">
+			<blockquote
+				class="text-center text-lg md:text-xl font-medium text-gray-700 mb-6 md:mb-8 border-l-4 border-blue-600 pl-4 md:pl-6 py-2 bg-blue-50 rounded"
+			>
+				"What you want is what you get at the right time with right information at the right place"
+			</blockquote>
 
-      <div class="bg-white rounded-xl shadow-lg p-8 md:p-12 border border-gray-100">
-        <div class="flex items-start gap-4">
-          <div class="p-3 bg-purple-100 rounded-lg flex-shrink-0">
-            <Heart class="text-purple-600" size={28} />
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-4">Our Vision</h3>
-            <p class="text-gray-700 leading-relaxed mb-4">
-              We envision a world where finding the perfect job or hiring the ideal candidate is no longer a challenge but an exciting, streamlined experience. HirePulse aims to be the go-to platform for career advancement across India.
-            </p>
-            <p class="text-gray-700 leading-relaxed">
-              Through continuous innovation, user-centric design, and unwavering commitment to quality, we're building the future of work—one connection at a time.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+			<div class="grid md:grid-cols-2 gap-6 md:gap-8">
+				<div class="space-y-4">
+					<p class="text-base md:text-lg">
+						<CheckCircle2 class="w-5 h-5 text-green-600 inline-block mr-2 mb-1" />
+						Peeljobs.com is one of the leading job boards today, attracting thousands of job seekers
+						every month searching through hundreds of live job opportunities. We serve as the bridge
+						between talented professionals and leading companies across various industries.
+					</p>
 
-<!-- Core Values -->
-<section class="py-20 bg-white">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Our Core Values</h2>
-      <p class="text-lg text-gray-600">The principles that guide everything we do</p>
-    </div>
+					<p class="text-base md:text-lg">
+						<Heart class="w-5 h-5 text-red-500 inline-block mr-2 mb-1" />
+						Our platform caters to both IT and non-IT sectors, helping companies find the perfect candidates
+						while assisting professionals in discovering their ideal career opportunities. We're proud
+						to help thousands of tech professionals find meaningful employment every day.
+					</p>
+				</div>
 
-    <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-      {#each values as value}
-        <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 border border-blue-100 hover:shadow-xl transition-shadow duration-300">
-          <div class="flex items-start gap-4">
-            <div class="p-3 bg-blue-600 rounded-lg flex-shrink-0">
-              <value.icon class="text-white" size={24} />
-            </div>
-            <div>
-              <h3 class="text-xl font-bold text-gray-800 mb-3">{value.title}</h3>
-              <p class="text-gray-700 leading-relaxed">{value.description}</p>
-            </div>
-          </div>
-        </div>
-      {/each}
-    </div>
-  </div>
-</section>
+				<div class="space-y-4">
+					<p class="text-base md:text-lg">
+						<Clock class="w-5 h-5 text-blue-600 inline-block mr-2 mb-1" />
+						As a comprehensive online job portal, Peeljobs.com provides a one-stop platform for all
+						job market participants. Whether you're a job seeker, recruiter, or employer, our user-friendly
+						interface makes your search effortless and simple.
+					</p>
 
-<!-- How It Works -->
-<section class="py-20 bg-gray-50">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">How It Works</h2>
-      <p class="text-lg text-gray-600">Simple steps to achieve your goals</p>
-    </div>
+					<p class="text-base md:text-lg">
+						<TrendingUp class="w-5 h-5 text-purple-600 inline-block mr-2 mb-1" />
+						We continuously work on improving job coverage and result relevance to meet the ever-changing
+						needs of our users. Every visitor to our platform is assured of finding their perfect match.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <!-- Tabs -->
-    <div class="flex justify-center gap-4 mb-12">
-      <button
-        onclick={() => activeTab = 'jobSeekers'}
-        class="px-8 py-3 rounded-lg font-semibold transition-all duration-200"
-        class:bg-blue-600={activeTab === 'jobSeekers'}
-        class:text-white={activeTab === 'jobSeekers'}
-        class:shadow-lg={activeTab === 'jobSeekers'}
-        class:bg-white={activeTab !== 'jobSeekers'}
-        class:text-gray-700={activeTab !== 'jobSeekers'}
-        class:border={activeTab !== 'jobSeekers'}
-        class:border-gray-300={activeTab !== 'jobSeekers'}
-      >
-        For Job Seekers
-      </button>
-      <button
-        onclick={() => activeTab = 'employers'}
-        class="px-8 py-3 rounded-lg font-semibold transition-all duration-200"
-        class:bg-blue-600={activeTab === 'employers'}
-        class:text-white={activeTab === 'employers'}
-        class:shadow-lg={activeTab === 'employers'}
-        class:bg-white={activeTab !== 'employers'}
-        class:text-gray-700={activeTab !== 'employers'}
-        class:border={activeTab !== 'employers'}
-        class:border-gray-300={activeTab !== 'employers'}
-      >
-        For Employers
-      </button>
-    </div>
+	<!-- Features Grid -->
+	<div class="grid md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
+		{#each features as feature}
+			<div class="rounded-xl p-6 border {getColorClasses(feature.color)}">
+				<div class="w-12 h-12 {getIconBgColor(feature.color)} rounded-lg flex items-center justify-center mb-4">
+					<svelte:component this={feature.icon} class="w-6 h-6 text-white" />
+				</div>
+				<h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
+				<p class="text-sm md:text-base text-gray-600 leading-relaxed">{feature.description}</p>
+			</div>
+		{/each}
+	</div>
 
-    <!-- Job Seekers Flow -->
-    {#if activeTab === 'jobSeekers'}
-      <div class="max-w-4xl mx-auto">
-        <div class="grid md:grid-cols-2 gap-8">
-          {#each howItWorks.jobSeekers as step}
-            <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div class="flex items-start gap-4">
-                <div class="flex-shrink-0">
-                  <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                    {step.step}
-                  </div>
-                </div>
-                <div class="flex-1">
-                  <h3 class="text-xl font-bold text-gray-800 mb-3">{step.title}</h3>
-                  <p class="text-gray-600 leading-relaxed">{step.description}</p>
-                </div>
-              </div>
-            </div>
-          {/each}
-        </div>
-      </div>
-    {/if}
+	<!-- Industry Coverage -->
+	<div class="bg-gray-50 rounded-xl p-6 md:p-8 mb-12">
+		<h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-6 md:mb-8">
+			Industry Coverage
+		</h2>
+		<p class="text-center text-gray-600 mb-6 md:mb-8 max-w-3xl mx-auto text-sm md:text-base">
+			We provide the perfect platform for candidates from diverse backgrounds to seize the best job
+			opportunities by screening through our vast database of available positions.
+		</p>
 
-    <!-- Employers Flow -->
-    {#if activeTab === 'employers'}
-      <div class="max-w-4xl mx-auto">
-        <div class="grid md:grid-cols-2 gap-8">
-          {#each howItWorks.employers as step}
-            <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div class="flex items-start gap-4">
-                <div class="flex-shrink-0">
-                  <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                    {step.step}
-                  </div>
-                </div>
-                <div class="flex-1">
-                  <h3 class="text-xl font-bold text-gray-800 mb-3">{step.title}</h3>
-                  <p class="text-gray-600 leading-relaxed">{step.description}</p>
-                </div>
-              </div>
-            </div>
-          {/each}
-        </div>
-      </div>
-    {/if}
-  </div>
-</section>
+		<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+			{#each industries as industry}
+				<div
+					class="bg-white rounded-lg p-3 md:p-4 text-center shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+				>
+					<div class="text-sm md:text-base text-blue-600 font-semibold">{industry.name}</div>
+					<div class="text-xs md:text-sm text-gray-500">{industry.subtitle}</div>
+				</div>
+			{/each}
+		</div>
+	</div>
 
-<!-- Why Choose HirePulse -->
-<section class="py-20 bg-white">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Why Choose HirePulse?</h2>
-      <p class="text-lg text-gray-600">We're different, and here's why</p>
-    </div>
+	<!-- What Makes Us Special -->
+	<div class="text-center mb-12">
+		<h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">
+			In Short, PeelJobs.com is...
+		</h2>
 
-    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-      <div class="text-center">
-        <div class="flex justify-center mb-6">
-          <div class="p-4 bg-green-100 rounded-full">
-            <CheckCircle class="text-green-600" size={40} />
-          </div>
-        </div>
-        <h3 class="text-xl font-bold text-gray-800 mb-3">Verified Companies</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Every company on our platform is verified to ensure authenticity and protect job seekers from fraud.
-        </p>
-      </div>
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+			{#each values as value}
+				<div
+					class="bg-white rounded-lg p-4 md:p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow"
+				>
+					<div
+						class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4"
+					>
+						<svelte:component this={value.icon} class="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+					</div>
+					<h3 class="text-sm md:text-base font-semibold text-gray-900 mb-2">{value.title}</h3>
+					<p class="text-xs md:text-sm text-gray-600">{value.description}</p>
+				</div>
+			{/each}
+		</div>
+	</div>
 
-      <div class="text-center">
-        <div class="flex justify-center mb-6">
-          <div class="p-4 bg-blue-100 rounded-full">
-            <Zap class="text-blue-600" size={40} />
-          </div>
-        </div>
-        <h3 class="text-xl font-bold text-gray-800 mb-3">Smart Matching</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Our AI-powered algorithms match you with jobs that truly fit your skills, experience, and preferences.
-        </p>
-      </div>
-
-      <div class="text-center">
-        <div class="flex justify-center mb-6">
-          <div class="p-4 bg-purple-100 rounded-full">
-            <Shield class="text-purple-600" size={40} />
-          </div>
-        </div>
-        <h3 class="text-xl font-bold text-gray-800 mb-3">Privacy Protected</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Your data is secure with us. We never share your information without your explicit consent.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA Section -->
-<section class="py-20 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-3xl lg:text-4xl font-bold mb-6">Ready to Get Started?</h2>
-      <p class="text-xl text-blue-100 mb-8">
-        Join thousands of professionals who have found their dream jobs through HirePulse
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <a
-          href="/register"
-          class="bg-white text-blue-700 hover:bg-blue-50 font-semibold px-8 py-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-        >
-          Create Free Account
-        </a>
-        <a
-          href="/jobs"
-          class="border-2 border-white text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-4 rounded-lg transition duration-200"
-        >
-          Browse Jobs
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<style>
-  @keyframes fade-in-down {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  .animate-fade-in-down {
-    animation: fade-in-down 0.8s ease-out forwards;
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 0.8s ease-out 0.2s forwards;
-    opacity: 0;
-  }
-
-  .animate-fade-in {
-    animation: fade-in 1s ease-out 0.4s forwards;
-    opacity: 0;
-  }
-</style>
+	<!-- Call to Action -->
+	<div class="bg-blue-600 rounded-xl p-6 md:p-8 text-center text-white">
+		<h2 class="text-xl md:text-2xl font-bold mb-3 md:mb-4">
+			Ready to Find Your Next Opportunity?
+		</h2>
+		<p class="text-sm md:text-base text-blue-100 mb-4 md:mb-6 max-w-2xl mx-auto">
+			Peeljobs.com is the fastest online recruitment platform that attracts a huge number of job
+			seekers, generating tremendous applications. Join thousands of professionals who have found
+			their dream jobs through our platform.
+		</p>
+		<div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+			<a
+				href="/jobs"
+				class="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200 text-sm md:text-base"
+			>
+				Browse Jobs
+			</a>
+			<a
+				href="/contact"
+				class="inline-block bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors duration-200 text-sm md:text-base"
+			>
+				Contact Us
+			</a>
+		</div>
+	</div>
+</div>

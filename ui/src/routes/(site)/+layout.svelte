@@ -498,15 +498,15 @@
           <div class="space-y-3">
             <div class="flex items-center space-x-3">
               <Phone size={16} class="text-blue-400" />
-              <span class="text-gray-300">+1 (555) 123-4567</span>
+              <span class="text-gray-300">+91 1800-123-4567</span>
             </div>
             <div class="flex items-center space-x-3">
               <Mail size={16} class="text-blue-400" />
-              <span class="text-gray-300">hello@hirepulse.in</span>
+              <a href="mailto:support@peeljobs.com" class="text-gray-300 hover:text-blue-400 transition-colors">support@peeljobs.com</a>
             </div>
             <div class="flex items-center space-x-3">
               <MapPin size={16} class="text-blue-400" />
-              <span class="text-gray-300">San Francisco, CA</span>
+              <span class="text-gray-300">Mumbai, Maharashtra, India</span>
             </div>
           </div>
         </div>
@@ -518,10 +518,11 @@
           <p class="text-gray-400 text-sm mb-4 md:mb-0">
             &copy; {new Date().getFullYear()} PeelJobs. All rights reserved.
           </p>
-          <div class="flex space-x-6 text-sm">
-            <a href="/privacy-policy" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Privacy Policy</a>
-            <a href="/terms-of-service" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Terms of Service</a>
-            <a href="/cookie-policy" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Cookie Policy</a>
+          <div class="flex flex-wrap justify-center md:justify-end gap-4 md:gap-6 text-sm">
+            <a href="/about" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">About Us</a>
+            <a href="/privacy" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Privacy Policy</a>
+            <a href="/terms" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Terms & Conditions</a>
+            <a href="/contact" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Contact Us</a>
           </div>
         </div>
       </div>
