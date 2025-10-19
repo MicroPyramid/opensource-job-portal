@@ -365,10 +365,6 @@
     }
   }
 
-  function viewJobDetails(jobId: number): void {
-    goto(`/jobs/${jobId}`);
-  }
-
   function goToPage(page: number): void {
     currentPage = page;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -721,38 +717,16 @@
         {:else if filteredJobs.length > 0}
           <div class="space-y-4">
             {#each filteredJobs as job (job.id)}
-              <button
-                type="button"
-                class="w-full text-left bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-blue-100"
-                onclick={() => viewJobDetails(job.id)}
-                aria-label="View details for {job.title} at {job.company_name}"
-              >
-                <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+              <article class="relative bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 group hover:shadow-lg hover:shadow-blue-100">
+                <a
+                  href="/jobs/{job.slug.replace(/^\/+/, '')}"
+                  class="block after:absolute after:inset-0"
+                  aria-label="View details for {job.title} at {job.company_name}"
+                >
                   <div class="flex-1">
-                    <div class="flex items-start justify-between mb-3">
-                      <h3 class="text-xl font-semibold text-blue-600 group-hover:text-blue-700 transition-colors">
-                        {job.title}
-                      </h3>
-                      <span
-                        role="button"
-                        tabindex="0"
-                        onclick={(event) => {
-                          event.stopPropagation();
-                          saveJob(job.id);
-                        }}
-                        onkeydown={(event) => {
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            saveJob(job.id);
-                          }
-                        }}
-                        class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-all {job.is_saved ? 'text-blue-600 bg-gray-100' : ''}"
-                        aria-label="Save {job.title}"
-                      >
-                        <Bookmark size={20} class={job.is_saved ? 'fill-current' : ''} />
-                      </span>
-                    </div>
+                    <h3 class="text-xl font-semibold text-blue-600 group-hover:text-blue-700 transition-colors mb-3">
+                      {job.title}
+                    </h3>
 
                     <div class="space-y-2 mb-4">
                       <div class="flex items-center text-gray-700 text-sm">
@@ -788,8 +762,21 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </button>
+                </a>
+
+                <!-- Bookmark button with higher z-index to be clickable -->
+                <button
+                  type="button"
+                  onclick={(event) => {
+                    event.preventDefault();
+                    saveJob(job.id);
+                  }}
+                  class="absolute top-6 right-6 z-10 p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-all {job.is_saved ? 'text-blue-600 bg-gray-100' : ''}"
+                  aria-label="Save {job.title}"
+                >
+                  <Bookmark size={20} class={job.is_saved ? 'fill-current' : ''} />
+                </button>
+              </article>
             {/each}
           </div>
 

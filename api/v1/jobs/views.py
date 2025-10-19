@@ -86,10 +86,16 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
             return JobDetailSerializer
         return JobListSerializer
 
+    @extend_schema(
+        summary="Get job details",
+        description="Retrieve detailed information about a specific job by ID or slug",
+        tags=['Jobs'],
+    )
     def retrieve(self, request, *args, **kwargs):
         """
         Retrieve job by ID or slug
         Supports both numeric ID and string slug
+        Normalizes slug to match database format (with leading/trailing slashes)
         """
         lookup_value = kwargs.get('id')
 
@@ -98,8 +104,16 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
             if lookup_value.isdigit():
                 instance = self.get_queryset().get(id=int(lookup_value))
             else:
-                # Try by slug
-                instance = self.get_queryset().get(slug=lookup_value)
+                # Normalize slug: ensure it starts and ends with /
+                # Database slugs are stored as /slug-text/
+                normalized_slug = lookup_value.strip()
+                if not normalized_slug.startswith('/'):
+                    normalized_slug = '/' + normalized_slug
+                if not normalized_slug.endswith('/'):
+                    normalized_slug = normalized_slug + '/'
+
+                # Try by normalized slug
+                instance = self.get_queryset().get(slug=normalized_slug)
         except JobPost.DoesNotExist:
             return Response(
                 {'detail': 'Job not found.'},
@@ -213,14 +227,6 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
-
-    @extend_schema(
-        summary="Get job details",
-        description="Retrieve detailed information about a specific job by ID or slug",
-        tags=['Jobs'],
-    )
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
 
 
 class JobFilterOptionsView(APIView):

@@ -86,7 +86,7 @@ export const jobsApi = {
     const queryString = queryParams.toString();
     const url = queryString ? `/jobs/?${queryString}` : '/jobs/';
 
-    const response = await apiClient.get(url, true);
+    const response = await apiClient.get<JobListResponse>(url, true);
     return response;
   },
 
@@ -96,7 +96,7 @@ export const jobsApi = {
    * @returns Detailed job information
    */
   async get(idOrSlug: string | number): Promise<JobDetail> {
-    const response = await apiClient.get(`/jobs/${idOrSlug}/`, true);
+    const response = await apiClient.get<JobDetail>(`/jobs/${idOrSlug}/`, true);
     return response;
   },
 
@@ -105,7 +105,7 @@ export const jobsApi = {
    * @returns Filter options with counts
    */
   async getFilterOptions(): Promise<JobFilterOptions> {
-    const response = await apiClient.get('/jobs/filter-options/', true);
+    const response = await apiClient.get<JobFilterOptions>('/jobs/filter-options/', true);
     return response;
   },
 
@@ -130,7 +130,7 @@ export const jobsApi = {
    * @returns List of saved jobs
    */
   async getSaved(): Promise<Job[]> {
-    const response = await apiClient.get('/jobs/saved/');
+    const response = await apiClient.get<Job[]>('/jobs/saved/');
     return response;
   },
 };

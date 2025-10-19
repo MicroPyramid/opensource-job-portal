@@ -10,7 +10,10 @@ const config = {
 			out: 'build',
 			precompress: false,
 			envPrefix: ''
-		})
+		}),
+		// Enforce trailing slashes for consistency with Django URLs
+		// This ensures all routes have trailing slashes (e.g., /jobs/slug/)
+		trailingSlash: 'always'
 	}
 };
 
