@@ -1,18 +1,27 @@
-<script>
+<script lang="ts">
   import { Lock, Eye, EyeOff, ChevronLeft, Save, Check, AlertCircle } from '@lucide/svelte';
 
   let currentPassword = '';
   let newPassword = '';
   let confirmPassword = '';
-  /** @type {{currentPassword?: string, newPassword?: string, confirmPassword?: string, submit?: string}} */
-  let errors = {};
+  interface PasswordErrors {
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+    submit?: string;
+  }
+  let errors: PasswordErrors = {};
   let isLoading = false;
   let showCurrentPassword = false;
   let showNewPassword = false;
   let showConfirmPassword = false;
   let saveSuccess = false;
+  let passwordStrength: number;
+  let passwordStrengthText: string;
+  let passwordStrengthColor: string;
+  let requirements: { text: string; met: boolean }[];
 
-  function validatePassword(password) {
+  function validatePassword(password: string): boolean {
     // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
     return password.length >= 8 &&
            /[A-Z]/.test(password) &&
@@ -20,7 +29,7 @@
            /[0-9]/.test(password);
   }
 
-  function validateForm() {
+  function validateForm(): boolean {
     errors = {};
     let isValid = true;
 
@@ -51,7 +60,7 @@
     return isValid;
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(): Promise<void> {
     if (!validateForm()) {
       return;
     }
@@ -83,7 +92,7 @@
     }
   }
 
-  function togglePasswordVisibility(field) {
+  function togglePasswordVisibility(field: 'current' | 'new' | 'confirm'): void {
     if (field === 'current') {
       showCurrentPassword = !showCurrentPassword;
     } else if (field === 'new') {
@@ -108,7 +117,7 @@
     { text: 'Contains uppercase letter', met: /[A-Z]/.test(newPassword) },
     { text: 'Contains lowercase letter', met: /[a-z]/.test(newPassword) },
     { text: 'Contains number', met: /[0-9]/.test(newPassword) },
-    { text: 'Different from current password', met: newPassword && newPassword !== currentPassword }
+    { text: 'Different from current password', met: newPassword !== '' && newPassword !== currentPassword }
   ];
 </script>
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { Shield, ChevronRight } from '@lucide/svelte';
 
   const lastUpdated = 'January 18, 2024';
@@ -19,7 +19,7 @@
     { id: 'contact', title: '13. Contact Us' }
   ];
 
-  function scrollToSection(id) {
+  function scrollToSection(id: string): void {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });

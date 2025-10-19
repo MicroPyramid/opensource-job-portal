@@ -122,7 +122,7 @@
         <div class="text-center">
           <div class="flex justify-center mb-4">
             <div class="p-4 bg-blue-100 rounded-full">
-              <svelte:component this={stat.icon} class="text-blue-600" size={32} />
+              <stat.icon class="text-blue-600" size={32} />
             </div>
           </div>
           <div class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{stat.value}</div>
@@ -192,7 +192,7 @@
         <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 border border-blue-100 hover:shadow-xl transition-shadow duration-300">
           <div class="flex items-start gap-4">
             <div class="p-3 bg-blue-600 rounded-lg flex-shrink-0">
-              <svelte:component this={value.icon} class="text-white" size={24} />
+              <value.icon class="text-white" size={24} />
             </div>
             <div>
               <h3 class="text-xl font-bold text-gray-800 mb-3">{value.title}</h3>
@@ -288,7 +288,8 @@
         </div>
       </div>
     {/if}
-  </section>
+  </div>
+</section>
 
 <!-- Why Choose HirePulse -->
 <section class="py-20 bg-white">

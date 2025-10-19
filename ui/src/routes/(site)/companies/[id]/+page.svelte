@@ -219,7 +219,7 @@
         <div class="text-center">
           <div class="flex justify-center mb-2">
             <div class="p-3 bg-blue-100 rounded-full">
-              <svelte:component this={stat.icon} class="text-blue-600" size={24} />
+              <stat.icon class="text-blue-600" size={24} />
             </div>
           </div>
           <div class="text-2xl md:text-3xl font-bold text-gray-800 mb-1">{stat.value}</div>

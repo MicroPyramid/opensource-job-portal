@@ -1,11 +1,35 @@
-<script>
+<script lang="ts">
   import { HelpCircle, Search, ChevronDown, ChevronUp, Book, UserCircle, Briefcase, Settings, MessageCircle, Shield } from '@lucide/svelte';
 
-  let searchQuery = '';
-  let selectedCategory = 'all';
-  let expandedFaqId = null;
+  type IconComponent = typeof HelpCircle;
 
-  const categories = [
+  interface Category {
+    id: 'all' | 'getting_started' | 'account' | 'job_search' | 'applications' | 'privacy' | 'technical';
+    name: string;
+    icon: IconComponent;
+  }
+
+  type CategoryId = Category['id'];
+
+  interface FaqItem {
+    id: number;
+    category: Exclude<CategoryId, 'all'>;
+    question: string;
+    answer: string;
+  }
+
+  interface Article {
+    title: string;
+    description: string;
+    category: string;
+    readTime: string;
+  }
+
+  let searchQuery = $state('');
+  let selectedCategory = $state<CategoryId>('all');
+  let expandedFaqId = $state<number | null>(null);
+
+  const categories: Category[] = [
     { id: 'all', name: 'All Topics', icon: HelpCircle },
     { id: 'getting_started', name: 'Getting Started', icon: Book },
     { id: 'account', name: 'Account & Profile', icon: UserCircle },
@@ -15,7 +39,7 @@
     { id: 'technical', name: 'Technical Issues', icon: Settings }
   ];
 
-  const faqs = [
+  const faqs: FaqItem[] = [
     // Getting Started
     {
       id: 1,
@@ -155,7 +179,7 @@
     }
   ];
 
-  const popularArticles = [
+  const popularArticles: Article[] = [
     {
       title: 'How to Create a Winning Resume',
       description: 'Tips and best practices for crafting a resume that stands out',
@@ -177,20 +201,24 @@
   ];
 
   // Filter FAQs
-  $: filteredFaqs = faqs.filter(faq => {
-    const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
-    const matchesSearch = searchQuery === '' ||
-      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredFaqs = $derived((): FaqItem[] => {
+    const query = searchQuery.toLowerCase().trim();
+    return faqs.filter(faq => {
+      const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
+      const matchesSearch =
+        query === '' ||
+        faq.question.toLowerCase().includes(query) ||
+        faq.answer.toLowerCase().includes(query);
 
-    return matchesCategory && matchesSearch;
+      return matchesCategory && matchesSearch;
+    });
   });
 
-  function toggleFaq(id) {
+  function toggleFaq(id: number): void {
     expandedFaqId = expandedFaqId === id ? null : id;
   }
 
-  function selectCategory(categoryId) {
+  function selectCategory(categoryId: CategoryId): void {
     selectedCategory = categoryId;
     expandedFaqId = null; // Collapse all when changing category
   }
@@ -278,7 +306,7 @@
               class:border-gray-200={selectedCategory !== category.id}
               class:hover:border-blue-300={selectedCategory !== category.id}
             >
-              <svelte:component this={category.icon} size={24} />
+              <category.icon size={24} />
               <span class="text-xs font-medium text-center">{category.name}</span>
             </button>
           {/each}
@@ -289,16 +317,16 @@
       {#if searchQuery !== ''}
         <div class="mb-6">
           <p class="text-gray-600">
-            Found <span class="font-semibold text-gray-800">{filteredFaqs.length}</span>
-            result{filteredFaqs.length !== 1 ? 's' : ''} for "{searchQuery}"
+            Found <span class="font-semibold text-gray-800">{filteredFaqs().length}</span>
+            result{filteredFaqs().length !== 1 ? 's' : ''} for "{searchQuery}"
           </p>
         </div>
       {/if}
 
       <!-- FAQs -->
-      {#if filteredFaqs.length > 0}
+      {#if filteredFaqs().length > 0}
         <div class="bg-white rounded-xl shadow-lg border border-gray-100">
-          {#each filteredFaqs as faq, index (faq.id)}
+          {#each filteredFaqs() as faq, index (faq.id)}
             <div class="border-b border-gray-200 last:border-b-0">
               <button
                 onclick={() => toggleFaq(faq.id)}

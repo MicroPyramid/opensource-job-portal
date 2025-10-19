@@ -306,7 +306,7 @@
 
 					<!-- Skills -->
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">
+						<label for="project-skill-search" class="block text-sm font-medium text-gray-700 mb-1">
 							Technologies Used <span class="text-red-500">*</span>
 						</label>
 
@@ -335,6 +335,7 @@
 						<div class="relative">
 							<input
 								type="text"
+								id="project-skill-search"
 								placeholder="Search technologies (e.g., React, Python, AWS)..."
 								bind:value={skillSearchQuery}
 								oninput={handleSkillSearch}

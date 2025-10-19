@@ -1,8 +1,35 @@
-<script>
+<script lang="ts">
   import { Bell, Plus, Trash2, Edit, MapPin, DollarSign, Briefcase, ChevronLeft, Save, X } from '@lucide/svelte';
 
+  type JobFrequency = 'instant' | 'daily' | 'weekly';
+
+  interface JobAlert {
+    id: number;
+    name: string;
+    keywords: string[];
+    location: string;
+    jobType: string;
+    salaryMin: number;
+    salaryMax: number;
+    experience: string;
+    frequency: JobFrequency;
+    active: boolean;
+    createdDate: string;
+  }
+
+  interface JobAlertForm {
+    name: string;
+    keywords: string;
+    location: string;
+    jobType: string;
+    salaryMin: string;
+    salaryMax: string;
+    experience: string;
+    frequency: JobFrequency;
+  }
+
   // Mock existing job alerts
-  let jobAlerts = [
+  let jobAlerts: JobAlert[] = [
     {
       id: 1,
       name: 'Senior Software Engineer - Remote',
@@ -45,10 +72,10 @@
   ];
 
   let showNewAlertModal = false;
-  let editingAlert = null;
+  let editingAlert: JobAlert | null = null;
 
   // New alert form data
-  let newAlert = {
+  let newAlert: JobAlertForm = {
     name: '',
     keywords: '',
     location: '',
@@ -59,7 +86,9 @@
     frequency: 'instant'
   };
 
-  function openNewAlertModal() {
+  let activeAlerts: number;
+
+  function openNewAlertModal(): void {
     newAlert = {
       name: '',
       keywords: '',
@@ -74,7 +103,7 @@
     showNewAlertModal = true;
   }
 
-  function openEditModal(alert) {
+  function openEditModal(alert: JobAlert): void {
     editingAlert = alert;
     newAlert = {
       name: alert.name,
@@ -89,23 +118,23 @@
     showNewAlertModal = true;
   }
 
-  function closeModal() {
+  function closeModal(): void {
     showNewAlertModal = false;
     editingAlert = null;
   }
 
-  async function handleSaveAlert() {
+  async function handleSaveAlert(): Promise<void> {
     // TODO: Replace with actual API call
     console.log('Saving alert:', newAlert);
 
-    const alertData = {
+    const alertData: JobAlert = {
       id: editingAlert ? editingAlert.id : Date.now(),
       name: newAlert.name,
-      keywords: newAlert.keywords.split(',').map(k => k.trim()).filter(k => k),
+      keywords: newAlert.keywords.split(',').map(keyword => keyword.trim()).filter(Boolean),
       location: newAlert.location,
       jobType: newAlert.jobType,
-      salaryMin: parseInt(newAlert.salaryMin) || 0,
-      salaryMax: parseInt(newAlert.salaryMax) || 0,
+      salaryMin: Number.parseInt(newAlert.salaryMin, 10) || 0,
+      salaryMax: Number.parseInt(newAlert.salaryMax, 10) || 0,
       experience: newAlert.experience,
       frequency: newAlert.frequency,
       active: true,
@@ -114,8 +143,10 @@
 
     if (editingAlert) {
       // Update existing alert
-      const index = jobAlerts.findIndex(a => a.id === editingAlert.id);
-      jobAlerts[index] = alertData;
+      const index = jobAlerts.findIndex(alert => alert.id === editingAlert?.id);
+      if (index !== -1) {
+        jobAlerts = jobAlerts.map((alert, alertIndex) => (alertIndex === index ? alertData : alert));
+      }
     } else {
       // Add new alert
       jobAlerts = [...jobAlerts, alertData];
@@ -124,20 +155,21 @@
     closeModal();
   }
 
-  function toggleAlert(alert) {
-    alert.active = !alert.active;
-    jobAlerts = jobAlerts; // Trigger reactivity
+  function toggleAlert(alert: JobAlert): void {
+    jobAlerts = jobAlerts.map(existingAlert =>
+      existingAlert.id === alert.id ? { ...existingAlert, active: !existingAlert.active } : existingAlert
+    );
     // TODO: Save to API
   }
 
-  function deleteAlert(alert) {
+  function deleteAlert(alert: JobAlert): void {
     if (confirm(`Are you sure you want to delete the alert "${alert.name}"?`)) {
-      jobAlerts = jobAlerts.filter(a => a.id !== alert.id);
+      jobAlerts = jobAlerts.filter(existingAlert => existingAlert.id !== alert.id);
       // TODO: Delete from API
     }
   }
 
-  $: activeAlerts = jobAlerts.filter(a => a.active).length;
+  $: activeAlerts = jobAlerts.filter(alert => alert.active).length;
 </script>
 
 <svelte:head>
@@ -354,8 +386,22 @@
 
 <!-- New/Edit Alert Modal -->
 {#if showNewAlertModal}
-  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onclick={closeModal}>
-    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick={(e) => e.stopPropagation()}>
+  <div
+    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+    onclick={closeModal}
+    onkeydown={(e) => e.key === 'Escape' && closeModal()}
+    role="button"
+    tabindex="0"
+    aria-label="Close modal"
+  >
+    <div
+      class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
+      role="dialog"
+      aria-modal="true"
+      tabindex="-1"
+    >
       <!-- Modal Header -->
       <div class="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
         <h2 class="text-2xl font-bold text-gray-800">

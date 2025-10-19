@@ -55,14 +55,12 @@
 <!-- Toast Container -->
 <div class="fixed top-4 right-4 z-50 flex flex-col gap-3 max-w-md">
 	{#each toasts as toastItem (toastItem.id)}
+		{@const ToastIcon = getIcon(toastItem.type)}
 		<div
 			class="flex items-start gap-3 p-4 rounded-lg border shadow-lg {getStyles(toastItem.type)}"
 			transition:fly={{ y: -20, duration: 300 }}
 		>
-			<svelte:component
-				this={getIcon(toastItem.type)}
-				class="w-5 h-5 flex-shrink-0 {getIconColor(toastItem.type)}"
-			/>
+			<ToastIcon class="w-5 h-5 flex-shrink-0 {getIconColor(toastItem.type)}" />
 			<p class="flex-1 text-sm font-medium">{toastItem.message}</p>
 			<button
 				onclick={() => toast.dismiss(toastItem.id)}

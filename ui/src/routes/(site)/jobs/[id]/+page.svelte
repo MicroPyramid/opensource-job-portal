@@ -1,5 +1,4 @@
-<script>
-  import { page } from '$app/stores';
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { 
     MapPin, 
@@ -20,15 +19,60 @@
     ExternalLink
   } from '@lucide/svelte';
   
-  let isAuthenticated = false; // Replace with actual auth state
-  let isJobSaved = false;
-  let showApplyModal = false;
-  let showLoginPrompt = false;
-  let isApplying = false;
+  interface Recruiter {
+    name: string;
+    title: string;
+    email: string;
+    phone: string;
+    avatar: string;
+  }
+
+  interface CompanyInfo {
+    founded: string;
+    employees: string;
+    industry: string;
+    website: string;
+  }
+
+  interface JobDetails {
+    id: string;
+    title: string;
+    company: string;
+    companyLogo: string;
+    location: string;
+    locationType: string;
+    salary: string;
+    jobType: string;
+    experience: string;
+    postedDate: string;
+    applicants: number;
+    description: string;
+    requirements: string[];
+    responsibilities: string[];
+    benefits: string[];
+    recruiter: Recruiter;
+    company_info: CompanyInfo;
+  }
+
+  interface RelatedJob {
+    id: string;
+    title: string;
+    company: string;
+    location: string;
+    salary: string;
+    logo: string;
+    postedDate: string;
+  }
+
+  let isAuthenticated = $state(false); // Replace with actual auth state
+  let isJobSaved = $state(false);
+  let showApplyModal = $state(false);
+  let showLoginPrompt = $state(false);
+  let isApplying = $state(false);
   
   // Mock job data - replace with actual data fetching
-  let jobData = {
-    id: $page.params.id,
+  let jobData = $state<JobDetails>({
+    id: '1',
     title: "Senior Frontend Developer",
     company: "TechCorp Solutions",
     companyLogo: "/api/placeholder/80/80",
@@ -78,7 +122,7 @@
       industry: "Technology",
       website: "https://techcorp.com"
     }
-  };
+  });
   
   // Mock related jobs
   let relatedJobs = [
@@ -111,7 +155,7 @@
     }
   ];
   
-  function handleApply() {
+  function handleApply(): void {
     if (!isAuthenticated) {
       showLoginPrompt = true;
       return;
@@ -119,20 +163,30 @@
     showApplyModal = true;
   }
   
-  function handleSaveJob() {
+  function handleSaveJob(): void {
     isJobSaved = !isJobSaved;
     // Add API call to save/unsave job
   }
   
-  function handleShare() {
-    navigator.share?.({
+  function handleShare(): void {
+    if (typeof navigator === 'undefined') {
+      return;
+    }
+
+    const shareData = {
       title: jobData.title,
       text: `Check out this job at ${jobData.company}`,
-      url: window.location.href
-    }) || navigator.clipboard.writeText(window.location.href);
+      url: typeof window !== 'undefined' ? window.location.href : ''
+    };
+
+    if (navigator.share) {
+      void navigator.share(shareData);
+    } else if (navigator.clipboard && shareData.url) {
+      void navigator.clipboard.writeText(shareData.url);
+    }
   }
   
-  async function submitApplication() {
+  async function submitApplication(): Promise<void> {
     isApplying = true;
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -141,7 +195,7 @@
     // Show success message
   }
   
-  function navigateToJob(jobId) {
+  function navigateToJob(jobId: string): void {
     goto(`/jobs/${jobId}`);
   }
 </script>
@@ -382,7 +436,12 @@
       <h2 class="text-2xl font-bold text-gray-900 mb-6">Related Jobs</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {#each relatedJobs as job}
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer" onclick={() => navigateToJob(job.id)}>
+          <button
+            type="button"
+            class="w-full text-left bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+            onclick={() => navigateToJob(job.id)}
+            aria-label="View job {job.title} at {job.company}"
+          >
             <div class="flex items-start gap-4 mb-4">
               <img src={job.logo} alt="{job.company} logo" class="w-12 h-12 rounded-lg object-cover border border-gray-200" />
               <div class="flex-1">
@@ -404,7 +463,7 @@
                 Posted {job.postedDate}
               </div>
             </div>
-          </div>
+          </button>
         {/each}
       </div>
     </div>
@@ -413,8 +472,27 @@
 
 <!-- Apply Modal -->
 {#if showApplyModal}
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-xl max-w-md w-full p-6">
+  <div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    onclick={() => (showApplyModal = false)}
+    onkeydown={(event) => {
+      if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        showApplyModal = false;
+      }
+    }}
+    role="button"
+    tabindex="0"
+    aria-label="Close apply modal"
+  >
+    <div
+      class="bg-white rounded-xl max-w-md w-full p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Apply for job"
+      tabindex="-1"
+      onpointerdown={(event) => event.stopPropagation()}
+    >
       <h3 class="text-xl font-bold text-gray-900 mb-4">Apply for {jobData.title}</h3>
       <p class="text-gray-600 mb-6">Your profile and resume will be sent to {jobData.company} for review.</p>
       
@@ -446,8 +524,27 @@
 
 <!-- Login Prompt Modal -->
 {#if showLoginPrompt}
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-xl max-w-md w-full p-6">
+  <div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    onclick={() => (showLoginPrompt = false)}
+    onkeydown={(event) => {
+      if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        showLoginPrompt = false;
+      }
+    }}
+    role="button"
+    tabindex="0"
+    aria-label="Dismiss login prompt"
+  >
+    <div
+      class="bg-white rounded-xl max-w-md w-full p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Login required"
+      tabindex="-1"
+      onpointerdown={(event) => event.stopPropagation()}
+    >
       <h3 class="text-xl font-bold text-gray-900 mb-4">Login Required</h3>
       <p class="text-gray-600 mb-6">Please login to apply for this job position.</p>
       

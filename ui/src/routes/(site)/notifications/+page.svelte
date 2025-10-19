@@ -1,10 +1,29 @@
-<script>
+<script lang="ts">
   import { Bell, CheckCheck, Trash2, Filter, Briefcase, MessageCircle, Star, AlertCircle, Check, Settings, X } from '@lucide/svelte';
 
-  let selectedFilter = 'all';
-  let showOnlyUnread = false;
+  type NotificationFilter = 'all' | NotificationType;
+  type NotificationType = 'applications' | 'messages' | 'job_alerts' | 'system';
 
-  const filters = [
+  interface NotificationFilterOption {
+    id: NotificationFilter;
+    name: string;
+    icon: typeof Bell;
+  }
+
+  interface NotificationItem {
+    id: number;
+    type: NotificationType;
+    title: string;
+    message: string;
+    timestamp: string;
+    read: boolean;
+    actionUrl?: string;
+  }
+
+  let selectedFilter = $state<NotificationFilter>('all');
+  let showOnlyUnread = $state(false);
+
+  const filters: NotificationFilterOption[] = [
     { id: 'all', name: 'All', icon: Bell },
     { id: 'applications', name: 'Applications', icon: Briefcase },
     { id: 'messages', name: 'Messages', icon: MessageCircle },
@@ -12,7 +31,7 @@
     { id: 'system', name: 'System', icon: AlertCircle }
   ];
 
-  let notifications = [
+  let notifications = $state<NotificationItem[]>([
     {
       id: 1,
       type: 'applications',
@@ -103,48 +122,56 @@
       read: true,
       actionUrl: '/settings/job-alerts'
     }
-  ];
+  ]);
 
-  // Stats
-  $: totalNotifications = notifications.length;
-  $: unreadCount = notifications.filter(n => !n.read).length;
-  $: todayCount = notifications.filter(n => {
-    const today = new Date().toDateString();
-    const notifDate = new Date(n.timestamp).toDateString();
-    return today === notifDate;
-  }).length;
+  const totalNotifications = $derived(notifications.length);
 
-  // Filtered notifications
-  $: filteredNotifications = notifications
-    .filter(n => selectedFilter === 'all' || n.type === selectedFilter)
-    .filter(n => !showOnlyUnread || !n.read)
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const unreadCount = $derived(notifications.filter(notification => !notification.read).length);
 
-  function markAsRead(id) {
-    notifications = notifications.map(n =>
-      n.id === id ? { ...n, read: true } : n
+  const todayCount = $derived(
+    notifications.filter(notification => {
+      const today = new Date().toDateString();
+      const notificationDate = new Date(notification.timestamp).toDateString();
+      return today === notificationDate;
+    }).length
+  );
+
+  const filteredNotifications = $derived(
+    (() => {
+      return notifications
+        .filter(notification => selectedFilter === 'all' || notification.type === selectedFilter)
+        .filter(notification => !showOnlyUnread || !notification.read)
+        .sort(
+          (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
+    })()
+  );
+
+  function markAsRead(id: number): void {
+    notifications = notifications.map(notification =>
+      notification.id === id ? { ...notification, read: true } : notification
     );
   }
 
-  function markAllAsRead() {
-    notifications = notifications.map(n => ({ ...n, read: true }));
+  function markAllAsRead(): void {
+    notifications = notifications.map(notification => ({ ...notification, read: true }));
   }
 
-  function deleteNotification(id) {
-    notifications = notifications.filter(n => n.id !== id);
+  function deleteNotification(id: number): void {
+    notifications = notifications.filter(notification => notification.id !== id);
   }
 
-  function clearAllRead() {
+  function clearAllRead(): void {
     const confirmed = confirm('Are you sure you want to delete all read notifications?');
     if (confirmed) {
-      notifications = notifications.filter(n => !n.read);
+      notifications = notifications.filter(notification => !notification.read);
     }
   }
 
-  function formatTimestamp(timestamp) {
+  function formatTimestamp(timestamp: string): string {
     const date = new Date(timestamp);
     const now = new Date();
-    const diffMs = now - date;
+    const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
@@ -157,24 +184,24 @@
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
-  function getNotificationIcon(type) {
-    const iconMap = {
+  function getNotificationIcon(type: NotificationType): typeof Bell {
+    const iconMap: Record<NotificationType, typeof Bell> = {
       applications: Briefcase,
       messages: MessageCircle,
       job_alerts: Star,
       system: AlertCircle
     };
-    return iconMap[type] || Bell;
+    return iconMap[type] ?? Bell;
   }
 
-  function getNotificationColor(type) {
-    const colorMap = {
+  function getNotificationColor(type: NotificationType): 'blue' | 'green' | 'purple' | 'gray' {
+    const colorMap: Record<NotificationType, 'blue' | 'green' | 'purple' | 'gray'> = {
       applications: 'blue',
       messages: 'green',
       job_alerts: 'purple',
       system: 'gray'
     };
-    return colorMap[type] || 'gray';
+    return colorMap[type] ?? 'gray';
   }
 </script>
 
@@ -265,7 +292,7 @@
               class:text-gray-700={selectedFilter !== filter.id}
               class:hover:bg-gray-200={selectedFilter !== filter.id}
             >
-              <svelte:component this={filter.icon} size={16} />
+              <filter.icon size={16} />
               {filter.name}
             </button>
           {/each}
@@ -324,8 +351,7 @@
                     class:bg-purple-100={color === 'purple'}
                     class:bg-gray-100={color === 'gray'}
                   >
-                    <svelte:component
-                      this={IconComponent}
+                    <IconComponent
                       size={24}
                       class={
                         color === 'blue' ? 'text-blue-600' :

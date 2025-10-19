@@ -57,8 +57,8 @@
 		</div>
 
 		<!-- Total Experience -->
-		<div>
-			<label class="block text-sm font-medium text-gray-700 mb-2"> Total Experience </label>
+		<fieldset class="border-0 p-0 m-0">
+			<legend class="block text-sm font-medium text-gray-700 mb-2">Total Experience</legend>
 			<div class="grid grid-cols-2 gap-3">
 				<div>
 					<input
@@ -84,7 +84,7 @@
 			<p class="mt-1 text-xs text-gray-500">
 				{formatExperience(formData.year, formData.month)}
 			</p>
-		</div>
+		</fieldset>
 
 		<!-- Notice Period -->
 		<div>

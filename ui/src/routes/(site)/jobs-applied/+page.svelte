@@ -1,12 +1,45 @@
-<script>
+<script lang="ts">
     import { Calendar, MapPin, Building2, Filter, SortAsc, Eye, Clock, CheckCircle, XCircle, AlertCircle } from '@lucide/svelte';
-    import { onMount } from 'svelte';
+    import type { PageData } from './$types';
 
-    /** @type {{ data: import('./$types').PageData }} */
-    let { data } = $props();
+    interface ApplicationDetails {
+        resume: string;
+        coverLetter: string;
+        submittedAt: string;
+    }
 
-    // Sample data - replace with actual data from your backend
-    let appliedJobs = [
+    type ApplicationStatus = 'pending' | 'reviewed' | 'rejected' | 'accepted';
+    type ApplicationSortField = 'date' | 'status' | 'company';
+    type SortOrder = 'asc' | 'desc';
+
+    interface AppliedJob {
+        id: number;
+        title: string;
+        company: string;
+        location: string;
+        appliedDate: string;
+        status: ApplicationStatus;
+        salary: string;
+        applicationDetails: ApplicationDetails;
+    }
+
+    interface StatusMeta {
+        label: string;
+        color: string;
+        icon: typeof Clock;
+    }
+
+    const { data } = $props<{ data: PageData }>();
+    void data;
+
+    const statusConfig: Record<ApplicationStatus, StatusMeta> = {
+        pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+        reviewed: { label: 'Under Review', color: 'bg-blue-100 text-blue-800', icon: AlertCircle },
+        rejected: { label: 'Rejected', color: 'bg-red-100 text-red-800', icon: XCircle },
+        accepted: { label: 'Accepted', color: 'bg-green-100 text-green-800', icon: CheckCircle }
+    };
+
+    let appliedJobs = $state<AppliedJob[]>([
         {
             id: 1,
             title: "Senior Frontend Developer",
@@ -49,70 +82,57 @@
                 submittedAt: "2024-01-08T09:15:00Z"
             }
         }
-    ];
+    ]);
 
-    let filteredJobs = appliedJobs;
-    let selectedStatus = 'all';
-    let sortBy = 'date';
-    let sortOrder = 'desc';
-    let selectedJob = null;
-    let showModal = false;
+    let selectedStatus = $state<ApplicationStatus | 'all'>('all');
+    let sortBy = $state<ApplicationSortField>('date');
+    let sortOrder = $state<SortOrder>('desc');
+    let selectedJob = $state<AppliedJob | null>(null);
+    let showModal = $state(false);
 
-    const statusConfig = {
-        pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-        reviewed: { label: 'Under Review', color: 'bg-blue-100 text-blue-800', icon: AlertCircle },
-        rejected: { label: 'Rejected', color: 'bg-red-100 text-red-800', icon: XCircle },
-        accepted: { label: 'Accepted', color: 'bg-green-100 text-green-800', icon: CheckCircle }
-    };
+    let filteredJobs = $derived<AppliedJob[]>(
+        (() => {
+            const jobsByStatus =
+                selectedStatus === 'all' ? appliedJobs : appliedJobs.filter(job => job.status === selectedStatus);
 
-    function filterJobs() {
-        filteredJobs = selectedStatus === 'all' 
-            ? appliedJobs 
-            : appliedJobs.filter(job => job.status === selectedStatus);
-        sortJobs();
+            const multiplier = sortOrder === 'desc' ? -1 : 1;
+
+            return [...jobsByStatus].sort((a, b) => {
+                if (sortBy === 'date') {
+                    const diff = new Date(a.appliedDate).getTime() - new Date(b.appliedDate).getTime();
+                    return diff * multiplier;
+                }
+
+                if (sortBy === 'status') {
+                    return a.status.localeCompare(b.status) * multiplier;
+                }
+
+                return a.company.localeCompare(b.company) * multiplier;
+            });
+        })()
+    );
+
+    function toggleSortOrder(): void {
+        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     }
 
-    function sortJobs() {
-        filteredJobs = [...filteredJobs].sort((a, b) => {
-            let comparison = 0;
-            
-            if (sortBy === 'date') {
-                comparison = new Date(a.appliedDate) - new Date(b.appliedDate);
-            } else if (sortBy === 'status') {
-                comparison = a.status.localeCompare(b.status);
-            } else if (sortBy === 'company') {
-                comparison = a.company.localeCompare(b.company);
-            }
-            
-            return sortOrder === 'desc' ? -comparison : comparison;
-        });
-    }
-
-    function openApplicationDetails(job) {
+    function openApplicationDetails(job: AppliedJob): void {
         selectedJob = job;
         showModal = true;
     }
 
-    function closeModal() {
+    function closeModal(): void {
         showModal = false;
         selectedJob = null;
     }
 
-    function formatDate(dateString) {
+    function formatDate(dateString: string): string {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         });
     }
-
-    onMount(() => {
-        filterJobs();
-    });
-
-    $effect(() => {
-        filterJobs();
-    });
 </script>
 
 <svelte:head>
@@ -159,7 +179,7 @@
                             <option value="company">Company</option>
                         </select>
                         <button 
-                            onclick={() => sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'}
+                            onclick={toggleSortOrder}
                             class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                         >
                             {sortOrder === 'asc' ? '↑' : '↓'}
@@ -189,13 +209,14 @@
         {:else}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {#each filteredJobs as job (job.id)}
+                    {@const status = statusConfig[job.status]}
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                         <div class="p-6">
                             <!-- Status Badge -->
                             <div class="flex items-center justify-between mb-4">
-                                <span class="px-2 py-1 rounded-full text-xs font-medium {statusConfig[job.status].color}">
-                                    <svelte:component this={statusConfig[job.status].icon} class="w-3 h-3 inline mr-1" />
-                                    {statusConfig[job.status].label}
+                                <span class={`px-2 py-1 rounded-full text-xs font-medium ${status.color}`}>
+                                    <status.icon class="w-3 h-3 inline mr-1" />
+                                    {status.label}
                                 </span>
                                 <span class="text-xs text-gray-500 flex items-center">
                                     <Calendar class="w-3 h-3 mr-1" />
@@ -237,8 +258,28 @@
 
 <!-- Application Details Modal -->
 {#if showModal && selectedJob}
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick={closeModal}>
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick={(e) => e.stopPropagation()}>
+    {@const selectedStatus = statusConfig[selectedJob.status]}
+    <div
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+        onclick={closeModal}
+        onkeydown={(event) => {
+            if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                closeModal();
+            }
+        }}
+        role="button"
+        tabindex="0"
+        aria-label="Close application details"
+    >
+        <div
+            class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Application details"
+            tabindex="-1"
+            onpointerdown={(event) => event.stopPropagation()}
+        >
             <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl font-semibold text-gray-900">Application Details</h2>
@@ -266,9 +307,9 @@
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-gray-900">{selectedJob.salary}</span>
-                            <span class="px-2 py-1 rounded-full text-xs font-medium {statusConfig[selectedJob.status].color}">
-                                <svelte:component this={statusConfig[selectedJob.status].icon} class="w-3 h-3 inline mr-1" />
-                                {statusConfig[selectedJob.status].label}
+                            <span class={`px-2 py-1 rounded-full text-xs font-medium ${selectedStatus.color}`}>
+                                <selectedStatus.icon class="w-3 h-3 inline mr-1" />
+                                {selectedStatus.label}
                             </span>
                         </div>
                     </div>
@@ -280,26 +321,26 @@
                     
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Applied Date</label>
+                            <p class="block text-sm font-medium text-gray-700 mb-1">Applied Date</p>
                             <p class="text-sm text-gray-900">{formatDate(selectedJob.appliedDate)}</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Submitted Resume</label>
+                            <p class="block text-sm font-medium text-gray-700 mb-1">Submitted Resume</p>
                             <p class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer underline">
                                 {selectedJob.applicationDetails.resume}
                             </p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Cover Letter</label>
+                            <p class="block text-sm font-medium text-gray-700 mb-1">Cover Letter</p>
                             <div class="bg-gray-50 rounded-md p-3">
                                 <p class="text-sm text-gray-700">{selectedJob.applicationDetails.coverLetter}</p>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Submission Time</label>
+                            <p class="block text-sm font-medium text-gray-700 mb-1">Submission Time</p>
                             <p class="text-sm text-gray-900">
                                 {new Date(selectedJob.applicationDetails.submittedAt).toLocaleString()}
                             </p>

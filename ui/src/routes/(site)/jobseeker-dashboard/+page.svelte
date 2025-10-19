@@ -1,47 +1,66 @@
-<script>
+<script lang="ts">
     import { User, Briefcase, BookmarkIcon, Search, Settings, Bell, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from '@lucide/svelte';
-    
-    /** @type {{ data: import('./$types').PageData }} */
-    let { data } = $props();
+    import type { PageData } from './$types';
+
+    interface DashboardUser {
+        name: string;
+        profileCompletion: number;
+        avatar: string;
+    }
+
+    type JobStatus = 'pending' | 'reviewed' | 'interview' | 'rejected';
+
+    interface AppliedJobSummary {
+        id: number;
+        title: string;
+        company: string;
+        status: JobStatus;
+        appliedDate: string;
+    }
+
+    interface SavedJobSummary {
+        id: number;
+        title: string;
+        company: string;
+        location: string;
+        salary: string;
+    }
+
+    const { data } = $props<{ data: PageData }>();
+    void data;
 
     // Mock data - replace with actual data from your backend
-    const user = {
-        name: "John Doe",
+    const user: DashboardUser = {
+        name: 'John Doe',
         profileCompletion: 75,
-        avatar: "/api/placeholder/40/40"
+        avatar: '/api/placeholder/40/40'
     };
 
-    const appliedJobs = [
-        { id: 1, title: "Frontend Developer", company: "TechCorp", status: "reviewed", appliedDate: "2024-01-15" },
-        { id: 2, title: "UX Designer", company: "DesignStudio", status: "pending", appliedDate: "2024-01-14" },
-        { id: 3, title: "Product Manager", company: "StartupXYZ", status: "rejected", appliedDate: "2024-01-10" },
-        { id: 4, title: "Full Stack Developer", company: "WebSolutions", status: "interview", appliedDate: "2024-01-12" }
+    const appliedJobs: AppliedJobSummary[] = [
+        { id: 1, title: 'Frontend Developer', company: 'TechCorp', status: 'reviewed', appliedDate: '2024-01-15' },
+        { id: 2, title: 'UX Designer', company: 'DesignStudio', status: 'pending', appliedDate: '2024-01-14' },
+        { id: 3, title: 'Product Manager', company: 'StartupXYZ', status: 'rejected', appliedDate: '2024-01-10' },
+        { id: 4, title: 'Full Stack Developer', company: 'WebSolutions', status: 'interview', appliedDate: '2024-01-12' }
     ];
 
-    const savedJobs = [
-        { id: 1, title: "Senior React Developer", company: "Meta", location: "Remote", salary: "$120k - $150k" },
-        { id: 2, title: "Backend Engineer", company: "Google", location: "Mountain View", salary: "$140k - $180k" },
-        { id: 3, title: "DevOps Engineer", company: "Amazon", location: "Seattle", salary: "$130k - $160k" }
+    const savedJobs: SavedJobSummary[] = [
+        { id: 1, title: 'Senior React Developer', company: 'Meta', location: 'Remote', salary: '$120k - $150k' },
+        { id: 2, title: 'Backend Engineer', company: 'Google', location: 'Mountain View', salary: '$140k - $180k' },
+        { id: 3, title: 'DevOps Engineer', company: 'Amazon', location: 'Seattle', salary: '$130k - $160k' }
     ];
 
-    const getStatusIcon = (status) => {
-        switch (status) {
-            case 'pending': return AlertCircle;
-            case 'reviewed': return Clock;
-            case 'interview': return CheckCircle;
-            case 'rejected': return XCircle;
-            default: return AlertCircle;
-        }
+    const statusIconMap: Record<JobStatus, typeof AlertCircle> = {
+        pending: AlertCircle,
+        reviewed: Clock,
+        interview: CheckCircle,
+        rejected: XCircle
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'pending': return 'text-yellow-600 bg-yellow-50';
-            case 'reviewed': return 'text-blue-600 bg-blue-50';
-            case 'interview': return 'text-green-600 bg-green-50';
-            case 'rejected': return 'text-red-600 bg-red-50';
-            default: return 'text-gray-600 bg-gray-50';
-        }
+    const statusColorMap: Record<JobStatus, string> = {
+        pending: 'text-yellow-600 bg-yellow-50',
+        reviewed: 'text-blue-600 bg-blue-50',
+        interview: 'text-green-600 bg-green-50',
+        rejected: 'text-red-600 bg-red-50'
     };
 
     const appliedJobsStats = $derived({
@@ -166,6 +185,7 @@
                     </div>
                     <div class="divide-y">
                         {#each appliedJobs.slice(0, 5) as job}
+                            {@const statusIcon = statusIconMap[job.status]}
                             <div class="p-6 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1">
@@ -174,8 +194,8 @@
                                         <p class="text-xs text-gray-500">Applied on {new Date(job.appliedDate).toLocaleDateString()}</p>
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {getStatusColor(job.status)}">
-                                            <svelte:component this={getStatusIcon(job.status)} class="w-3 h-3 mr-1" />
+                                        <span class={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColorMap[job.status]}`}>
+                                            <statusIcon class="w-3 h-3 mr-1"></statusIcon>
                                             {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                                         </span>
                                     </div>

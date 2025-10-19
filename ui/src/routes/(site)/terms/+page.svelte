@@ -1,9 +1,14 @@
-<script>
+<script lang="ts">
   import { FileText, ChevronRight } from '@lucide/svelte';
 
   const lastUpdated = 'January 18, 2024';
 
-  const sections = [
+  interface TermsSection {
+    id: string;
+    title: string;
+  }
+
+  const sections: TermsSection[] = [
     { id: 'acceptance', title: '1. Acceptance of Terms' },
     { id: 'definitions', title: '2. Definitions' },
     { id: 'eligibility', title: '3. Eligibility' },
@@ -24,7 +29,7 @@
     { id: 'contact', title: '18. Contact Information' }
   ];
 
-  function scrollToSection(id) {
+  function scrollToSection(id: string): void {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });

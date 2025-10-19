@@ -327,10 +327,11 @@
           <div class="space-y-6">
             <!-- Industry Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="industry-filter" class="block text-sm font-medium text-gray-700 mb-2">
                 Industry
               </label>
               <select
+                id="industry-filter"
                 bind:value={selectedIndustry}
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               >
@@ -342,10 +343,11 @@
 
             <!-- Company Size Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="company-size-filter" class="block text-sm font-medium text-gray-700 mb-2">
                 Company Size
               </label>
               <select
+                id="company-size-filter"
                 bind:value={selectedSize}
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               >
@@ -357,10 +359,11 @@
 
             <!-- Location Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="location-filter" class="block text-sm font-medium text-gray-700 mb-2">
                 Location
               </label>
               <select
+                id="location-filter"
                 bind:value={selectedLocation}
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               >
@@ -375,8 +378,28 @@
 
       <!-- Mobile Filters -->
       {#if showFilters}
-        <div class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-50" onclick={toggleFilters}>
-          <div class="bg-white rounded-t-3xl p-6 absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto" onclick={(e) => e.stopPropagation()}>
+        <div class="md:hidden fixed inset-0 z-50 flex items-end justify-center">
+          <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+          <button
+            type="button"
+            class="absolute inset-0 cursor-default"
+            onclick={toggleFilters}
+            onkeydown={(event) => {
+              if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleFilters();
+              }
+            }}
+            aria-label="Close filters"
+          ></button>
+          <div
+            class="relative bg-white rounded-t-3xl p-6 w-full max-h-[80vh] overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Company filters"
+            tabindex="-1"
+            onpointerdown={(event) => event.stopPropagation()}
+          >
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-bold text-gray-800">Filters</h3>
               <button
@@ -391,10 +414,11 @@
             <div class="space-y-6">
               <!-- Industry Filter -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="industry-filter-mobile" class="block text-sm font-medium text-gray-700 mb-2">
                   Industry
                 </label>
                 <select
+                  id="industry-filter-mobile"
                   bind:value={selectedIndustry}
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
@@ -406,10 +430,11 @@
 
               <!-- Company Size Filter -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="company-size-filter-mobile" class="block text-sm font-medium text-gray-700 mb-2">
                   Company Size
                 </label>
                 <select
+                  id="company-size-filter-mobile"
                   bind:value={selectedSize}
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
@@ -421,10 +446,11 @@
 
               <!-- Location Filter -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="location-filter-mobile" class="block text-sm font-medium text-gray-700 mb-2">
                   Location
                 </label>
                 <select
+                  id="location-filter-mobile"
                   bind:value={selectedLocation}
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
@@ -582,6 +608,7 @@
   }
 
   .line-clamp-2 {
+    line-clamp: 2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;

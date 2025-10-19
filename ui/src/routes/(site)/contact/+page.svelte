@@ -1,7 +1,23 @@
-<script>
+<script lang="ts">
   import { Mail, Phone, MapPin, Send, Clock, MessageCircle, HelpCircle, CheckCircle, AlertCircle } from '@lucide/svelte';
 
-  let formData = {
+  interface ContactFormData {
+    name: string;
+    email: string;
+    subject: string;
+    category: string;
+    message: string;
+  }
+
+  interface ContactFormErrors {
+    name?: string;
+    email?: string;
+    subject?: string;
+    message?: string;
+    submit?: string;
+  }
+
+  const initialFormData: ContactFormData = {
     name: '',
     email: '',
     subject: '',
@@ -9,9 +25,11 @@
     message: ''
   };
 
-  let errors = {};
-  let isSubmitting = false;
-  let submitSuccess = false;
+  let formData = $state<ContactFormData>({ ...initialFormData });
+
+  let errors = $state<ContactFormErrors>({});
+  let isSubmitting = $state(false);
+  let submitSuccess = $state(false);
 
   const categories = [
     { value: 'general', label: 'General Inquiry' },
@@ -61,7 +79,7 @@
     }
   ];
 
-  function validateForm() {
+  function validateForm(): boolean {
     errors = {};
     let isValid = true;
 
@@ -94,7 +112,9 @@
     return isValid;
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(event: SubmitEvent): Promise<void> {
+    event.preventDefault();
+
     if (!validateForm()) {
       return;
     }
@@ -112,13 +132,7 @@
       submitSuccess = true;
 
       // Reset form
-      formData = {
-        name: '',
-        email: '',
-        subject: '',
-        category: 'general',
-        message: ''
-      };
+      formData = { ...initialFormData };
 
       // Auto-hide success message after 10 seconds
       setTimeout(() => {
@@ -158,7 +172,7 @@
         <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 border border-blue-100 text-center hover:shadow-lg transition-shadow duration-300">
           <div class="flex justify-center mb-4">
             <div class="p-4 bg-blue-600 rounded-full">
-              <svelte:component this={info.icon} class="text-white" size={28} />
+              <info.icon class="text-white" size={28} />
             </div>
           </div>
           <h3 class="text-xl font-bold text-gray-800 mb-2">{info.title}</h3>

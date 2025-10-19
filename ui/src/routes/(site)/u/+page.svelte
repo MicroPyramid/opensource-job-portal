@@ -1,12 +1,52 @@
-<script>
+<script lang="ts">
     import { Download, Mail, MapPin, Calendar, ExternalLink, Award, Briefcase, GraduationCap, Github } from '@lucide/svelte';
     import { Linkedin, Twitter } from '@lucide/svelte';
-    
-    /** @type {{ data: import('./$types').PageData }} */
-    let { data } = $props();
+    import type { PageData } from './$types';
+
+    interface SocialLinks {
+        github?: string;
+        linkedin?: string;
+        twitter?: string;
+    }
+
+    interface ExperienceItem {
+        title: string;
+        company: string;
+        location: string;
+        duration: string;
+        description: string;
+    }
+
+    interface EducationItem {
+        degree: string;
+        institution: string;
+        year: string;
+        gpa?: string;
+        certification?: string;
+    }
+
+    interface Profile {
+        name: string;
+        title: string;
+        location: string;
+        profileImage: string;
+        bio: string;
+        email: string;
+        joinDate: string;
+        isContactEnabled: boolean;
+        isResumePublic: boolean;
+        resumeUrl: string;
+        socialLinks: SocialLinks;
+        skills: string[];
+        experience: ExperienceItem[];
+        education: EducationItem[];
+    }
+
+    const { data } = $props<{ data: PageData }>();
+    void data;
 
     // Mock data - replace with actual data from your backend
-    const profile = {
+    const profile: Profile = {
         name: "Sarah Johnson",
         title: "Senior Frontend Developer",
         location: "San Francisco, CA",
@@ -69,27 +109,30 @@
     let contactMessage = $state('');
     let contactSubject = $state('');
 
-    function openContactModal() {
+    function openContactModal(): void {
         showContactModal = true;
     }
 
-    function closeContactModal() {
+    function closeContactModal(): void {
         showContactModal = false;
         contactMessage = '';
         contactSubject = '';
     }
 
-    function sendMessage() {
+    function sendMessage(): void {
         // Handle message sending logic here
         console.log('Sending message:', { subject: contactSubject, message: contactMessage });
         closeContactModal();
     }
 
-    function downloadResume() {
+    function downloadResume(): void {
         window.open(profile.resumeUrl, '_blank');
     }
 
-    function openSocialLink(url) {
+    function openSocialLink(url?: string): void {
+        if (!url) {
+            return;
+        }
         window.open(url, '_blank', 'noopener,noreferrer');
     }
 </script>

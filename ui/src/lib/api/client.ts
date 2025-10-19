@@ -35,17 +35,18 @@ export class ApiClient {
 	): Promise<T> {
 		const url = `${API_BASE}${endpoint}`;
 
-		const headers: HeadersInit = {
-			// Only set Content-Type for JSON, let browser set it for FormData
-			...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-			...options.headers
-		};
+		const headers = new Headers(options.headers ?? undefined);
+
+		// Only set Content-Type for JSON, let browser set it for FormData
+		if (!isFormData && !headers.has('Content-Type')) {
+			headers.set('Content-Type', 'application/json');
+		}
 
 		// Add auth token if available (skip for public endpoints)
 		if (!skipAuth && typeof window !== 'undefined') {
 			const token = localStorage.getItem('access_token');
 			if (token) {
-				headers['Authorization'] = `Bearer ${token}`;
+				headers.set('Authorization', `Bearer ${token}`);
 			}
 		}
 
@@ -145,7 +146,19 @@ export class ApiClient {
 		return response.json();
 	}
 
-	static get<T>(endpoint: string, params?: Record<string, any>, skipAuth = false): Promise<T> {
+	static get<T>(
+		endpoint: string,
+		paramsOrSkipAuth?: Record<string, any> | boolean,
+		skipAuth = false
+	): Promise<T> {
+		let params: Record<string, any> | undefined;
+
+		if (typeof paramsOrSkipAuth === 'boolean') {
+			skipAuth = paramsOrSkipAuth;
+		} else if (paramsOrSkipAuth) {
+			params = paramsOrSkipAuth;
+		}
+
 		// Build query string from params
 		let url = endpoint;
 		if (params) {

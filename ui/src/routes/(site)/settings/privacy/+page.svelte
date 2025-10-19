@@ -117,10 +117,10 @@
 
         <div class="space-y-6">
           <!-- Profile Visibility Level -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">
+          <fieldset class="space-y-3 border-0 p-0 m-0">
+            <legend class="block text-sm font-medium text-gray-700 mb-3">
               Who can view your profile?
-            </label>
+            </legend>
             <div class="space-y-3">
               <label class="flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200" class:border-blue-500={privacySettings.profileVisibility === 'public'} class:bg-blue-50={privacySettings.profileVisibility === 'public'} class:border-gray-200={privacySettings.profileVisibility !== 'public'}>
                 <input
@@ -161,7 +161,7 @@
                 </div>
               </label>
             </div>
-          </div>
+          </fieldset>
 
           <!-- Contact Information -->
           <div class="pt-6 border-t border-gray-200">
@@ -228,10 +228,10 @@
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-3">
+        <fieldset class="space-y-3 border-0 p-0 m-0">
+          <legend class="block text-sm font-medium text-gray-700 mb-3">
             Who can view and download your resume?
-          </label>
+          </legend>
           <div class="space-y-3">
             <label class="flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200" class:border-purple-500={privacySettings.resumeVisibility === 'public'} class:bg-purple-50={privacySettings.resumeVisibility === 'public'} class:border-gray-200={privacySettings.resumeVisibility !== 'public'}>
               <input
@@ -287,7 +287,7 @@
               <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
           </div>
-        </div>
+        </fieldset>
       </div>
 
       <!-- Communication Preferences -->
@@ -295,10 +295,11 @@
         <h2 class="text-xl font-bold text-gray-800 mb-4">Communication Preferences</h2>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-3">
+          <label for="message-visibility" class="block text-sm font-medium text-gray-700 mb-3">
             Who can send you messages?
           </label>
           <select
+            id="message-visibility"
             bind:value={privacySettings.allowMessagesFrom}
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-700"
           >

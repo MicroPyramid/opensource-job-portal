@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import {
@@ -16,12 +16,39 @@
     File
   } from '@lucide/svelte';
 
-  // Get conversation ID from URL params
-  $: conversationId = parseInt($page.params.id);
+  type Sender = 'me' | 'recruiter';
+
+  interface Message {
+    id: number;
+    sender: Sender;
+    text: string;
+    timestamp: string;
+    read: boolean;
+  }
+
+  interface RecruiterDetails {
+    name: string;
+    company: string;
+    position: string;
+    avatar: string | null;
+    online: boolean;
+    email: string;
+    phone: string;
+  }
+
+  interface Conversation {
+    id: number;
+    recruiter: RecruiterDetails;
+    jobTitle: string;
+    jobId: number;
+    messages: Message[];
+  }
+
+  type AttachmentType = 'image' | 'file';
+  type CallType = 'voice' | 'video';
 
   // TODO: Replace with API call to fetch conversation data
-  // Mock data for all conversations
-  const allConversations = [
+  const allConversations: Conversation[] = [
     {
       id: 1,
       recruiter: {
@@ -142,27 +169,49 @@
     }
   ];
 
-  // Find the current conversation
-  $: conversation = allConversations.find(c => c.id === conversationId);
+  let conversationId = $state<number | null>(null);
+  let conversation = $state<Conversation | null>(null);
 
-  // Redirect if conversation not found
-  $: if (!conversation && typeof window !== 'undefined') {
+  $effect(() => {
+    const idParam = $page.params.id;
+    if (!idParam) {
+      conversationId = null;
+      conversation = null;
+      return;
+    }
+    const parsed = Number.parseInt(idParam, 10);
+    if (Number.isNaN(parsed)) {
+      conversationId = null;
+      conversation = null;
+      return;
+    }
+    conversationId = parsed;
+    conversation = allConversations.find(c => c.id === parsed) ?? null;
+  });
+
+  let messageText = $state('');
+  let messages = $state<Message[]>([]);
+  let showRecruiterInfo = $state(false);
+  let showAttachmentMenu = $state(false);
+
+  $effect(() => {
+    if (!conversation && typeof window !== 'undefined') {
+      goto('/messages');
+    }
+  });
+
+  $effect(() => {
+    messages = conversation ? [...conversation.messages] : [];
+  });
+
+  function goBack(): void {
     goto('/messages');
   }
 
-  let messageText = '';
-  let messages = conversation?.messages || [];
-  let showRecruiterInfo = false;
-  let showAttachmentMenu = false;
-
-  function goBack() {
-    goto('/messages');
-  }
-
-  function sendMessage() {
+  function sendMessage(): void {
     if (!messageText.trim() || !conversation) return;
 
-    const newMessage = {
+    const newMessage: Message = {
       id: Date.now(),
       sender: 'me',
       text: messageText.trim(),
@@ -184,22 +233,23 @@
     // TODO: Send message to API
   }
 
-  function handleKeyPress(event) {
+  function handleKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       sendMessage();
     }
   }
 
-  function formatMessageTime(timestamp) {
+  function formatMessageTime(timestamp: string): string {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   }
 
-  function formatMessageDate(timestamp) {
+  function formatMessageDate(timestamp: string): string {
     const date = new Date(timestamp);
     const now = new Date();
-    const diffDays = Math.floor((now - date) / 86400000);
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
@@ -208,26 +258,37 @@
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
-  function attachFile(type) {
-    // TODO: Implement file attachment
+  function attachFile(type: AttachmentType): void {
     alert(`${type} attachment will be implemented`);
     showAttachmentMenu = false;
   }
 
-  function makeCall(type) {
-    // TODO: Implement calling functionality
+  function makeCall(type: CallType): void {
     alert(`${type} call feature will be implemented`);
   }
 
-  // Group messages by date
-  $: groupedMessages = messages.reduce((groups, message) => {
-    const date = formatMessageDate(message.timestamp);
-    if (!groups[date]) {
-      groups[date] = [];
-    }
-    groups[date].push(message);
-    return groups;
-  }, {});
+  function getInitials(name: string): string {
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .map(part => part[0]?.toUpperCase() ?? '')
+      .join('');
+  }
+
+  type MessageGroups = Record<string, Message[]>;
+
+  let groupedMessages = $state<MessageGroups>({});
+
+	$effect(() => {
+		groupedMessages = messages.reduce<MessageGroups>((groups, message) => {
+			const dateKey = formatMessageDate(message.timestamp);
+			if (!groups[dateKey]) {
+				groups[dateKey] = [];
+			}
+			groups[dateKey].push(message);
+			return groups;
+		}, {});
+	});
 </script>
 
 <svelte:head>
@@ -253,7 +314,7 @@
 
             <div class="relative flex-shrink-0">
               <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                {conversation.recruiter.name.split(' ').map(n => n[0]).join('')}
+                {getInitials(conversation.recruiter.name)}
               </div>
               {#if conversation.recruiter.online}
                 <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
@@ -507,14 +568,34 @@
 
   <!-- Mobile Recruiter Info Modal -->
   {#if showRecruiterInfo}
-    <div class="lg:hidden fixed inset-0 bg-black/50 z-50" onclick={() => showRecruiterInfo = false}>
-      <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 max-h-[80vh] overflow-y-auto" onclick={(e) => e.stopPropagation()}>
+    <div class="lg:hidden fixed inset-0 z-50 flex items-end justify-center">
+      <div class="absolute inset-0 bg-black/50"></div>
+      <button
+        type="button"
+        class="absolute inset-0 cursor-default"
+        onclick={() => (showRecruiterInfo = false)}
+        onkeydown={(event) => {
+          if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            showRecruiterInfo = false;
+          }
+        }}
+        aria-label="Close recruiter info"
+      ></button>
+      <div
+        class="relative bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 max-h-[80vh] overflow-y-auto"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Recruiter information"
+        tabindex="-1"
+        onpointerdown={(event) => event.stopPropagation()}
+      >
         <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
 
         <!-- Recruiter Details -->
         <div class="text-center mb-6 pb-6 border-b border-gray-200">
           <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
-            {conversation.recruiter.name.split(' ').map(n => n[0]).join('')}
+            {getInitials(conversation.recruiter.name)}
           </div>
           <h4 class="font-bold text-gray-800 text-lg mb-1">{conversation.recruiter.name}</h4>
           <p class="text-sm text-gray-600 mb-2">{conversation.recruiter.position}</p>

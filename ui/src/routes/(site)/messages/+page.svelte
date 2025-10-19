@@ -1,9 +1,31 @@
-<script>
+<script lang="ts">
   import { MessageCircle, Search, Filter, Archive, Star, Trash2, MoreVertical } from '@lucide/svelte';
   import { goto } from '$app/navigation';
 
+  interface RecruiterSummary {
+    name: string;
+    company: string;
+    position: string;
+    avatar: string | null;
+    online: boolean;
+  }
+
+  type FilterType = 'all' | 'unread' | 'starred' | 'archived';
+
+  interface ConversationSummary {
+    id: number;
+    recruiter: RecruiterSummary;
+    jobTitle: string;
+    lastMessage: string;
+    lastMessageSender: 'me' | 'recruiter';
+    timestamp: string;
+    unread: number;
+    starred: boolean;
+    archived: boolean;
+  }
+
   // TODO: Replace with API call to fetch conversations
-  let conversations = [
+  let conversations = $state<ConversationSummary[]>([
     {
       id: 1,
       recruiter: {
@@ -106,63 +128,76 @@
       starred: false,
       archived: false
     }
-  ];
+  ]);
 
-  let searchQuery = '';
-  let filterType = 'all'; // 'all', 'unread', 'starred', 'archived'
+  let searchQuery = $state('');
+  let filterType = $state<FilterType>('all');
 
-  $: totalUnread = conversations.filter(c => !c.archived).reduce((sum, c) => sum + c.unread, 0);
-  $: starredCount = conversations.filter(c => c.starred && !c.archived).length;
-  $: archivedCount = conversations.filter(c => c.archived).length;
+  const totalUnread = $derived(
+    conversations
+      .filter(conversation => !conversation.archived)
+      .reduce((sum, conversation) => sum + conversation.unread, 0)
+  );
 
-  $: filteredConversations = conversations
-    .filter(c => {
-      // Filter by type
-      if (filterType === 'unread' && c.unread === 0) return false;
-      if (filterType === 'starred' && !c.starred) return false;
-      if (filterType === 'archived' && !c.archived) return false;
-      if (filterType === 'all' && c.archived) return false;
+  const starredCount = $derived(
+    conversations.filter(conversation => conversation.starred && !conversation.archived).length
+  );
 
-      // Filter by search
+  const archivedCount = $derived(conversations.filter(conversation => conversation.archived).length);
+
+  const filteredConversations = $derived(
+    (() => {
       const searchLower = searchQuery.toLowerCase();
-      return (
-        c.recruiter.name.toLowerCase().includes(searchLower) ||
-        c.recruiter.company.toLowerCase().includes(searchLower) ||
-        c.jobTitle.toLowerCase().includes(searchLower) ||
-        c.lastMessage.toLowerCase().includes(searchLower)
-      );
-    })
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-  function openConversation(id) {
+      return conversations
+        .filter(conversation => {
+          if (filterType === 'unread' && conversation.unread === 0) return false;
+          if (filterType === 'starred' && !conversation.starred) return false;
+          if (filterType === 'archived' && !conversation.archived) return false;
+          if (filterType === 'all' && conversation.archived) return false;
+
+          return (
+            conversation.recruiter.name.toLowerCase().includes(searchLower) ||
+            conversation.recruiter.company.toLowerCase().includes(searchLower) ||
+            conversation.jobTitle.toLowerCase().includes(searchLower) ||
+            conversation.lastMessage.toLowerCase().includes(searchLower)
+          );
+        })
+        .sort(
+          (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
+    })()
+  );
+
+  function openConversation(id: number): void {
     goto(`/messages/${id}`);
   }
 
-  function toggleStar(id, event) {
+  function toggleStar(id: number, event: MouseEvent): void {
     event.stopPropagation();
-    conversations = conversations.map(c =>
-      c.id === id ? { ...c, starred: !c.starred } : c
+    conversations = conversations.map(conversation =>
+      conversation.id === id ? { ...conversation, starred: !conversation.starred } : conversation
     );
   }
 
-  function archiveConversation(id, event) {
+  function archiveConversation(id: number, event: MouseEvent): void {
     event.stopPropagation();
-    conversations = conversations.map(c =>
-      c.id === id ? { ...c, archived: true } : c
+    conversations = conversations.map(conversation =>
+      conversation.id === id ? { ...conversation, archived: true } : conversation
     );
   }
 
-  function deleteConversation(id, event) {
+  function deleteConversation(id: number, event: MouseEvent): void {
     event.stopPropagation();
     if (confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
-      conversations = conversations.filter(c => c.id !== id);
+      conversations = conversations.filter(conversation => conversation.id !== id);
     }
   }
 
-  function formatTimestamp(timestamp) {
+  function formatTimestamp(timestamp: string): string {
     const date = new Date(timestamp);
     const now = new Date();
-    const diffMs = now - date;
+    const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);

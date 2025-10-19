@@ -1,22 +1,40 @@
-<script>
+<script lang="ts">
   import { Search, Filter, SlidersHorizontal, X, MapPin, Briefcase, DollarSign, Bookmark, CalendarDays, Building, Clock, Users } from '@lucide/svelte';
 
+  type JobType = 'Full-time' | 'Part-time' | 'Contract' | 'Internship';
+  type ExperienceLevel = 'Entry Level' | 'Mid Level' | 'Senior Level' | 'Lead' | 'Manager';
+
+  interface Job {
+    id: number;
+    title: string;
+    company: string;
+    location: string;
+    salaryMin: number;
+    salaryMax: number;
+    postedDate: string;
+    type: JobType;
+    experienceLevel: ExperienceLevel;
+    isRemote: boolean;
+    applicants: number;
+    saved: boolean;
+  }
+
   // Search and filter state
-  let searchTerm = '';
-  let locationTerm = '';
-  let jobType = '';
-  let salaryMin = null;
-  let salaryMax = null;
-  let experienceLevel = '';
-  let isRemote = false;
-  let showFiltersMobile = false;
+  let searchTerm = $state('');
+  let locationTerm = $state('');
+  let jobType = $state<JobType | ''>('');
+  let salaryMin = $state<number | null>(null);
+  let salaryMax = $state<number | null>(null);
+  let experienceLevel = $state<ExperienceLevel | ''>('');
+  let isRemote = $state(false);
+  let showFiltersMobile = $state(false);
 
   // Constants
-  const allJobTypes = ['Full-time', 'Part-time', 'Contract', 'Internship'];
-  const allExperienceLevels = ['Entry Level', 'Mid Level', 'Senior Level', 'Lead', 'Manager'];
+  const allJobTypes: JobType[] = ['Full-time', 'Part-time', 'Contract', 'Internship'];
+  const allExperienceLevels: ExperienceLevel[] = ['Entry Level', 'Mid Level', 'Senior Level', 'Lead', 'Manager'];
 
   // Dummy job data
-  const jobs = [
+  let jobs = $state<Job[]>([
     { 
       id: 1, 
       title: 'Senior Software Engineer', 
@@ -129,37 +147,58 @@
       applicants: 34,
       saved: false
     }
-  ];
+  ]);
 
   // Reactive filtered jobs
-  $: filteredJobs = jobs.filter(job => {
-    const searchMatch = !searchTerm || 
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.company.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const locationMatch = !locationTerm || 
-      job.location.toLowerCase().includes(locationTerm.toLowerCase());
-    
-    const typeMatch = !jobType || job.type === jobType;
-    
-    const salaryMinMatch = !salaryMin || job.salaryMax >= salaryMin;
-    const salaryMaxMatch = !salaryMax || job.salaryMin <= salaryMax;
-    
-    const experienceMatch = !experienceLevel || job.experienceLevel === experienceLevel;
-    const remoteMatch = !isRemote || job.isRemote;
+  let filteredJobs = $derived<Job[]>(
+    (() => {
+      const searchTermLower = searchTerm.toLowerCase();
+      const locationTermLower = locationTerm.toLowerCase();
 
-    return searchMatch && locationMatch && typeMatch && salaryMinMatch && salaryMaxMatch && experienceMatch && remoteMatch;
-  });
+      return jobs.filter(job => {
+        const searchMatch =
+          searchTermLower === '' ||
+          job.title.toLowerCase().includes(searchTermLower) ||
+          job.company.toLowerCase().includes(searchTermLower);
 
-  // Check if any filters are applied
-  $: hasActiveFilters = searchTerm || locationTerm || jobType || salaryMin || salaryMax || experienceLevel || isRemote;
+        const locationMatch = locationTermLower === '' || job.location.toLowerCase().includes(locationTermLower);
+        const typeMatch = jobType === '' || job.type === jobType;
+        const salaryMinMatch = salaryMin === null || job.salaryMax >= salaryMin;
+        const salaryMaxMatch = salaryMax === null || job.salaryMin <= salaryMax;
+        const experienceMatch = experienceLevel === '' || job.experienceLevel === experienceLevel;
+        const remoteMatch = !isRemote || job.isRemote;
+
+        return (
+          searchMatch &&
+          locationMatch &&
+          typeMatch &&
+          salaryMinMatch &&
+          salaryMaxMatch &&
+          experienceMatch &&
+          remoteMatch
+        );
+      });
+    })()
+  );
+
+  const hasActiveFilters = $derived(
+    Boolean(
+      searchTerm ||
+        locationTerm ||
+        jobType ||
+        salaryMin !== null ||
+        salaryMax !== null ||
+        experienceLevel ||
+        isRemote
+    )
+  );
 
   // Functions
-  function toggleFiltersMobile() {
+  function toggleFiltersMobile(): void {
     showFiltersMobile = !showFiltersMobile;
   }
 
-  function resetFilters() {
+  function resetFilters(): void {
     searchTerm = '';
     locationTerm = '';
     jobType = '';
@@ -170,33 +209,32 @@
     showFiltersMobile = false;
   }
 
-  function saveJob(jobId) {
+  function saveJob(jobId: number): void {
     const jobIndex = jobs.findIndex(job => job.id === jobId);
     if (jobIndex !== -1) {
       jobs[jobIndex].saved = !jobs[jobIndex].saved;
-      // Trigger reactivity
-      // jobs = [...jobs];
+      jobs = [...jobs];
     }
   }
 
-  function viewJobDetails(jobId) {
+  function viewJobDetails(jobId: number): void {
     // In a real app, navigate to job details page
     // goto(`/jobs/${jobId}`);
     console.log(`Viewing job details for job ${jobId}`);
   }
 
-  function formatSalary(min, max) {
-    const formatNumber = (num) => (num / 1000).toFixed(0) + 'k';
-    if (min && max) return `$${formatNumber(min)} - $${formatNumber(max)}`;
-    if (min) return `From $${formatNumber(min)}`;
-    if (max) return `Up to $${formatNumber(max)}`;
+  function formatSalary(min: number | null, max: number | null): string {
+    const formatNumber = (num: number) => `${(num / 1000).toFixed(0)}k`;
+    if (min !== null && max !== null) return `$${formatNumber(min)} - $${formatNumber(max)}`;
+    if (min !== null) return `From $${formatNumber(min)}`;
+    if (max !== null) return `Up to $${formatNumber(max)}`;
     return 'Competitive';
   }
 
-  function timeSince(dateString) {
+  function timeSince(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
-    const diffTime = Math.abs(now - date);
+    const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     if (diffDays === 1) return '1 day ago';
@@ -322,13 +360,15 @@
 
           <div class="space-y-6">
             <!-- Salary Range -->
-            <div>
-              <label class="block text-sm font-medium text-blue-700 mb-3">
+            <fieldset class="border-0 p-0">
+              <legend class="block text-sm font-medium text-blue-700 mb-3">
                 Salary Range (USD)
-              </label>
+              </legend>
               <div class="grid grid-cols-2 gap-3">
                 <div>
+                  <label for="salary-min" class="sr-only">Minimum salary</label>
                   <input
+                    id="salary-min"
                     type="number"
                     bind:value={salaryMin}
                     placeholder="Min salary"
@@ -336,7 +376,9 @@
                   />
                 </div>
                 <div>
+                  <label for="salary-max" class="sr-only">Maximum salary</label>
                   <input
+                    id="salary-max"
                     type="number"
                     bind:value={salaryMax}
                     placeholder="Max salary"
@@ -344,7 +386,7 @@
                   />
                 </div>
               </div>
-            </div>
+            </fieldset>
 
             <!-- Experience Level -->
             <div>
@@ -402,12 +444,10 @@
         {#if filteredJobs.length > 0}
           <div class="space-y-4">
             {#each filteredJobs as job (job.id)}
-              <article 
-                class="bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-blue-100"
+              <button
+                type="button"
+                class="w-full text-left bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-blue-100"
                 onclick={() => viewJobDetails(job.id)}
-                onkeydown={(e) => e.key === 'Enter' && viewJobDetails(job.id)}
-                role="button"
-                tabindex="0"
                 aria-label="View details for {job.title} at {job.company}"
               >
                 <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
@@ -416,13 +456,25 @@
                       <h3 class="text-xl font-semibold text-blue-600 group-hover:text-blue-700 transition-colors">
                         {job.title}
                       </h3>
-                      <button
-                        onclick={(e) => { e.stopPropagation(); saveJob(job.id); }}
+                      <span
+                        role="button"
+                        tabindex="0"
+                        onclick={(event) => {
+                          event.stopPropagation();
+                          saveJob(job.id);
+                        }}
+                        onkeydown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            saveJob(job.id);
+                          }
+                        }}
                         class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-all {job.saved ? 'text-blue-600 bg-gray-100' : ''}"
                         aria-label="Save {job.title}"
                       >
                         <Bookmark size={20} class={job.saved ? 'fill-current' : ''} />
-                      </button>
+                      </span>
                     </div>
 
                     <div class="space-y-2 mb-4">
@@ -463,7 +515,7 @@
                     </div>
                   </div>
                 </div>
-              </article>
+              </button>
             {/each}
           </div>
 

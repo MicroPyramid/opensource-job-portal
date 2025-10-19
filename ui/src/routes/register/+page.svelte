@@ -242,7 +242,7 @@
           >
             <div class="flex justify-center mb-6">
               <div class="p-4 bg-blue-100 rounded-full group-hover:bg-blue-600 transition-colors duration-300">
-                <svelte:component this={type.icon} class="text-blue-600 group-hover:text-white transition-colors duration-300" size={48} />
+                <type.icon class="text-blue-600 group-hover:text-white transition-colors duration-300" size={48} />
               </div>
             </div>
 
@@ -298,11 +298,11 @@
 
             <div class="flex justify-center mb-4">
               <div class="p-3 bg-blue-100 rounded-full">
-                <svelte:component
-                  this={userType === 'jobseeker' ? UserCircle : Building2}
-                  class="text-blue-600"
-                  size={32}
-                />
+                {#if userType === 'jobseeker'}
+                  <UserCircle class="text-blue-600" size={32} />
+                {:else}
+                  <Building2 class="text-blue-600" size={32} />
+                {/if}
               </div>
             </div>
 

@@ -1,5 +1,14 @@
-<script>
+<script lang="ts">
   import { User, Bell, Briefcase, Lock, Shield, Mail, Phone, Calendar, CheckCircle, AlertCircle, ChevronRight } from '@lucide/svelte';
+  import type { Component } from 'svelte';
+
+  type ColorName = 'blue' | 'green' | 'purple' | 'yellow' | 'red';
+
+  interface ColorClasses {
+    bg: string;
+    text: string;
+    hover: string;
+  }
 
   // Mock user data - will be replaced with actual data from auth/database
   const user = {
@@ -13,7 +22,7 @@
   };
 
   // Mock stats
-  const stats = [
+  const stats: Array<{ label: string; value: string; icon: Component; color: ColorName }> = [
     { label: 'Profile Completion', value: `${user.profileCompletion}%`, icon: User, color: 'blue' },
     { label: 'Applications Sent', value: '12', icon: Briefcase, color: 'green' },
     { label: 'Saved Jobs', value: '24', icon: AlertCircle, color: 'purple' },
@@ -21,7 +30,7 @@
   ];
 
   // Settings sections
-  const settingsSections = [
+  const settingsSections: Array<{ title: string; description: string; icon: Component; href: string; color: ColorName }> = [
     {
       title: 'Notifications',
       description: 'Manage email and push notification preferences',
@@ -52,7 +61,7 @@
     }
   ];
 
-  const colorClasses = {
+  const colorClasses: Record<ColorName, ColorClasses> = {
     blue: { bg: 'bg-blue-100', text: 'text-blue-600', hover: 'group-hover:bg-blue-50' },
     green: { bg: 'bg-green-100', text: 'text-green-600', hover: 'group-hover:bg-green-50' },
     purple: { bg: 'bg-purple-100', text: 'text-purple-600', hover: 'group-hover:bg-purple-50' },
@@ -177,7 +186,7 @@
                   <p class="text-3xl font-bold text-gray-800">{stat.value}</p>
                 </div>
                 <div class="p-3 {colorClasses[stat.color].bg} rounded-full">
-                  <svelte:component this={stat.icon} class={colorClasses[stat.color].text} size={24} />
+                  <stat.icon class={colorClasses[stat.color].text} size={24} />
                 </div>
               </div>
             </div>
@@ -197,7 +206,7 @@
                 >
                   <div class="flex items-center gap-4">
                     <div class="p-3 {colorClasses[section.color].bg} {colorClasses[section.color].hover} rounded-lg transition-colors duration-200">
-                      <svelte:component this={section.icon} class={colorClasses[section.color].text} size={24} />
+                      <section.icon class={colorClasses[section.color].text} size={24} />
                     </div>
 
                     <div class="flex-1">
