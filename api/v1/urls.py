@@ -11,6 +11,5 @@ urlpatterns = [
     path("locations/", include("api.v1.locations.urls")),
     path("skills/", include("api.v1.skills.urls")),
     path("employment/", include("api.v1.employment.urls")),
-    # Future endpoints for Job Seekers:
-    # path('jobs/', include('api.v1.jobs.urls')),
+    path("jobs/", include("api.v1.jobs.urls")),
 ]

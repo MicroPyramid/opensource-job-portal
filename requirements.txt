@@ -20,6 +20,7 @@ djangorestframework==3.16.0
 djangorestframework-simplejwt==5.5.0
 dj-rest-auth==7.0.1
 drf-spectacular==0.28.0
+django-filter==25.2
 
 # Storage & Media
 boto3==1.38.32

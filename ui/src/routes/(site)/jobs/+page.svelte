@@ -1,40 +1,33 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { Search, Filter, SlidersHorizontal, X, MapPin, Briefcase, DollarSign, Bookmark, Building, Clock, Users, GraduationCap, Factory } from '@lucide/svelte';
   import FilterSection from '$lib/components/FilterSection.svelte';
   import FilterModal from '$lib/components/FilterModal.svelte';
+  import { toast } from '$lib/stores/toast';
+  import { jobsApi } from '$lib/api/jobs';
+  import type { Job, FilterOption, JobFilterOptions, JobSearchParams } from '$lib/types/jobs';
+  import type { PageData } from './$types';
 
-  interface FilterOption {
-    name: string;
-    value: string;
-    count: number;
-    checked: boolean;
+  interface Props {
+    data: PageData;
   }
 
-  type JobType = 'full-time' | 'internship' | 'walk-in' | 'fresher';
+  let { data }: Props = $props();
 
-  interface Job {
-    id: number;
-    title: string;
-    company: string;
-    location: string;
-    salaryMin: number;
-    salaryMax: number;
-    postedDate: string;
-    type: JobType;
-    experienceMin: number;
-    experienceMax: number;
-    isRemote: boolean;
-    applicants: number;
-    saved: boolean;
-    skills: string[];
-    industry: string;
-    education: string;
-  }
+  // Initialize from server data
+  let jobs = $state<Job[]>(data.jobs || []);
+  let totalJobs = $state(data.totalJobs || 0);
+  let totalPages = $state(data.totalPages || 0);
+  let currentPage = $state(data.currentPage || 1);
+  let filterOptions = $state<JobFilterOptions | null>(data.filterOptions);
+  let isLoading = $state(false);
+  let error = $state<string | null>(data.error);
 
   // Search and filter state
   let searchTerm = $state('');
   let locationSearchTerm = $state('');
-  let jobTypeFilter = $state<JobType | ''>('');
   let showFiltersMobile = $state(false);
 
   // Modal states
@@ -54,208 +47,106 @@
   // Remote filter
   let isRemote = $state(false);
 
+  // Track if we've mounted (to prevent fetch on initial SSR)
+  let hasMounted = $state(false);
+
   // Filter options with job counts
-  let locationOptions = $state<FilterOption[]>([
-    { name: 'Chennai', value: 'chennai', count: 2250, checked: false },
-    { name: 'Bangalore', value: 'bangalore', count: 2234, checked: false },
-    { name: 'Mumbai', value: 'mumbai', count: 2190, checked: false },
-    { name: 'Kolkata', value: 'kolkata', count: 2173, checked: false },
-    { name: 'Delhi', value: 'delhi', count: 1922, checked: false },
-    { name: 'Hyderabad', value: 'hyderabad', count: 1856, checked: false },
-    { name: 'Noida', value: 'noida', count: 1645, checked: false },
-    { name: 'Gurgaon', value: 'gurgaon', count: 1542, checked: false },
-    { name: 'Pune', value: 'pune', count: 1489, checked: false },
-    { name: 'Ahmedabad', value: 'ahmedabad', count: 1321, checked: false },
-  ]);
+  let locationOptions = $state<FilterOption[]>([]);
+  let skillOptions = $state<FilterOption[]>([]);
+  let industryOptions = $state<FilterOption[]>([]);
+  let educationOptions = $state<FilterOption[]>([]);
+  let jobTypeOptions = $state<{ name: string; value: string; count: number; checked: boolean }[]>([]);
 
-  let skillOptions = $state<FilterOption[]>([
-    { name: 'Basic Computer Knowledge', value: 'basic-computer-knowledge', count: 1565, checked: false },
-    { name: 'Basic Computer Skills', value: 'basic-computer-skills', count: 1279, checked: false },
-    { name: 'Sales', value: 'sales', count: 891, checked: false },
-    { name: 'Communication Skills', value: 'communication-skills', count: 861, checked: false },
-    { name: 'Java', value: 'java', count: 860, checked: false },
-    { name: 'JavaScript', value: 'javascript', count: 752, checked: false },
-    { name: 'Python', value: 'python', count: 720, checked: false },
-    { name: 'PHP', value: 'php', count: 680, checked: false },
-    { name: 'HTML', value: 'html', count: 650, checked: false },
-    { name: 'CSS', value: 'css', count: 620, checked: false },
-  ]);
+  // Initialize filter options from server data
+  onMount(() => {
+    if (filterOptions) {
+      locationOptions = filterOptions.locations.map(opt => ({
+        ...opt,
+        value: opt.slug,
+        checked: false
+      }));
 
-  let industryOptions = $state<FilterOption[]>([
-    { name: 'IT Services', value: 'it-services', count: 5531, checked: false },
-    { name: 'BPO', value: 'bpo', count: 2430, checked: false },
-    { name: 'Advertising', value: 'advertising', count: 1364, checked: false },
-    { name: 'Other', value: 'other', count: 660, checked: false },
-    { name: 'Education', value: 'education', count: 651, checked: false },
-    { name: 'Banking', value: 'banking', count: 580, checked: false },
-    { name: 'Healthcare', value: 'healthcare', count: 520, checked: false },
-    { name: 'E-commerce', value: 'e-commerce', count: 480, checked: false },
-  ]);
+      skillOptions = filterOptions.skills.map(opt => ({
+        ...opt,
+        value: opt.slug,
+        checked: false
+      }));
 
-  let educationOptions = $state<FilterOption[]>([
-    { name: 'Graduate', value: 'graduate', count: 4914, checked: false },
-    { name: '12th pass', value: '12th-pass', count: 3008, checked: false },
-    { name: 'B.Tech', value: 'btech', count: 2532, checked: false },
-    { name: 'MCA', value: 'mca', count: 1124, checked: false },
-    { name: '10th pass', value: '10th-pass', count: 1004, checked: false },
-    { name: 'MBA', value: 'mba', count: 892, checked: false },
-    { name: 'M.Tech', value: 'mtech', count: 756, checked: false },
-  ]);
+      industryOptions = filterOptions.industries.map(opt => ({
+        ...opt,
+        value: opt.slug,
+        checked: false
+      }));
 
-  let jobTypeOptions = $state<FilterOption[]>([
-    { name: 'Full-Time', value: 'full-time', count: 8500, checked: false },
-    { name: 'Internship', value: 'internship', count: 1200, checked: false },
-    { name: 'Walk-in', value: 'walk-in', count: 850, checked: false },
-    { name: 'Fresher', value: 'fresher', count: 3200, checked: false },
-  ]);
+      educationOptions = filterOptions.education.map(opt => ({
+        ...opt,
+        value: opt.slug,
+        checked: false
+      }));
 
-  // Dummy job data (expanded with new fields)
-  let jobs = $state<Job[]>([
-    {
-      id: 1,
-      title: 'Senior Software Engineer',
-      company: 'Tech Solutions Inc.',
-      location: 'chennai',
-      salaryMin: 12,
-      salaryMax: 16,
-      postedDate: '2024-01-15',
-      type: 'full-time',
-      experienceMin: 5,
-      experienceMax: 8,
-      isRemote: false,
-      applicants: 45,
-      saved: false,
-      skills: ['java', 'python'],
-      industry: 'it-services',
-      education: 'btech'
-    },
-    {
-      id: 2,
-      title: 'Frontend Developer',
-      company: 'Web Wizards LLC',
-      location: 'bangalore',
-      salaryMin: 8,
-      salaryMax: 11,
-      postedDate: '2024-01-12',
-      type: 'full-time',
-      experienceMin: 2,
-      experienceMax: 4,
-      isRemote: true,
-      applicants: 78,
-      saved: false,
-      skills: ['javascript', 'html', 'css'],
-      industry: 'it-services',
-      education: 'graduate'
-    },
-    {
-      id: 3,
-      title: 'Product Manager',
-      company: 'Innovate Co.',
-      location: 'mumbai',
-      salaryMin: 13,
-      salaryMax: 18,
-      postedDate: '2024-01-10',
-      type: 'full-time',
-      experienceMin: 5,
-      experienceMax: 10,
-      isRemote: false,
-      applicants: 32,
-      saved: false,
-      skills: ['communication-skills'],
-      industry: 'it-services',
-      education: 'mba'
-    },
-    {
-      id: 4,
-      title: 'UX Designer',
-      company: 'Creative Designs',
-      location: 'delhi',
-      salaryMin: 7,
-      salaryMax: 9.5,
-      postedDate: '2024-01-18',
-      type: 'internship',
-      experienceMin: 1,
-      experienceMax: 3,
-      isRemote: false,
-      applicants: 23,
-      saved: false,
-      skills: ['basic-computer-skills'],
-      industry: 'advertising',
-      education: 'graduate'
-    },
-    {
-      id: 5,
-      title: 'DevOps Engineer',
-      company: 'CloudNet Systems',
-      location: 'hyderabad',
-      salaryMin: 10,
-      salaryMax: 14,
-      postedDate: '2024-01-05',
-      type: 'full-time',
-      experienceMin: 4,
-      experienceMax: 7,
-      isRemote: true,
-      applicants: 56,
-      saved: false,
-      skills: ['python'],
-      industry: 'it-services',
-      education: 'btech'
-    },
-    {
-      id: 6,
-      title: 'Data Analyst',
-      company: 'Analytics Corp',
-      location: 'pune',
-      salaryMin: 6.5,
-      salaryMax: 8.5,
-      postedDate: '2024-01-20',
-      type: 'fresher',
-      experienceMin: 0,
-      experienceMax: 1,
-      isRemote: false,
-      applicants: 67,
-      saved: false,
-      skills: ['basic-computer-knowledge'],
-      industry: 'bpo',
-      education: 'graduate'
-    },
-    {
-      id: 7,
-      title: 'Full Stack Developer',
-      company: 'StartupHub',
-      location: 'bangalore',
-      salaryMin: 9,
-      salaryMax: 12,
-      postedDate: '2024-01-22',
-      type: 'full-time',
-      experienceMin: 3,
-      experienceMax: 5,
-      isRemote: true,
-      applicants: 89,
-      saved: false,
-      skills: ['javascript', 'java', 'html', 'css'],
-      industry: 'it-services',
-      education: 'btech'
-    },
-    {
-      id: 8,
-      title: 'Marketing Specialist',
-      company: 'Growth Co.',
-      location: 'mumbai',
-      salaryMin: 5.5,
-      salaryMax: 7.5,
-      postedDate: '2024-01-14',
-      type: 'full-time',
-      experienceMin: 1,
-      experienceMax: 3,
-      isRemote: false,
-      applicants: 34,
-      saved: false,
-      skills: ['sales', 'communication-skills'],
-      industry: 'advertising',
-      education: 'graduate'
+      jobTypeOptions = filterOptions.job_types.map(opt => ({
+        name: opt.label,
+        value: opt.value,
+        count: opt.count,
+        checked: false
+      }));
     }
-  ]);
+
+    // Parse URL params to set initial filter state
+    const urlParams = $page.url.searchParams;
+    searchTerm = urlParams.get('search') || '';
+
+    // Parse multi-select filters
+    const selectedLocations = urlParams.getAll('location');
+    selectedLocations.forEach(loc => {
+      const option = locationOptions.find(opt => opt.slug === loc);
+      if (option) option.checked = true;
+    });
+
+    const selectedSkills = urlParams.getAll('skills');
+    selectedSkills.forEach(skill => {
+      const option = skillOptions.find(opt => opt.slug === skill);
+      if (option) option.checked = true;
+    });
+
+    const selectedIndustries = urlParams.getAll('industry');
+    selectedIndustries.forEach(ind => {
+      const option = industryOptions.find(opt => opt.slug === ind);
+      if (option) option.checked = true;
+    });
+
+    const selectedEducation = urlParams.getAll('education');
+    selectedEducation.forEach(edu => {
+      const option = educationOptions.find(opt => opt.slug === edu);
+      if (option) option.checked = true;
+    });
+
+    const selectedJobTypes = urlParams.getAll('job_type');
+    selectedJobTypes.forEach(type => {
+      const option = jobTypeOptions.find(opt => opt.value === type);
+      if (option) option.checked = true;
+    });
+
+    // Parse numeric filters
+    const minSal = urlParams.get('min_salary');
+    if (minSal) salaryMin = parseFloat(minSal);
+
+    const maxSal = urlParams.get('max_salary');
+    if (maxSal) salaryMax = parseFloat(maxSal);
+
+    const minExp = urlParams.get('min_experience');
+    if (minExp) experienceMin = parseInt(minExp, 10);
+
+    const maxExp = urlParams.get('max_experience');
+    if (maxExp) experienceMax = parseInt(maxExp, 10);
+
+    // Parse boolean filters
+    const remote = urlParams.get('is_remote');
+    if (remote) isRemote = remote === 'true';
+
+    // Mark as mounted
+    hasMounted = true;
+  });
 
   // Filter toggle handlers
   function toggleLocationFilter(value: string) {
@@ -283,73 +174,110 @@
     if (option) option.checked = !option.checked;
   }
 
-  // Reactive filtered jobs
-  let filteredJobs = $derived<Job[]>(
-    (() => {
-      const searchTermLower = searchTerm.toLowerCase();
-      const locationTermLower = locationSearchTerm.toLowerCase();
+  // Build API params from current filter state
+  function buildApiParams(): JobSearchParams {
+    return {
+      page: currentPage,
+      page_size: 20,
+      search: searchTerm || undefined,
+      location: locationOptions.filter(opt => opt.checked).map(opt => opt.slug),
+      skills: skillOptions.filter(opt => opt.checked).map(opt => opt.slug),
+      industry: industryOptions.filter(opt => opt.checked).map(opt => opt.slug),
+      education: educationOptions.filter(opt => opt.checked).map(opt => opt.slug),
+      job_type: jobTypeOptions.filter(opt => opt.checked).map(opt => opt.value),
+      min_salary: salaryMin || undefined,
+      max_salary: salaryMax || undefined,
+      min_experience: experienceMin > 0 ? experienceMin : undefined,
+      max_experience: experienceMax < 20 ? experienceMax : undefined,
+      is_remote: isRemote || undefined,
+    };
+  }
 
-      const selectedLocations = locationOptions.filter(opt => opt.checked).map(opt => opt.value);
-      const selectedSkills = skillOptions.filter(opt => opt.checked).map(opt => opt.value);
-      const selectedIndustries = industryOptions.filter(opt => opt.checked).map(opt => opt.value);
-      const selectedEducation = educationOptions.filter(opt => opt.checked).map(opt => opt.value);
-      const selectedJobTypes = jobTypeOptions.filter(opt => opt.checked).map(opt => opt.value);
+  // Update URL with current filters
+  function updateURL() {
+    const params = new URLSearchParams();
 
-      return jobs.filter(job => {
-        const searchMatch =
-          searchTermLower === '' ||
-          job.title.toLowerCase().includes(searchTermLower) ||
-          job.company.toLowerCase().includes(searchTermLower);
+    if (searchTerm) params.set('search', searchTerm);
 
-        const locationSearchMatch =
-          locationTermLower === '' ||
-          job.location.toLowerCase().includes(locationTermLower);
+    locationOptions.filter(opt => opt.checked).forEach(opt => params.append('location', opt.slug));
+    skillOptions.filter(opt => opt.checked).forEach(opt => params.append('skills', opt.slug));
+    industryOptions.filter(opt => opt.checked).forEach(opt => params.append('industry', opt.slug));
+    educationOptions.filter(opt => opt.checked).forEach(opt => params.append('education', opt.slug));
+    jobTypeOptions.filter(opt => opt.checked).forEach(opt => params.append('job_type', opt.value));
 
-        const locationMatch =
-          selectedLocations.length === 0 ||
-          selectedLocations.includes(job.location);
+    if (salaryMin !== null) params.set('min_salary', salaryMin.toString());
+    if (salaryMax !== null) params.set('max_salary', salaryMax.toString());
+    if (experienceMin > 0) params.set('min_experience', experienceMin.toString());
+    if (experienceMax < 20) params.set('max_experience', experienceMax.toString());
+    if (isRemote) params.set('is_remote', 'true');
+    if (currentPage > 1) params.set('page', currentPage.toString());
 
-        const skillMatch =
-          selectedSkills.length === 0 ||
-          job.skills.some(skill => selectedSkills.includes(skill));
+    const url = params.toString() ? `/jobs?${params.toString()}` : '/jobs';
+    goto(url, { replaceState: true, noScroll: true, keepFocus: true });
+  }
 
-        const industryMatch =
-          selectedIndustries.length === 0 ||
-          selectedIndustries.includes(job.industry);
+  // Fetch jobs from API
+  async function fetchJobs() {
+    isLoading = true;
+    error = null;
 
-        const educationMatch =
-          selectedEducation.length === 0 ||
-          selectedEducation.includes(job.education);
+    try {
+      const params = buildApiParams();
+      const response = await jobsApi.list(params);
 
-        const jobTypeMatch =
-          selectedJobTypes.length === 0 ||
-          selectedJobTypes.includes(job.type);
+      jobs = response.results;
+      totalJobs = response.count;
+      totalPages = Math.ceil(response.count / 20);
 
-        const salaryMinMatch = salaryMin === null || job.salaryMax >= salaryMin;
-        const salaryMaxMatch = salaryMax === null || job.salaryMin <= salaryMax;
+      // Update URL
+      updateURL();
+    } catch (err) {
+      console.error('Failed to fetch jobs:', err);
+      error = 'Failed to load jobs. Please try again.';
+      toast.error('Failed to load jobs');
+    } finally {
+      isLoading = false;
+    }
+  }
 
-        const experienceMinMatch = job.experienceMax >= experienceMin;
-        const experienceMaxMatch = job.experienceMin <= experienceMax;
+  // Debounced fetch
+  let fetchTimeout: ReturnType<typeof setTimeout>;
+  function debouncedFetch(delay: number = 500) {
+    clearTimeout(fetchTimeout);
+    fetchTimeout = setTimeout(() => {
+      fetchJobs();
+    }, delay);
+  }
 
-        const remoteMatch = !isRemote || job.isRemote;
+  // Watch for filter changes
+  $effect(() => {
+    // React to any filter change - need to track checked states
+    const selectedLocations = locationOptions.filter(opt => opt.checked).map(opt => opt.slug).join(',');
+    const selectedSkills = skillOptions.filter(opt => opt.checked).map(opt => opt.slug).join(',');
+    const selectedIndustries = industryOptions.filter(opt => opt.checked).map(opt => opt.slug).join(',');
+    const selectedEducation = educationOptions.filter(opt => opt.checked).map(opt => opt.slug).join(',');
+    const selectedJobTypes = jobTypeOptions.filter(opt => opt.checked).map(opt => opt.value).join(',');
 
-        return (
-          searchMatch &&
-          locationSearchMatch &&
-          locationMatch &&
-          skillMatch &&
-          industryMatch &&
-          educationMatch &&
-          jobTypeMatch &&
-          salaryMinMatch &&
-          salaryMaxMatch &&
-          experienceMinMatch &&
-          experienceMaxMatch &&
-          remoteMatch
-        );
-      });
-    })()
-  );
+    const _ = [
+      searchTerm,
+      selectedLocations,
+      selectedSkills,
+      selectedIndustries,
+      selectedEducation,
+      selectedJobTypes,
+      salaryMin,
+      salaryMax,
+      experienceMin,
+      experienceMax,
+      isRemote,
+      currentPage,
+    ];
+
+    // Don't fetch on initial mount (we have server data)
+    if (hasMounted) {
+      debouncedFetch();
+    }
+  });
 
   const hasActiveFilters = $derived(
     Boolean(
@@ -381,6 +309,18 @@
     (isRemote ? 1 : 0)
   );
 
+  // Filter jobs locally by location search term
+  let filteredJobs = $derived<Job[]>(
+    (() => {
+      if (!locationSearchTerm) return jobs;
+
+      const term = locationSearchTerm.toLowerCase();
+      return jobs.filter(job =>
+        job.location_display.toLowerCase().includes(term)
+      );
+    })()
+  );
+
   // Functions
   function toggleFiltersMobile(): void {
     showFiltersMobile = !showFiltersMobile;
@@ -399,31 +339,51 @@
     experienceMin = 0;
     experienceMax = 20;
     isRemote = false;
+    currentPage = 1;
     showFiltersMobile = false;
   }
 
-  function saveJob(jobId: number): void {
+  async function saveJob(jobId: number): Promise<void> {
     const jobIndex = jobs.findIndex(job => job.id === jobId);
-    if (jobIndex !== -1) {
-      jobs[jobIndex].saved = !jobs[jobIndex].saved;
-      jobs = [...jobs];
+    if (jobIndex === -1) return;
+
+    const job = jobs[jobIndex];
+
+    try {
+      if (job.is_saved) {
+        await jobsApi.unsave(jobId);
+        job.is_saved = false;
+        toast.success('Job removed from saved');
+      } else {
+        await jobsApi.save(jobId);
+        job.is_saved = true;
+        toast.success('Job saved!');
+      }
+    } catch (err) {
+      console.error('Failed to save job:', err);
+      toast.error('Please login to save jobs');
     }
   }
 
   function viewJobDetails(jobId: number): void {
-    console.log(`Viewing job details for job ${jobId}`);
+    goto(`/jobs/${jobId}`);
   }
 
-  function formatSalary(min: number | null, max: number | null): string {
-    if (min !== null && max !== null) return `₹${min} - ₹${max} LPA`;
-    if (min !== null) return `From ₹${min} LPA`;
-    if (max !== null) return `Up to ₹${max} LPA`;
-    return 'Competitive';
+  function goToPage(page: number): void {
+    currentPage = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function formatLocation(location: string): string {
-    const option = locationOptions.find(opt => opt.value === location);
-    return option ? option.name : location;
+  function nextPage(): void {
+    if (currentPage < totalPages) {
+      goToPage(currentPage + 1);
+    }
+  }
+
+  function prevPage(): void {
+    if (currentPage > 1) {
+      goToPage(currentPage - 1);
+    }
   }
 
   function timeSince(dateString: string): string {
@@ -437,11 +397,32 @@
     if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
     return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
   }
+
+  // Generate array of page numbers to display
+  function getPageNumbers(): number[] {
+    const maxPagesToShow = 5;
+    const pages: number[] = [];
+
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const startPage = Math.max(1, currentPage - 2);
+      const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  }
 </script>
 
 <svelte:head>
-  <title>Job Search - HirePulse.in</title>
-  <meta name="description" content="Find your dream job with HirePulse.in's advanced job search and filtering capabilities" />
+  <title>Job Search - PeelJobs</title>
+  <meta name="description" content="Find your dream job with PeelJobs advanced job search and filtering capabilities" />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 text-gray-900">
@@ -461,7 +442,7 @@
     <!-- Search Section -->
     <section class="mb-8">
       <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Keywords Search -->
           <div class="relative">
             <label for="search-keywords" class="block text-sm font-medium text-gray-700 mb-2">
@@ -489,29 +470,11 @@
                 id="search-location"
                 type="text"
                 bind:value={locationSearchTerm}
-                placeholder="City, state, or remote"
+                placeholder="Filter displayed results by location..."
                 class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 transition-all"
               />
               <MapPin class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
-          </div>
-
-          <!-- Job Type -->
-          <div>
-            <label for="job-type" class="block text-sm font-medium text-gray-700 mb-2">
-              Quick Filter
-            </label>
-            <select
-              id="job-type"
-              bind:value={jobTypeFilter}
-              class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 transition-all"
-            >
-              <option value="">All Types</option>
-              <option value="full-time">Full-Time</option>
-              <option value="internship">Internship</option>
-              <option value="walk-in">Walk-in</option>
-              <option value="fresher">Fresher</option>
-            </select>
           </div>
         </div>
       </div>
@@ -530,7 +493,7 @@
         {/if}
       </button>
       <div class="text-sm text-gray-600">
-        {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''} found
+        {totalJobs.toLocaleString()} job{totalJobs !== 1 ? 's' : ''} found
       </div>
     </div>
 
@@ -556,66 +519,77 @@
 
           <div class="space-y-4">
             <!-- Location Filter -->
-            <FilterSection
-              title="Location"
-              icon={MapPin}
-              options={locationOptions}
-              showMoreButton={true}
-              onToggle={toggleLocationFilter}
-              onShowMore={() => showLocationModal = true}
-            />
+            {#if locationOptions.length > 0}
+              <FilterSection
+                title="Location"
+                icon={MapPin}
+                options={locationOptions}
+                showMoreButton={locationOptions.length > 5}
+                onToggle={toggleLocationFilter}
+                onShowMore={() => showLocationModal = true}
+              />
+            {/if}
 
             <!-- Skills Filter -->
-            <FilterSection
-              title="Skills"
-              icon={Briefcase}
-              options={skillOptions}
-              showMoreButton={true}
-              onToggle={toggleSkillFilter}
-              onShowMore={() => showSkillsModal = true}
-            />
+            {#if skillOptions.length > 0}
+              <FilterSection
+                title="Skills"
+                icon={Briefcase}
+                options={skillOptions}
+                showMoreButton={skillOptions.length > 5}
+                onToggle={toggleSkillFilter}
+                onShowMore={() => showSkillsModal = true}
+              />
+            {/if}
 
             <!-- Industry Filter -->
-            <FilterSection
-              title="Industry"
-              icon={Factory}
-              options={industryOptions}
-              showMoreButton={true}
-              onToggle={toggleIndustryFilter}
-              onShowMore={() => showIndustryModal = true}
-            />
+            {#if industryOptions.length > 0}
+              <FilterSection
+                title="Industry"
+                icon={Factory}
+                options={industryOptions}
+                showMoreButton={industryOptions.length > 5}
+                onToggle={toggleIndustryFilter}
+                onShowMore={() => showIndustryModal = true}
+              />
+            {/if}
 
             <!-- Education Filter -->
-            <FilterSection
-              title="Education"
-              icon={GraduationCap}
-              options={educationOptions}
-              showMoreButton={true}
-              onToggle={toggleEducationFilter}
-              onShowMore={() => showEducationModal = true}
-            />
+            {#if educationOptions.length > 0}
+              <FilterSection
+                title="Education"
+                icon={GraduationCap}
+                options={educationOptions}
+                showMoreButton={educationOptions.length > 5}
+                onToggle={toggleEducationFilter}
+                onShowMore={() => showEducationModal = true}
+              />
+            {/if}
 
             <!-- Job Type Filter -->
-            <div class="border border-gray-200 rounded-lg">
-              <div class="p-4 bg-gray-50 border-b border-gray-200">
-                <h3 class="font-medium text-gray-800">Job Type</h3>
-              </div>
-              <div class="p-4 bg-white">
-                <div class="space-y-2">
-                  {#each jobTypeOptions as option (option.value)}
-                    <label class="flex items-center space-x-2 text-sm cursor-pointer min-h-[44px] hover:bg-gray-50 -mx-2 px-2 rounded transition-colors">
-                      <input
-                        type="checkbox"
-                        checked={option.checked}
-                        onchange={() => toggleJobTypeFilter(option.value)}
-                        class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
-                      />
-                      <span class="text-gray-700">{option.name}</span>
-                    </label>
-                  {/each}
+            {#if jobTypeOptions.length > 0}
+              <div class="border border-gray-200 rounded-lg">
+                <div class="p-4 bg-gray-50 border-b border-gray-200">
+                  <h3 class="font-medium text-gray-800">Job Type</h3>
+                </div>
+                <div class="p-4 bg-white">
+                  <div class="space-y-2">
+                    {#each jobTypeOptions as option (option.value)}
+                      <label class="flex items-center space-x-2 text-sm cursor-pointer min-h-[44px] hover:bg-gray-50 -mx-2 px-2 rounded transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={option.checked}
+                          onchange={() => toggleJobTypeFilter(option.value)}
+                          class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
+                        />
+                        <span class="text-gray-700">{option.name}</span>
+                        <span class="text-gray-500 text-xs ml-auto">({option.count})</span>
+                      </label>
+                    {/each}
+                  </div>
                 </div>
               </div>
-            </div>
+            {/if}
 
             <!-- Salary Range -->
             <div class="border border-gray-200 rounded-lg">
@@ -725,18 +699,33 @@
             Job Opportunities
           </h2>
           <div class="text-sm text-gray-600">
-            {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''} found
+            {totalJobs.toLocaleString()} job{totalJobs !== 1 ? 's' : ''} found
           </div>
         </div>
 
-        {#if filteredJobs.length > 0}
+        {#if isLoading}
+          <div class="text-center py-16">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p class="mt-4 text-gray-600">Loading jobs...</p>
+          </div>
+        {:else if error}
+          <div class="text-center py-16">
+            <p class="text-red-600 mb-4">{error}</p>
+            <button
+              onclick={() => fetchJobs()}
+              class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        {:else if filteredJobs.length > 0}
           <div class="space-y-4">
             {#each filteredJobs as job (job.id)}
               <button
                 type="button"
                 class="w-full text-left bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-blue-100"
                 onclick={() => viewJobDetails(job.id)}
-                aria-label="View details for {job.title} at {job.company}"
+                aria-label="View details for {job.title} at {job.company_name}"
               >
                 <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
                   <div class="flex-1">
@@ -758,47 +747,44 @@
                             saveJob(job.id);
                           }
                         }}
-                        class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-all {job.saved ? 'text-blue-600 bg-gray-100' : ''}"
+                        class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-all {job.is_saved ? 'text-blue-600 bg-gray-100' : ''}"
                         aria-label="Save {job.title}"
                       >
-                        <Bookmark size={20} class={job.saved ? 'fill-current' : ''} />
+                        <Bookmark size={20} class={job.is_saved ? 'fill-current' : ''} />
                       </span>
                     </div>
 
                     <div class="space-y-2 mb-4">
                       <div class="flex items-center text-gray-700 text-sm">
                         <Building size={16} class="mr-2 text-blue-500" />
-                        {job.company}
+                        {job.company_name}
                       </div>
                       <div class="flex items-center text-gray-700 text-sm">
                         <MapPin size={16} class="mr-2 text-blue-500" />
-                        {formatLocation(job.location)}
-                        {#if job.isRemote}
-                          <span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Remote</span>
-                        {/if}
+                        {job.location_display}
                       </div>
                       <div class="flex items-center text-gray-700 text-sm">
                         <DollarSign size={16} class="mr-2 text-green-600" />
-                        {formatSalary(job.salaryMin, job.salaryMax)}
+                        {job.salary_display}
                       </div>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-4 text-xs text-gray-600">
                       <div class="flex items-center gap-1">
                         <Briefcase size={14} />
-                        {job.type}
+                        {job.job_type}
                       </div>
                       <div class="flex items-center gap-1">
                         <Users size={14} />
-                        {job.experienceMin}-{job.experienceMax} years
+                        {job.experience_display}
                       </div>
                       <div class="flex items-center gap-1">
                         <Clock size={14} />
-                        {timeSince(job.postedDate)}
+                        {job.time_ago}
                       </div>
                       <div class="flex items-center gap-1">
                         <Users size={14} />
-                        {job.applicants} applicants
+                        {job.applicants_count} applicants
                       </div>
                     </div>
                   </div>
@@ -808,21 +794,36 @@
           </div>
 
           <!-- Pagination -->
-          <div class="mt-12 flex justify-center">
-            <div class="flex items-center gap-2">
-              <button class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors disabled:opacity-50" disabled>
-                Previous
-              </button>
-              <div class="flex gap-1">
-                <button class="px-3 py-2 bg-blue-600 text-white rounded-lg">1</button>
-                <button class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">2</button>
-                <button class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">3</button>
+          {#if totalPages > 1}
+            <div class="mt-12 flex justify-center">
+              <div class="flex items-center gap-2">
+                <button
+                  onclick={prevPage}
+                  disabled={currentPage === 1}
+                  class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <div class="flex gap-1">
+                  {#each getPageNumbers() as pageNum}
+                    <button
+                      onclick={() => goToPage(pageNum)}
+                      class="{pageNum === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'} px-3 py-2 rounded-lg transition-colors"
+                    >
+                      {pageNum}
+                    </button>
+                  {/each}
+                </div>
+                <button
+                  onclick={nextPage}
+                  disabled={currentPage === totalPages}
+                  class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
               </div>
-              <button class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
-                Next
-              </button>
             </div>
-          </div>
+          {/if}
         {:else}
           <div class="text-center py-16">
             <Search size={64} class="mx-auto text-gray-400 mb-4" />
