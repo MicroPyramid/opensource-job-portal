@@ -116,8 +116,8 @@ function createAuthStore() {
 				isLoading: false
 			});
 
-			// Redirect to login
-			goto('/login');
+			// Redirect to home page
+			goto('/');
 		},
 
 		/**
