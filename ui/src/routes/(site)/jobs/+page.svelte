@@ -5,11 +5,19 @@
   import { Search, Filter, SlidersHorizontal, X, MapPin, Briefcase, DollarSign, Bookmark, Building, Clock, Users, GraduationCap, Factory } from '@lucide/svelte';
   import FilterSection from '$lib/components/FilterSection.svelte';
   import FilterModal from '$lib/components/FilterModal.svelte';
+  import FilterChips from '$lib/components/FilterChips.svelte';
+  import CollapsibleFilterSection from '$lib/components/CollapsibleFilterSection.svelte';
   import { toast } from '$lib/stores/toast';
   import { authStore } from '$lib/stores/auth';
   import { jobsApi } from '$lib/api/jobs';
-  import type { Job, FilterOption, JobFilterOptions, JobSearchParams } from '$lib/types/jobs';
+  import type { Job, FilterOption as BaseFilterOption, JobFilterOptions, JobSearchParams } from '$lib/types/jobs';
   import type { PageData } from './$types';
+
+  // Extended filter option with UI state
+  interface FilterOption extends BaseFilterOption {
+    value: string;
+    checked: boolean;
+  }
 
   interface Props {
     data: PageData;
@@ -345,12 +353,61 @@
     industryOptions.filter(opt => opt.checked).length +
     educationOptions.filter(opt => opt.checked).length +
     jobTypeOptions.filter(opt => opt.checked).length +
-    (salaryMin !== null ? 1 : 0) +
-    (salaryMax !== null ? 1 : 0) +
-    (experienceMin > 0 ? 1 : 0) +
-    (experienceMax < 20 ? 1 : 0) +
+    (salaryMin !== null || salaryMax !== null ? 1 : 0) +
+    (experienceMin > 0 || experienceMax < 20 ? 1 : 0) +
     (isRemote ? 1 : 0)
   );
+
+  // Generate filter chips for active filters
+  const filterChips = $derived((() => {
+    const chips: Array<{ label: string; value: string; type: 'location' | 'skill' | 'industry' | 'education' | 'job_type' | 'salary' | 'experience' | 'remote' }> = [];
+
+    // Location chips
+    locationOptions.filter(opt => opt.checked).forEach(opt => {
+      chips.push({ label: opt.name, value: opt.value, type: 'location' });
+    });
+
+    // Skill chips
+    skillOptions.filter(opt => opt.checked).forEach(opt => {
+      chips.push({ label: opt.name, value: opt.value, type: 'skill' });
+    });
+
+    // Industry chips
+    industryOptions.filter(opt => opt.checked).forEach(opt => {
+      chips.push({ label: opt.name, value: opt.value, type: 'industry' });
+    });
+
+    // Education chips
+    educationOptions.filter(opt => opt.checked).forEach(opt => {
+      chips.push({ label: opt.name, value: opt.value, type: 'education' });
+    });
+
+    // Job type chips
+    jobTypeOptions.filter(opt => opt.checked).forEach(opt => {
+      chips.push({ label: opt.name, value: opt.value, type: 'job_type' });
+    });
+
+    // Salary chip
+    if (salaryMin !== null || salaryMax !== null) {
+      const min = salaryMin !== null ? `${salaryMin}L` : '0';
+      const max = salaryMax !== null ? `${salaryMax}L` : '∞';
+      chips.push({ label: `Salary: ${min} - ${max}`, value: 'salary', type: 'salary' });
+    }
+
+    // Experience chip
+    if (experienceMin > 0 || experienceMax < 20) {
+      const min = experienceMin > 0 ? `${experienceMin}` : '0';
+      const max = experienceMax < 20 ? `${experienceMax}` : '20+';
+      chips.push({ label: `Experience: ${min} - ${max} years`, value: 'experience', type: 'experience' });
+    }
+
+    // Remote chip
+    if (isRemote) {
+      chips.push({ label: 'Remote Only', value: 'remote', type: 'remote' });
+    }
+
+    return chips;
+  })());
 
   // Filter jobs locally by location search term
   let filteredJobs = $derived<Job[]>(
@@ -384,6 +441,37 @@
     isRemote = false;
     currentPage = 1;
     showFiltersMobile = false;
+  }
+
+  function removeFilterChip(chip: { type: string; value: string }): void {
+    switch (chip.type) {
+      case 'location':
+        toggleLocationFilter(chip.value);
+        break;
+      case 'skill':
+        toggleSkillFilter(chip.value);
+        break;
+      case 'industry':
+        toggleIndustryFilter(chip.value);
+        break;
+      case 'education':
+        toggleEducationFilter(chip.value);
+        break;
+      case 'job_type':
+        toggleJobTypeFilter(chip.value);
+        break;
+      case 'salary':
+        salaryMin = null;
+        salaryMax = null;
+        break;
+      case 'experience':
+        experienceMin = 0;
+        experienceMax = 20;
+        break;
+      case 'remote':
+        isRemote = false;
+        break;
+    }
   }
 
   async function saveJob(jobId: number): Promise<void> {
@@ -541,24 +629,23 @@
     <div class="flex flex-col md:flex-row gap-8">
       <!-- Filter Sidebar -->
       <aside class={`${showFiltersMobile ? 'block' : 'hidden'} md:block md:w-80 md:sticky md:top-24 self-start`}>
-        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-              <Filter size={24} class="text-blue-600" />
-              Filters
+        <div class="bg-white border border-gray-200 rounded-lg">
+          <div class="flex justify-between items-center px-4 py-4 border-b border-gray-200">
+            <h2 class="text-base font-semibold text-gray-900 flex items-center gap-2">
+              <Filter size={18} class="text-gray-600" />
+              All Filters
             </h2>
             {#if hasActiveFilters}
               <button
                 onclick={resetFilters}
-                class="text-sm text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1"
+                class="text-sm text-blue-600 hover:text-blue-700 transition-colors"
               >
-                <X size={16} />
-                Clear All
+                Clear ({activeFilterCount})
               </button>
             {/if}
           </div>
 
-          <div class="space-y-4">
+          <div>
             <!-- Location Filter -->
             {#if locationOptions.length > 0}
               <FilterSection
@@ -609,127 +696,114 @@
 
             <!-- Job Type Filter -->
             {#if jobTypeOptions.length > 0}
-              <div class="border border-gray-200 rounded-lg">
-                <div class="p-4 bg-gray-50 border-b border-gray-200">
-                  <h3 class="font-medium text-gray-800">Job Type</h3>
+              <CollapsibleFilterSection
+                title="Job Type"
+                hasActiveFilter={jobTypeOptions.some(opt => opt.checked)}
+              >
+                <div class="space-y-2">
+                  {#each jobTypeOptions as option (option.value)}
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={option.checked}
+                        onchange={() => toggleJobTypeFilter(option.value)}
+                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                      />
+                      <span class="text-gray-700 flex-1 text-sm">{option.name}</span>
+                      <span class="text-gray-500 text-xs">({option.count})</span>
+                    </label>
+                  {/each}
                 </div>
-                <div class="p-4 bg-white">
-                  <div class="space-y-2">
-                    {#each jobTypeOptions as option (option.value)}
-                      <label class="flex items-center space-x-2 text-sm cursor-pointer min-h-[44px] hover:bg-gray-50 -mx-2 px-2 rounded transition-colors">
-                        <input
-                          type="checkbox"
-                          checked={option.checked}
-                          onchange={() => toggleJobTypeFilter(option.value)}
-                          class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
-                        />
-                        <span class="text-gray-700">{option.name}</span>
-                        <span class="text-gray-500 text-xs ml-auto">({option.count})</span>
-                      </label>
-                    {/each}
-                  </div>
-                </div>
-              </div>
+              </CollapsibleFilterSection>
             {/if}
 
             <!-- Salary Range -->
-            <div class="border border-gray-200 rounded-lg">
-              <div class="p-4 bg-gray-50 border-b border-gray-200">
-                <h3 class="font-medium text-gray-800">Salary (LPA)</h3>
-              </div>
-              <div class="p-4 bg-white">
-                <div class="grid grid-cols-2 gap-3">
-                  <div>
-                    <label for="salary-min" class="sr-only">Minimum salary</label>
-                    <input
-                      id="salary-min"
-                      type="number"
-                      bind:value={salaryMin}
-                      placeholder="Min"
-                      class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 text-sm transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label for="salary-max" class="sr-only">Maximum salary</label>
-                    <input
-                      id="salary-max"
-                      type="number"
-                      bind:value={salaryMax}
-                      placeholder="Max"
-                      class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 text-sm transition-all"
-                    />
-                  </div>
+            <CollapsibleFilterSection
+              title="Salary (LPA)"
+              hasActiveFilter={salaryMin !== null || salaryMax !== null}
+            >
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="salary-min" class="block text-xs text-gray-600 mb-1 font-medium">Min</label>
+                  <input
+                    id="salary-min"
+                    type="number"
+                    bind:value={salaryMin}
+                    placeholder="0"
+                    class="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 text-sm transition-all"
+                  />
+                </div>
+                <div>
+                  <label for="salary-max" class="block text-xs text-gray-600 mb-1 font-medium">Max</label>
+                  <input
+                    id="salary-max"
+                    type="number"
+                    bind:value={salaryMax}
+                    placeholder="∞"
+                    class="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 text-sm transition-all"
+                  />
                 </div>
               </div>
-            </div>
+            </CollapsibleFilterSection>
 
             <!-- Experience Range Slider -->
-            <div class="border border-gray-200 rounded-lg">
-              <div class="p-4 bg-gray-50 border-b border-gray-200">
-                <h3 class="font-medium text-gray-800">Experience</h3>
-              </div>
-              <div class="p-4 bg-white">
-                <div class="space-y-4">
-                  <div class="flex justify-between text-sm text-gray-600">
-                    <span>Min: {experienceMin} years</span>
-                    <span>Max: {experienceMax} years</span>
-                  </div>
+            <CollapsibleFilterSection
+              title="Experience"
+              hasActiveFilter={experienceMin > 0 || experienceMax < 20}
+            >
+              <div class="space-y-3">
+                <div class="flex justify-between text-xs text-gray-700 font-semibold">
+                  <span>{experienceMin} {experienceMin === 1 ? 'yr' : 'yrs'}</span>
+                  <span>{experienceMax === 20 ? '20+' : experienceMax} {experienceMax === 1 ? 'yr' : 'yrs'}</span>
+                </div>
 
-                  <div class="space-y-3">
-                    <div>
-                      <label for="min-experience" class="block text-xs text-gray-500 mb-1">Min Experience</label>
-                      <input
-                        id="min-experience"
-                        type="range"
-                        min="0"
-                        max="20"
-                        bind:value={experienceMin}
-                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                      />
-                    </div>
-                    <div>
-                      <label for="max-experience" class="block text-xs text-gray-500 mb-1">Max Experience</label>
-                      <input
-                        id="max-experience"
-                        type="range"
-                        min="0"
-                        max="20"
-                        bind:value={experienceMax}
-                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                      />
-                    </div>
+                <div class="space-y-2">
+                  <div>
+                    <label for="min-experience" class="block text-xs text-gray-500 mb-1">Min</label>
+                    <input
+                      id="min-experience"
+                      type="range"
+                      min="0"
+                      max="20"
+                      bind:value={experienceMin}
+                      class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+                    />
                   </div>
-
-                  <div class="flex justify-between text-xs text-gray-400">
-                    <span>0 years</span>
-                    <span>20+ years</span>
+                  <div>
+                    <label for="max-experience" class="block text-xs text-gray-500 mb-1">Max</label>
+                    <input
+                      id="max-experience"
+                      type="range"
+                      min="0"
+                      max="20"
+                      bind:value={experienceMax}
+                      class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+                    />
                   </div>
                 </div>
+
+                <div class="flex justify-between text-xs text-gray-400">
+                  <span>Fresher</span>
+                  <span>20+ yrs</span>
+                </div>
               </div>
-            </div>
+            </CollapsibleFilterSection>
 
             <!-- Remote Toggle -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <label class="flex items-center gap-3 text-sm font-medium text-gray-700 cursor-pointer">
+            <CollapsibleFilterSection
+              title="Work Mode"
+              hasActiveFilter={isRemote}
+            >
+              <label class="flex items-center gap-2 text-sm cursor-pointer py-1.5 hover:bg-gray-50 -mx-1 px-1 rounded transition-colors">
                 <input
                   type="checkbox"
                   bind:checked={isRemote}
-                  class="w-4 h-4 rounded border-gray-300 bg-gray-50 text-blue-600 focus:ring-blue-500 focus:ring-2"
+                  class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-1 cursor-pointer"
                 />
-                Remote Work Only
+                <span class="text-gray-700 text-sm leading-tight">Remote Work Only</span>
               </label>
-            </div>
+            </CollapsibleFilterSection>
           </div>
-
-          {#if hasActiveFilters}
-            <button
-              onclick={resetFilters}
-              class="mt-6 w-full flex items-center justify-center gap-2 px-4 py-2 border border-blue-500 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-            >
-              <X size={18} />
-              Clear All Filters
-            </button>
-          {/if}
         </div>
       </aside>
 
@@ -743,6 +817,13 @@
             {totalJobs.toLocaleString()} job{totalJobs !== 1 ? 's' : ''} found
           </div>
         </div>
+
+        <!-- Active Filter Chips -->
+        <FilterChips
+          chips={filterChips}
+          onRemove={removeFilterChip}
+          onClearAll={resetFilters}
+        />
 
         {#if error}
           <div class="text-center py-16">
