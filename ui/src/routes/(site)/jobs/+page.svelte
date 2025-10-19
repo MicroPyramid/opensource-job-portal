@@ -38,8 +38,11 @@
     jobs = data.jobs || [];
   });
 
-  // Search and filter state
-  let searchTerm = $state('');
+  // Initialize filter state from URL params (SSR-compatible)
+  const initialParams = data.initialParams || {};
+
+  // Search and filter state - initialized from URL
+  let searchTerm = $state(initialParams.search || '');
   let showFiltersMobile = $state(false);
 
   // Modal states
@@ -48,70 +51,79 @@
   let showIndustryModal = $state(false);
   let showEducationModal = $state(false);
 
-  // Salary filter (INR in Lakhs per Annum)
-  let salaryMin = $state<number | null>(null);
-  let salaryMax = $state<number | null>(null);
+  // Salary filter (INR in Lakhs per Annum) - initialized from URL
+  let salaryMin = $state<number | null>(initialParams.min_salary ?? null);
+  let salaryMax = $state<number | null>(initialParams.max_salary ?? null);
 
-  // Experience range filter (in years)
-  let experienceMin = $state(0);
-  let experienceMax = $state(20);
+  // Experience range filter (in years) - initialized from URL
+  let experienceMin = $state(initialParams.min_experience ?? 0);
+  let experienceMax = $state(initialParams.max_experience ?? 20);
 
-  // Remote filter
-  let isRemote = $state(false);
+  // Remote filter - initialized from URL
+  let isRemote = $state(initialParams.is_remote ?? false);
 
   // Track if we've mounted (to prevent navigation on initial SSR)
   let hasMounted = $state(false);
   // Track if we're syncing from URL (to prevent triggering navigation)
   let isSyncingFromUrl = $state(false);
 
-  // Filter options with job counts
-  let locationOptions = $state<FilterOption[]>([]);
-  let skillOptions = $state<FilterOption[]>([]);
-  let industryOptions = $state<FilterOption[]>([]);
-  let educationOptions = $state<FilterOption[]>([]);
-  let jobTypeOptions = $state<{ name: string; value: string; count: number; checked: boolean }[]>([]);
+  // Initialize filter options from server data immediately (SSR-compatible)
+  // This runs during SSR and on the client
+  // Check initial URL params to pre-select filters
+  const selectedLocations = initialParams.location || [];
+  const selectedSkills = initialParams.skills || [];
+  const selectedIndustries = initialParams.industry || [];
+  const selectedEducation = initialParams.education || [];
+  const selectedJobTypes = initialParams.job_type || [];
+
+  let locationOptions = $state<FilterOption[]>(
+    filterOptions?.locations.map(opt => ({
+      ...opt,
+      value: opt.slug,
+      checked: selectedLocations.includes(opt.slug)
+    })) || []
+  );
+
+  let skillOptions = $state<FilterOption[]>(
+    filterOptions?.skills.map(opt => ({
+      ...opt,
+      value: opt.slug,
+      checked: selectedSkills.includes(opt.slug)
+    })) || []
+  );
+
+  let industryOptions = $state<FilterOption[]>(
+    filterOptions?.industries.map(opt => ({
+      ...opt,
+      value: opt.slug,
+      checked: selectedIndustries.includes(opt.slug)
+    })) || []
+  );
+
+  let educationOptions = $state<FilterOption[]>(
+    filterOptions?.education.map(opt => ({
+      ...opt,
+      value: opt.slug,
+      checked: selectedEducation.includes(opt.slug)
+    })) || []
+  );
+
+  let jobTypeOptions = $state<{ name: string; value: string; count: number; checked: boolean }[]>(
+    filterOptions?.job_types.map(opt => ({
+      name: opt.label,
+      value: opt.value,
+      count: opt.count,
+      checked: selectedJobTypes.includes(opt.value)
+    })) || []
+  );
 
   // Sync currentPage when data changes
   $effect(() => {
     currentPage = data.currentPage || 1;
   });
 
-  // Initialize filter options from server data
+  // Mark as mounted when component is mounted on client
   onMount(() => {
-    if (filterOptions) {
-      locationOptions = filterOptions.locations.map(opt => ({
-        ...opt,
-        value: opt.slug,
-        checked: false
-      }));
-
-      skillOptions = filterOptions.skills.map(opt => ({
-        ...opt,
-        value: opt.slug,
-        checked: false
-      }));
-
-      industryOptions = filterOptions.industries.map(opt => ({
-        ...opt,
-        value: opt.slug,
-        checked: false
-      }));
-
-      educationOptions = filterOptions.education.map(opt => ({
-        ...opt,
-        value: opt.slug,
-        checked: false
-      }));
-
-      jobTypeOptions = filterOptions.job_types.map(opt => ({
-        name: opt.label,
-        value: opt.value,
-        count: opt.count,
-        checked: false
-      }));
-    }
-
-    // Mark as mounted
     hasMounted = true;
   });
 
@@ -540,17 +552,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 text-gray-900">
-  <!-- Header -->
-  <header class="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 py-6">
-      <div class="text-center">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
-          Find Your Dream Job
-        </h1>
-        <p class="text-gray-600 mt-2">Discover opportunities that match your skills and ambitions</p>
-      </div>
-    </div>
-  </header>
 
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Mobile Filter Toggle -->
