@@ -86,3 +86,46 @@ class GoogleUrlRequestSerializer(serializers.Serializer):
     redirect_uri = serializers.URLField(
         required=True, help_text="Frontend callback URL"
     )
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """Serializer for password change"""
+
+    old_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        help_text="Current password"
+    )
+    new_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        min_length=8,
+        help_text="New password (minimum 8 characters)"
+    )
+    confirm_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        help_text="Confirm new password"
+    )
+
+    def validate_old_password(self, value):
+        """Validate that the old password is correct"""
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Current password is incorrect")
+        return value
+
+    def validate(self, data):
+        """Validate that new passwords match"""
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({
+                'confirm_password': "New passwords do not match"
+            })
+
+        # Check that new password is different from old
+        if data['old_password'] == data['new_password']:
+            raise serializers.ValidationError({
+                'new_password': "New password must be different from current password"
+            })
+
+        return data

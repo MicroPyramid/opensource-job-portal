@@ -18,6 +18,7 @@ from .serializers import (
     TokenResponseSerializer,
     UserSerializer,
     GoogleUrlRequestSerializer,
+    ChangePasswordSerializer,
 )
 from .utils import create_or_update_google_user, get_tokens_for_user
 
@@ -412,3 +413,77 @@ def logout(request):
             {"error": "Invalid token", "detail": str(e)},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Change Password",
+    description="Change password for authenticated Job Seeker. Requires current password verification.",
+    request=ChangePasswordSerializer,
+    responses={
+        200: {
+            "type": "object",
+            "properties": {"message": {"type": "string"}},
+        },
+        400: {
+            "type": "object",
+            "properties": {"error": {"type": "object"}},
+        },
+    },
+)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    """
+    Change password for authenticated Job Seeker
+
+    **Headers:**
+    ```
+    Authorization: Bearer <access_token>
+    ```
+
+    **Request Body:**
+    ```json
+    {
+        "old_password": "current_password",
+        "new_password": "new_password_here",
+        "confirm_password": "new_password_here"
+    }
+    ```
+
+    **Response (Success):**
+    ```json
+    {
+        "message": "Password changed successfully"
+    }
+    ```
+
+    **Response (Error):**
+    ```json
+    {
+        "error": {
+            "old_password": ["Current password is incorrect"]
+        }
+    }
+    ```
+    """
+    serializer = ChangePasswordSerializer(
+        data=request.data,
+        context={'request': request}
+    )
+
+    if serializer.is_valid():
+        # Set new password
+        user = request.user
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response(
+            {"message": "Password changed successfully"},
+            status=status.HTTP_200_OK
+        )
+
+    return Response(
+        {"error": serializer.errors},
+        status=status.HTTP_400_BAD_REQUEST
+    )

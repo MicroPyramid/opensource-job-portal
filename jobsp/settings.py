@@ -138,8 +138,11 @@ INSTALLED_APPS = (
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
+    "rest_framework_simplejwt.token_blacklist",
     "dj_rest_auth",
     "django_ses",
+    "drf_spectacular",  # API documentation
+    "api",  # New API app for job seekers
 )
 
 MIDDLEWARE = [
@@ -156,12 +159,18 @@ MIDDLEWARE = [
 ]
 
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:4200", "http://127.0.0.1:4200"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+    "http://127.0.0.1:4200",
+    "http://localhost:3000",  # SvelteKit default
+    "http://localhost:5173",  # Vite default
+]
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.peeljobs\.com$",
 ]
 CORS_ALLOW_METHODS = list(default_methods)
 CORS_ALLOW_HEADERS = list(default_headers)
+CORS_ALLOW_CREDENTIALS = True
 
 
 AUTH_USER_MODEL = "peeldb.User"
@@ -403,12 +412,88 @@ DAILY_REPORT_USERS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
-        # 'rest_framework.authentication.SessionAuthentication',
-    ]
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.TokenAuthentication",  # Keep for backward compatibility
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# JWT Configuration
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
 }
 
 REST_USE_JWT = True
+
+# drf-spectacular Configuration
+SPECTACULAR_SETTINGS = {
+    "TITLE": "PeelJobs API",
+    "DESCRIPTION": "REST API for PeelJobs Job Seeker Platform - Google OAuth Authentication and Job Management",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "CONTACT": {
+        "name": "PeelJobs Support",
+        "email": "support@peeljobs.com",
+    },
+    "LICENSE": {
+        "name": "Proprietary",
+    },
+    "SERVERS": [
+        {"url": "http://localhost:8000", "description": "Development server"},
+        {"url": "https://peeljobs.com", "description": "Production server"},
+    ],
+    "TAGS": [
+        {"name": "Authentication", "description": "Google OAuth 2.0 and JWT token management"},
+        {"name": "User Profile", "description": "Job Seeker profile management"},
+        {"name": "Jobs", "description": "Job search and applications (coming soon)"},
+    ],
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": "/api/v[0-9]",
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "persistAuthorization": True,
+        "displayOperationId": True,
+        "filter": True,
+    },
+    "SECURITY": [
+        {
+            "Bearer": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
+    ],
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 

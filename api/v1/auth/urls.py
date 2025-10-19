@@ -19,4 +19,6 @@ urlpatterns = [
     # User Info & Logout
     path("me/", views.current_user, name="current-user"),
     path("logout/", views.logout, name="logout"),
+    # Password Change
+    path("change-password/", views.change_password, name="change-password"),
 ]

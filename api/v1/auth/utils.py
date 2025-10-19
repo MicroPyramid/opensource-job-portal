@@ -66,6 +66,10 @@ def create_or_update_google_user(user_document):
         if not user.profile_pic:
             user.profile_pic = user_document.get("picture", "")
 
+        # Ensure user_type is Job Seeker for OAuth logins
+        if user.user_type != "JS":
+            user.user_type = "JS"
+
         user.is_active = True
         user.profile_updated = timezone.now()
         user.save()
@@ -81,6 +85,11 @@ def create_or_update_google_user(user_document):
             user.profile_pic = user_document.get("picture", "")
             user.profile_updated = timezone.now()
             user.is_active = True
+
+            # Ensure user_type is Job Seeker for OAuth logins
+            if user.user_type != "JS":
+                user.user_type = "JS"
+
             user.save()
         else:
             # Create new Job Seeker user

@@ -311,6 +311,32 @@ urlpatterns = [
     # url(r'^dj-rest-auth/', include('dj_rest_auth.urls')),
     url(r"^api-recruiter/", include("recruiter.api_urls", namespace="api_recruiter")),
     url(r"^celery-check/", include("mp_celery_monitor.urls", namespace="celery-check")),
+    # Job Seeker API (DRF + JWT)
+    path("api/", include("api.urls", namespace="api")),
+]
+
+# Add API documentation URLs (drf-spectacular)
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
+
+urlpatterns += [
+    # OpenAPI 3.0 schema
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    # Swagger UI
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    # ReDoc UI
+    path(
+        "api/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
+    ),
 ]
 
 handler404 = custom_404
@@ -324,7 +350,8 @@ try:
 except ImportError:
     pass  # urls_local.py doesn't exist or has import errors
 
-# if settings.DEBUG is False:   # if DEBUG is True it will be served automatically
-#     urlpatterns += [
-#         url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
-#     ]
+# Serve media files in development
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

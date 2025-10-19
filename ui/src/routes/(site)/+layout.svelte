@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import { Menu, X, Phone, Mail, MapPin, User, LogOut, ChevronDown } from '@lucide/svelte';
   import { authStore } from '$lib/stores/auth';
+  import Toast from '$lib/components/Toast.svelte';
 
   let mobileMenuOpen = false;
   let userMenuOpen = false;
@@ -268,3 +269,6 @@
     </div>
   </footer>
 </div>
+
+<!-- Toast Notifications -->
+<Toast />

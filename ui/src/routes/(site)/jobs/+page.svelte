@@ -417,7 +417,7 @@
                         {job.title}
                       </h3>
                       <button
-                        onclick={(e) => e.stopPropagation()}={() => saveJob(job.id)}
+                        onclick={(e) => { e.stopPropagation(); saveJob(job.id); }}
                         class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-all {job.saved ? 'text-blue-600 bg-gray-100' : ''}"
                         aria-label="Save {job.title}"
                       >
