@@ -5,8 +5,9 @@
 
 import type { PageServerLoad } from './$types';
 import type { JobSearchParams } from '$lib/types/jobs';
+import { getApiBaseUrl } from '$lib/config/env';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = getApiBaseUrl().replace('/api/v1', ''); // Get base domain without /api/v1
 
 /**
  * Parse URL search params into API parameters

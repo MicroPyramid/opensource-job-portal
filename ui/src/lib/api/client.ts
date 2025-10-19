@@ -3,7 +3,9 @@
  * Handles all HTTP requests to Django backend
  */
 
-const API_BASE = '/api/v1';
+import { getApiBasePath } from '$lib/config/env';
+
+const API_BASE = getApiBasePath();
 
 export interface ApiError {
 	error: string;

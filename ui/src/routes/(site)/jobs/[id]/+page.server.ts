@@ -6,8 +6,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { JobDetail, Job, JobListResponse } from '$lib/types/jobs';
+import { getApiBaseUrl } from '$lib/config/env';
 
-const API_BASE = '/api/v1';
+const API_BASE = getApiBaseUrl();
 
 export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
   const { id } = params;

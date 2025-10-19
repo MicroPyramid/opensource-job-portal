@@ -26,7 +26,7 @@ sudo apt install -y nodejs
 docker run -d --name elasticsearch \
   -p 127.0.0.1:9200:9200 \
   -e "discovery.type=single-node" \
-  docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+  docker.elastic.co/elasticsearch/elasticsearch:7.17.12
 
 or
 
