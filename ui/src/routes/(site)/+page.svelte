@@ -1,11 +1,13 @@
 <script lang="ts">
   import { Search, Briefcase, Users, Star, MapPin, Brain, TrendingUp, Shield, Clock, ChevronRight, Building, DollarSign, Sparkles, GraduationCap, CalendarDays, UserCheck, ArrowRight, Code, Database, Palette, BarChart } from '@lucide/svelte';
   import { goto } from '$app/navigation';
-  import { onMount } from 'svelte';
   import Autocomplete from '$lib/components/Autocomplete.svelte';
   import { searchSkills, searchLocations } from '$lib/api/search';
   import type { SkillSuggestion, LocationSuggestion } from '$lib/types/search';
-  import { ApiClient } from '$lib/api/client';
+  import type { PageData } from './$types';
+
+  // Server-loaded data
+  export let data: PageData;
 
   let jobKeyword = '';
   let location = '';
@@ -19,51 +21,10 @@
   let loadingSkills = false;
   let loadingLocations = false;
 
-  // Browse Jobs data
-  interface Category {
-    id: number;
-    name: string;
-    slug: string;
-  }
-
-  interface Job {
-    id: number;
-    title: string;
-    slug: string;
-    company_name: string;
-    company_logo: string;
-    job_type: string;
-    locations: Array<{ id: number; name: string; slug: string; state: string }>;
-    skills: Array<{ id: number; name: string; slug: string }>;
-    min_salary: number;
-    max_salary: number;
-    salary_display: string;
-    experience_display: string;
-    location_display: string;
-    time_ago: string;
-  }
-
-  let topCategories: Category[] = [];
-  let topLocations: LocationSuggestion[] = [];
-  let loadingBrowseData = true;
-  let featuredJobs: Job[] = [];
-  let loadingFeaturedJobs = true;
-
-  // Curated categories - relevant industries
-  const curatedCategorySlugs = [
-    'it-software',
-    'bpo',
-    'banking',
-    'education',
-    'sales',
-    'accounting',
-    'medical',
-    'advertising',
-    'construction',
-    'automobile',
-    'travel',
-    'freshers'
-  ];
+  // Use server-loaded data
+  const topCategories = data.topCategories;
+  const topLocations = data.topLocations;
+  const featuredJobs = data.featuredJobs;
 
   const heroStats = [
     { label: 'Jobs', value: '10K+', icon: Briefcase },
@@ -175,59 +136,6 @@
 
   function selectJobType(typeId: string) {
     selectedJobType = typeId;
-  }
-
-  // Load top categories, locations, and featured jobs
-  onMount(async () => {
-    try {
-      // Fetch filter options
-      const filterOptions = await ApiClient.get<any>('/jobs/filter-options/', true);
-
-      // Filter for curated categories only, maintaining order
-      const allCategories = filterOptions.industries || [];
-      const categories = curatedCategorySlugs
-        .map(slug => allCategories.find((c: any) => c.slug === slug))
-        .filter(Boolean) // Remove undefined entries
-        .map((category: any) => ({
-          id: category.id,
-          name: category.name.trim(), // Clean up whitespace
-          slug: category.slug
-        }));
-
-      // Get top 12 locations sorted by job count
-      const locations = (filterOptions.locations || [])
-        .sort((a: any, b: any) => (b.count || 0) - (a.count || 0))
-        .slice(0, 12)
-        .map((location: any) => ({
-          id: location.id,
-          name: location.name,
-          slug: location.slug,
-          jobs_count: location.count
-        }));
-
-      topCategories = categories;
-      topLocations = locations;
-      loadingBrowseData = false;
-
-      // Fetch latest jobs for featured section
-      const jobsResponse = await ApiClient.get<any>('/jobs/', { page: 1, page_size: 8 }, true);
-      featuredJobs = jobsResponse.results || [];
-      loadingFeaturedJobs = false;
-    } catch (error) {
-      console.error('Error loading browse data:', error);
-      loadingBrowseData = false;
-      loadingFeaturedJobs = false;
-    }
-  });
-
-  // Navigate to jobs page with category filter
-  function browseByCategory(category: Category) {
-    goto(`/jobs/?industry=${category.slug}`);
-  }
-
-  // Navigate to jobs page with location filter
-  function browseByLocation(location: LocationSuggestion) {
-    goto(`/jobs/?location=${location.slug}`);
   }
 </script>
 
@@ -343,29 +251,21 @@
         </a>
       </div>
 
-      {#if loadingBrowseData}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {#each Array(12) as _}
-            <div class="bg-gray-100 rounded-lg p-4 h-24 animate-pulse"></div>
-          {/each}
-        </div>
-      {:else}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {#each topCategories as category}
-            <a
-              href="/jobs/?industry={category.slug}"
-              class="group bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg p-4 transition-all duration-200 hover:shadow-md"
-            >
-              <div class="flex items-center mb-3">
-                <Briefcase size={20} class="text-blue-600" />
-              </div>
-              <h3 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">
-                {category.name}
-              </h3>
-            </a>
-          {/each}
-        </div>
-      {/if}
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {#each topCategories as category}
+          <a
+            href="/jobs/?industry={category.slug}"
+            class="group bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg p-4 transition-all duration-200 hover:shadow-md"
+          >
+            <div class="flex items-center mb-3">
+              <Briefcase size={20} class="text-blue-600" />
+            </div>
+            <h3 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">
+              {category.name}
+            </h3>
+          </a>
+        {/each}
+      </div>
     </div>
 
     <!-- Browse by Location -->
@@ -377,29 +277,21 @@
         </div>
       </div>
 
-      {#if loadingBrowseData}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {#each Array(12) as _}
-            <div class="bg-gray-100 rounded-lg p-4 h-24 animate-pulse"></div>
-          {/each}
-        </div>
-      {:else}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {#each topLocations as location}
-            <a
-              href="/jobs/?location={location.slug}"
-              class="group bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg p-4 transition-all duration-200 hover:shadow-md"
-            >
-              <div class="flex items-center mb-3">
-                <MapPin size={20} class="text-blue-600" />
-              </div>
-              <h3 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">
-                {location.name}
-              </h3>
-            </a>
-          {/each}
-        </div>
-      {/if}
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {#each topLocations as location}
+          <a
+            href="/jobs/?location={location.slug}"
+            class="group bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg p-4 transition-all duration-200 hover:shadow-md"
+          >
+            <div class="flex items-center mb-3">
+              <MapPin size={20} class="text-blue-600" />
+            </div>
+            <h3 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">
+              {location.name}
+            </h3>
+          </a>
+        {/each}
+      </div>
     </div>
   </div>
 </section>
@@ -451,86 +343,69 @@
       <p class="text-lg text-gray-600">Explore the newest openings from companies across India</p>
     </div>
 
-    {#if loadingFeaturedJobs}
-      <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        {#each Array(8) as _}
-          <div class="bg-white rounded-xl shadow-lg p-6 h-64 animate-pulse">
-            <div class="bg-gray-200 h-12 w-12 rounded-lg mb-4"></div>
-            <div class="bg-gray-200 h-4 w-3/4 mb-2"></div>
-            <div class="bg-gray-200 h-3 w-1/2 mb-4"></div>
-            <div class="space-y-2">
-              <div class="bg-gray-200 h-3 w-full"></div>
-              <div class="bg-gray-200 h-3 w-full"></div>
-              <div class="bg-gray-200 h-3 w-2/3"></div>
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+      {#each featuredJobs as job (job.id)}
+        <a
+          href="{job.slug}"
+          class="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+        >
+          <div class="p-6">
+            <div class="flex items-start mb-4">
+              <img
+                src={job.company_logo}
+                alt="{job.company_name} logo"
+                class="w-12 h-12 rounded-lg mr-3 object-cover border border-gray-200"
+                onerror={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  const initial = job.company_name.charAt(0).toUpperCase();
+                  target.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23E5E7EB' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%236B7280'%3E${initial}%3C/text%3E%3C/svg%3E`;
+                }}
+              >
+              <div class="flex-1">
+                <h3 class="font-bold text-gray-800 text-base leading-tight group-hover:text-blue-600 transition-colors mb-1 line-clamp-2">
+                  {job.title}
+                </h3>
+                <p class="text-gray-600 text-sm truncate">{job.company_name}</p>
+              </div>
+            </div>
+
+            <div class="space-y-2 mb-4">
+              <div class="flex items-center text-gray-600 text-sm">
+                <MapPin size={14} class="mr-2 text-gray-400 flex-shrink-0" />
+                <span class="truncate">{job.location_display}</span>
+              </div>
+              <div class="flex items-center text-gray-600 text-sm">
+                <Briefcase size={14} class="mr-2 text-gray-400 flex-shrink-0" />
+                <span class="truncate">{job.experience_display}</span>
+              </div>
+              {#if job.salary_display}
+                <div class="flex items-center text-gray-600 text-sm">
+                  <DollarSign size={14} class="mr-2 text-gray-400 flex-shrink-0" />
+                  <span class="truncate">{job.salary_display}</span>
+                </div>
+              {/if}
+            </div>
+
+            <div class="flex flex-wrap gap-1 mb-4">
+              {#each job.skills.slice(0, 3) as skill}
+                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">{skill.name}</span>
+              {/each}
+              {#if job.skills.length > 3}
+                <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">+{job.skills.length - 3}</span>
+              {/if}
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+              <span class="text-xs text-gray-500">{job.time_ago}</span>
+              <span class="text-blue-600 text-sm font-medium inline-flex items-center group-hover:text-blue-700">
+                View Details
+                <ChevronRight size={14} class="ml-1" />
+              </span>
             </div>
           </div>
-        {/each}
-      </div>
-    {:else}
-      <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        {#each featuredJobs as job (job.id)}
-          <a
-            href="{job.slug}"
-            class="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
-          >
-            <div class="p-6">
-              <div class="flex items-start mb-4">
-                <img
-                  src={job.company_logo}
-                  alt="{job.company_name} logo"
-                  class="w-12 h-12 rounded-lg mr-3 object-cover border border-gray-200"
-                  onerror={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    const initial = job.company_name.charAt(0).toUpperCase();
-                    target.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23E5E7EB' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%236B7280'%3E${initial}%3C/text%3E%3C/svg%3E`;
-                  }}
-                >
-                <div class="flex-1">
-                  <h3 class="font-bold text-gray-800 text-base leading-tight group-hover:text-blue-600 transition-colors mb-1 line-clamp-2">
-                    {job.title}
-                  </h3>
-                  <p class="text-gray-600 text-sm truncate">{job.company_name}</p>
-                </div>
-              </div>
-
-              <div class="space-y-2 mb-4">
-                <div class="flex items-center text-gray-600 text-sm">
-                  <MapPin size={14} class="mr-2 text-gray-400 flex-shrink-0" />
-                  <span class="truncate">{job.location_display}</span>
-                </div>
-                <div class="flex items-center text-gray-600 text-sm">
-                  <Briefcase size={14} class="mr-2 text-gray-400 flex-shrink-0" />
-                  <span class="truncate">{job.experience_display}</span>
-                </div>
-                {#if job.salary_display}
-                  <div class="flex items-center text-gray-600 text-sm">
-                    <DollarSign size={14} class="mr-2 text-gray-400 flex-shrink-0" />
-                    <span class="truncate">{job.salary_display}</span>
-                  </div>
-                {/if}
-              </div>
-
-              <div class="flex flex-wrap gap-1 mb-4">
-                {#each job.skills.slice(0, 3) as skill}
-                  <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">{skill.name}</span>
-                {/each}
-                {#if job.skills.length > 3}
-                  <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">+{job.skills.length - 3}</span>
-                {/if}
-              </div>
-
-              <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                <span class="text-xs text-gray-500">{job.time_ago}</span>
-                <span class="text-blue-600 text-sm font-medium inline-flex items-center group-hover:text-blue-700">
-                  View Details
-                  <ChevronRight size={14} class="ml-1" />
-                </span>
-              </div>
-            </div>
-          </a>
-        {/each}
-      </div>
-    {/if}
+        </a>
+      {/each}
+    </div>
 
     <div class="text-center">
       <a href="/jobs/" class="inline-flex items-center bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-3 px-8 border-2 border-blue-500 hover:border-blue-600 rounded-lg transition duration-200">
