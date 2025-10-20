@@ -1,6 +1,11 @@
 /**
  * Base API Client for PeelJobs
  * Handles all HTTP requests to Django backend
+ *
+ * SECURITY: This client uses HttpOnly cookies for authentication
+ * - JWT tokens are stored in HttpOnly cookies (NOT localStorage)
+ * - Cookies are automatically sent with every request (credentials: 'include')
+ * - Tokens are never accessible to JavaScript (XSS protection)
  */
 
 import { getApiBasePath, getApiBaseUrl } from '$lib/config/env';
@@ -28,7 +33,7 @@ function onTokenRefreshed(token: string) {
 
 export class ApiClient {
 	/**
-	 * Make authenticated request with JWT token
+	 * Make authenticated request with JWT token from HttpOnly cookies
 	 */
 	private static async request<T>(
 		endpoint: string,
@@ -46,84 +51,63 @@ export class ApiClient {
 			headers.set('Content-Type', 'application/json');
 		}
 
-		// Add auth token if available (skip for public endpoints)
-		if (!skipAuth && typeof window !== 'undefined') {
-			const token = localStorage.getItem('access_token');
-			if (token) {
-				headers.set('Authorization', `Bearer ${token}`);
-			}
-		}
+		// NOTE: We no longer add Authorization header - tokens are in HttpOnly cookies
+		// The browser automatically sends cookies with credentials: 'include'
 
 		const response = await fetch(url, {
 			...options,
-			headers
+			headers,
+			credentials: 'include'  // Send HttpOnly cookies with request
 		});
 
 		// Handle 401 Unauthorized - try to refresh token
 		if (response.status === 401 && !skipAuth && retryCount === 0) {
-			const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+			try {
+				if (!isRefreshing) {
+					isRefreshing = true;
 
-			if (refreshToken) {
-				try {
-					if (!isRefreshing) {
-						isRefreshing = true;
+					// Try to refresh the token (cookies sent automatically)
+					const refreshResponse = await fetch(`${getApiBase()}/auth/token/refresh/`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						credentials: 'include'  // Send refresh token cookie
+					});
 
-						// Try to refresh the token
-						const refreshResponse = await fetch(`${getApiBase()}/auth/token/refresh/`, {
-							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ refresh: refreshToken })
-						});
+					if (refreshResponse.ok) {
+						// New tokens are set in HttpOnly cookies by the server
+						isRefreshing = false;
+						onTokenRefreshed('refreshed');
 
-						if (refreshResponse.ok) {
-							const { access, refresh } = await refreshResponse.json();
-
-							// Update localStorage
-							if (typeof window !== 'undefined') {
-								localStorage.setItem('access_token', access);
-								localStorage.setItem('refresh_token', refresh);
-							}
-
-							isRefreshing = false;
-							onTokenRefreshed(access);
-
-							// Retry the original request with new token
-							return this.request<T>(endpoint, options, skipAuth, isFormData, 1);
-						} else {
-							// Refresh failed, clear auth and redirect to login
-							isRefreshing = false;
-							if (typeof window !== 'undefined') {
-								localStorage.removeItem('user');
-								localStorage.removeItem('access_token');
-								localStorage.removeItem('refresh_token');
-								window.location.href = '/login';
-							}
-							throw new Error('Session expired. Please login again.');
-						}
+						// Retry the original request with new token from cookie
+						return this.request<T>(endpoint, options, skipAuth, isFormData, 1);
 					} else {
-						// Wait for the ongoing refresh to complete
-						return new Promise((resolve, reject) => {
-							subscribeTokenRefresh((token: string) => {
-								// Retry request with new token
-								this.request<T>(endpoint, options, skipAuth, isFormData, 1)
-									.then(resolve)
-									.catch(reject);
-							});
-						});
+						// Refresh failed, clear auth and redirect to login
+						isRefreshing = false;
+						if (typeof window !== 'undefined') {
+							localStorage.removeItem('user');  // Clear user data
+							window.location.href = '/login';
+						}
+						throw new Error('Session expired. Please login again.');
 					}
-				} catch (error) {
-					isRefreshing = false;
-					throw error;
+				} else {
+					// Wait for the ongoing refresh to complete
+					return new Promise((resolve, reject) => {
+						subscribeTokenRefresh(() => {
+							// Retry request with new token from cookie
+							this.request<T>(endpoint, options, skipAuth, isFormData, 1)
+								.then(resolve)
+								.catch(reject);
+						});
+					});
 				}
-			} else {
-				// No refresh token, clear everything and redirect to login
+			} catch (error) {
+				isRefreshing = false;
+				// Clear user data and redirect to login
 				if (typeof window !== 'undefined') {
 					localStorage.removeItem('user');
-					localStorage.removeItem('access_token');
-					localStorage.removeItem('refresh_token');
 					window.location.href = '/login';
 				}
-				throw new Error('Session expired. Please login again.');
+				throw error;
 			}
 		}
 

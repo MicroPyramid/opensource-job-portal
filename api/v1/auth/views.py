@@ -21,6 +21,7 @@ from .serializers import (
     ChangePasswordSerializer,
 )
 from .utils import create_or_update_google_user, get_tokens_for_user
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 
 @extend_schema(
@@ -241,17 +242,44 @@ def google_auth_callback(request):
     redirect_to = "/"  # Redirect to home page after successful login
 
     response_data = {
-        "access": tokens["access"],
-        "refresh": tokens["refresh"],
         "user": UserSerializer(user).data,
         "requires_profile_completion": requires_profile_completion,
         "redirect_to": redirect_to,
         "is_new_user": created,
     }
 
-    return Response(
-        TokenResponseSerializer(response_data).data, status=status.HTTP_200_OK
+    # Create response and set HttpOnly cookies for tokens
+    response = Response(response_data, status=status.HTTP_200_OK)
+
+    # Determine cookie domain (for cross-subdomain support in production)
+    # Use '.peeljobs.com' in production to allow peeljobs.com and recruiter.peeljobs.com
+    cookie_domain = getattr(settings, 'SESSION_COOKIE_DOMAIN', None)
+
+    # Set access token cookie (HttpOnly, Secure in production)
+    response.set_cookie(
+        key='access_token',
+        value=tokens["access"],
+        max_age=7 * 24 * 60 * 60,  # 7 days
+        httponly=True,  # Not accessible to JavaScript (XSS protection)
+        secure=not settings.DEBUG,  # HTTPS only in production
+        samesite='Lax',  # CSRF protection
+        domain=cookie_domain,  # Allow subdomains (e.g., recruiter.peeljobs.com)
+        path='/',
     )
+
+    # Set refresh token cookie (HttpOnly, Secure in production)
+    response.set_cookie(
+        key='refresh_token',
+        value=tokens["refresh"],
+        max_age=30 * 24 * 60 * 60,  # 30 days
+        httponly=True,  # Not accessible to JavaScript (XSS protection)
+        secure=not settings.DEBUG,  # HTTPS only in production
+        samesite='Lax',  # CSRF protection
+        domain=cookie_domain,  # Allow subdomains (e.g., recruiter.peeljobs.com)
+        path='/',
+    )
+
+    return response
 
 
 @extend_schema(
@@ -395,24 +423,56 @@ def logout(request):
     try:
         from rest_framework_simplejwt.tokens import RefreshToken
 
-        refresh_token = request.data.get("refresh")
-        if not refresh_token:
-            return Response(
-                {"error": "Refresh token is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # Get refresh token from cookie or request body (backward compatibility)
+        refresh_token = request.COOKIES.get("refresh_token") or request.data.get("refresh")
 
-        token = RefreshToken(refresh_token)
-        token.blacklist()
+        # Try to blacklist token if available
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except Exception as blacklist_error:
+                # Log but don't fail - token might already be invalid
+                print(f"Token blacklist error (continuing): {blacklist_error}")
 
-        return Response(
+        # Always clear cookies and return success (even if token missing/invalid)
+        # This ensures user can logout even if token is corrupted
+        response = Response(
             {"message": "Logout successful"}, status=status.HTTP_200_OK
         )
-    except Exception as e:
-        return Response(
-            {"error": "Invalid token", "detail": str(e)},
-            status=status.HTTP_400_BAD_REQUEST,
+
+        # Get cookie domain for consistent clearing
+        cookie_domain = getattr(settings, 'SESSION_COOKIE_DOMAIN', None)
+
+        # Clear access token cookie
+        response.delete_cookie(
+            key='access_token',
+            path='/',
+            domain=cookie_domain,
+            samesite='Lax',
         )
+
+        # Clear refresh token cookie
+        response.delete_cookie(
+            key='refresh_token',
+            path='/',
+            domain=cookie_domain,
+            samesite='Lax',
+        )
+
+        return response
+    except Exception as e:
+        # Even on error, try to clear cookies
+        response = Response(
+            {"message": "Logout completed (with errors)", "detail": str(e)},
+            status=status.HTTP_200_OK  # Return 200 so frontend can continue
+        )
+
+        cookie_domain = getattr(settings, 'SESSION_COOKIE_DOMAIN', None)
+        response.delete_cookie(key='access_token', path='/', domain=cookie_domain, samesite='Lax')
+        response.delete_cookie(key='refresh_token', path='/', domain=cookie_domain, samesite='Lax')
+
+        return response
 
 
 @extend_schema(
@@ -487,3 +547,80 @@ def change_password(request):
         {"error": serializer.errors},
         status=status.HTTP_400_BAD_REQUEST
     )
+
+
+class CookieTokenRefreshView(TokenRefreshView):
+    """
+    Custom TokenRefreshView that reads refresh token from HttpOnly cookie
+    and sets new tokens in HttpOnly cookies
+    """
+    def post(self, request, *args, **kwargs):
+        # Get refresh token from cookie or request body (backward compatibility)
+        refresh_token = request.COOKIES.get('refresh_token') or request.data.get('refresh')
+
+        if not refresh_token:
+            return Response(
+                {"error": "Refresh token is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Create request data with refresh token
+        request.data._mutable = True if hasattr(request.data, '_mutable') else None
+        if isinstance(request.data, dict):
+            request.data['refresh'] = refresh_token
+        else:
+            request.data._mutable = True
+            request.data['refresh'] = refresh_token
+            request.data._mutable = False
+
+        # Call parent class to perform token refresh
+        try:
+            response = super().post(request, *args, **kwargs)
+
+            if response.status_code == 200:
+                # Extract new tokens from response
+                access_token = response.data.get('access')
+                new_refresh_token = response.data.get('refresh', refresh_token)
+
+                # Create new response without tokens in body
+                new_response = Response(
+                    {"message": "Token refreshed successfully"},
+                    status=status.HTTP_200_OK
+                )
+
+                # Get cookie domain for cross-subdomain support
+                cookie_domain = getattr(settings, 'SESSION_COOKIE_DOMAIN', None)
+
+                # Set new access token cookie
+                new_response.set_cookie(
+                    key='access_token',
+                    value=access_token,
+                    max_age=7 * 24 * 60 * 60,  # 7 days
+                    httponly=True,
+                    secure=not settings.DEBUG,
+                    samesite='Lax',
+                    domain=cookie_domain,
+                    path='/',
+                )
+
+                # Set new refresh token cookie
+                new_response.set_cookie(
+                    key='refresh_token',
+                    value=new_refresh_token,
+                    max_age=30 * 24 * 60 * 60,  # 30 days
+                    httponly=True,
+                    secure=not settings.DEBUG,
+                    samesite='Lax',
+                    domain=cookie_domain,
+                    path='/',
+                )
+
+                return new_response
+
+            return response
+
+        except (TokenError, InvalidToken) as e:
+            return Response(
+                {"error": "Invalid or expired refresh token", "detail": str(e)},
+                status=status.HTTP_401_UNAUTHORIZED
+            )

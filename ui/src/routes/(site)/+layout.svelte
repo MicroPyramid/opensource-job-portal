@@ -1,12 +1,15 @@
 <script lang="ts">
   import '../../app.css';
-  import { onMount } from 'svelte';
   import { Menu, X, Mail, MapPin, LogOut, ChevronDown, Twitter, Linkedin, Facebook } from '@lucide/svelte';
   import { authStore } from '$lib/stores/auth';
   import Toast from '$lib/components/Toast.svelte';
+  import type { PageData } from './$types';
 
-  let mobileMenuOpen = false;
-  let latestJobsDropdownOpen = false;
+  // Receive server-side auth data and children
+  let { data, children }: { data: PageData, children: any } = $props();
+
+  let mobileMenuOpen = $state(false);
+  let latestJobsDropdownOpen = $state(false);
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -32,21 +35,22 @@
     }
   }
 
-  // Validate auth state on mount
-  onMount(() => {
-    // If tokens exist but user is not in store, it means tokens might be invalid
-    // The API client will handle token refresh automatically on next request
-    if (typeof window !== 'undefined') {
-      const hasTokens = localStorage.getItem('access_token') && localStorage.getItem('refresh_token');
-      const hasUser = localStorage.getItem('user');
-
-      // If we have tokens but no user data, clear everything to prevent errors
-      if (hasTokens && !hasUser) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+  // Initialize auth store from server data (SSR-compatible)
+  // Use $derived to compute auth state from both server data and store
+  // Server data is used for initial SSR, then store takes over on client
+  $effect(() => {
+    // Initialize auth store with server data if authenticated on first mount
+    if (data.isAuthenticated && data.user) {
+      // Only update if store doesn't already have this user
+      if (!$authStore.isAuthenticated || $authStore.user?.id !== data.user.id) {
+        authStore.login(data.user);
       }
     }
   });
+
+  // Determine which auth state to display (prefer server data during SSR)
+  let isAuthenticated = $derived(data.isAuthenticated || $authStore.isAuthenticated);
+  let user = $derived(data.user || $authStore.user);
 
   // Sample data - in production, this would come from API
   const skills = [
@@ -239,7 +243,7 @@
           <a href="/jobs/?is_remote=true" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
             Remote Jobs
           </a>
-          {#if $authStore.isAuthenticated && $authStore.user && $authStore.user.user_type === 'JS'}
+          {#if isAuthenticated && user && user.user_type === 'JS'}
             <a href="/applied-jobs/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
               Applied Jobs
             </a>
@@ -254,17 +258,17 @@
 
         <!-- Auth Section -->
         <div class="hidden lg:flex items-center space-x-3">
-          {#if $authStore.isAuthenticated && $authStore.user}
+          {#if isAuthenticated && user}
             <!-- User Profile Picture -->
-            {#if $authStore.user.photo || $authStore.user.profile_pic}
+            {#if user.photo || user.profile_pic}
               <img
-                src={$authStore.user.photo || $authStore.user.profile_pic}
-                alt={$authStore.user.first_name}
+                src={user.photo || user.profile_pic}
+                alt={user.first_name}
                 class="w-10 h-10 rounded-full border-2 border-gray-300"
               />
             {:else}
               <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                {$authStore.user.first_name?.charAt(0) || $authStore.user.email?.charAt(0) || 'U'}
+                {user.first_name?.charAt(0) || user.email?.charAt(0) || 'U'}
               </div>
             {/if}
 
@@ -305,24 +309,24 @@
       <!-- Mobile Navigation -->
       {#if mobileMenuOpen}
         <div class="lg:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
-          {#if $authStore.isAuthenticated && $authStore.user}
+          {#if isAuthenticated && user}
             <!-- User Info (Mobile) -->
             <div class="px-3 py-3 mb-3 bg-gray-100 rounded">
               <div class="flex items-center space-x-3">
-                {#if $authStore.user.photo || $authStore.user.profile_pic}
+                {#if user.photo || user.profile_pic}
                   <img
-                    src={$authStore.user.photo || $authStore.user.profile_pic}
-                    alt={$authStore.user.first_name}
+                    src={user.photo || user.profile_pic}
+                    alt={user.first_name}
                     class="w-10 h-10 rounded-full border-2 border-gray-300"
                   />
                 {:else}
                   <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                    {$authStore.user.first_name?.charAt(0) || $authStore.user.email?.charAt(0) || 'U'}
+                    {user.first_name?.charAt(0) || user.email?.charAt(0) || 'U'}
                   </div>
                 {/if}
                 <div>
-                  <p class="text-sm font-semibold text-gray-900">{$authStore.user.first_name} {$authStore.user.last_name}</p>
-                  <p class="text-xs text-gray-600 truncate">{$authStore.user.email}</p>
+                  <p class="text-sm font-semibold text-gray-900">{user.first_name} {user.last_name}</p>
+                  <p class="text-xs text-gray-600 truncate">{user.email}</p>
                 </div>
               </div>
             </div>
@@ -342,7 +346,7 @@
             <a href="/jobs/?is_remote=true" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
               Remote Jobs
             </a>
-            {#if $authStore.isAuthenticated && $authStore.user && $authStore.user.user_type === 'JS'}
+            {#if isAuthenticated && user && user.user_type === 'JS'}
               <a href="/applied-jobs/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
                 Applied Jobs
               </a>
@@ -354,7 +358,7 @@
               Companies
             </a>
 
-            {#if $authStore.isAuthenticated && $authStore.user}
+            {#if isAuthenticated && user}
               <a href="/profile/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
                 My Profile
               </a>
@@ -386,7 +390,7 @@
 
   <!-- Main Content -->
   <main class="flex-grow">
-    <slot />
+    {@render children()}
   </main>
 
   <!-- Footer -->

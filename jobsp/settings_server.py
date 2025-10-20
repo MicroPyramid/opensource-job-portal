@@ -7,6 +7,17 @@ DEBUG = False
 
 CELERY_IMPORTS = ("dashboard.tasks")
 
+# Cookie Domain Configuration for Cross-Subdomain Auth
+# Allows cookies to be shared between peeljobs.com and recruiter.peeljobs.com
+SESSION_COOKIE_DOMAIN = '.peeljobs.com'  # Note: leading dot is important
+CSRF_COOKIE_DOMAIN = '.peeljobs.com'
+
+# Ensure cookies are secure in production
+SESSION_COOKIE_SECURE = True  # Only send over HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
 
 # sentry_sdk.init(
 #     dsn=os.getenv("SENTRY_DSN"),

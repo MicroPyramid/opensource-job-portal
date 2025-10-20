@@ -19,7 +19,23 @@ export default defineConfig(({ mode }) => {
 				// Proxy API requests to Django during development
 				'/api': {
 					target: proxyTarget,
-					changeOrigin: true
+					changeOrigin: true,
+					// Forward cookies between client and Django
+					configure: (proxy, _options) => {
+						proxy.on('proxyReq', (proxyReq, req, _res) => {
+							// Forward cookies from browser to Django
+							if (req.headers.cookie) {
+								proxyReq.setHeader('Cookie', req.headers.cookie);
+							}
+						});
+						proxy.on('proxyRes', (proxyRes, _req, _res) => {
+							// Forward Set-Cookie headers from Django to browser
+							const setCookie = proxyRes.headers['set-cookie'];
+							if (setCookie) {
+								proxyRes.headers['set-cookie'] = setCookie;
+							}
+						});
+					}
 				}
 			}
 		}

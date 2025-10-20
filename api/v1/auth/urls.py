@@ -2,7 +2,7 @@
 Authentication URL routing for Job Seekers
 """
 from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.views import TokenVerifyView
 
 from . import views
 
@@ -14,7 +14,7 @@ urlpatterns = [
     path("google/callback/", views.google_auth_callback, name="google-callback"),
     path("google/disconnect/", views.google_disconnect, name="google-disconnect"),
     # JWT Token Management
-    path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("token/refresh/", views.CookieTokenRefreshView.as_view(), name="token-refresh"),
     path("token/verify/", TokenVerifyView.as_view(), name="token-verify"),
     # User Info & Logout
     path("me/", views.current_user, name="current-user"),

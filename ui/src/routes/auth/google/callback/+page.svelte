@@ -34,14 +34,14 @@
 			return;
 		}
 
-		// Exchange code for tokens
+		// Exchange code for tokens (tokens set in HttpOnly cookies by server)
 		try {
 			const redirectUri = window.location.origin + '/auth/google/callback';
 
 			const response = await googleAuthCallback(code, redirectUri);
 
-			// Login user with tokens
-			authStore.login(response.user, response.access, response.refresh);
+			// Login user (tokens already set in HttpOnly cookies by server)
+			authStore.login(response.user);
 
 			status = 'success';
 			redirectPath = response.redirect_to || '/';

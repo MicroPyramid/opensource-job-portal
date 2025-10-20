@@ -1,6 +1,11 @@
 /**
  * Authentication API
  * Google OAuth and JWT token management
+ *
+ * SECURITY NOTE:
+ * - Tokens are NOT returned in API responses
+ * - Tokens are set by the server in HttpOnly cookies
+ * - This protects against XSS attacks stealing authentication tokens
  */
 
 import { ApiClient } from './client';
@@ -23,9 +28,7 @@ export interface User {
 	date_joined: string;
 }
 
-export interface TokenResponse {
-	access: string;
-	refresh: string;
+export interface AuthResponse {
 	user: User;
 	requires_profile_completion: boolean;
 	redirect_to: string;
@@ -47,12 +50,13 @@ export async function getGoogleAuthUrl(redirectUri: string): Promise<GoogleAuthU
 
 /**
  * Exchange Google authorization code for JWT tokens
+ * NOTE: Tokens are set by server in HttpOnly cookies, not returned in response
  */
 export async function googleAuthCallback(
 	code: string,
 	redirectUri: string
-): Promise<TokenResponse> {
-	return ApiClient.post<TokenResponse>('/auth/google/callback/', {
+): Promise<AuthResponse> {
+	return ApiClient.post<AuthResponse>('/auth/google/callback/', {
 		code,
 		redirect_uri: redirectUri
 	}, true); // Skip auth - public endpoint
@@ -66,21 +70,12 @@ export async function getCurrentUser(): Promise<User> {
 }
 
 /**
- * Refresh access token using refresh token
+ * Logout - blacklist refresh token and clear HttpOnly cookies
+ * NOTE: Refresh token is read from HttpOnly cookie by the server
  */
-export async function refreshAccessToken(refreshToken: string): Promise<{ access: string; refresh: string }> {
-	return ApiClient.post<{ access: string; refresh: string }>('/auth/token/refresh/', {
-		refresh: refreshToken
-	});
-}
-
-/**
- * Logout - blacklist refresh token
- */
-export async function logout(refreshToken: string): Promise<void> {
-	await ApiClient.post('/auth/logout/', {
-		refresh: refreshToken
-	}, true); // Skip auth - uses refresh token in body
+export async function logout(): Promise<void> {
+	// Don't skip auth - we need to send cookies with credentials: 'include'
+	await ApiClient.post('/auth/logout/', {});
 }
 
 /**
