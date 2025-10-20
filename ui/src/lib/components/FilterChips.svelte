@@ -4,7 +4,7 @@
   interface FilterChip {
     label: string;
     value: string;
-    type: 'location' | 'skill' | 'industry' | 'education' | 'job_type' | 'salary' | 'experience' | 'remote';
+    type: 'location' | 'skill' | 'industry' | 'education' | 'job_type' | 'salary' | 'experience' | 'remote' | 'fresher';
   }
 
   interface Props {

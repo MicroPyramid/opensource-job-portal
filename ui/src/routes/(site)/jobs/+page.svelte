@@ -1,16 +1,14 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Search, Filter, SlidersHorizontal, X, MapPin, Briefcase, DollarSign, Bookmark, Building, Clock, Users, GraduationCap, Factory } from '@lucide/svelte';
+  import { Search, Filter, SlidersHorizontal, MapPin, Briefcase, DollarSign, Bookmark, Building, Clock, Users, GraduationCap, Factory } from '@lucide/svelte';
   import FilterSection from '$lib/components/FilterSection.svelte';
   import FilterModal from '$lib/components/FilterModal.svelte';
   import FilterChips from '$lib/components/FilterChips.svelte';
   import CollapsibleFilterSection from '$lib/components/CollapsibleFilterSection.svelte';
   import { toast } from '$lib/stores/toast';
-  import { authStore } from '$lib/stores/auth';
   import { jobsApi } from '$lib/api/jobs';
-  import type { Job, FilterOption as BaseFilterOption, JobFilterOptions, JobSearchParams } from '$lib/types/jobs';
+  import type { Job, FilterOption as BaseFilterOption, JobFilterOptions } from '$lib/types/jobs';
   import type { PageData } from './$types';
 
   // Extended filter option with UI state
@@ -65,8 +63,6 @@
   // Fresher filter - initialized from URL
   let isFresher = $state(initialParams.fresher ?? false);
 
-  // Track if we've mounted (to prevent navigation on initial SSR)
-  let hasMounted = $state(false);
   // Track if we're syncing from URL (to prevent triggering navigation)
   let isSyncingFromUrl = $state(false);
 
@@ -123,11 +119,6 @@
   // Sync currentPage when data changes
   $effect(() => {
     currentPage = data.currentPage || 1;
-  });
-
-  // Mark as mounted when component is mounted on client
-  onMount(() => {
-    hasMounted = true;
   });
 
   // Sync filter state with URL params whenever they change
@@ -228,49 +219,6 @@
     if (option) option.checked = !option.checked;
   }
 
-  // Build API params from current filter state
-  function buildApiParams(): JobSearchParams {
-    return {
-      page: currentPage,
-      page_size: 20,
-      search: searchTerm || undefined,
-      location: locationOptions.filter(opt => opt.checked).map(opt => opt.slug),
-      skills: skillOptions.filter(opt => opt.checked).map(opt => opt.slug),
-      industry: industryOptions.filter(opt => opt.checked).map(opt => opt.slug),
-      education: educationOptions.filter(opt => opt.checked).map(opt => opt.slug),
-      job_type: jobTypeOptions.filter(opt => opt.checked).map(opt => opt.value),
-      min_salary: salaryMin || undefined,
-      max_salary: salaryMax || undefined,
-      min_experience: experienceMin > 0 ? experienceMin : undefined,
-      max_experience: experienceMax < 20 ? experienceMax : undefined,
-      is_remote: isRemote || undefined,
-      fresher: isFresher || undefined,
-    };
-  }
-
-  // Update URL with current filters
-  function updateURL() {
-    const params = new URLSearchParams();
-
-    if (searchTerm) params.set('search', searchTerm);
-
-    locationOptions.filter(opt => opt.checked).forEach(opt => params.append('location', opt.slug));
-    skillOptions.filter(opt => opt.checked).forEach(opt => params.append('skills', opt.slug));
-    industryOptions.filter(opt => opt.checked).forEach(opt => params.append('industry', opt.slug));
-    educationOptions.filter(opt => opt.checked).forEach(opt => params.append('education', opt.slug));
-    jobTypeOptions.filter(opt => opt.checked).forEach(opt => params.append('job_type', opt.value));
-
-    if (salaryMin !== null) params.set('min_salary', salaryMin.toString());
-    if (salaryMax !== null) params.set('max_salary', salaryMax.toString());
-    if (experienceMin > 0) params.set('min_experience', experienceMin.toString());
-    if (experienceMax < 20) params.set('max_experience', experienceMax.toString());
-    if (isRemote) params.set('is_remote', 'true');
-    if (currentPage > 1) params.set('page', currentPage.toString());
-
-    const url = params.toString() ? `/jobs?${params.toString()}` : '/jobs';
-    goto(url, { replaceState: true, noScroll: true, keepFocus: true });
-  }
-
   // Navigate to new URL with filters (triggers SSR reload)
   let navigationTimeout: ReturnType<typeof setTimeout>;
   function navigateWithFilters(delay: number = 500) {
@@ -342,10 +290,8 @@
       currentPage,
     ];
 
-    // Don't navigate if:
-    // 1. Not mounted yet (initial SSR)
-    // 2. Currently syncing from URL (would cause infinite loop)
-    if (hasMounted && !isSyncingFromUrl) {
+    // Don't navigate if currently syncing from URL (would cause infinite loop)
+    if (!isSyncingFromUrl) {
       navigateWithFilters();
     }
   });

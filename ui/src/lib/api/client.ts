@@ -3,9 +3,11 @@
  * Handles all HTTP requests to Django backend
  */
 
-import { getApiBasePath } from '$lib/config/env';
+import { getApiBasePath, getApiBaseUrl } from '$lib/config/env';
+import { browser } from '$app/environment';
 
-const API_BASE = getApiBasePath();
+// Use full URL for server-side, proxy path for client-side
+const getApiBase = () => browser ? getApiBasePath() : getApiBaseUrl();
 
 export interface ApiError {
 	error: string;
@@ -35,7 +37,7 @@ export class ApiClient {
 		isFormData = false,
 		retryCount = 0
 	): Promise<T> {
-		const url = `${API_BASE}${endpoint}`;
+		const url = `${getApiBase()}${endpoint}`;
 
 		const headers = new Headers(options.headers ?? undefined);
 
@@ -67,7 +69,7 @@ export class ApiClient {
 						isRefreshing = true;
 
 						// Try to refresh the token
-						const refreshResponse = await fetch(`${API_BASE}/auth/token/refresh/`, {
+						const refreshResponse = await fetch(`${getApiBase()}/auth/token/refresh/`, {
 							method: 'POST',
 							headers: { 'Content-Type': 'application/json' },
 							body: JSON.stringify({ refresh: refreshToken })

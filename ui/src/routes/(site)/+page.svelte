@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Search, Briefcase, Users, Star, MapPin, Brain, TrendingUp, Shield, Clock, ChevronRight, Building, DollarSign, Sparkles, GraduationCap, CalendarDays, UserCheck, ArrowRight, Code, Database, Palette, BarChart, Home, UserSquare2 } from '@lucide/svelte';
+  import { Search, Briefcase, MapPin, Brain, Shield, Clock, ChevronRight, Building, DollarSign, Sparkles, GraduationCap, ArrowRight, Home, UserSquare2 } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import Autocomplete from '$lib/components/Autocomplete.svelte';
   import { searchSkills, searchLocations } from '$lib/api/search';
@@ -26,28 +26,12 @@
   const topLocations = data.topLocations;
   const featuredJobs = data.featuredJobs;
 
-  const heroStats = [
-    { label: 'Jobs', value: '10K+', icon: Briefcase },
-    { label: 'Users', value: '50K+', icon: Users },
-    { label: 'Companies', value: '5K+', icon: Building },
-    { label: 'Cities', value: '100+', icon: MapPin }
-  ];
-
   const jobTypes = [
     { id: 'full-time', label: 'Full Time', icon: Briefcase },
     { id: 'internship', label: 'Internship', icon: GraduationCap },
     { id: 'remote', label: 'Remote', icon: Home },
     { id: 'fresher', label: 'Fresher', icon: UserSquare2 }
   ];
-
-  const stats = [
-    { label: 'Active Jobs', value: '50,000+', icon: Briefcase },
-    { label: 'Happy Users', value: '100,000+', icon: Users },
-    { label: 'Companies', value: '5,000+', icon: Building },
-    { label: 'Success Rate', value: '95%', icon: TrendingUp }
-  ];
-
-
 
 
   async function handleSkillSearch(event: CustomEvent<string>) {

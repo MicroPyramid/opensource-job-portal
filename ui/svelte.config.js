@@ -10,8 +10,7 @@ const config = {
 			out: 'build',
 			precompress: false,
 			envPrefix: ''
-		}),
-		trailingSlash: 'always'
+		})
 	}
 };
 

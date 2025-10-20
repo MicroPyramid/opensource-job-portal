@@ -1,21 +1,15 @@
 <script lang="ts">
   import '../../app.css';
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
-  import { Menu, X, Phone, Mail, MapPin, User, LogOut, ChevronDown, Twitter, Linkedin, Facebook } from '@lucide/svelte';
+  import { Menu, X, Mail, MapPin, LogOut, ChevronDown, Twitter, Linkedin, Facebook } from '@lucide/svelte';
   import { authStore } from '$lib/stores/auth';
   import Toast from '$lib/components/Toast.svelte';
 
   let mobileMenuOpen = false;
-  let userMenuOpen = false;
   let latestJobsDropdownOpen = false;
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
-  }
-
-  function toggleUserMenu() {
-    userMenuOpen = !userMenuOpen;
   }
 
   function toggleLatestJobsDropdown() {
@@ -24,7 +18,6 @@
 
   async function handleLogout() {
     await authStore.logout();
-    userMenuOpen = false;
   }
 
   // Close dropdowns when clicking outside
@@ -34,9 +27,6 @@
       return;
     }
 
-    if (userMenuOpen && !target.closest('.user-menu-container')) {
-      userMenuOpen = false;
-    }
     if (latestJobsDropdownOpen && !target.closest('.latest-jobs-menu')) {
       latestJobsDropdownOpen = false;
     }
@@ -139,25 +129,6 @@
     { name: 'Gurgaon', slug: 'gurgaon' }
   ];
 
-  const companies = [
-    { name: 'Sumukh Multigrains', slug: 'sumukh-multigrains' },
-    { name: 'DIPS', slug: 'dips' },
-    { name: 'MAC Technologies', slug: 'mac-technologies-pvt-ltd' },
-    { name: 'Maximus Human Resources', slug: 'maximus-human-resources-pvt-ltd' },
-    { name: 'Exovy Job Search', slug: 'exovy-job-search' },
-    { name: 'Grape Services', slug: 'grape-services-pvt-ltd' },
-    { name: 'TFG Vacations', slug: 'tfg-vacations-india-pvt-ltd' },
-    { name: 'MAVEN INFOTECH', slug: 'maven-infotech-pvt-ltd' },
-    { name: 'Alenam Technologies', slug: 'alenam-technologies-pvt-ltd' },
-    { name: 'Tech Mahindra', slug: 'tech-mahindra-private-limited' },
-    { name: 'Symplocos Solutions', slug: 'symplocos-solutions-limited' },
-    { name: 'PRO HUNTERS', slug: 'pro-hunters' },
-    { name: 'Regatta Recruiters', slug: 'regatta-recruiters' },
-    { name: 'One Stop Career', slug: 'one-stop-career' },
-    { name: 'HCL Technologies', slug: 'hcl-technologies-limited' },
-    { name: 'ReadMind Info', slug: 'readmind-info-services' },
-    { name: 'Human Life Consultancy', slug: 'human-life-consultancy' }
-  ];
 </script>
 
 <svelte:window onclick={handleClickOutside} />
@@ -279,9 +250,6 @@
           <a href="/companies/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
             Companies
           </a>
-          <a href="/recruiters/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
-            Recruiters
-          </a>
         </div>
 
         <!-- Auth Section -->
@@ -385,9 +353,6 @@
             <a href="/companies/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
               Companies
             </a>
-            <a href="/recruiters/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
-              Recruiters
-            </a>
 
             {#if $authStore.isAuthenticated && $authStore.user}
               <a href="/profile/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
@@ -470,8 +435,6 @@
           <h5 class="font-bold mb-4 text-lg">For Job Seekers</h5>
           <ul class="space-y-2">
             <li><a href="/jobs/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Browse Jobs</a></li>
-            <li><a href="/career-advice/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Career Advice</a></li>
-            <li><a href="/resume-builder/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Resume Builder</a></li>
           </ul>
         </div>
         
