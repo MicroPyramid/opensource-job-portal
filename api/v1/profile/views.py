@@ -9,7 +9,8 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample, OpenApiParameter
 from django.utils import timezone
-from django.db.models import Q
+from django.db import models as django_models
+from django.db.models import Q, Sum
 
 from peeldb.models import (
     User, EducationDetails, Degree, Qualification, EducationInstitue, Project, Certification
