@@ -224,8 +224,8 @@
   function navigateWithFilters(delay: number = 500) {
     clearTimeout(navigationTimeout);
     navigationTimeout = setTimeout(() => {
-      // Only navigate if we're still on the jobs page
-      if (!$page.url.pathname.startsWith('/jobs')) {
+      // Only navigate if we're on the exact jobs listing page (not job detail pages)
+      if ($page.url.pathname !== '/jobs' && $page.url.pathname !== '/jobs/') {
         return;
       }
 
