@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Search, Briefcase, Users, Star, MapPin, Brain, TrendingUp, Shield, Clock, ChevronRight, Building, DollarSign, Sparkles, GraduationCap, CalendarDays, UserCheck, ArrowRight, Code, Database, Palette, BarChart } from '@lucide/svelte';
+  import { Search, Briefcase, Users, Star, MapPin, Brain, TrendingUp, Shield, Clock, ChevronRight, Building, DollarSign, Sparkles, GraduationCap, CalendarDays, UserCheck, ArrowRight, Code, Database, Palette, BarChart, Home, UserSquare2 } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import Autocomplete from '$lib/components/Autocomplete.svelte';
   import { searchSkills, searchLocations } from '$lib/api/search';
@@ -36,8 +36,8 @@
   const jobTypes = [
     { id: 'full-time', label: 'Full Time', icon: Briefcase },
     { id: 'internship', label: 'Internship', icon: GraduationCap },
-    { id: 'walk-in', label: 'Walk-in', icon: CalendarDays },
-    { id: 'government', label: 'Government', icon: UserCheck }
+    { id: 'remote', label: 'Remote', icon: Home },
+    { id: 'fresher', label: 'Fresher', icon: UserSquare2 }
   ];
 
   const stats = [
@@ -126,7 +126,15 @@
 
     // Add job type filter
     if (selectedJobType) {
-      params.append('job_type', selectedJobType);
+      // Handle special job types
+      if (selectedJobType === 'remote') {
+        params.append('is_remote', 'true');
+      } else if (selectedJobType === 'fresher') {
+        params.append('fresher', 'true');
+      } else {
+        // Regular job types (full-time, internship, etc.)
+        params.append('job_type', selectedJobType);
+      }
     }
 
     // Navigate to jobs page with filters using SvelteKit navigation

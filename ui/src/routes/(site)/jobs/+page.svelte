@@ -62,6 +62,9 @@
   // Remote filter - initialized from URL
   let isRemote = $state(initialParams.is_remote ?? false);
 
+  // Fresher filter - initialized from URL
+  let isFresher = $state(initialParams.fresher ?? false);
+
   // Track if we've mounted (to prevent navigation on initial SSR)
   let hasMounted = $state(false);
   // Track if we're syncing from URL (to prevent triggering navigation)
@@ -192,6 +195,9 @@
     const remote = urlParams.get('is_remote');
     isRemote = remote === 'true';
 
+    const fresher = urlParams.get('fresher');
+    isFresher = fresher === 'true';
+
     // Done syncing
     isSyncingFromUrl = false;
   });
@@ -238,6 +244,7 @@
       min_experience: experienceMin > 0 ? experienceMin : undefined,
       max_experience: experienceMax < 20 ? experienceMax : undefined,
       is_remote: isRemote || undefined,
+      fresher: isFresher || undefined,
     };
   }
 
@@ -294,6 +301,7 @@
 
       // Add boolean filters
       if (isRemote) params.set('is_remote', 'true');
+      if (isFresher) params.set('fresher', 'true');
 
       // Add pagination
       if (currentPage > 1) params.set('page', currentPage.toString());
@@ -330,6 +338,7 @@
       experienceMin,
       experienceMax,
       isRemote,
+      isFresher,
       currentPage,
     ];
 
@@ -353,7 +362,8 @@
         salaryMax !== null ||
         experienceMin > 0 ||
         experienceMax < 20 ||
-        isRemote
+        isRemote ||
+        isFresher
     )
   );
 
@@ -365,12 +375,13 @@
     jobTypeOptions.filter(opt => opt.checked).length +
     (salaryMin !== null || salaryMax !== null ? 1 : 0) +
     (experienceMin > 0 || experienceMax < 20 ? 1 : 0) +
-    (isRemote ? 1 : 0)
+    (isRemote ? 1 : 0) +
+    (isFresher ? 1 : 0)
   );
 
   // Generate filter chips for active filters
   const filterChips = $derived((() => {
-    const chips: Array<{ label: string; value: string; type: 'location' | 'skill' | 'industry' | 'education' | 'job_type' | 'salary' | 'experience' | 'remote' }> = [];
+    const chips: Array<{ label: string; value: string; type: 'location' | 'skill' | 'industry' | 'education' | 'job_type' | 'salary' | 'experience' | 'remote' | 'fresher' }> = [];
 
     // Location chips
     locationOptions.filter(opt => opt.checked).forEach(opt => {
@@ -416,6 +427,11 @@
       chips.push({ label: 'Remote Only', value: 'remote', type: 'remote' });
     }
 
+    // Fresher chip
+    if (isFresher) {
+      chips.push({ label: 'Fresher Jobs', value: 'fresher', type: 'fresher' });
+    }
+
     return chips;
   })());
 
@@ -436,6 +452,7 @@
     experienceMin = 0;
     experienceMax = 20;
     isRemote = false;
+    isFresher = false;
     currentPage = 1;
     showFiltersMobile = false;
   }
@@ -467,6 +484,9 @@
         break;
       case 'remote':
         isRemote = false;
+        break;
+      case 'fresher':
+        isFresher = false;
         break;
     }
   }
