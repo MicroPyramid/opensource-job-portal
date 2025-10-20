@@ -10,9 +10,8 @@ const config = {
 			out: 'build',
 			precompress: false,
 			envPrefix: ''
-		})
-		// Note: trailingSlash option removed - not supported in current SvelteKit version
-		// Django backend handles URL normalization (adds trailing slashes)
+		}),
+		trailingSlash: 'always'
 	}
 };
 

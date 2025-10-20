@@ -360,7 +360,7 @@
 								<p class="text-sm md:text-base text-gray-600 font-medium">
 									You can reach us at:
 									<a
-										href="/contact"
+										href="/contact/"
 										class="text-blue-600 hover:text-blue-700 underline ml-1">Contact Page</a
 									>
 								</p>

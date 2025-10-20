@@ -392,7 +392,7 @@
         </p>
         <div class="flex flex-wrap justify-center gap-4">
           <a
-            href="/contact"
+            href="/contact/"
             class="bg-white text-blue-700 hover:bg-blue-50 font-semibold px-8 py-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
           >
             Contact Support

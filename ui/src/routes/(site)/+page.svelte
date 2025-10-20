@@ -424,11 +424,11 @@
       Join thousands of professionals who've found their dream jobs through our AI-powered platform.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a href="/register" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition duration-200 inline-flex items-center justify-center">
+      <a href="/register/" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition duration-200 inline-flex items-center justify-center">
         Get Started Free
         <ChevronRight size={20} class="ml-2" />
       </a>
-      <a href="/jobs" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-200">
+      <a href="/jobs/" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-200">
         Browse Jobs
       </a>
     </div>

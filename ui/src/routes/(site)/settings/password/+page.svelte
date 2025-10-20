@@ -131,7 +131,7 @@
   <div class="container mx-auto px-4 lg:px-6">
     <div class="flex items-center gap-4 mb-4">
       <a
-        href="/settings"
+        href="/settings/"
         class="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200"
       >
         <ChevronLeft size={24} />
@@ -205,7 +205,7 @@
           {#if errors.currentPassword}
             <p class="mt-1 text-sm text-red-600">{errors.currentPassword}</p>
           {/if}
-          <a href="/forgot-password" class="text-xs text-blue-600 hover:text-blue-700 mt-1 inline-block">
+          <a href="/forgot-password/" class="text-xs text-blue-600 hover:text-blue-700 mt-1 inline-block">
             Forgot your password?
           </a>
         </div>
@@ -326,7 +326,7 @@
         <!-- Submit Button -->
         <div class="flex justify-between items-center pt-4 border-t border-gray-200">
           <a
-            href="/settings"
+            href="/settings/"
             class="text-gray-600 hover:text-blue-600 font-medium"
           >
             ← Back to Settings

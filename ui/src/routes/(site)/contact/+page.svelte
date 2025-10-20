@@ -381,7 +381,7 @@
           </p>
 
           <a
-            href="/help"
+            href="/help/"
             class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors duration-200 text-center text-sm"
           >
             Visit Help Center
@@ -407,7 +407,7 @@
           </div>
 
           <a
-            href="/help"
+            href="/help/"
             class="text-blue-600 hover:text-blue-700 font-medium text-sm mt-4 inline-block"
           >
             View all FAQs →

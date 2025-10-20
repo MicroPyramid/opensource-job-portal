@@ -276,7 +276,7 @@
       <div class="text-center mt-12">
         <p class="text-gray-600">
           Already have an account?
-          <a href="/login" class="text-blue-600 hover:text-blue-700 font-medium">
+          <a href="/login/" class="text-blue-600 hover:text-blue-700 font-medium">
             Sign in here
           </a>
         </p>
@@ -523,9 +523,9 @@
                 />
                 <span class="ml-3 text-sm text-gray-600">
                   I agree to the
-                  <a href="/terms" target="_blank" class="text-blue-600 hover:text-blue-700 font-medium">Terms of Service</a>
+                  <a href="/terms/" target="_blank" class="text-blue-600 hover:text-blue-700 font-medium">Terms of Service</a>
                   and
-                  <a href="/privacy" target="_blank" class="text-blue-600 hover:text-blue-700 font-medium">Privacy Policy</a>
+                  <a href="/privacy/" target="_blank" class="text-blue-600 hover:text-blue-700 font-medium">Privacy Policy</a>
                 </span>
               </label>
               {#if errors.terms}
@@ -562,7 +562,7 @@
           <div class="mt-6 text-center">
             <p class="text-sm text-gray-600">
               Already have an account?
-              <a href="/login" class="text-blue-600 hover:text-blue-700 font-medium">
+              <a href="/login/" class="text-blue-600 hover:text-blue-700 font-medium">
                 Sign in
               </a>
             </p>

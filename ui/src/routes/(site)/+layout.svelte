@@ -312,13 +312,13 @@
               <span>Logout</span>
             </button>
           {:else}
-            <a href="/login" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
+            <a href="/login/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
               Login
             </a>
-            <a href="/register" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">
+            <a href="/register/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">
               Register
             </a>
-            <a href="/employer" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-200 text-sm font-medium">
+            <a href="/employer/" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-200 text-sm font-medium">
               Employer
             </a>
           {/if}
@@ -408,13 +408,13 @@
               </button>
             {:else}
               <div class="pt-3 space-y-2 border-t border-gray-200 mt-2">
-                <a href="/login" class="block text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                <a href="/login/" class="block text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
                   Login
                 </a>
-                <a href="/register" class="block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200 text-sm font-medium text-center">
+                <a href="/register/" class="block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200 text-sm font-medium text-center">
                   Register
                 </a>
-                <a href="/employer" class="block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-200 text-sm font-medium text-center">
+                <a href="/employer/" class="block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-200 text-sm font-medium text-center">
                   Employer
                 </a>
               </div>
@@ -475,10 +475,10 @@
         <div>
           <h5 class="font-bold mb-4 text-lg">For Job Seekers</h5>
           <ul class="space-y-2">
-            <li><a href="/jobs" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Browse Jobs</a></li>
-            <li><a href="/career-advice" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Career Advice</a></li>
-            <li><a href="/resume-builder" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Resume Builder</a></li>
-            <li><a href="/salary-guide" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Salary Guide</a></li>
+            <li><a href="/jobs/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Browse Jobs</a></li>
+            <li><a href="/career-advice/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Career Advice</a></li>
+            <li><a href="/resume-builder/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Resume Builder</a></li>
+            <li><a href="/salary-guide/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Salary Guide</a></li>
           </ul>
         </div>
         
@@ -486,10 +486,10 @@
         <div>
           <h5 class="font-bold mb-4 text-lg">For Employers</h5>
           <ul class="space-y-2">
-            <li><a href="/post-job" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Post a Job</a></li>
-            <li><a href="/employer-dashboard" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Employer Dashboard</a></li>
-            <li><a href="/pricing" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Pricing Plans</a></li>
-            <li><a href="/talent-search" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Search Candidates</a></li>
+            <li><a href="/post-job/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Post a Job</a></li>
+            <li><a href="/employer-dashboard/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Employer Dashboard</a></li>
+            <li><a href="/pricing/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Pricing Plans</a></li>
+            <li><a href="/talent-search/" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Search Candidates</a></li>
           </ul>
         </div>
         
@@ -520,10 +520,10 @@
             &copy; {new Date().getFullYear()} PeelJobs. All rights reserved.
           </p>
           <div class="flex flex-wrap justify-center md:justify-end gap-4 md:gap-6 text-sm">
-            <a href="/about" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">About Us</a>
-            <a href="/privacy" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Privacy Policy</a>
-            <a href="/terms" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Terms & Conditions</a>
-            <a href="/contact" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Contact Us</a>
+            <a href="/about/" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">About Us</a>
+            <a href="/privacy/" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Privacy Policy</a>
+            <a href="/terms/" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Terms & Conditions</a>
+            <a href="/contact/" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">Contact Us</a>
           </div>
         </div>
       </div>

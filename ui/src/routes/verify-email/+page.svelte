@@ -147,7 +147,7 @@
           </div>
 
           <a
-            href="/jobseeker-dashboard"
+            href="/jobseeker-dashboard/"
             class="inline-block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg text-center"
           >
             Continue to Dashboard
@@ -215,7 +215,7 @@
             {/if}
           </button>
 
-          <a href="/login" class="text-gray-600 hover:text-blue-600 font-medium text-sm">
+          <a href="/login/" class="text-gray-600 hover:text-blue-600 font-medium text-sm">
             Back to Sign In
           </a>
         </div>
@@ -276,13 +276,13 @@
 
           <div class="space-y-2">
             <a
-              href="/login"
+              href="/login/"
               class="block text-blue-600 hover:text-blue-700 font-medium text-sm"
             >
               Try Signing In
             </a>
             <a
-              href="/contact"
+              href="/contact/"
               class="block text-gray-600 hover:text-blue-600 font-medium text-sm"
             >
               Contact Support

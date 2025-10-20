@@ -158,18 +158,18 @@
     <div class="mt-6 text-center text-sm text-gray-600">
       <p>
         By signing in, you agree to our 
-        <a href="/terms" class="text-blue-600 hover:text-blue-800 underline">Terms of Service</a>
+        <a href="/terms/" class="text-blue-600 hover:text-blue-800 underline">Terms of Service</a>
         and 
-        <a href="/privacy" class="text-blue-600 hover:text-blue-800 underline">Privacy Policy</a>
+        <a href="/privacy/" class="text-blue-600 hover:text-blue-800 underline">Privacy Policy</a>
       </p>
     </div>
 
     <!-- Additional Links -->
     <div class="mt-8 text-center">
       <div class="flex justify-center space-x-6 text-sm text-gray-500">
-        <a href="/about" class="hover:text-gray-700 transition-colors">About</a>
-        <a href="/help" class="hover:text-gray-700 transition-colors">Help</a>
-        <a href="/contact" class="hover:text-gray-700 transition-colors">Contact</a>
+        <a href="/about/" class="hover:text-gray-700 transition-colors">About</a>
+        <a href="/help/" class="hover:text-gray-700 transition-colors">Help</a>
+        <a href="/contact/" class="hover:text-gray-700 transition-colors">Contact</a>
       </div>
     </div>
   </div>

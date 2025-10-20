@@ -297,13 +297,13 @@
 		</p>
 		<div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
 			<a
-				href="/jobs"
+				href="/jobs/"
 				class="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200 text-sm md:text-base"
 			>
 				Browse Jobs
 			</a>
 			<a
-				href="/contact"
+				href="/contact/"
 				class="inline-block bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors duration-200 text-sm md:text-base"
 			>
 				Contact Us

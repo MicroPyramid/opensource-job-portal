@@ -133,7 +133,7 @@
 
           <!-- Back to Login -->
           <div class="mt-6 text-center">
-            <a href="/login" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+            <a href="/login/" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
               <ArrowLeft size={16} class="mr-1" />
               Back to Sign In
             </a>
@@ -180,7 +180,7 @@
           </button>
 
           <a
-            href="/login"
+            href="/login/"
             class="inline-flex items-center text-gray-600 hover:text-blue-600 font-medium text-sm"
           >
             <ArrowLeft size={16} class="mr-1" />
@@ -195,7 +195,7 @@
     <div class="mt-8 text-center">
       <p class="text-sm text-gray-600">
         Need more help?
-        <a href="/contact" class="text-blue-600 hover:text-blue-700 font-medium">
+        <a href="/contact/" class="text-blue-600 hover:text-blue-700 font-medium">
           Contact Support
         </a>
       </p>

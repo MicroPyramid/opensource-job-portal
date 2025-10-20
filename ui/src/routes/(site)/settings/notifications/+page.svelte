@@ -78,7 +78,7 @@
   <div class="container mx-auto px-4 lg:px-6">
     <div class="flex items-center gap-4 mb-4">
       <a
-        href="/settings"
+        href="/settings/"
         class="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200"
       >
         <ChevronLeft size={24} />
@@ -345,7 +345,7 @@
       <!-- Save Button -->
       <div class="flex justify-between items-center pt-4">
         <a
-          href="/settings"
+          href="/settings/"
           class="text-gray-600 hover:text-blue-600 font-medium"
         >
           ← Back to Settings

@@ -388,7 +388,7 @@
 							For any questions, or legal concerns, please email Support at Peeljobs.com
 						</p>
 						<a
-							href="/contact"
+							href="/contact/"
 							class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200"
 						>
 							Contact Support

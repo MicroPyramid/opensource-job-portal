@@ -149,7 +149,7 @@
               ></div>
             </div>
             {#if user.profileCompletion < 100}
-              <a href="/profile" class="text-xs text-blue-600 hover:text-blue-700 mt-2 inline-block">
+              <a href="/profile/" class="text-xs text-blue-600 hover:text-blue-700 mt-2 inline-block">
                 Complete your profile →
               </a>
             {/if}
@@ -158,13 +158,13 @@
           <!-- Quick Actions -->
           <div class="space-y-2">
             <a
-              href="/profile"
+              href="/profile/"
               class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
             >
               Edit Profile
             </a>
             <a
-              href="/jobseeker-dashboard"
+              href="/jobseeker-dashboard/"
               class="block w-full text-center border border-gray-300 hover:border-blue-300 text-gray-700 hover:text-blue-600 font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
             >
               Back to Dashboard
@@ -264,13 +264,13 @@
             </p>
             <div class="flex gap-3">
               <a
-                href="/help"
+                href="/help/"
                 class="bg-white text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
               >
                 Help Center
               </a>
               <a
-                href="/contact"
+                href="/contact/"
                 class="border border-white hover:bg-white/10 font-semibold py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
               >
                 Contact Support

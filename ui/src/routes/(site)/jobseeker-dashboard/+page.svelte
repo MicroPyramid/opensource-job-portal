@@ -117,7 +117,7 @@
                             <div class="bg-white rounded-full h-2 transition-all duration-300" style="width: {user.profileCompletion}%"></div>
                         </div>
                     </div>
-                    <a href="/profile" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                    <a href="/profile/" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">
                         Update Profile
                     </a>
                 </div>
@@ -178,7 +178,7 @@
                     <div class="p-6 border-b">
                         <div class="flex items-center justify-between">
                             <h2 class="text-lg font-semibold text-gray-900">Recent Applications</h2>
-                            <a href="/applied-jobs" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                            <a href="/applied-jobs/" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
                                 View All
                             </a>
                         </div>
@@ -212,19 +212,19 @@
                 <div class="bg-white rounded-xl shadow-sm border p-6">
                     <h3 class="font-semibold text-gray-900 mb-4">Quick Actions</h3>
                     <div class="space-y-3">
-                        <a href="/jobs" class="flex items-center p-3 rounded-lg border hover:bg-gray-50 transition-colors group">
+                        <a href="/jobs/" class="flex items-center p-3 rounded-lg border hover:bg-gray-50 transition-colors group">
                             <div class="bg-blue-50 p-2 rounded-lg mr-3 group-hover:bg-blue-100 transition-colors">
                                 <Search class="w-4 h-4 text-blue-600" />
                             </div>
                             <span class="font-medium text-gray-900">Search Jobs</span>
                         </a>
-                        <a href="/profile" class="flex items-center p-3 rounded-lg border hover:bg-gray-50 transition-colors group">
+                        <a href="/profile/" class="flex items-center p-3 rounded-lg border hover:bg-gray-50 transition-colors group">
                             <div class="bg-green-50 p-2 rounded-lg mr-3 group-hover:bg-green-100 transition-colors">
                                 <User class="w-4 h-4 text-green-600" />
                             </div>
                             <span class="font-medium text-gray-900">Edit Profile</span>
                         </a>
-                        <a href="/saved-jobs" class="flex items-center p-3 rounded-lg border hover:bg-gray-50 transition-colors group">
+                        <a href="/saved-jobs/" class="flex items-center p-3 rounded-lg border hover:bg-gray-50 transition-colors group">
                             <div class="bg-purple-50 p-2 rounded-lg mr-3 group-hover:bg-purple-100 transition-colors">
                                 <BookmarkIcon class="w-4 h-4 text-purple-600" />
                             </div>
@@ -238,7 +238,7 @@
                     <div class="p-6 border-b">
                         <div class="flex items-center justify-between">
                             <h3 class="font-semibold text-gray-900">Saved Jobs</h3>
-                            <a href="/saved-jobs" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                            <a href="/saved-jobs/" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
                                 View All
                             </a>
                         </div>

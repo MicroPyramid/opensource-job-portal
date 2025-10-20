@@ -149,14 +149,14 @@
           </p>
 
           <a
-            href="/forgot-password"
+            href="/forgot-password/"
             class="inline-block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg text-center"
           >
             Request New Link
           </a>
 
           <div class="mt-6">
-            <a href="/login" class="text-gray-600 hover:text-blue-600 font-medium">
+            <a href="/login/" class="text-gray-600 hover:text-blue-600 font-medium">
               Back to Sign In
             </a>
           </div>
@@ -186,7 +186,7 @@
           </div>
 
           <a
-            href="/login"
+            href="/login/"
             class="inline-block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg text-center"
           >
             Continue to Sign In
@@ -329,7 +329,7 @@
 
           <!-- Back to Login -->
           <div class="mt-6 text-center">
-            <a href="/login" class="text-gray-600 hover:text-blue-600 font-medium text-sm">
+            <a href="/login/" class="text-gray-600 hover:text-blue-600 font-medium text-sm">
               Remember your password? Sign In
             </a>
           </div>
