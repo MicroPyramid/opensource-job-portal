@@ -77,6 +77,7 @@ export interface Job {
   time_ago: string;
   applicants_count: number;
   is_saved: boolean;
+  is_applied: boolean;
 }
 
 /**

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { authStore } from '$lib/stores/auth';
@@ -31,21 +31,16 @@
   let job: JobDetail = $derived(data.job);
   let relatedJobs: Job[] = $derived(data.relatedJobs || []);
 
-  // Component state
-  let isJobSaved = $state(false);
+  // Component state - use $derived for SSR compatibility
+  let isJobSaved = $derived(job.is_saved);
+  let isJobApplied = $derived(job.is_applied);
   let showApplyModal = $state(false);
   let showLoginPrompt = $state(false);
   let isApplying = $state(false);
   let isSaving = $state(false);
-  let isCheckingSavedState = $state(false);
 
   // Check if user is authenticated
   let isAuthenticated = $derived($authStore.isAuthenticated);
-
-  // Initialize saved state when job data changes
-  $effect(() => {
-    isJobSaved = job.is_saved;
-  });
 
   // Handle save/unsave job
   async function handleSaveJob(): Promise<void> {
@@ -58,21 +53,19 @@
     try {
       if (isJobSaved) {
         await jobsApi.unsave(job.id);
-        isJobSaved = false;
         toast.success('Job removed from saved list');
       } else {
         await jobsApi.save(job.id);
-        isJobSaved = true;
         toast.success('Job saved successfully');
       }
+      // Reload data from server to update is_saved state (SSR-friendly)
+      await invalidateAll();
     } catch (error: any) {
       console.error('Error saving job:', error);
-      // Handle specific error cases
       const errorMessage = error?.message || error?.error || String(error);
       if (errorMessage.includes('already saved')) {
-        // Update UI state to match reality
-        isJobSaved = true;
         toast.info('Job is already saved');
+        await invalidateAll();
       } else {
         toast.error('Failed to save job. Please try again.');
       }
@@ -85,6 +78,10 @@
   function handleApply(): void {
     if (!isAuthenticated) {
       showLoginPrompt = true;
+      return;
+    }
+    if (isJobApplied) {
+      toast.info('You have already applied for this job');
       return;
     }
     showApplyModal = true;
@@ -122,6 +119,8 @@
       await jobsApi.apply(job.id);
       toast.success('Application submitted successfully!');
       showApplyModal = false;
+      // Reload data from server to update is_applied state (SSR-friendly)
+      await invalidateAll();
     } catch (error) {
       console.error('Error submitting application:', error);
       toast.error('Failed to submit application. Please try again.');
@@ -293,10 +292,18 @@
           <div class="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-gray-100 lg:hidden">
             <button
               onclick={handleApply}
-              class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              disabled={isJobApplied}
+              class="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 {isJobApplied
+                ? 'bg-green-50 text-green-700 border border-green-300 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'}"
             >
-              <Send class="w-5 h-5" />
-              Apply Now
+              {#if isJobApplied}
+                <CheckCircle class="w-5 h-5" />
+                Applied
+              {:else}
+                <Send class="w-5 h-5" />
+                Apply Now
+              {/if}
             </button>
             <button
               onclick={handleSaveJob}
@@ -558,10 +565,18 @@
 
           <button
             onclick={handleApply}
-            class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 mb-3"
+            disabled={isJobApplied}
+            class="w-full px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mb-3 {isJobApplied
+              ? 'bg-green-50 text-green-700 border border-green-300 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700'}"
           >
-            <Send class="w-5 h-5" />
-            Quick Apply
+            {#if isJobApplied}
+              <CheckCircle class="w-5 h-5" />
+              Applied
+            {:else}
+              <Send class="w-5 h-5" />
+              Quick Apply
+            {/if}
           </button>
 
           <button

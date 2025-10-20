@@ -3,12 +3,16 @@ Profile API URL routing
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (
-    ProfileView, ProfileUploadView, ResumeDeleteView,
-    EducationViewSet, QualificationViewSet,
-    DegreeViewSet, EducationInstituteViewSet,
-    ProjectViewSet, CertificationViewSet
+
+# Import from split view modules
+from .profile_views import ProfileView, ProfileUploadView, ResumeDeleteView
+from .education_views import EducationViewSet
+from .education_lookup_views import (
+    QualificationViewSet,
+    DegreeViewSet,
+    EducationInstituteViewSet
 )
+from .portfolio_views import ProjectViewSet, CertificationViewSet
 
 app_name = "profile"
 

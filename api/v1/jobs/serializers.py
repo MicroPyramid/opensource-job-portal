@@ -87,6 +87,7 @@ class JobListSerializer(serializers.ModelSerializer):
     time_ago = serializers.SerializerMethodField()
     applicants_count = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
+    is_applied = serializers.SerializerMethodField()
 
     class Meta:
         model = JobPost
@@ -117,6 +118,7 @@ class JobListSerializer(serializers.ModelSerializer):
             'time_ago',
             'applicants_count',
             'is_saved',
+            'is_applied',
         ]
 
     def get_company_logo(self, obj):
@@ -214,6 +216,13 @@ class JobListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             return SavedJobs.objects.filter(job_post=obj, user=request.user).exists()
+        return False
+
+    def get_is_applied(self, obj):
+        """Check if user has already applied for this job"""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return AppliedJobs.objects.filter(job_post=obj, user=request.user).exists()
         return False
 
 
