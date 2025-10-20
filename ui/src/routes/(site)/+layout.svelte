@@ -1,6 +1,6 @@
 <script lang="ts">
   import '../../app.css';
-  import { Menu, X, Mail, MapPin, LogOut, ChevronDown, Twitter, Linkedin, Facebook } from '@lucide/svelte';
+  import { Menu, X, Mail, MapPin, LogOut, ChevronDown, Twitter, Linkedin, Facebook, User, LayoutDashboard, FileText, Bookmark, FilePlus, MessageSquare, Bell, Settings } from '@lucide/svelte';
   import { authStore } from '$lib/stores/auth';
   import Toast from '$lib/components/Toast.svelte';
   import type { PageData } from './$types';
@@ -10,6 +10,7 @@
 
   let mobileMenuOpen = $state(false);
   let latestJobsDropdownOpen = $state(false);
+  let userMenuDropdownOpen = $state(false);
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -19,8 +20,13 @@
     latestJobsDropdownOpen = !latestJobsDropdownOpen;
   }
 
+  function toggleUserMenuDropdown() {
+    userMenuDropdownOpen = !userMenuDropdownOpen;
+  }
+
   async function handleLogout() {
     await authStore.logout();
+    userMenuDropdownOpen = false;
   }
 
   // Close dropdowns when clicking outside
@@ -32,6 +38,10 @@
 
     if (latestJobsDropdownOpen && !target.closest('.latest-jobs-menu')) {
       latestJobsDropdownOpen = false;
+    }
+
+    if (userMenuDropdownOpen && !target.closest('.user-menu')) {
+      userMenuDropdownOpen = false;
     }
   }
 
@@ -254,27 +264,84 @@
         <!-- Auth Section -->
         <div class="hidden lg:flex items-center space-x-3">
           {#if isAuthenticated && user}
-            <!-- User Profile Picture -->
-            {#if user.photo || user.profile_pic}
-              <img
-                src={user.photo || user.profile_pic}
-                alt={user.first_name}
-                class="w-10 h-10 rounded-full border-2 border-gray-300"
-              />
-            {:else}
-              <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                {user.first_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-              </div>
-            {/if}
+            <!-- User Menu Dropdown -->
+            <div class="relative user-menu">
+              <button
+                onclick={toggleUserMenuDropdown}
+                class="flex items-center space-x-2 hover:opacity-90 transition-opacity duration-200"
+              >
+                <!-- User Profile Picture -->
+                {#if user.photo || user.profile_pic}
+                  <img
+                    src={user.photo || user.profile_pic}
+                    alt={user.first_name}
+                    class="w-10 h-10 rounded-full border-2 border-gray-300"
+                  />
+                {:else}
+                  <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                    {user.first_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                  </div>
+                {/if}
+                <ChevronDown size={16} class="text-gray-600 transition-transform {userMenuDropdownOpen ? 'rotate-180' : ''}" />
+              </button>
 
-            <!-- Logout Button -->
-            <button
-              onclick={handleLogout}
-              class="text-gray-700 hover:text-red-600 transition-colors duration-200 px-3 py-2 text-sm flex items-center space-x-1"
-            >
-              <LogOut size={16} />
-              <span>Logout</span>
-            </button>
+              {#if userMenuDropdownOpen}
+                <div class="absolute right-0 top-full mt-2 bg-white shadow-lg border border-gray-200 rounded-lg z-50 w-64">
+                  <!-- User Info Header -->
+                  <div class="px-4 py-3 border-b border-gray-200">
+                    <p class="text-sm font-semibold text-gray-900 truncate">{user.first_name} {user.last_name}</p>
+                    <p class="text-xs text-gray-600 truncate">{user.email}</p>
+                  </div>
+
+                  <!-- Menu Items -->
+                  <div class="py-2">
+                    <a href="/profile/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                      <User size={16} class="text-gray-500" />
+                      <span>My Profile</span>
+                    </a>
+                    <a href="/jobseeker-dashboard/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                      <LayoutDashboard size={16} class="text-gray-500" />
+                      <span>Dashboard</span>
+                    </a>
+                    <a href="/applications/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                      <FileText size={16} class="text-gray-500" />
+                      <span>My Applications</span>
+                    </a>
+                    <a href="/saved/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                      <Bookmark size={16} class="text-gray-500" />
+                      <span>Saved Jobs</span>
+                    </a>
+                    <a href="/resume/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                      <FilePlus size={16} class="text-gray-500" />
+                      <span>My Resumes</span>
+                    </a>
+                    <a href="/messages/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                      <MessageSquare size={16} class="text-gray-500" />
+                      <span>Messages</span>
+                    </a>
+                    <a href="/notifications/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                      <Bell size={16} class="text-gray-500" />
+                      <span>Notifications</span>
+                    </a>
+                    <a href="/settings/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                      <Settings size={16} class="text-gray-500" />
+                      <span>Settings</span>
+                    </a>
+                  </div>
+
+                  <!-- Logout -->
+                  <div class="border-t border-gray-200 py-2">
+                    <button
+                      onclick={handleLogout}
+                      class="flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                    >
+                      <LogOut size={16} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </div>
+              {/if}
+            </div>
           {:else}
             <a href="/login/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
               Login
@@ -349,12 +416,47 @@
             </a>
 
             {#if isAuthenticated && user}
-              <a href="/profile/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
-                My Profile
-              </a>
+              <!-- User Menu Section (Mobile) -->
+              <div class="pt-3 space-y-1 border-t border-gray-200 mt-2">
+                <p class="text-xs font-semibold text-gray-500 px-3 py-1 uppercase tracking-wide">My Account</p>
+
+                <a href="/profile/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  <User size={16} />
+                  <span>My Profile</span>
+                </a>
+                <a href="/jobseeker-dashboard/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  <LayoutDashboard size={16} />
+                  <span>Dashboard</span>
+                </a>
+                <a href="/applications/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  <FileText size={16} />
+                  <span>My Applications</span>
+                </a>
+                <a href="/saved/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  <Bookmark size={16} />
+                  <span>Saved Jobs</span>
+                </a>
+                <a href="/resume/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  <FilePlus size={16} />
+                  <span>My Resumes</span>
+                </a>
+                <a href="/messages/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  <MessageSquare size={16} />
+                  <span>Messages</span>
+                </a>
+                <a href="/notifications/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  <Bell size={16} />
+                  <span>Notifications</span>
+                </a>
+                <a href="/settings/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  <Settings size={16} />
+                  <span>Settings</span>
+                </a>
+              </div>
+
               <button
                 onclick={handleLogout}
-                class="text-red-600 hover:bg-red-50 py-2 px-3 rounded transition-colors duration-200 flex items-center space-x-2 text-left text-sm mt-2"
+                class="text-red-600 hover:bg-red-50 py-2 px-3 rounded transition-colors duration-200 flex items-center space-x-2 text-left text-sm mt-2 w-full"
               >
                 <LogOut size={16} />
                 <span>Logout</span>
