@@ -1,6 +1,6 @@
 <script lang="ts">
   import '../../app.css';
-  import { Menu, X, Mail, MapPin, LogOut, ChevronDown, Twitter, Linkedin, Facebook, User, FileText, Bookmark, FilePlus, MessageSquare, Bell, Settings } from '@lucide/svelte';
+  import { Menu, X, Mail, MapPin, LogOut, ChevronDown, Twitter, Linkedin, Facebook, User, FileText, Bookmark, FilePlus, MessageSquare, Bell } from '@lucide/svelte';
   import { authStore } from '$lib/stores/auth';
   import Toast from '$lib/components/Toast.svelte';
   import type { PageData } from './$types';
@@ -319,10 +319,6 @@
                       <Bell size={16} class="text-gray-500" />
                       <span>Notifications</span>
                     </a>
-                    <a href="/settings/" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                      <Settings size={16} class="text-gray-500" />
-                      <span>Settings</span>
-                    </a>
                   </div>
 
                   <!-- Logout -->
@@ -439,10 +435,6 @@
                 <a href="/notifications/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
                   <Bell size={16} />
                   <span>Notifications</span>
-                </a>
-                <a href="/settings/" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
-                  <Settings size={16} />
-                  <span>Settings</span>
                 </a>
               </div>
 

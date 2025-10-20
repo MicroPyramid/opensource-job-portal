@@ -7,7 +7,6 @@
 		Briefcase,
 		Award,
 		FileText,
-		Settings,
 		Code
 	} from '@lucide/svelte';
 
@@ -54,12 +53,6 @@
 			href: '/profile/resume',
 			icon: FileText,
 			description: 'Resume management'
-		},
-		{
-			name: 'Settings',
-			href: '/profile/settings',
-			icon: Settings,
-			description: 'Account settings'
 		}
 	];
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Bell, CheckCheck, Trash2, Filter, Briefcase, MessageCircle, Star, AlertCircle, Check, Settings, X } from '@lucide/svelte';
+  import { Bell, CheckCheck, Trash2, Filter, Briefcase, MessageCircle, Star, AlertCircle, Check, X } from '@lucide/svelte';
 
   type NotificationFilter = 'all' | NotificationType;
   type NotificationType = 'applications' | 'messages' | 'job_alerts' | 'system';
@@ -120,7 +120,7 @@
       message: 'Your job alert for "Data Scientist - Machine Learning" is now active',
       timestamp: '2024-01-16T18:00:00',
       read: true,
-      actionUrl: '/settings/job-alerts'
+      actionUrl: '/jobs/alerts'
     }
   ]);
 
@@ -223,14 +223,6 @@
           <p class="text-blue-100 mt-1">Stay updated with your job search activity</p>
         </div>
       </div>
-
-      <a
-        href="/settings/notifications"
-        class="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2"
-      >
-        <Settings size={18} />
-        <span class="hidden md:inline">Settings</span>
-      </a>
     </div>
   </div>
 </section>
