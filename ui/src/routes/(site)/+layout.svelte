@@ -74,23 +74,23 @@
   ];
 
   const industries = [
-    { name: 'IT Services', slug: 'it-services-consulting-industry' },
-    { name: 'BPO', slug: 'bpo-call-centre-industry' },
-    { name: 'Advertising', slug: 'advertising-marketing-industry' },
-    { name: 'Other', slug: 'other-industry' },
-    { name: 'Education', slug: 'education-teaching-industry' },
-    { name: 'Banking', slug: 'banking-industry' },
-    { name: 'Hotels', slug: 'hotels-restaurants-travel-industry' },
-    { name: 'Aerospace', slug: 'aerospace-aviation-industry' },
-    { name: 'Healthcare', slug: 'healthcare-industry' },
-    { name: 'Financial Services', slug: 'financial-services-industry' },
-    { name: 'Consumer Goods', slug: 'consumer-goods-fmcg-industry' },
-    { name: 'Engineering', slug: 'engineering-construction-industry' },
-    { name: 'E-commerce', slug: 'e-commerce-internet-industry' },
-    { name: 'Recruitment', slug: 'recruitment-industry' },
-    { name: 'Automobile', slug: 'automobile-industry' },
-    { name: 'IT-Hardware', slug: 'it-hardware-industry' },
-    { name: 'Manufacturing Company', slug: 'manufacturing-company-industry' }
+    { name: 'IT-Software', slug: 'it-software' },
+    { name: 'BPO', slug: 'bpo' },
+    { name: 'Education', slug: 'education' },
+    { name: 'Banking', slug: 'banking' },
+    { name: 'Sales & Marketing', slug: 'sales' },
+    { name: 'Travel & Hotels', slug: 'travel' },
+    { name: 'Accounting', slug: 'accounting' },
+    { name: 'Medical', slug: 'medical' },
+    { name: 'Other', slug: 'other' },
+    { name: 'Advertising', slug: 'advertising' },
+    { name: 'Construction', slug: 'construction' },
+    { name: 'Automobile', slug: 'automobile' },
+    { name: 'Aviation', slug: 'aviation' },
+    { name: 'Freshers', slug: 'freshers' },
+    { name: 'IT-Hardware', slug: 'it-hardware' },
+    { name: 'Recruitment', slug: 'recruitment' },
+    { name: 'Digital Marketing', slug: 'digital-marketing' }
   ];
 
   const locations = [
@@ -165,11 +165,11 @@
                 <div class="flex p-4 gap-6 max-w-6xl">
                   <!-- Skills Column -->
                   <div class="w-48">
-                    <a href="/jobs-by-skill/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Skills</a>
+                    <a href="/jobs/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Skills</a>
                     <ul class="space-y-1.5">
                       {#each skills as skill}
                         <li>
-                          <a href="/{skill.slug}-jobs/" class="text-gray-600 hover:text-blue-600 text-xs block">
+                          <a href="/jobs/?skills={skill.slug}" class="text-gray-600 hover:text-blue-600 text-xs block">
                             Jobs For {skill.name}
                           </a>
                         </li>
@@ -179,11 +179,11 @@
 
                   <!-- Industry Column -->
                   <div class="w-48">
-                    <a href="/jobs-by-industry/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Industry</a>
+                    <a href="/jobs/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Industry</a>
                     <ul class="space-y-1.5">
                       {#each industries as industry}
                         <li>
-                          <a href="/{industry.slug}-jobs/" class="text-gray-600 hover:text-blue-600 text-xs block">
+                          <a href="/jobs/?industry={industry.slug}" class="text-gray-600 hover:text-blue-600 text-xs block">
                             Jobs For {industry.name}
                           </a>
                         </li>
@@ -193,11 +193,11 @@
 
                   <!-- Location Column -->
                   <div class="w-48">
-                    <a href="/jobs-by-location/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Location</a>
+                    <a href="/jobs/" class="block font-semibold text-gray-900 mb-3 hover:text-blue-600 text-sm">Location</a>
                     <ul class="space-y-1.5">
                       {#each locations as location}
                         <li>
-                          <a href="/jobs-in-{location.slug}/" class="text-gray-600 hover:text-blue-600 text-xs block">
+                          <a href="/jobs/?location={location.slug}" class="text-gray-600 hover:text-blue-600 text-xs block">
                             Jobs in {location.name}
                           </a>
                         </li>
@@ -243,11 +243,6 @@
           <a href="/jobs/?is_remote=true" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
             Remote Jobs
           </a>
-          {#if isAuthenticated && user && user.user_type === 'JS'}
-            <a href="/applied-jobs/" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
-              Applied Jobs
-            </a>
-          {/if}
           <a href="/jobs/?job_type=internship" class="text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 text-sm">
             Internship
           </a>
@@ -346,11 +341,6 @@
             <a href="/jobs/?is_remote=true" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
               Remote Jobs
             </a>
-            {#if isAuthenticated && user && user.user_type === 'JS'}
-              <a href="/applied-jobs/" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
-                Applied Jobs
-              </a>
-            {/if}
             <a href="/jobs/?job_type=internship" class="text-gray-700 hover:text-blue-600 py-2 px-3 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
               Internship
             </a>
