@@ -123,8 +123,8 @@
 </script>
 
 <svelte:head>
-  <title>Reset Password - HirePulse.in</title>
-  <meta name="description" content="Reset your HirePulse.in account password" />
+  <title>Reset Password - PeelJobs</title>
+  <meta name="description" content="Reset your PeelJobs account password" />
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">

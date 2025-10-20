@@ -27,12 +27,23 @@
 </script>
 
 <svelte:head>
-	<title>Privacy Policy - PeelJobs</title>
+	<title>Privacy Policy - PeelJobs | How We Protect Your Data</title>
 	<meta
 		name="description"
-		content="Peeljobs privacy policy - We set our efforts to secure all your confidential information, third party details and more. Read our commitment to protecting your privacy."
+		content="PeelJobs privacy policy explains how we collect, use, and protect your personal information. Learn about our commitment to data security, cookies, third-party services, and your privacy rights."
 	/>
-	<link rel="canonical" href="https://peeljobs.com/privacy" />
+	<link rel="canonical" href="https://peeljobs.com/privacy/" />
+
+	<!-- Open Graph -->
+	<meta property="og:title" content="Privacy Policy - PeelJobs" />
+	<meta property="og:description" content="Learn how PeelJobs protects your privacy and personal information." />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://peeljobs.com/privacy/" />
+
+	<!-- Twitter Card -->
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="Privacy Policy - PeelJobs" />
+	<meta name="twitter:description" content="Our commitment to protecting your privacy and data." />
 </svelte:head>
 
 <!-- Hero Section -->

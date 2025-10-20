@@ -63,7 +63,7 @@
 </script>
 
 <svelte:head>
-  <title>Privacy Settings - HirePulse.in</title>
+  <title>Privacy Settings - PeelJobs</title>
   <meta name="description" content="Manage your privacy and data settings" />
 </svelte:head>
 
@@ -307,7 +307,7 @@
             <option value="verified">Verified recruiters only</option>
             <option value="none">No one</option>
           </select>
-          <p class="text-xs text-gray-500 mt-1">Control who can contact you through HirePulse</p>
+          <p class="text-xs text-gray-500 mt-1">Control who can contact you through PeelJobs</p>
         </div>
       </div>
 
@@ -387,7 +387,7 @@
               </div>
               <div class="text-left">
                 <div class="font-semibold text-gray-800 group-hover:text-blue-600">Download Your Data</div>
-                <div class="text-sm text-gray-600">Get a copy of all your HirePulse data</div>
+                <div class="text-sm text-gray-600">Get a copy of all your PeelJobs data</div>
               </div>
             </div>
           </button>

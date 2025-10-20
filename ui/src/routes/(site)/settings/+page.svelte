@@ -71,8 +71,8 @@
 </script>
 
 <svelte:head>
-  <title>Account Settings - HirePulse.in</title>
-  <meta name="description" content="Manage your HirePulse account settings and preferences" />
+  <title>Account Settings - PeelJobs</title>
+  <meta name="description" content="Manage your PeelJobs account settings and preferences" />
 </svelte:head>
 
 <!-- Page Header -->

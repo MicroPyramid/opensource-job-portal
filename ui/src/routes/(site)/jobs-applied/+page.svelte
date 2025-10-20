@@ -136,8 +136,8 @@
 </script>
 
 <svelte:head>
-    <title>Applied Jobs - HirePulse.in</title>
-    <meta name="description" content="Track your job applications and their status on HirePulse.in" />
+    <title>Applied Jobs - PeelJobs</title>
+    <meta name="description" content="Track your job applications and their status on PeelJobs" />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 py-8">

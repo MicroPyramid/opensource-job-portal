@@ -206,7 +206,7 @@
 </script>
 
 <svelte:head>
-  <title>Notifications - HirePulse.in</title>
+  <title>Notifications - PeelJobs</title>
   <meta name="description" content="View and manage your notifications" />
 </svelte:head>
 

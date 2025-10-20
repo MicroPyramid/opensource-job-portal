@@ -138,7 +138,7 @@
 </script>
 
 <svelte:head>
-    <title>{profile.name} - {profile.title} | HirePulse.in</title>
+    <title>{profile.name} - {profile.title} | PeelJobs</title>
     <meta name="description" content="{profile.name} - {profile.title}. {profile.bio}" />
 </svelte:head>
 

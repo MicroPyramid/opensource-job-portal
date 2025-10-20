@@ -122,7 +122,7 @@
 </script>
 
 <svelte:head>
-  <title>Change Password - HirePulse.in</title>
+  <title>Change Password - PeelJobs</title>
   <meta name="description" content="Update your account password" />
 </svelte:head>
 

@@ -31,12 +31,23 @@
 </script>
 
 <svelte:head>
-	<title>Terms & Conditions - PeelJobs</title>
+	<title>Terms & Conditions - PeelJobs | User Agreement and Acceptable Use Policy</title>
 	<meta
 		name="description"
-		content="Terms of Service and User Agreement for PeelJobs - Bound to terms and conditions to get all the facilities of PeelJobs for your needs."
+		content="Read PeelJobs' Terms of Service, user agreement, and acceptable use policy. Understand your rights and responsibilities when using our free job portal platform for job seekers and employers."
 	/>
-	<link rel="canonical" href="https://peeljobs.com/terms" />
+	<link rel="canonical" href="https://peeljobs.com/terms/" />
+
+	<!-- Open Graph -->
+	<meta property="og:title" content="Terms & Conditions - PeelJobs" />
+	<meta property="og:description" content="User agreement and terms of service for using PeelJobs platform." />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://peeljobs.com/terms/" />
+
+	<!-- Twitter Card -->
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="Terms & Conditions - PeelJobs" />
+	<meta name="twitter:description" content="Our terms of service and user agreement." />
 </svelte:head>
 
 <!-- Hero Section -->

@@ -69,7 +69,7 @@
 </script>
 
 <svelte:head>
-  <title>Notification Settings - HirePulse.in</title>
+  <title>Notification Settings - PeelJobs</title>
   <meta name="description" content="Manage your notification preferences" />
 </svelte:head>
 

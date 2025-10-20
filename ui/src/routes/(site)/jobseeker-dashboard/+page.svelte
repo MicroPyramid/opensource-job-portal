@@ -72,7 +72,7 @@
 </script>
 
 <svelte:head>
-    <title>Dashboard - HirePulse.in</title>
+    <title>Dashboard - PeelJobs</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">

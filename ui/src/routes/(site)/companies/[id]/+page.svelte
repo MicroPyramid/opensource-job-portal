@@ -153,7 +153,7 @@
 </script>
 
 <svelte:head>
-  <title>{company.name} - Company Profile | HirePulse.in</title>
+  <title>{company.name} - Company Profile | PeelJobs</title>
   <meta name="description" content={company.tagline} />
 </svelte:head>
 

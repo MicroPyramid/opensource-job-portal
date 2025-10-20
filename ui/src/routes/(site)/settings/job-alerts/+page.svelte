@@ -173,7 +173,7 @@
 </script>
 
 <svelte:head>
-  <title>Job Alerts - HirePulse.in</title>
+  <title>Job Alerts - PeelJobs</title>
   <meta name="description" content="Manage your custom job alerts" />
 </svelte:head>
 

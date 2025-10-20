@@ -208,8 +208,8 @@
 </script>
 
 <svelte:head>
-  <title>Sign Up - HirePulse.in</title>
-  <meta name="description" content="Create your HirePulse.in account and start your journey to finding the perfect job or hiring top talent." />
+  <title>Sign Up - PeelJobs</title>
+  <meta name="description" content="Create your PeelJobs account and start your journey to finding the perfect job or hiring top talent." />
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -224,7 +224,7 @@
           </div>
         </div>
         <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Join HirePulse.in Today
+          Join PeelJobs Today
         </h1>
         <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
           Choose how you'd like to get started and unlock opportunities

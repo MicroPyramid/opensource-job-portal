@@ -213,7 +213,7 @@
 </script>
 
 <svelte:head>
-  <title>Messages - HirePulse.in</title>
+  <title>Messages - PeelJobs</title>
   <meta name="description" content="Chat with recruiters and hiring managers" />
 </svelte:head>
 

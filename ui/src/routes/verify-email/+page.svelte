@@ -86,8 +86,8 @@
 </script>
 
 <svelte:head>
-  <title>Verify Email - HirePulse.in</title>
-  <meta name="description" content="Verify your HirePulse.in email address" />
+  <title>Verify Email - PeelJobs</title>
+  <meta name="description" content="Verify your PeelJobs email address" />
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
@@ -134,12 +134,12 @@
           </h2>
 
           <p class="text-gray-600 mb-6">
-            Your email has been verified. You can now access all features of HirePulse.in.
+            Your email has been verified. You can now access all features of PeelJobs.
           </p>
 
           <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
             <p class="text-sm text-gray-700 mb-2">
-              <strong>Welcome to HirePulse.in!</strong>
+              <strong>Welcome to PeelJobs!</strong>
             </p>
             <p class="text-sm text-gray-600">
               Redirecting you to your dashboard in a few seconds...

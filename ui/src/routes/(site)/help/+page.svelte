@@ -44,14 +44,14 @@
     {
       id: 1,
       category: 'getting_started',
-      question: 'How do I create an account on HirePulse?',
+      question: 'How do I create an account on PeelJobs?',
       answer: 'To create an account, click on "Register" in the top right corner of the homepage. You can sign up using your email address or use Google/Facebook OAuth for quick registration. Fill in your basic details, verify your email, and you\'re ready to start your job search!'
     },
     {
       id: 2,
       category: 'getting_started',
-      question: 'Is HirePulse free to use for job seekers?',
-      answer: 'Yes! HirePulse is completely free for job seekers. You can create an account, search for jobs, apply to unlimited positions, and use all our features without any charges.'
+      question: 'Is PeelJobs free to use for job seekers?',
+      answer: 'Yes! PeelJobs is completely free for job seekers. You can create an account, search for jobs, apply to unlimited positions, and use all our features without any charges.'
     },
     {
       id: 3,
@@ -169,7 +169,7 @@
       id: 20,
       category: 'technical',
       question: 'I\'m not receiving email notifications. How do I fix this?',
-      answer: 'Check your spam/junk folder for emails from HirePulse. Add support@hirepulse.in to your contacts. Also verify that email notifications are enabled in Settings > Notifications. If issues persist, contact support.'
+      answer: 'Check your spam/junk folder for emails from PeelJobs. Add support@peeljobs.com to your contacts. Also verify that email notifications are enabled in Settings > Notifications. If issues persist, contact support.'
     },
     {
       id: 21,
@@ -225,8 +225,8 @@
 </script>
 
 <svelte:head>
-  <title>Help Center - HirePulse.in</title>
-  <meta name="description" content="Find answers to common questions about using HirePulse" />
+  <title>Help Center - PeelJobs</title>
+  <meta name="description" content="Find answers to common questions about using PeelJobs" />
 </svelte:head>
 
 <!-- Page Header -->
@@ -398,7 +398,7 @@
             Contact Support
           </a>
           <a
-            href="mailto:support@hirepulse.in"
+            href="mailto:support@peeljobs.com"
             class="border-2 border-white text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-4 rounded-lg transition duration-200"
           >
             Email Us
