@@ -33,39 +33,49 @@ from peeldb.models import (
 
 
 @app.task
-def send_email(mto, msubject, mbody):
+def send_email(mto, msubject, mbody, reply_to=None):
     import logging
-    
+
     logger = logging.getLogger(__name__)
-    
+
     if not isinstance(mto, list):
         mto = [mto]
-    
+
     # Log email details for debugging
     logger.info(f"Sending email to: {mto}")
     logger.info(f"Subject: {msubject}")
+    logger.info(f"Reply-To: {reply_to}")
     logger.info(f"Email backend: {settings.EMAIL_BACKEND}")
-    
+
     # Check if we're in development mode and should log to console
-    if (settings.DEBUG or 
+    if (settings.DEBUG or
         settings.EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend" or
         getattr(settings, 'ENV_TYPE', None) == 'DEV'):
-        
+
         # Print email to console for development
         print("=" * 80)
         print("EMAIL SENT VIA CELERY")
         print("=" * 80)
         print(f"To: {', '.join(mto)}")
         print(f"From: {settings.DEFAULT_FROM_EMAIL}")
+        if reply_to:
+            print(f"Reply-To: {reply_to if isinstance(reply_to, str) else ', '.join(reply_to)}")
         print(f"Subject: {msubject}")
         print("-" * 80)
         print("Body:")
         print(mbody)
         print("=" * 80)
-    
+
     msg = EmailMessage(msubject, mbody, settings.DEFAULT_FROM_EMAIL, mto)
     msg.content_subtype = "html"
-    
+
+    # Set reply-to header if provided
+    if reply_to:
+        if isinstance(reply_to, str):
+            msg.reply_to = [reply_to]
+        else:
+            msg.reply_to = reply_to
+
     try:
         result = msg.send()
         logger.info(f"Email sent successfully. Result: {result}")

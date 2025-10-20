@@ -1575,6 +1575,13 @@ class AppliedJobs(models.Model):
 
 
 ENQUERY_TYPES = (
+    ("general", "General Inquiry"),
+    ("support", "Technical Support"),
+    ("job_seeker", "Job Seeker Help"),
+    ("employer", "Employer/Recruiter"),
+    ("partnership", "Partnership Opportunities"),
+    ("feedback", "Feedback & Suggestions"),
+    # Keep legacy values for backward compatibility
     ("Suggestion", "Suggestion"),
     ("Technical Issue", "Technical Issue"),
     ("Complaint", "Complaint"),

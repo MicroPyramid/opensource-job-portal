@@ -102,9 +102,18 @@ def custom_500(request):
 
 
 def sitemap_xml(request):
-    with open("sitemap/sitemap.xml") as file:
-        xml_cont = file.read()
-    return HttpResponse(xml_cont, content_type="text/xml")
+    # TODO: Replace with Django sitemap framework
+    # Old implementation reading static XML file - deprecated
+    # with open("sitemap/sitemap.xml") as file:
+    #     xml_cont = file.read()
+    # return HttpResponse(xml_cont, content_type="text/xml")
+
+    # Temporary response until new sitemap is implemented
+    return HttpResponse(
+        "Sitemap temporarily unavailable. Implementing new sitemap system.",
+        content_type="text/plain",
+        status=503
+    )
 
 
 def contact(request):

@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.sites",
+    "django.contrib.sitemaps",  # Django sitemap framework
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django.contrib.messages",
@@ -312,12 +313,13 @@ CELERY_BEAT_SCHEDULE = {
     #     "task": "dashboard.tasks.applicants_walkin_job_notifications",
     #     "schedule": crontab(hour="09", minute="00", day_of_week="thu"),
     # },
-    "daily-sitemap-generation": {
-        "task": "dashboard.tasks.sitemap_generation",
-        "schedule": crontab(
-            hour="00", minute="10", day_of_week="mon,tue,wed,thu,fri,sat"
-        ),
-    },
+    # OLD SITEMAP GENERATION - Replaced with Django sitemap framework
+    # "daily-sitemap-generation": {
+    #     "task": "dashboard.tasks.sitemap_generation",
+    #     "schedule": crontab(
+    #         hour="00", minute="10", day_of_week="mon,tue,wed,thu,fri,sat"
+    #     ),
+    # },
     "sending-today-live-jobs-to-users-based-on-profile": {
         "task": "dashboard.tasks.job_alerts_to_users",
         "schedule": crontab(

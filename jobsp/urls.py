@@ -81,7 +81,7 @@ urlpatterns = [
     path("forgot-password/", forgot_password, name="forgot_password"),
     path("set-password/<int:user_id>/<str:passwd_reset_token>/", set_password, name="set_password"),
     url(
-        r"^(?P<job_title_slug>[a-z0-9-.,*?]+)-(?P<job_id>([0-9])+)/$",
+        r"^jobs/(?P<job_title_slug>[a-z0-9-.,*?]+)-(?P<job_id>([0-9])+)/$",
         job_detail,
         name="job_detail",
     ),
@@ -236,7 +236,7 @@ urlpatterns = [
     ),
     url(r"^assessment-questions/(?P<page_num>[0-9]+)/$", assessments_questions),
     url(r"^assessment-changes/$", assessment_changes),
-    url(r"^sitemap.xml$", sitemap_xml, name="sitemap_xml"),
+    # OLD: url(r"^sitemap.xml$", sitemap_xml, name="sitemap_xml"),  # Replaced with Django sitemaps
     # url(r"^login/$", users_login, name="users_login"),
     url(r"^contact/$", contact, name="contact"),
     url(
@@ -337,6 +337,36 @@ urlpatterns += [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+]
+
+# Add Django Sitemap URLs (Modern replacement for old sitemap generation)
+from django.contrib.sitemaps.views import sitemap as sitemap_view, index as sitemap_index
+from psite.sitemaps import (
+    JobPostSitemap,
+    SkillLocationSitemap,
+    FresherSkillLocationSitemap,
+    SkillSitemap,
+    LocationSitemap,
+    CompanySitemap,
+    StaticPagesSitemap,
+)
+
+sitemaps = {
+    'jobs': JobPostSitemap,
+    'skill-locations': SkillLocationSitemap,
+    'fresher-skill-locations': FresherSkillLocationSitemap,
+    'skills': SkillSitemap,
+    'locations': LocationSitemap,
+    'companies': CompanySitemap,
+    'static': StaticPagesSitemap,
+}
+
+urlpatterns += [
+    # Sitemap index - automatically splits into multiple files if needed
+    # Domain (peeljobs.com) configured via Django Site framework (SITE_ID=1)
+    path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.index'),
+    # Individual sitemap sections
+    path('sitemap-<section>.xml', sitemap_view, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]
 
 handler404 = custom_404
