@@ -2,6 +2,10 @@
 	import { onMount } from 'svelte';
 	import { CheckCircle2, XCircle, Loader2, Mail } from '@lucide/svelte';
 	import { getContext } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { verifyEmail, resendVerification as apiResendVerification } from '$lib/api/auth';
+	import { authStore } from '$lib/stores/auth';
 
 	type AuthLayoutContext = {
 		containerClass: string;
@@ -12,33 +16,64 @@
 	layout.containerClass = 'max-w-lg';
 
 	let status = $state<'verifying' | 'success' | 'error' | 'expired'>('verifying');
-	let email = $state('user@company.com'); // This would come from the verification token
+	let email = $state('');
+	let errorMessage = $state('');
+	let resending = $state(false);
 
-	onMount(() => {
-		// Simulate API call to verify email with token from URL
-		setTimeout(() => {
-			// For demo purposes, randomly show success or error
-			const token = new URLSearchParams(window.location.search).get('token');
+	onMount(async () => {
+		// Get token and email from URL query params
+		const token = $page.url.searchParams.get('token');
+		email = $page.url.searchParams.get('email') || '';
 
-			if (token) {
-				// Simulate verification
-				console.log('Verifying token:', token);
-				// API call here
-				status = 'success'; // or 'error' / 'expired'
+		if (!token) {
+			status = 'error';
+			errorMessage = 'No verification token provided';
+			return;
+		}
+
+		// Call API to verify email
+		try {
+			const response = await verifyEmail({ token });
+
+			// Store user and tokens
+			await authStore.login(response.user, response.access, response.refresh);
+
+			status = 'success';
+
+			// Redirect to dashboard after 2 seconds
+			setTimeout(() => {
+				goto('/dashboard/');
+			}, 2000);
+		} catch (err: any) {
+			console.error('Email verification error:', err);
+
+			// Check if token is expired
+			if (err.message?.includes('expired') || err.message?.includes('invalid')) {
+				status = 'expired';
+				errorMessage = err.message;
 			} else {
 				status = 'error';
+				errorMessage = err.message || 'Verification failed';
 			}
-		}, 2000);
+		}
 	});
 
-	function resendVerification() {
-		console.log('Resending verification email to:', email);
-		status = 'verifying';
-		// API call here
-		setTimeout(() => {
-			alert('Verification email sent! Check your inbox.');
-			status = 'error'; // Go back to waiting state
-		}, 1500);
+	async function resendVerificationEmail() {
+		if (!email) {
+			alert('Please provide an email address');
+			return;
+		}
+
+		resending = true;
+
+		try {
+			await apiResendVerification(email);
+			alert('Verification email sent! Please check your inbox.');
+		} catch (err: any) {
+			alert(err.message || 'Failed to resend verification email');
+		} finally {
+			resending = false;
+		}
 	}
 </script>
 
@@ -92,15 +127,18 @@
 
 			<h1 class="text-2xl font-bold text-gray-900 mb-3">Verification Link Expired</h1>
 			<p class="text-gray-600 mb-8">
-				This verification link has expired. Please request a new verification email.
+				{errorMessage || 'This verification link has expired. Please request a new verification email.'}
 			</p>
 
-			<button
-				onclick={resendVerification}
-				class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors mb-4"
-			>
-				Resend Verification Email
-			</button>
+			{#if email}
+				<button
+					onclick={resendVerificationEmail}
+					disabled={resending}
+					class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-4"
+				>
+					{resending ? 'Sending...' : 'Resend Verification Email'}
+				</button>
+			{/if}
 
 			<a
 				href="/login/"
@@ -118,15 +156,18 @@
 
 			<h1 class="text-2xl font-bold text-gray-900 mb-3">Verification Failed</h1>
 			<p class="text-gray-600 mb-8">
-				We couldn't verify your email address. The verification link may be invalid or has already been used.
+				{errorMessage || "We couldn't verify your email address. The verification link may be invalid or has already been used."}
 			</p>
 
-			<button
-				onclick={resendVerification}
-				class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors mb-4"
-			>
-				Resend Verification Email
-			</button>
+			{#if email}
+				<button
+					onclick={resendVerificationEmail}
+					disabled={resending}
+					class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-4"
+				>
+					{resending ? 'Sending...' : 'Resend Verification Email'}
+				</button>
+			{/if}
 
 			<a
 				href="/login/"

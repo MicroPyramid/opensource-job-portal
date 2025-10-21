@@ -565,13 +565,16 @@ class CookieTokenRefreshView(TokenRefreshView):
             )
 
         # Create request data with refresh token
-        request.data._mutable = True if hasattr(request.data, '_mutable') else None
-        if isinstance(request.data, dict):
-            request.data['refresh'] = refresh_token
-        else:
+        # Handle both QueryDict (from forms) and dict (from JSON)
+        if hasattr(request.data, '_mutable'):
+            # It's a QueryDict
             request.data._mutable = True
             request.data['refresh'] = refresh_token
             request.data._mutable = False
+        else:
+            # It's a regular dict, create a new mutable copy
+            from rest_framework.request import Request
+            request._full_data = {'refresh': refresh_token}
 
         # Call parent class to perform token refresh
         try:

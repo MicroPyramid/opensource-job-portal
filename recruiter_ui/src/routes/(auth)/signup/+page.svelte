@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { Building2, Mail, Lock, User, Phone, Eye, EyeOff, UserCircle, Globe } from '@lucide/svelte';
 	import { getContext } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { register } from '$lib/api/auth';
+	import type { RegisterData } from '$lib/types';
 
 	type AuthLayoutContext = {
 		containerClass: string;
@@ -15,6 +18,9 @@
 	let userType = $state<'recruiter' | 'company' | null>(null);
 	let showPassword = $state(false);
 	let showConfirmPassword = $state(false);
+	let loading = $state(false);
+	let error = $state('');
+	let success = $state(false);
 
 	// Form data
 	let formData = $state({
@@ -90,14 +96,63 @@
 		}
 	}
 
-	function handleSubmit() {
-		console.log('Signing up...', formData);
-		// API call here
+	async function handleSubmit() {
+		loading = true;
+		error = '';
+
+		try {
+			// Map company size to API format
+			const sizeMap: Record<string, string> = {
+				'1-10 employees': '1-10',
+				'11-50 employees': '11-20',
+				'51-200 employees': '50-200',
+				'201-500 employees': '200+',
+				'501-1000 employees': '200+',
+				'1001-5000 employees': '200+',
+				'5000+ employees': '200+'
+			};
+
+			const data: RegisterData = {
+				account_type: formData.accountType,
+				first_name: formData.firstName,
+				last_name: formData.lastName,
+				email: formData.email,
+				phone: formData.phone || undefined,
+				job_title: formData.jobTitle || undefined,
+				password: formData.password,
+				confirm_password: formData.confirmPassword,
+				agree_to_terms: formData.agreeToTerms
+			};
+
+			// Add company fields if company type
+			if (formData.accountType === 'company') {
+				data.company_name = formData.companyName;
+				data.company_website = formData.website;
+				data.company_industry = formData.industry || undefined;
+				data.company_size = sizeMap[formData.companySize] as any;
+			}
+
+			console.log('Registering...', data);
+			const response = await register(data);
+
+			console.log('Registration successful:', response);
+			success = true;
+
+			// Show success message and redirect to verify email page
+			setTimeout(() => {
+				goto('/verify-email?email=' + encodeURIComponent(formData.email));
+			}, 2000);
+		} catch (err: any) {
+			console.error('Registration error:', err);
+			error = err.message || 'Registration failed. Please try again.';
+		} finally {
+			loading = false;
+		}
 	}
 
 	function signInWithGoogle() {
 		console.log('Sign in with Google');
-		// OAuth flow
+		error = 'Google Sign-Up coming soon!';
 	}
 
 	// Calculate current step number for display
@@ -274,8 +329,26 @@
 		</div>
 	{/if}
 
-	<form onsubmit={(e) => { e.preventDefault(); if ((userType === 'company' && step === 3) || (userType === 'recruiter' && step === 2)) handleSubmit(); else nextStep(); }} class="space-y-5">
-		{#if step === 0}
+	{#if success}
+		<div class="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+			<div class="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
+				<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+				</svg>
+			</div>
+			<h2 class="text-xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
+			<p class="text-gray-600 mb-4">Please check your email ({formData.email}) for a verification link.</p>
+			<p class="text-sm text-gray-500">Redirecting to verification page...</p>
+		</div>
+	{:else}
+		<form onsubmit={(e) => { e.preventDefault(); if ((userType === 'company' && step === 3) || (userType === 'recruiter' && step === 2)) handleSubmit(); else nextStep(); }} class="space-y-5">
+			{#if error}
+				<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
+					{error}
+				</div>
+			{/if}
+
+			{#if step === 0}
 			<!-- Step 0: Account Type Selection -->
 			<div class="space-y-4">
 				<h2 class="text-lg font-semibold text-gray-900 text-center mb-4">Choose Account Type</h2>
@@ -692,15 +765,26 @@
 				{:else}
 					<button
 						type="submit"
-						disabled={!formData.agreeToTerms}
+						disabled={!formData.agreeToTerms || loading}
 						class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					>
-						Create Account
+						{#if loading}
+							<span class="flex items-center justify-center gap-2">
+								<svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								</svg>
+								Creating Account...
+							</span>
+						{:else}
+							Create Account
+						{/if}
 					</button>
 				{/if}
 			</div>
 		{/if}
 	</form>
+	{/if}
 
 	<!-- Sign In Link -->
 	<p class="mt-4 text-center text-sm text-gray-600">

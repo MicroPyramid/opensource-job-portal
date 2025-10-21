@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { Mail, Lock, Eye, EyeOff } from '@lucide/svelte';
 	import { getContext } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { login } from '$lib/api/auth';
+	import { authStore } from '$lib/stores/auth';
+	import type { LoginData } from '$lib/types';
 
 	type AuthLayoutContext = {
 		containerClass: string;
@@ -13,22 +17,49 @@
 
 	let showPassword = $state(false);
 	let rememberMe = $state(false);
+	let loading = $state(false);
+	let error = $state('');
 
 	let formData = $state({
 		email: '',
 		password: ''
 	});
 
-	function handleLogin(e: Event) {
+	async function handleLogin(e: Event) {
 		e.preventDefault();
-		console.log('Logging in...', formData);
-		// API call here
-		// On success, redirect to /dashboard/
+		loading = true;
+		error = '';
+
+		try {
+			const data: LoginData = {
+				email: formData.email,
+				password: formData.password,
+				remember_me: rememberMe
+			};
+
+			console.log('Logging in...', data);
+			const response = await login(data);
+
+			console.log('Login successful:', response);
+
+			// Store user and tokens in auth store
+			// Tokens will be saved to HttpOnly cookies via SvelteKit server endpoint
+			await authStore.login(response.user, response.access, response.refresh);
+
+			// Redirect to dashboard
+			goto('/dashboard');
+		} catch (err: any) {
+			console.error('Login error:', err);
+			error = err.message || 'Login failed. Please check your credentials.';
+		} finally {
+			loading = false;
+		}
 	}
 
 	function signInWithGoogle() {
 		console.log('Sign in with Google');
-		// OAuth flow
+		// TODO: OAuth flow
+		error = 'Google Sign-In coming soon!';
 	}
 </script>
 
@@ -137,6 +168,13 @@
 
 			<!-- Login Form -->
 			<form onsubmit={handleLogin} class="space-y-5">
+				<!-- Error Message -->
+				{#if error}
+					<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
+						{error}
+					</div>
+				{/if}
+
 				<div>
 					<label for="email" class="block text-sm font-medium text-gray-700 mb-1">
 						Email Address
@@ -148,8 +186,9 @@
 							id="email"
 							bind:value={formData.email}
 							required
+							disabled={loading}
 							placeholder="you@company.com"
-							class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
 						/>
 					</div>
 				</div>
@@ -165,13 +204,15 @@
 							id="password"
 							bind:value={formData.password}
 							required
+							disabled={loading}
 							placeholder="Enter your password"
-							class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
 						/>
 						<button
 							type="button"
 							onclick={() => (showPassword = !showPassword)}
-							class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+							disabled={loading}
+							class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
 						>
 							{#if showPassword}
 								<EyeOff class="w-5 h-5" />
@@ -195,9 +236,20 @@
 
 				<button
 					type="submit"
-					class="w-full py-2.5 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+					disabled={loading}
+					class="w-full py-2.5 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				>
-					Sign In
+					{#if loading}
+						<span class="flex items-center justify-center gap-2">
+							<svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+							Signing in...
+						</span>
+					{:else}
+						Sign In
+					{/if}
 				</button>
 			</form>
 

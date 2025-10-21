@@ -7,11 +7,18 @@
 		BarChart3,
 		User,
 		Menu,
-		X
+		X,
+		LogOut,
+		ChevronDown
 	} from '@lucide/svelte';
+	import { authStore } from '$lib/stores/auth';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import type { LayoutData } from './$types';
 
-	let { children } = $props();
+	let { children, data }: { children: any; data: LayoutData } = $props();
 	let sidebarOpen = $state(false);
+	let userMenuOpen = $state(false);
 
 	const navItems = [
 		{ href: '/dashboard/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -21,6 +28,23 @@
 		{ href: '/dashboard/analytics/', icon: BarChart3, label: 'Analytics' },
 		{ href: '/dashboard/account/', icon: User, label: 'Account' }
 	];
+
+	async function handleLogout() {
+		await authStore.logout();
+		goto('/login/');
+	}
+
+	// Sync server-loaded user data with auth store on mount
+	onMount(() => {
+		if (data.user) {
+			// Update store with server-loaded user data
+			// This keeps localStorage in sync with the actual authenticated state
+			authStore.updateUser(data.user);
+		}
+	});
+
+	// Get user info from server data (SSR-safe) or fallback to store
+	let user = $derived(data.user || $authStore.user);
 </script>
 
 <div class="min-h-screen bg-gray-50">
@@ -70,14 +94,44 @@
 
 			<!-- User section -->
 			<div class="border-t border-gray-200 p-4">
-				<div class="flex items-center gap-3">
-					<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-						<User class="w-5 h-5 text-gray-600" />
-					</div>
-					<div class="flex-1 min-w-0">
-						<p class="text-sm font-medium text-gray-900 truncate">Recruiter Name</p>
-						<p class="text-xs text-gray-500 truncate">Company Admin</p>
-					</div>
+				<div class="relative">
+					<button
+						onclick={() => (userMenuOpen = !userMenuOpen)}
+						class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+					>
+						<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+							<User class="w-5 h-5 text-blue-600" />
+						</div>
+						<div class="flex-1 min-w-0 text-left">
+							<p class="text-sm font-medium text-gray-900 truncate">
+								{user?.first_name || 'User'} {user?.last_name || ''}
+							</p>
+							<p class="text-xs text-gray-500 truncate">
+								{user?.company?.name || 'Independent Recruiter'}
+							</p>
+						</div>
+						<ChevronDown class="w-4 h-4 text-gray-400 flex-shrink-0 transition-transform {userMenuOpen ? 'rotate-180' : ''}" />
+					</button>
+
+					<!-- Dropdown menu -->
+					{#if userMenuOpen}
+						<div class="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+							<a
+								href="/dashboard/account/"
+								class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+							>
+								<User class="w-4 h-4" />
+								Account Settings
+							</a>
+							<button
+								onclick={handleLogout}
+								class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+							>
+								<LogOut class="w-4 h-4" />
+								Logout
+							</button>
+						</div>
+					{/if}
 				</div>
 			</div>
 		</div>
