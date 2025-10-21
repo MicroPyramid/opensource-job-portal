@@ -1,111 +1,114 @@
 <script lang="ts">
+	import { goto, invalidateAll } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { enhance } from '$app/forms';
 	import {
 		Plus,
 		Search,
 		Filter,
 		Eye,
 		Users,
-		MoreVertical,
 		Edit,
-		Copy,
 		XCircle,
 		ExternalLink,
 		Calendar,
 		MapPin,
-		Briefcase
+		Briefcase,
+		Send,
+		Archive
 	} from '@lucide/svelte';
+	import type { JobStatus } from '$lib/types';
 
-	let searchQuery = $state('');
-	let selectedFilter = $state('all');
+	// Get data from server-side load function
+	let { data } = $props();
+
+	let searchQuery = $state(data.filters.search);
+	let selectedFilter = $state<JobStatus | 'all'>(data.filters.status as JobStatus | 'all');
 	let viewMode = $state<'grid' | 'list'>('list');
-
-	// Mock data
-	const jobs = [
-		{
-			id: 1,
-			title: 'Senior Frontend Developer',
-			department: 'Engineering',
-			location: 'San Francisco, CA',
-			employmentType: 'Full-time',
-			postedDate: '2025-10-15',
-			expiryDate: '2025-11-15',
-			status: 'Published',
-			views: 1240,
-			applicants: 45,
-			isExpiringSoon: false
-		},
-		{
-			id: 2,
-			title: 'Product Manager',
-			department: 'Product',
-			location: 'Remote',
-			employmentType: 'Full-time',
-			postedDate: '2025-10-12',
-			expiryDate: '2025-10-28',
-			status: 'Published',
-			views: 980,
-			applicants: 38,
-			isExpiringSoon: true
-		},
-		{
-			id: 3,
-			title: 'UI/UX Designer',
-			department: 'Design',
-			location: 'New York, NY',
-			employmentType: 'Full-time',
-			postedDate: '2025-10-10',
-			expiryDate: '2025-11-10',
-			status: 'Published',
-			views: 756,
-			applicants: 28,
-			isExpiringSoon: false
-		},
-		{
-			id: 4,
-			title: 'Backend Developer',
-			department: 'Engineering',
-			location: 'Austin, TX',
-			employmentType: 'Contract',
-			postedDate: '2025-10-08',
-			expiryDate: '2025-11-08',
-			status: 'Published',
-			views: 645,
-			applicants: 22,
-			isExpiringSoon: false
-		},
-		{
-			id: 5,
-			title: 'DevOps Engineer',
-			department: 'Engineering',
-			location: 'Remote',
-			employmentType: 'Full-time',
-			postedDate: '2025-10-05',
-			expiryDate: '2025-10-25',
-			status: 'Published',
-			views: 523,
-			applicants: 19,
-			isExpiringSoon: true
-		}
-	];
+	let submittingAction = $state<number | null>(null);
 
 	const filterOptions = [
 		{ value: 'all', label: 'All Jobs' },
-		{ value: 'active', label: 'Active' },
-		{ value: 'draft', label: 'Drafts' },
-		{ value: 'closed', label: 'Closed' },
-		{ value: 'expiring', label: 'Expiring Soon' }
+		{ value: 'Live', label: 'Active' },
+		{ value: 'Draft', label: 'Drafts' },
+		{ value: 'Disabled', label: 'Closed' },
+		{ value: 'Expired', label: 'Expired' }
 	];
 
-	function formatDate(dateString: string): string {
+	// Update URL when filters change
+	function updateFilters() {
+		const params = new URLSearchParams();
+		params.set('page', '1'); // Reset to page 1 on filter change
+
+		if (selectedFilter !== 'all') {
+			params.set('status', selectedFilter);
+		}
+
+		if (searchQuery.trim()) {
+			params.set('search', searchQuery.trim());
+		}
+
+		goto(`?${params.toString()}`, { keepFocus: true, noScroll: true });
+	}
+
+	// Navigate to page
+	function goToPage(pageNum: number) {
+		const params = new URLSearchParams($page.url.searchParams);
+		params.set('page', pageNum.toString());
+		goto(`?${params.toString()}`, { keepFocus: true, noScroll: true });
+	}
+
+	function formatDate(dateString?: string): string {
+		if (!dateString) return 'N/A';
 		const date = new Date(dateString);
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	}
 
-	function getDaysUntilExpiry(expiryDate: string): number {
-		const today = new Date();
-		const expiry = new Date(expiryDate);
-		const diffTime = expiry.getTime() - today.getTime();
-		return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+	function getStatusBadgeClass(status: JobStatus): string {
+		switch (status) {
+			case 'Live':
+				return 'bg-green-100 text-green-800';
+			case 'Draft':
+				return 'bg-gray-100 text-gray-800';
+			case 'Disabled':
+				return 'bg-red-100 text-red-800';
+			case 'Expired':
+				return 'bg-orange-100 text-orange-800';
+			default:
+				return 'bg-blue-100 text-blue-800';
+		}
+	}
+
+	async function handleDelete(jobId: number, jobTitle: string) {
+		if (!confirm(`Are you sure you want to delete "${jobTitle}"?`)) {
+			return;
+		}
+
+		submittingAction = jobId;
+
+		// Use fetch to submit delete action
+		const formData = new FormData();
+		formData.append('jobId', jobId.toString());
+
+		try {
+			const response = await fetch('?/delete', {
+				method: 'POST',
+				body: formData
+			});
+
+			const result = await response.json();
+
+			if (result.type === 'success') {
+				// Refresh the page data
+				await invalidateAll();
+			} else {
+				alert(result.data?.error || 'Failed to delete job');
+			}
+		} catch (err: any) {
+			alert(err.message || 'Failed to delete job');
+		} finally {
+			submittingAction = null;
+		}
 	}
 </script>
 
@@ -131,13 +134,14 @@
 
 	<!-- Filters and Search -->
 	<div class="bg-white rounded-lg border border-gray-200 p-4">
-		<div class="flex flex-col md:flex-row gap-4">
+		<form onsubmit={(e) => { e.preventDefault(); updateFilters(); }} class="flex flex-col md:flex-row gap-4">
 			<!-- Search -->
 			<div class="flex-1 relative">
 				<Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
 				<input
 					type="text"
 					bind:value={searchQuery}
+					onchange={updateFilters}
 					placeholder="Search jobs by title..."
 					class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 				/>
@@ -149,6 +153,7 @@
 					<Filter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 					<select
 						bind:value={selectedFilter}
+						onchange={updateFilters}
 						class="pl-9 pr-8 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
 					>
 						{#each filterOptions as option}
@@ -159,6 +164,7 @@
 
 				<div class="flex border border-gray-300 rounded-lg overflow-hidden">
 					<button
+						type="button"
 						onclick={() => (viewMode = 'list')}
 						class="px-3 py-2 {viewMode === 'list' ? 'bg-gray-100' : 'bg-white'} hover:bg-gray-50"
 						aria-label="List view"
@@ -172,6 +178,7 @@
 						</svg>
 					</button>
 					<button
+						type="button"
 						onclick={() => (viewMode = 'grid')}
 						class="px-3 py-2 {viewMode === 'grid' ? 'bg-gray-100' : 'bg-white'} hover:bg-gray-50"
 						aria-label="Grid view"
@@ -184,11 +191,29 @@
 					</button>
 				</div>
 			</div>
-		</div>
+		</form>
 	</div>
 
-	<!-- Jobs List -->
-	{#if viewMode === 'list'}
+	<!-- Empty State -->
+	{#if data.jobs.length === 0}
+		<div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+			<Briefcase class="w-12 h-12 text-gray-400 mx-auto mb-4" />
+			<h3 class="text-lg font-semibold text-gray-900 mb-2">No jobs found</h3>
+			<p class="text-gray-600 mb-6">
+				{searchQuery || selectedFilter !== 'all'
+					? 'Try adjusting your filters or search query'
+					: 'Get started by posting your first job'}
+			</p>
+			<a
+				href="/dashboard/jobs/new/"
+				class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+			>
+				<Plus class="w-4 h-4" />
+				Post New Job
+			</a>
+		</div>
+	{:else if viewMode === 'list'}
+		<!-- List View -->
 		<div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
 			<div class="overflow-x-auto">
 				<table class="w-full">
@@ -196,6 +221,9 @@
 						<tr>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								Job Details
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Status
 							</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								Posted
@@ -212,7 +240,7 @@
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-gray-200">
-						{#each jobs as job}
+						{#each data.jobs as job}
 							<tr class="hover:bg-gray-50">
 								<td class="px-6 py-4">
 									<div class="flex items-start gap-3">
@@ -224,44 +252,87 @@
 												{job.title}
 											</a>
 											<div class="flex items-center gap-3 mt-1 text-sm text-gray-500">
-												<span>{job.department}</span>
+												<span>{job.company_name}</span>
 												<span>•</span>
 												<span class="flex items-center gap-1">
 													<MapPin class="w-3 h-3" />
-													{job.location}
+													{job.location_display}
 												</span>
 												<span>•</span>
-												<span>{job.employmentType}</span>
+												<span>{job.job_type}</span>
 											</div>
-											{#if job.isExpiringSoon}
+											{#if job.is_expiring_soon}
 												<span class="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded">
 													<Calendar class="w-3 h-3" />
-													Expires in {getDaysUntilExpiry(job.expiryDate)} days
+													Expires in {job.days_until_expiry} days
 												</span>
 											{/if}
 										</div>
 									</div>
 								</td>
-								<td class="px-6 py-4 text-sm text-gray-600">
-									{formatDate(job.postedDate)}
+								<td class="px-6 py-4">
+									<span class="inline-flex px-2 py-1 text-xs font-medium rounded {getStatusBadgeClass(job.status)}">
+										{job.status}
+									</span>
 								</td>
 								<td class="px-6 py-4 text-sm text-gray-600">
-									{formatDate(job.expiryDate)}
+									{job.time_ago}
+								</td>
+								<td class="px-6 py-4 text-sm text-gray-600">
+									{formatDate(job.last_date)}
 								</td>
 								<td class="px-6 py-4">
 									<div class="flex items-center gap-4 text-sm">
 										<div class="flex items-center gap-1 text-gray-600">
 											<Eye class="w-4 h-4" />
-											{job.views.toLocaleString()}
+											{job.views_count.toLocaleString()}
 										</div>
 										<div class="flex items-center gap-1 text-gray-600">
 											<Users class="w-4 h-4" />
-											{job.applicants}
+											{job.applicants_count}
 										</div>
 									</div>
 								</td>
 								<td class="px-6 py-4">
 									<div class="flex items-center gap-2">
+										{#if job.status === 'Draft'}
+											<form method="POST" action="?/publish" use:enhance={() => {
+												submittingAction = job.id;
+												return async ({ update }) => {
+													await update();
+													submittingAction = null;
+												};
+											}}>
+												<input type="hidden" name="jobId" value={job.id} />
+												<button
+													type="submit"
+													disabled={submittingAction === job.id}
+													class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+													title="Publish"
+												>
+													<Send class="w-4 h-4" />
+												</button>
+											</form>
+										{/if}
+										{#if job.status === 'Live'}
+											<form method="POST" action="?/close" use:enhance={() => {
+												submittingAction = job.id;
+												return async ({ update }) => {
+													await update();
+													submittingAction = null;
+												};
+											}}>
+												<input type="hidden" name="jobId" value={job.id} />
+												<button
+													type="submit"
+													disabled={submittingAction === job.id}
+													class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50"
+													title="Close"
+												>
+													<Archive class="w-4 h-4" />
+												</button>
+											</form>
+										{/if}
 										<a
 											href="/dashboard/jobs/{job.id}/edit/"
 											class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -277,10 +348,12 @@
 											<ExternalLink class="w-4 h-4" />
 										</a>
 										<button
-											class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-											title="More options"
+											onclick={() => handleDelete(job.id, job.title)}
+											disabled={submittingAction === job.id}
+											class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+											title="Delete"
 										>
-											<MoreVertical class="w-4 h-4" />
+											<XCircle class="w-4 h-4" />
 										</button>
 									</div>
 								</td>
@@ -293,15 +366,15 @@
 	{:else}
 		<!-- Grid View -->
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{#each jobs as job}
+			{#each data.jobs as job}
 				<div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
 					<div class="flex items-start justify-between mb-4">
 						<div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
 							<Briefcase class="w-6 h-6 text-blue-600" />
 						</div>
-						<button class="p-1 text-gray-400 hover:text-gray-600">
-							<MoreVertical class="w-5 h-5" />
-						</button>
+						<span class="px-2 py-1 text-xs font-medium rounded {getStatusBadgeClass(job.status)}">
+							{job.status}
+						</span>
 					</div>
 
 					<a href="/dashboard/jobs/{job.id}/" class="block mb-3">
@@ -313,19 +386,19 @@
 					<div class="space-y-2 text-sm text-gray-600 mb-4">
 						<div class="flex items-center gap-2">
 							<MapPin class="w-4 h-4" />
-							{job.location}
+							{job.location_display}
 						</div>
 						<div class="flex items-center gap-2">
 							<Calendar class="w-4 h-4" />
-							Posted {formatDate(job.postedDate)}
+							Posted {job.time_ago}
 						</div>
 					</div>
 
-					{#if job.isExpiringSoon}
+					{#if job.is_expiring_soon}
 						<div class="mb-4">
 							<span class="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded">
 								<Calendar class="w-3 h-3" />
-								Expires in {getDaysUntilExpiry(job.expiryDate)} days
+								Expires in {job.days_until_expiry} days
 							</span>
 						</div>
 					{/if}
@@ -333,15 +406,38 @@
 					<div class="flex items-center justify-between mb-4 pt-4 border-t border-gray-200">
 						<div class="flex items-center gap-1 text-sm text-gray-600">
 							<Eye class="w-4 h-4" />
-							{job.views.toLocaleString()}
+							{job.views_count.toLocaleString()}
 						</div>
 						<div class="flex items-center gap-1 text-sm text-gray-600">
 							<Users class="w-4 h-4" />
-							{job.applicants} applicants
+							{job.applicants_count} applicants
 						</div>
 					</div>
 
 					<div class="flex items-center gap-2">
+						{#if job.status === 'Draft'}
+							<form method="POST" action="?/publish" use:enhance class="flex-1">
+								<input type="hidden" name="jobId" value={job.id} />
+								<button
+									type="submit"
+									class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-green-600 rounded-lg text-sm font-medium text-white hover:bg-green-700 transition-colors"
+								>
+									<Send class="w-4 h-4" />
+									Publish
+								</button>
+							</form>
+						{:else if job.status === 'Live'}
+							<form method="POST" action="?/close" use:enhance class="flex-1">
+								<input type="hidden" name="jobId" value={job.id} />
+								<button
+									type="submit"
+									class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-orange-600 rounded-lg text-sm font-medium text-white hover:bg-orange-700 transition-colors"
+								>
+									<Archive class="w-4 h-4" />
+									Close
+								</button>
+							</form>
+						{/if}
 						<a
 							href="/dashboard/jobs/{job.id}/edit/"
 							class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
@@ -358,6 +454,32 @@
 					</div>
 				</div>
 			{/each}
+		</div>
+	{/if}
+
+	<!-- Pagination -->
+	{#if data.jobs.length > 0 && (data.next || data.previous)}
+		<div class="flex items-center justify-between bg-white rounded-lg border border-gray-200 px-6 py-4">
+			<div class="text-sm text-gray-600">
+				Showing {data.jobs.length} of {data.count} jobs
+			</div>
+			<div class="flex items-center gap-2">
+				<button
+					onclick={() => goToPage(data.currentPage - 1)}
+					disabled={!data.previous}
+					class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+				>
+					Previous
+				</button>
+				<span class="text-sm text-gray-600">Page {data.currentPage}</span>
+				<button
+					onclick={() => goToPage(data.currentPage + 1)}
+					disabled={!data.next}
+					class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+				>
+					Next
+				</button>
+			</div>
 		</div>
 	{/if}
 </div>

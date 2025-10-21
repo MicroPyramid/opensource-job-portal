@@ -44,7 +44,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         total_applicants = 0
         for job in jobs:
             # Get applicant count from AppliedJobs
-            total_applicants += job.applied_jobs.count()
+            total_applicants += job.appliedjobs_set.count()
 
         return {
             'jobs_posted': jobs.count(),
@@ -70,7 +70,7 @@ class TeamMemberDetailSerializer(TeamMemberSerializer):
             'title': job.job_title,
             'status': job.status,
             'posted_date': job.created_on,
-            'applicants_count': job.applied_jobs.count()
+            'applicants_count': job.appliedjobs_set.count()
         } for job in jobs]
 
 

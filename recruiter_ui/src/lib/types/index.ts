@@ -204,6 +204,206 @@ export interface UpdateTeamMemberData {
 	is_admin?: boolean;
 }
 
+// ===== Job Management Types =====
+
+export type JobStatus = 'Draft' | 'Live' | 'Disabled' | 'Expired' | 'Pending' | 'Published' | 'Hired' | 'Process';
+export type JobType = 'full-time' | 'internship' | 'walk-in' | 'government' | 'Fresher';
+export type SalaryType = 'Month' | 'Year';
+
+export interface Location {
+	id: number;
+	name: string;
+	slug: string;
+	state?: string;
+	state_slug?: string;
+}
+
+export interface Skill {
+	id: number;
+	name: string;
+	slug: string;
+}
+
+export interface Industry {
+	id: number;
+	name: string;
+	slug: string;
+}
+
+export interface Qualification {
+	id: number;
+	name: string;
+	slug: string;
+}
+
+export interface FunctionalArea {
+	id: number;
+	name: string;
+}
+
+export interface JobListItem {
+	id: number;
+	title: string;
+	slug: string;
+	company_name: string;
+	job_type: JobType;
+	status: JobStatus;
+	location_display: string;
+	applicants_count: number;
+	views_count: number;
+	vacancies: number;
+	created_on: string;
+	published_on?: string;
+	last_date?: string;
+	time_ago: string;
+	days_until_expiry?: number;
+	is_expiring_soon: boolean;
+}
+
+export interface JobDetail extends JobListItem {
+	description: string;
+	job_role: string;
+	locations: Location[];
+	skills: Skill[];
+	industries: Industry[];
+	qualifications: Qualification[];
+	functional_areas: FunctionalArea[];
+	min_salary: number;
+	max_salary: number;
+	salary_type: SalaryType;
+	min_year: number;
+	max_year: number;
+	min_month: number;
+	max_month: number;
+	fresher: boolean;
+	company_description?: string;
+	company_address?: string;
+	company_links?: string;
+	company_emails?: string;
+	// Walk-in fields
+	walkin_contactinfo?: string;
+	walkin_show_contact_info?: boolean;
+	walkin_from_date?: string;
+	walkin_to_date?: string;
+	walkin_time?: string;
+	// Government job fields
+	govt_job_type?: string;
+	application_fee?: string;
+	selection_process?: string;
+	how_to_apply?: string;
+	important_dates?: string;
+	govt_from_date?: string;
+	govt_to_date?: string;
+	govt_exam_date?: string;
+	age_relaxation?: string;
+}
+
+export interface JobCreateData {
+	title: string;
+	job_role: string;
+	description: string;
+	company_name: string;
+	job_type: JobType;
+	location_ids?: number[];
+	skill_ids?: number[];
+	industry_ids?: number[];
+	qualification_ids?: number[];
+	functional_area_ids?: number[];
+	min_salary?: number;
+	max_salary?: number;
+	salary_type?: SalaryType;
+	min_year?: number;
+	max_year?: number;
+	min_month?: number;
+	max_month?: number;
+	fresher?: boolean;
+	vacancies?: number;
+	last_date?: string;
+	company_description?: string;
+	company_address?: string;
+	company_links?: string;
+	company_emails?: string;
+	// Walk-in fields
+	walkin_contactinfo?: string;
+	walkin_show_contact_info?: boolean;
+	walkin_from_date?: string;
+	walkin_to_date?: string;
+	walkin_time?: string;
+	// Government job fields
+	govt_job_type?: string;
+	application_fee?: string;
+	selection_process?: string;
+	how_to_apply?: string;
+	important_dates?: string;
+	govt_from_date?: string;
+	govt_to_date?: string;
+	govt_exam_date?: string;
+	age_relaxation?: string;
+}
+
+export interface JobUpdateData extends Partial<JobCreateData> {}
+
+export interface JobsListResponse {
+	count: number;
+	next?: string;
+	previous?: string;
+	results: JobListItem[];
+}
+
+export interface JobApplicant {
+	id: number;
+	name: string;
+	email: string;
+	profile_pic?: string;
+}
+
+export interface JobApplication {
+	id: number;
+	applicant: JobApplicant;
+	status: 'Pending' | 'Shortlisted' | 'Selected' | 'Rejected';
+	applied_on: string;
+	applied_time_ago: string;
+}
+
+export interface JobApplicantsResponse {
+	job: {
+		id: number;
+		title: string;
+		status: JobStatus;
+	};
+	applications: JobApplication[];
+	total_applicants: number;
+	stats: {
+		pending: number;
+		shortlisted: number;
+		selected: number;
+		rejected: number;
+	};
+}
+
+export interface DashboardStats {
+	total_jobs: number;
+	live_jobs: number;
+	draft_jobs: number;
+	closed_jobs: number;
+	expired_jobs: number;
+	total_applicants: number;
+	total_views: number;
+}
+
+export interface DashboardStatsResponse {
+	stats: DashboardStats;
+	recent_jobs: JobListItem[];
+}
+
+export interface JobFilters {
+	status?: JobStatus;
+	search?: string;
+	ordering?: string;
+	page?: number;
+	page_size?: number;
+}
+
 // ===== API Response Types =====
 
 export interface ApiResponse<T = any> {

@@ -1,8 +1,8 @@
 """
-URL routing for Recruiter API (Auth + Team Management)
+URL routing for Recruiter API (Auth + Team Management + Jobs)
 """
 from django.urls import path
-from . import views, auth_views
+from . import views, auth_views, job_views
 
 app_name = "recruiter"
 
@@ -45,4 +45,22 @@ urlpatterns = [
     path("team/invitations/", views.list_invitations, name="invitations-list"),
     path("team/invitations/<int:invitation_id>/resend/", views.resend_invitation, name="invitation-resend"),
     path("team/invitations/<int:invitation_id>/cancel/", views.cancel_invitation, name="invitation-cancel"),
+
+    # ===== JOB MANAGEMENT =====
+    # Dashboard Stats
+    path("dashboard/stats/", job_views.get_dashboard_stats, name="dashboard-stats"),
+
+    # Job CRUD
+    path("jobs/", job_views.list_jobs, name="jobs-list"),
+    path("jobs/create/", job_views.create_job, name="jobs-create"),
+    path("jobs/<int:job_id>/", job_views.get_job, name="jobs-detail"),
+    path("jobs/<int:job_id>/update/", job_views.update_job, name="jobs-update"),
+    path("jobs/<int:job_id>/delete/", job_views.delete_job, name="jobs-delete"),
+
+    # Job Actions
+    path("jobs/<int:job_id>/publish/", job_views.publish_job, name="jobs-publish"),
+    path("jobs/<int:job_id>/close/", job_views.close_job, name="jobs-close"),
+
+    # Job Applicants
+    path("jobs/<int:job_id>/applicants/", job_views.get_job_applicants, name="jobs-applicants"),
 ]
