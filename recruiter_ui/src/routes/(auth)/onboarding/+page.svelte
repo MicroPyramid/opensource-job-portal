@@ -8,6 +8,15 @@
 		ChevronRight,
 		ChevronLeft
 	} from '@lucide/svelte';
+	import { getContext } from 'svelte';
+
+	type AuthLayoutContext = {
+		containerClass: string;
+		mainClass: string;
+	};
+
+	const layout = getContext<AuthLayoutContext>('authLayout');
+	layout.containerClass = 'max-w-3xl';
 
 	let currentStep = $state(1);
 	const totalSteps = 3;

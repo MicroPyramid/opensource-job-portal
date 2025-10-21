@@ -1,6 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { CheckCircle2, XCircle, Loader2, Mail } from '@lucide/svelte';
+	import { getContext } from 'svelte';
+
+	type AuthLayoutContext = {
+		containerClass: string;
+		mainClass: string;
+	};
+
+	const layout = getContext<AuthLayoutContext>('authLayout');
+	layout.containerClass = 'max-w-lg';
 
 	let status = $state<'verifying' | 'success' | 'error' | 'expired'>('verifying');
 	let email = $state('user@company.com'); // This would come from the verification token

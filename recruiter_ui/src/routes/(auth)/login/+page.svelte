@@ -8,7 +8,7 @@
 	};
 
 	const layout = getContext<AuthLayoutContext>('authLayout');
-	layout.containerClass = 'max-w-[1400px]';
+	layout.containerClass = 'max-w-6xl';
 	layout.mainClass = 'flex justify-center items-start py-2 px-4 sm:px-5 lg:px-6';
 
 	let showPassword = $state(false);

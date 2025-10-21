@@ -1,5 +1,14 @@
 <script lang="ts">
 	import { Lock, Eye, EyeOff, CheckCircle2 } from '@lucide/svelte';
+	import { getContext } from 'svelte';
+
+	type AuthLayoutContext = {
+		containerClass: string;
+		mainClass: string;
+	};
+
+	const layout = getContext<AuthLayoutContext>('authLayout');
+	layout.containerClass = 'max-w-lg';
 
 	let showPassword = $state(false);
 	let showConfirmPassword = $state(false);
