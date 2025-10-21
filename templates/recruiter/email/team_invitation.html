@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #059669;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: #f9fafb;
+            padding: 40px 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .button {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: #059669;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .info-box {
+            background-color: #e0f2fe;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="margin: 0;">Team Invitation</h1>
+    </div>
+    <div class="content">
+        <h2>You're Invited!</h2>
+        <p><strong>{{ invited_by.first_name }} {{ invited_by.last_name }}</strong> has invited you to join the team at <strong>{{ company.name }}</strong> on PeelJobs.</p>
+
+        <div class="info-box">
+            <p style="margin: 5px 0;"><strong>Company:</strong> {{ company.name }}</p>
+            <p style="margin: 5px 0;"><strong>Role:</strong> {{ role_title }}</p>
+            <p style="margin: 5px 0;"><strong>Invited by:</strong> {{ invited_by.first_name }} {{ invited_by.last_name }} ({{ invited_by.email }})</p>
+        </div>
+
+        {% if message %}
+        <p><strong>Personal message:</strong></p>
+        <p style="font-style: italic; background-color: #fff; padding: 15px; border-left: 3px solid #059669;">{{ message }}</p>
+        {% endif %}
+
+        <p>Join the team to:</p>
+        <ul>
+            <li>Post and manage job openings for {{ company.name }}</li>
+            <li>Review and manage applicants</li>
+            <li>Collaborate with team members</li>
+            <li>Access the recruiter dashboard</li>
+        </ul>
+
+        <div style="text-align: center;">
+            <a href="{{ invitation_url }}" class="button">Accept Invitation</a>
+        </div>
+
+        <p style="text-align: center; color: #6b7280; font-size: 14px;">This invitation will expire in 7 days</p>
+
+        <div class="footer">
+            <p>&copy; {{ current_year }} PeelJobs. All rights reserved.</p>
+            <p>Need help? Contact us at support@peeljobs.com</p>
+        </div>
+    </div>
+</body>
+</html>

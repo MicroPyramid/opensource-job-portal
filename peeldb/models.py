@@ -61,10 +61,7 @@ class Keyword(models.Model):
 
 USER_TYPE = (
     ("JS", "Job Seeker"),
-    ("RR", "Recruiter"),
-    ("RA", "Recruiter Admin"),
-    ("AA", "Agency Admin"),
-    ("AR", "Agency Recruiter"),
+    ("EM", "Employer"),  # Simplified from RR, RA, AA, AR
 )
 
 GENDER_TYPES = (
@@ -536,6 +533,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     preferred_city = models.ManyToManyField(City, related_name="preferred_city")
     functional_area = models.ManyToManyField(FunctionalArea)
     job_role = models.CharField(max_length=500, default="")
+    job_title = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Job title/role for employers (e.g., 'Senior Recruiter', 'HR Manager')"
+    )
     education = models.ManyToManyField(EducationDetails)
     project = models.ManyToManyField(Project)
     skills = models.ManyToManyField(TechnicalSkill)
@@ -665,14 +668,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_recruiter(self):
-        if (
-            str(self.user_type) == "RR"
-            or str(self.user_type) == "RA"
-            or str(self.user_type) == "RA"
-        ):
-            return True
-        else:
-            return False
+        """Check if user is an employer (recruiter/company user)"""
+        return str(self.user_type) == "EM"
 
 
     @property
@@ -712,9 +709,35 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_jobseeker(self):
-        if str(self.user_type) == "JS":
-            return True
-        return False
+        """Check if user is a job seeker"""
+        return str(self.user_type) == "JS"
+
+    @property
+    def is_company_admin(self):
+        """Check if user is a company admin/owner"""
+        return self.user_type == "EM" and self.is_admin and self.company is not None
+
+    @property
+    def is_company_member(self):
+        """Check if user is part of a company (but not admin)"""
+        return self.user_type == "EM" and not self.is_admin and self.company is not None
+
+    @property
+    def is_independent_recruiter(self):
+        """Check if user is an independent recruiter (no company)"""
+        return self.user_type == "EM" and self.company is None
+
+    def can_manage_company(self, company):
+        """Check if user can manage company settings"""
+        return self.company == company and self.is_admin
+
+    def can_manage_team(self, company):
+        """Check if user can invite/remove team members"""
+        return self.can_manage_company(company)
+
+    def can_post_job_for_company(self, company):
+        """Check if user can post jobs for a company"""
+        return self.user_type == "EM" and self.company == company
 
     @property
     def profile_completion_percentage(self):
@@ -1884,4 +1907,76 @@ class UserMessage(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     job = models.ForeignKey(JobPost, null=True, on_delete=models.CASCADE)
     is_read = models.BooleanField(default=False)
+
+
+class TeamInvitation(models.Model):
+    """
+    Track team member invitations before they sign up.
+    Allows company admins to invite colleagues to join their company.
+    """
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name='team_invitations'
+    )
+    invited_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='sent_invitations'
+    )
+    email = models.EmailField(
+        help_text="Email address of person to invite"
+    )
+    token = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text="Unique token for invitation link"
+    )
+    role_title = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Job title/role of invitee (e.g., 'Senior Recruiter', 'HR Manager')"
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('accepted', 'Accepted'),
+            ('expired', 'Expired'),
+            ('cancelled', 'Cancelled'),
+        ],
+        default='pending'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(
+        help_text="Invitation expires after 7 days"
+    )
+    accepted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('company', 'email')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['token']),
+            models.Index(fields=['email', 'status']),
+        ]
+
+    def __str__(self):
+        return f"{self.email} invited to {self.company.name}"
+
+    def is_expired(self):
+        """Check if invitation has expired"""
+        return timezone.now() > self.expires_at and self.status == 'pending'
+
+    def accept(self, user):
+        """Mark invitation as accepted and link user to company"""
+        self.status = 'accepted'
+        self.accepted_at = timezone.now()
+        self.save()
+
+        user.company = self.company
+        user.is_admin = False  # Invited users are never admins by default
+        if self.role_title:
+            user.job_title = self.role_title
+        user.save()
 

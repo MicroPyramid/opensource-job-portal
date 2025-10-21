@@ -414,8 +414,7 @@ DAILY_REPORT_USERS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "api.v1.auth.authentication.CookieJWTAuthentication",  # HttpOnly cookie support
-        "rest_framework_simplejwt.authentication.JWTAuthentication",  # Fallback to header
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT in Authorization header ONLY
         "rest_framework.authentication.TokenAuthentication",  # Keep for backward compatibility
     ],
     "DEFAULT_PERMISSION_CLASSES": [
