@@ -11,7 +11,10 @@ from drf_spectacular.types import OpenApiTypes
 from django.db.models import Q, Count
 from django.utils import timezone
 
-from peeldb.models import JobPost, AppliedJobs
+from peeldb.models import (
+    JobPost, AppliedJobs, City, Skill, Industry,
+    Qualification, FunctionalArea, Country, State
+)
 from .job_serializers import (
     RecruiterJobListSerializer,
     RecruiterJobDetailSerializer,
@@ -264,9 +267,15 @@ def publish_job(request, job_id):
         )
 
     # Validate required fields before publishing
-    if not job.title or not job.description:
+    if not job.title:
         return Response(
-            {"error": "Job must have title and description to be published"},
+            {"error": "Job must have title to be published"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not job.description or job.description.strip() == '':
+        return Response(
+            {"error": "Job must have description to be published"},
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -420,4 +429,126 @@ def get_dashboard_stats(request):
             "total_views": total_views,
         },
         "recent_jobs": recent_jobs_data
+    })
+
+
+@extend_schema(
+    tags=["Recruiter - Jobs"],
+    summary="Get Job Form Metadata",
+    description="Get all metadata needed for job posting form (countries, states, cities, skills, industries, qualifications, functional areas)",
+    parameters=[
+        OpenApiParameter('country_id', OpenApiTypes.INT, description='Country ID to filter states'),
+        OpenApiParameter('state_id', OpenApiTypes.INT, description='State ID to filter cities'),
+        OpenApiParameter('search', OpenApiTypes.STR, description='Search term for filtering'),
+    ],
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_job_form_metadata(request):
+    """
+    Get metadata for job posting form
+
+    This endpoint provides all the reference data needed for the job posting form:
+    - Countries, States, Cities (hierarchical)
+    - Skills
+    - Industries
+    - Qualifications
+    - Functional Areas
+    """
+    country_id = request.GET.get('country_id')
+    state_id = request.GET.get('state_id')
+    search = request.GET.get('search', '')
+
+    # Countries
+    countries = Country.objects.filter(status='Enabled').order_by('name')
+    countries_data = [{
+        'id': c.id,
+        'name': c.name,
+        'slug': c.slug,
+    } for c in countries]
+
+    # States (filter by country if provided)
+    states_query = State.objects.filter(status='Enabled')
+    if country_id:
+        states_query = states_query.filter(country_id=country_id)
+    if search:
+        states_query = states_query.filter(name__icontains=search)
+    states = states_query.order_by('name')[:100]  # Limit to 100
+    states_data = [{
+        'id': s.id,
+        'name': s.name,
+        'slug': s.slug,
+        'country_id': s.country_id,
+    } for s in states]
+
+    # Cities (filter by state if provided)
+    cities_query = City.objects.filter(status='Enabled')
+    if state_id:
+        cities_query = cities_query.filter(state_id=state_id)
+    elif country_id:
+        cities_query = cities_query.filter(state__country_id=country_id)
+    if search:
+        cities_query = cities_query.filter(name__icontains=search)
+    cities = cities_query.order_by('name')[:100]  # Limit to 100
+    cities_data = [{
+        'id': c.id,
+        'name': c.name,
+        'slug': c.slug,
+        'state': {
+            'id': c.state.id if c.state else None,
+            'name': c.state.name if c.state else None,
+        } if c.state else None
+    } for c in cities]
+
+    # Skills
+    skills_query = Skill.objects.filter(status='Active')
+    if search:
+        skills_query = skills_query.filter(name__icontains=search)
+    skills = skills_query.order_by('name')[:100]  # Limit to 100
+    skills_data = [{
+        'id': s.id,
+        'name': s.name,
+        'slug': s.slug,
+    } for s in skills]
+
+    # Industries
+    industries_query = Industry.objects.filter(status='Active')
+    if search:
+        industries_query = industries_query.filter(name__icontains=search)
+    industries = industries_query.order_by('name')[:100]  # Limit to 100
+    industries_data = [{
+        'id': i.id,
+        'name': i.name,
+        'slug': i.slug,
+    } for i in industries]
+
+    # Qualifications
+    qualifications_query = Qualification.objects.filter(status='Active')
+    if search:
+        qualifications_query = qualifications_query.filter(name__icontains=search)
+    qualifications = qualifications_query.order_by('name')[:100]  # Limit to 100
+    qualifications_data = [{
+        'id': q.id,
+        'name': q.name,
+        'slug': q.slug,
+    } for q in qualifications]
+
+    # Functional Areas
+    functional_areas_query = FunctionalArea.objects.filter(status='Active')
+    if search:
+        functional_areas_query = functional_areas_query.filter(name__icontains=search)
+    functional_areas = functional_areas_query.order_by('name')[:100]  # Limit to 100
+    functional_areas_data = [{
+        'id': fa.id,
+        'name': fa.name,
+    } for fa in functional_areas]
+
+    return Response({
+        'countries': countries_data,
+        'states': states_data,
+        'cities': cities_data,
+        'skills': skills_data,
+        'industries': industries_data,
+        'qualifications': qualifications_data,
+        'functional_areas': functional_areas_data,
     })

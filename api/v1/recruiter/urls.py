@@ -50,6 +50,9 @@ urlpatterns = [
     # Dashboard Stats
     path("dashboard/stats/", job_views.get_dashboard_stats, name="dashboard-stats"),
 
+    # Job Form Metadata
+    path("jobs/metadata/", job_views.get_job_form_metadata, name="jobs-metadata"),
+
     # Job CRUD
     path("jobs/", job_views.list_jobs, name="jobs-list"),
     path("jobs/create/", job_views.create_job, name="jobs-create"),

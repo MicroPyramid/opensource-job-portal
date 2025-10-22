@@ -208,6 +208,7 @@ export interface UpdateTeamMemberData {
 
 export type JobStatus = 'Draft' | 'Live' | 'Disabled' | 'Expired' | 'Pending' | 'Published' | 'Hired' | 'Process';
 export type JobType = 'full-time' | 'internship' | 'walk-in' | 'government' | 'Fresher';
+export type WorkMode = 'in-office' | 'remote' | 'hybrid';
 export type SalaryType = 'Month' | 'Year';
 
 export interface Location {
@@ -247,6 +248,7 @@ export interface JobListItem {
 	slug: string;
 	company_name: string;
 	job_type: JobType;
+	work_mode: WorkMode;
 	status: JobStatus;
 	location_display: string;
 	applicants_count: number;
@@ -304,6 +306,7 @@ export interface JobCreateData {
 	description: string;
 	company_name: string;
 	job_type: JobType;
+	work_mode?: WorkMode;
 	location_ids?: number[];
 	skill_ids?: number[];
 	industry_ids?: number[];
@@ -402,6 +405,41 @@ export interface JobFilters {
 	ordering?: string;
 	page?: number;
 	page_size?: number;
+}
+
+// ===== Job Form Metadata Types =====
+
+export interface Country {
+	id: number;
+	name: string;
+	slug: string;
+}
+
+export interface State {
+	id: number;
+	name: string;
+	slug: string;
+	country_id: number;
+}
+
+export interface City {
+	id: number;
+	name: string;
+	slug: string;
+	state?: {
+		id: number;
+		name: string;
+	};
+}
+
+export interface JobFormMetadata {
+	countries: Country[];
+	states: State[];
+	cities: City[];
+	skills: Skill[];
+	industries: Industry[];
+	qualifications: Qualification[];
+	functional_areas: FunctionalArea[];
 }
 
 // ===== API Response Types =====

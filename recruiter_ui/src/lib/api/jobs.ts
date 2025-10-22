@@ -104,3 +104,25 @@ export async function getJobApplicants(
 
 	return apiClient.get(url);
 }
+
+/**
+ * Get job form metadata (countries, states, cities, skills, industries, qualifications, functional areas)
+ */
+export async function getJobFormMetadata(filters?: {
+	country_id?: number;
+	state_id?: number;
+	search?: string;
+}): Promise<import('$lib/types').JobFormMetadata> {
+	const params = new URLSearchParams();
+
+	if (filters) {
+		if (filters.country_id) params.append('country_id', filters.country_id.toString());
+		if (filters.state_id) params.append('state_id', filters.state_id.toString());
+		if (filters.search) params.append('search', filters.search);
+	}
+
+	const queryString = params.toString();
+	const url = `/recruiter/jobs/metadata/${queryString ? `?${queryString}` : ''}`;
+
+	return apiClient.get(url);
+}

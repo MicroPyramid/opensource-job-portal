@@ -27,39 +27,44 @@
 	// State for form submission
 	let isSubmitting = $state(false);
 
-	// Form data
+	// Initialize form data from loaded job
 	let formData = $state({
 		// Step 1: Basics
-		jobTitle: '',
-		department: '',
-		companyName: '', // Company name (required)
-		employmentType: 'full-time', // Lowercase to match API
+		jobTitle: data.job.title || '',
+		department: data.job.job_role || '',
+		companyName: data.job.company_name || '',
+		employmentType: data.job.job_type || 'full-time',
 		experienceLevel: '',
-		positions: 1,
+		positions: data.job.vacancies || 1,
 
 		// Step 2: Location
 		country: '',
 		state: '',
 		city: '',
-		workMode: 'in-office',
-		officeAddress: '',
+		workMode: data.job.work_mode || 'in-office',
+		officeAddress: data.job.company_address || '',
+		selectedLocationIds: data.job.locations?.map(loc => loc.id) || [],
 
 		// Step 3: Details
-		description: '',
+		description: data.job.description || '',
 		responsibilities: '',
 		requirements: '',
-		skills: [] as string[],
+		skills: data.job.skills?.map(s => s.name) || [],
+		selectedSkillIds: data.job.skills?.map(s => s.id) || [],
 		education: '',
+		selectedQualificationIds: data.job.qualifications?.map(q => q.id) || [],
+		selectedIndustryIds: data.job.industries?.map(i => i.id) || [],
+		selectedFunctionalAreaIds: data.job.functional_areas?.map(fa => fa.id) || [],
 
 		// Step 4: Compensation
-		salaryMin: '',
-		salaryMax: '',
+		salaryMin: data.job.min_salary?.toString() || '',
+		salaryMax: data.job.max_salary?.toString() || '',
 		hideSalary: false,
 		benefits: '',
 		perks: '',
 
 		// Step 5: Application Settings
-		deadline: '',
+		deadline: data.job.last_date || '',
 		assignedRecruiters: [] as string[],
 		screeningQuestions: [] as { question: string; required: boolean }[],
 		requiredDocuments: {
@@ -68,6 +73,23 @@
 			portfolio: false
 		},
 		autoReplyTemplate: ''
+	});
+
+	// Derive experience level from job data
+	$effect(() => {
+		if (data.job.fresher) {
+			formData.experienceLevel = 'Fresher';
+		} else if (data.job.min_year !== undefined && data.job.max_year !== undefined) {
+			if (data.job.max_year <= 3) {
+				formData.experienceLevel = '1-3 years';
+			} else if (data.job.max_year <= 5) {
+				formData.experienceLevel = '3-5 years';
+			} else if (data.job.max_year <= 10) {
+				formData.experienceLevel = '5-10 years';
+			} else {
+				formData.experienceLevel = '10+ years';
+			}
+		}
 	});
 
 	let newSkill = $state('');
@@ -132,21 +154,25 @@
 	// Handle form action results
 	$effect(() => {
 		if (form?.success && form?.jobId) {
-			// Redirect to jobs list or job detail page
+			// Redirect to jobs list
 			goto(`/dashboard/jobs/`);
 		}
 	});
 </script>
 
 <svelte:head>
-	<title>Post New Job - PeelJobs Recruiter</title>
+	<title>Edit Job - {data.job.title} - PeelJobs Recruiter</title>
 </svelte:head>
 
 <div class="max-w-5xl mx-auto space-y-6">
 	<!-- Header -->
 	<div>
-		<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Post New Job</h1>
-		<p class="text-gray-600 mt-1">Fill in the details to create a new job posting</p>
+		<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Edit Job</h1>
+		<p class="text-gray-600 mt-1">Update details for: {data.job.title}</p>
+		<div class="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+			<span class="font-medium text-blue-800">Status:</span>
+			<span class="text-blue-600">{data.job.status}</span>
+		</div>
 	</div>
 
 	<!-- Success/Error Messages -->
@@ -178,6 +204,7 @@
 				<div class="flex items-center {index < steps.length - 1 ? 'flex-1' : ''}">
 					<div class="flex flex-col items-center">
 						<button
+							type="button"
 							onclick={() => (currentStep = step.number)}
 							class="w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-colors {currentStep ===
 							step.number
@@ -221,6 +248,53 @@
 			};
 		}}
 	>
+		<!-- Hidden fields for all form data (needed because form fields are in conditional blocks) -->
+		<!-- Step 1: Basics -->
+		<input type="hidden" name="title" bind:value={formData.jobTitle} />
+		<input type="hidden" name="job_role" bind:value={formData.department} />
+		<input type="hidden" name="company_name" bind:value={formData.companyName} />
+		<input type="hidden" name="job_type" bind:value={formData.employmentType} />
+		<input type="hidden" name="vacancies" bind:value={formData.positions} />
+
+		<!-- Step 2: Location & Work Mode -->
+		<input type="hidden" name="work_mode" bind:value={formData.workMode} />
+		{#each formData.selectedLocationIds as locationId}
+			<input type="hidden" name="location_ids" value={locationId} />
+		{/each}
+
+		<!-- Step 3: Details -->
+		<input type="hidden" name="description" bind:value={formData.description} />
+		{#each formData.selectedSkillIds as skillId}
+			<input type="hidden" name="skill_ids" value={skillId} />
+		{/each}
+		{#each formData.selectedIndustryIds as industryId}
+			<input type="hidden" name="industry_ids" value={industryId} />
+		{/each}
+		{#each formData.selectedQualificationIds as qualificationId}
+			<input type="hidden" name="qualification_ids" value={qualificationId} />
+		{/each}
+		{#each formData.selectedFunctionalAreaIds as functionalAreaId}
+			<input type="hidden" name="functional_area_ids" value={functionalAreaId} />
+		{/each}
+
+		<!-- Step 4: Compensation -->
+		{#if formData.salaryMin}
+			<input type="hidden" name="min_salary" value={formData.salaryMin} />
+		{/if}
+		{#if formData.salaryMax}
+			<input type="hidden" name="max_salary" value={formData.salaryMax} />
+		{/if}
+		<input type="hidden" name="salary_type" value="Year" />
+
+		<!-- Step 5: Application Settings -->
+		{#if formData.deadline}
+			<input type="hidden" name="last_date" bind:value={formData.deadline} />
+		{/if}
+
+		<!-- Additional fields -->
+		<input type="hidden" name="company_address" bind:value={formData.officeAddress} />
+		<input type="hidden" name="company_description" bind:value={formData.benefits} />
+
 		<!-- Form Content -->
 		<div class="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
 			{#if currentStep === 1}
@@ -349,42 +423,54 @@
 						{/each}
 					</div>
 				</div>
-				<input type="hidden" name="work_mode" bind:value={formData.workMode} />
+
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-3">Current Locations</label>
+					{#if data.job.locations && data.job.locations.length > 0}
+						<div class="flex flex-wrap gap-2 mb-3">
+							{#each data.job.locations as location}
+								<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+									{location.name}, {location.state}
+								</span>
+							{/each}
+						</div>
+					{:else}
+						<p class="text-sm text-gray-500 mb-3">No locations set</p>
+					{/if}
+					<p class="text-xs text-gray-500">Note: Location editing coming soon. Please contact support to change locations.</p>
+				</div>
 
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							Country <span class="text-red-500">*</span>
-						</label>
+						<label class="block text-sm font-medium text-gray-700 mb-2">Country</label>
 						<input
 							type="text"
 							bind:value={formData.country}
 							placeholder="e.g., United States"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							disabled
+							class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
 						/>
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							State <span class="text-red-500">*</span>
-						</label>
+						<label class="block text-sm font-medium text-gray-700 mb-2">State</label>
 						<input
 							type="text"
 							bind:value={formData.state}
 							placeholder="e.g., California"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							disabled
+							class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
 						/>
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							City <span class="text-red-500">*</span>
-						</label>
+						<label class="block text-sm font-medium text-gray-700 mb-2">City</label>
 						<input
 							type="text"
 							bind:value={formData.city}
 							placeholder="e.g., San Francisco"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							disabled
+							class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
 						/>
 					</div>
 				</div>
@@ -446,41 +532,19 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
-					<div class="flex gap-2 mb-3">
-						<input
-							type="text"
-							bind:value={newSkill}
-							placeholder="Add a skill (e.g., React, Python)"
-							onkeydown={(e) => {
-								if (e.key === 'Enter') {
-									e.preventDefault();
-									addSkill();
-								}
-							}}
-							class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-						<button
-							onclick={addSkill}
-							class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-						>
-							Add
-						</button>
-					</div>
-					{#if formData.skills.length > 0}
-						<div class="flex flex-wrap gap-2">
-							{#each formData.skills as skill, index}
-								<span
-									class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-								>
-									{skill}
-									<button onclick={() => removeSkill(index)} class="hover:text-blue-900">
-										<X class="w-3 h-3" />
-									</button>
+					<label class="block text-sm font-medium text-gray-700 mb-3">Current Skills</label>
+					{#if data.job.skills && data.job.skills.length > 0}
+						<div class="flex flex-wrap gap-2 mb-3">
+							{#each data.job.skills as skill}
+								<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+									{skill.name}
 								</span>
 							{/each}
 						</div>
+					{:else}
+						<p class="text-sm text-gray-500 mb-3">No skills set</p>
 					{/if}
+					<p class="text-xs text-gray-500">Note: Skill editing coming soon. Please contact support to change skills.</p>
 				</div>
 
 				<div>
@@ -564,6 +628,7 @@
 					</label>
 					<input
 						type="date"
+						name="last_date"
 						bind:value={formData.deadline}
 						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 					/>
@@ -603,6 +668,7 @@
 					<div class="flex items-center justify-between mb-3">
 						<label class="block text-sm font-medium text-gray-700">Screening Questions (Optional)</label>
 						<button
+							type="button"
 							onclick={addScreeningQuestion}
 							class="text-sm text-blue-600 hover:text-blue-700 font-medium"
 						>
@@ -624,6 +690,7 @@
 										<span class="text-sm text-gray-700">Required</span>
 									</label>
 									<button
+										type="button"
 										onclick={() => removeScreeningQuestion(index)}
 										class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
 									>
@@ -650,7 +717,7 @@
 			<div class="space-y-6">
 				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
 					<Eye class="w-6 h-6" />
-					Preview & Publish
+					Preview & Update
 				</h2>
 
 				<div class="bg-gray-50 rounded-lg p-6 space-y-4">
@@ -659,7 +726,7 @@
 						<div class="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
 							<span>{formData.department || 'Department'}</span>
 							<span>•</span>
-							<span>{formData.city}, {formData.state}</span>
+							<span>{formData.companyName || 'Company'}</span>
 							<span>•</span>
 							<span>{formData.employmentType}</span>
 							<span>•</span>
@@ -688,12 +755,12 @@
 						</div>
 					{/if}
 
-					{#if formData.skills.length > 0}
+					{#if data.job.skills && data.job.skills.length > 0}
 						<div>
 							<h4 class="font-semibold text-gray-900 mb-2">Required Skills</h4>
 							<div class="flex flex-wrap gap-2">
-								{#each formData.skills as skill}
-									<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{skill}</span>
+								{#each data.job.skills as skill}
+									<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{skill.name}</span>
 								{/each}
 							</div>
 						</div>
@@ -704,18 +771,16 @@
 							<div>
 								<h4 class="font-semibold text-gray-900 mb-2">Salary Range</h4>
 								<p class="text-gray-700">
-									${formData.salaryMin?.toLocaleString() || '0'} - ${formData.salaryMax?.toLocaleString() ||
-										'0'}
+									${formData.salaryMin || '0'} - ${formData.salaryMax || '0'}
 								</p>
 							</div>
 						{/if}
 					{/if}
 				</div>
 
-				<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-					<p class="text-sm text-yellow-800">
-						<strong>Note:</strong> Once published, this job will be visible to all job seekers on the platform.
-						You can edit or close it at any time from the Jobs page.
+				<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+					<p class="text-sm text-blue-800">
+						<strong>Note:</strong> Changes will be saved to this job posting. If you publish, it will be visible to job seekers.
 					</p>
 				</div>
 			</div>
@@ -742,7 +807,7 @@
 					class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
 				>
 					<Save class="w-4 h-4" />
-					{isSubmitting ? 'Saving...' : 'Save Draft'}
+					{isSubmitting ? 'Saving...' : 'Save Changes'}
 				</button>
 
 				{#if currentStep < totalSteps}
@@ -762,7 +827,7 @@
 						class="inline-flex items-center gap-2 px-6 py-2 bg-green-600 rounded-lg text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
 					>
 						<Send class="w-4 h-4" />
-						{isSubmitting ? 'Publishing...' : 'Publish Job'}
+						{isSubmitting ? 'Publishing...' : data.job.status === 'Live' ? 'Update & Republish' : 'Update & Publish'}
 					</button>
 				{/if}
 			</div>

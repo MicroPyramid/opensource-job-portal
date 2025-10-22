@@ -1118,6 +1118,12 @@ JOB_TYPE = (
     ("Fresher", "Fresher"),
 )
 
+WORK_MODE = (
+    ("in-office", "In-Office"),
+    ("remote", "Remote"),
+    ("hybrid", "Hybrid"),
+)
+
 WALKIN_TYPE = (
     ("this_week", "This Week"),
     ("this_month", "This Month"),
@@ -1296,6 +1302,7 @@ class JobPost(models.Model):
     ln_views = models.IntegerField(default=0)
     other_views = models.IntegerField(default=0)
     job_type = models.CharField(choices=JOB_TYPE, max_length=50)
+    work_mode = models.CharField(choices=WORK_MODE, max_length=50, default="in-office")
     published_message = models.TextField()
     company_name = models.CharField(max_length=100, default="")
     company_address = models.TextField()

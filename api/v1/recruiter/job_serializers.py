@@ -1,6 +1,7 @@
 """
 Serializers for Recruiter Job Management API
 """
+import datetime
 from rest_framework import serializers
 from peeldb.models import (
     JobPost, City, Skill, Industry, Qualification,
@@ -27,6 +28,7 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
             'slug',
             'company_name',
             'job_type',
+            'work_mode',
             'status',
             'location_display',
             'applicants_count',
@@ -63,8 +65,27 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
         if not obj.created_on:
             return "Recently created"
 
-        now = timezone.now()
-        diff = now - obj.created_on
+        try:
+            now = timezone.now()
+
+            # Handle both datetime and date objects
+            if isinstance(obj.created_on, datetime.date) and not isinstance(obj.created_on, datetime.datetime):
+                # Convert date to datetime at midnight
+                created_datetime = datetime.datetime.combine(obj.created_on, datetime.time.min)
+                # Make timezone aware
+                created_datetime = timezone.make_aware(created_datetime)
+            elif isinstance(obj.created_on, datetime.datetime):
+                created_datetime = obj.created_on
+                # Ensure datetime is timezone aware
+                if timezone.is_naive(created_datetime):
+                    created_datetime = timezone.make_aware(created_datetime)
+            else:
+                return "Recently created"
+
+            diff = now - created_datetime
+        except Exception as e:
+            # If anything goes wrong, just return a default
+            return "Recently created"
 
         if diff.days == 0:
             hours = diff.seconds // 3600
@@ -196,28 +217,40 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
     location_ids = serializers.ListField(
         child=serializers.IntegerField(),
         write_only=True,
-        required=False
+        required=False,
+        allow_empty=True
     )
     skill_ids = serializers.ListField(
         child=serializers.IntegerField(),
         write_only=True,
-        required=False
+        required=False,
+        allow_empty=True
     )
     industry_ids = serializers.ListField(
         child=serializers.IntegerField(),
         write_only=True,
-        required=False
+        required=False,
+        allow_empty=True
     )
     qualification_ids = serializers.ListField(
         child=serializers.IntegerField(),
         write_only=True,
-        required=False
+        required=False,
+        allow_empty=True
     )
     functional_area_ids = serializers.ListField(
         child=serializers.IntegerField(),
         write_only=True,
-        required=False
+        required=False,
+        allow_empty=True
     )
+
+    # Override model fields to make them not required for drafts
+    description = serializers.CharField(required=False, allow_blank=True)
+    company_description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    company_address = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    company_links = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    company_emails = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = JobPost
@@ -227,6 +260,7 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
             'description',
             'company_name',
             'job_type',
+            'work_mode',
             'location_ids',
             'skill_ids',
             'industry_ids',
