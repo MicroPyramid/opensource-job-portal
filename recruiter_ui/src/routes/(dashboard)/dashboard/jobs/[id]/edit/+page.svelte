@@ -185,9 +185,6 @@
 			<CheckCircle class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
 			<div class="flex-1">
 				<p class="text-sm font-medium text-green-800">{form.message || 'Job updated successfully!'}</p>
-				{#if form.warning}
-					<p class="text-sm text-green-700 mt-1">{form.warning}</p>
-				{/if}
 			</div>
 			<button
 				onclick={() => (form = null)}

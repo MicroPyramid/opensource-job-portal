@@ -333,13 +333,15 @@
 												</button>
 											</form>
 										{/if}
-										<a
-											href="/dashboard/jobs/{job.id}/edit/"
-											class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-											title="Edit"
-										>
-											<Edit class="w-4 h-4" />
-										</a>
+										{#if job.status === 'Draft'}
+											<a
+												href="/dashboard/jobs/{job.id}/edit/"
+												class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+												title="Edit"
+											>
+												<Edit class="w-4 h-4" />
+											</a>
+										{/if}
 										<a
 											href="/dashboard/jobs/{job.id}/"
 											class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -347,14 +349,16 @@
 										>
 											<ExternalLink class="w-4 h-4" />
 										</a>
-										<button
-											onclick={() => handleDelete(job.id, job.title)}
-											disabled={submittingAction === job.id}
-											class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-											title="Delete"
-										>
-											<XCircle class="w-4 h-4" />
-										</button>
+										{#if job.status === 'Draft'}
+											<button
+												onclick={() => handleDelete(job.id, job.title)}
+												disabled={submittingAction === job.id}
+												class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+												title="Delete"
+											>
+												<XCircle class="w-4 h-4" />
+											</button>
+										{/if}
 									</div>
 								</td>
 							</tr>
@@ -438,13 +442,15 @@
 								</button>
 							</form>
 						{/if}
-						<a
-							href="/dashboard/jobs/{job.id}/edit/"
-							class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-						>
-							<Edit class="w-4 h-4" />
-							Edit
-						</a>
+						{#if job.status === 'Draft'}
+							<a
+								href="/dashboard/jobs/{job.id}/edit/"
+								class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+							>
+								<Edit class="w-4 h-4" />
+								Edit
+							</a>
+						{/if}
 						<a
 							href="/dashboard/jobs/{job.id}/"
 							class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"

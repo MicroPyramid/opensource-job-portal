@@ -182,6 +182,13 @@ def update_job(request, job_id):
             status=status.HTTP_404_NOT_FOUND
         )
 
+    # Prevent editing published jobs (Live, Disabled, or Expired)
+    if job.status in ['Live', 'Disabled', 'Expired']:
+        return Response(
+            {"error": f"Cannot edit a job with status '{job.status}'. Only Draft jobs can be edited."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     serializer = RecruiterJobUpdateSerializer(
         job,
         data=request.data,
@@ -219,6 +226,13 @@ def delete_job(request, job_id):
         return Response(
             {"error": "Job not found"},
             status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Prevent deleting published jobs (Live, Disabled, or Expired)
+    if job.status in ['Live', 'Disabled', 'Expired']:
+        return Response(
+            {"error": f"Cannot delete a job with status '{job.status}'. Published jobs cannot be hard-deleted. Use the Close option instead."},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     # Check if job has applicants

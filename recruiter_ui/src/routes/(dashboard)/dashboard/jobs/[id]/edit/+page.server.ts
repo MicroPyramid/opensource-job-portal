@@ -57,6 +57,11 @@ export const load: PageServerLoad = async ({ params, cookies, fetch, url }) => {
 		const job: JobDetail = await jobResponse.json();
 		const metadata: JobFormMetadata = await metadataResponse.json();
 
+		// Prevent editing published jobs - redirect to jobs list
+		if (job.status === 'Live' || job.status === 'Disabled' || job.status === 'Expired') {
+			throw redirect(302, '/dashboard/jobs/?error=' + encodeURIComponent(`Cannot edit a job with status '${job.status}'. Only Draft jobs can be edited.`));
+		}
+
 		return {
 			job,
 			metadata
@@ -183,12 +188,12 @@ export const actions: Actions = {
 				);
 
 				if (!publishResponse.ok) {
-					// Job was updated but publish failed
-					return {
-						success: true,
-						warning: 'Job updated successfully but failed to publish.',
-						jobId: jobId
-					};
+					// Job was updated but publish failed - return error
+					const errorData = await publishResponse.json().catch(() => ({}));
+					return fail(400, {
+						error: errorData.error || errorData.detail || 'Job was updated but failed to publish. Please try publishing from the job list.',
+						values: Object.fromEntries(formData)
+					});
 				}
 			}
 
