@@ -20,14 +20,32 @@
 	let sidebarOpen = $state(false);
 	let userMenuOpen = $state(false);
 
-	const navItems = [
+	// Get user info from server data (SSR-safe) or fallback to store
+	let user = $derived(data.user || $authStore.user);
+
+	// Base navigation items available to all users
+	const baseNavItems = [
 		{ href: '/dashboard/', icon: LayoutDashboard, label: 'Dashboard' },
 		{ href: '/dashboard/jobs/', icon: Briefcase, label: 'Jobs' },
 		{ href: '/dashboard/applicants/', icon: Users, label: 'Applicants' },
-		{ href: '/dashboard/company/', icon: Building2, label: 'Company' },
 		{ href: '/dashboard/analytics/', icon: BarChart3, label: 'Analytics' },
 		{ href: '/dashboard/account/', icon: User, label: 'Account' }
 	];
+
+	// Company nav item (only for users with a company)
+	const companyNavItem = { href: '/dashboard/company/', icon: Building2, label: 'Company' };
+
+	// Compute final nav items based on user's company status
+	let navItems = $derived(
+		user?.company ? [
+			baseNavItems[0], // Dashboard
+			baseNavItems[1], // Jobs
+			baseNavItems[2], // Applicants
+			companyNavItem,  // Company (only if user has a company)
+			baseNavItems[3], // Analytics
+			baseNavItems[4]  // Account
+		] : baseNavItems
+	);
 
 	async function handleLogout() {
 		await authStore.logout();
@@ -42,9 +60,6 @@
 			authStore.updateUser(data.user);
 		}
 	});
-
-	// Get user info from server data (SSR-safe) or fallback to store
-	let user = $derived(data.user || $authStore.user);
 </script>
 
 <div class="min-h-screen bg-gray-50">
@@ -78,7 +93,7 @@
 			<!-- Navigation -->
 			<nav class="flex-1 overflow-y-auto py-4">
 				<ul class="space-y-1 px-3">
-					{#each navItems as item}
+					{#each navItems as item (item.href)}
 						<li>
 							<a
 								href={item.href}
@@ -141,7 +156,10 @@
 	{#if sidebarOpen}
 		<div
 			class="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+			role="button"
+			tabindex="0"
 			onclick={() => (sidebarOpen = false)}
+			onkeydown={(e) => e.key === 'Enter' && (sidebarOpen = false)}
 		></div>
 	{/if}
 

@@ -66,4 +66,6 @@ urlpatterns = [
 
     # Job Applicants
     path("jobs/<int:job_id>/applicants/", job_views.get_job_applicants, name="jobs-applicants"),
+    path("jobs/<int:job_id>/applicants/<int:applicant_id>/", job_views.get_applicant_detail, name="applicant-detail"),
+    path("jobs/<int:job_id>/applicants/<int:applicant_id>/update/", job_views.update_applicant_status, name="applicant-update"),
 ]

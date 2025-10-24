@@ -248,7 +248,10 @@
 											<Briefcase class="w-5 h-5 text-blue-600" />
 										</div>
 										<div>
-											<a href="/dashboard/jobs/{job.id}/" class="font-medium text-gray-900 hover:text-blue-600">
+											<a
+												href="/dashboard/jobs/{job.id}/{job.status === 'Draft' ? '' : 'applicants/'}"
+												class="font-medium text-gray-900 hover:text-blue-600"
+											>
 												{job.title}
 											</a>
 											<div class="flex items-center gap-3 mt-1 text-sm text-gray-500">
@@ -287,10 +290,13 @@
 											<Eye class="w-4 h-4" />
 											{job.views_count.toLocaleString()}
 										</div>
-										<div class="flex items-center gap-1 text-gray-600">
+										<a
+											href="/dashboard/jobs/{job.id}/applicants/"
+											class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium"
+										>
 											<Users class="w-4 h-4" />
 											{job.applicants_count}
-										</div>
+										</a>
 									</div>
 								</td>
 								<td class="px-6 py-4">
@@ -381,7 +387,10 @@
 						</span>
 					</div>
 
-					<a href="/dashboard/jobs/{job.id}/" class="block mb-3">
+					<a
+						href="/dashboard/jobs/{job.id}/{job.status === 'Draft' ? '' : 'applicants/'}"
+						class="block mb-3"
+					>
 						<h3 class="text-lg font-semibold text-gray-900 hover:text-blue-600 line-clamp-2">
 							{job.title}
 						</h3>
@@ -412,10 +421,13 @@
 							<Eye class="w-4 h-4" />
 							{job.views_count.toLocaleString()}
 						</div>
-						<div class="flex items-center gap-1 text-sm text-gray-600">
+						<a
+							href="/dashboard/jobs/{job.id}/applicants/"
+							class="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium"
+						>
 							<Users class="w-4 h-4" />
 							{job.applicants_count} applicants
-						</div>
+						</a>
 					</div>
 
 					<div class="flex items-center gap-2">

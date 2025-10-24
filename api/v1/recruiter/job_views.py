@@ -20,7 +20,8 @@ from .job_serializers import (
     RecruiterJobDetailSerializer,
     RecruiterJobCreateSerializer,
     RecruiterJobUpdateSerializer,
-    JobApplicationSerializer
+    JobApplicationSerializer,
+    ApplicantDetailSerializer
 )
 
 
@@ -549,4 +550,128 @@ def get_job_form_metadata(request):
         'skills': skills_data,
         'industries': industries_data,
         'qualifications': qualifications_data,
+    })
+
+
+@extend_schema(
+    tags=["Recruiter - Applicants"],
+    summary="Get Applicant Detail",
+    description="Get detailed profile of a specific applicant for a job",
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_applicant_detail(request, job_id, applicant_id):
+    """Get detailed profile of an applicant"""
+    user = request.user
+
+    # Verify job ownership
+    try:
+        job = JobPost.objects.get(id=job_id, user=user)
+    except JobPost.DoesNotExist:
+        return Response(
+            {"error": "Job not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Get application
+    try:
+        application = AppliedJobs.objects.select_related('user').get(
+            id=applicant_id,
+            job_post=job
+        )
+    except AppliedJobs.DoesNotExist:
+        return Response(
+            {"error": "Applicant not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Get detailed user profile
+    applicant_user = application.user
+    if not applicant_user:
+        return Response(
+            {"error": "Applicant user not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    serializer = ApplicantDetailSerializer(
+        applicant_user,
+        context={'request': request, 'job_id': job_id}
+    )
+
+    return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Recruiter - Applicants"],
+    summary="Update Applicant Status",
+    description="Update applicant status (Pending, Shortlisted, Hired, Rejected) and add remarks",
+    request={
+        'application/json': {
+            'type': 'object',
+            'properties': {
+                'status': {
+                    'type': 'string',
+                    'enum': ['Pending', 'Shortlisted', 'Hired', 'Rejected'],
+                    'description': 'New status for the application'
+                },
+                'remarks': {
+                    'type': 'string',
+                    'description': 'Recruiter notes/remarks about the applicant'
+                }
+            }
+        }
+    }
+)
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_applicant_status(request, job_id, applicant_id):
+    """Update applicant status and remarks"""
+    user = request.user
+
+    # Verify job ownership
+    try:
+        job = JobPost.objects.get(id=job_id, user=user)
+    except JobPost.DoesNotExist:
+        return Response(
+            {"error": "Job not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Get application
+    try:
+        application = AppliedJobs.objects.select_related('user').get(
+            id=applicant_id,
+            job_post=job
+        )
+    except AppliedJobs.DoesNotExist:
+        return Response(
+            {"error": "Applicant not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Update status if provided
+    new_status = request.data.get('status')
+    if new_status:
+        valid_statuses = ['Pending', 'Shortlisted', 'Hired', 'Rejected']
+        if new_status not in valid_statuses:
+            return Response(
+                {"error": f"Invalid status. Must be one of: {', '.join(valid_statuses)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        application.status = new_status
+
+    # Update remarks if provided
+    remarks = request.data.get('remarks')
+    if remarks is not None:
+        application.remarks = remarks
+
+    application.save()
+
+    # Return updated application
+    serializer = JobApplicationSerializer(application, context={'request': request})
+
+    return Response({
+        "success": True,
+        "message": f"Applicant status updated to {application.status}",
+        "application": serializer.data
     })

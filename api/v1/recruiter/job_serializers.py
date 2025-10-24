@@ -430,16 +430,36 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             'status',
             'applied_on',
             'applied_time_ago',
+            'remarks',
         ]
 
     def get_applicant(self, obj):
         """Get applicant basic info"""
         user = obj.user
+        if not user:
+            return None
+
+        # Calculate experience
+        years = int(user.year) if user.year and user.year.isdigit() else 0
+        months = int(user.month) if user.month and user.month.isdigit() else 0
+
+        experience_str = ""
+        if years > 0:
+            experience_str = f"{years}y"
+        if months > 0:
+            experience_str += f" {months}m" if experience_str else f"{months}m"
+        if not experience_str:
+            experience_str = "Fresher"
+
         return {
             'id': user.id,
             'name': f"{user.first_name} {user.last_name}".strip() or user.email,
             'email': user.email,
+            'mobile': user.mobile,
             'profile_pic': user.profile_pic.url if user.profile_pic else None,
+            'experience': experience_str,
+            'current_location': user.current_city.name if user.current_city else None,
+            'resume_url': user.resume.url if user.resume else None,
         }
 
     def get_applied_time_ago(self, obj):
@@ -459,3 +479,148 @@ class JobApplicationSerializer(serializers.ModelSerializer):
         else:
             weeks = diff.days // 7
             return f"{weeks}w ago"
+
+
+class ApplicantDetailSerializer(serializers.ModelSerializer):
+    """Detailed serializer for applicant profile"""
+    application = serializers.SerializerMethodField()
+    skills = serializers.SerializerMethodField()
+    employment_history = serializers.SerializerMethodField()
+    education = serializers.SerializerMethodField()
+    certifications = serializers.SerializerMethodField()
+    experience = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'mobile',
+            'profile_pic',
+            'experience',
+            'location',
+            'profile_description',
+            'resume',
+            'current_salary',
+            'expected_salary',
+            'notice_period',
+            'relocation',
+            'show_email',
+            'skills',
+            'employment_history',
+            'education',
+            'certifications',
+            'application',
+        ]
+
+    def get_application(self, obj):
+        """Get application details for this job"""
+        request = self.context.get('request')
+        job_id = self.context.get('job_id')
+
+        if job_id:
+            try:
+                application = AppliedJobs.objects.get(user=obj, job_post_id=job_id)
+                return {
+                    'id': application.id,
+                    'status': application.status,
+                    'applied_on': application.applied_on,
+                    'remarks': application.remarks,
+                }
+            except AppliedJobs.DoesNotExist:
+                pass
+
+        return None
+
+    def get_experience(self, obj):
+        """Get formatted experience"""
+        years = int(obj.year) if obj.year and obj.year.isdigit() else 0
+        months = int(obj.month) if obj.month and obj.month.isdigit() else 0
+
+        return {
+            'years': years,
+            'months': months,
+            'total_months': years * 12 + months,
+            'display': f"{years}y {months}m" if years > 0 else (f"{months}m" if months > 0 else "Fresher")
+        }
+
+    def get_location(self, obj):
+        """Get location details"""
+        location_data = {
+            'current_city': obj.current_city.name if obj.current_city else None,
+            'current_state': obj.current_city.state.name if obj.current_city and obj.current_city.state else None,
+            'preferred_cities': [city.name for city in obj.preferred_city.all()[:5]],
+            'relocation': obj.relocation,
+        }
+
+        if obj.city:
+            location_data['city'] = obj.city.name
+            location_data['state'] = obj.city.state.name if obj.city.state else None
+
+        return location_data
+
+    def get_skills(self, obj):
+        """Get technical skills"""
+        skills = []
+        for tech_skill in obj.skills.all():
+            skill_data = {
+                'name': tech_skill.skill.name,
+                'years': tech_skill.year,
+                'months': tech_skill.month,
+                'proficiency': tech_skill.proficiency,
+                'last_used': tech_skill.last_used,
+                'is_major': tech_skill.is_major,
+            }
+            skills.append(skill_data)
+
+        return skills
+
+    def get_employment_history(self, obj):
+        """Get employment history"""
+        history = []
+        for emp in obj.employment_history.all():
+            history.append({
+                'company': emp.company,
+                'designation': emp.designation,
+                'from_date': emp.from_date,
+                'to_date': emp.to_date,
+                'current_job': emp.current_job,
+                'job_profile': emp.job_profile,
+            })
+
+        return history
+
+    def get_education(self, obj):
+        """Get education details"""
+        education = []
+        for edu in obj.education.all():
+            education.append({
+                'institute': edu.institute.name if edu.institute else None,
+                'degree': edu.degree.degree_name.name if edu.degree and edu.degree.degree_name else None,
+                'specialization': edu.degree.specialization if edu.degree else None,
+                'from_date': edu.from_date,
+                'to_date': edu.to_date,
+                'score': edu.score,
+                'current_education': edu.current_education,
+            })
+
+        return education
+
+    def get_certifications(self, obj):
+        """Get certifications"""
+        certifications = []
+        for cert in obj.user_certifications.all():
+            certifications.append({
+                'name': cert.name,
+                'organization': cert.organization,
+                'credential_id': cert.credential_id,
+                'credential_url': cert.credential_url,
+                'issued_date': cert.issued_date,
+                'expiry_date': cert.expiry_date,
+                'does_not_expire': cert.does_not_expire,
+            })
+
+        return certifications
