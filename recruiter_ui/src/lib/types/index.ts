@@ -207,9 +207,14 @@ export interface UpdateTeamMemberData {
 // ===== Job Management Types =====
 
 export type JobStatus = 'Draft' | 'Live' | 'Disabled' | 'Expired' | 'Pending' | 'Published' | 'Hired' | 'Process';
-export type JobType = 'full-time' | 'internship' | 'walk-in' | 'government' | 'Fresher';
+export type JobType = 'full-time' | 'permanent' | 'contract' | 'internship' | 'part-time' | 'freelance' | 'walk-in' | 'government' | 'fresher';
 export type WorkMode = 'in-office' | 'remote' | 'hybrid';
 export type SalaryType = 'Month' | 'Year';
+export type SeniorityLevel = 'intern' | 'junior' | 'mid' | 'senior' | 'lead' | 'manager';
+export type ApplicationMethod = 'portal' | 'external' | 'email';
+export type LanguageProficiency = 'basic' | 'conversational' | 'fluent';
+export type HiringTimeline = '1-3days' | '1-2weeks' | '1month' | '1-3months';
+export type HiringPriority = 'Low' | 'Normal' | 'High';
 
 export interface Location {
 	id: number;
@@ -262,6 +267,11 @@ export interface JobListItem {
 	is_expiring_soon: boolean;
 }
 
+export interface LanguageRequirement {
+	language: string;
+	proficiency: LanguageProficiency;
+}
+
 export interface JobDetail extends JobListItem {
 	description: string;
 	job_role: string;
@@ -269,7 +279,6 @@ export interface JobDetail extends JobListItem {
 	skills: Skill[];
 	industries: Industry[];
 	qualifications: Qualification[];
-	functional_areas: FunctionalArea[];
 	min_salary: number;
 	max_salary: number;
 	salary_type: SalaryType;
@@ -282,6 +291,19 @@ export interface JobDetail extends JobListItem {
 	company_address?: string;
 	company_links?: string;
 	company_emails?: string;
+	// New enhanced fields
+	seniority_level?: SeniorityLevel;
+	application_method: ApplicationMethod;
+	application_url?: string;
+	show_salary: boolean;
+	benefits?: string[];
+	language_requirements?: LanguageRequirement[];
+	required_certifications?: string;
+	preferred_certifications?: string;
+	relocation_required: boolean;
+	travel_percentage?: string;
+	hiring_timeline?: HiringTimeline;
+	hiring_priority: HiringPriority;
 	// Walk-in fields
 	walkin_contactinfo?: string;
 	walkin_show_contact_info?: boolean;
@@ -311,7 +333,6 @@ export interface JobCreateData {
 	skill_ids?: number[];
 	industry_ids?: number[];
 	qualification_ids?: number[];
-	functional_area_ids?: number[];
 	min_salary?: number;
 	max_salary?: number;
 	salary_type?: SalaryType;
@@ -326,6 +347,19 @@ export interface JobCreateData {
 	company_address?: string;
 	company_links?: string;
 	company_emails?: string;
+	// New enhanced fields
+	seniority_level?: SeniorityLevel;
+	application_method?: ApplicationMethod;
+	application_url?: string;
+	show_salary?: boolean;
+	benefits?: string[];
+	language_requirements?: LanguageRequirement[];
+	required_certifications?: string;
+	preferred_certifications?: string;
+	relocation_required?: boolean;
+	travel_percentage?: string;
+	hiring_timeline?: HiringTimeline;
+	hiring_priority?: HiringPriority;
 	// Walk-in fields
 	walkin_contactinfo?: string;
 	walkin_show_contact_info?: boolean;
@@ -439,7 +473,6 @@ export interface JobFormMetadata {
 	skills: Skill[];
 	industries: Industry[];
 	qualifications: Qualification[];
-	functional_areas: FunctionalArea[];
 }
 
 // ===== API Response Types =====

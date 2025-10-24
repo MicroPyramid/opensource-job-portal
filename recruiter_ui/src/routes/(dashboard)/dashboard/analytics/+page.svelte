@@ -105,7 +105,7 @@
 
 	const topSources = [
 		{ source: 'Direct Application', count: 512, percentage: 41 },
-		{ source: 'LinkedIn', count: 384, count: 31 },
+		{ source: 'LinkedIn', count: 384, percentage: 31 },
 		{ source: 'Indeed', count: 192, percentage: 15 },
 		{ source: 'Referral', count: 96, percentage: 8 },
 		{ source: 'Other', count: 64, percentage: 5 }

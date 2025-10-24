@@ -13,7 +13,7 @@ from django.utils import timezone
 
 from peeldb.models import (
     JobPost, AppliedJobs, City, Skill, Industry,
-    Qualification, FunctionalArea, Country, State
+    Qualification, Country, State
 )
 from .job_serializers import (
     RecruiterJobListSerializer,
@@ -111,7 +111,7 @@ def get_job(request, job_id):
         job = JobPost.objects.select_related(
             'company', 'country'
         ).prefetch_related(
-            'location', 'skills', 'industry', 'edu_qualification', 'functional_area'
+            'location', 'skills', 'industry', 'edu_qualification'
         ).get(id=job_id, user=user)
     except JobPost.DoesNotExist:
         return Response(
@@ -281,8 +281,6 @@ def publish_job(request, job_id):
 
     job.status = 'Live'
     job.published_on = timezone.now()
-    if not job.published_date:
-        job.published_date = timezone.now().date()
     job.save()
 
     serializer = RecruiterJobDetailSerializer(job, context={'request': request})
@@ -406,11 +404,8 @@ def get_dashboard_stats(request):
     # Total applicants across all jobs
     total_applicants = AppliedJobs.objects.filter(job_post__user=user).count()
 
-    # Total views
-    total_views = sum([
-        job.fb_views + job.tw_views + job.ln_views + job.other_views
-        for job in jobs
-    ])
+    # Total views - TODO: Implement proper analytics tracking
+    total_views = 0
 
     # Recent jobs (last 5)
     recent_jobs = jobs.order_by('-created_on')[:5]
@@ -533,16 +528,6 @@ def get_job_form_metadata(request):
         'slug': q.slug,
     } for q in qualifications]
 
-    # Functional Areas
-    functional_areas_query = FunctionalArea.objects.filter(status='Active')
-    if search:
-        functional_areas_query = functional_areas_query.filter(name__icontains=search)
-    functional_areas = functional_areas_query.order_by('name')[:100]  # Limit to 100
-    functional_areas_data = [{
-        'id': fa.id,
-        'name': fa.name,
-    } for fa in functional_areas]
-
     return Response({
         'countries': countries_data,
         'states': states_data,
@@ -550,5 +535,4 @@ def get_job_form_metadata(request):
         'skills': skills_data,
         'industries': industries_data,
         'qualifications': qualifications_data,
-        'functional_areas': functional_areas_data,
     })

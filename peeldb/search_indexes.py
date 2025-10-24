@@ -3,7 +3,6 @@ from peeldb.models import (
     JobPost,
     Skill,
     City,
-    FunctionalArea,
     Industry,
     Qualification,
     State,
@@ -35,7 +34,6 @@ class jobIndex(indexes.SearchIndex, indexes.Indexable):
     max_salary = indexes.FloatField()
     industry = indexes.MultiValueField()
     edu_qualification = indexes.MultiValueField()
-    functional_area = indexes.MultiValueField()
     walkin_from_date = indexes.DateField(null=True, model_attr="walkin_from_date")
     walkin_to_date = indexes.DateField(null=True, model_attr="walkin_to_date")
     status = indexes.CharField(model_attr="status")
@@ -62,9 +60,6 @@ class jobIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_industry(self, obj):
         return [str(s.name) for s in obj.industry.all()]
-
-    def prepare_functional_area(self, obj):
-        return [str(l.name) for l in obj.functional_area.all()]
 
     def prepare_min_salary(self, obj):
         if int(obj.min_salary) > 0:
@@ -117,7 +112,7 @@ class jobIndex(indexes.SearchIndex, indexes.Indexable):
             .objects.filter(status="Live")
             .select_related("company", "user")
             .prefetch_related(
-                "location", "edu_qualification", "industry", "skills", "functional_area"
+                "location", "edu_qualification", "industry", "skills"
             )
         )
 
@@ -177,25 +172,6 @@ class industryIndex(indexes.SearchIndex, indexes.Indexable):
 
     def get_model(self):
         return Industry
-
-    def index_queryset(self, using=None):
-        return self.get_model().objects.all()
-
-    def prepare_no_of_jobposts(self, obj):
-        return obj.get_no_of_jobposts().count()
-
-
-class functionalareaIndex(indexes.SearchIndex, indexes.Indexable):
-    """index for loacation"""
-
-    text = indexes.CharField(
-        document=True, use_template=True, template_name="index/functionalarea_text.txt"
-    )
-    functionalarea_name = indexes.CharField(model_attr="name")
-    no_of_jobposts = indexes.CharField()
-
-    def get_model(self):
-        return FunctionalArea
 
     def index_queryset(self, using=None):
         return self.get_model().objects.all()

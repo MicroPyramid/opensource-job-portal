@@ -218,7 +218,6 @@ class PersonalInfoForm(forms.ModelForm):
             "mobile",
             "technical_skills",
             "industry",
-            "functional_area",
             "year",
             "month",
             "profile_description",
@@ -445,11 +444,6 @@ class JobPostForm(ModelForm):
                 self.fields["edu_qualification"].required = False
             else:
                 self.fields["edu_qualification"].required = True
-        if "final_functional_area" in self.data.keys():
-            if len(self.data["final_functional_area"]) > 2:
-                self.fields["functional_area"].required = False
-            else:
-                self.fields["functional_area"].required = True
         if "other_location" in self.data.keys():
             if len(self.data["other_location"]) != 0:
                 self.fields["location"].required = False
@@ -470,7 +464,6 @@ class JobPostForm(ModelForm):
             # self.fields['company_description'].required = False
             self.fields["industry"].required = False
             self.fields["skills"].required = False
-            self.fields["functional_area"].required = False
             self.fields["last_date"].required = False
             # self.fields['code'].required = False
             self.fields["job_role"].required = False
@@ -497,7 +490,6 @@ class JobPostForm(ModelForm):
 
             self.fields["industry"].required = False
             self.fields["skills"].required = False
-            self.fields["functional_area"].required = False
             self.fields["last_date"].required = False
             # self.fields['code'].required = False
             self.fields["job_role"].required = False

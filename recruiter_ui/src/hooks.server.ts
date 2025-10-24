@@ -15,7 +15,7 @@ const apiHandler: Handle = async ({ event, resolve }) => {
 	const originalFetch = event.fetch;
 
 	event.fetch = async (input, init) => {
-		const url = typeof input === 'string' ? input : input.url;
+		const url = typeof input === 'string' ? input : (input instanceof Request ? input.url : input.toString());
 
 		// If this is a request to our Django API
 		if (url.includes('/api/v1/')) {

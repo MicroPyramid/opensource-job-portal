@@ -5,7 +5,7 @@ import datetime
 from rest_framework import serializers
 from peeldb.models import (
     JobPost, City, Skill, Industry, Qualification,
-    FunctionalArea, AppliedJobs, User
+    AppliedJobs, User
 )
 from django.utils import timezone
 from django.utils.text import slugify
@@ -58,7 +58,8 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
 
     def get_views_count(self, obj):
         """Get total views across all platforms"""
-        return obj.fb_views + obj.tw_views + obj.ln_views + obj.other_views
+        # Social media view fields have been removed
+        return 0  # TODO: Implement proper analytics tracking
 
     def get_time_ago(self, obj):
         """Calculate time since job was created"""
@@ -129,7 +130,6 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
     skills = serializers.SerializerMethodField()
     industries = serializers.SerializerMethodField()
     qualifications = serializers.SerializerMethodField()
-    functional_areas = serializers.SerializerMethodField()
 
     class Meta(RecruiterJobListSerializer.Meta):
         fields = RecruiterJobListSerializer.Meta.fields + [
@@ -139,7 +139,6 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
             'skills',
             'industries',
             'qualifications',
-            'functional_areas',
             'min_salary',
             'max_salary',
             'salary_type',
@@ -152,6 +151,19 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
             'company_address',
             'company_links',
             'company_emails',
+            # New enhanced fields
+            'seniority_level',
+            'application_method',
+            'application_url',
+            'show_salary',
+            'benefits',
+            'language_requirements',
+            'required_certifications',
+            'preferred_certifications',
+            'relocation_required',
+            'travel_percentage',
+            'hiring_timeline',
+            'hiring_priority',
             # Walk-in fields
             'walkin_contactinfo',
             'walkin_show_contact_info',
@@ -204,13 +216,6 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
             'slug': qual.slug,
         } for qual in obj.edu_qualification.all()]
 
-    def get_functional_areas(self, obj):
-        """Get all functional areas"""
-        return [{
-            'id': fa.id,
-            'name': fa.name,
-        } for fa in obj.functional_area.all()]
-
 
 class RecruiterJobCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating new jobs"""
@@ -238,12 +243,6 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
         required=False,
         allow_empty=True
     )
-    functional_area_ids = serializers.ListField(
-        child=serializers.IntegerField(),
-        write_only=True,
-        required=False,
-        allow_empty=True
-    )
 
     # Override model fields to make them not required for drafts
     description = serializers.CharField(required=False, allow_blank=True)
@@ -265,7 +264,6 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
             'skill_ids',
             'industry_ids',
             'qualification_ids',
-            'functional_area_ids',
             'min_salary',
             'max_salary',
             'salary_type',
@@ -280,6 +278,19 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
             'company_address',
             'company_links',
             'company_emails',
+            # New enhanced fields
+            'seniority_level',
+            'application_method',
+            'application_url',
+            'show_salary',
+            'benefits',
+            'language_requirements',
+            'required_certifications',
+            'preferred_certifications',
+            'relocation_required',
+            'travel_percentage',
+            'hiring_timeline',
+            'hiring_priority',
             # Walk-in fields
             'walkin_contactinfo',
             'walkin_show_contact_info',
@@ -332,7 +343,6 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
         skill_ids = validated_data.pop('skill_ids', [])
         industry_ids = validated_data.pop('industry_ids', [])
         qualification_ids = validated_data.pop('qualification_ids', [])
-        functional_area_ids = validated_data.pop('functional_area_ids', [])
 
         # Get user from context
         user = self.context['user']
@@ -363,8 +373,6 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
             job.industry.set(Industry.objects.filter(id__in=industry_ids))
         if qualification_ids:
             job.edu_qualification.set(Qualification.objects.filter(id__in=qualification_ids))
-        if functional_area_ids:
-            job.functional_area.set(FunctionalArea.objects.filter(id__in=functional_area_ids))
 
         return job
 
@@ -385,7 +393,6 @@ class RecruiterJobUpdateSerializer(RecruiterJobCreateSerializer):
         skill_ids = validated_data.pop('skill_ids', None)
         industry_ids = validated_data.pop('industry_ids', None)
         qualification_ids = validated_data.pop('qualification_ids', None)
-        functional_area_ids = validated_data.pop('functional_area_ids', None)
 
         # Update basic fields
         for field, value in validated_data.items():
@@ -406,8 +413,6 @@ class RecruiterJobUpdateSerializer(RecruiterJobCreateSerializer):
             instance.industry.set(Industry.objects.filter(id__in=industry_ids))
         if qualification_ids is not None:
             instance.edu_qualification.set(Qualification.objects.filter(id__in=qualification_ids))
-        if functional_area_ids is not None:
-            instance.functional_area.set(FunctionalArea.objects.filter(id__in=functional_area_ids))
 
         return instance
 

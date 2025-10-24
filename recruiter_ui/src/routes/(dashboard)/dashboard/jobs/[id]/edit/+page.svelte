@@ -17,6 +17,7 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
+	import type { WorkMode } from '$lib/types';
 
 	// Receive data from server-side load function (Svelte 5 runes mode)
 	let { data, form }: { data: PageData; form: ActionData | null | undefined } = $props();
@@ -41,7 +42,7 @@
 		country: '',
 		state: '',
 		city: '',
-		workMode: data.job.work_mode || 'in-office',
+		workMode: (data.job.work_mode || 'in-office') as WorkMode,
 		officeAddress: data.job.company_address || '',
 		selectedLocationIds: data.job.locations?.map(loc => loc.id) || [],
 
@@ -54,7 +55,6 @@
 		education: '',
 		selectedQualificationIds: data.job.qualifications?.map(q => q.id) || [],
 		selectedIndustryIds: data.job.industries?.map(i => i.id) || [],
-		selectedFunctionalAreaIds: data.job.functional_areas?.map(fa => fa.id) || [],
 
 		// Step 4: Compensation
 		salaryMin: data.job.min_salary?.toString() || '',
@@ -66,12 +66,6 @@
 		// Step 5: Application Settings
 		deadline: data.job.last_date || '',
 		assignedRecruiters: [] as string[],
-		screeningQuestions: [] as { question: string; required: boolean }[],
-		requiredDocuments: {
-			resume: true,
-			coverLetter: false,
-			portfolio: false
-		},
 		autoReplyTemplate: ''
 	});
 
@@ -93,6 +87,14 @@
 	});
 
 	let newSkill = $state('');
+	let searchSkill = $state('');
+
+	// Filtered skills for searchable select
+	let filteredSkills = $derived(
+		data.metadata.skills.filter(skill =>
+			skill.name.toLowerCase().includes(searchSkill.toLowerCase())
+		).slice(0, 20)
+	);
 
 	const steps = [
 		{ number: 1, title: 'Job Basics', icon: Briefcase },
@@ -111,7 +113,7 @@
 		'5-10 years',
 		'10+ years'
 	];
-	const workModes = [
+	const workModes: { value: WorkMode; label: string }[] = [
 		{ value: 'in-office', label: 'In-Office' },
 		{ value: 'remote', label: 'Remote' },
 		{ value: 'hybrid', label: 'Hybrid' }
@@ -140,22 +142,24 @@
 		formData.skills = formData.skills.filter((_, i) => i !== index);
 	}
 
-	function addScreeningQuestion() {
-		formData.screeningQuestions = [
-			...formData.screeningQuestions,
-			{ question: '', required: false }
-		];
+	function toggleSkill(skillId: number) {
+		if (formData.selectedSkillIds.includes(skillId)) {
+			formData.selectedSkillIds = formData.selectedSkillIds.filter(id => id !== skillId);
+		} else if (formData.selectedSkillIds.length < 8) {
+			formData.selectedSkillIds = [...formData.selectedSkillIds, skillId];
+		}
 	}
 
-	function removeScreeningQuestion(index: number) {
-		formData.screeningQuestions = formData.screeningQuestions.filter((_, i) => i !== index);
-	}
-
-	// Handle form action results
+	// Show success message and scroll to top
 	$effect(() => {
-		if (form?.success && form?.jobId) {
-			// Redirect to jobs list
-			goto(`/dashboard/jobs/`);
+		if (form?.success) {
+			// Scroll to top to show success message
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+
+			// Auto-dismiss success message after 5 seconds
+			setTimeout(() => {
+				form = null;
+			}, 5000);
 		}
 	});
 </script>
@@ -179,21 +183,35 @@
 	{#if form?.success}
 		<div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
 			<CheckCircle class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-			<div>
-				<p class="text-sm font-medium text-green-800">{form.message || 'Success!'}</p>
+			<div class="flex-1">
+				<p class="text-sm font-medium text-green-800">{form.message || 'Job updated successfully!'}</p>
 				{#if form.warning}
 					<p class="text-sm text-green-700 mt-1">{form.warning}</p>
 				{/if}
 			</div>
+			<button
+				onclick={() => (form = null)}
+				class="text-green-600 hover:text-green-800 transition-colors"
+				aria-label="Dismiss"
+			>
+				<X class="w-4 h-4" />
+			</button>
 		</div>
 	{/if}
 
 	{#if form?.error}
 		<div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
 			<AlertCircle class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-			<div>
+			<div class="flex-1">
 				<p class="text-sm font-medium text-red-800">{form.error}</p>
 			</div>
+			<button
+				onclick={() => (form = null)}
+				class="text-red-600 hover:text-red-800 transition-colors"
+				aria-label="Dismiss"
+			>
+				<X class="w-4 h-4" />
+			</button>
 		</div>
 	{/if}
 
@@ -272,9 +290,6 @@
 		{/each}
 		{#each formData.selectedQualificationIds as qualificationId}
 			<input type="hidden" name="qualification_ids" value={qualificationId} />
-		{/each}
-		{#each formData.selectedFunctionalAreaIds as functionalAreaId}
-			<input type="hidden" name="functional_area_ids" value={functionalAreaId} />
 		{/each}
 
 		<!-- Step 4: Compensation -->
@@ -532,19 +547,61 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-3">Current Skills</label>
-					{#if data.job.skills && data.job.skills.length > 0}
-						<div class="flex flex-wrap gap-2 mb-3">
-							{#each data.job.skills as skill}
-								<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-									{skill.name}
-								</span>
-							{/each}
-						</div>
-					{:else}
-						<p class="text-sm text-gray-500 mb-3">No skills set</p>
-					{/if}
-					<p class="text-xs text-gray-500">Note: Skill editing coming soon. Please contact support to change skills.</p>
+					<label class="block text-sm font-medium text-gray-700 mb-2">
+						Key Skills <span class="text-gray-500 text-xs">(Max 8)</span>
+					</label>
+					<div class="space-y-3">
+						<input
+							type="text"
+							bind:value={searchSkill}
+							placeholder="Search skills... (e.g., Python, React, AWS)"
+							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						/>
+
+						{#if formData.selectedSkillIds.length > 0}
+							<div class="flex flex-wrap gap-2">
+								{#each formData.selectedSkillIds as skillId}
+									{@const skill = data.metadata.skills.find(s => s.id === skillId)}
+									{#if skill}
+										<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+											{skill.name}
+											<button
+												type="button"
+												onclick={() => toggleSkill(skillId)}
+												class="hover:text-blue-900"
+											>
+												<X class="w-4 h-4" />
+											</button>
+										</span>
+									{/if}
+								{/each}
+							</div>
+						{/if}
+
+						{#if searchSkill.length > 0}
+							<div class="border border-gray-300 rounded-lg max-h-60 overflow-y-auto">
+								{#each filteredSkills as skill}
+									<button
+										type="button"
+										onclick={() => {
+											if (formData.selectedSkillIds.length < 8 || formData.selectedSkillIds.includes(skill.id)) {
+												toggleSkill(skill.id);
+												searchSkill = '';
+											}
+										}}
+										disabled={formData.selectedSkillIds.length >= 8 && !formData.selectedSkillIds.includes(skill.id)}
+										class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center justify-between {formData.selectedSkillIds.includes(skill.id) ? 'bg-blue-50 text-blue-700' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
+									>
+										<span class="text-sm">{skill.name}</span>
+										{#if formData.selectedSkillIds.includes(skill.id)}
+											<CheckCircle class="w-4 h-4 text-blue-600" />
+										{/if}
+									</button>
+								{/each}
+							</div>
+						{/if}
+					</div>
+					<p class="text-xs text-gray-500 mt-1">Select up to 8 key skills required for this role</p>
 				</div>
 
 				<div>
@@ -632,74 +689,6 @@
 						bind:value={formData.deadline}
 						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 					/>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-3">Required Documents</label>
-					<div class="space-y-2">
-						<label class="flex items-center gap-2 cursor-pointer">
-							<input
-								type="checkbox"
-								bind:checked={formData.requiredDocuments.resume}
-								class="w-4 h-4 text-blue-600 rounded"
-							/>
-							<span class="text-sm text-gray-700">Resume/CV</span>
-						</label>
-						<label class="flex items-center gap-2 cursor-pointer">
-							<input
-								type="checkbox"
-								bind:checked={formData.requiredDocuments.coverLetter}
-								class="w-4 h-4 text-blue-600 rounded"
-							/>
-							<span class="text-sm text-gray-700">Cover Letter</span>
-						</label>
-						<label class="flex items-center gap-2 cursor-pointer">
-							<input
-								type="checkbox"
-								bind:checked={formData.requiredDocuments.portfolio}
-								class="w-4 h-4 text-blue-600 rounded"
-							/>
-							<span class="text-sm text-gray-700">Portfolio/Work Samples</span>
-						</label>
-					</div>
-				</div>
-
-				<div>
-					<div class="flex items-center justify-between mb-3">
-						<label class="block text-sm font-medium text-gray-700">Screening Questions (Optional)</label>
-						<button
-							type="button"
-							onclick={addScreeningQuestion}
-							class="text-sm text-blue-600 hover:text-blue-700 font-medium"
-						>
-							+ Add Question
-						</button>
-					</div>
-					{#if formData.screeningQuestions.length > 0}
-						<div class="space-y-3">
-							{#each formData.screeningQuestions as question, index}
-								<div class="flex gap-3">
-									<input
-										type="text"
-										bind:value={question.question}
-										placeholder="Enter your screening question"
-										class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-									/>
-									<label class="flex items-center gap-2 cursor-pointer whitespace-nowrap">
-										<input type="checkbox" bind:checked={question.required} class="w-4 h-4 text-blue-600 rounded" />
-										<span class="text-sm text-gray-700">Required</span>
-									</label>
-									<button
-										type="button"
-										onclick={() => removeScreeningQuestion(index)}
-										class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-									>
-										<X class="w-5 h-5" />
-									</button>
-								</div>
-							{/each}
-						</div>
-					{/if}
 				</div>
 
 				<div>

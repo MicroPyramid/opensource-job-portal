@@ -198,9 +198,6 @@ class FunctionalArea(models.Model):
     def __str__(self):
         return self.name
 
-    def get_no_of_jobposts(self):
-        return JobPost.objects.filter(functional_area__in=[self])
-
 
 class Language(models.Model):
     name = models.CharField(max_length=500)
@@ -531,7 +528,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True
     )
     preferred_city = models.ManyToManyField(City, related_name="preferred_city")
-    functional_area = models.ManyToManyField(FunctionalArea)
     job_role = models.CharField(max_length=500, default="")
     job_title = models.CharField(
         max_length=200,
@@ -770,21 +766,15 @@ class User(AbstractBaseUser, PermissionsMixin):
                 complete += 15
             if self.technical_skills.all():
                 complete += 15
-            if self.functional_area.all():
-                complete += 10
         return complete
 
     def get_jobposts_count(self):
         return len(JobPost.objects.filter(user=self))
 
     def get_total_job_post_views_count(self):
-        job_posts = JobPost.objects.filter(user=self)
-        total_views = 0
-        for each in job_posts:
-            total_views = (
-                each.fb_views + each.tw_views + each.ln_views + each.other_views
-            )
-        return total_views
+        # TODO: Implement proper analytics tracking system
+        # Social media view fields have been removed from JobPost model
+        return 0
 
     def get_total_jobposts(self):
         return JobPost.objects.filter(user=self)
@@ -1112,10 +1102,14 @@ GOV_JOB_TYPE = (
 
 JOB_TYPE = (
     ("full-time", "Full Time"),
+    ("permanent", "Permanent"),
+    ("contract", "Contract"),
     ("internship", "Internship"),
+    ("part-time", "Part Time"),
+    ("freelance", "Freelance"),
     ("walk-in", "Walk-in"),
     ("government", "Government"),
-    ("Fresher", "Fresher"),
+    ("fresher", "Fresher"),
 )
 
 WORK_MODE = (
@@ -1139,6 +1133,38 @@ AGENCY_JOB_TYPE = (
 AGENCY_INVOICE_TYPE = (
     ("Recurring", "Recurring"),
     ("Non_Recurring", "Non Recurring"),
+)
+
+# Seniority Level choices
+SENIORITY_LEVEL = (
+    ("intern", "Intern"),
+    ("junior", "Junior"),
+    ("mid", "Mid-Level"),
+    ("senior", "Senior"),
+    ("lead", "Lead"),
+    ("manager", "Manager"),
+)
+
+# Application Method choices
+APPLICATION_METHOD = (
+    ("portal", "Apply on Portal"),
+    ("external", "External URL"),
+    ("email", "Email"),
+)
+
+# Language Proficiency choices
+LANGUAGE_PROFICIENCY = (
+    ("basic", "Basic"),
+    ("conversational", "Conversational"),
+    ("fluent", "Fluent"),
+)
+
+# Hiring Timeline choices
+HIRING_TIMELINE = (
+    ("1-3days", "1-3 Days"),
+    ("1-2weeks", "1-2 Weeks"),
+    ("1month", "1 Month"),
+    ("1-3months", "1-3 Months"),
 )
 
 MONTHS = (
@@ -1224,8 +1250,7 @@ class JobPost(models.Model):
     job_interview_location = models.ManyToManyField(InterviewLocation)
     country = models.ForeignKey(
         Country, null=True, related_name="job_country", on_delete=models.SET_NULL)
-    
-    functional_area = models.ManyToManyField(FunctionalArea)
+
     keywords = models.ManyToManyField(Keyword)
     description = models.TextField()
     min_year = models.IntegerField(default=0)
@@ -1287,28 +1312,18 @@ class JobPost(models.Model):
     max_salary = models.IntegerField(default=0)
     last_date = models.DateField(null=True)
     published_on = models.DateTimeField(null=True, blank=True)
-    published_date = models.DateTimeField(null=True, blank=True)
-    posted_on = models.DateTimeField(auto_now=True)
     created_on = models.DateField(auto_now_add=True)
     status = models.CharField(choices=POST_STATUS, max_length=50)
-    previous_status = models.CharField(
-        choices=POST_STATUS, max_length=50, default="Draft"
-    )
-    post_on_fb = models.BooleanField(default=False)
-    post_on_tw = models.BooleanField(default=False)
-    post_on_ln = models.BooleanField(default=False)
-    fb_views = models.IntegerField(default=0)
-    tw_views = models.IntegerField(default=0)
-    ln_views = models.IntegerField(default=0)
-    other_views = models.IntegerField(default=0)
     job_type = models.CharField(choices=JOB_TYPE, max_length=50)
     work_mode = models.CharField(choices=WORK_MODE, max_length=50, default="in-office")
-    published_message = models.TextField()
+
+    # Company details (needed for display and jobs without company FK)
     company_name = models.CharField(max_length=100, default="")
-    company_address = models.TextField()
-    company_description = models.TextField()
-    company_links = models.TextField()
+    company_address = models.TextField(default="")
+    company_description = models.TextField(default="")
+    company_links = models.TextField(default="")
     company_emails = models.EmailField(blank=True, null=True)
+
     meta_title = models.TextField()
     meta_description = models.TextField()
     major_skill = models.ForeignKey(
@@ -1320,7 +1335,85 @@ class JobPost(models.Model):
     
     closed_date = models.DateTimeField(null=True, blank=True)
 
-    fb_groups = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    # New fields for enhanced job posting form
+
+    # Seniority Level
+    seniority_level = models.CharField(
+        choices=SENIORITY_LEVEL,
+        max_length=20,
+        blank=True,
+        null=True,
+        help_text="Role level (Intern, Junior, Mid, Senior, Lead, Manager)"
+    )
+
+    # Application Method & URL
+    application_method = models.CharField(
+        choices=APPLICATION_METHOD,
+        max_length=20,
+        default="portal",
+        help_text="How candidates should apply for this job"
+    )
+    application_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text="External URL for job applications (if application_method is 'external')"
+    )
+
+    # Salary Visibility
+    show_salary = models.BooleanField(
+        default=True,
+        help_text="Show salary range to job seekers"
+    )
+
+    # Benefits & Perks (stored as JSON array)
+    benefits = ArrayField(
+        models.CharField(max_length=100),
+        blank=True,
+        null=True,
+        help_text="List of benefits: PF, ESI, Health Insurance, Annual Bonus, etc."
+    )
+
+    # Language Requirements (stored as JSON: [{"language": "English", "proficiency": "fluent"}])
+    language_requirements = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="Required languages with proficiency levels"
+    )
+
+    # Certifications
+    required_certifications = models.TextField(
+        blank=True,
+        help_text="Required certifications (comma-separated or free text)"
+    )
+    preferred_certifications = models.TextField(
+        blank=True,
+        help_text="Preferred/nice-to-have certifications"
+    )
+
+    # Relocation & Travel
+    relocation_required = models.BooleanField(
+        default=False,
+        help_text="Is candidate willing to relocate required?"
+    )
+    travel_percentage = models.CharField(
+        max_length=20,
+        blank=True,
+        help_text="Expected travel percentage (e.g., '0-10%', '10-25%', '25-50%')"
+    )
+
+    # Hiring Timeline & Priority
+    hiring_timeline = models.CharField(
+        choices=HIRING_TIMELINE,
+        max_length=20,
+        blank=True,
+        help_text="Target time to fill this position"
+    )
+    hiring_priority = models.CharField(
+        choices=PRIORITY_TYPES,
+        max_length=20,
+        default="Normal",
+        help_text="Urgency level for filling this position"
+    )
 
     # objects = JobPostManager()
     class Meta:
@@ -1341,7 +1434,7 @@ class JobPost(models.Model):
             if self.company:
                 company_name = self.company.slug
             else:
-                company_name = self.company_name
+                company_name = "company"  # Fallback for jobs without company
             qs = "/" + qs + "-" + str(company_name) + "-" + str(self.id) + "/"
         else:
             qs = (
@@ -1358,8 +1451,9 @@ class JobPost(models.Model):
         return qs
 
     def get_total_views_count(self):
-        total_views = self.fb_views + self.tw_views + self.ln_views + self.other_views
-        return total_views
+        # TODO: Implement proper analytics tracking system
+        # Social media view fields have been removed
+        return 0
 
     def get_similar_jobposts(self):
         # current_date = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").strftime("%Y-%m-%d")
@@ -1413,9 +1507,6 @@ class JobPost(models.Model):
 
     def get_skills(self):
         return self.skills.filter().order_by("id")
-
-    def get_active_functional_area(self):
-        return self.functional_area.filter(status="Active").order_by("name")
 
     def get_active_qualification(self):
         return self.edu_qualification.filter(status="Active").order_by("name")
@@ -1682,7 +1773,6 @@ class SearchResult(models.Model):
     search_text = JSONField()
     industry = models.CharField(max_length=1000)
     search_on = models.DateTimeField(auto_now=True)
-    functional_area = models.CharField(max_length=1000)
     job_type = models.CharField(max_length=20, choices=JOB_TYPE, blank=True, null=True)
     expierence = models.IntegerField(blank=True, null=True)
     ip_address = models.CharField(max_length=200)

@@ -240,6 +240,24 @@ function extractJobDataFromForm(formData: FormData): JobUpdateData {
 		return formData.get(key) === 'true' || formData.get(key) === 'on';
 	};
 
+	// Helper to parse JSON field
+	const getJSON = (key: string): any | undefined => {
+		const value = getString(key);
+		if (!value) return undefined;
+		try {
+			return JSON.parse(value);
+		} catch {
+			return undefined;
+		}
+	};
+
+	// Helper to get string array
+	const getStringArray = (key: string): string[] | undefined => {
+		const value = getString(key);
+		if (!value) return undefined;
+		return value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+	};
+
 	// Extract basic fields
 	const title = formData.get('title')?.toString() || '';
 	const job_role = formData.get('job_role')?.toString() || formData.get('department')?.toString() || '';
@@ -261,12 +279,12 @@ function extractJobDataFromForm(formData: FormData): JobUpdateData {
 		skill_ids: getArray('skill_ids'),
 		industry_ids: getArray('industry_ids'),
 		qualification_ids: getArray('qualification_ids'),
-		functional_area_ids: getArray('functional_area_ids'),
 
 		// Salary
 		min_salary: getNumber('min_salary'),
 		max_salary: getNumber('max_salary'),
 		salary_type: (getString('salary_type') || 'Year') as any,
+		show_salary: getBoolean('show_salary'),
 
 		// Experience
 		min_year: getNumber('min_year'),
@@ -284,6 +302,19 @@ function extractJobDataFromForm(formData: FormData): JobUpdateData {
 		company_address: getString('company_address'),
 		company_links: getString('company_links'),
 		company_emails: getString('company_emails'),
+
+		// NEW ENHANCED FIELDS
+		seniority_level: getString('seniority_level') as any,
+		application_method: (getString('application_method') || 'portal') as any,
+		application_url: getString('application_url'),
+		benefits: getStringArray('benefits'),
+		language_requirements: getJSON('language_requirements'),
+		required_certifications: getString('required_certifications'),
+		preferred_certifications: getString('preferred_certifications'),
+		relocation_required: getBoolean('relocation_required'),
+		travel_percentage: getString('travel_percentage'),
+		hiring_timeline: getString('hiring_timeline') as any,
+		hiring_priority: (getString('hiring_priority') || 'Normal') as any,
 
 		// Walk-in fields
 		walkin_contactinfo: getString('walkin_contactinfo'),

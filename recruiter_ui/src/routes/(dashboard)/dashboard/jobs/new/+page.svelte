@@ -12,76 +12,105 @@
 		Send,
 		X,
 		AlertCircle,
-		CheckCircle
+		CheckCircle,
+		Plus
 	} from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
+	import type { LanguageRequirement, SeniorityLevel, ApplicationMethod, LanguageProficiency, HiringTimeline, HiringPriority } from '$lib/types';
 
 	// Receive data from server-side load function (Svelte 5 runes mode)
 	let { data, form }: { data: PageData; form: ActionData | null | undefined } = $props();
 
 	let currentStep = $state(1);
-	const totalSteps = 6;
+	const totalSteps = 7; // Increased from 6 to 7
 
 	// State for form submission
 	let isSubmitting = $state(false);
+	let currentAction = $state<'saveDraft' | 'publish'>('publish');
 
 	// Form data
 	let formData = $state({
 		// Step 1: Basics
 		jobTitle: '',
 		department: '',
-		companyName: '', // Company name (required)
-		employmentType: 'full-time', // Lowercase to match API
+		companyName: '',
+		employmentType: 'full-time' as string,
+		seniorityLevel: '' as SeniorityLevel | '',
 		experienceLevel: '',
 		positions: 1,
 
 		// Step 2: Location
-		country: '',
-		state: '',
-		city: '',
-		workMode: 'in-office',
+		selectedLocationIds: [] as number[],
+		workMode: 'in-office' as string,
 		officeAddress: '',
+		searchCity: '',
 
-		// Step 3: Details
+		// Step 3: Details & Requirements
 		description: '',
-		responsibilities: '',
-		requirements: '',
-		skills: [] as string[],
-		education: '',
+		selectedSkillIds: [] as number[],
+		selectedIndustryIds: [] as number[],
+		selectedQualificationIds: [] as number[],
+		languages: [] as LanguageRequirement[],
+		requiredCertifications: '',
+		preferredCertifications: '',
+		searchSkill: '',
 
-		// Step 4: Compensation
+		// Step 4: Compensation & Benefits
 		salaryMin: '',
 		salaryMax: '',
-		hideSalary: false,
-		benefits: '',
-		perks: '',
+		salaryType: 'Year' as string,
+		showSalary: true,
+		benefits: [] as string[],
 
 		// Step 5: Application Settings
+		applicationMethod: 'portal' as ApplicationMethod,
+		applicationUrl: '',
 		deadline: '',
-		assignedRecruiters: [] as string[],
-		screeningQuestions: [] as { question: string; required: boolean }[],
-		requiredDocuments: {
-			resume: true,
-			coverLetter: false,
-			portfolio: false
-		},
-		autoReplyTemplate: ''
+
+		// Step 6: Additional Settings
+		relocationRequired: false,
+		travelPercentage: '',
+		hiringTimeline: '' as HiringTimeline | '',
+		hiringPriority: 'Normal' as HiringPriority,
+
+		// Experience mapping (computed from experienceLevel)
+		minYear: 0,
+		maxYear: 0,
+		minMonth: 0,
+		maxMonth: 0,
+		fresher: false
 	});
 
-	let newSkill = $state('');
-
 	const steps = [
-		{ number: 1, title: 'Job Basics', icon: Briefcase },
+		{ number: 1, title: 'Basics', icon: Briefcase },
 		{ number: 2, title: 'Location', icon: MapPin },
 		{ number: 3, title: 'Details', icon: FileText },
 		{ number: 4, title: 'Compensation', icon: DollarSign },
-		{ number: 5, title: 'Settings', icon: Settings },
-		{ number: 6, title: 'Preview', icon: Eye }
+		{ number: 5, title: 'Application', icon: Send },
+		{ number: 6, title: 'Settings', icon: Settings },
+		{ number: 7, title: 'Preview', icon: Eye }
 	];
 
-	const employmentTypes = ['Full-time', 'Part-time', 'Contract', 'Internship'];
+	const employmentTypes = [
+		{ value: 'full-time', label: 'Full-time' },
+		{ value: 'permanent', label: 'Permanent' },
+		{ value: 'contract', label: 'Contract' },
+		{ value: 'part-time', label: 'Part-time' },
+		{ value: 'internship', label: 'Internship' },
+		{ value: 'freelance', label: 'Freelance' }
+	];
+
+	const seniorityLevels = [
+		{ value: 'intern', label: 'Intern' },
+		{ value: 'junior', label: 'Junior' },
+		{ value: 'mid', label: 'Mid-Level' },
+		{ value: 'senior', label: 'Senior' },
+		{ value: 'lead', label: 'Lead' },
+		{ value: 'manager', label: 'Manager' }
+	];
+
 	const experienceLevels = [
 		'Fresher',
 		'1-3 years',
@@ -89,10 +118,41 @@
 		'5-10 years',
 		'10+ years'
 	];
+
 	const workModes = [
 		{ value: 'in-office', label: 'In-Office' },
 		{ value: 'remote', label: 'Remote' },
 		{ value: 'hybrid', label: 'Hybrid' }
+	];
+
+	const benefitOptions = [
+		'PF',
+		'ESI',
+		'Health Insurance',
+		'Annual Bonus',
+		'Food',
+		'Cab',
+		'Work From Home',
+		'Flexible Hours'
+	];
+
+	const languageProficiencies: { value: LanguageProficiency; label: string }[] = [
+		{ value: 'basic', label: 'Basic' },
+		{ value: 'conversational', label: 'Conversational' },
+		{ value: 'fluent', label: 'Fluent' }
+	];
+
+	const hiringTimelines: { value: HiringTimeline; label: string }[] = [
+		{ value: '1-3days', label: '1-3 Days' },
+		{ value: '1-2weeks', label: '1-2 Weeks' },
+		{ value: '1month', label: '1 Month' },
+		{ value: '1-3months', label: '1-3 Months' }
+	];
+
+	const hiringPriorities: { value: HiringPriority; label: string }[] = [
+		{ value: 'Low', label: 'Low' },
+		{ value: 'Normal', label: 'Normal' },
+		{ value: 'High', label: 'High' }
 	];
 
 	function nextStep() {
@@ -107,32 +167,105 @@
 		}
 	}
 
-	function addSkill() {
-		if (newSkill.trim()) {
-			formData.skills = [...formData.skills, newSkill.trim()];
-			newSkill = '';
+	// Helper functions for managing selections
+	function toggleSkill(skillId: number) {
+		if (formData.selectedSkillIds.includes(skillId)) {
+			formData.selectedSkillIds = formData.selectedSkillIds.filter(id => id !== skillId);
+		} else {
+			formData.selectedSkillIds = [...formData.selectedSkillIds, skillId];
 		}
 	}
 
-	function removeSkill(index: number) {
-		formData.skills = formData.skills.filter((_, i) => i !== index);
+	function toggleIndustry(industryId: number) {
+		if (formData.selectedIndustryIds.includes(industryId)) {
+			formData.selectedIndustryIds = formData.selectedIndustryIds.filter(id => id !== industryId);
+		} else {
+			formData.selectedIndustryIds = [...formData.selectedIndustryIds, industryId];
+		}
 	}
 
-	function addScreeningQuestion() {
-		formData.screeningQuestions = [
-			...formData.screeningQuestions,
-			{ question: '', required: false }
+	function toggleQualification(qualId: number) {
+		if (formData.selectedQualificationIds.includes(qualId)) {
+			formData.selectedQualificationIds = formData.selectedQualificationIds.filter(id => id !== qualId);
+		} else {
+			formData.selectedQualificationIds = [...formData.selectedQualificationIds, qualId];
+		}
+	}
+
+	function toggleLocation(cityId: number) {
+		if (formData.selectedLocationIds.includes(cityId)) {
+			formData.selectedLocationIds = formData.selectedLocationIds.filter(id => id !== cityId);
+		} else {
+			formData.selectedLocationIds = [...formData.selectedLocationIds, cityId];
+		}
+	}
+
+	// Map experience level to min/max years
+	$effect(() => {
+		if (formData.experienceLevel === 'Fresher') {
+			formData.minYear = 0;
+			formData.maxYear = 0;
+			formData.minMonth = 0;
+			formData.maxMonth = 0;
+			formData.fresher = true;
+		} else if (formData.experienceLevel === '1-3 years') {
+			formData.minYear = 1;
+			formData.maxYear = 3;
+			formData.minMonth = 0;
+			formData.maxMonth = 0;
+			formData.fresher = false;
+		} else if (formData.experienceLevel === '3-5 years') {
+			formData.minYear = 3;
+			formData.maxYear = 5;
+			formData.minMonth = 0;
+			formData.maxMonth = 0;
+			formData.fresher = false;
+		} else if (formData.experienceLevel === '5-10 years') {
+			formData.minYear = 5;
+			formData.maxYear = 10;
+			formData.minMonth = 0;
+			formData.maxMonth = 0;
+			formData.fresher = false;
+		} else if (formData.experienceLevel === '10+ years') {
+			formData.minYear = 10;
+			formData.maxYear = 50; // Max cap
+			formData.minMonth = 0;
+			formData.maxMonth = 0;
+			formData.fresher = false;
+		}
+	});
+
+	// Filtered lists based on search
+	let filteredCities = $derived(data.metadata.cities.filter(city =>
+		city.name.toLowerCase().includes(formData.searchCity.toLowerCase())
+	).slice(0, 20)); // Limit to 20 results
+
+	let filteredSkills = $derived(data.metadata.skills.filter(skill =>
+		skill.name.toLowerCase().includes(formData.searchSkill.toLowerCase())
+	).slice(0, 20)); // Limit to 20 results
+
+	function addLanguage() {
+		formData.languages = [
+			...formData.languages,
+			{ language: '', proficiency: 'conversational' }
 		];
 	}
 
-	function removeScreeningQuestion(index: number) {
-		formData.screeningQuestions = formData.screeningQuestions.filter((_, i) => i !== index);
+	function removeLanguage(index: number) {
+		formData.languages = formData.languages.filter((_, i) => i !== index);
+	}
+
+	function toggleBenefit(benefit: string) {
+		if (formData.benefits.includes(benefit)) {
+			formData.benefits = formData.benefits.filter(b => b !== benefit);
+		} else {
+			formData.benefits = [...formData.benefits, benefit];
+		}
 	}
 
 	// Handle form action results
 	$effect(() => {
 		if (form?.success && form?.jobId) {
-			// Redirect to jobs list or job detail page
 			goto(`/dashboard/jobs/`);
 		}
 	});
@@ -178,6 +311,7 @@
 				<div class="flex items-center {index < steps.length - 1 ? 'flex-1' : ''}">
 					<div class="flex flex-col items-center">
 						<button
+							type="button"
 							onclick={() => (currentStep = step.number)}
 							class="w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-colors {currentStep ===
 							step.number
@@ -213,6 +347,7 @@
 	<!-- Form -->
 	<form
 		method="POST"
+		action="?/{currentAction}"
 		use:enhance={() => {
 			isSubmitting = true;
 			return async ({ result, update }) => {
@@ -224,548 +359,861 @@
 		<!-- Form Content -->
 		<div class="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
 			{#if currentStep === 1}
-			<!-- Step 1: Job Basics -->
-			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
-					<Briefcase class="w-6 h-6" />
-					Job Basics
-				</h2>
+				<!-- Step 1: Job Basics -->
+				<div class="space-y-6">
+					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+						<Briefcase class="w-6 h-6" />
+						Job Basics
+					</h2>
 
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-					<div class="md:col-span-2">
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							Job Title <span class="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							name="title"
-							bind:value={formData.jobTitle}
-							placeholder="e.g., Senior Frontend Developer"
-							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div class="md:col-span-2">
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Job Title <span class="text-red-500">*</span>
+							</label>
+							<input
+								type="text"
+								name="title"
+								bind:value={formData.jobTitle}
+								placeholder="e.g., Senior Frontend Developer"
+								required
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
 
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							Company Name <span class="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							name="company_name"
-							bind:value={formData.companyName}
-							placeholder="e.g., Acme Inc."
-							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Company Name <span class="text-red-500">*</span>
+							</label>
+							<input
+								type="text"
+								name="company_name"
+								bind:value={formData.companyName}
+								placeholder="e.g., Acme Inc."
+								required
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
 
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							Department <span class="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							name="job_role"
-							bind:value={formData.department}
-							placeholder="e.g., Engineering"
-							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Department <span class="text-red-500">*</span>
+							</label>
+							<input
+								type="text"
+								name="job_role"
+								bind:value={formData.department}
+								placeholder="e.g., Engineering"
+								required
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
 
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							Employment Type <span class="text-red-500">*</span>
-						</label>
-						<select
-							name="job_type"
-							bind:value={formData.employmentType}
-							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						>
-							{#each employmentTypes as type}
-								<option value={type.toLowerCase()}>{type}</option>
-							{/each}
-						</select>
-					</div>
-
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							Experience Level <span class="text-red-500">*</span>
-						</label>
-						<select
-							name="experience_level"
-							bind:value={formData.experienceLevel}
-							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						>
-							<option value="">Select experience level</option>
-							{#each experienceLevels as level}
-								<option value={level}>{level}</option>
-							{/each}
-						</select>
-					</div>
-
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							Number of Positions <span class="text-red-500">*</span>
-						</label>
-						<input
-							type="number"
-							name="vacancies"
-							bind:value={formData.positions}
-							min="1"
-							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
-				</div>
-			</div>
-		{:else if currentStep === 2}
-			<!-- Step 2: Location & Work Mode -->
-			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
-					<MapPin class="w-6 h-6" />
-					Location & Work Mode
-				</h2>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
-						Work Mode <span class="text-red-500">*</span>
-					</label>
-					<div class="grid grid-cols-3 gap-3">
-						{#each workModes as mode}
-							<button
-								type="button"
-								onclick={() => (formData.workMode = mode.value)}
-								class="px-4 py-3 rounded-lg border-2 font-medium text-sm transition-colors {formData.workMode ===
-								mode.value
-									? 'border-blue-600 bg-blue-50 text-blue-600'
-									: 'border-gray-300 text-gray-700 hover:border-gray-400'}"
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Employment Type <span class="text-red-500">*</span>
+							</label>
+							<select
+								name="job_type"
+								bind:value={formData.employmentType}
+								required
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 							>
-								{mode.label}
-							</button>
-						{/each}
-					</div>
-				</div>
-				<input type="hidden" name="work_mode" bind:value={formData.workMode} />
-
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							Country <span class="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							bind:value={formData.country}
-							placeholder="e.g., United States"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
-
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							State <span class="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							bind:value={formData.state}
-							placeholder="e.g., California"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
-
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
-							City <span class="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							bind:value={formData.city}
-							placeholder="e.g., San Francisco"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
-				</div>
-
-				{#if formData.workMode !== 'remote'}
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Office Address</label>
-						<textarea
-							bind:value={formData.officeAddress}
-							rows="3"
-							placeholder="Enter the full office address"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						></textarea>
-					</div>
-				{/if}
-			</div>
-		{:else if currentStep === 3}
-			<!-- Step 3: Job Details -->
-			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
-					<FileText class="w-6 h-6" />
-					Job Details
-				</h2>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
-						Job Description <span class="text-red-500">*</span>
-					</label>
-					<textarea
-						name="description"
-						bind:value={formData.description}
-						rows="6"
-						placeholder="Describe the role and what the candidate will be doing..."
-						required
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					></textarea>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
-					<textarea
-						bind:value={formData.responsibilities}
-						rows="5"
-						placeholder="List the key responsibilities (one per line)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					></textarea>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
-						Requirements <span class="text-red-500">*</span>
-					</label>
-					<textarea
-						bind:value={formData.requirements}
-						rows="5"
-						placeholder="List the requirements and qualifications (one per line)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					></textarea>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
-					<div class="flex gap-2 mb-3">
-						<input
-							type="text"
-							bind:value={newSkill}
-							placeholder="Add a skill (e.g., React, Python)"
-							onkeydown={(e) => {
-								if (e.key === 'Enter') {
-									e.preventDefault();
-									addSkill();
-								}
-							}}
-							class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-						<button
-							onclick={addSkill}
-							class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-						>
-							Add
-						</button>
-					</div>
-					{#if formData.skills.length > 0}
-						<div class="flex flex-wrap gap-2">
-							{#each formData.skills as skill, index}
-								<span
-									class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-								>
-									{skill}
-									<button onclick={() => removeSkill(index)} class="hover:text-blue-900">
-										<X class="w-3 h-3" />
-									</button>
-								</span>
-							{/each}
+								{#each employmentTypes as type}
+									<option value={type.value}>{type.label}</option>
+								{/each}
+							</select>
 						</div>
-					{/if}
-				</div>
 
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Education Requirements</label>
-					<input
-						type="text"
-						bind:value={formData.education}
-						placeholder="e.g., Bachelor's degree in Computer Science or related field"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					/>
-				</div>
-			</div>
-		{:else if currentStep === 4}
-			<!-- Step 4: Compensation & Benefits -->
-			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
-					<DollarSign class="w-6 h-6" />
-					Compensation & Benefits
-				</h2>
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Seniority Level
+							</label>
+							<select
+								name="seniority_level"
+								bind:value={formData.seniorityLevel}
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							>
+								<option value="">Select level</option>
+								{#each seniorityLevels as level}
+									<option value={level.value}>{level.label}</option>
+								{/each}
+							</select>
+						</div>
 
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Minimum Salary</label>
-						<input
-							type="number"
-							bind:value={formData.salaryMin}
-							placeholder="50000"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Experience Level <span class="text-red-500">*</span>
+							</label>
+							<select
+								name="experience_level"
+								bind:value={formData.experienceLevel}
+								required
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							>
+								<option value="">Select experience level</option>
+								{#each experienceLevels as level}
+									<option value={level}>{level}</option>
+								{/each}
+							</select>
+						</div>
 
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Maximum Salary</label>
-						<input
-							type="number"
-							bind:value={formData.salaryMax}
-							placeholder="80000"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
-				</div>
-
-				<div>
-					<label class="flex items-center gap-2 cursor-pointer">
-						<input type="checkbox" bind:checked={formData.hideSalary} class="w-4 h-4 text-blue-600 rounded" />
-						<span class="text-sm text-gray-700">Hide salary range from public job posting</span>
-					</label>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Benefits</label>
-					<textarea
-						bind:value={formData.benefits}
-						rows="4"
-						placeholder="List the benefits (e.g., Health insurance, 401k, etc.)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					></textarea>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Perks</label>
-					<textarea
-						bind:value={formData.perks}
-						rows="4"
-						placeholder="List additional perks (e.g., Flexible hours, Remote work, etc.)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					></textarea>
-				</div>
-			</div>
-		{:else if currentStep === 5}
-			<!-- Step 5: Application Settings -->
-			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
-					<Settings class="w-6 h-6" />
-					Application Settings
-				</h2>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
-						Application Deadline <span class="text-red-500">*</span>
-					</label>
-					<input
-						type="date"
-						bind:value={formData.deadline}
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					/>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-3">Required Documents</label>
-					<div class="space-y-2">
-						<label class="flex items-center gap-2 cursor-pointer">
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Number of Positions <span class="text-red-500">*</span>
+							</label>
 							<input
-								type="checkbox"
-								bind:checked={formData.requiredDocuments.resume}
-								class="w-4 h-4 text-blue-600 rounded"
+								type="number"
+								name="vacancies"
+								bind:value={formData.positions}
+								min="1"
+								required
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 							/>
-							<span class="text-sm text-gray-700">Resume/CV</span>
-						</label>
-						<label class="flex items-center gap-2 cursor-pointer">
-							<input
-								type="checkbox"
-								bind:checked={formData.requiredDocuments.coverLetter}
-								class="w-4 h-4 text-blue-600 rounded"
-							/>
-							<span class="text-sm text-gray-700">Cover Letter</span>
-						</label>
-						<label class="flex items-center gap-2 cursor-pointer">
-							<input
-								type="checkbox"
-								bind:checked={formData.requiredDocuments.portfolio}
-								class="w-4 h-4 text-blue-600 rounded"
-							/>
-							<span class="text-sm text-gray-700">Portfolio/Work Samples</span>
-						</label>
+						</div>
 					</div>
 				</div>
 
-				<div>
-					<div class="flex items-center justify-between mb-3">
-						<label class="block text-sm font-medium text-gray-700">Screening Questions (Optional)</label>
-						<button
-							onclick={addScreeningQuestion}
-							class="text-sm text-blue-600 hover:text-blue-700 font-medium"
-						>
-							+ Add Question
-						</button>
-					</div>
-					{#if formData.screeningQuestions.length > 0}
-						<div class="space-y-3">
-							{#each formData.screeningQuestions as question, index}
-								<div class="flex gap-3">
-									<input
-										type="text"
-										bind:value={question.question}
-										placeholder="Enter your screening question"
-										class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-									/>
-									<label class="flex items-center gap-2 cursor-pointer whitespace-nowrap">
-										<input type="checkbox" bind:checked={question.required} class="w-4 h-4 text-blue-600 rounded" />
-										<span class="text-sm text-gray-700">Required</span>
+			{:else if currentStep === 2}
+				<!-- Step 2: Location & Work Mode -->
+				<div class="space-y-6">
+					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+						<MapPin class="w-6 h-6" />
+						Location & Work Mode
+					</h2>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div class="md:col-span-2">
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Work Mode <span class="text-red-500">*</span>
+							</label>
+							<div class="grid grid-cols-3 gap-3">
+								{#each workModes as mode}
+									<label class="relative flex cursor-pointer">
+										<input
+											type="radio"
+											name="work_mode"
+											value={mode.value}
+											bind:group={formData.workMode}
+											class="peer sr-only"
+										/>
+										<div class="w-full py-3 px-4 text-center border-2 border-gray-200 rounded-lg peer-checked:border-blue-600 peer-checked:bg-blue-50 transition-colors">
+											<span class="text-sm font-medium text-gray-700 peer-checked:text-blue-600">{mode.label}</span>
+										</div>
 									</label>
-									<button
-										onclick={() => removeScreeningQuestion(index)}
-										class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-									>
-										<X class="w-5 h-5" />
-									</button>
-								</div>
-							{/each}
-						</div>
-					{/if}
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Auto-Reply Email Template</label>
-					<textarea
-						bind:value={formData.autoReplyTemplate}
-						rows="4"
-						placeholder="Thank you for applying! We have received your application and will review it shortly..."
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					></textarea>
-				</div>
-			</div>
-		{:else if currentStep === 6}
-			<!-- Step 6: Preview -->
-			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
-					<Eye class="w-6 h-6" />
-					Preview & Publish
-				</h2>
-
-				<div class="bg-gray-50 rounded-lg p-6 space-y-4">
-					<div>
-						<h3 class="text-2xl font-bold text-gray-900">{formData.jobTitle || 'Job Title'}</h3>
-						<div class="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
-							<span>{formData.department || 'Department'}</span>
-							<span>•</span>
-							<span>{formData.city}, {formData.state}</span>
-							<span>•</span>
-							<span>{formData.employmentType}</span>
-							<span>•</span>
-							<span>{formData.workMode}</span>
-						</div>
-					</div>
-
-					{#if formData.description}
-						<div>
-							<h4 class="font-semibold text-gray-900 mb-2">Description</h4>
-							<p class="text-gray-700 whitespace-pre-line">{formData.description}</p>
-						</div>
-					{/if}
-
-					{#if formData.responsibilities}
-						<div>
-							<h4 class="font-semibold text-gray-900 mb-2">Responsibilities</h4>
-							<p class="text-gray-700 whitespace-pre-line">{formData.responsibilities}</p>
-						</div>
-					{/if}
-
-					{#if formData.requirements}
-						<div>
-							<h4 class="font-semibold text-gray-900 mb-2">Requirements</h4>
-							<p class="text-gray-700 whitespace-pre-line">{formData.requirements}</p>
-						</div>
-					{/if}
-
-					{#if formData.skills.length > 0}
-						<div>
-							<h4 class="font-semibold text-gray-900 mb-2">Required Skills</h4>
-							<div class="flex flex-wrap gap-2">
-								{#each formData.skills as skill}
-									<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{skill}</span>
 								{/each}
 							</div>
 						</div>
-					{/if}
 
-					{#if formData.salaryMin || formData.salaryMax}
-						{#if !formData.hideSalary}
-							<div>
-								<h4 class="font-semibold text-gray-900 mb-2">Salary Range</h4>
-								<p class="text-gray-700">
-									${formData.salaryMin?.toLocaleString() || '0'} - ${formData.salaryMax?.toLocaleString() ||
-										'0'}
-								</p>
+						<div class="md:col-span-2">
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Job Location(s) <span class="text-red-500">*</span> <span class="text-gray-500 text-xs">(Max 3)</span>
+							</label>
+							<div class="space-y-3">
+								<input
+									type="text"
+									bind:value={formData.searchCity}
+									placeholder="Search city... (e.g., Bangalore, Mumbai)"
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									disabled={formData.selectedLocationIds.length >= 3}
+								/>
+
+								{#if formData.selectedLocationIds.length > 0}
+									<div class="flex flex-wrap gap-2">
+										{#each formData.selectedLocationIds as cityId}
+											{@const city = data.metadata.cities.find(c => c.id === cityId)}
+											{#if city}
+												<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+													{city.name}, {city.state?.name}
+													<button
+														type="button"
+														onclick={() => toggleLocation(cityId)}
+														class="hover:text-blue-900"
+													>
+														<X class="w-4 h-4" />
+													</button>
+												</span>
+											{/if}
+										{/each}
+									</div>
+								{/if}
+
+								{#if formData.selectedLocationIds.length >= 3}
+									<p class="text-sm text-orange-600">Maximum 3 locations reached. Remove a location to add another.</p>
+								{/if}
+
+								{#if formData.searchCity.length > 0}
+									<div class="border border-gray-300 rounded-lg max-h-60 overflow-y-auto">
+										{#each filteredCities as city}
+											<button
+												type="button"
+												onclick={() => {
+													if (formData.selectedLocationIds.length < 3 || formData.selectedLocationIds.includes(city.id)) {
+														toggleLocation(city.id);
+														formData.searchCity = '';
+													}
+												}}
+												disabled={formData.selectedLocationIds.length >= 3 && !formData.selectedLocationIds.includes(city.id)}
+												class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center justify-between {formData.selectedLocationIds.includes(city.id) ? 'bg-blue-50 text-blue-700' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												<span class="text-sm">{city.name}, {city.state?.name || 'N/A'}</span>
+												{#if formData.selectedLocationIds.includes(city.id)}
+													<CheckCircle class="w-4 h-4 text-blue-600" />
+												{/if}
+											</button>
+										{/each}
+									</div>
+								{/if}
+							</div>
+							<p class="text-xs text-gray-500 mt-1">Select up to 3 cities where the job is available</p>
+						</div>
+
+						{#if formData.workMode !== 'remote'}
+							<div class="md:col-span-2">
+								<label class="block text-sm font-medium text-gray-700 mb-2">
+									Office Address
+								</label>
+								<textarea
+									name="company_address"
+									bind:value={formData.officeAddress}
+									rows="2"
+									placeholder="Office address"
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								></textarea>
 							</div>
 						{/if}
-					{/if}
+					</div>
 				</div>
 
-				<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-					<p class="text-sm text-yellow-800">
-						<strong>Note:</strong> Once published, this job will be visible to all job seekers on the platform.
-						You can edit or close it at any time from the Jobs page.
-					</p>
+			{:else if currentStep === 3}
+				<!-- Step 3: Details & Requirements -->
+				<div class="space-y-6">
+					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+						<FileText class="w-6 h-6" />
+						Job Details & Requirements
+					</h2>
+
+					<div class="space-y-6">
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Job Description <span class="text-red-500">*</span>
+							</label>
+							<textarea
+								name="description"
+								bind:value={formData.description}
+								rows="6"
+								required
+								placeholder="Describe the role, responsibilities, and what you're looking for..."
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							></textarea>
+						</div>
+
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Key Skills <span class="text-gray-500 text-xs">(Max 8)</span>
+							</label>
+							<div class="space-y-3">
+								<input
+									type="text"
+									bind:value={formData.searchSkill}
+									placeholder="Search skills... (e.g., Python, React, AWS)"
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								/>
+
+								{#if formData.selectedSkillIds.length > 0}
+									<div class="flex flex-wrap gap-2">
+										{#each formData.selectedSkillIds as skillId}
+											{@const skill = data.metadata.skills.find(s => s.id === skillId)}
+											{#if skill}
+												<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+													{skill.name}
+													<button
+														type="button"
+														onclick={() => toggleSkill(skillId)}
+														class="hover:text-blue-900"
+													>
+														<X class="w-4 h-4" />
+													</button>
+												</span>
+											{/if}
+										{/each}
+									</div>
+								{/if}
+
+								{#if formData.searchSkill.length > 0}
+									<div class="border border-gray-300 rounded-lg max-h-60 overflow-y-auto">
+										{#each filteredSkills as skill}
+											<button
+												type="button"
+												onclick={() => {
+													if (formData.selectedSkillIds.length < 8 || formData.selectedSkillIds.includes(skill.id)) {
+														toggleSkill(skill.id);
+														formData.searchSkill = '';
+													}
+												}}
+												disabled={formData.selectedSkillIds.length >= 8 && !formData.selectedSkillIds.includes(skill.id)}
+												class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center justify-between {formData.selectedSkillIds.includes(skill.id) ? 'bg-blue-50 text-blue-700' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												<span class="text-sm">{skill.name}</span>
+												{#if formData.selectedSkillIds.includes(skill.id)}
+													<CheckCircle class="w-4 h-4 text-blue-600" />
+												{/if}
+											</button>
+										{/each}
+									</div>
+								{/if}
+							</div>
+							<p class="text-xs text-gray-500 mt-1">Select up to 8 key skills required for this role</p>
+						</div>
+
+						<!-- Industries -->
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Industry/Domain Preference
+							</label>
+							<div class="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto">
+								<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+									{#each data.metadata.industries as industry}
+										<label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+											<input
+												type="checkbox"
+												checked={formData.selectedIndustryIds.includes(industry.id)}
+												onchange={() => toggleIndustry(industry.id)}
+												class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+											/>
+											<span class="text-sm text-gray-700">{industry.name}</span>
+										</label>
+									{/each}
+								</div>
+							</div>
+							<p class="text-xs text-gray-500 mt-1">Select preferred industries for candidates</p>
+						</div>
+
+						<!-- Education/Qualifications -->
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Education Qualification
+							</label>
+							<div class="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto">
+								<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+									{#each data.metadata.qualifications as qual}
+										<label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+											<input
+												type="checkbox"
+												checked={formData.selectedQualificationIds.includes(qual.id)}
+												onchange={() => toggleQualification(qual.id)}
+												class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+											/>
+											<span class="text-sm text-gray-700">{qual.name}</span>
+										</label>
+									{/each}
+								</div>
+							</div>
+							<p class="text-xs text-gray-500 mt-1">Select minimum education qualifications required</p>
+						</div>
+
+						<!-- Language Requirements -->
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Language Requirements
+							</label>
+							<div class="space-y-3">
+								{#each formData.languages as lang, index}
+									<div class="flex gap-3 items-start">
+										<input
+											type="text"
+											bind:value={lang.language}
+											placeholder="Language (e.g., English)"
+											class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+										/>
+										<select
+											bind:value={lang.proficiency}
+											class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+										>
+											{#each languageProficiencies as prof}
+												<option value={prof.value}>{prof.label}</option>
+											{/each}
+										</select>
+										<button
+											type="button"
+											onclick={() => removeLanguage(index)}
+											class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+										>
+											<X class="w-5 h-5" />
+										</button>
+									</div>
+								{/each}
+								<button
+									type="button"
+									onclick={addLanguage}
+									class="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-2"
+								>
+									<Plus class="w-4 h-4" />
+									Add Language
+								</button>
+							</div>
+						</div>
+
+						<!-- Certifications -->
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div>
+								<label class="block text-sm font-medium text-gray-700 mb-2">
+									Required Certifications
+								</label>
+								<textarea
+									name="required_certifications"
+									bind:value={formData.requiredCertifications}
+									placeholder="e.g., AWS Solutions Architect, Azure Administrator"
+									rows="3"
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								></textarea>
+								<p class="text-xs text-gray-500 mt-1">Comma-separated list</p>
+							</div>
+
+							<div>
+								<label class="block text-sm font-medium text-gray-700 mb-2">
+									Preferred Certifications
+								</label>
+								<textarea
+									name="preferred_certifications"
+									bind:value={formData.preferredCertifications}
+									placeholder="e.g., PMP, ISTQB"
+									rows="3"
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								></textarea>
+								<p class="text-xs text-gray-500 mt-1">Nice-to-have certifications</p>
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
+
+			{:else if currentStep === 4}
+				<!-- Step 4: Compensation & Benefits -->
+				<div class="space-y-6">
+					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+						<DollarSign class="w-6 h-6" />
+						Compensation & Benefits
+					</h2>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Minimum Salary (INR)
+							</label>
+							<input
+								type="number"
+								name="min_salary"
+								bind:value={formData.salaryMin}
+								placeholder="e.g., 500000"
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
+
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Maximum Salary (INR)
+							</label>
+							<input
+								type="number"
+								name="max_salary"
+								bind:value={formData.salaryMax}
+								placeholder="e.g., 800000"
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
+
+						<div class="md:col-span-2">
+							<label class="flex items-center gap-3 cursor-pointer">
+								<input
+									type="checkbox"
+									name="show_salary"
+									bind:checked={formData.showSalary}
+									class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+								/>
+								<span class="text-sm font-medium text-gray-700">
+									Show salary range to job seekers
+								</span>
+							</label>
+						</div>
+
+						<!-- Benefits & Perks -->
+						<div class="md:col-span-2">
+							<label class="block text-sm font-medium text-gray-700 mb-3">
+								Benefits & Perks
+							</label>
+							<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+								{#each benefitOptions as benefit}
+									<label class="flex items-center gap-2 cursor-pointer">
+										<input
+											type="checkbox"
+											checked={formData.benefits.includes(benefit)}
+											onchange={() => toggleBenefit(benefit)}
+											class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+										/>
+										<span class="text-sm text-gray-700">{benefit}</span>
+									</label>
+								{/each}
+							</div>
+						</div>
+					</div>
+				</div>
+
+			{:else if currentStep === 5}
+				<!-- Step 5: Application Settings -->
+				<div class="space-y-6">
+					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+						<Send class="w-6 h-6" />
+						Application Settings
+					</h2>
+
+					<div class="space-y-6">
+						<!-- Application Method -->
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-3">
+								Application Method <span class="text-red-500">*</span>
+							</label>
+							<div class="space-y-3">
+								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition-colors {formData.applicationMethod === 'portal' ? 'border-blue-600 bg-blue-50' : ''}">
+									<input
+										type="radio"
+										name="application_method"
+										value="portal"
+										bind:group={formData.applicationMethod}
+										class="w-4 h-4 text-blue-600"
+									/>
+									<div>
+										<div class="text-sm font-medium text-gray-900">Apply on PeelJobs Portal</div>
+										<div class="text-xs text-gray-500">Candidates apply through our platform</div>
+									</div>
+								</label>
+								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition-colors {formData.applicationMethod === 'external' ? 'border-blue-600 bg-blue-50' : ''}">
+									<input
+										type="radio"
+										name="application_method"
+										value="external"
+										bind:group={formData.applicationMethod}
+										class="w-4 h-4 text-blue-600"
+									/>
+									<div>
+										<div class="text-sm font-medium text-gray-900">External URL</div>
+										<div class="text-xs text-gray-500">Redirect to your company careers page</div>
+									</div>
+								</label>
+								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition-colors {formData.applicationMethod === 'email' ? 'border-blue-600 bg-blue-50' : ''}">
+									<input
+										type="radio"
+										name="application_method"
+										value="email"
+										bind:group={formData.applicationMethod}
+										class="w-4 h-4 text-blue-600"
+									/>
+									<div>
+										<div class="text-sm font-medium text-gray-900">Email</div>
+										<div class="text-xs text-gray-500">Candidates apply via email</div>
+									</div>
+								</label>
+							</div>
+
+							{#if formData.applicationMethod === 'external'}
+								<div class="mt-3">
+									<input
+										type="url"
+										name="application_url"
+										bind:value={formData.applicationUrl}
+										placeholder="https://example.com/apply"
+										class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									/>
+								</div>
+							{/if}
+						</div>
+
+						<!-- Application Deadline -->
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-2">
+								Application Deadline
+							</label>
+							<input
+								type="date"
+								name="last_date"
+								bind:value={formData.deadline}
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
+					</div>
+				</div>
+
+			{:else if currentStep === 6}
+				<!-- Step 6: Additional Settings -->
+				<div class="space-y-6">
+					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+						<Settings class="w-6 h-6" />
+						Additional Settings
+					</h2>
+
+					<div class="space-y-6">
+						<!-- Relocation & Travel -->
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div>
+								<label class="flex items-center gap-3 cursor-pointer">
+									<input
+										type="checkbox"
+										name="relocation_required"
+										bind:checked={formData.relocationRequired}
+										class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+									/>
+									<span class="text-sm font-medium text-gray-700">
+										Relocation Required
+									</span>
+								</label>
+							</div>
+
+							<div>
+								<label class="block text-sm font-medium text-gray-700 mb-2">
+									Travel Requirements
+								</label>
+								<select
+									name="travel_percentage"
+									bind:value={formData.travelPercentage}
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								>
+									<option value="">No travel required</option>
+									<option value="0-10%">0-10%</option>
+									<option value="10-25%">10-25%</option>
+									<option value="25-50%">25-50%</option>
+									<option value="50%+">50%+</option>
+								</select>
+							</div>
+						</div>
+
+						<!-- Hiring Urgency -->
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div>
+								<label class="block text-sm font-medium text-gray-700 mb-2">
+									Hiring Timeline
+								</label>
+								<select
+									name="hiring_timeline"
+									bind:value={formData.hiringTimeline}
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								>
+									<option value="">Select timeline</option>
+									{#each hiringTimelines as timeline}
+										<option value={timeline.value}>{timeline.label}</option>
+									{/each}
+								</select>
+							</div>
+
+							<div>
+								<label class="block text-sm font-medium text-gray-700 mb-2">
+									Priority <span class="text-red-500">*</span>
+								</label>
+								<select
+									name="hiring_priority"
+									bind:value={formData.hiringPriority}
+									required
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								>
+									{#each hiringPriorities as priority}
+										<option value={priority.value}>{priority.label}</option>
+									{/each}
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			{:else if currentStep === 7}
+				<!-- Step 7: Preview -->
+				<div class="space-y-6">
+					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+						<Eye class="w-6 h-6" />
+						Preview & Submit
+					</h2>
+
+					<div class="space-y-6 border border-gray-200 rounded-lg p-6">
+						<!-- Job Basics -->
+						<div>
+							<h3 class="font-semibold text-gray-900 mb-3">Job Basics</h3>
+							<dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+								<div>
+									<dt class="text-gray-500">Job Title</dt>
+									<dd class="text-gray-900 font-medium">{formData.jobTitle || 'Not set'}</dd>
+								</div>
+								<div>
+									<dt class="text-gray-500">Company</dt>
+									<dd class="text-gray-900 font-medium">{formData.companyName || 'Not set'}</dd>
+								</div>
+								<div>
+									<dt class="text-gray-500">Employment Type</dt>
+									<dd class="text-gray-900 font-medium capitalize">{formData.employmentType}</dd>
+								</div>
+								<div>
+									<dt class="text-gray-500">Seniority Level</dt>
+									<dd class="text-gray-900 font-medium capitalize">{formData.seniorityLevel || 'Not set'}</dd>
+								</div>
+								<div>
+									<dt class="text-gray-500">Work Mode</dt>
+									<dd class="text-gray-900 font-medium capitalize">{formData.workMode}</dd>
+								</div>
+								<div>
+									<dt class="text-gray-500">Positions</dt>
+									<dd class="text-gray-900 font-medium">{formData.positions}</dd>
+								</div>
+							</dl>
+						</div>
+
+						<!-- Compensation -->
+						{#if formData.salaryMin || formData.salaryMax}
+							<div>
+								<h3 class="font-semibold text-gray-900 mb-3">Compensation</h3>
+								<p class="text-sm text-gray-700">
+									INR {formData.salaryMin || '0'} - {formData.salaryMax || '0'} per year
+									{#if !formData.showSalary}<span class="text-gray-500">(Hidden from candidates)</span>{/if}
+								</p>
+								{#if formData.benefits.length > 0}
+									<div class="mt-2">
+										<p class="text-sm text-gray-500 mb-1">Benefits:</p>
+										<div class="flex flex-wrap gap-2">
+											{#each formData.benefits as benefit}
+												<span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded">{benefit}</span>
+											{/each}
+										</div>
+									</div>
+								{/if}
+							</div>
+						{/if}
+
+						<!-- Skills & Requirements -->
+						{#if formData.selectedSkillIds.length > 0}
+							<div>
+								<h3 class="font-semibold text-gray-900 mb-3">Skills</h3>
+								<div class="flex flex-wrap gap-2">
+									{#each formData.selectedSkillIds as skillId}
+										{@const skill = data.metadata.skills.find(s => s.id === skillId)}
+										{#if skill}
+											<span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded">{skill.name}</span>
+										{/if}
+									{/each}
+								</div>
+							</div>
+						{/if}
+
+						<!-- Locations -->
+						{#if formData.selectedLocationIds.length > 0}
+							<div>
+								<h3 class="font-semibold text-gray-900 mb-3">Locations</h3>
+								<div class="flex flex-wrap gap-2">
+									{#each formData.selectedLocationIds as cityId}
+										{@const city = data.metadata.cities.find(c => c.id === cityId)}
+										{#if city}
+											<span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded">{city.name}, {city.state?.name}</span>
+										{/if}
+									{/each}
+								</div>
+							</div>
+						{/if}
+
+						<!-- Application Method -->
+						<div>
+							<h3 class="font-semibold text-gray-900 mb-3">Application Method</h3>
+							<p class="text-sm text-gray-700 capitalize">{formData.applicationMethod}</p>
+							{#if formData.applicationMethod === 'external' && formData.applicationUrl}
+								<p class="text-sm text-blue-600 mt-1">{formData.applicationUrl}</p>
+							{/if}
+						</div>
+					</div>
+				</div>
+			{/if}
+		</div>
+
+		<!-- Hidden fields for form submission -->
+		{#each formData.selectedLocationIds as cityId}
+			<input type="hidden" name="location_ids" value={cityId} />
+		{/each}
+		{#each formData.selectedSkillIds as skillId}
+			<input type="hidden" name="skill_ids" value={skillId} />
+		{/each}
+		{#each formData.selectedIndustryIds as industryId}
+			<input type="hidden" name="industry_ids" value={industryId} />
+		{/each}
+		{#each formData.selectedQualificationIds as qualId}
+			<input type="hidden" name="qualification_ids" value={qualId} />
+		{/each}
+
+		<!-- Experience fields (computed from experience level) -->
+		<input type="hidden" name="min_year" value={formData.minYear} />
+		<input type="hidden" name="max_year" value={formData.maxYear} />
+		<input type="hidden" name="min_month" value={formData.minMonth} />
+		<input type="hidden" name="max_month" value={formData.maxMonth} />
+		<input type="hidden" name="fresher" value={formData.fresher} />
+
+		<!-- Language requirements as JSON -->
+		{#if formData.languages.length > 0}
+			<input type="hidden" name="language_requirements" value={JSON.stringify(formData.languages)} />
 		{/if}
-	</div>
+
+		<!-- Benefits as comma-separated -->
+		{#if formData.benefits.length > 0}
+			<input type="hidden" name="benefits" value={formData.benefits.join(',')} />
+		{/if}
 
 		<!-- Navigation Buttons -->
-		<div class="flex items-center justify-between bg-white rounded-lg border border-gray-200 p-4">
-			<button
-				type="button"
-				onclick={prevStep}
-				disabled={currentStep === 1}
-				class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-			>
-				<ChevronLeft class="w-4 h-4" />
-				Previous
-			</button>
-
-			<div class="flex items-center gap-3">
+		<div class="flex items-center justify-between mt-6">
+			<div class="flex gap-3">
 				<button
-					type="submit"
-					formaction="?/saveDraft"
-					disabled={isSubmitting}
-					class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+					type="button"
+					onclick={prevStep}
+					disabled={currentStep === 1}
+					class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
 				>
-					<Save class="w-4 h-4" />
-					{isSubmitting ? 'Saving...' : 'Save Draft'}
+					<ChevronLeft class="w-4 h-4" />
+					Previous
 				</button>
 
 				{#if currentStep < totalSteps}
 					<button
-						type="button"
-						onclick={nextStep}
-						class="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-					>
-						Next
-						<ChevronRight class="w-4 h-4" />
-					</button>
-				{:else}
-					<button
 						type="submit"
-						formaction="?/publish"
+						onclick={() => (currentAction = 'saveDraft')}
 						disabled={isSubmitting}
-						class="inline-flex items-center gap-2 px-6 py-2 bg-green-600 rounded-lg text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
+						class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 flex items-center gap-2"
 					>
-						<Send class="w-4 h-4" />
-						{isSubmitting ? 'Publishing...' : 'Publish Job'}
+						<Save class="w-4 h-4" />
+						{isSubmitting && currentAction === 'saveDraft' ? 'Saving...' : 'Save Draft'}
 					</button>
 				{/if}
 			</div>
+
+			{#if currentStep < totalSteps}
+				<button
+					type="button"
+					onclick={nextStep}
+					class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+				>
+					Next
+					<ChevronRight class="w-4 h-4" />
+				</button>
+			{:else}
+				<div class="flex gap-3">
+					<button
+						type="submit"
+						onclick={() => (currentAction = 'saveDraft')}
+						disabled={isSubmitting}
+						class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 flex items-center gap-2"
+					>
+						<Save class="w-4 h-4" />
+						{isSubmitting && currentAction === 'saveDraft' ? 'Saving...' : 'Save as Draft'}
+					</button>
+					<button
+						type="submit"
+						onclick={() => (currentAction = 'publish')}
+						disabled={isSubmitting}
+						class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+					>
+						<Send class="w-4 h-4" />
+						{isSubmitting && currentAction === 'publish' ? 'Publishing...' : 'Publish Job'}
+					</button>
+				</div>
+			{/if}
 		</div>
 	</form>
 </div>
