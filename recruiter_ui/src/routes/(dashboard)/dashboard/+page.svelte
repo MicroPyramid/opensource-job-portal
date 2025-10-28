@@ -11,99 +11,92 @@
 		UserCheck,
 		Calendar
 	} from '@lucide/svelte';
+	import type { PageData } from './$types';
 
-	// Mock data - will be replaced with API calls
-	const stats = [
-		{
-			label: 'Active Jobs',
-			value: '12',
-			icon: Briefcase,
-			trend: '+2 this month',
-			trendPositive: true
-		},
-		{
-			label: 'Total Applicants',
-			value: '248',
-			icon: Users,
-			trend: '+34 this week',
-			trendPositive: true
-		},
-		{
-			label: 'Pending Reviews',
-			value: '18',
-			icon: Clock,
-			trend: '6 urgent',
-			trendPositive: false
-		},
-		{
-			label: 'Expiring Soon',
-			value: '3',
-			icon: AlertCircle,
-			trend: 'Next 7 days',
-			trendPositive: false
-		}
-	];
+	export let data: PageData;
 
-	const recentApplicants = [
-		{
-			id: 1,
-			name: 'John Smith',
-			jobTitle: 'Senior Frontend Developer',
-			appliedDate: '2 hours ago',
-			status: 'New'
-		},
-		{
-			id: 2,
-			name: 'Sarah Johnson',
-			jobTitle: 'Product Manager',
-			appliedDate: '4 hours ago',
-			status: 'New'
-		},
-		{
-			id: 3,
-			name: 'Michael Chen',
-			jobTitle: 'UI/UX Designer',
-			appliedDate: '1 day ago',
-			status: 'In Review'
-		},
-		{
-			id: 4,
-			name: 'Emma Davis',
-			jobTitle: 'Backend Developer',
-			appliedDate: '1 day ago',
-			status: 'Shortlisted'
-		},
-		{
-			id: 5,
-			name: 'James Wilson',
-			jobTitle: 'Senior Frontend Developer',
-			appliedDate: '2 days ago',
-			status: 'In Review'
-		}
-	];
+	// Helper function to format relative time
+	function getRelativeTime(dateString: string): string {
+		const date = new Date(dateString);
+		const now = new Date();
+		const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-	const topJobs = [
-		{ title: 'Senior Frontend Developer', views: 1240, applications: 45, conversion: '3.6%' },
-		{ title: 'Product Manager', views: 980, applications: 38, conversion: '3.9%' },
-		{ title: 'UI/UX Designer', views: 756, applications: 28, conversion: '3.7%' },
-		{ title: 'Backend Developer', views: 645, applications: 22, conversion: '3.4%' }
-	];
+		if (diffInSeconds < 60) return 'Just now';
+		if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+		if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+		if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+		return date.toLocaleDateString();
+	}
 
-	const recentActivity = [
-		{ action: 'Sarah reviewed John Smith for Senior Frontend Developer', time: '10 min ago' },
-		{ action: 'New application received for Product Manager', time: '25 min ago' },
-		{ action: 'Interview scheduled with Emma Davis', time: '1 hour ago' },
-		{ action: 'Job posted: DevOps Engineer', time: '2 hours ago' },
-		{ action: 'Michael Chen moved to Shortlisted', time: '3 hours ago' }
-	];
+	// Build stats array from API data
+	$: stats = data.stats
+		? [
+				{
+					label: 'Active Jobs',
+					value: data.stats.live_jobs.toString(),
+					icon: Briefcase,
+					trend: `${data.stats.draft_jobs} drafts`,
+					trendPositive: true
+				},
+				{
+					label: 'Total Applicants',
+					value: data.stats.total_applicants.toString(),
+					icon: Users,
+					trend: 'All time',
+					trendPositive: true
+				},
+				{
+					label: 'Draft Jobs',
+					value: data.stats.draft_jobs.toString(),
+					icon: Clock,
+					trend: 'Ready to publish',
+					trendPositive: false
+				},
+				{
+					label: 'Closed Jobs',
+					value: data.stats.closed_jobs.toString(),
+					icon: AlertCircle,
+					trend: `${data.stats.expired_jobs} expired`,
+					trendPositive: false
+				}
+			]
+		: [];
+
+	// Map API applicants data
+	$: recentApplicants = (data.recentApplicants || []).map((app: any) => ({
+		id: app.id,
+		name: app.user?.name || 'Anonymous',
+		jobTitle: app.jobTitle || 'Unknown Job',
+		appliedDate: getRelativeTime(app.applied_on),
+		status: app.status
+	}));
+
+	// Map recent jobs data to top jobs format
+	$: topJobs = (data.recentJobs || []).map((job: any) => ({
+		id: job.id,
+		title: job.title,
+		views: 0, // Views tracking not implemented yet
+		applications: job.applicants_count || 0,
+		status: job.status
+	}));
 
 	function getStatusColor(status: string): string {
 		const colors: Record<string, string> = {
-			New: 'bg-blue-100 text-blue-800',
-			'In Review': 'bg-yellow-100 text-yellow-800',
-			Shortlisted: 'bg-green-100 text-green-800',
-			Interviewed: 'bg-purple-100 text-purple-800',
+			Pending: 'bg-blue-100 text-blue-800',
+			Shortlisted: 'bg-yellow-100 text-yellow-800',
+			Hired: 'bg-green-100 text-green-800',
+			Selected: 'bg-green-100 text-green-800',
 			Rejected: 'bg-red-100 text-red-800'
+		};
+		return colors[status] || 'bg-gray-100 text-gray-800';
+	}
+
+	function getJobStatusColor(status: string): string {
+		const colors: Record<string, string> = {
+			Live: 'bg-green-100 text-green-800',
+			Draft: 'bg-gray-100 text-gray-800',
+			Disabled: 'bg-red-100 text-red-800',
+			Expired: 'bg-orange-100 text-orange-800'
 		};
 		return colors[status] || 'bg-gray-100 text-gray-800';
 	}
@@ -167,17 +160,16 @@
 	</div>
 
 	<!-- Main Content Grid -->
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-		<!-- Recent Applicants -->
-		<div class="lg:col-span-2 bg-white rounded-lg border border-gray-200">
-			<div class="p-6 border-b border-gray-200">
-				<div class="flex items-center justify-between">
-					<h2 class="text-lg font-semibold text-gray-900">Recent Applicants</h2>
-					<a href="/dashboard/applicants/" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-						View all
-					</a>
-				</div>
+	<div class="bg-white rounded-lg border border-gray-200">
+		<div class="p-6 border-b border-gray-200">
+			<div class="flex items-center justify-between">
+				<h2 class="text-lg font-semibold text-gray-900">Recent Applicants</h2>
+				<a href="/dashboard/applicants/" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+					View all
+				</a>
 			</div>
+		</div>
+		{#if recentApplicants.length > 0}
 			<div class="divide-y divide-gray-200">
 				{#each recentApplicants as applicant}
 					<a
@@ -206,83 +198,92 @@
 					</a>
 				{/each}
 			</div>
-		</div>
-
-		<!-- Activity Feed -->
-		<div class="bg-white rounded-lg border border-gray-200">
-			<div class="p-6 border-b border-gray-200">
-				<h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+		{:else}
+			<div class="p-12 text-center">
+				<Users class="w-12 h-12 text-gray-400 mx-auto mb-3" />
+				<p class="text-gray-600 mb-4">No applications received yet</p>
+				<a
+					href="/dashboard/jobs/new/"
+					class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+				>
+					<Plus class="w-4 h-4" />
+					Post Your First Job
+				</a>
 			</div>
-			<div class="p-6">
-				<div class="space-y-4">
-					{#each recentActivity as activity}
-						<div class="flex gap-3">
-							<div class="w-2 h-2 rounded-full bg-blue-600 mt-2 flex-shrink-0"></div>
-							<div class="flex-1 min-w-0">
-								<p class="text-sm text-gray-900">{activity.action}</p>
-								<p class="text-xs text-gray-500 mt-1">{activity.time}</p>
-							</div>
-						</div>
-					{/each}
-				</div>
-			</div>
-		</div>
+		{/if}
 	</div>
 
 	<!-- Job Performance -->
 	<div class="bg-white rounded-lg border border-gray-200">
 		<div class="p-6 border-b border-gray-200">
 			<div class="flex items-center justify-between">
-				<h2 class="text-lg font-semibold text-gray-900">Top Performing Jobs</h2>
-				<a href="/dashboard/analytics/jobs/" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-					View analytics
+				<h2 class="text-lg font-semibold text-gray-900">Recent Jobs</h2>
+				<a href="/dashboard/jobs/" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+					View all jobs
 				</a>
 			</div>
 		</div>
-		<div class="overflow-x-auto">
-			<table class="w-full">
-				<thead class="bg-gray-50 border-b border-gray-200">
-					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Job Title
-						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Views
-						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Applications
-						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Conversion
-						</th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-gray-200">
-					{#each topJobs as job}
-						<tr class="hover:bg-gray-50">
-							<td class="px-6 py-4 text-sm font-medium text-gray-900">{job.title}</td>
-							<td class="px-6 py-4 text-sm text-gray-600">
-								<div class="flex items-center gap-2">
-									<Eye class="w-4 h-4 text-gray-400" />
-									{job.views.toLocaleString()}
-								</div>
-							</td>
-							<td class="px-6 py-4 text-sm text-gray-600">
-								<div class="flex items-center gap-2">
-									<FileText class="w-4 h-4 text-gray-400" />
-									{job.applications}
-								</div>
-							</td>
-							<td class="px-6 py-4 text-sm text-gray-600">
-								<div class="flex items-center gap-2">
-									<TrendingUp class="w-4 h-4 text-green-600" />
-									{job.conversion}
-								</div>
-							</td>
+		{#if topJobs.length > 0}
+			<div class="overflow-x-auto">
+				<table class="w-full">
+					<thead class="bg-gray-50 border-b border-gray-200">
+						<tr>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Job Title
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Views
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Applications
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Status
+							</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+					</thead>
+					<tbody class="divide-y divide-gray-200">
+						{#each topJobs as job}
+							<tr class="hover:bg-gray-50">
+								<td class="px-6 py-4">
+									<a href="/dashboard/jobs/{job.id}/" class="text-sm font-medium text-blue-600 hover:text-blue-700">
+										{job.title}
+									</a>
+								</td>
+								<td class="px-6 py-4 text-sm text-gray-600">
+									<div class="flex items-center gap-2">
+										<Eye class="w-4 h-4 text-gray-400" />
+										<span class="text-gray-400">Coming soon</span>
+									</div>
+								</td>
+								<td class="px-6 py-4 text-sm text-gray-600">
+									<div class="flex items-center gap-2">
+										<FileText class="w-4 h-4 text-gray-400" />
+										{job.applications}
+									</div>
+								</td>
+								<td class="px-6 py-4 text-sm">
+									<span class="px-3 py-1 rounded-full text-xs font-medium {getJobStatusColor(job.status)}">
+										{job.status}
+									</span>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{:else}
+			<div class="p-12 text-center">
+				<Briefcase class="w-12 h-12 text-gray-400 mx-auto mb-3" />
+				<p class="text-gray-600 mb-4">No jobs posted yet</p>
+				<a
+					href="/dashboard/jobs/new/"
+					class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+				>
+					<Plus class="w-4 h-4" />
+					Post Your First Job
+				</a>
+			</div>
+		{/if}
 	</div>
 </div>
