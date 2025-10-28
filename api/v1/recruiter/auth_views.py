@@ -25,7 +25,8 @@ from .auth_serializers import (
     GoogleCallbackSerializer,
     GoogleCompleteSerializer,
     UserSerializer,
-    AcceptInvitationSerializer
+    AcceptInvitationSerializer,
+    UpdateProfileSerializer
 )
 
 
@@ -649,3 +650,87 @@ def google_complete(request):
         }, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Profile Management Views
+@extend_schema(
+    tags=["Recruiter Profile"],
+    summary="Update Profile",
+    description="Update recruiter profile information",
+    request=UpdateProfileSerializer,
+)
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    """
+    Update recruiter profile
+
+    Allows updating: first_name, last_name, job_title, mobile
+    """
+    serializer = UpdateProfileSerializer(data=request.data, instance=request.user)
+
+    if serializer.is_valid():
+        user = serializer.save()
+
+        # Return updated user data
+        user_serializer = UserSerializer(user)
+
+        return Response({
+            "success": True,
+            "user": user_serializer.data,
+            "message": "Profile updated successfully"
+        })
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Recruiter Profile"],
+    summary="Upload Profile Picture",
+    description="Upload or update profile picture",
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_profile_picture(request):
+    """
+    Upload profile picture
+
+    Accepts multipart/form-data with 'profile_pic' field
+    """
+    if 'profile_pic' not in request.FILES:
+        return Response(
+            {"error": "Please provide a profile_pic file"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    profile_pic = request.FILES['profile_pic']
+
+    # Validate file type
+    allowed_types = ['image/jpeg', 'image/jpg', 'image/png']
+    if profile_pic.content_type not in allowed_types:
+        return Response(
+            {"error": "Invalid file type. Please upload a JPEG or PNG image"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Validate file size (max 2MB)
+    max_size = 2 * 1024 * 1024  # 2MB
+    if profile_pic.size > max_size:
+        return Response(
+            {"error": "File too large. Maximum size is 2MB"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Save profile picture
+    user = request.user
+    user.profile_pic = profile_pic
+    user.save()
+
+    # Return updated user data
+    user_serializer = UserSerializer(user)
+
+    return Response({
+        "success": True,
+        "user": user_serializer.data,
+        "message": "Profile picture uploaded successfully"
+    })

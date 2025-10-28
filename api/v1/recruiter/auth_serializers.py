@@ -350,3 +350,24 @@ class UserSerializer(serializers.ModelSerializer):
             'is_company_member': obj.is_company_member,
             'is_independent_recruiter': obj.is_independent_recruiter
         }
+
+
+class UpdateProfileSerializer(serializers.Serializer):
+    """Update recruiter profile"""
+    first_name = serializers.CharField(max_length=100, required=False)
+    last_name = serializers.CharField(max_length=100, required=False)
+    job_title = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    mobile = serializers.CharField(max_length=20, required=False, allow_blank=True)
+
+    def validate_mobile(self, value):
+        """Validate mobile number format"""
+        if value and not value.replace('+', '').replace('-', '').replace(' ', '').isdigit():
+            raise serializers.ValidationError("Please enter a valid phone number")
+        return value
+
+    def update(self, instance, validated_data):
+        """Update user profile"""
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        return instance

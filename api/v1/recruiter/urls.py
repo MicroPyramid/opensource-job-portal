@@ -28,6 +28,10 @@ urlpatterns = [
     # User Info
     path("auth/me/", auth_views.me, name="me"),
 
+    # Profile Management
+    path("profile/update/", auth_views.update_profile, name="profile-update"),
+    path("profile/picture/", auth_views.upload_profile_picture, name="profile-picture"),
+
     # Google OAuth
     path("auth/google/url/", auth_views.google_auth_url, name="google-auth-url"),
     path("auth/google/callback/", auth_views.google_callback, name="google-callback"),
