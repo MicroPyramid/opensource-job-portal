@@ -1,6 +1,6 @@
 /**
  * Authentication API for Recruiters
- * Handles registration, login, email verification, password reset, and Google OAuth
+ * Handles registration, login, email verification, and password reset
  *
  * SECURITY NOTE:
  * - Tokens are NOT returned in API responses
@@ -14,9 +14,6 @@ import type {
 	RegisterData,
 	LoginData,
 	AuthResponse,
-	GoogleAuthUrlResponse,
-	GoogleCallbackResponse,
-	GoogleCompleteData,
 	VerifyEmailData,
 	ForgotPasswordData,
 	ResetPasswordData,
@@ -104,44 +101,4 @@ export async function acceptInvitation(data: AcceptInvitationData): Promise<Auth
  */
 export async function getCurrentUser(): Promise<User> {
 	return ApiClient.get('/recruiter/auth/me/');
-}
-
-// ===== Google OAuth =====
-
-/**
- * Get Google OAuth URL for frontend to redirect to
- */
-export async function getGoogleAuthUrl(
-	redirectUri: string,
-	accountType: 'company' | 'recruiter'
-): Promise<GoogleAuthUrlResponse> {
-	const endpoint = `/recruiter/auth/google/url/?redirect_uri=${encodeURIComponent(redirectUri)}&account_type=${accountType}`;
-	return ApiClient.get<GoogleAuthUrlResponse>(endpoint, true);
-}
-
-/**
- * Exchange Google authorization code for JWT tokens
- * NOTE: Tokens are set by server in HttpOnly cookies
- */
-export async function googleAuthCallback(
-	code: string,
-	redirectUri: string,
-	accountType: 'company' | 'recruiter'
-): Promise<GoogleCallbackResponse> {
-	return ApiClient.post<GoogleCallbackResponse>(
-		'/recruiter/auth/google/callback/',
-		{
-			code,
-			redirect_uri: redirectUri,
-			account_type: accountType
-		},
-		true
-	);
-}
-
-/**
- * Complete Google OAuth registration with additional info
- */
-export async function googleCompleteRegistration(data: GoogleCompleteData): Promise<AuthResponse> {
-	return ApiClient.post<AuthResponse>('/recruiter/auth/google/complete/', data, true);
 }

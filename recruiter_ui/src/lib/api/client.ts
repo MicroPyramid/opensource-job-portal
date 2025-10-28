@@ -10,6 +10,7 @@
 
 import { getApiBasePath, getApiBaseUrl } from '$lib/config/env';
 import { browser } from '$app/environment';
+import { formatApiError } from '$lib/utils/error-formatter';
 
 // Use full URL for server-side, proxy path for client-side
 const getApiBase = () => (browser ? getApiBasePath() : getApiBaseUrl());
@@ -124,33 +125,14 @@ export class ApiClient {
 
 		// Handle other errors
 		if (!response.ok) {
-			const error: ApiError = await response.json().catch(() => ({
+			const errorData = await response.json().catch(() => ({
 				error: 'Request failed',
 				detail: response.statusText
 			}));
 
-			// If there are field-specific errors, include them in the message
-			const errorData = error as any;
-			if (errorData && typeof errorData === 'object' && !errorData.error && !errorData.detail) {
-				// DRF validation errors format: { field_name: ["error message"] }
-				const fieldErrors = Object.entries(errorData)
-					.map(([field, messages]) => {
-						// Format field name to be more readable
-						const fieldName = field
-							.split('_')
-							.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-							.join(' ');
-
-						// Extract error message(s)
-						const errorMessage = Array.isArray(messages) ? messages.join(', ') : messages;
-
-						return `• ${fieldName}: ${errorMessage}`;
-					})
-					.join('\n');
-				throw new Error(fieldErrors || 'Validation failed');
-			}
-
-			throw new Error(error.error || error.detail || 'Request failed');
+			// Format error using centralized error formatter
+			const errorMessage = formatApiError(errorData);
+			throw new Error(errorMessage);
 		}
 
 		return response.json();

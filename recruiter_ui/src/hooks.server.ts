@@ -60,8 +60,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		'/forgot-password',
 		'/reset-password',
 		'/verify-email',
-		'/onboarding',
-		'/auth/google/callback'
+		'/onboarding'
 	];
 
 	// Check if current route is public
@@ -78,7 +77,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	}
 
 	// If accessing auth pages while authenticated, redirect to dashboard
-	if (isPublicRoute && hasValidAuth && !url.pathname.includes('/auth/google/callback')) {
+	if (isPublicRoute && hasValidAuth) {
 		return new Response(null, {
 			status: 302,
 			headers: {

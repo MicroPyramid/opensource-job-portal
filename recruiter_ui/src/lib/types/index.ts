@@ -77,37 +77,6 @@ export interface AuthResponse {
 	user: User;
 }
 
-export interface GoogleAuthUrlResponse {
-	auth_url: string;
-	account_type: 'company' | 'recruiter';
-}
-
-export interface GoogleCallbackResponse {
-	status: 'authenticated' | 'additional_info_required';
-	access?: string;
-	refresh?: string;
-	user?: User;
-	google_data?: {
-		email: string;
-		first_name: string;
-		last_name: string;
-		picture?: string;
-	};
-	session_token?: string;
-}
-
-export interface GoogleCompleteData {
-	session_token: string;
-	account_type: 'company' | 'recruiter';
-	company_name?: string;
-	company_website?: string;
-	company_industry?: string;
-	company_size?: string;
-	phone?: string;
-	job_title?: string;
-	agree_to_terms: boolean;
-}
-
 export interface VerifyEmailData {
 	token: string;
 }
