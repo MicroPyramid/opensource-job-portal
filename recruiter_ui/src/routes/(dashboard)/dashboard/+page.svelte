@@ -1,15 +1,11 @@
 <script lang="ts">
 	import {
 		Briefcase,
-		Users,
 		Clock,
 		AlertCircle,
-		TrendingUp,
 		Eye,
 		FileText,
-		Plus,
-		UserCheck,
-		Calendar
+		Plus
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -62,15 +58,6 @@
 			]
 		: [];
 
-	// Map API applicants data
-	$: recentApplicants = (data.recentApplicants || []).map((app: any) => ({
-		id: app.id,
-		name: app.user?.name || 'Anonymous',
-		jobTitle: app.jobTitle || 'Unknown Job',
-		appliedDate: getRelativeTime(app.applied_on),
-		status: app.status
-	}));
-
 	// Map recent jobs data to top jobs format
 	$: topJobs = (data.recentJobs || []).map((job: any) => ({
 		id: job.id,
@@ -79,17 +66,6 @@
 		applications: job.applicants_count || 0,
 		status: job.status
 	}));
-
-	function getStatusColor(status: string): string {
-		const colors: Record<string, string> = {
-			Pending: 'bg-blue-100 text-blue-800',
-			Shortlisted: 'bg-yellow-100 text-yellow-800',
-			Hired: 'bg-green-100 text-green-800',
-			Selected: 'bg-green-100 text-green-800',
-			Rejected: 'bg-red-100 text-red-800'
-		};
-		return colors[status] || 'bg-gray-100 text-gray-800';
-	}
 
 	function getJobStatusColor(status: string): string {
 		const colors: Record<string, string> = {
@@ -113,22 +89,13 @@
 			<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
 			<p class="text-gray-600 mt-1">Welcome back! Here's what's happening today.</p>
 		</div>
-		<div class="flex gap-3">
-			<a
-				href="/dashboard/applicants/"
-				class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-			>
-				<UserCheck class="w-4 h-4" />
-				Review Applicants
-			</a>
-			<a
-				href="/dashboard/jobs/new/"
-				class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-			>
-				<Plus class="w-4 h-4" />
-				Post New Job
-			</a>
-		</div>
+		<a
+			href="/dashboard/jobs/new/"
+			class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+		>
+			<Plus class="w-4 h-4" />
+			Post New Job
+		</a>
 	</div>
 
 	<!-- Stats Cards -->
@@ -157,60 +124,6 @@
 				</div>
 			</div>
 		{/each}
-	</div>
-
-	<!-- Main Content Grid -->
-	<div class="bg-white rounded-lg border border-gray-200">
-		<div class="p-6 border-b border-gray-200">
-			<div class="flex items-center justify-between">
-				<h2 class="text-lg font-semibold text-gray-900">Recent Applicants</h2>
-				<a href="/dashboard/applicants/" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-					View all
-				</a>
-			</div>
-		</div>
-		{#if recentApplicants.length > 0}
-			<div class="divide-y divide-gray-200">
-				{#each recentApplicants as applicant}
-					<a
-						href="/dashboard/applicants/{applicant.id}/"
-						class="block p-6 hover:bg-gray-50 transition-colors"
-					>
-						<div class="flex items-start justify-between gap-4">
-							<div class="flex items-start gap-4 flex-1 min-w-0">
-								<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-									<Users class="w-5 h-5 text-gray-600" />
-								</div>
-								<div class="flex-1 min-w-0">
-									<p class="font-medium text-gray-900 truncate">{applicant.name}</p>
-									<p class="text-sm text-gray-600 truncate">{applicant.jobTitle}</p>
-									<p class="text-xs text-gray-500 mt-1">{applicant.appliedDate}</p>
-								</div>
-							</div>
-							<span
-								class="px-3 py-1 rounded-full text-xs font-medium flex-shrink-0 {getStatusColor(
-									applicant.status
-								)}"
-							>
-								{applicant.status}
-							</span>
-						</div>
-					</a>
-				{/each}
-			</div>
-		{:else}
-			<div class="p-12 text-center">
-				<Users class="w-12 h-12 text-gray-400 mx-auto mb-3" />
-				<p class="text-gray-600 mb-4">No applications received yet</p>
-				<a
-					href="/dashboard/jobs/new/"
-					class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-				>
-					<Plus class="w-4 h-4" />
-					Post Your First Job
-				</a>
-			</div>
-		{/if}
 	</div>
 
 	<!-- Job Performance -->

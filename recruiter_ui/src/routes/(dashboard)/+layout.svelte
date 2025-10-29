@@ -2,7 +2,6 @@
 	import {
 		LayoutDashboard,
 		Briefcase,
-		Users,
 		Building2,
 		BarChart3,
 		User,
@@ -27,7 +26,6 @@
 	const baseNavItems = [
 		{ href: '/dashboard/', icon: LayoutDashboard, label: 'Dashboard' },
 		{ href: '/dashboard/jobs/', icon: Briefcase, label: 'Jobs' },
-		{ href: '/dashboard/applicants/', icon: Users, label: 'Applicants' },
 		{ href: '/dashboard/analytics/', icon: BarChart3, label: 'Analytics' },
 		{ href: '/dashboard/account/', icon: User, label: 'Account' }
 	];
@@ -40,10 +38,9 @@
 		user?.company ? [
 			baseNavItems[0], // Dashboard
 			baseNavItems[1], // Jobs
-			baseNavItems[2], // Applicants
 			companyNavItem,  // Company (only if user has a company)
-			baseNavItems[3], // Analytics
-			baseNavItems[4]  // Account
+			baseNavItems[2], // Analytics
+			baseNavItems[3]  // Account
 		] : baseNavItems
 	);
 
