@@ -274,10 +274,6 @@ def add_other_functional_area(job_post, data, user):
                         send_email.delay(mto, subject, rendered)
 
 
-def add_other_locations(post, data, user):
-    pass
-    
-
 def add_interview_location(data, job_post, no_of_locations):
     for i in range(1, no_of_locations):
         current_interview_city = "final_location_" + str(i)
@@ -407,8 +403,6 @@ def adding_other_fields_data(data, post, user):
         )
     if "final_functional_area" in data.keys():
         add_other_functional_area(post, json.loads(data["final_functional_area"]), user)
-    if "other_location" in data.keys():
-        add_other_locations(post, data, user)
 
     no_of_locations = int(json.loads(data["no_of_interview_location"])) + 1
     add_interview_location(data, post, no_of_locations)

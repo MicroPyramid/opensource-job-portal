@@ -230,6 +230,48 @@ class City(models.Model):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        """
+        Validate city name to ensure data quality.
+        Added as part of location cleanup initiative (LOCATION_CLEANUP_PLAN.md Phase 1)
+        """
+        from django.core.exceptions import ValidationError
+
+        if not self.name:
+            return
+
+        # Normalize whitespace
+        self.name = ' '.join(self.name.split())
+
+        # Check for multiple cities (commas)
+        if ',' in self.name:
+            raise ValidationError({
+                'name': 'City name cannot contain multiple locations. Please create separate entries for each city.'
+            })
+
+        # Check for special characters (except spaces, hyphens, apostrophes, periods)
+        if re.search(r'[^a-zA-Z\s\-\'\.]', self.name):
+            raise ValidationError({
+                'name': 'City name cannot contain numbers or special characters. Only letters, spaces, hyphens, apostrophes, and periods are allowed.'
+            })
+
+        # Check for excessive length (likely an address)
+        if len(self.name) > 100:
+            raise ValidationError({
+                'name': 'City name is too long (max 100 characters). This appears to be an address rather than a city name.'
+            })
+
+        # Check for patterns that indicate addresses (multiple numbers)
+        if re.search(r'\d+.*\d+', self.name):
+            raise ValidationError({
+                'name': 'City name cannot contain multiple numbers. This appears to be an address rather than a city name.'
+            })
+
+    def save(self, *args, **kwargs):
+        """Override save to run validation"""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def get_job_url(self):
         job_url = "/jobs-in-" + str(self.slug) + "/"
         return job_url
