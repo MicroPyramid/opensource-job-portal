@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		Briefcase,
+		Users,
 		Clock,
 		AlertCircle,
 		Eye,
