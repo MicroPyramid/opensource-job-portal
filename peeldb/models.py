@@ -404,7 +404,7 @@ class Company(models.Model):
 class EducationInstitue(models.Model):
     name = models.CharField(max_length=500)
     address = models.CharField(max_length=2000, default="")
-    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    city = models.ForeignKey(City, on_delete=models.PROTECT, null=True, blank=True)
 
 
 class EmploymentHistory(models.Model):
