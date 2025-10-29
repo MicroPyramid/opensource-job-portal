@@ -50,10 +50,23 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 			applicantsData = await applicantsResponse.json();
 		}
 
+		// Fetch job analytics (30-day period)
+		const analyticsResponse = await fetch(`${API_BASE_URL}/recruiter/jobs/${jobId}/analytics/?period=30d`, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		});
+
+		let analytics = null;
+		if (analyticsResponse.ok) {
+			analytics = await analyticsResponse.json();
+		}
+
 		return {
 			job,
 			applicantsStats: applicantsData.stats,
-			totalApplicants: applicantsData.total_applicants
+			totalApplicants: applicantsData.total_applicants,
+			analytics
 		};
 	} catch (err: any) {
 		console.error('Error loading job details:', err);

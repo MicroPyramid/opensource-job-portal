@@ -1,8 +1,8 @@
 """
-URL routing for Recruiter API (Auth + Team Management + Jobs)
+URL routing for Recruiter API (Auth + Team Management + Jobs + Analytics)
 """
 from django.urls import path
-from . import views, auth_views, job_views
+from . import views, auth_views, job_views, analytics_views
 
 app_name = "recruiter"
 
@@ -53,6 +53,10 @@ urlpatterns = [
     # ===== JOB MANAGEMENT =====
     # Dashboard Stats
     path("dashboard/stats/", job_views.get_dashboard_stats, name="dashboard-stats"),
+
+    # Analytics
+    path("analytics/applications/", analytics_views.get_application_analytics, name="application-analytics"),
+    path("jobs/<int:job_id>/analytics/", analytics_views.get_job_application_analytics, name="job-analytics"),
 
     # Job Form Metadata
     path("jobs/metadata/", job_views.get_job_form_metadata, name="jobs-metadata"),

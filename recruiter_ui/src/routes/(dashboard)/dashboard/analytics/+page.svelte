@@ -1,123 +1,95 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import {
 		TrendingUp,
 		TrendingDown,
-		Eye,
 		Users,
 		Briefcase,
 		Clock,
 		Target,
 		Download,
-		Calendar
+		CheckCircle,
+		UserCheck,
+		XCircle
 	} from '@lucide/svelte';
+	import type { PageData } from './$types';
 
-	let selectedPeriod = $state('30d');
+	export let data: PageData;
+
+	const { analytics, period } = data;
 
 	const periodOptions = [
 		{ value: '7d', label: 'Last 7 days' },
 		{ value: '30d', label: 'Last 30 days' },
-		{ value: '90d', label: 'Last 90 days' },
-		{ value: 'custom', label: 'Custom range' }
+		{ value: '90d', label: 'Last 90 days' }
 	];
 
-	// Mock data
-	const overviewMetrics = [
-		{
-			label: 'Total Job Views',
-			value: '15,234',
-			change: '+12.5%',
-			isPositive: true,
-			icon: Eye
-		},
+	function changePeriod(newPeriod: string) {
+		goto(`/dashboard/analytics/?period=${newPeriod}`);
+	}
+
+	// Build overview metrics from real data
+	$: overviewMetrics = [
 		{
 			label: 'Total Applications',
-			value: '1,248',
-			change: '+8.3%',
-			isPositive: true,
+			value: analytics.overview.total_applications.toLocaleString(),
+			change: analytics.overview.trend,
+			isPositive: analytics.overview.trend.startsWith('+'),
 			icon: Users
 		},
 		{
 			label: 'Active Jobs',
-			value: '12',
-			change: '+2',
+			value: analytics.overview.total_jobs.toString(),
+			change: `${analytics.overview.avg_per_day} apps/day`,
 			isPositive: true,
 			icon: Briefcase
 		},
 		{
-			label: 'Avg. Time to Fill',
-			value: '18 days',
-			change: '-3 days',
+			label: 'Hired',
+			value: analytics.pipeline.hired.toString(),
+			change: `${analytics.pipeline.conversion_rate}% conversion`,
 			isPositive: true,
+			icon: CheckCircle
+		},
+		{
+			label: 'Pending Review',
+			value: analytics.pipeline.pending.toString(),
+			change: 'Need attention',
+			isPositive: false,
 			icon: Clock
 		}
 	];
 
-	const jobPerformance = [
+	// Pipeline metrics with percentages
+	$: pipelineMetrics = [
 		{
-			title: 'Senior Frontend Developer',
-			views: 1240,
-			applications: 45,
-			conversion: 3.6,
-			status: 'Active',
-			daysActive: 15
+			stage: 'New Applications',
+			count: analytics.overview.total_applications,
+			percentage: 100
 		},
 		{
-			title: 'Product Manager',
-			views: 980,
-			applications: 38,
-			conversion: 3.9,
-			status: 'Active',
-			daysActive: 12
+			stage: 'Shortlisted',
+			count: analytics.pipeline.shortlisted,
+			percentage: Math.round((analytics.pipeline.shortlisted / analytics.overview.total_applications) * 100)
 		},
 		{
-			title: 'UI/UX Designer',
-			views: 756,
-			applications: 28,
-			conversion: 3.7,
-			status: 'Active',
-			daysActive: 10
+			stage: 'Hired',
+			count: analytics.pipeline.hired,
+			percentage: Math.round((analytics.pipeline.hired / analytics.overview.total_applications) * 100)
 		},
 		{
-			title: 'Backend Developer',
-			views: 645,
-			applications: 22,
-			conversion: 3.4,
-			status: 'Active',
-			daysActive: 8
-		},
-		{
-			title: 'DevOps Engineer',
-			views: 523,
-			applications: 19,
-			conversion: 3.6,
-			status: 'Active',
-			daysActive: 5
+			stage: 'Rejected',
+			count: analytics.pipeline.rejected,
+			percentage: Math.round((analytics.pipeline.rejected / analytics.overview.total_applications) * 100)
 		}
 	];
 
-	const pipelineMetrics = [
-		{ stage: 'New Applications', count: 248, percentage: 100 },
-		{ stage: 'In Review', count: 186, percentage: 75 },
-		{ stage: 'Shortlisted', count: 92, percentage: 37 },
-		{ stage: 'Interviewed', count: 45, percentage: 18 },
-		{ stage: 'Hired', count: 12, percentage: 5 }
-	];
-
-	const topSources = [
-		{ source: 'Direct Application', count: 512, percentage: 41 },
-		{ source: 'LinkedIn', count: 384, percentage: 31 },
-		{ source: 'Indeed', count: 192, percentage: 15 },
-		{ source: 'Referral', count: 96, percentage: 8 },
-		{ source: 'Other', count: 64, percentage: 5 }
-	];
-
-	const locationInsights = [
-		{ location: 'San Francisco, CA', applicants: 245 },
-		{ location: 'New York, NY', applicants: 198 },
-		{ location: 'Austin, TX', applicants: 156 },
-		{ location: 'Seattle, WA', applicants: 134 },
-		{ location: 'Remote', applicants: 289 }
-	];
+	// Sort peak days
+	const dayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+	$: peakDaysArray = dayOrder.map(day => ({
+		day: day.charAt(0).toUpperCase() + day.slice(1),
+		count: analytics.peak_days[day] || 0
+	}));
 </script>
 
 <svelte:head>
@@ -128,12 +100,13 @@
 	<!-- Header -->
 	<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 		<div>
-			<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Analytics</h1>
+			<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Application Analytics</h1>
 			<p class="text-gray-600 mt-1">Track your hiring performance and insights</p>
 		</div>
 		<div class="flex items-center gap-3">
 			<select
-				bind:value={selectedPeriod}
+				value={period}
+				onchange={(e) => changePeriod(e.currentTarget.value)}
 				class="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 			>
 				{#each periodOptions as option}
@@ -158,14 +131,15 @@
 						<p class="text-sm font-medium text-gray-600">{metric.label}</p>
 						<p class="text-3xl font-bold text-gray-900 mt-2">{metric.value}</p>
 						<div class="flex items-center gap-1 mt-2">
-							{#if metric.isPositive}
+							{#if metric.isPositive && metric.change.includes('%')}
 								<TrendingUp class="w-4 h-4 text-green-600" />
 								<span class="text-sm font-medium text-green-600">{metric.change}</span>
-							{:else}
+							{:else if !metric.isPositive && metric.change.includes('%')}
 								<TrendingDown class="w-4 h-4 text-red-600" />
 								<span class="text-sm font-medium text-red-600">{metric.change}</span>
+							{:else}
+								<span class="text-sm text-gray-600">{metric.change}</span>
 							{/if}
-							<span class="text-sm text-gray-600">vs last period</span>
 						</div>
 					</div>
 					<div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -181,71 +155,77 @@
 		<div class="p-6 border-b border-gray-200">
 			<h2 class="text-lg font-semibold text-gray-900">Job Performance</h2>
 		</div>
-		<div class="overflow-x-auto">
-			<table class="w-full">
-				<thead class="bg-gray-50 border-b border-gray-200">
-					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Job Title
-						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Views
-						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Applications
-						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Conversion Rate
-						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Days Active
-						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-							Status
-						</th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-gray-200">
-					{#each jobPerformance as job}
-						<tr class="hover:bg-gray-50">
-							<td class="px-6 py-4 text-sm font-medium text-gray-900">{job.title}</td>
-							<td class="px-6 py-4 text-sm text-gray-600">
-								<div class="flex items-center gap-2">
-									<Eye class="w-4 h-4 text-gray-400" />
-									{job.views.toLocaleString()}
-								</div>
-							</td>
-							<td class="px-6 py-4 text-sm text-gray-600">
-								<div class="flex items-center gap-2">
-									<Users class="w-4 h-4 text-gray-400" />
-									{job.applications}
-								</div>
-							</td>
-							<td class="px-6 py-4 text-sm text-gray-600">
-								<div class="flex items-center gap-2">
-									<Target class="w-4 h-4 text-green-600" />
-									{job.conversion}%
-								</div>
-							</td>
-							<td class="px-6 py-4 text-sm text-gray-600">
-								<div class="flex items-center gap-2">
-									<Calendar class="w-4 h-4 text-gray-400" />
-									{job.daysActive} days
-								</div>
-							</td>
-							<td class="px-6 py-4">
-								<span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-									{job.status}
-								</span>
-							</td>
+		{#if analytics.job_performance.length > 0}
+			<div class="overflow-x-auto">
+				<table class="w-full">
+					<thead class="bg-gray-50 border-b border-gray-200">
+						<tr>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Job Title
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Applications
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Pending
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Shortlisted
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Hired
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Conversion
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Avg/Day
+							</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+					</thead>
+					<tbody class="divide-y divide-gray-200">
+						{#each analytics.job_performance as job}
+							<tr class="hover:bg-gray-50">
+								<td class="px-6 py-4">
+									<a href="/dashboard/jobs/{job.job_id}/" class="text-sm font-medium text-blue-600 hover:text-blue-700">
+										{job.job_title}
+									</a>
+								</td>
+								<td class="px-6 py-4 text-sm text-gray-900 font-medium">
+									{job.total_applications}
+								</td>
+								<td class="px-6 py-4 text-sm text-gray-600">
+									{job.pending}
+								</td>
+								<td class="px-6 py-4 text-sm text-gray-600">
+									{job.shortlisted}
+								</td>
+								<td class="px-6 py-4 text-sm text-green-600 font-medium">
+									{job.hired}
+								</td>
+								<td class="px-6 py-4 text-sm">
+									<div class="flex items-center gap-2">
+										<Target class="w-4 h-4 text-green-600" />
+										{job.conversion_rate}%
+									</div>
+								</td>
+								<td class="px-6 py-4 text-sm text-gray-600">
+									{job.avg_applications_per_day}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{:else}
+			<div class="p-12 text-center">
+				<Briefcase class="w-12 h-12 text-gray-400 mx-auto mb-3" />
+				<p class="text-gray-600">No active jobs in this period</p>
+			</div>
+		{/if}
 	</div>
 
-	<!-- Pipeline & Sources Grid -->
+	<!-- Pipeline & Peak Days Grid -->
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 		<!-- Application Pipeline -->
 		<div class="bg-white rounded-lg border border-gray-200">
@@ -266,58 +246,37 @@
 									style="width: {stage.percentage}%"
 								></div>
 							</div>
-							<div class="text-xs text-gray-500 mt-1">{stage.percentage}% conversion</div>
+							<div class="text-xs text-gray-500 mt-1">{stage.percentage}% of total</div>
 						</div>
 					{/each}
 				</div>
 			</div>
 		</div>
 
-		<!-- Top Sources -->
+		<!-- Peak Days -->
 		<div class="bg-white rounded-lg border border-gray-200">
 			<div class="p-6 border-b border-gray-200">
-				<h2 class="text-lg font-semibold text-gray-900">Application Sources</h2>
+				<h2 class="text-lg font-semibold text-gray-900">Applications by Day of Week</h2>
 			</div>
 			<div class="p-6">
 				<div class="space-y-4">
-					{#each topSources as source}
+					{#each peakDaysArray as day}
+						{@const maxCount = Math.max(...peakDaysArray.map(d => d.count))}
+						{@const percentage = maxCount > 0 ? (day.count / maxCount) * 100 : 0}
 						<div>
 							<div class="flex items-center justify-between mb-2">
-								<span class="text-sm font-medium text-gray-900">{source.source}</span>
-								<span class="text-sm text-gray-600">{source.count}</span>
+								<span class="text-sm font-medium text-gray-900">{day.day}</span>
+								<span class="text-sm text-gray-600">{day.count}</span>
 							</div>
 							<div class="w-full bg-gray-200 rounded-full h-2">
 								<div
 									class="bg-green-600 h-2 rounded-full transition-all"
-									style="width: {source.percentage}%"
+									style="width: {percentage}%"
 								></div>
 							</div>
-							<div class="text-xs text-gray-500 mt-1">{source.percentage}%</div>
 						</div>
 					{/each}
 				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Location Insights -->
-	<div class="bg-white rounded-lg border border-gray-200">
-		<div class="p-6 border-b border-gray-200">
-			<h2 class="text-lg font-semibold text-gray-900">Top Applicant Locations</h2>
-		</div>
-		<div class="p-6">
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-				{#each locationInsights as location}
-					<div class="text-center">
-						<div
-							class="w-20 h-20 mx-auto rounded-full bg-blue-100 flex items-center justify-center mb-3"
-						>
-							<span class="text-2xl font-bold text-blue-600">{location.applicants}</span>
-						</div>
-						<p class="text-sm font-medium text-gray-900">{location.location}</p>
-						<p class="text-xs text-gray-600 mt-1">applicants</p>
-					</div>
-				{/each}
 			</div>
 		</div>
 	</div>
@@ -329,53 +288,61 @@
 		</div>
 		<div class="p-6">
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-				<div class="flex gap-4">
-					<div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
-						<TrendingUp class="w-6 h-6 text-green-600" />
+				{#if analytics.pipeline.pending > 0}
+					<div class="flex gap-4">
+						<div class="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+							<Clock class="w-6 h-6 text-orange-600" />
+						</div>
+						<div>
+							<h3 class="font-semibold text-gray-900 mb-1">Action Required</h3>
+							<p class="text-sm text-gray-600">
+								{analytics.pipeline.pending} applications are pending review.
+							</p>
+						</div>
 					</div>
-					<div>
-						<h3 class="font-semibold text-gray-900 mb-1">Strong Application Rate</h3>
-						<p class="text-sm text-gray-600">
-							Your jobs are receiving 23% more applications than the industry average.
-						</p>
-					</div>
-				</div>
+				{/if}
 
-				<div class="flex gap-4">
-					<div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-						<Target class="w-6 h-6 text-blue-600" />
+				{#if analytics.pipeline.conversion_rate > 3}
+					<div class="flex gap-4">
+						<div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+							<Target class="w-6 h-6 text-green-600" />
+						</div>
+						<div>
+							<h3 class="font-semibold text-gray-900 mb-1">Strong Conversion Rate</h3>
+							<p class="text-sm text-gray-600">
+								{analytics.pipeline.conversion_rate}% conversion rate from applications to hires.
+							</p>
+						</div>
 					</div>
-					<div>
-						<h3 class="font-semibold text-gray-900 mb-1">High Conversion Rate</h3>
-						<p class="text-sm text-gray-600">
-							3.7% average conversion rate from views to applications is above average.
-						</p>
-					</div>
-				</div>
+				{/if}
 
-				<div class="flex gap-4">
-					<div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-						<Users class="w-6 h-6 text-purple-600" />
+				{#if analytics.overview.avg_per_day > 0}
+					<div class="flex gap-4">
+						<div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+							<TrendingUp class="w-6 h-6 text-blue-600" />
+						</div>
+						<div>
+							<h3 class="font-semibold text-gray-900 mb-1">Application Velocity</h3>
+							<p class="text-sm text-gray-600">
+								Receiving an average of {analytics.overview.avg_per_day} applications per day.
+							</p>
+						</div>
 					</div>
-					<div>
-						<h3 class="font-semibold text-gray-900 mb-1">Remote Popularity</h3>
-						<p class="text-sm text-gray-600">
-							Remote positions receive 45% more applications than on-site roles.
-						</p>
-					</div>
-				</div>
+				{/if}
 
-				<div class="flex gap-4">
-					<div class="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
-						<Clock class="w-6 h-6 text-orange-600" />
+				{#if analytics.pipeline.shortlisted > 0}
+					<div class="flex gap-4">
+						<div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+							<UserCheck class="w-6 h-6 text-purple-600" />
+						</div>
+						<div>
+							<h3 class="font-semibold text-gray-900 mb-1">Active Pipeline</h3>
+							<p class="text-sm text-gray-600">
+								{analytics.pipeline.shortlisted} qualified candidates in your pipeline.
+							</p>
+						</div>
 					</div>
-					<div>
-						<h3 class="font-semibold text-gray-900 mb-1">Quick Response Needed</h3>
-						<p class="text-sm text-gray-600">
-							18 applications are pending review for more than 48 hours.
-						</p>
-					</div>
-				</div>
+				{/if}
 			</div>
 		</div>
 	</div>

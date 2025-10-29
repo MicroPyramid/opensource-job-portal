@@ -13,7 +13,9 @@
 		Mail,
 		Edit,
 		Share2,
-		ExternalLink
+		ExternalLink,
+		TrendingUp,
+		Target
 	} from '@lucide/svelte';
 
 	let { data } = $props();
@@ -123,6 +125,43 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Analytics Section (30-day period) -->
+	{#if data.analytics}
+		<div class="bg-white rounded-lg border border-gray-200 p-6">
+			<h2 class="text-lg font-semibold text-gray-900 mb-4">Application Analytics (Last 30 Days)</h2>
+			<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+				<div class="text-center">
+					<div class="text-2xl font-bold text-blue-600">{data.analytics.metrics.total_applications}</div>
+					<div class="text-sm text-gray-600 mt-1">Total Applications</div>
+				</div>
+				<div class="text-center">
+					<div class="text-2xl font-bold text-purple-600">{data.analytics.pipeline.pending}</div>
+					<div class="text-sm text-gray-600 mt-1">Pending Review</div>
+				</div>
+				<div class="text-center">
+					<div class="text-2xl font-bold text-green-600">{data.analytics.pipeline.hired}</div>
+					<div class="text-sm text-gray-600 mt-1">Hired</div>
+				</div>
+				<div class="text-center">
+					<div class="flex items-center justify-center gap-1">
+						<Target class="w-5 h-5 text-green-600" />
+						<div class="text-2xl font-bold text-green-600">{data.analytics.pipeline.conversion_rate}%</div>
+					</div>
+					<div class="text-sm text-gray-600 mt-1">Conversion Rate</div>
+				</div>
+			</div>
+
+			{#if data.analytics.metrics.avg_per_day > 0}
+				<div class="mt-4 pt-4 border-t border-gray-200">
+					<div class="flex items-center justify-center gap-2 text-sm text-gray-600">
+						<TrendingUp class="w-4 h-4 text-blue-600" />
+						<span>Average <span class="font-semibold text-gray-900">{data.analytics.metrics.avg_per_day}</span> applications per day</span>
+					</div>
+				</div>
+			{/if}
+		</div>
+	{/if}
 
 	<!-- Action Buttons -->
 	<div class="flex flex-wrap gap-3">

@@ -4,28 +4,17 @@
 		Users,
 		Clock,
 		AlertCircle,
-		Eye,
 		FileText,
-		Plus
+		Plus,
+		TrendingUp,
+		TrendingDown,
+		CheckCircle
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
 
-	// Helper function to format relative time
-	function getRelativeTime(dateString: string): string {
-		const date = new Date(dateString);
-		const now = new Date();
-		const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-		if (diffInSeconds < 60) return 'Just now';
-		if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-		if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-		if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-		return date.toLocaleDateString();
-	}
-
-	// Build stats array from API data
+	// Build stats array with NEW metrics
 	$: stats = data.stats
 		? [
 				{
@@ -39,32 +28,34 @@
 					label: 'Total Applicants',
 					value: data.stats.total_applicants.toString(),
 					icon: Users,
-					trend: 'All time',
-					trendPositive: true
+					trend: `${data.stats.new_applicants} new (30d)`,
+					trendPositive: true,
+					change: data.stats.applicants_trend
 				},
 				{
-					label: 'Draft Jobs',
-					value: data.stats.draft_jobs.toString(),
+					label: 'Pending Review',
+					value: data.pipeline ? data.pipeline.pending.toString() : '0',
 					icon: Clock,
-					trend: 'Ready to publish',
+					trend: 'Need action',
 					trendPositive: false
 				},
 				{
-					label: 'Closed Jobs',
-					value: data.stats.closed_jobs.toString(),
-					icon: AlertCircle,
-					trend: `${data.stats.expired_jobs} expired`,
-					trendPositive: false
+					label: 'Hired',
+					value: data.pipeline ? data.pipeline.hired.toString() : '0',
+					icon: CheckCircle,
+					trend: data.pipeline ? `${data.pipeline.conversion_rate}% conversion` : '0%',
+					trendPositive: true
 				}
 			]
 		: [];
 
-	// Map recent jobs data to top jobs format
+	// Map recent jobs with new fields
 	$: topJobs = (data.recentJobs || []).map((job: any) => ({
 		id: job.id,
 		title: job.title,
-		views: 0, // Views tracking not implemented yet
 		applications: job.applicants_count || 0,
+		newApplications: job.new_applicants || 0,
+		pendingReview: job.pending_review || 0,
 		status: job.status
 	}));
 
@@ -107,19 +98,25 @@
 					<div class="flex-1">
 						<p class="text-sm font-medium text-gray-600">{stat.label}</p>
 						<p class="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-						<p
-							class="text-xs mt-2 {stat.trendPositive
-								? 'text-green-600'
-								: 'text-orange-600'} font-medium"
-						>
-							{stat.trend}
-						</p>
+						<div class="flex items-center gap-1 mt-2">
+							{#if stat.change}
+								{#if stat.change.startsWith('+')}
+									<TrendingUp class="w-4 h-4 text-green-600" />
+									<span class="text-xs font-medium text-green-600">{stat.change}</span>
+								{:else if stat.change.startsWith('-')}
+									<TrendingDown class="w-4 h-4 text-red-600" />
+									<span class="text-xs font-medium text-red-600">{stat.change}</span>
+								{:else}
+									<span class="text-xs font-medium text-gray-600">{stat.change}</span>
+								{/if}
+							{:else}
+								<p class="text-xs {stat.trendPositive ? 'text-green-600' : 'text-orange-600'} font-medium">
+									{stat.trend}
+								</p>
+							{/if}
+						</div>
 					</div>
-					<div
-						class="w-12 h-12 rounded-lg {stat.trendPositive
-							? 'bg-blue-100'
-							: 'bg-orange-100'} flex items-center justify-center"
-					>
+					<div class="w-12 h-12 rounded-lg {stat.trendPositive ? 'bg-blue-100' : 'bg-orange-100'} flex items-center justify-center">
 						<stat.icon class="w-6 h-6 {stat.trendPositive ? 'text-blue-600' : 'text-orange-600'}" />
 					</div>
 				</div>
@@ -127,7 +124,32 @@
 		{/each}
 	</div>
 
-	<!-- Job Performance -->
+	<!-- Hiring Pipeline Overview -->
+	{#if data.pipeline}
+		<div class="bg-white rounded-lg border border-gray-200 p-6">
+			<h2 class="text-lg font-semibold text-gray-900 mb-4">Hiring Pipeline</h2>
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<div class="text-center">
+					<div class="text-3xl font-bold text-blue-600">{data.pipeline.pending}</div>
+					<div class="text-sm text-gray-600 mt-1">Pending Review</div>
+				</div>
+				<div class="text-center">
+					<div class="text-3xl font-bold text-purple-600">{data.pipeline.shortlisted}</div>
+					<div class="text-sm text-gray-600 mt-1">Shortlisted</div>
+				</div>
+				<div class="text-center">
+					<div class="text-3xl font-bold text-green-600">{data.pipeline.hired}</div>
+					<div class="text-sm text-gray-600 mt-1">Hired</div>
+				</div>
+				<div class="text-center">
+					<div class="text-3xl font-bold text-gray-600">{data.pipeline.rejected}</div>
+					<div class="text-sm text-gray-600 mt-1">Rejected</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<!-- Recent Jobs -->
 	<div class="bg-white rounded-lg border border-gray-200">
 		<div class="p-6 border-b border-gray-200">
 			<div class="flex items-center justify-between">
@@ -146,10 +168,13 @@
 								Job Title
 							</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Views
+								Applications
 							</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Applications
+								New (7d)
+							</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Pending
 							</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								Status
@@ -166,15 +191,29 @@
 								</td>
 								<td class="px-6 py-4 text-sm text-gray-600">
 									<div class="flex items-center gap-2">
-										<Eye class="w-4 h-4 text-gray-400" />
-										<span class="text-gray-400">Coming soon</span>
-									</div>
-								</td>
-								<td class="px-6 py-4 text-sm text-gray-600">
-									<div class="flex items-center gap-2">
 										<FileText class="w-4 h-4 text-gray-400" />
 										{job.applications}
 									</div>
+								</td>
+								<td class="px-6 py-4 text-sm">
+									{#if job.newApplications > 0}
+										<span class="inline-flex items-center gap-1 text-green-600 font-medium">
+											<TrendingUp class="w-4 h-4" />
+											{job.newApplications}
+										</span>
+									{:else}
+										<span class="text-gray-400">-</span>
+									{/if}
+								</td>
+								<td class="px-6 py-4 text-sm">
+									{#if job.pendingReview > 0}
+										<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-100 text-orange-800 font-medium">
+											<Clock class="w-3 h-3" />
+											{job.pendingReview}
+										</span>
+									{:else}
+										<span class="text-gray-400">-</span>
+									{/if}
 								</td>
 								<td class="px-6 py-4 text-sm">
 									<span class="px-3 py-1 rounded-full text-xs font-medium {getJobStatusColor(job.status)}">

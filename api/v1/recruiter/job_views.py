@@ -399,34 +399,101 @@ def get_job_applicants(request, job_id):
 @extend_schema(
     tags=["Recruiter - Jobs"],
     summary="Get Dashboard Stats",
-    description="Get overall statistics for recruiter's jobs",
+    description="Get overall statistics for recruiter's jobs with application pipeline metrics",
+    parameters=[
+        OpenApiParameter('period', OpenApiTypes.STR, description='Time period for trend calculation: 7d, 30d, 90d (default: 30d)'),
+    ],
 )
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_dashboard_stats(request):
-    """Get dashboard statistics for recruiter"""
+    """Get dashboard statistics for recruiter with application analytics"""
     user = request.user
+    period = request.GET.get('period', '30d')
+
+    # Parse period
+    if period == '7d':
+        days = 7
+    elif period == '90d':
+        days = 90
+    else:
+        days = 30
+
+    from datetime import timedelta
+    start_date = timezone.now() - timedelta(days=days)
+    prev_start_date = start_date - timedelta(days=days)
 
     jobs = JobPost.objects.filter(user=user)
 
-    # Calculate stats
+    # Basic stats
     total_jobs = jobs.count()
     live_jobs = jobs.filter(status='Live').count()
     draft_jobs = jobs.filter(status='Draft').count()
     closed_jobs = jobs.filter(status='Disabled').count()
     expired_jobs = jobs.filter(status='Expired').count()
 
-    # Total applicants across all jobs
-    total_applicants = AppliedJobs.objects.filter(job_post__user=user).count()
+    # Application stats
+    all_applicants = AppliedJobs.objects.filter(job_post__user=user)
+    total_applicants = all_applicants.count()
 
-    # Total views - TODO: Implement proper analytics tracking
-    total_views = 0
+    # NEW: Applications in current period
+    new_applicants = all_applicants.filter(
+        applied_on__gte=start_date
+    ).count()
 
-    # Recent jobs (last 5)
+    # NEW: Applications in previous period (for trend)
+    prev_applicants = all_applicants.filter(
+        applied_on__gte=prev_start_date,
+        applied_on__lt=start_date
+    ).count()
+
+    # Calculate trend
+    if prev_applicants > 0:
+        trend_pct = ((new_applicants - prev_applicants) / prev_applicants) * 100
+        applicants_trend = f"{'+' if trend_pct > 0 else ''}{trend_pct:.1f}%"
+    else:
+        applicants_trend = "N/A"
+
+    # NEW: Pipeline metrics
+    pipeline = {
+        'pending': all_applicants.filter(status='Pending').count(),
+        'shortlisted': all_applicants.filter(status='Shortlisted').count(),
+        'hired': all_applicants.filter(status='Hired').count(),
+        'rejected': all_applicants.filter(status='Rejected').count(),
+    }
+
+    # Conversion rate
+    if total_applicants > 0:
+        pipeline['conversion_rate'] = round(
+            (pipeline['hired'] / total_applicants) * 100, 2
+        )
+    else:
+        pipeline['conversion_rate'] = 0
+
+    # Average applications per live job
+    avg_applications_per_job = (
+        total_applicants / live_jobs if live_jobs > 0 else 0
+    )
+
+    # Recent jobs with enhanced data
     recent_jobs = jobs.order_by('-created_on')[:5]
-    recent_jobs_data = RecruiterJobListSerializer(
-        recent_jobs, many=True, context={'request': request}
-    ).data
+    recent_jobs_data = []
+
+    for job in recent_jobs:
+        job_data = RecruiterJobListSerializer(
+            job, context={'request': request}
+        ).data
+
+        # Add new application metrics
+        job_applicants = AppliedJobs.objects.filter(job_post=job)
+        new_apps_7d = job_applicants.filter(
+            applied_on__gte=timezone.now() - timedelta(days=7)
+        ).count()
+
+        job_data['new_applicants'] = new_apps_7d
+        job_data['pending_review'] = job_applicants.filter(status='Pending').count()
+
+        recent_jobs_data.append(job_data)
 
     return Response({
         "stats": {
@@ -436,8 +503,11 @@ def get_dashboard_stats(request):
             "closed_jobs": closed_jobs,
             "expired_jobs": expired_jobs,
             "total_applicants": total_applicants,
-            "total_views": total_views,
+            "new_applicants": new_applicants,
+            "applicants_trend": applicants_trend,
+            "avg_applications_per_job": round(avg_applications_per_job, 1),
         },
+        "pipeline": pipeline,
         "recent_jobs": recent_jobs_data
     })
 
