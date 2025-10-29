@@ -1352,7 +1352,6 @@ class JobPost(models.Model):
     )
     min_salary = models.IntegerField(default=0)
     max_salary = models.IntegerField(default=0)
-    last_date = models.DateField(null=True)
     published_on = models.DateTimeField(null=True, blank=True)
     created_on = models.DateField(auto_now_add=True)
     status = models.CharField(choices=POST_STATUS, max_length=50)
@@ -1559,6 +1558,30 @@ class JobPost(models.Model):
     def get_all_applied_users_count(self):
         return AppliedJobs.objects.filter(job_post=self).count()
 
+    def can_accept_applications(self):
+        """
+        Check if this job post can still accept applications.
+        Jobs can only accept applications if:
+        1. Status is 'Live'
+        2. Published within the last 30 days (or configured max age)
+        """
+        from django.conf import settings
+        from datetime import timedelta
+
+        # Only Live jobs can accept applications
+        if self.status != 'Live':
+            return False
+
+        # Must have a published_on date
+        if not self.published_on:
+            return False
+
+        # Check if within application acceptance period (default 30 days)
+        max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+        age = timezone.now() - self.published_on
+
+        return age.days < max_age_days
+
     def get_selected_users(self):
         return AppliedJobs.objects.filter(job_post=self, status="Selected")
 
@@ -1567,15 +1590,6 @@ class JobPost(models.Model):
 
     def get_rejected_users(self):
         return AppliedJobs.objects.filter(job_post=self, status="Rejected")
-
-    def is_expired(self):
-        current_date = datetime.strptime(
-            str(datetime.now().date()), "%Y-%m-%d"
-        ).strftime("%Y-%m-%d")
-        if str(current_date) > str(self.last_date):
-            return True
-        else:
-            return False
 
     def get_content(self):
         return ""
@@ -1593,13 +1607,6 @@ class JobPost(models.Model):
             job_post=self, status="Hired"
         ).distinct()
         return selected_applicants
-
-    def get_post_last_date(self):
-        # today = arrow.utcnow().to('Asia/Calcutta').format('YYYY-MM-DD')
-        current_date = datetime.strptime(str(self.last_date), "%Y-%m-%d").strftime(
-            "%d %b %Y"
-        )
-        return current_date
 
     def get_post_created_date(self):
         # today = arrow.utcnow().to('Asia/Calcutta').format('YYYY-MM-DD')

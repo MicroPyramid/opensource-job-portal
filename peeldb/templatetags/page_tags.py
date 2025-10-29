@@ -706,10 +706,13 @@ def get_related_skills(search_skills):
 
 @register.filter()
 def is_events_created(request, job):
-    """Google Calendar integration removed - only check job last_date"""
-    if not job.last_date or date.today() >= job.last_date:
+    """Google Calendar integration removed - check job expiry using 30-day rule"""
+    from datetime import timedelta
+    if not job.published_on:
         return True
-    return False
+    max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+    expiry_date = job.published_on.date() + timedelta(days=max_age_days)
+    return date.today() >= expiry_date
 
 
 @register.filter()

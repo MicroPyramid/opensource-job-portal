@@ -69,7 +69,6 @@ export interface Job {
   max_month: number;
   fresher: boolean;
   published_on: string;
-  last_date: string | null;
   vacancies: number;
   experience_display: string;
   salary_display: string;
@@ -78,6 +77,7 @@ export interface Job {
   applicants_count: number;
   is_saved: boolean;
   is_applied: boolean;
+  accepts_applications: boolean;
 }
 
 /**

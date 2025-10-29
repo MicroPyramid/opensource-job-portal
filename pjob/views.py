@@ -1112,9 +1112,13 @@ def jobposts_by_date(request, year, month, date, **kwargs):
     import datetime
 
     day = datetime.date(int(year), int(month), int(date))
-    results = JobPost.objects.filter(status="Live", last_date=day).order_by(
-        "-published_on"
-    )
+    # Filter by published_on date instead of removed last_date field
+    results = JobPost.objects.filter(
+        status="Live",
+        published_on__year=int(year),
+        published_on__month=int(month),
+        published_on__day=int(date)
+    ).order_by("-published_on")
     # Google Calendar integration removed
     events = JobPost.objects.none()
     if not results:

@@ -253,7 +253,6 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             self.fields["industry"].required = False
             self.fields["skills"].required = False
             self.fields["functional_area"].required = False
-            self.fields["last_date"].required = False
             # self.fields['code'].required = False
             self.fields["job_role"].required = False
             self.fields["company_description"].required = False
@@ -280,12 +279,10 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             self.fields["industry"].required = False
             self.fields["skills"].required = False
             self.fields["functional_area"].required = False
-            self.fields["last_date"].required = False
             self.fields["job_role"].required = False
             self.fields["company_description"].required = False
 
         if str(kwargs["data"]["job_type"]) in ["internship", "full-time"]:
-            self.fields["last_date"].required = False
             self.fields["edu_qualification"].required = False
 
     def validate_title(self, title):
@@ -306,12 +303,6 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             else:
                 return self.cleaned_data.get("vacancies")
         return self.cleaned_data.get("vacancies")
-
-    def validate_last_date(self):
-        date = self.cleaned_data["last_date"]
-        if str(date) < str(datetime.now().date()):
-            raise serializers.ValidationError("The date cannot be in the past!")
-        return date
 
     def validate_govt_exam_date(self):
         if ("govt_exam_date", "govt_from_date", "govt_to_date") in self.data.keys():

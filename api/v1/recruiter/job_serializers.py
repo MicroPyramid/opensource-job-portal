@@ -19,6 +19,7 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
     time_ago = serializers.SerializerMethodField()
     days_until_expiry = serializers.SerializerMethodField()
     is_expiring_soon = serializers.SerializerMethodField()
+    accepts_applications = serializers.SerializerMethodField()
 
     class Meta:
         model = JobPost
@@ -36,10 +37,10 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
             'vacancies',
             'created_on',
             'published_on',
-            'last_date',
             'time_ago',
             'days_until_expiry',
             'is_expiring_soon',
+            'accepts_applications',
         ]
 
     def get_location_display(self, obj):
@@ -105,16 +106,16 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
             return f"{months}mo ago"
 
     def get_days_until_expiry(self, obj):
-        """Calculate days until job expires"""
-        if not obj.last_date:
+        """Calculate days until job expires (30-day rule from published_on)"""
+        if not obj.published_on:
             return None
 
-        now = timezone.now().date()
-        if obj.last_date < now:
-            return 0
+        from django.conf import settings
+        max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+        age = timezone.now() - obj.published_on
+        days_remaining = max_age_days - age.days
 
-        diff = obj.last_date - now
-        return diff.days
+        return days_remaining if days_remaining >= 0 else 0
 
     def get_is_expiring_soon(self, obj):
         """Check if job is expiring within 7 days"""
@@ -122,6 +123,10 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
         if days is None:
             return False
         return 0 < days <= 7
+
+    def get_accepts_applications(self, obj):
+        """Check if this job post can still accept applications (30-day rule)"""
+        return obj.can_accept_applications()
 
 
 class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
@@ -273,7 +278,6 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
             'max_month',
             'fresher',
             'vacancies',
-            'last_date',
             'company_description',
             'company_address',
             'company_links',
@@ -325,13 +329,6 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
         if max_year > 0 and min_year > max_year:
             raise serializers.ValidationError({
                 'min_year': 'Minimum experience cannot be greater than maximum experience'
-            })
-
-        # Validate last_date is in future
-        last_date = data.get('last_date')
-        if last_date and last_date < timezone.now().date():
-            raise serializers.ValidationError({
-                'last_date': 'Last date must be in the future'
             })
 
         return data

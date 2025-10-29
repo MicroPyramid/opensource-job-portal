@@ -177,17 +177,7 @@
                   <span class="text-gray-900 font-semibold">{{job.published_date|date:"M. d, Y"}}</span>
                 </div>
               </div>
-              {% if job.last_date %}
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                  <i class="fa fa-clock-o text-red-600"></i>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500 block">Apply Before</span>
-                  <span class="text-gray-900 font-semibold">{{ job.last_date }}</span>
-                </div>
-              </div>
-              {% endif %}
+              <!-- last_date field removed - using 30-day expiry rule -->
             </div>
           </div>
 

@@ -262,14 +262,6 @@ def add_interview_location(data, job_post, no_of_locations):
 
 
 def set_other_fields(post, data, user):
-    if data.get("last_date"):
-        last_date = datetime.strptime(data.get("last_date"), "%m/%d/%Y").strftime(
-            "%Y-%m-%d"
-        )
-        post.last_date = last_date
-    else:
-        post.last_date = get_next_month()
-
     post.fresher = data.get("min_year") == 0
     if data.get("visa_required"):
         post.visa_required = True
@@ -310,7 +302,6 @@ def set_other_fields(post, data, user):
         if data.get("walkin_time"):
             post.walkin_time = data.get("walkin_time")
 
-        post.last_date = walkin_to_date
     post.save()
 
     if user.agency_admin or user.has_perm("jobposts_edit"):

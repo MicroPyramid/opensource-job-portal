@@ -85,7 +85,7 @@
         <tr class='job_detail {% if post.status == 'Draft' %}drafted{% elif post.status == 'Pending' %}pending{% elif post.status == 'Published' %}published{% elif post.status == 'Disabled' %}disabled{% elif post.status == 'Expired' %}disabled{% else %}live{% endif %}' data-href='{% url 'recruiter:view' post.id%}'>
         <td><span class="title">{{ post.title }}</span></td>
         <td><span>{%for location in post.location.all %}{{ location.name }} {% if forloop.last %}{% else %},{% endif%}{% empty %} N/A {% endfor %}</span></td>
-        <td><span>{{ post.last_date }}</span></td>
+        <td><!-- last_date field removed - now using 30-day expiry from published_on --></td>
         {% if 'inactive' in request.path %}
         <td><span>{{ post.closed_date }}</span></td>
         {% endif %}

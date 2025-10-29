@@ -279,7 +279,6 @@ function extractJobDataFromForm(formData: FormData): JobCreateData {
 
 		// Other fields
 		vacancies: getNumber('vacancies') || 1,
-		last_date: getString('last_date'),
 
 		// Company details
 		company_description: getString('company_description'),

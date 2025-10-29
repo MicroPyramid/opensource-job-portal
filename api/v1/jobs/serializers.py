@@ -88,6 +88,7 @@ class JobListSerializer(serializers.ModelSerializer):
     applicants_count = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
     is_applied = serializers.SerializerMethodField()
+    accepts_applications = serializers.SerializerMethodField()
 
     class Meta:
         model = JobPost
@@ -110,7 +111,6 @@ class JobListSerializer(serializers.ModelSerializer):
             'max_month',
             'fresher',
             'published_on',
-            'last_date',
             'vacancies',
             'experience_display',
             'salary_display',
@@ -119,6 +119,7 @@ class JobListSerializer(serializers.ModelSerializer):
             'applicants_count',
             'is_saved',
             'is_applied',
+            'accepts_applications',
         ]
 
     def get_company_logo(self, obj):
@@ -224,6 +225,10 @@ class JobListSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return AppliedJobs.objects.filter(job_post=obj, user=request.user).exists()
         return False
+
+    def get_accepts_applications(self, obj):
+        """Check if this job post can still accept applications (30-day rule)"""
+        return obj.can_accept_applications()
 
 
 class JobDetailSerializer(JobListSerializer):

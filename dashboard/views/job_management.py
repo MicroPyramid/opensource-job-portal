@@ -335,9 +335,6 @@ def new_govt_job(request, job_type):
                     request.POST.get("govt_exam_date"), "%m/%d/%Y"
                 ).strftime("%Y-%m-%d")
                 validate_post.govt_exam_date = govt_exam_date
-                validate_post.last_date = govt_exam_date
-            else:
-                validate_post.last_date = govt_to_date
         if request.POST.get("published_date"):
             validate_post.published_date = published_date
         validate_post.published_on = datetime.now()
@@ -362,7 +359,6 @@ def new_govt_job(request, job_type):
             if request.POST.get("walkin_time"):
                 validate_post.walkin_time = request.POST.get("walkin_time")
 
-            validate_post.last_date = walkin_to_date
         if "final_skills" in request.POST.keys():
             add_other_skills(
                 validate_post, json.loads(request.POST["final_skills"]), request.user
@@ -591,10 +587,6 @@ def edit_govt_job(request, post_id):
 
                 post.govt_exam_date = govt_exam_date
 
-                post.last_date = govt_exam_date
-            else:
-                post.last_date = govt_to_date
-
         if request.POST.get("status") == "Pending":
             if request.POST.get("fb_post") == "on":
                 post.post_on_fb = True
@@ -685,7 +677,6 @@ def edit_govt_job(request, post_id):
             if request.POST.get("walkin_time"):
                 post.walkin_time = request.POST.get("walkin_time")
 
-            post.last_date = walkin_to_date
         post.save()
         if post.major_skill and post.major_skill not in post.skills.all():
             post.skills.add(post.major_skill)

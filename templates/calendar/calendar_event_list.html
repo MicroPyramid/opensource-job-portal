@@ -56,12 +56,7 @@
             <span class='content'>{{ event.start_date }}</span>
             </span>
             {% endif %}
-                {% if event.last_date %}
-                    <span class='row mt'>
-            <label>End Date</label>
-            <span class='content'>{{ event.last_date }}</span>
-            </span>
-                {% endif %}
+            <!-- last_date removed -->
                 {% if event.description %}
                     <span class='row mt'>
             <label>Description</label>

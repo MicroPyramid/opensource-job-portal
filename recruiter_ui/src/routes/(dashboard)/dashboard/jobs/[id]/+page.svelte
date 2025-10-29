@@ -321,7 +321,13 @@
 					</div>
 					<div class="flex items-center justify-between">
 						<span class="text-gray-600">Expires</span>
-						<span class="text-gray-900">{formatDate(data.job.last_date)}</span>
+						<span class="text-gray-900">
+						{#if data.job.published_on}
+							{formatDate(new Date(new Date(data.job.published_on).getTime() + 30*24*60*60*1000).toISOString())}
+						{:else}
+							Not available
+						{/if}
+					</span>
 					</div>
 					{#if data.job.days_until_expiry !== null}
 						<div class="flex items-center justify-between">

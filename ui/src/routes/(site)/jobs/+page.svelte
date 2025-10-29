@@ -756,9 +756,16 @@
                   aria-label="View details for {job.title} at {job.company_name}"
                 >
                   <div class="flex-1">
-                    <h3 class="text-xl font-semibold text-blue-600 group-hover:text-blue-700 transition-colors mb-3">
-                      {job.title}
-                    </h3>
+                    <div class="flex items-start gap-3 mb-3">
+                      <h3 class="text-xl font-semibold text-blue-600 group-hover:text-blue-700 transition-colors flex-1">
+                        {job.title}
+                      </h3>
+                      {#if !job.accepts_applications}
+                        <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-md border border-gray-300 flex-shrink-0">
+                          Closed
+                        </span>
+                      {/if}
+                    </div>
 
                     <div class="space-y-2 mb-4">
                       <div class="flex items-center text-gray-700 text-sm">

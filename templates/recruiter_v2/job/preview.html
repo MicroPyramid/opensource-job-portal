@@ -66,12 +66,7 @@
                   <span class="text-sm text-gray-600">Posted:</span>
                   <span class="text-sm text-gray-900">{{ jobpost.published_date|date:"M d, Y" }}</span>
                 </div>
-                {% if jobpost.last_date %}
-                <div class="flex items-center justify-between">
-                  <span class="text-sm text-gray-600">Expires:</span>
-                  <span class="text-sm text-gray-900">{{ jobpost.last_date|date:"M d, Y" }}</span>
-                </div>
-                {% endif %}
+                <!-- last_date removed - using 30-day expiry -->
                 <div class="flex items-center justify-between">
                   <span class="text-sm text-gray-600">Applications:</span>
                   <span class="text-sm font-medium text-blue-600">{{ jobpost.job_applied_users.count }}</span>

@@ -282,7 +282,11 @@
 									{job.time_ago}
 								</td>
 								<td class="px-6 py-4 text-sm text-gray-600">
-									{formatDate(job.last_date)}
+									{#if job.days_until_expiry !== null && job.days_until_expiry !== undefined}
+										{job.days_until_expiry} days left
+									{:else}
+										Expired
+									{/if}
 								</td>
 								<td class="px-6 py-4">
 									<div class="flex items-center gap-4 text-sm">

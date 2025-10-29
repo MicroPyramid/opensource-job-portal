@@ -464,7 +464,6 @@ class JobPostForm(ModelForm):
             # self.fields['company_description'].required = False
             self.fields["industry"].required = False
             self.fields["skills"].required = False
-            self.fields["last_date"].required = False
             # self.fields['code'].required = False
             self.fields["job_role"].required = False
             self.fields["company_description"].required = False
@@ -490,17 +489,14 @@ class JobPostForm(ModelForm):
 
             self.fields["industry"].required = False
             self.fields["skills"].required = False
-            self.fields["last_date"].required = False
             # self.fields['code'].required = False
             self.fields["job_role"].required = False
             self.fields["company_description"].required = False
 
         if str(self.data["job_type"]) == "full-time":
-            self.fields["last_date"].required = False
             self.fields["edu_qualification"].required = False
 
         if str(self.data["job_type"]) == "internship":
-            self.fields["last_date"].required = False
             self.fields["edu_qualification"].required = False
 
     def clean_title(self):
@@ -522,12 +518,6 @@ class JobPostForm(ModelForm):
             else:
                 return self.cleaned_data.get("vacancies")
         return self.cleaned_data.get("vacancies")
-
-    def clean_last_date(self):
-        date = self.cleaned_data["last_date"]
-        if str(date) < str(datetime.now().date()):
-            raise forms.ValidationError("The date cannot be in the past!")
-        return date
 
     def clean_govt_exam_date(self):
         if ("govt_exam_date", "govt_from_date", "govt_to_date") in self.data.keys():

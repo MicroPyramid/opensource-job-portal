@@ -348,6 +348,12 @@ CELERY_BEAT_SCHEDULE = {
             hour="00", minute="20", day_of_week="mon,tue,wed,thu,fri,sat,sun"
         ),
     },
+    "check-expiring-jobs-and-send-notifications": {
+        "task": "dashboard.tasks.check_expiring_jobs",
+        "schedule": crontab(
+            hour="09", minute="00", day_of_week="mon,tue,wed,thu,fri,sat,sun"
+        ),
+    },
 }
 SUPPORT_EMAILS = [
     "ashwin@micropyramid.com",

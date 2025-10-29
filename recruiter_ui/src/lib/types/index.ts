@@ -230,10 +230,10 @@ export interface JobListItem {
 	vacancies: number;
 	created_on: string;
 	published_on?: string;
-	last_date?: string;
 	time_ago: string;
 	days_until_expiry?: number;
 	is_expiring_soon: boolean;
+	accepts_applications: boolean;
 }
 
 export interface LanguageRequirement {
@@ -311,7 +311,6 @@ export interface JobCreateData {
 	max_month?: number;
 	fresher?: boolean;
 	vacancies?: number;
-	last_date?: string;
 	company_description?: string;
 	company_address?: string;
 	company_links?: string;

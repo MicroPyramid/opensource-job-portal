@@ -17,6 +17,7 @@
     Users,
     Award,
     CheckCircle,
+    XCircle,
     ArrowLeft,
     Share2,
     ExternalLink,
@@ -82,6 +83,10 @@
     }
     if (isJobApplied) {
       toast.info('You have already applied for this job');
+      return;
+    }
+    if (!job.accepts_applications) {
+      toast.error('This job is no longer accepting applications');
       return;
     }
     showApplyModal = true;
@@ -187,7 +192,9 @@
     title: job.title,
     description: job.description || `${job.title} at ${job.company_name}`,
     datePosted: job.published_on,
-    validThrough: job.last_date || undefined,
+    validThrough: job.published_on
+      ? new Date(new Date(job.published_on).getTime() + 30*24*60*60*1000).toISOString()
+      : undefined,
     employmentType: job.job_type.toUpperCase().replace('-', '_'),
     hiringOrganization: {
       '@type': 'Organization',
@@ -292,14 +299,19 @@
           <div class="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-gray-100 lg:hidden">
             <button
               onclick={handleApply}
-              disabled={isJobApplied}
+              disabled={isJobApplied || !job.accepts_applications}
               class="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 {isJobApplied
                 ? 'bg-green-50 text-green-700 border border-green-300 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'}"
+                : !job.accepts_applications
+                  ? 'bg-gray-100 text-gray-500 border border-gray-300 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'}"
             >
               {#if isJobApplied}
                 <CheckCircle class="w-5 h-5" />
                 Applied
+              {:else if !job.accepts_applications}
+                <XCircle class="w-5 h-5" />
+                Applications Closed
               {:else}
                 <Send class="w-5 h-5" />
                 Apply Now
@@ -362,6 +374,21 @@
             </div>
           {/if}
         </div>
+
+        <!-- Applications Closed Alert -->
+        {#if !job.accepts_applications}
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+              <XCircle class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 class="font-semibold text-amber-900 mb-1">Applications Closed</h3>
+                <p class="text-sm text-amber-700">
+                  This job posting is no longer accepting new applications. It was published more than 30 days ago.
+                </p>
+              </div>
+            </div>
+          </div>
+        {/if}
 
         <!-- Skills -->
         {#if job.skills && job.skills.length > 0}
@@ -556,23 +583,23 @@
                 {job.applicants_count} applicants
               </div>
             {/if}
-            {#if job.last_date}
-              <div class="text-sm text-amber-600 font-medium">
-                Apply by: {new Date(job.last_date).toLocaleDateString()}
-              </div>
-            {/if}
           </div>
 
           <button
             onclick={handleApply}
-            disabled={isJobApplied}
+            disabled={isJobApplied || !job.accepts_applications}
             class="w-full px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mb-3 {isJobApplied
               ? 'bg-green-50 text-green-700 border border-green-300 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'}"
+              : !job.accepts_applications
+                ? 'bg-gray-100 text-gray-500 border border-gray-300 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'}"
           >
             {#if isJobApplied}
               <CheckCircle class="w-5 h-5" />
               Applied
+            {:else if !job.accepts_applications}
+              <XCircle class="w-5 h-5" />
+              Applications Closed
             {:else}
               <Send class="w-5 h-5" />
               Quick Apply

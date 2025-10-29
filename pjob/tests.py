@@ -71,7 +71,6 @@ class BaseTest(TestCase):
                 published_message="test message",
                 company_address="company address",
                 company_description="company description",
-                last_date=current_date,
             )
             self.interview_location = InterviewLocation.objects.create(
                 venue_details="hyderabad, India",
@@ -96,7 +95,6 @@ class BaseTest(TestCase):
                 published_message="test message",
                 company_address="company address",
                 company_description="company description",
-                last_date=current_date,
             )
             self.interview_location = InterviewLocation.objects.create(
                 venue_details="hyderabad, India",
@@ -123,7 +121,6 @@ class BaseTest(TestCase):
                 published_message="test message",
                 company_address="company address",
                 company_description="company description",
-                last_date=current_date,
             )
             self.interview_location = InterviewLocation.objects.create(
                 venue_details="hyderabad, India",
@@ -148,7 +145,6 @@ class BaseTest(TestCase):
                 published_message="test message",
                 company_address="company address",
                 company_description="company description",
-                last_date=current_date,
             )
             self.interview_location = InterviewLocation.objects.create(
                 venue_details="hyderabad, India",

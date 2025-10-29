@@ -368,6 +368,13 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+        # Check if job can still accept applications (30-day rule)
+        if not job.can_accept_applications():
+            return Response(
+                {'error': 'This job is no longer accepting applications'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         # Check if already applied
         if AppliedJobs.objects.filter(job_post=job, user=request.user).exists():
             return Response(

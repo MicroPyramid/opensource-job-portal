@@ -592,11 +592,7 @@
                   <div class="form_block">
                        <!--input element -->
                       {% if not status == 'walk-in' %}
-                        <div class="input_element row marl_15 date_time">
-                          <label class="col-md-3">Post Validity</label>
-                          <input type="text" class="input col-md-9" id='last_date'
-                          name="last_date">
-                        </div>
+                        <!-- Post Validity field removed - now using 30-day expiry rule -->
                         {% endif %}
                         <!--/input element -->
                         <!--input element -->
@@ -1262,11 +1258,7 @@ $( "select#agency_recruiters" ).select2( { placeholder: "Select A Recruiter" } )
     }
     });
   
-    $( "#last_date" ).datepicker({
-      changeMonth: true,
-      changeYear: true,
-      yearRange: "2015:2050"
-   })
+    
   
     $( "#walkin_from_date" ).datepicker({
       changeMonth: true,
