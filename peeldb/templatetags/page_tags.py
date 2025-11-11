@@ -93,7 +93,11 @@ def get_string(value):
 
 @register.filter
 def get_resume_name(value):
-    resume_name = value.split("/")[-1]
+    if not value:
+        return ""
+    # Convert FieldFile to string using .name attribute
+    file_path = value.name if hasattr(value, 'name') else str(value)
+    resume_name = file_path.split("/")[-1]
     return resume_name
 
 

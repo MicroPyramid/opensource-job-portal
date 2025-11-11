@@ -418,3 +418,77 @@ def remove_team_member(request, user_id):
         "success": True,
         "message": f"{member_name} has been removed from {user.company.name}"
     })
+
+
+@extend_schema(
+    tags=["Company Profile"],
+    summary="Get Company Profile",
+    description="Get detailed company profile for the authenticated recruiter",
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_company_profile(request):
+    """
+    Get company profile details for the authenticated recruiter
+
+    Only accessible to recruiters who are part of a company
+    """
+    user = request.user
+
+    # Check if user is part of a company
+    if not user.company:
+        return Response(
+            {"error": "You are not part of any company"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    from .serializers import CompanyDetailSerializer
+    serializer = CompanyDetailSerializer(user.company, context={'request': request})
+
+    return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Company Profile"],
+    summary="Update Company Profile",
+    description="Update company profile (Admin only)",
+)
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_company_profile(request):
+    """
+    Update company profile details
+
+    Only company admins can update company profile
+    """
+    user = request.user
+
+    # Check if user is company admin
+    if not is_company_admin(user):
+        return Response(
+            {"error": "Only company admins can update company profile"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    from .serializers import CompanyUpdateSerializer, CompanyDetailSerializer
+
+    serializer = CompanyUpdateSerializer(
+        user.company,
+        data=request.data,
+        partial=True,
+        context={'request': request}
+    )
+
+    if serializer.is_valid():
+        serializer.save()
+
+        # Return updated company data
+        result_serializer = CompanyDetailSerializer(user.company, context={'request': request})
+
+        return Response({
+            "success": True,
+            "message": "Company profile updated successfully",
+            "company": result_serializer.data
+        })
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

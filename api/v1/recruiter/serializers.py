@@ -222,3 +222,59 @@ class AcceptInvitationSerializer(serializers.Serializer):
         invitation.accept(user)
 
         return user
+
+
+class CompanyDetailSerializer(serializers.ModelSerializer):
+    """Detailed company information for recruiters"""
+    logo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Company
+        fields = [
+            'id', 'name', 'slug', 'website', 'address', 'profile',
+            'phone_number', 'email', 'size', 'company_type',
+            'profile_pic', 'logo_url', 'registered_date'
+        ]
+        read_only_fields = ['id', 'slug', 'registered_date']
+
+    def get_logo_url(self, obj):
+        """Get company logo URL"""
+        if obj.profile_pic:
+            request = self.context.get('request')
+            if request:
+                try:
+                    return request.build_absolute_uri(obj.profile_pic.url)
+                except:
+                    pass
+        return 'https://cdn.peeljobs.com/static/company_logo.png'
+
+
+class CompanyUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating company profile"""
+
+    class Meta:
+        model = Company
+        fields = [
+            'name', 'website', 'address', 'profile',
+            'phone_number', 'email', 'size', 'profile_pic'
+        ]
+
+    def validate_name(self, value):
+        """Validate company name"""
+        if not value or len(value.strip()) < 2:
+            raise serializers.ValidationError("Company name must be at least 2 characters")
+        return value.strip()
+
+    def validate_website(self, value):
+        """Validate website URL"""
+        if value:
+            value = value.strip()
+            if not value.startswith(('http://', 'https://')):
+                value = 'https://' + value
+        return value
+
+    def validate_email(self, value):
+        """Validate email format"""
+        if value:
+            value = value.strip().lower()
+        return value
