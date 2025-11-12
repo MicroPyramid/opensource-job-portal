@@ -5,6 +5,7 @@
 		Building2,
 		BarChart3,
 		User,
+		Users,
 		Menu,
 		X,
 		LogOut,
@@ -30,8 +31,9 @@
 		{ href: '/dashboard/account/', icon: User, label: 'Account' }
 	];
 
-	// Company nav item (only for users with a company)
+	// Company-specific nav items (only for users with a company)
 	const companyNavItem = { href: '/dashboard/company/', icon: Building2, label: 'Company' };
+	const teamNavItem = { href: '/dashboard/team/', icon: Users, label: 'Team' };
 
 	// Compute final nav items based on user's company status
 	let navItems = $derived(
@@ -39,6 +41,7 @@
 			baseNavItems[0], // Dashboard
 			baseNavItems[1], // Jobs
 			companyNavItem,  // Company (only if user has a company)
+			teamNavItem,     // Team (only if user has a company)
 			baseNavItems[2], // Analytics
 			baseNavItems[3]  // Account
 		] : baseNavItems

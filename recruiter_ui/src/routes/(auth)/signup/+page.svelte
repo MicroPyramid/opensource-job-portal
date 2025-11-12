@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { Building2, Mail, Lock, User, Phone, Eye, EyeOff, UserCircle, Globe } from '@lucide/svelte';
+	import { Building2, Mail, Lock, User, Phone, Eye, EyeOff, UserCircle, Globe, Users } from '@lucide/svelte';
 	import { getContext } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { register } from '$lib/api/auth';
+	import { page } from '$app/stores';
+	import { register, acceptInvitation } from '$lib/api/auth';
 	import type { RegisterData } from '$lib/types';
 
 	type AuthLayoutContext = {
@@ -14,8 +15,12 @@
 	layout.containerClass = 'max-w-6xl';
 	layout.mainClass = 'flex justify-center items-start py-2 px-4 sm:px-5 lg:px-6';
 
-	let step = $state(0); // Start at 0 for account type selection
-	let userType = $state<'recruiter' | 'company' | null>(null);
+	// Check for invitation token in URL
+	let invitationToken = $state($page.url.searchParams.get('invitation') || '');
+	let isInvitationFlow = $derived(!!invitationToken);
+
+	let step = $state(isInvitationFlow ? 1 : 0); // Skip account type selection for invitations
+	let userType = $state<'recruiter' | 'company' | null>(isInvitationFlow ? 'company' : null);
 	let showPassword = $state(false);
 	let showConfirmPassword = $state(false);
 	let loading = $state(false);
@@ -77,9 +82,12 @@
 	}
 
 	function nextStep() {
+		// For invitation: steps are 1 (personal info) -> 2 (password)
 		// For company: steps are 1 (company info) -> 2 (personal info) -> 3 (account)
 		// For recruiter: steps are 1 (personal info) -> 2 (account)
-		if (userType === 'company') {
+		if (isInvitationFlow) {
+			if (step < 2) step++;
+		} else if (userType === 'company') {
 			if (step < 3) step++;
 		} else {
 			if (step < 2) step++;
@@ -101,47 +109,70 @@
 		error = '';
 
 		try {
-			// Map company size to API format
-			const sizeMap: Record<string, string> = {
-				'1-10 employees': '1-10',
-				'11-50 employees': '11-20',
-				'51-200 employees': '50-200',
-				'201-500 employees': '200+',
-				'501-1000 employees': '200+',
-				'1001-5000 employees': '200+',
-				'5000+ employees': '200+'
-			};
+			// If invitation flow, use accept-invitation endpoint
+			if (isInvitationFlow) {
+				const inviteData = {
+					token: invitationToken,
+					first_name: formData.firstName,
+					last_name: formData.lastName,
+					password: formData.password,
+					confirm_password: formData.confirmPassword
+				};
 
-			const data: RegisterData = {
-				account_type: formData.accountType,
-				first_name: formData.firstName,
-				last_name: formData.lastName,
-				email: formData.email,
-				phone: formData.phone || undefined,
-				job_title: formData.jobTitle || undefined,
-				password: formData.password,
-				confirm_password: formData.confirmPassword,
-				agree_to_terms: formData.agreeToTerms
-			};
+				console.log('Accepting invitation...', inviteData);
+				const response = await acceptInvitation(inviteData);
 
-			// Add company fields if company type
-			if (formData.accountType === 'company') {
-				data.company_name = formData.companyName;
-				data.company_website = formData.website;
-				data.company_industry = formData.industry || undefined;
-				data.company_size = sizeMap[formData.companySize] as any;
+				console.log('Invitation accepted:', response);
+				success = true;
+
+				// Redirect to dashboard after successful invitation acceptance
+				setTimeout(() => {
+					goto('/dashboard/');
+				}, 2000);
+			} else {
+				// Normal registration flow
+				// Map company size to API format
+				const sizeMap: Record<string, string> = {
+					'1-10 employees': '1-10',
+					'11-50 employees': '11-20',
+					'51-200 employees': '50-200',
+					'201-500 employees': '200+',
+					'501-1000 employees': '200+',
+					'1001-5000 employees': '200+',
+					'5000+ employees': '200+'
+				};
+
+				const data: RegisterData = {
+					account_type: formData.accountType,
+					first_name: formData.firstName,
+					last_name: formData.lastName,
+					email: formData.email,
+					phone: formData.phone || undefined,
+					job_title: formData.jobTitle || undefined,
+					password: formData.password,
+					confirm_password: formData.confirmPassword,
+					agree_to_terms: formData.agreeToTerms
+				};
+
+				// Add company fields if company type
+				if (formData.accountType === 'company') {
+					data.company_name = formData.companyName;
+					data.company_website = formData.website;
+					data.company_industry = formData.industry || undefined;
+					data.company_size = sizeMap[formData.companySize] as any;
+				}
+
+				console.log('Registering...', data);
+				const response = await register(data);
+
+				console.log('Registration successful:', response);
+				success = true;
+
+				// Show success message and redirect to verify email page
+				setTimeout(() => {
+					goto('/verify-email?email=' + encodeURIComponent(formData.email));
+				}, 2000);
 			}
-
-			console.log('Registering...', data);
-			const response = await register(data);
-
-			console.log('Registration successful:', response);
-			success = true;
-
-			// Show success message and redirect to verify email page
-			setTimeout(() => {
-				goto('/verify-email?email=' + encodeURIComponent(formData.email));
-			}, 2000);
 		} catch (err: any) {
 			console.error('Registration error:', err);
 			error = err.message || 'Registration failed. Please try again.';
@@ -265,15 +296,24 @@
 			<div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
 	<!-- Header -->
 	<div class="text-center mb-6">
-		<h1 class="text-2xl font-bold text-gray-900">Create Employer Account</h1>
-		<p class="text-gray-600 mt-2">Start hiring top talent today</p>
+		{#if isInvitationFlow}
+			<div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg mb-4">
+				<Users class="w-5 h-5" />
+				<span class="text-sm font-medium">Team Invitation</span>
+			</div>
+			<h1 class="text-2xl font-bold text-gray-900">Join Your Team</h1>
+			<p class="text-gray-600 mt-2">Complete your profile to join your company's team</p>
+		{:else}
+			<h1 class="text-2xl font-bold text-gray-900">Create Employer Account</h1>
+			<p class="text-gray-600 mt-2">Start hiring top talent today</p>
+		{/if}
 	</div>
 
 	{#if step > 0}
 		<!-- Progress Indicator -->
 		<div class="flex items-center justify-center mb-5">
 			<div class="flex items-center">
-				{#if userType === 'company'}
+				{#if userType === 'company' && !isInvitationFlow}
 					<!-- Company: 3 steps -->
 					<div
 						class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm {step >=
@@ -302,7 +342,7 @@
 						3
 					</div>
 				{:else}
-					<!-- Recruiter: 2 steps -->
+					<!-- Recruiter/Invitation: 2 steps -->
 					<div
 						class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm {step >=
 						1
@@ -332,20 +372,26 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
 				</svg>
 			</div>
-			<h2 class="text-xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
-			<p class="text-gray-600 mb-4">Please check your email ({formData.email}) for a verification link.</p>
-			<p class="text-sm text-gray-500">Redirecting to verification page...</p>
+			{#if isInvitationFlow}
+				<h2 class="text-xl font-bold text-gray-900 mb-2">Welcome to the Team!</h2>
+				<p class="text-gray-600 mb-4">Your account has been created successfully.</p>
+				<p class="text-sm text-gray-500">Redirecting to dashboard...</p>
+			{:else}
+				<h2 class="text-xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
+				<p class="text-gray-600 mb-4">Please check your email ({formData.email}) for a verification link.</p>
+				<p class="text-sm text-gray-500">Redirecting to verification page...</p>
+			{/if}
 		</div>
 	{:else}
-		<form onsubmit={(e) => { e.preventDefault(); if ((userType === 'company' && step === 3) || (userType === 'recruiter' && step === 2)) handleSubmit(); else nextStep(); }} class="space-y-5">
+		<form onsubmit={(e) => { e.preventDefault(); if ((userType === 'company' && step === 3) || (userType === 'recruiter' && step === 2) || (isInvitationFlow && step === 2)) handleSubmit(); else nextStep(); }} class="space-y-5">
 			{#if error}
 				<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
 					{error}
 				</div>
 			{/if}
 
-			{#if step === 0}
-			<!-- Step 0: Account Type Selection -->
+			{#if step === 0 && !isInvitationFlow}
+			<!-- Step 0: Account Type Selection (Skip for invitations) -->
 			<div class="space-y-4">
 				<h2 class="text-lg font-semibold text-gray-900 text-center mb-4">Choose Account Type</h2>
 
@@ -504,10 +550,10 @@
 					</select>
 				</div>
 			</div>
-		{:else if (userType === 'company' && step === 2) || (userType === 'recruiter' && step === 1)}
-			<!-- Step: Personal Information (Company Step 2 or Recruiter Step 1) -->
+		{:else if (userType === 'company' && step === 2) || (userType === 'recruiter' && step === 1) || (isInvitationFlow && step === 1)}
+			<!-- Step: Personal Information (Company Step 2 or Recruiter Step 1 or Invitation Step 1) -->
 			<div class="space-y-4">
-				<h2 class="text-lg font-semibold text-gray-900 mb-3">Your Information</h2>
+				<h2 class="text-lg font-semibold text-gray-900 mb-3">{isInvitationFlow ? 'Your Information' : 'Your Information'}</h2>
 
 				<div class="grid grid-cols-2 gap-3">
 					<div>
@@ -539,61 +585,63 @@
 					</div>
 				</div>
 
-				<div>
-					<label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-						{userType === 'company' ? 'Work Email' : 'Email Address'} <span class="text-red-500">*</span>
-					</label>
-					<div class="relative">
-						<Mail class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+				{#if !isInvitationFlow}
+					<div>
+						<label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+							{userType === 'company' ? 'Work Email' : 'Email Address'} <span class="text-red-500">*</span>
+						</label>
+						<div class="relative">
+							<Mail class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+							<input
+								type="email"
+								id="email"
+								bind:value={formData.email}
+								required
+								placeholder={userType === 'company' ? 'john@company.com' : 'john@example.com'}
+								class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
+						{#if userType === 'company'}
+							<p class="text-xs text-gray-500 mt-1">Use your company email to verify your association</p>
+						{/if}
+					</div>
+
+					<div>
+						<label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+							Phone Number <span class="text-red-500">*</span>
+						</label>
+						<div class="relative">
+							<Phone class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+							<input
+								type="tel"
+								id="phone"
+								bind:value={formData.phone}
+								required
+								placeholder="+1 (555) 123-4567"
+								class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
+					</div>
+
+					<div>
+						<label for="jobTitle" class="block text-sm font-medium text-gray-700 mb-1">
+							{userType === 'company' ? 'Your Job Title' : 'Professional Title'} <span class="text-red-500">*</span>
+						</label>
 						<input
-							type="email"
-							id="email"
-							bind:value={formData.email}
+							type="text"
+							id="jobTitle"
+							bind:value={formData.jobTitle}
 							required
-							placeholder={userType === 'company' ? 'john@company.com' : 'john@example.com'}
-							class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							placeholder={userType === 'company' ? 'HR Manager, Recruiter, etc.' : 'Senior Recruiter, Talent Acquisition Specialist, etc.'}
+							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 						/>
 					</div>
-					{#if userType === 'company'}
-						<p class="text-xs text-gray-500 mt-1">Use your company email to verify your association</p>
-					{/if}
-				</div>
-
-				<div>
-					<label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
-						Phone Number <span class="text-red-500">*</span>
-					</label>
-					<div class="relative">
-						<Phone class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-						<input
-							type="tel"
-							id="phone"
-							bind:value={formData.phone}
-							required
-							placeholder="+1 (555) 123-4567"
-							class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-						/>
-					</div>
-				</div>
-
-				<div>
-					<label for="jobTitle" class="block text-sm font-medium text-gray-700 mb-1">
-						{userType === 'company' ? 'Your Job Title' : 'Professional Title'} <span class="text-red-500">*</span>
-					</label>
-					<input
-						type="text"
-						id="jobTitle"
-						bind:value={formData.jobTitle}
-						required
-						placeholder={userType === 'company' ? 'HR Manager, Recruiter, etc.' : 'Senior Recruiter, Talent Acquisition Specialist, etc.'}
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					/>
-				</div>
+				{/if}
 			</div>
-		{:else}
-			<!-- Final Step: Account Setup (Company Step 3 or Recruiter Step 2) -->
+		{:else if (userType === 'company' && step === 3) || (userType === 'recruiter' && step === 2) || (isInvitationFlow && step === 2)}
+			<!-- Final Step: Account Setup (Company Step 3 or Recruiter Step 2 or Invitation Step 2) -->
 			<div class="space-y-4">
-				<h2 class="text-lg font-semibold text-gray-900 mb-3">Create Your Account</h2>
+				<h2 class="text-lg font-semibold text-gray-900 mb-3">{isInvitationFlow ? 'Set Your Password' : 'Create Your Account'}</h2>
 
 				<div>
 					<label for="password" class="block text-sm font-medium text-gray-700 mb-1">
@@ -652,32 +700,34 @@
 					</div>
 				</div>
 
-				<div class="space-y-2 pt-3">
-					<label class="flex items-start gap-3 cursor-pointer">
-						<input
-							type="checkbox"
-							bind:checked={formData.agreeToTerms}
-							required
-							class="w-4 h-4 text-blue-600 rounded mt-0.5"
-						/>
-						<span class="text-sm text-gray-700">
-							I agree to the <a href="/terms/" class="text-blue-600 hover:text-blue-700">Terms of Service</a>
-							and
-							<a href="/privacy/" class="text-blue-600 hover:text-blue-700">Privacy Policy</a>
-						</span>
-					</label>
+				{#if !isInvitationFlow}
+					<div class="space-y-2 pt-3">
+						<label class="flex items-start gap-3 cursor-pointer">
+							<input
+								type="checkbox"
+								bind:checked={formData.agreeToTerms}
+								required
+								class="w-4 h-4 text-blue-600 rounded mt-0.5"
+							/>
+							<span class="text-sm text-gray-700">
+								I agree to the <a href="/terms/" class="text-blue-600 hover:text-blue-700">Terms of Service</a>
+								and
+								<a href="/privacy/" class="text-blue-600 hover:text-blue-700">Privacy Policy</a>
+							</span>
+						</label>
 
-					<label class="flex items-start gap-3 cursor-pointer">
-						<input
-							type="checkbox"
-							bind:checked={formData.subscribeNewsletter}
-							class="w-4 h-4 text-blue-600 rounded mt-0.5"
-						/>
-						<span class="text-sm text-gray-700">
-							Send me updates about hiring trends and platform features
-						</span>
-					</label>
-				</div>
+						<label class="flex items-start gap-3 cursor-pointer">
+							<input
+								type="checkbox"
+								bind:checked={formData.subscribeNewsletter}
+								class="w-4 h-4 text-blue-600 rounded mt-0.5"
+							/>
+							<span class="text-sm text-gray-700">
+								Send me updates about hiring trends and platform features
+							</span>
+						</label>
+					</div>
+				{/if}
 			</div>
 		{/if}
 
@@ -692,7 +742,7 @@
 					Back
 				</button>
 
-				{#if (userType === 'company' && step < 3) || (userType === 'recruiter' && step < 2)}
+				{#if (userType === 'company' && step < 3) || (userType === 'recruiter' && step < 2) || (isInvitationFlow && step < 2)}
 					<button
 						type="submit"
 						class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
@@ -702,7 +752,7 @@
 				{:else}
 					<button
 						type="submit"
-						disabled={!formData.agreeToTerms || loading}
+						disabled={(!isInvitationFlow && !formData.agreeToTerms) || loading}
 						class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					>
 						{#if loading}
@@ -711,10 +761,10 @@
 									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 								</svg>
-								Creating Account...
+								{isInvitationFlow ? 'Joining Team...' : 'Creating Account...'}
 							</span>
 						{:else}
-							Create Account
+							{isInvitationFlow ? 'Join Team' : 'Create Account'}
 						{/if}
 					</button>
 				{/if}
