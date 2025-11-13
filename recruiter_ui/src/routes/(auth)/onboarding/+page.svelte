@@ -137,7 +137,7 @@
 
 				<!-- Logo Upload -->
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-3">Company Logo</label>
+					<label for="company-logo-upload" class="block text-sm font-medium text-gray-700 mb-3">Company Logo</label>
 					<div class="flex items-center gap-6">
 						<div
 							class="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 overflow-hidden"
@@ -150,11 +150,12 @@
 						</div>
 						<div class="flex-1">
 							<label
+								for="company-logo-upload"
 								class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
 							>
 								<Upload class="w-4 h-4" />
 								Upload Logo
-								<input type="file" accept="image/*" onchange={handleLogoUpload} class="hidden" />
+								<input id="company-logo-upload" type="file" accept="image/*" onchange={handleLogoUpload} class="hidden" />
 							</label>
 							<p class="text-xs text-gray-500 mt-2">PNG, JPG up to 2MB</p>
 						</div>
@@ -220,11 +221,12 @@
 				</p>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-3">Team Members</label>
+					<label for="team-member-0" class="block text-sm font-medium text-gray-700 mb-3">Team Members</label>
 					<div class="space-y-3">
 						{#each formData.inviteEmails as email, index}
 							<div class="flex gap-2">
 								<input
+									id="team-member-{index}"
 									type="email"
 									bind:value={formData.inviteEmails[index]}
 									placeholder="teammate@company.com"
@@ -269,7 +271,7 @@
 
 				<!-- Job Categories -->
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-3">
+					<label for="job-categories" class="block text-sm font-medium text-gray-700 mb-3">
 						Which roles are you hiring for?
 					</label>
 					<div class="grid grid-cols-2 gap-3">

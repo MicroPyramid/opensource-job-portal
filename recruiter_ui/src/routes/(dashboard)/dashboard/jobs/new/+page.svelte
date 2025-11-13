@@ -83,6 +83,72 @@
 		fresher: false
 	});
 
+	// Initialize form with copied job data if copying
+	$effect(() => {
+		if (data.jobToCopy && data.isCopying) {
+			const job = data.jobToCopy;
+
+			// Step 1: Basics
+			formData.jobTitle = job.title || '';
+			formData.department = job.job_role || '';
+			formData.companyName = job.company_name || '';
+			formData.employmentType = job.job_type || 'full-time';
+			formData.seniorityLevel = job.seniority_level || '';
+			formData.positions = job.vacancies || 1;
+
+			// Step 2: Location
+			formData.selectedLocationIds = job.locations?.map((l: any) => l.id) || [];
+			formData.workMode = job.work_mode || 'in-office';
+			formData.officeAddress = job.company_address || '';
+
+			// Step 3: Details
+			formData.description = job.description || '';
+			formData.selectedSkillIds = job.skills?.map((s: any) => s.id) || [];
+			formData.selectedIndustryIds = job.industries?.map((i: any) => i.id) || [];
+			formData.selectedQualificationIds = job.qualifications?.map((q: any) => q.id) || [];
+			formData.languages = job.language_requirements || [];
+			formData.requiredCertifications = job.required_certifications || '';
+			formData.preferredCertifications = job.preferred_certifications || '';
+
+			// Step 4: Compensation
+			formData.salaryMin = job.min_salary?.toString() || '';
+			formData.salaryMax = job.max_salary?.toString() || '';
+			formData.salaryType = job.salary_type || 'Year';
+			formData.showSalary = job.show_salary ?? true;
+			formData.benefits = job.benefits || [];
+
+			// Step 5: Application
+			formData.applicationMethod = job.application_method || 'portal';
+			formData.applicationUrl = job.application_url || '';
+
+			// Step 6: Settings
+			formData.relocationRequired = job.relocation_required || false;
+			formData.travelPercentage = job.travel_percentage || '';
+			formData.hiringTimeline = job.hiring_timeline || '';
+			formData.hiringPriority = job.hiring_priority || 'Normal';
+
+			// Experience
+			formData.minYear = job.min_year || 0;
+			formData.maxYear = job.max_year || 0;
+			formData.minMonth = job.min_month || 0;
+			formData.maxMonth = job.max_month || 0;
+			formData.fresher = job.fresher || false;
+
+			// Compute experience level string
+			if (job.fresher) {
+				formData.experienceLevel = 'Fresher';
+			} else if (job.max_year >= 10) {
+				formData.experienceLevel = '10+ years';
+			} else if (job.max_year >= 5) {
+				formData.experienceLevel = '5-10 years';
+			} else if (job.max_year >= 3) {
+				formData.experienceLevel = '3-5 years';
+			} else {
+				formData.experienceLevel = '1-3 years';
+			}
+		}
+	});
+
 	const steps = [
 		{ number: 1, title: 'Basics', icon: Briefcase },
 		{ number: 2, title: 'Location', icon: MapPin },
@@ -368,10 +434,11 @@
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div class="md:col-span-2">
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="job-title" class="block text-sm font-medium text-gray-700 mb-2">
 								Job Title <span class="text-red-500">*</span>
 							</label>
 							<input
+								id="job-title"
 								type="text"
 								name="title"
 								bind:value={formData.jobTitle}
@@ -382,10 +449,11 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="company-name" class="block text-sm font-medium text-gray-700 mb-2">
 								Company Name <span class="text-red-500">*</span>
 							</label>
 							<input
+								id="company-name"
 								type="text"
 								name="company_name"
 								bind:value={formData.companyName}
@@ -396,10 +464,11 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="job-department" class="block text-sm font-medium text-gray-700 mb-2">
 								Department <span class="text-red-500">*</span>
 							</label>
 							<input
+								id="job-department"
 								type="text"
 								name="job_role"
 								bind:value={formData.department}
@@ -410,10 +479,11 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="employment-type" class="block text-sm font-medium text-gray-700 mb-2">
 								Employment Type <span class="text-red-500">*</span>
 							</label>
 							<select
+								id="employment-type"
 								name="job_type"
 								bind:value={formData.employmentType}
 								required
@@ -426,10 +496,11 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="seniority-level" class="block text-sm font-medium text-gray-700 mb-2">
 								Seniority Level
 							</label>
 							<select
+								id="seniority-level"
 								name="seniority_level"
 								bind:value={formData.seniorityLevel}
 								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -442,10 +513,11 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="experience-level" class="block text-sm font-medium text-gray-700 mb-2">
 								Experience Level <span class="text-red-500">*</span>
 							</label>
 							<select
+								id="experience-level"
 								name="experience_level"
 								bind:value={formData.experienceLevel}
 								required
@@ -459,10 +531,11 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="number-of-positions" class="block text-sm font-medium text-gray-700 mb-2">
 								Number of Positions <span class="text-red-500">*</span>
 							</label>
 							<input
+								id="number-of-positions"
 								type="number"
 								name="vacancies"
 								bind:value={formData.positions}
@@ -484,10 +557,10 @@
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div class="md:col-span-2">
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="work-mode" class="block text-sm font-medium text-gray-700 mb-2">
 								Work Mode <span class="text-red-500">*</span>
 							</label>
-							<div class="grid grid-cols-3 gap-3">
+							<div id="work-mode" class="grid grid-cols-3 gap-3">
 								{#each workModes as mode}
 									<label class="relative flex cursor-pointer">
 										<input
@@ -506,11 +579,12 @@
 						</div>
 
 						<div class="md:col-span-2">
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="job-locations-search" class="block text-sm font-medium text-gray-700 mb-2">
 								Job Location(s) <span class="text-red-500">*</span> <span class="text-gray-500 text-xs">(Max 3)</span>
 							</label>
 							<div class="space-y-3">
 								<input
+									id="job-locations-search"
 									type="text"
 									bind:value={formData.searchCity}
 									placeholder="Search city... (e.g., Bangalore, Mumbai)"
@@ -570,10 +644,11 @@
 
 						{#if formData.workMode !== 'remote'}
 							<div class="md:col-span-2">
-								<label class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="new-office-address" class="block text-sm font-medium text-gray-700 mb-2">
 									Office Address
 								</label>
 								<textarea
+									id="new-office-address"
 									name="company_address"
 									bind:value={formData.officeAddress}
 									rows="2"
@@ -595,10 +670,11 @@
 
 					<div class="space-y-6">
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="job-description" class="block text-sm font-medium text-gray-700 mb-2">
 								Job Description <span class="text-red-500">*</span>
 							</label>
 							<textarea
+								id="job-description"
 								name="description"
 								bind:value={formData.description}
 								rows="6"
@@ -609,11 +685,12 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="key-skills-search" class="block text-sm font-medium text-gray-700 mb-2">
 								Key Skills <span class="text-gray-500 text-xs">(Max 8)</span>
 							</label>
 							<div class="space-y-3">
 								<input
+									id="key-skills-search"
 									type="text"
 									bind:value={formData.searchSkill}
 									placeholder="Search skills... (e.g., Python, React, AWS)"
@@ -668,10 +745,10 @@
 
 						<!-- Industries -->
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="industry-preferences" class="block text-sm font-medium text-gray-700 mb-2">
 								Industry/Domain Preference
 							</label>
-							<div class="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto">
+							<div id="industry-preferences" class="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto">
 								<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
 									{#each data.metadata.industries as industry}
 										<label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
@@ -691,10 +768,10 @@
 
 						<!-- Education/Qualifications -->
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="education-qualifications" class="block text-sm font-medium text-gray-700 mb-2">
 								Education Qualification
 							</label>
-							<div class="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto">
+							<div id="education-qualifications" class="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto">
 								<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
 									{#each data.metadata.qualifications as qual}
 										<label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
@@ -714,19 +791,21 @@
 
 						<!-- Language Requirements -->
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="language-requirements" class="block text-sm font-medium text-gray-700 mb-2">
 								Language Requirements
 							</label>
-							<div class="space-y-3">
+							<div id="language-requirements" class="space-y-3">
 								{#each formData.languages as lang, index}
 									<div class="flex gap-3 items-start">
 										<input
+											id="language-{index}"
 											type="text"
 											bind:value={lang.language}
 											placeholder="Language (e.g., English)"
 											class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 										/>
 										<select
+											id="proficiency-{index}"
 											bind:value={lang.proficiency}
 											class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 										>
@@ -757,10 +836,11 @@
 						<!-- Certifications -->
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="required-certifications" class="block text-sm font-medium text-gray-700 mb-2">
 									Required Certifications
 								</label>
 								<textarea
+									id="required-certifications"
 									name="required_certifications"
 									bind:value={formData.requiredCertifications}
 									placeholder="e.g., AWS Solutions Architect, Azure Administrator"
@@ -771,10 +851,11 @@
 							</div>
 
 							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="preferred-certifications" class="block text-sm font-medium text-gray-700 mb-2">
 									Preferred Certifications
 								</label>
 								<textarea
+									id="preferred-certifications"
 									name="preferred_certifications"
 									bind:value={formData.preferredCertifications}
 									placeholder="e.g., PMP, ISTQB"
@@ -797,10 +878,11 @@
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="minimum-salary" class="block text-sm font-medium text-gray-700 mb-2">
 								Minimum Salary (INR)
 							</label>
 							<input
+								id="minimum-salary"
 								type="number"
 								name="min_salary"
 								bind:value={formData.salaryMin}
@@ -810,10 +892,11 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="maximum-salary" class="block text-sm font-medium text-gray-700 mb-2">
 								Maximum Salary (INR)
 							</label>
 							<input
+								id="maximum-salary"
 								type="number"
 								name="max_salary"
 								bind:value={formData.salaryMax}
@@ -825,6 +908,7 @@
 						<div class="md:col-span-2">
 							<label class="flex items-center gap-3 cursor-pointer">
 								<input
+									id="show-salary"
 									type="checkbox"
 									name="show_salary"
 									bind:checked={formData.showSalary}
@@ -838,10 +922,10 @@
 
 						<!-- Benefits & Perks -->
 						<div class="md:col-span-2">
-							<label class="block text-sm font-medium text-gray-700 mb-3">
+							<label for="benefits-perks" class="block text-sm font-medium text-gray-700 mb-3">
 								Benefits & Perks
 							</label>
-							<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+							<div id="benefits-perks" class="grid grid-cols-2 md:grid-cols-4 gap-3">
 								{#each benefitOptions as benefit}
 									<label class="flex items-center gap-2 cursor-pointer">
 										<input
@@ -869,10 +953,10 @@
 					<div class="space-y-6">
 						<!-- Application Method -->
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-3">
+							<label for="application-method" class="block text-sm font-medium text-gray-700 mb-3">
 								Application Method <span class="text-red-500">*</span>
 							</label>
-							<div class="space-y-3">
+							<div id="application-method" class="space-y-3">
 								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition-colors {formData.applicationMethod === 'portal' ? 'border-blue-600 bg-blue-50' : ''}">
 									<input
 										type="radio"
@@ -916,7 +1000,9 @@
 
 							{#if formData.applicationMethod === 'external'}
 								<div class="mt-3">
+									<label for="application-url" class="sr-only">Application URL</label>
 									<input
+										id="application-url"
 										type="url"
 										name="application_url"
 										bind:value={formData.applicationUrl}
@@ -928,11 +1014,13 @@
 						</div>
 
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="application-deadline" class="block text-sm font-medium text-gray-700 mb-2">
+								Application Deadline
 							</label>
 							<input
+								id="application-deadline"
 								type="date"
-								
+								name="deadline"
 								bind:value={formData.deadline}
 								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 							/>
@@ -954,6 +1042,7 @@
 							<div>
 								<label class="flex items-center gap-3 cursor-pointer">
 									<input
+										id="relocation-required"
 										type="checkbox"
 										name="relocation_required"
 										bind:checked={formData.relocationRequired}
@@ -966,10 +1055,11 @@
 							</div>
 
 							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="travel-requirements" class="block text-sm font-medium text-gray-700 mb-2">
 									Travel Requirements
 								</label>
 								<select
+									id="travel-requirements"
 									name="travel_percentage"
 									bind:value={formData.travelPercentage}
 									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -986,10 +1076,11 @@
 						<!-- Hiring Urgency -->
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="hiring-timeline" class="block text-sm font-medium text-gray-700 mb-2">
 									Hiring Timeline
 								</label>
 								<select
+									id="hiring-timeline"
 									name="hiring_timeline"
 									bind:value={formData.hiringTimeline}
 									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -1002,10 +1093,11 @@
 							</div>
 
 							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="hiring-priority" class="block text-sm font-medium text-gray-700 mb-2">
 									Priority <span class="text-red-500">*</span>
 								</label>
 								<select
+									id="hiring-priority"
 									name="hiring_priority"
 									bind:value={formData.hiringPriority}
 									required

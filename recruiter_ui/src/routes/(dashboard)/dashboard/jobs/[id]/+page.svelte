@@ -15,10 +15,16 @@
 		Share2,
 		ExternalLink,
 		TrendingUp,
-		Target
+		Target,
+		Bell,
+		BellOff,
+		Copy
 	} from '@lucide/svelte';
+	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 
 	let { data } = $props();
+	let togglingNotifications = $state(false);
 
 	function formatDate(dateString?: string): string {
 		if (!dateString) return 'N/A';
@@ -183,6 +189,48 @@
 			</a>
 		{/if}
 
+		<!-- Email Notifications Toggle -->
+		<form method="POST" action="?/toggleNotifications" use:enhance={() => {
+			togglingNotifications = true;
+			return async ({ result }) => {
+				togglingNotifications = false;
+				if (result.type === 'success') {
+					await invalidateAll();
+				}
+			};
+		}}>
+			<button
+				type="submit"
+				disabled={togglingNotifications}
+				class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+				title={data.job.send_email_notifications ? 'Disable email notifications' : 'Enable email notifications'}
+			>
+				{#if data.job.send_email_notifications}
+					<Bell class="w-4 h-4 text-green-600" />
+					<span>Notifications On</span>
+				{:else}
+					<BellOff class="w-4 h-4 text-gray-400" />
+					<span>Notifications Off</span>
+				{/if}
+			</button>
+		</form>
+
+		<a
+			href="/dashboard/jobs/{data.job.id}/preview/"
+			class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+		>
+			<Eye class="w-4 h-4" />
+			Preview
+		</a>
+
+		<a
+			href="/dashboard/jobs/new/?copy_from={data.job.id}"
+			class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+		>
+			<Copy class="w-4 h-4" />
+			Copy Job
+		</a>
+
 		<button
 			class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
 		>
@@ -190,14 +238,16 @@
 			Share Job
 		</button>
 
-		<a
-			href="/jobs/{data.job.id}/"
-			target="_blank"
-			class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-		>
-			<ExternalLink class="w-4 h-4" />
-			View Public Page
-		</a>
+		{#if data.job.status === 'Live' || data.job.status === 'Published'}
+			<a
+				href="/jobs/{data.job.id}/"
+				target="_blank"
+				class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+			>
+				<ExternalLink class="w-4 h-4" />
+				View Public Page
+			</a>
+		{/if}
 	</div>
 
 	<!-- Job Details -->

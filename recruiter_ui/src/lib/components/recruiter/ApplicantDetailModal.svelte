@@ -67,10 +67,19 @@
 <div
 	class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
 	onclick={onClose}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') onClose();
+	}}
+	role="button"
+	tabindex="-1"
 >
 	<div
 		class="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col"
 		onclick={(e) => e.stopPropagation()}
+		onkeydown={(e) => e.stopPropagation()}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
 	>
 		<!-- Header -->
 		<div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-6 text-white">
@@ -131,10 +140,10 @@
 		<div class="border-b border-gray-200 px-6">
 			<div class="flex gap-6">
 				{#each [
-					{ id: 'profile', label: 'Profile' },
-					{ id: 'experience', label: 'Experience' },
-					{ id: 'education', label: 'Education' },
-					{ id: 'skills', label: 'Skills' }
+					{ id: 'profile' as const, label: 'Profile' },
+					{ id: 'experience' as const, label: 'Experience' },
+					{ id: 'education' as const, label: 'Education' },
+					{ id: 'skills' as const, label: 'Skills' }
 				] as tab}
 					<button
 						onclick={() => (activeTab = tab.id)}
@@ -158,10 +167,11 @@
 						{#if applicant.application}
 							<div class="space-y-4">
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-2">
+									<label for="applicant-status" class="block text-sm font-medium text-gray-700 mb-2">
 										Current Status
 									</label>
 									<select
+										id="applicant-status"
 										bind:value={newStatus}
 										class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 									>
@@ -173,10 +183,11 @@
 								</div>
 
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-2">
+									<label for="recruiter-remarks" class="block text-sm font-medium text-gray-700 mb-2">
 										Recruiter Remarks
 									</label>
 									<textarea
+										id="recruiter-remarks"
 										bind:value={remarksText}
 										rows="3"
 										placeholder="Add notes about this candidate..."

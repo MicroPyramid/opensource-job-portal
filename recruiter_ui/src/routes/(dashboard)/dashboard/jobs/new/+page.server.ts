@@ -12,6 +12,7 @@ import type { JobCreateData, JobFormMetadata } from '$lib/types';
 /**
  * Load function - runs on server before page renders
  * Fetches all form metadata needed for job posting
+ * Supports copying from existing job via ?copy_from=<job_id> parameter
  */
 export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 	// Check authentication
@@ -40,8 +41,37 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 
 		const metadata: JobFormMetadata = await response.json();
 
+		// Check if copying from existing job
+		const copyFromJobId = url.searchParams.get('copy_from');
+		let jobToCopy = null;
+
+		if (copyFromJobId) {
+			try {
+				const jobResponse = await fetch(`http://localhost:8000/api/v1/recruiter/jobs/${copyFromJobId}/`);
+
+				if (jobResponse.ok) {
+					jobToCopy = await jobResponse.json();
+					// Modify the copied job data
+					jobToCopy.title = `Copy of ${jobToCopy.title}`;
+					// Remove fields that shouldn't be copied
+					delete jobToCopy.id;
+					delete jobToCopy.slug;
+					delete jobToCopy.created_on;
+					delete jobToCopy.published_on;
+					delete jobToCopy.status; // Will default to Draft
+					delete jobToCopy.applicants_count;
+					delete jobToCopy.views_count;
+				}
+			} catch (err) {
+				console.error('Error fetching job to copy:', err);
+				// Continue without copy data if fetch fails
+			}
+		}
+
 		return {
-			metadata
+			metadata,
+			jobToCopy,
+			isCopying: !!copyFromJobId
 		};
 	} catch (err: any) {
 		console.error('Error loading job form metadata:', err);

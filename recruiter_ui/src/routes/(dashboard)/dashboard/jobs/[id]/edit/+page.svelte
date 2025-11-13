@@ -315,10 +315,11 @@
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div class="md:col-span-2">
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<label for="edit-job-title" class="block text-sm font-medium text-gray-700 mb-2">
 							Job Title <span class="text-red-500">*</span>
 						</label>
 						<input
+							id="edit-job-title"
 							type="text"
 							name="title"
 							bind:value={formData.jobTitle}
@@ -329,10 +330,11 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<label for="edit-company-name" class="block text-sm font-medium text-gray-700 mb-2">
 							Company Name <span class="text-red-500">*</span>
 						</label>
 						<input
+							id="edit-company-name"
 							type="text"
 							name="company_name"
 							bind:value={formData.companyName}
@@ -343,10 +345,11 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<label for="edit-department" class="block text-sm font-medium text-gray-700 mb-2">
 							Department <span class="text-red-500">*</span>
 						</label>
 						<input
+							id="edit-department"
 							type="text"
 							name="job_role"
 							bind:value={formData.department}
@@ -357,10 +360,11 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<label for="edit-employment-type" class="block text-sm font-medium text-gray-700 mb-2">
 							Employment Type <span class="text-red-500">*</span>
 						</label>
 						<select
+							id="edit-employment-type"
 							name="job_type"
 							bind:value={formData.employmentType}
 							required
@@ -373,10 +377,11 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<label for="edit-experience-level" class="block text-sm font-medium text-gray-700 mb-2">
 							Experience Level <span class="text-red-500">*</span>
 						</label>
 						<select
+							id="edit-experience-level"
 							name="experience_level"
 							bind:value={formData.experienceLevel}
 							required
@@ -390,10 +395,11 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<label for="edit-positions" class="block text-sm font-medium text-gray-700 mb-2">
 							Number of Positions <span class="text-red-500">*</span>
 						</label>
 						<input
+							id="edit-positions"
 							type="number"
 							name="vacancies"
 							bind:value={formData.positions}
@@ -413,7 +419,7 @@
 				</h2>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
+					<label for="edit-work-mode" class="block text-sm font-medium text-gray-700 mb-2">
 						Work Mode <span class="text-red-500">*</span>
 					</label>
 					<div class="grid grid-cols-3 gap-3">
@@ -433,7 +439,7 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-3">Current Locations</label>
+					<label for="edit-current-locations" class="block text-sm font-medium text-gray-700 mb-3">Current Locations</label>
 					{#if data.job.locations && data.job.locations.length > 0}
 						<div class="flex flex-wrap gap-2 mb-3">
 							{#each data.job.locations as location}
@@ -450,8 +456,9 @@
 
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Country</label>
+						<label for="edit-country" class="block text-sm font-medium text-gray-700 mb-2">Country</label>
 						<input
+							id="edit-country"
 							type="text"
 							bind:value={formData.country}
 							placeholder="e.g., United States"
@@ -461,8 +468,9 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">State</label>
+						<label for="edit-state" class="block text-sm font-medium text-gray-700 mb-2">State</label>
 						<input
+							id="edit-state"
 							type="text"
 							bind:value={formData.state}
 							placeholder="e.g., California"
@@ -472,8 +480,9 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+						<label for="edit-city" class="block text-sm font-medium text-gray-700 mb-2">City</label>
 						<input
+							id="edit-city"
 							type="text"
 							bind:value={formData.city}
 							placeholder="e.g., San Francisco"
@@ -485,8 +494,9 @@
 
 				{#if formData.workMode !== 'remote'}
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Office Address</label>
+						<label for="edit-office-address" class="block text-sm font-medium text-gray-700 mb-2">Office Address</label>
 						<textarea
+							id="edit-office-address"
 							bind:value={formData.officeAddress}
 							rows="3"
 							placeholder="Enter the full office address"
@@ -504,10 +514,11 @@
 				</h2>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
+					<label for="edit-description" class="block text-sm font-medium text-gray-700 mb-2">
 						Job Description <span class="text-red-500">*</span>
 					</label>
 					<textarea
+						id="edit-description"
 						name="description"
 						bind:value={formData.description}
 						rows="6"
@@ -518,8 +529,9 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
+					<label for="edit-responsibilities" class="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
 					<textarea
+						id="edit-responsibilities"
 						bind:value={formData.responsibilities}
 						rows="5"
 						placeholder="List the key responsibilities (one per line)"
@@ -528,10 +540,11 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
+					<label for="edit-requirements" class="block text-sm font-medium text-gray-700 mb-2">
 						Requirements <span class="text-red-500">*</span>
 					</label>
 					<textarea
+						id="edit-requirements"
 						bind:value={formData.requirements}
 						rows="5"
 						placeholder="List the requirements and qualifications (one per line)"
@@ -540,11 +553,12 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
+					<label for="edit-search-skill" class="block text-sm font-medium text-gray-700 mb-2">
 						Key Skills <span class="text-gray-500 text-xs">(Max 8)</span>
 					</label>
 					<div class="space-y-3">
 						<input
+							id="edit-search-skill"
 							type="text"
 							bind:value={searchSkill}
 							placeholder="Search skills... (e.g., Python, React, AWS)"
@@ -598,8 +612,9 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Education Requirements</label>
+					<label for="edit-education" class="block text-sm font-medium text-gray-700 mb-2">Education Requirements</label>
 					<input
+						id="edit-education"
 						type="text"
 						bind:value={formData.education}
 						placeholder="e.g., Bachelor's degree in Computer Science or related field"
@@ -617,8 +632,9 @@
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Minimum Salary</label>
+						<label for="edit-salary-min" class="block text-sm font-medium text-gray-700 mb-2">Minimum Salary</label>
 						<input
+							id="edit-salary-min"
 							type="number"
 							bind:value={formData.salaryMin}
 							placeholder="50000"
@@ -627,8 +643,9 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Maximum Salary</label>
+						<label for="edit-salary-max" class="block text-sm font-medium text-gray-700 mb-2">Maximum Salary</label>
 						<input
+							id="edit-salary-max"
 							type="number"
 							bind:value={formData.salaryMax}
 							placeholder="80000"
@@ -638,15 +655,16 @@
 				</div>
 
 				<div>
-					<label class="flex items-center gap-2 cursor-pointer">
-						<input type="checkbox" bind:checked={formData.hideSalary} class="w-4 h-4 text-blue-600 rounded" />
+					<label for="edit-hide-salary" class="flex items-center gap-2 cursor-pointer">
+						<input id="edit-hide-salary" type="checkbox" bind:checked={formData.hideSalary} class="w-4 h-4 text-blue-600 rounded" />
 						<span class="text-sm text-gray-700">Hide salary range from public job posting</span>
 					</label>
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Benefits</label>
+					<label for="edit-benefits" class="block text-sm font-medium text-gray-700 mb-2">Benefits</label>
 					<textarea
+						id="edit-benefits"
 						bind:value={formData.benefits}
 						rows="4"
 						placeholder="List the benefits (e.g., Health insurance, 401k, etc.)"
@@ -655,8 +673,9 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Perks</label>
+					<label for="edit-perks" class="block text-sm font-medium text-gray-700 mb-2">Perks</label>
 					<textarea
+						id="edit-perks"
 						bind:value={formData.perks}
 						rows="4"
 						placeholder="List additional perks (e.g., Flexible hours, Remote work, etc.)"
@@ -673,8 +692,9 @@
 				</h2>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Auto-Reply Email Template</label>
+					<label for="edit-auto-reply" class="block text-sm font-medium text-gray-700 mb-2">Auto-Reply Email Template</label>
 					<textarea
+						id="edit-auto-reply"
 						bind:value={formData.autoReplyTemplate}
 						rows="4"
 						placeholder="Thank you for applying! We have received your application and will review it shortly..."

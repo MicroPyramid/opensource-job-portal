@@ -182,6 +182,7 @@
 	<!-- Stats Cards -->
 	<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 		{#each statusFilters.slice(1) as filter}
+			{@const StatusIcon = getStatusIcon(filter.value)}
 			<button
 				onclick={() => {
 					selectedFilter = filter.value;
@@ -194,7 +195,7 @@
 			>
 				<div class="flex items-center justify-between mb-2">
 					<span class="text-sm text-gray-600">{filter.label}</span>
-					<svelte:component this={getStatusIcon(filter.value)} class="w-4 h-4 text-gray-400" />
+					<StatusIcon class="w-4 h-4 text-gray-400" />
 				</div>
 				<div class="text-2xl font-bold text-gray-900">{filter.count}</div>
 			</button>
@@ -203,39 +204,54 @@
 
 	<!-- Filters -->
 	<div class="bg-white rounded-lg border border-gray-200 p-4">
-		<form
-			onsubmit={(e) => {
-				e.preventDefault();
-				updateFilters();
-			}}
-			class="flex flex-col md:flex-row gap-4"
-		>
-			<!-- Search -->
-			<div class="flex-1 relative">
-				<Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-				<input
-					type="text"
-					bind:value={searchQuery}
-					onchange={updateFilters}
-					placeholder="Search applicants by name or email..."
-					class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-				/>
-			</div>
+		<div class="flex flex-col md:flex-row gap-4">
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					updateFilters();
+				}}
+				class="flex-1 flex flex-col md:flex-row gap-4"
+			>
+				<!-- Search -->
+				<div class="flex-1 relative">
+					<Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+					<input
+						id="applicant-search"
+						type="text"
+						bind:value={searchQuery}
+						onchange={updateFilters}
+						placeholder="Search applicants by name or email..."
+						class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+					/>
+				</div>
 
-			<!-- Status Filter -->
-			<div class="relative">
-				<Filter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-				<select
-					bind:value={selectedFilter}
-					onchange={updateFilters}
-					class="pl-9 pr-8 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
-				>
-					{#each statusFilters as option}
-						<option value={option.value}>{option.label} ({option.count})</option>
-					{/each}
-				</select>
-			</div>
-		</form>
+				<!-- Status Filter -->
+				<div class="relative">
+					<Filter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+					<select
+						id="applicant-status-filter"
+						bind:value={selectedFilter}
+						onchange={updateFilters}
+						class="pl-9 pr-8 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
+					>
+						{#each statusFilters as option}
+							<option value={option.value}>{option.label} ({option.count})</option>
+						{/each}
+					</select>
+				</div>
+			</form>
+
+			<!-- Download CSV Button -->
+			<a
+				href="/dashboard/jobs/{data.job.id}/applicants/download?status={selectedFilter !== 'all' ? selectedFilter : ''}&search={searchQuery}"
+				class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium whitespace-nowrap"
+				title="Download applicants as CSV"
+			>
+				<Download class="w-4 h-4" />
+				<span class="hidden md:inline">Download CSV</span>
+				<span class="md:hidden">CSV</span>
+			</a>
+		</div>
 	</div>
 
 	<!-- Applicants List -->

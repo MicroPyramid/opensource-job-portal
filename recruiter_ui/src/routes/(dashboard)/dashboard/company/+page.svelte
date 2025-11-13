@@ -129,6 +129,15 @@
 				<p class="text-sm text-amber-600 mt-1">⚠️ Only company admins can edit the profile</p>
 			{/if}
 		</div>
+		{#if isAdmin}
+			<a
+				href="/dashboard/company/microsite/"
+				class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+			>
+				<Globe class="w-4 h-4" />
+				Manage Microsite
+			</a>
+		{/if}
 	</div>
 
 	<!-- Profile Completeness -->
@@ -192,10 +201,11 @@
 			<h2 class="text-lg font-semibold text-gray-900 mb-6">Basic Information</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div class="md:col-span-2">
-					<label class="block text-sm font-medium text-gray-700 mb-2">
+					<label for="company-name" class="block text-sm font-medium text-gray-700 mb-2">
 						Company Name <span class="text-red-500">*</span>
 					</label>
 					<input
+						id="company-name"
 						type="text"
 						name="name"
 						bind:value={formData.companyName}
@@ -207,10 +217,11 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
+					<label for="company-size" class="block text-sm font-medium text-gray-700 mb-2">
 						Company Size <span class="text-red-500">*</span>
 					</label>
 					<select
+						id="company-size"
 						name="size"
 						bind:value={formData.companySize}
 						disabled={!isAdmin}
@@ -223,10 +234,11 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
+					<label for="company-website" class="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
 					<div class="relative">
 						<Globe class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
 						<input
+							id="company-website"
 							type="url"
 							name="website"
 							bind:value={formData.website}
@@ -244,10 +256,11 @@
 			<h2 class="text-lg font-semibold text-gray-900 mb-6">About Company</h2>
 			<div class="space-y-6">
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
+					<label for="company-profile" class="block text-sm font-medium text-gray-700 mb-2">
 						Company Description <span class="text-red-500">*</span>
 					</label>
 					<textarea
+						id="company-profile"
 						name="profile"
 						bind:value={formData.about}
 						rows="5"
@@ -264,10 +277,11 @@
 			<h2 class="text-lg font-semibold text-gray-900 mb-6">Contact Information</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">
+					<label for="company-email" class="block text-sm font-medium text-gray-700 mb-2">
 						Primary Email <span class="text-red-500">*</span>
 					</label>
 					<input
+						id="company-email"
 						type="email"
 						name="email"
 						bind:value={formData.primaryEmail}
@@ -278,8 +292,9 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+					<label for="company-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
 					<input
+						id="company-phone"
 						type="tel"
 						name="phone_number"
 						bind:value={formData.phone}
@@ -290,8 +305,9 @@
 				</div>
 
 				<div class="md:col-span-2">
-					<label class="block text-sm font-medium text-gray-700 mb-2">Office Address</label>
+					<label for="company-address" class="block text-sm font-medium text-gray-700 mb-2">Office Address</label>
 					<textarea
+						id="company-address"
 						name="address"
 						bind:value={formData.address}
 						rows="2"

@@ -1,5 +1,5 @@
-import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import { error, fail } from '@sveltejs/kit';
+import type { PageServerLoad, Actions } from './$types';
 import { API_BASE_URL } from '$lib/config/env';
 
 export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
@@ -71,5 +71,66 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 	} catch (err: any) {
 		console.error('Error loading job details:', err);
 		throw error(500, err.message || 'Failed to load job details');
+	}
+};
+
+export const actions: Actions = {
+	/**
+	 * Toggle email notifications for job applicants
+	 */
+	toggleNotifications: async ({ params, cookies, fetch }) => {
+		const jobId = params.id;
+		const accessToken = cookies.get('access_token');
+
+		if (!accessToken) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		try {
+			// First, get current job state
+			const jobResponse = await fetch(`${API_BASE_URL}/recruiter/jobs/${jobId}/`, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			});
+
+			if (!jobResponse.ok) {
+				return fail(jobResponse.status, { error: 'Failed to fetch job details' });
+			}
+
+			const job = await jobResponse.json();
+
+			// Toggle the notification setting
+			const newNotificationState = !job.send_email_notifications;
+
+			// Update the job
+			const updateResponse = await fetch(`${API_BASE_URL}/recruiter/jobs/${jobId}/update/`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${accessToken}`
+				},
+				body: JSON.stringify({
+					send_email_notifications: newNotificationState
+				})
+			});
+
+			if (!updateResponse.ok) {
+				const errorData = await updateResponse.json();
+				return fail(updateResponse.status, {
+					error: errorData.error || 'Failed to update notification settings'
+				});
+			}
+
+			return {
+				success: true,
+				message: newNotificationState
+					? 'Email notifications enabled'
+					: 'Email notifications disabled'
+			};
+		} catch (err: any) {
+			console.error('Error toggling notifications:', err);
+			return fail(500, { error: err.message || 'Failed to toggle notifications' });
+		}
 	}
 };

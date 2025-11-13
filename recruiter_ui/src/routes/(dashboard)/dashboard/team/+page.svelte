@@ -15,7 +15,8 @@
 		CheckCircle,
 		XCircle,
 		Shield,
-		Clock
+		Clock,
+		Eye
 	} from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
@@ -288,6 +289,13 @@
 								<!-- Actions Menu -->
 								{#if isAdmin && member.id !== data.user.id}
 									<div class="flex items-center gap-2">
+										<a
+											href="/dashboard/team/{member.id}/"
+											class="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+											title="View details"
+										>
+											<Eye class="w-4 h-4" />
+										</a>
 										<button
 											onclick={() => openEditDialog(member)}
 											class="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -448,10 +456,11 @@
 			>
 				<div class="p-6 space-y-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<label for="invite-email" class="block text-sm font-medium text-gray-700 mb-2">
 							Email Address <span class="text-red-500">*</span>
 						</label>
 						<input
+							id="invite-email"
 							type="email"
 							name="email"
 							bind:value={inviteForm.email}
@@ -462,8 +471,9 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Job Title (Optional)</label>
+						<label for="invite-job-title" class="block text-sm font-medium text-gray-700 mb-2">Job Title (Optional)</label>
 						<input
+							id="invite-job-title"
 							type="text"
 							name="job_title"
 							bind:value={inviteForm.job_title}
@@ -473,10 +483,11 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<label for="invite-message" class="block text-sm font-medium text-gray-700 mb-2">
 							Personal Message (Optional)
 						</label>
 						<textarea
+							id="invite-message"
 							name="message"
 							bind:value={inviteForm.message}
 							rows="3"
@@ -557,8 +568,9 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
+						<label for="edit-job-title" class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
 						<input
+							id="edit-job-title"
 							type="text"
 							name="job_title"
 							bind:value={editForm.job_title}

@@ -15,7 +15,8 @@
 		MapPin,
 		Briefcase,
 		Send,
-		Archive
+		Archive,
+		Copy
 	} from '@lucide/svelte';
 	import type { JobStatus } from '$lib/types';
 
@@ -123,13 +124,22 @@
 			<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Jobs</h1>
 			<p class="text-gray-600 mt-1">Manage your job postings</p>
 		</div>
-		<a
-			href="/dashboard/jobs/new/"
-			class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-		>
-			<Plus class="w-4 h-4" />
-			Post New Job
-		</a>
+		<div class="flex gap-3">
+			<a
+				href="/dashboard/jobs/inactive/"
+				class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+			>
+				<Archive class="w-4 h-4" />
+				Inactive Jobs
+			</a>
+			<a
+				href="/dashboard/jobs/new/"
+				class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+			>
+				<Plus class="w-4 h-4" />
+				Post New Job
+			</a>
+		</div>
 	</div>
 
 	<!-- Filters and Search -->
@@ -358,6 +368,13 @@
 											title="View"
 										>
 											<ExternalLink class="w-4 h-4" />
+										</a>
+										<a
+											href="/dashboard/jobs/new/?copy_from={job.id}"
+											class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+											title="Copy Job"
+										>
+											<Copy class="w-4 h-4" />
 										</a>
 										{#if job.status === 'Draft'}
 											<button

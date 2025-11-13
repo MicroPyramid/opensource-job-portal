@@ -286,5 +286,49 @@ export const actions: Actions = {
 				error: 'An error occurred while cancelling the invitation'
 			});
 		}
+	},
+
+	// Toggle member active/inactive status
+	toggleStatus: async ({ request, fetch }) => {
+		const formData = await request.formData();
+		const userId = formData.get('user_id')?.toString();
+
+		if (!userId) {
+			return fail(400, {
+				action: 'toggleStatus',
+				success: false,
+				error: 'User ID is required'
+			});
+		}
+
+		try {
+			const response = await fetch(`${API_BASE_URL}/recruiter/team/${userId}/toggle-status/`, {
+				method: 'POST'
+			});
+
+			const result = await response.json();
+
+			if (response.ok) {
+				return {
+					action: 'toggleStatus',
+					success: true,
+					message: result.message || 'Member status updated successfully',
+					user: result.user
+				};
+			} else {
+				return fail(400, {
+					action: 'toggleStatus',
+					success: false,
+					error: result.error || 'Failed to toggle member status'
+				});
+			}
+		} catch (error) {
+			console.error('Error toggling member status:', error);
+			return fail(500, {
+				action: 'toggleStatus',
+				success: false,
+				error: 'An error occurred while toggling member status'
+			});
+		}
 	}
 };

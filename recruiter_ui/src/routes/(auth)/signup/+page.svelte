@@ -19,8 +19,8 @@
 	let invitationToken = $state($page.url.searchParams.get('invitation') || '');
 	let isInvitationFlow = $derived(!!invitationToken);
 
-	let step = $state(isInvitationFlow ? 1 : 0); // Skip account type selection for invitations
-	let userType = $state<'recruiter' | 'company' | null>(isInvitationFlow ? 'company' : null);
+	let step = $state(!!invitationToken ? 1 : 0); // Skip account type selection for invitations
+	let userType = $state<'recruiter' | 'company' | null>(!!invitationToken ? 'company' : null);
 	let showPassword = $state(false);
 	let showConfirmPassword = $state(false);
 	let loading = $state(false);
