@@ -11,7 +11,12 @@
 
   let { title, defaultExpanded = true, hasActiveFilter = false, children }: Props = $props();
 
-  let isExpanded = $state(defaultExpanded);
+  let isExpanded = $state(true);
+
+  // Sync with prop on mount
+  $effect(() => {
+    isExpanded = defaultExpanded;
+  });
 
   function toggleExpanded() {
     isExpanded = !isExpanded;

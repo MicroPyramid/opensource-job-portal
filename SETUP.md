@@ -237,7 +237,7 @@ sudo chown -R $USER:$USER .
 
 ## Technology Stack
 
-- **Framework**: Django 4.2.22
+- **Framework**: Django 5.x
 - **Database**: PostgreSQL
 - **Cache**: Redis + Celery 5.5.0
 - **Search**: Elasticsearch 7.17.6

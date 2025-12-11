@@ -31,7 +31,12 @@
     defaultExpanded = true
   }: Props = $props();
 
-  let isExpanded = $state(defaultExpanded);
+  let isExpanded = $state(true);
+
+  // Sync with prop on mount
+  $effect(() => {
+    isExpanded = defaultExpanded;
+  });
 
   const selectedCount = $derived(options.filter(opt => opt.checked).length);
   const visibleOptions = $derived(options.slice(0, maxVisible));

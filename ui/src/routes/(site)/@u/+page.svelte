@@ -42,8 +42,8 @@
         education: EducationItem[];
     }
 
-    const { data } = $props<{ data: PageData }>();
-    void data;
+    const _: { data: PageData } = $props();
+    void _;
 
     // Mock data - replace with actual data from your backend
     const profile: Profile = {

@@ -24,23 +24,21 @@
   let { data }: Props = $props();
 
   // Initialize from server data (reactive to changes)
-  let jobs = $state<Job[]>(data.jobs || []);
-  let totalJobs = $derived(data.totalJobs || 0);
-  let totalPages = $derived(data.totalPages || 0);
-  let currentPage = $state(data.currentPage || 1);
-  let filterOptions = $state<JobFilterOptions | null>(data.filterOptions);
-  let error = $derived(data.error);
+  let jobs = $state<Job[]>([]);
+  const totalJobs = $derived(data.totalJobs || 0);
+  const totalPages = $derived(data.totalPages || 0);
+  let currentPage = $state(1);
+  let filterOptions = $state<JobFilterOptions | null>(null);
+  const error = $derived(data.error);
 
-  // Sync jobs when server data changes
+  // Sync jobs and filterOptions when server data changes
   $effect(() => {
     jobs = data.jobs || [];
+    filterOptions = data.filterOptions;
   });
 
-  // Initialize filter state from URL params (SSR-compatible)
-  const initialParams = data.initialParams || {};
-
-  // Search and filter state - initialized from URL
-  let searchTerm = $state(initialParams.search || '');
+  // Search and filter state - initialized empty, synced via $effect
+  let searchTerm = $state('');
   let showFiltersMobile = $state(false);
 
   // Modal states
@@ -49,75 +47,72 @@
   let showIndustryModal = $state(false);
   let showEducationModal = $state(false);
 
-  // Salary filter (INR in Lakhs per Annum) - initialized from URL
-  let salaryMin = $state<number | null>(initialParams.min_salary ?? null);
-  let salaryMax = $state<number | null>(initialParams.max_salary ?? null);
+  // Salary filter (INR in Lakhs per Annum)
+  let salaryMin = $state<number | null>(null);
+  let salaryMax = $state<number | null>(null);
 
-  // Experience range filter (in years) - initialized from URL
-  let experienceMin = $state(initialParams.min_experience ?? 0);
-  let experienceMax = $state(initialParams.max_experience ?? 20);
+  // Experience range filter (in years)
+  let experienceMin = $state(0);
+  let experienceMax = $state(20);
 
-  // Remote filter - initialized from URL
-  let isRemote = $state(initialParams.is_remote ?? false);
+  // Remote filter
+  let isRemote = $state(false);
 
-  // Fresher filter - initialized from URL
-  let isFresher = $state(initialParams.fresher ?? false);
+  // Fresher filter
+  let isFresher = $state(false);
 
   // Track if we're syncing from URL (to prevent triggering navigation)
   let isSyncingFromUrl = $state(false);
 
-  // Initialize filter options from server data immediately (SSR-compatible)
-  // This runs during SSR and on the client
-  // Check initial URL params to pre-select filters
-  const selectedLocations = initialParams.location || [];
-  const selectedSkills = initialParams.skills || [];
-  const selectedIndustries = initialParams.industry || [];
-  const selectedEducation = initialParams.education || [];
-  const selectedJobTypes = initialParams.job_type || [];
+  // Filter options state
+  let locationOptions = $state<FilterOption[]>([]);
+  let skillOptions = $state<FilterOption[]>([]);
+  let industryOptions = $state<FilterOption[]>([]);
+  let educationOptions = $state<FilterOption[]>([]);
+  let jobTypeOptions = $state<{ name: string; value: string; count: number; checked: boolean }[]>([]);
 
-  let locationOptions = $state<FilterOption[]>(
-    filterOptions?.locations.map(opt => ({
+  // Initialize filter options from server data
+  $effect(() => {
+    const params = data.initialParams || {};
+    const opts = data.filterOptions;
+
+    const selectedLocations = params.location || [];
+    const selectedSkills = params.skills || [];
+    const selectedIndustries = params.industry || [];
+    const selectedEducation = params.education || [];
+    const selectedJobTypes = params.job_type || [];
+
+    locationOptions = opts?.locations.map((opt: BaseFilterOption) => ({
       ...opt,
       value: opt.slug,
       checked: selectedLocations.includes(opt.slug)
-    })) || []
-  );
+    })) || [];
 
-  let skillOptions = $state<FilterOption[]>(
-    filterOptions?.skills.map(opt => ({
+    skillOptions = opts?.skills.map((opt: BaseFilterOption) => ({
       ...opt,
       value: opt.slug,
       checked: selectedSkills.includes(opt.slug)
-    })) || []
-  );
+    })) || [];
 
-  let industryOptions = $state<FilterOption[]>(
-    filterOptions?.industries.map(opt => ({
+    industryOptions = opts?.industries.map((opt: BaseFilterOption) => ({
       ...opt,
       value: opt.slug,
       checked: selectedIndustries.includes(opt.slug)
-    })) || []
-  );
+    })) || [];
 
-  let educationOptions = $state<FilterOption[]>(
-    filterOptions?.education.map(opt => ({
+    educationOptions = opts?.education.map((opt: BaseFilterOption) => ({
       ...opt,
       value: opt.slug,
       checked: selectedEducation.includes(opt.slug)
-    })) || []
-  );
+    })) || [];
 
-  let jobTypeOptions = $state<{ name: string; value: string; count: number; checked: boolean }[]>(
-    filterOptions?.job_types.map(opt => ({
+    jobTypeOptions = opts?.job_types.map((opt: { label: string; value: string; count: number }) => ({
       name: opt.label,
       value: opt.value,
       count: opt.count,
       checked: selectedJobTypes.includes(opt.value)
-    })) || []
-  );
+    })) || [];
 
-  // Sync currentPage when data changes
-  $effect(() => {
     currentPage = data.currentPage || 1;
   });
 

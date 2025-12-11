@@ -31,16 +31,17 @@
 
   let { data }: Props = $props();
 
-  // Initialize from server data
-  let companies = $state<APICompany[]>(data.companies || []);
-  let totalCompanies = $derived(data.totalCompanies || 0);
-  let totalPages = $derived(data.totalPages || 0);
-  let currentPage = $state(data.currentPage || 1);
-  let error = $derived(data.error);
+  // Initialize from server data - use $derived for reactive values
+  let companies = $state<APICompany[]>([]);
+  const totalCompanies = $derived(data.totalCompanies || 0);
+  const totalPages = $derived(data.totalPages || 0);
+  let currentPage = $state(1);
+  const error = $derived(data.error);
 
-  // Sync companies when server data changes
+  // Sync companies and currentPage when server data changes
   $effect(() => {
     companies = data.companies || [];
+    currentPage = data.currentPage || 1;
   });
 
   // Filter state
@@ -55,45 +56,40 @@
   let locationSearchTerm = $state('');
   let industrySearchTerm = $state('');
 
-  // Initialize filter options from server data
-  const initialParams = data.initialParams || {};
+  // Filter options state
+  let companyTypeOptions = $state<FilterOption[]>([]);
+  let locationOptions = $state<FilterOption[]>([]);
+  let industryOptions = $state<FilterOption[]>([]);
+  let sizeOptions = $state<FilterOption[]>([]);
 
-  let companyTypeOptions = $state<FilterOption[]>(
-    (data.filterOptions?.company_types || []).map(opt => ({
+  // Initialize filter options from server data
+  $effect(() => {
+    const initialParams = data.initialParams || {};
+
+    companyTypeOptions = (data.filterOptions?.company_types || []).map(opt => ({
       ...opt,
       checked: initialParams.company_type === opt.value
-    }))
-  );
+    }));
 
-  let locationOptions = $state<FilterOption[]>(
-    (data.filterOptions?.locations || []).map(opt => ({
+    locationOptions = (data.filterOptions?.locations || []).map(opt => ({
       ...opt,
       checked: initialParams.location === opt.value
-    }))
-  );
+    }));
 
-  let industryOptions = $state<FilterOption[]>(
-    (data.filterOptions?.industries || []).map(opt => ({
+    industryOptions = (data.filterOptions?.industries || []).map(opt => ({
       ...opt,
       checked: initialParams.industry === opt.value
-    }))
-  );
+    }));
 
-  let sizeOptions = $state<FilterOption[]>(
-    (data.filterOptions?.sizes || []).map(opt => ({
+    sizeOptions = (data.filterOptions?.sizes || []).map(opt => ({
       ...opt,
       checked: initialParams.size === opt.value
-    }))
-  );
+    }));
+  });
 
   // Track if we've mounted
   let hasMounted = $state(false);
   let isSyncingFromUrl = $state(false);
-
-  // Sync currentPage when data changes
-  $effect(() => {
-    currentPage = data.currentPage || 1;
-  });
 
   onMount(() => {
     hasMounted = true;
