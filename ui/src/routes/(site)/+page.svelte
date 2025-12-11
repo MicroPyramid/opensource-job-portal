@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Search, Briefcase, MapPin, Brain, Shield, Clock, ChevronRight, Building, DollarSign, Sparkles, GraduationCap, ArrowRight, Home, UserSquare2 } from '@lucide/svelte';
+  import { Search, Briefcase, MapPin, Brain, Shield, Clock, ChevronRight, Building2, IndianRupee, Sparkles, GraduationCap, ArrowRight, Home, Users, Zap, TrendingUp, CheckCircle2, Star } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import Autocomplete from '$lib/components/Autocomplete.svelte';
   import { searchSkills, searchLocations } from '$lib/api/search';
@@ -30,9 +30,8 @@
     { id: 'full-time', label: 'Full Time', icon: Briefcase },
     { id: 'internship', label: 'Internship', icon: GraduationCap },
     { id: 'remote', label: 'Remote', icon: Home },
-    { id: 'fresher', label: 'Fresher', icon: UserSquare2 }
+    { id: 'fresher', label: 'Fresher', icon: Users }
   ];
-
 
   async function handleSkillSearch(event: CustomEvent<string>) {
     const query = event.detail;
@@ -86,42 +85,32 @@
 
   function handleSearch(event: Event) {
     event.preventDefault();
-
-    // Build query parameters for job search
     const params = new URLSearchParams();
 
-    // Add skill filter if provided
     if (selectedSkill?.slug) {
       params.append('skills', selectedSkill.slug);
     } else if (jobKeyword.trim()) {
-      // If no skill selected but keyword typed, add to search
       params.append('search', jobKeyword.trim());
     }
 
-    // Add location filter if provided
     if (selectedLocation?.slug) {
       params.append('location', selectedLocation.slug);
     } else if (location.trim()) {
-      // If no location selected but text typed, add to search
       if (!params.has('search')) {
         params.append('search', location.trim());
       }
     }
 
-    // Add job type filter
     if (selectedJobType) {
-      // Handle special job types
       if (selectedJobType === 'remote') {
         params.append('is_remote', 'true');
       } else if (selectedJobType === 'fresher') {
         params.append('fresher', 'true');
       } else {
-        // Regular job types (full-time, internship, etc.)
         params.append('job_type', selectedJobType);
       }
     }
 
-    // Navigate to jobs page with filters using SvelteKit navigation
     const queryString = params.toString();
     goto(`/jobs/${queryString ? '?' + queryString : ''}`);
   }
@@ -129,351 +118,350 @@
   function selectJobType(typeId: string) {
     selectedJobType = typeId;
   }
+
+  // Stats for social proof
+  const stats = [
+    { value: '50K+', label: 'Active Jobs' },
+    { value: '10K+', label: 'Companies' },
+    { value: '1M+', label: 'Job Seekers' },
+    { value: '95%', label: 'Success Rate' }
+  ];
 </script>
 
 <svelte:head>
-  <title>PeelJobs - Find Your Dream Job with Smart Precision | AI-Powered Job Matching</title>
-  <meta name="description" content="PeelJobs uses advanced AI to match you with perfect job opportunities across India. Search thousands of jobs, get personalized recommendations, and accelerate your career growth." />
+  <title>PeelJobs - Find Your Dream Job | India's Smart Job Platform</title>
+  <meta name="description" content="Discover thousands of job opportunities across India. PeelJobs connects talented professionals with top companies using intelligent job matching." />
 </svelte:head>
 
-<!-- Hero Section -->
-<section class="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white py-12 md:py-16 lg:py-20 relative overflow-hidden">
-  <div class="container mx-auto px-4 lg:px-6 relative z-10">
-    <div class="max-w-4xl mx-auto">
-      <!-- Content -->
-      <div class="space-y-6">
-        <!-- AI Badge -->
-        <div class="inline-flex items-center gap-2 bg-blue-800 bg-opacity-50 px-4 py-2 rounded-full text-sm border border-blue-600">
-          <Sparkles size={16} class="text-blue-300" />
-          <span>AI-Powered Job Matching</span>
+<!-- Hero Section - Material Design 3 with clean, elevated aesthetic -->
+<section class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 lg:px-8 pt-12 pb-20 md:pt-16 md:pb-28 lg:pt-20 lg:pb-32">
+    <div class="max-w-3xl mx-auto text-center">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full text-primary-700 text-sm font-medium mb-8 animate-fade-in-down">
+        <Sparkles size={16} />
+        <span>Smart Job Matching Platform</span>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight leading-tight mb-6 animate-fade-in-down delay-100" style="opacity: 0;">
+        Find the job that
+        <span class="text-primary-600">fits your life</span>
+      </h1>
+
+      <p class="text-lg md:text-xl text-gray-600 leading-relaxed mb-10 max-w-2xl mx-auto animate-fade-in-up delay-200" style="opacity: 0;">
+        Join millions of professionals who trust PeelJobs to connect them with opportunities at India's top companies.
+      </p>
+
+      <!-- Search Form - Elevated Card Style -->
+      <form onsubmit={handleSearch} class="bg-white rounded-2xl elevation-3 p-4 md:p-6 animate-scale-in delay-300 max-w-2xl mx-auto" style="opacity: 0;">
+        <div class="flex flex-col md:flex-row gap-3">
+          <!-- Location Input -->
+          <div class="flex-1">
+            <Autocomplete
+              id="location-search"
+              placeholder="City or Location"
+              bind:value={location}
+              icon={MapPin}
+              suggestions={locationSuggestions}
+              loading={loadingLocations}
+              showJobCount={true}
+              inputClass="!rounded-xl !border-gray-200 !bg-gray-50 focus:!bg-white"
+              on:search={handleLocationSearch}
+              on:select={handleLocationSelect}
+              on:clear={handleLocationClear}
+            />
+          </div>
+
+          <!-- Skills/Job Input -->
+          <div class="flex-1">
+            <Autocomplete
+              id="job-search"
+              placeholder="Skills or Job Title"
+              bind:value={jobKeyword}
+              icon={Search}
+              suggestions={skillSuggestions}
+              loading={loadingSkills}
+              showJobCount={true}
+              inputClass="!rounded-xl !border-gray-200 !bg-gray-50 focus:!bg-white"
+              on:search={handleSkillSearch}
+              on:select={handleSkillSelect}
+              on:clear={handleSkillClear}
+            />
+          </div>
+
+          <!-- Search Button -->
+          <button
+            type="submit"
+            class="flex items-center justify-center gap-2 px-8 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-all duration-200 elevation-1 hover:elevation-2 whitespace-nowrap"
+          >
+            <Search size={20} />
+            <span class="hidden md:inline">Search</span>
+          </button>
         </div>
 
-        <!-- Heading -->
-        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight animate-fade-in-down">
-          Find Your Dream Job with
-          <span class="text-blue-300">Smart Precision</span>
-        </h1>
+        <!-- Job Type Chips -->
+        <div class="flex flex-wrap justify-center gap-2 mt-5 pt-5 border-t border-gray-100">
+          {#each jobTypes as jobType}
+            <button
+              type="button"
+              onclick={() => selectJobType(jobType.id)}
+              class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 {selectedJobType === jobType.id
+                ? 'bg-primary-600 text-white elevation-1'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+            >
+              <svelte:component this={jobType.icon} size={16} />
+              <span>{jobType.label}</span>
+            </button>
+          {/each}
+        </div>
+      </form>
 
-        <p class="text-base md:text-lg text-blue-100 leading-relaxed animate-fade-in-up max-w-xl">
-          Join thousands of professionals who've accelerated their careers with our intelligent job matching platform. Your perfect opportunity is just one search away.
-        </p>
-
-        <!-- Search Form -->
-        <form onsubmit={handleSearch} class="bg-white p-4 md:p-6 rounded-xl shadow-2xl animate-fade-in space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <!-- Location Autocomplete -->
-            <div>
-              <Autocomplete
-                id="location-search"
-                placeholder="Select Location"
-                bind:value={location}
-                icon={MapPin}
-                suggestions={locationSuggestions}
-                loading={loadingLocations}
-                showJobCount={true}
-                on:search={handleLocationSearch}
-                on:select={handleLocationSelect}
-                on:clear={handleLocationClear}
-              />
-            </div>
-
-            <!-- Skills Autocomplete with Search Button -->
-            <div class="flex gap-2">
-              <div class="flex-1">
-                <Autocomplete
-                  id="job-search"
-                  placeholder="Enter skills or job title"
-                  bind:value={jobKeyword}
-                  icon={Search}
-                  suggestions={skillSuggestions}
-                  loading={loadingSkills}
-                  showJobCount={true}
-                  on:search={handleSkillSearch}
-                  on:select={handleSkillSelect}
-                  on:clear={handleSkillClear}
-                />
-              </div>
-              <button
-                type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl whitespace-nowrap"
-              >
-                <Search size={18} />
-                <span class="hidden md:inline">Search Jobs</span>
-              </button>
-            </div>
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12 animate-fade-in-up delay-500" style="opacity: 0;">
+        {#each stats as stat, i}
+          <div class="text-center">
+            <div class="text-2xl md:text-3xl font-bold text-gray-900">{stat.value}</div>
+            <div class="text-sm text-gray-500 mt-1">{stat.label}</div>
           </div>
-
-          <!-- Job Type Filters -->
-          <div class="flex flex-wrap gap-2">
-            {#each jobTypes as jobType}
-              <button
-                type="button"
-                onclick={() => selectJobType(jobType.id)}
-                class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-200 {selectedJobType === jobType.id
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50'}"
-              >
-                <svelte:component this={jobType.icon} size={16} />
-                <span class="text-sm font-medium">{jobType.label}</span>
-              </button>
-            {/each}
-          </div>
-        </form>
+        {/each}
       </div>
     </div>
   </div>
 </section>
 
-<!-- Browse Jobs Section -->
-<section class="py-16 lg:py-20 bg-white">
-  <div class="container mx-auto px-4 lg:px-6">
-    <!-- Browse by Category -->
-    <div class="mb-16">
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Browse Jobs by Category</h2>
-          <p class="text-gray-600">Explore opportunities across different industries</p>
-        </div>
+<!-- Browse by Category - Material Design Cards -->
+<section class="py-16 lg:py-24 bg-surface-50">
+  <div class="max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+      <div>
+        <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Browse by Category</h2>
+        <p class="text-gray-600 mt-2">Explore opportunities across different industries</p>
+      </div>
+      <a
+        href="/jobs/"
+        class="inline-flex items-center gap-2 text-primary-600 font-medium hover:text-primary-700 transition-colors group"
+      >
+        View All Jobs
+        <ArrowRight size={18} class="group-hover:translate-x-1 transition-transform" />
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {#each topCategories as category, i}
         <a
-          href="/jobs/"
-          class="hidden md:flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+          href="/jobs/?industry={category.slug}"
+          class="group bg-white rounded-2xl p-5 transition-all duration-300 hover:elevation-3 border border-gray-100 hover:border-primary-200"
+          style="animation: fade-in-up 0.5s ease forwards; animation-delay: {i * 50}ms; opacity: 0;"
         >
-          View All Jobs
-          <ArrowRight size={18} />
+          <div class="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center mb-4 group-hover:bg-primary-100 transition-colors">
+            <Building2 size={22} class="text-primary-600" />
+          </div>
+          <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2">
+            {category.name}
+          </h3>
         </a>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {#each topCategories as category}
-          <a
-            href="/jobs/?industry={category.slug}"
-            class="group bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg p-4 transition-all duration-200 hover:shadow-md"
-          >
-            <div class="flex items-center mb-3">
-              <Briefcase size={20} class="text-blue-600" />
-            </div>
-            <h3 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">
-              {category.name}
-            </h3>
-          </a>
-        {/each}
-      </div>
-    </div>
-
-    <!-- Browse by Location -->
-    <div>
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Browse Jobs by Location</h2>
-          <p class="text-gray-600">Find opportunities in your preferred city</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {#each topLocations as location}
-          <a
-            href="/jobs/?location={location.slug}"
-            class="group bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg p-4 transition-all duration-200 hover:shadow-md"
-          >
-            <div class="flex items-center mb-3">
-              <MapPin size={20} class="text-blue-600" />
-            </div>
-            <h3 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">
-              {location.name}
-            </h3>
-          </a>
-        {/each}
-      </div>
+      {/each}
     </div>
   </div>
 </section>
 
-<!-- Platform Highlights -->
-<section class="py-16 lg:py-20 bg-gray-50">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="text-center mb-16">
-      <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Why Choose PeelJobs?</h2>
-      <p class="text-lg text-gray-600 max-w-2xl mx-auto">Experience the future of job searching with our cutting-edge features designed to accelerate your career.</p>
+<!-- Browse by Location -->
+<section class="py-16 lg:py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+      <div>
+        <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Jobs by Location</h2>
+        <p class="text-gray-600 mt-2">Find opportunities in your preferred city</p>
+      </div>
     </div>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-        <div class="flex justify-center mb-6">
-          <div class="p-4 bg-blue-100 rounded-full">
-            <Brain class="text-blue-600" size={32} />
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {#each topLocations as loc, i}
+        <a
+          href="/jobs/?location={loc.slug}"
+          class="group flex items-center gap-4 bg-surface-50 rounded-2xl p-4 transition-all duration-300 hover:bg-primary-50 border border-transparent hover:border-primary-200"
+          style="animation: fade-in-up 0.5s ease forwards; animation-delay: {i * 50}ms; opacity: 0;"
+        >
+          <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-primary-100 transition-colors elevation-1">
+            <MapPin size={18} class="text-primary-600" />
           </div>
+          <span class="font-medium text-gray-900 group-hover:text-primary-700 transition-colors">{loc.name}</span>
+        </a>
+      {/each}
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose PeelJobs - Feature Cards -->
+<section class="py-16 lg:py-24 bg-gray-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl lg:text-4xl font-bold tracking-tight mb-4">Why Choose PeelJobs?</h2>
+      <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+        Experience the future of job searching with features designed for your success.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+      <!-- Feature 1 -->
+      <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-primary-500/20 flex items-center justify-center mb-6">
+          <Brain size={28} class="text-primary-400" />
         </div>
-        <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">AI-Powered Matching</h3>
-        <p class="text-gray-600 text-center leading-relaxed">Our advanced algorithms analyze your skills, experience, and preferences to find the most relevant opportunities.</p>
+        <h3 class="text-xl font-bold mb-3">Smart Matching</h3>
+        <p class="text-gray-400 leading-relaxed">
+          Our intelligent algorithms analyze your skills and experience to surface the most relevant opportunities for you.
+        </p>
       </div>
-      <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-        <div class="flex justify-center mb-6">
-          <div class="p-4 bg-green-100 rounded-full">
-            <Shield class="text-green-600" size={32} />
-          </div>
+
+      <!-- Feature 2 -->
+      <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-success-500/20 flex items-center justify-center mb-6">
+          <Shield size={28} class="text-success-500" />
         </div>
-        <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">Verified Companies</h3>
-        <p class="text-gray-600 text-center leading-relaxed">All employers are thoroughly vetted to ensure you're applying to legitimate, high-quality opportunities.</p>
+        <h3 class="text-xl font-bold mb-3">Verified Companies</h3>
+        <p class="text-gray-400 leading-relaxed">
+          Every employer is thoroughly vetted to ensure you're applying to legitimate, trustworthy opportunities.
+        </p>
       </div>
-      <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-        <div class="flex justify-center mb-6">
-          <div class="p-4 bg-purple-100 rounded-full">
-            <Clock class="text-purple-600" size={32} />
-          </div>
+
+      <!-- Feature 3 -->
+      <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-warning-500/20 flex items-center justify-center mb-6">
+          <Zap size={28} class="text-warning-500" />
         </div>
-        <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">Fast Applications</h3>
-        <p class="text-gray-600 text-center leading-relaxed">Apply to multiple jobs in minutes with our streamlined application process and smart autofill features.</p>
+        <h3 class="text-xl font-bold mb-3">Quick Apply</h3>
+        <p class="text-gray-400 leading-relaxed">
+          Apply to multiple jobs in minutes with our streamlined process and smart profile autofill.
+        </p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Featured Jobs Section -->
-<section class="py-16 lg:py-20 bg-gray-50">
-  <div class="container mx-auto px-4 lg:px-6">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Latest Job Opportunities</h2>
-      <p class="text-lg text-gray-600">Explore the newest openings from companies across India</p>
+<section class="py-16 lg:py-24 bg-surface-50">
+  <div class="max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-success-500/10 rounded-full text-success-600 text-sm font-medium mb-3">
+          <TrendingUp size={14} />
+          <span>Latest Openings</span>
+        </div>
+        <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Featured Jobs</h2>
+        <p class="text-gray-600 mt-2">Fresh opportunities from top companies across India</p>
+      </div>
+      <a
+        href="/jobs/"
+        class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white font-medium rounded-full hover:bg-primary-700 transition-colors elevation-1"
+      >
+        View All Jobs
+        <ArrowRight size={18} />
+      </a>
     </div>
 
-    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-      {#each featuredJobs as job (job.id)}
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+      {#each featuredJobs as job, i (job.id)}
         <a
           href="{job.slug}"
-          class="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+          class="group bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:elevation-3 border border-gray-100"
+          style="animation: fade-in-up 0.5s ease forwards; animation-delay: {i * 75}ms; opacity: 0;"
         >
-          <div class="p-6">
-            <div class="flex items-start mb-4">
+          <div class="p-5">
+            <!-- Company Info -->
+            <div class="flex items-start gap-3 mb-4">
               <img
                 src={job.company_logo}
                 alt="{job.company_name} logo"
-                class="w-12 h-12 rounded-lg mr-3 object-cover border border-gray-200"
+                class="w-12 h-12 rounded-xl object-cover bg-gray-100 flex-shrink-0"
                 onerror={(e) => {
                   const target = e.target as HTMLImageElement;
                   const initial = job.company_name.charAt(0).toUpperCase();
-                  target.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23E5E7EB' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%236B7280'%3E${initial}%3C/text%3E%3C/svg%3E`;
+                  target.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23E8F0FE' width='48' height='48' rx='12'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='20' font-weight='600' fill='%231A73E8'%3E${initial}%3C/text%3E%3C/svg%3E`;
                 }}
-              >
-              <div class="flex-1">
-                <h3 class="font-bold text-gray-800 text-base leading-tight group-hover:text-blue-600 transition-colors mb-1 line-clamp-2">
+              />
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 leading-snug">
                   {job.title}
                 </h3>
-                <p class="text-gray-600 text-sm truncate">{job.company_name}</p>
+                <p class="text-sm text-gray-500 mt-0.5 truncate">{job.company_name}</p>
               </div>
             </div>
 
+            <!-- Job Details -->
             <div class="space-y-2 mb-4">
-              <div class="flex items-center text-gray-600 text-sm">
-                <MapPin size={14} class="mr-2 text-gray-400 flex-shrink-0" />
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <MapPin size={14} class="text-gray-400 flex-shrink-0" />
                 <span class="truncate">{job.location_display}</span>
               </div>
-              <div class="flex items-center text-gray-600 text-sm">
-                <Briefcase size={14} class="mr-2 text-gray-400 flex-shrink-0" />
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <Briefcase size={14} class="text-gray-400 flex-shrink-0" />
                 <span class="truncate">{job.experience_display}</span>
               </div>
               {#if job.salary_display}
-                <div class="flex items-center text-gray-600 text-sm">
-                  <DollarSign size={14} class="mr-2 text-gray-400 flex-shrink-0" />
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  <IndianRupee size={14} class="text-gray-400 flex-shrink-0" />
                   <span class="truncate">{job.salary_display}</span>
                 </div>
               {/if}
             </div>
 
-            <div class="flex flex-wrap gap-1 mb-4">
+            <!-- Skills -->
+            <div class="flex flex-wrap gap-1.5 mb-4">
               {#each job.skills.slice(0, 3) as skill}
-                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">{skill.name}</span>
+                <span class="px-2.5 py-1 bg-primary-50 text-primary-700 text-xs font-medium rounded-lg">{skill.name}</span>
               {/each}
               {#if job.skills.length > 3}
-                <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">+{job.skills.length - 3}</span>
+                <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">+{job.skills.length - 3}</span>
               {/if}
             </div>
+          </div>
 
-            <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-              <span class="text-xs text-gray-500">{job.time_ago}</span>
-              <span class="text-blue-600 text-sm font-medium inline-flex items-center group-hover:text-blue-700">
-                View Details
-                <ChevronRight size={14} class="ml-1" />
-              </span>
-            </div>
+          <!-- Footer -->
+          <div class="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+            <span class="text-xs text-gray-500">{job.time_ago}</span>
+            <span class="text-sm font-medium text-primary-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+              View Job
+              <ChevronRight size={16} />
+            </span>
           </div>
         </a>
       {/each}
-    </div>
-
-    <div class="text-center">
-      <a href="/jobs/" class="inline-flex items-center bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-3 px-8 border-2 border-blue-500 hover:border-blue-600 rounded-lg transition duration-200">
-        View All Jobs
-        <ChevronRight size={20} class="ml-2" />
-      </a>
     </div>
   </div>
 </section>
 
 <!-- CTA Section -->
-<section class="py-16 lg:py-20 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-  <div class="container mx-auto px-4 lg:px-6 text-center">
-    <h2 class="text-3xl lg:text-4xl font-bold mb-6">Ready to Transform Your Career?</h2>
-    <p class="text-lg lg:text-xl mb-8 max-w-2xl mx-auto text-blue-100">
-      Join thousands of professionals who've found their dream jobs through our AI-powered platform.
+<section class="py-16 lg:py-24 bg-primary-600">
+  <div class="max-w-4xl mx-auto px-4 lg:px-8 text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-white/90 text-sm font-medium mb-6">
+      <Star size={16} />
+      <span>Join 1M+ professionals</span>
+    </div>
+
+    <h2 class="text-3xl lg:text-4xl font-bold text-white tracking-tight mb-6">
+      Ready to take the next step in your career?
+    </h2>
+
+    <p class="text-lg text-primary-100 mb-10 max-w-2xl mx-auto">
+      Create your free profile today and get matched with opportunities that align with your skills and goals.
     </p>
+
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a href="/register/" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition duration-200 inline-flex items-center justify-center">
+      <a
+        href="/register/"
+        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-full hover:bg-gray-100 transition-all duration-200 elevation-2"
+      >
+        <CheckCircle2 size={20} />
         Get Started Free
-        <ChevronRight size={20} class="ml-2" />
       </a>
-      <a href="/jobs/" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-200">
+      <a
+        href="/jobs/"
+        class="inline-flex items-center justify-center px-8 py-4 text-white font-semibold rounded-full border-2 border-white/30 hover:bg-white/10 transition-all duration-200"
+      >
         Browse Jobs
       </a>
     </div>
   </div>
 </section>
-
-<style>
-  /* Enhanced animations */
-  .animate-fade-in-down {
-    animation: fadeInDown 0.8s ease-out forwards;
-  }
-  .animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out 0.2s forwards;
-    opacity: 0;
-  }
-  .animate-fade-in {
-    animation: fadeIn 1s ease-out 0.4s forwards;
-    opacity: 0;
-  }
-
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  /* Smooth scrolling for anchor links */
-  :global(html) {
-    scroll-behavior: smooth;
-  }
-</style>

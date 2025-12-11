@@ -76,8 +76,7 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
             'location',
             'skills',
             'industry',
-            'edu_qualification',
-            'functional_area'
+            'edu_qualification'
         ).distinct()
 
     def get_serializer_class(self):

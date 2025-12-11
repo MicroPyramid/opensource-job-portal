@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
-  import { X } from '@lucide/svelte';
+  import { X, Loader2 } from '@lucide/svelte';
 
   export let placeholder: string = 'Type to search...';
   export let value: string = '';
@@ -33,7 +33,6 @@
     value = target.value;
     selectedIndex = -1;
 
-    // Debounce the search
     debounce(() => {
       if (value.trim().length >= 2) {
         dispatch('search', value.trim());
@@ -92,7 +91,6 @@
   }
 
   function handleBlur(event: FocusEvent) {
-    // Delay to allow click on dropdown item
     setTimeout(() => {
       showDropdown = false;
       selectedIndex = -1;
@@ -107,10 +105,10 @@
 </script>
 
 <div class="relative w-full">
-  <div class="relative">
+  <div class="relative group">
     {#if icon}
-      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svelte:component this={icon} class="text-gray-400" size={18} />
+      <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <svelte:component this={icon} class="text-gray-400 group-focus-within:text-primary-600 transition-colors" size={18} />
       </span>
     {/if}
 
@@ -124,15 +122,20 @@
       onkeydown={handleKeydown}
       onfocus={handleFocus}
       onblur={handleBlur}
-      class="w-full {icon ? 'pl-10' : 'pl-4'} {value ? 'pr-10' : 'pr-4'} py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 bg-gray-50 focus:bg-white transition-colors duration-200 {inputClass}"
+      class="w-full {icon ? 'pl-11' : 'pl-4'} {value ? 'pr-11' : 'pr-4'} py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 outline-none {inputClass}"
       autocomplete="off"
     />
 
-    {#if value}
+    <!-- Clear or Loading indicator -->
+    {#if loading}
+      <span class="absolute inset-y-0 right-0 pr-4 flex items-center">
+        <Loader2 size={18} class="text-primary-600 animate-spin" />
+      </span>
+    {:else if value}
       <button
         type="button"
         onclick={handleClear}
-        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
         aria-label="Clear input"
       >
         <X size={18} />
@@ -140,27 +143,31 @@
     {/if}
   </div>
 
+  <!-- Dropdown -->
   {#if showDropdown && (suggestions.length > 0 || loading)}
-    <div class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+    <div class="absolute z-50 w-full mt-2 bg-white rounded-xl elevation-3 overflow-hidden animate-scale-in origin-top">
       {#if loading}
-        <div class="px-4 py-3 text-sm text-gray-500 text-center">
-          Loading...
+        <div class="px-4 py-4 flex items-center justify-center gap-2 text-gray-500">
+          <Loader2 size={18} class="animate-spin text-primary-600" />
+          <span class="text-sm">Searching...</span>
         </div>
       {:else if suggestions.length > 0}
-        <ul class="py-1">
+        <ul class="py-2 max-h-64 overflow-y-auto">
           {#each suggestions as suggestion, index}
             <li>
               <button
                 type="button"
                 onclick={() => handleSelect(suggestion)}
-                class="w-full px-4 py-2 text-left hover:bg-blue-50 transition-colors cursor-pointer {selectedIndex === index ? 'bg-blue-50' : ''}"
+                class="w-full px-4 py-2.5 text-left transition-colors flex items-center justify-between group/item {selectedIndex === index ? 'bg-primary-50' : 'hover:bg-gray-50'}"
               >
-                <div class="flex items-center justify-between">
-                  <span class="text-sm text-gray-800 font-medium">{suggestion.name}</span>
-                  {#if showJobCount && suggestion.jobs_count !== undefined}
-                    <span class="text-xs text-gray-500 ml-2">{suggestion.jobs_count} jobs</span>
-                  {/if}
-                </div>
+                <span class="text-sm font-medium text-gray-900 group-hover/item:text-primary-700 {selectedIndex === index ? 'text-primary-700' : ''}">
+                  {suggestion.name}
+                </span>
+                {#if showJobCount && suggestion.jobs_count !== undefined}
+                  <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                    {suggestion.jobs_count} jobs
+                  </span>
+                {/if}
               </button>
             </li>
           {/each}
