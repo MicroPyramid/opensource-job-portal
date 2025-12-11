@@ -131,7 +131,7 @@ def facebook_login(request):
                 if user.is_recruiter or user.is_agency_recruiter:
                     user = authenticate(username=user.username)
                     login(request, user)
-                    return HttpResponseRedirect(reverse("recruiter:index"))
+                    return HttpResponseRedirect("http://localhost:5174/dashboard")
 
                 # Checking Email associated with the user but user is not connected to facebook
                 if not user.is_fb_connected:
@@ -301,9 +301,9 @@ def google_login(request):
                 user.is_active = True
                 user.save()
                 login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-                
+
                 # Redirect to recruiter dashboard
-                return HttpResponseRedirect(reverse("recruiter:index"))
+                return HttpResponseRedirect("http://localhost:5174/dashboard")
 
             # Email associated with the user but Google is not connected
             if not user.is_gp_connected:

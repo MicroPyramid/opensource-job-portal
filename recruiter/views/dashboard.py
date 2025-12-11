@@ -10,10 +10,8 @@ from mpcomp.views import recruiter_login_required
 
 @recruiter_login_required
 def dashboard(request):
-    # active_jobs = JobPost.objects.filter(user=request.user, status='Live')
-    # return render(request, 'recruiter/dashboard.html', {'active_jobs':
-    # active_jobs})
-    return HttpResponseRedirect(reverse("recruiter:list"))
+    # Redirect to new SvelteKit dashboard
+    return HttpResponseRedirect("http://localhost:5174/dashboard")
 
 
 def post_job(request):
