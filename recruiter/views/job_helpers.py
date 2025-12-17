@@ -109,7 +109,6 @@ from mpcomp.views import (
 # - add_other_functional_area()
 # - adding_keywords()
 # - add_interview_location()
-# - add_other_locations()
 # - set_other_fields()
 # - adding_other_fields_data()
 # - save_job_post()
@@ -262,19 +261,7 @@ def add_interview_location(data, job_post, no_of_locations):
 
 
 
-def add_other_locations(post, data, user):
-    pass
-
-
 def set_other_fields(post, data, user):
-    if data.get("last_date"):
-        last_date = datetime.strptime(data.get("last_date"), "%m/%d/%Y").strftime(
-            "%Y-%m-%d"
-        )
-        post.last_date = last_date
-    else:
-        post.last_date = get_next_month()
-
     post.fresher = data.get("min_year") == 0
     if data.get("visa_required"):
         post.visa_required = True
@@ -315,7 +302,6 @@ def set_other_fields(post, data, user):
         if data.get("walkin_time"):
             post.walkin_time = data.get("walkin_time")
 
-        post.last_date = walkin_to_date
     post.save()
 
     if user.agency_admin or user.has_perm("jobposts_edit"):
@@ -353,8 +339,6 @@ def adding_other_fields_data(data, post, user):
         )
     if "final_functional_area" in data.keys():
         add_other_functional_area(post, json.loads(data["final_functional_area"]), user)
-    if "other_location" in data.keys():
-        add_other_locations(post, data, user)
 
     no_of_locations = int(json.loads(data["no_of_interview_location"])) + 1
     add_interview_location(data, post, no_of_locations)

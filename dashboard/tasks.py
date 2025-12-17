@@ -33,39 +33,49 @@ from peeldb.models import (
 
 
 @app.task
-def send_email(mto, msubject, mbody):
+def send_email(mto, msubject, mbody, reply_to=None):
     import logging
-    
+
     logger = logging.getLogger(__name__)
-    
+
     if not isinstance(mto, list):
         mto = [mto]
-    
+
     # Log email details for debugging
     logger.info(f"Sending email to: {mto}")
     logger.info(f"Subject: {msubject}")
+    logger.info(f"Reply-To: {reply_to}")
     logger.info(f"Email backend: {settings.EMAIL_BACKEND}")
-    
+
     # Check if we're in development mode and should log to console
-    if (settings.DEBUG or 
+    if (settings.DEBUG or
         settings.EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend" or
         getattr(settings, 'ENV_TYPE', None) == 'DEV'):
-        
+
         # Print email to console for development
         print("=" * 80)
         print("EMAIL SENT VIA CELERY")
         print("=" * 80)
         print(f"To: {', '.join(mto)}")
         print(f"From: {settings.DEFAULT_FROM_EMAIL}")
+        if reply_to:
+            print(f"Reply-To: {reply_to if isinstance(reply_to, str) else ', '.join(reply_to)}")
         print(f"Subject: {msubject}")
         print("-" * 80)
         print("Body:")
         print(mbody)
         print("=" * 80)
-    
+
     msg = EmailMessage(msubject, mbody, settings.DEFAULT_FROM_EMAIL, mto)
     msg.content_subtype = "html"
-    
+
+    # Set reply-to header if provided
+    if reply_to:
+        if isinstance(reply_to, str):
+            msg.reply_to = [reply_to]
+        else:
+            msg.reply_to = reply_to
+
     try:
         result = msg.send()
         logger.info(f"Email sent successfully. Result: {result}")
@@ -1553,3 +1563,96 @@ def save_search_results(ip_address, data, results, user):
         search_result.user = user
     search_result.job_post = results
     search_result.save()
+
+
+@app.task()
+def check_expiring_jobs():
+    """
+    Check for jobs approaching expiry (7 days remaining) and jobs that just expired.
+    Send email notifications to job owners.
+
+    This task should be run daily via Celery Beat.
+    """
+    from django.utils import timezone
+
+    max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+    warning_days = 7  # Send warning when 7 days remaining
+
+    today = timezone.now().date()
+
+    # Calculate dates
+    expiring_soon_date = today - timedelta(days=(max_age_days - warning_days))
+    expired_today_date = today - timedelta(days=max_age_days)
+
+    # Find jobs expiring in 7 days (published exactly 23 days ago)
+    jobs_expiring_soon = JobPost.objects.filter(
+        status='Live',
+        published_on__date=expiring_soon_date
+    ).select_related('user')
+
+    # Find jobs that expired today (published exactly 30 days ago)
+    jobs_expired_today = JobPost.objects.filter(
+        status='Live',
+        published_on__date=expired_today_date
+    ).select_related('user')
+
+    # Send expiring soon warnings
+    for job in jobs_expiring_soon:
+        if job.user and job.user.email:
+            # Calculate expiry date and days remaining
+            expiry_date = job.published_on + timedelta(days=max_age_days)
+            days_remaining = (expiry_date.date() - today).days
+
+            # Get applicant count
+            applicants_count = job.get_all_applied_users_count()
+
+            # Render email template
+            context = {
+                'user': job.user,
+                'job': job,
+                'days_remaining': days_remaining,
+                'expiry_date': expiry_date,
+                'applicants_count': applicants_count,
+            }
+            template = loader.get_template('email/job_expiring_soon.html')
+            rendered = template.render(context)
+
+            # Send email
+            subject = f'Job Posting Expires in {days_remaining} Days - {job.title}'
+            send_email.delay([job.user.email], subject, rendered)
+
+    # Send expired notifications
+    for job in jobs_expired_today:
+        if job.user and job.user.email:
+            # Calculate expiry date
+            expiry_date = job.published_on + timedelta(days=max_age_days)
+
+            # Get applicant count
+            applicants_count = job.get_all_applied_users_count()
+
+            # Render email template
+            context = {
+                'user': job.user,
+                'job': job,
+                'expiry_date': expiry_date,
+                'applicants_count': applicants_count,
+            }
+            template = loader.get_template('email/job_expired.html')
+            rendered = template.render(context)
+
+            # Send email
+            subject = f'Job Posting No Longer Accepting Applications - {job.title}'
+            send_email.delay([job.user.email], subject, rendered)
+
+    # Log results
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(
+        f'Job expiry check completed: {jobs_expiring_soon.count()} warnings sent, '
+        f'{jobs_expired_today.count()} expiry notifications sent'
+    )
+
+    return {
+        'warnings_sent': jobs_expiring_soon.count(),
+        'expiry_notifications_sent': jobs_expired_today.count(),
+    }

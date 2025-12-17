@@ -218,7 +218,6 @@ class PersonalInfoForm(forms.ModelForm):
             "mobile",
             "technical_skills",
             "industry",
-            "functional_area",
             "year",
             "month",
             "profile_description",
@@ -445,11 +444,6 @@ class JobPostForm(ModelForm):
                 self.fields["edu_qualification"].required = False
             else:
                 self.fields["edu_qualification"].required = True
-        if "final_functional_area" in self.data.keys():
-            if len(self.data["final_functional_area"]) > 2:
-                self.fields["functional_area"].required = False
-            else:
-                self.fields["functional_area"].required = True
         if "other_location" in self.data.keys():
             if len(self.data["other_location"]) != 0:
                 self.fields["location"].required = False
@@ -470,8 +464,6 @@ class JobPostForm(ModelForm):
             # self.fields['company_description'].required = False
             self.fields["industry"].required = False
             self.fields["skills"].required = False
-            self.fields["functional_area"].required = False
-            self.fields["last_date"].required = False
             # self.fields['code'].required = False
             self.fields["job_role"].required = False
             self.fields["company_description"].required = False
@@ -497,18 +489,14 @@ class JobPostForm(ModelForm):
 
             self.fields["industry"].required = False
             self.fields["skills"].required = False
-            self.fields["functional_area"].required = False
-            self.fields["last_date"].required = False
             # self.fields['code'].required = False
             self.fields["job_role"].required = False
             self.fields["company_description"].required = False
 
         if str(self.data["job_type"]) == "full-time":
-            self.fields["last_date"].required = False
             self.fields["edu_qualification"].required = False
 
         if str(self.data["job_type"]) == "internship":
-            self.fields["last_date"].required = False
             self.fields["edu_qualification"].required = False
 
     def clean_title(self):
@@ -530,12 +518,6 @@ class JobPostForm(ModelForm):
             else:
                 return self.cleaned_data.get("vacancies")
         return self.cleaned_data.get("vacancies")
-
-    def clean_last_date(self):
-        date = self.cleaned_data["last_date"]
-        if str(date) < str(datetime.now().date()):
-            raise forms.ValidationError("The date cannot be in the past!")
-        return date
 
     def clean_govt_exam_date(self):
         if ("govt_exam_date", "govt_from_date", "govt_to_date") in self.data.keys():

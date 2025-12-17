@@ -1,47 +1,48 @@
-arrow==1.3.0
-behave-django==1.5.0
-black==25.1.0
-boto3==1.38.32
-bpython==0.25
-celery==5.5.3
-coverage==7.8.2
+# Core Framework
 django==5.2.2
-django-celery-beat==2.8.1
-django-compressor==4.5.1
-django-cors-headers==4.7.0
-django-debug-toolbar-template-profiler==2.1.0
-django-haystack==3.3.0
-#django-hmin==0.3.3
-django-ses==4.4.0
-elasticsearch==7.17.12
-google-api-python-client==2.171.0
-prospector==1.17.1
-psycopg-binary==3.2.9
-psycopg2-binary==2.9.10
 python-dotenv==1.1.0
-python-memcached==1.62
-redis==6.2.0
-sorl-thumbnail==12.11.0
-dj-rest-auth==7.0.1
-djangorestframework==3.16.0
-djangorestframework-simplejwt==5.5.0
-sentry-sdk[django]==2.29.1
-pip-check==3.1
-pillow==11.3.0
-django-storages==1.14.6
-lxml==5.4.0
-django-schema-viewer==0.5.3
-uv==0.7.12
+
+# Database
+psycopg[binary]==3.2.10
 pymemcache==4.0.0
 
-#suspense
-flake8-polyfill==1.0.2
-contextlib2==21.6.0
+# Task Queue & Background Jobs
+celery==5.5.3
+django-celery-beat==2.8.1
+redis==6.2.0
+
+# Search
+django-haystack==3.3.0
+elasticsearch==7.17.12
+
+# REST API
+djangorestframework==3.16.0
+djangorestframework-simplejwt==5.5.0
+dj-rest-auth==7.0.1
+drf-spectacular==0.28.0
+django-filter==25.2
+
+# Storage & Media
+boto3==1.38.32
+django-storages==1.14.6
+sorl-thumbnail==12.11.0
+pillow==11.3.0
+
+# Email
+django-ses==4.4.0
+
+# Frontend & Assets
+django-compressor==4.5.1
+django-cors-headers==4.7.0
+
+# Utilities
+arrow==1.3.0
+lxml==5.4.0
+requests==2.32.3
+pytz==2025.2
+
+# Monitoring & Error Tracking
+sentry-sdk[django]==2.29.1
+
+# Production Server
 gunicorn==23.0.0
-jsonpickle==4.1.1
-lockfile==0.12.2
-# pipenv==2021.5.29
-# poetry==1.0.10
-# python-magic==0.4.24
-# simplejson==3.17.2
-# smtpapi==0.4.7

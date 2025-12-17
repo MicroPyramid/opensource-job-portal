@@ -65,3 +65,8 @@ AWS_SES_REGION_ENDPOINT = 'email.eu-west-1.amazonaws.com'
 ## Sentry keys
 
 SENTRY_DSN=''
+
+## Recruiter Frontend keys
+
+RECRUITER_FRONTEND_URL='http://localhost:5173'  # Local development
+# RECRUITER_FRONTEND_URL='https://recruiter.peeljobs.com'  # Production

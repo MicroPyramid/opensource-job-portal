@@ -44,7 +44,7 @@
                   <td><span>{%for recruiter in post.agency_recruiters.all %}{{ recruiter.email }} {% if forloop.last %}{% else %}<br>{% endif%}{% endfor %}</span></td>
                   <td><span>{{ post.agency_client.name }}</span></td>
                   <td><span>{{ post.job_type|get_string }}</span></td>
-                  <td><span>{{ post.last_date }}</span></td>
+                  <td><!-- last_date field removed - now using 30-day expiry from published_on --></td>
                 </tr>
 
                 <tr class="content_block">
@@ -130,7 +130,7 @@
                     <td><span>{{job.title}}</span></td>
                     <td><span>{%for location in job.location.all %}{{ location.name }} {% if forloop.last %}{% else %},{% endif%}{% endfor %}</span></td>
                     <td><span>{{ job.job_type|get_string }}</span></td>
-                    <td><span>{{ job.last_date }}</span></td>
+                    <td><!-- last_date field removed --></td>
                   </tr>
                   {% empty %}
                   <tr>

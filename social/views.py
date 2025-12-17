@@ -381,8 +381,9 @@ def google_login(request):
         # login(request, user)
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
-        if request.session.get("job_event"):
-            return HttpResponseRedirect(reverse("pjob:job_add_event"))
+        # Google Calendar integration removed
+        # if request.session.get("job_event"):
+        #     return HttpResponseRedirect(reverse("pjob:job_add_event"))
         # if request.is_mobile == "mobile":
         #     return HttpResponseRedirect("/jobs/")
 

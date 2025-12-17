@@ -6,8 +6,8 @@ from .settings import *
 
 # Development-specific installed apps
 LOCAL_INSTALLED_APPS = [
-    "schema_viewer",
-    "behave_django",
+    # "schema_viewer",  # Install with: pip install -r dev-requirements.txt
+    # "behave_django",  # Install with: pip install -r dev-requirements.txt
     # Uncomment the following for debug toolbar support
     # "debug_toolbar",
     # "template_profiler_panel",

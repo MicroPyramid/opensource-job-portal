@@ -83,7 +83,7 @@
             {% if forloop.last %}{% else %},{% endif %}{% endfor %}</span>
           </td>
           <td><span>{{ post.job_role }}</span></td>
-          <td><span>{{ post.last_date }}</span></td>
+          <td><!-- last_date field removed - now using 30-day expiry from published_on --></td>
           <td class='inactive_td_text'><span>{{ post.job_type|get_string }}</span></td>
           <td>
             <span class='icon_wrap'>

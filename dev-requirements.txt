@@ -1,0 +1,17 @@
+# Development Requirements
+# Install with: pip install -r requirements.txt -r dev-requirements.txt
+
+# Code Quality & Linting
+black==25.1.0
+prospector==1.17.1
+
+# Testing
+behave-django==1.5.0
+coverage==7.8.2
+
+# Development Tools
+bpython==0.25
+django-schema-viewer==0.5.3
+
+# Debug Tools (uncomment in settings_local.py to use)
+django-debug-toolbar-template-profiler==2.1.0

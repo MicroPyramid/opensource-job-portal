@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Job Posting No Longer Accepting Applications - Peeljobs</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+  </head>
+  <body style="width:100% !important; margin:0 !important; padding:0 !important; -webkit-text-size-adjust:none; -ms-text-size-adjust:none;font-size:12px; font-family: 'Poppins', sans-serif;color: #45586d; background: #fff;">
+   <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable" style="height:auto !important; margin:0; padding:0; width:100% !important; font-family: 'Poppins', sans-serif;color: #45586d; background: #fff;">
+      <tr>
+        <td>
+          <table id="contenttable" width="600" align="center" cellpadding="0" cellspacing="0" border="0" style="font-family: 'Poppins', sans-serif;color: #45586d; background: #fff; margin-top:0 !important; margin-right: auto !important; margin-bottom:0 !important; margin-left: auto !important; border:none; width: 100% !important; max-width:600px !important;border: 1px solid #ddd !important;">
+              <tr>
+                <td>
+                  <table style="width:600px;background:#fff;padding:0;" cellpadding="0" cellspacing="0">
+                    <!-- Header -->
+                    <tr>
+                      <td style="background: #dc2626;height:30px;padding: 10px 15px;">
+                        <a href="https://peeljobs.com/" style="text-overflow: ellipsis;overflow: hidden;color: #fff !important;margin-left: 0 !important;display: inline-block;margin: 0; padding:0;font-weight: 600;font-size: 18px;text-decoration:none;">Peeljobs</a>
+                        <span style="float:right;color: #fff;letter-spacing: 0.7px;position: relative;top:5px;">Applications Closed</span>
+                      </td>
+                    </tr>
+
+                    <!-- Greeting -->
+                    <tr style="background:#fff;">
+                      <td style="text-align:left;padding:20px 15px;color: #131e26;font-weight: bold;font-size: 17px;">
+                        <strong style="margin-bottom:15px;color:#45586d;font-size: 13px;font-weight:600;display:block;">Job Posting Status Update</strong>
+                        <small style="margin-bottom:15px;color:#45586d;font-size: 13px;font-weight:500;display:block;">Dear {{ user.first_name|default:"Recruiter" }},</small>
+                        <p style="color: #4f657d;font-size: 12px;font-weight: 400;line-height:23px;margin-bottom:0px;">
+                          Your job posting has reached the 30-day application window and is no longer accepting new applications.
+                        </p>
+                      </td>
+                    </tr>
+
+                    <!-- Job Details -->
+                    <tr>
+                      <td style="padding:0 15px 20px 15px;">
+                        <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:15px;">
+                          <h3 style="margin:0 0 10px 0;color:#1f2937;font-size:14px;font-weight:600;">{{ job.title }}</h3>
+                          <p style="margin:5px 0;color:#4f657d;font-size:12px;">
+                            <strong>Job ID:</strong> #{{ job.id }}<br>
+                            <strong>Posted on:</strong> {{ job.published_on|date:"M d, Y" }}<br>
+                            <strong>Application window closed on:</strong> {{ expiry_date|date:"M d, Y" }}<br>
+                            <strong>Total Applicants Received:</strong> {{ applicants_count }}
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- Status Message -->
+                    <tr>
+                      <td style="padding:0 15px 20px 15px;">
+                        <div style="background:#fee2e2;border:1px solid #ef4444;border-radius:8px;padding:15px;">
+                          <p style="margin:0;color:#7f1d1d;font-size:12px;line-height:18px;">
+                            🔒 <strong>Applications Closed:</strong> This job posting is no longer accepting new applications. The posting remains visible to job seekers, but the apply button is now disabled.
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- Action Button -->
+                    <tr>
+                      <td style="padding:0 15px 20px 15px;text-align:center;">
+                        <a href="https://peeljobs.com/dashboard/jobs/{{ job.id }}/" style="display:inline-block;background:#3b82f6;padding:12px 24px;border-radius:6px;color:#fff;font-size:13px;font-weight:600;text-decoration:none;">View Job & Applicants</a>
+                      </td>
+                    </tr>
+
+                    <!-- What Happened -->
+                    <tr>
+                      <td style="padding:0 15px 20px 15px;">
+                        <h4 style="color:#1f2937;font-size:13px;font-weight:600;margin-bottom:10px;">What happened?</h4>
+                        <p style="margin:0 0 10px 0;color:#4f657d;font-size:12px;line-height:20px;">
+                          To ensure job postings remain fresh and relevant, Peeljobs automatically closes applications after 30 days from the publication date. This helps maintain quality for both job seekers and employers.
+                        </p>
+                      </td>
+                    </tr>
+
+                    <!-- Next Steps -->
+                    <tr>
+                      <td style="padding:0 15px 20px 15px;">
+                        <h4 style="color:#1f2937;font-size:13px;font-weight:600;margin-bottom:10px;">What you can do next:</h4>
+                        <ul style="margin:0;padding-left:20px;color:#4f657d;font-size:12px;line-height:20px;">
+                          <li>Review all {{ applicants_count }} applicant{{ applicants_count|pluralize }} and move forward with your hiring process</li>
+                          <li>Download applicant data and CVs for your records</li>
+                          <li>If still hiring, create a new job posting to continue receiving applications</li>
+                          <li>Mark the position as "Hired" when you've found the right candidate</li>
+                        </ul>
+                      </td>
+                    </tr>
+
+                    <!-- Additional Info -->
+                    <tr>
+                      <td style="padding:0 15px 20px 15px;">
+                        <div style="background:#dbeafe;border:1px solid #3b82f6;border-radius:8px;padding:15px;">
+                          <p style="margin:0;color:#1e3a8a;font-size:12px;line-height:18px;">
+                            💡 <strong>Tip:</strong> Your job posting remains visible on Peeljobs for reference. If you need to reopen applications, you can create a new posting with updated information.
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                      <td style="background:#f9fafb;padding:15px;text-align:center;border-top:1px solid #e5e7eb;">
+                        <p style="margin:0;color:#6b7280;font-size:11px;line-height:16px;">
+                          This is an automated notification from Peeljobs.<br>
+                          <a href="https://peeljobs.com/" style="color:#3b82f6;text-decoration:none;">Visit Peeljobs</a> |
+                          <a href="https://peeljobs.com/contact/" style="color:#3b82f6;text-decoration:none;">Contact Support</a>
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+          </table>
+        </td>
+      </tr>
+   </table>
+  </body>
+</html>

@@ -62,7 +62,6 @@
             "country": 1,
             "industry": 3,
             "min_year": 3,
-            "last_date": "2015-06-24",
             "vacancies": 4
         },
         "model": "peeldb.jobpost",
@@ -98,7 +97,6 @@
             "country": 1,
             "industry": 3,
             "min_year": 3,
-            "last_date": "2015-06-25",
             "vacancies": 4
         },
         "model": "peeldb.jobpost",
@@ -134,7 +132,6 @@
             "country": 1,
             "industry": 3,
             "min_year": 6,
-            "last_date": "2015-06-25",
             "vacancies": 4
         },
         "model": "peeldb.jobpost",
@@ -170,7 +167,6 @@
             "country": 1,
             "industry": 3,
             "min_year": 2,
-            "last_date": "2015-06-25",
             "vacancies": 4
         },
         "model": "peeldb.jobpost",

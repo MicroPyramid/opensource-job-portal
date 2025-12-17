@@ -53,11 +53,6 @@ from peeldb.models import (
     UserEmail,
     Qualification,
 )
-from pjob.calendar_events import (
-    create_google_calendar_event,
-    get_calendar_events_list,
-    get_service,
-)
 from psite.forms import (
     SubscribeForm,
     UserEmailRegisterForm,
@@ -1117,18 +1112,15 @@ def jobposts_by_date(request, year, month, date, **kwargs):
     import datetime
 
     day = datetime.date(int(year), int(month), int(date))
-    results = JobPost.objects.filter(status="Live", last_date=day).order_by(
-        "-published_on"
-    )
-    events = get_calendar_events_list(request) if request.user.is_authenticated else []
-    event_titles = []
-    for event in events:
-        if event.get("start_date") and event.get("end_date"):
-            if str(day) >= str(event["start_date"]) and str(day) <= str(
-                event["end_date"]
-            ):
-                event_titles.append(event["summary"])
-    events = JobPost.objects.filter(title__in=event_titles)
+    # Filter by published_on date instead of removed last_date field
+    results = JobPost.objects.filter(
+        status="Live",
+        published_on__year=int(year),
+        published_on__month=int(month),
+        published_on__day=int(date)
+    ).order_by("-published_on")
+    # Google Calendar integration removed
+    events = JobPost.objects.none()
     if not results:
         template = "404.html"
         return render(
@@ -1186,58 +1178,7 @@ def jobposts_by_date(request, year, month, date, **kwargs):
     )
 
 
-def job_add_event(request):
-    is_connected = True
-    if request.POST:
-        request.session["job_event"] = request.POST.get("job_id")
-        if request.user.is_authenticated:
-            service, is_connected = get_service(request)
-        else:
-            return HttpResponseRedirect(reverse("social:google_login"))
-    if not is_connected:
-        return service
-    elif request.session.get("job_event"):
-        jobpost = JobPost.objects.get(id=request.session.get("job_event"))
-        msg = ""
-        for location in jobpost.job_interview_location.all():
-            if location.show_location:
-                msg = location.venue_details
-        event = {
-            "summary": str(jobpost.title),
-            "location": str(msg),
-            "description": str(jobpost.title),
-            "start": {
-                "date": str(jobpost.last_date),
-                "timeZone": "Asia/Calcutta",
-            },
-            "end": {
-                "date": str(jobpost.last_date),
-                "timeZone": "Asia/Calcutta",
-            },
-            "recurrence": ["RRULE:FREQ=DAILY;COUNT=2"],
-            "attendees": [
-                {"email": str(request.user.email)},
-            ],
-            "reminders": {
-                "useDefault": False,
-                "overrides": [
-                    {"method": "email", "minutes": 60 * 15},
-                    {"method": "popup", "minutes": 60 * 15},
-                ],
-            },
-        }
-        response, created = create_google_calendar_event(request, request.user, event)
-        if created == "redirect":
-            return response
-        elif redirect:
-            request.session["job_event"] = ""
-            return redirect(
-                jobpost.get_absolute_url() + "?event=success", permanent=False
-            )
-        else:
-            return redirect(
-                jobpost.get_absolute_url() + "?event=error", permanent=False
-            )
+# Google Calendar integration removed - job_add_event function deleted
 
 
 def jobs_by_location(request, job_type):

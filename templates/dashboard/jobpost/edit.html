@@ -492,10 +492,7 @@
               <!--/input element -->
               <!--input element -->
                     {% if not job_post.job_type == 'walk-in' %}
-                      <div class="input_element wid_50 date_time">
-                        <label>Post Validity</label>
-                        <input type="text" class="input" placeholder="Post Validity" id='last_date' name="last_date" value="{{job_post.last_date|date:"m/d/Y"}}">
-                      </div>
+                      <!-- Post Validity field removed - using 30-day expiry -->
                     {% endif %}
 
               <div class="input_element wid_50">
@@ -1188,11 +1185,6 @@
             }
         });
 
-        $("#last_date").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            yearRange: "2015:2050"
-        })
 
         $("#govt_from_date").datepicker({
             changeMonth: true,

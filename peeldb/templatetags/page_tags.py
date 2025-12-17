@@ -26,7 +26,6 @@ from peeldb.models import (
 )
 from candidate.forms import YEARS, MONTHS
 from recruiter.forms import UserStatus
-from pjob.calendar_events import get_calendar_events_list
 
 register = template.Library()
 
@@ -94,7 +93,11 @@ def get_string(value):
 
 @register.filter
 def get_resume_name(value):
-    resume_name = value.split("/")[-1]
+    if not value:
+        return ""
+    # Convert FieldFile to string using .name attribute
+    file_path = value.name if hasattr(value, 'name') else str(value)
+    resume_name = file_path.split("/")[-1]
     return resume_name
 
 
@@ -707,11 +710,13 @@ def get_related_skills(search_skills):
 
 @register.filter()
 def is_events_created(request, job):
-    events = get_calendar_events_list(request)
-    titles = [i["summary"] for i in events]
-    if job.title in titles or not job.last_date or date.today() >= job.last_date:
+    """Google Calendar integration removed - check job expiry using 30-day rule"""
+    from datetime import timedelta
+    if not job.published_on:
         return True
-    return False
+    max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+    expiry_date = job.published_on.date() + timedelta(days=max_age_days)
+    return date.today() >= expiry_date
 
 
 @register.filter()

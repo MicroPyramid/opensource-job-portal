@@ -42,14 +42,6 @@ var jobFormHandler = {
     },
 
     initializeDatePickers: function() {
-        // Last date picker
-        $("#last_date").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            yearRange: "2015:2050",
-            dateFormat: "mm/dd/yy"
-        });
-        
         // Walk-in date pickers
         $("#walkin_from_date").datepicker({
             changeMonth: true,
