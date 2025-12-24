@@ -18,6 +18,7 @@ docs/build
 dist/
 env
 env/
+venv/
 .env
 secret
 staticfiles/CACHE

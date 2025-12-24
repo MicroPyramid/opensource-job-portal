@@ -2,22 +2,30 @@
  * Authentication Store
  * Manages user authentication state across the app
  *
- * SECURITY NOTE:
- * - JWT tokens are stored in HttpOnly cookies (NOT accessible to JavaScript)
- * - Only user profile data is stored in localStorage (non-sensitive)
- * - This protects against XSS attacks stealing authentication tokens
+ * JWT tokens are stored in localStorage for cross-platform compatibility (web + mobile)
+ * Tokens are sent via Authorization header with each API request
  */
 
 import { writable } from 'svelte/store';
 import { goto } from '$app/navigation';
 import type { User } from '$lib/api/auth';
 import { logout as apiLogout } from '$lib/api/auth';
+import {
+	getAccessToken,
+	setTokens,
+	clearTokens
+} from '$lib/utils/token-storage';
+
+// Re-export for convenience
+export { getAccessToken, getRefreshToken, setTokens, clearTokens } from '$lib/utils/token-storage';
 
 interface AuthState {
 	user: User | null;
 	isAuthenticated: boolean;
 	isLoading: boolean;
 }
+
+const USER_KEY = 'user';
 
 function createAuthStore() {
 	// Initialize from localStorage if available
@@ -30,11 +38,11 @@ function createAuthStore() {
 	const { subscribe, set, update } = writable<AuthState>(initialState);
 
 	// Load user data from localStorage on client side
-	// NOTE: Tokens are in HttpOnly cookies, not accessible to JavaScript
 	if (typeof window !== 'undefined') {
-		const storedUser = localStorage.getItem('user');
+		const storedUser = localStorage.getItem(USER_KEY);
+		const accessToken = getAccessToken();
 
-		if (storedUser) {
+		if (storedUser && accessToken) {
 			try {
 				set({
 					user: JSON.parse(storedUser),
@@ -44,7 +52,8 @@ function createAuthStore() {
 			} catch (error) {
 				// Invalid stored data, clear everything
 				console.error('Error parsing stored user data:', error);
-				localStorage.removeItem('user');
+				localStorage.removeItem(USER_KEY);
+				clearTokens();
 				update(state => ({ ...state, isLoading: false }));
 			}
 		} else {
@@ -56,13 +65,14 @@ function createAuthStore() {
 		subscribe,
 
 		/**
-		 * Login with user data
-		 * NOTE: Tokens are set by the server in HttpOnly cookies
+		 * Login with user data and tokens
 		 */
-		login: (user: User) => {
-			// Store only user data in localStorage (non-sensitive)
+		login: (user: User, accessToken: string, refreshToken: string) => {
 			if (typeof window !== 'undefined') {
-				localStorage.setItem('user', JSON.stringify(user));
+				// Store tokens
+				setTokens(accessToken, refreshToken);
+				// Store user data
+				localStorage.setItem(USER_KEY, JSON.stringify(user));
 			}
 
 			// Update store
@@ -75,19 +85,19 @@ function createAuthStore() {
 
 		/**
 		 * Logout and clear all data
-		 * NOTE: API call will clear HttpOnly cookies on the server
 		 */
 		logout: async () => {
-			// Call API to blacklist token and clear cookies
+			// Call API to blacklist token
 			try {
 				await apiLogout();
 			} catch (error) {
 				console.error('Logout API error:', error);
 			}
 
-			// Clear localStorage (user data only)
+			// Clear localStorage
 			if (typeof window !== 'undefined') {
-				localStorage.removeItem('user');
+				localStorage.removeItem(USER_KEY);
+				clearTokens();
 			}
 
 			// Reset store
@@ -106,7 +116,7 @@ function createAuthStore() {
 		 */
 		updateUser: (user: User) => {
 			if (typeof window !== 'undefined') {
-				localStorage.setItem('user', JSON.stringify(user));
+				localStorage.setItem(USER_KEY, JSON.stringify(user));
 			}
 
 			update(state => ({
@@ -116,10 +126,35 @@ function createAuthStore() {
 		},
 
 		/**
+		 * Update access token (after refresh)
+		 */
+		updateAccessToken: (accessToken: string) => {
+			if (typeof window !== 'undefined') {
+				localStorage.setItem('access_token', accessToken);
+			}
+		},
+
+		/**
 		 * Check if user is authenticated
 		 */
 		checkAuth: () => {
 			update(state => ({ ...state, isLoading: false }));
+		},
+
+		/**
+		 * Clear auth state (used when token refresh fails)
+		 */
+		clearAuth: () => {
+			if (typeof window !== 'undefined') {
+				localStorage.removeItem(USER_KEY);
+				clearTokens();
+			}
+
+			set({
+				user: null,
+				isAuthenticated: false,
+				isLoading: false
+			});
 		}
 	};
 }

@@ -168,6 +168,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:4200",
     "http://localhost:3000",  # SvelteKit default
     "http://localhost:5173",  # Vite default
+    "http://localhost:5174",  # Recruiter UI
 ]
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.peeljobs\.com$",
@@ -423,7 +424,7 @@ DAILY_REPORT_USERS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT in Authorization header ONLY
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT from Authorization header
         "rest_framework.authentication.TokenAuthentication",  # Keep for backward compatibility
     ],
     "DEFAULT_PERMISSION_CLASSES": [

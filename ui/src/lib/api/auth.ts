@@ -2,10 +2,8 @@
  * Authentication API
  * Google OAuth and JWT token management
  *
- * SECURITY NOTE:
- * - Tokens are NOT returned in API responses
- * - Tokens are set by the server in HttpOnly cookies
- * - This protects against XSS attacks stealing authentication tokens
+ * JWT tokens are stored in localStorage for cross-platform compatibility (web + mobile)
+ * Tokens are sent via Authorization header with each API request
  */
 
 import { ApiClient } from './client';
@@ -30,6 +28,8 @@ export interface User {
 
 export interface AuthResponse {
 	user: User;
+	access: string;
+	refresh: string;
 	requires_profile_completion: boolean;
 	redirect_to: string;
 	is_new_user: boolean;
@@ -50,7 +50,7 @@ export async function getGoogleAuthUrl(redirectUri: string): Promise<GoogleAuthU
 
 /**
  * Exchange Google authorization code for JWT tokens
- * NOTE: Tokens are set by server in HttpOnly cookies, not returned in response
+ * Returns access and refresh tokens in response body
  */
 export async function googleAuthCallback(
 	code: string,
@@ -70,12 +70,12 @@ export async function getCurrentUser(): Promise<User> {
 }
 
 /**
- * Logout - blacklist refresh token and clear HttpOnly cookies
- * NOTE: Refresh token is read from HttpOnly cookie by the server
+ * Logout - blacklist refresh token
  */
 export async function logout(): Promise<void> {
-	// Don't skip auth - we need to send cookies with credentials: 'include'
-	await ApiClient.post('/auth/logout/', {});
+	const { getRefreshToken } = await import('$lib/utils/token-storage');
+	const refreshToken = getRefreshToken();
+	await ApiClient.post('/auth/logout/', { refresh: refreshToken });
 }
 
 /**

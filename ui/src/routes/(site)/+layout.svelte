@@ -3,10 +3,9 @@
   import { Menu, X, Mail, MapPin, LogOut, ChevronDown, Twitter, Linkedin, Facebook, User, FileText, Bookmark, FilePlus, MessageSquare, Search, Briefcase, Building2, Zap, Users, GraduationCap, Home } from '@lucide/svelte';
   import { authStore } from '$lib/stores/auth';
   import Toast from '$lib/components/Toast.svelte';
-  import type { PageData } from './$types';
 
-  // Receive server-side auth data and children
-  let { data, children }: { data: PageData, children: any } = $props();
+  // Receive children snippet
+  let { children }: { children: any } = $props();
 
   let mobileMenuOpen = $state(false);
   let latestJobsDropdownOpen = $state(false);
@@ -56,18 +55,9 @@
     headerScrolled = window.scrollY > 10;
   }
 
-  // Initialize auth store from server data (SSR-compatible)
-  $effect(() => {
-    if (data.isAuthenticated && data.user) {
-      if (!$authStore.isAuthenticated || $authStore.user?.id !== data.user.id) {
-        authStore.login(data.user);
-      }
-    }
-  });
-
-  // Determine which auth state to display
-  let isAuthenticated = $derived(data.isAuthenticated || $authStore.isAuthenticated);
-  let user = $derived(data.user || $authStore.user);
+  // Auth state comes from client-side store (tokens stored in localStorage)
+  let isAuthenticated = $derived($authStore.isAuthenticated);
+  let user = $derived($authStore.user);
 
   // Navigation items for mega menu - full data
   const skills = [

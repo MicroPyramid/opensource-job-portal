@@ -40,8 +40,8 @@
 
 			const response = await googleAuthCallback(code, redirectUri);
 
-			// Login user (tokens already set in HttpOnly cookies by server)
-			authStore.login(response.user);
+			// Login user with tokens from response
+			authStore.login(response.user, response.access, response.refresh);
 
 			status = 'success';
 			redirectPath = response.redirect_to || '/';

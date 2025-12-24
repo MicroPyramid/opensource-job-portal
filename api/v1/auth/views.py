@@ -243,43 +243,14 @@ def google_auth_callback(request):
 
     response_data = {
         "user": UserSerializer(user).data,
+        "access": tokens["access"],
+        "refresh": tokens["refresh"],
         "requires_profile_completion": requires_profile_completion,
         "redirect_to": redirect_to,
         "is_new_user": created,
     }
 
-    # Create response and set HttpOnly cookies for tokens
-    response = Response(response_data, status=status.HTTP_200_OK)
-
-    # Determine cookie domain (for cross-subdomain support in production)
-    # Use '.peeljobs.com' in production to allow peeljobs.com and recruiter.peeljobs.com
-    cookie_domain = getattr(settings, 'SESSION_COOKIE_DOMAIN', None)
-
-    # Set access token cookie (HttpOnly, Secure in production)
-    response.set_cookie(
-        key='access_token',
-        value=tokens["access"],
-        max_age=7 * 24 * 60 * 60,  # 7 days
-        httponly=True,  # Not accessible to JavaScript (XSS protection)
-        secure=not settings.DEBUG,  # HTTPS only in production
-        samesite='Lax',  # CSRF protection
-        domain=cookie_domain,  # Allow subdomains (e.g., recruiter.peeljobs.com)
-        path='/',
-    )
-
-    # Set refresh token cookie (HttpOnly, Secure in production)
-    response.set_cookie(
-        key='refresh_token',
-        value=tokens["refresh"],
-        max_age=30 * 24 * 60 * 60,  # 30 days
-        httponly=True,  # Not accessible to JavaScript (XSS protection)
-        secure=not settings.DEBUG,  # HTTPS only in production
-        samesite='Lax',  # CSRF protection
-        domain=cookie_domain,  # Allow subdomains (e.g., recruiter.peeljobs.com)
-        path='/',
-    )
-
-    return response
+    return Response(response_data, status=status.HTTP_200_OK)
 
 
 @extend_schema(

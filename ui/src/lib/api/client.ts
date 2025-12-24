@@ -2,15 +2,14 @@
  * Base API Client for PeelJobs
  * Handles all HTTP requests to Django backend
  *
- * SECURITY: This client uses HttpOnly cookies for authentication
- * - JWT tokens are stored in HttpOnly cookies (NOT localStorage)
- * - Cookies are automatically sent with every request (credentials: 'include')
- * - Tokens are never accessible to JavaScript (XSS protection)
+ * Authentication uses JWT tokens stored in localStorage
+ * Tokens are sent via Authorization header for cross-platform compatibility (web + mobile)
  */
 
 import { getApiBasePath, getApiBaseUrl } from '$lib/config/env';
 import { browser } from '$app/environment';
 import { formatApiError } from '$lib/utils/error-formatter';
+import { getAccessToken, getRefreshToken, setTokens, clearTokens } from '$lib/utils/token-storage';
 
 // Use full URL for server-side, proxy path for client-side
 const getApiBase = () => browser ? getApiBasePath() : getApiBaseUrl();
@@ -34,7 +33,7 @@ function onTokenRefreshed(token: string) {
 
 export class ApiClient {
 	/**
-	 * Make authenticated request with JWT token from HttpOnly cookies
+	 * Make authenticated request with JWT token from localStorage
 	 */
 	private static async request<T>(
 		endpoint: string,
@@ -52,13 +51,17 @@ export class ApiClient {
 			headers.set('Content-Type', 'application/json');
 		}
 
-		// NOTE: We no longer add Authorization header - tokens are in HttpOnly cookies
-		// The browser automatically sends cookies with credentials: 'include'
+		// Add Authorization header if we have a token and auth is not skipped
+		if (!skipAuth) {
+			const accessToken = getAccessToken();
+			if (accessToken) {
+				headers.set('Authorization', `Bearer ${accessToken}`);
+			}
+		}
 
 		const response = await fetch(url, {
 			...options,
-			headers,
-			credentials: 'include'  // Send HttpOnly cookies with request
+			headers
 		});
 
 		// Handle 401 Unauthorized - try to refresh token
@@ -67,25 +70,33 @@ export class ApiClient {
 				if (!isRefreshing) {
 					isRefreshing = true;
 
-					// Try to refresh the token (cookies sent automatically)
+					const refreshToken = getRefreshToken();
+					if (!refreshToken) {
+						throw new Error('No refresh token available');
+					}
+
+					// Try to refresh the token
 					const refreshResponse = await fetch(`${getApiBase()}/auth/token/refresh/`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						credentials: 'include'  // Send refresh token cookie
+						body: JSON.stringify({ refresh: refreshToken })
 					});
 
 					if (refreshResponse.ok) {
-						// New tokens are set in HttpOnly cookies by the server
+						const data = await refreshResponse.json();
+						// Store new tokens
+						setTokens(data.access, data.refresh || refreshToken);
 						isRefreshing = false;
-						onTokenRefreshed('refreshed');
+						onTokenRefreshed(data.access);
 
-						// Retry the original request with new token from cookie
+						// Retry the original request with new token
 						return this.request<T>(endpoint, options, skipAuth, isFormData, 1);
 					} else {
 						// Refresh failed, clear auth and redirect to login
 						isRefreshing = false;
+						clearTokens();
 						if (typeof window !== 'undefined') {
-							localStorage.removeItem('user');  // Clear user data
+							localStorage.removeItem('user');
 							window.location.href = '/login';
 						}
 						throw new Error('Session expired. Please login again.');
@@ -94,7 +105,7 @@ export class ApiClient {
 					// Wait for the ongoing refresh to complete
 					return new Promise((resolve, reject) => {
 						subscribeTokenRefresh(() => {
-							// Retry request with new token from cookie
+							// Retry request with new token
 							this.request<T>(endpoint, options, skipAuth, isFormData, 1)
 								.then(resolve)
 								.catch(reject);
@@ -104,6 +115,7 @@ export class ApiClient {
 			} catch (error) {
 				isRefreshing = false;
 				// Clear user data and redirect to login
+				clearTokens();
 				if (typeof window !== 'undefined') {
 					localStorage.removeItem('user');
 					window.location.href = '/login';
