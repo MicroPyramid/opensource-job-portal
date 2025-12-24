@@ -1,0 +1,29 @@
+[
+{
+  "model": "peeldb.country",
+  "pk": 1,
+  "fields": {
+    "name": "India",
+    "status": "Enabled",
+    "slug": "india"
+  }
+},
+{
+  "model": "peeldb.country",
+  "pk": 2,
+  "fields": {
+    "name": "Russia",
+    "status": "Disabled",
+    "slug": "russia"
+  }
+},
+{
+  "model": "peeldb.country",
+  "pk": 3,
+  "fields": {
+    "name": "Australia",
+    "status": "Disabled",
+    "slug": "australia"
+  }
+}
+]

@@ -78,11 +78,31 @@ sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'password';"
 
 # Run migrations
 python manage.py migrate
-python manage.py loaddata industries qualification skills countries states cities
+python manage.py load_initial_data
 python manage.py createsuperuser
+
+# (Optional) Create test data for development
+python manage.py create_test_data
 ```
 
-### 4. Frontend Assets
+### 4. Test Data (Optional)
+
+For development, you can populate the database with realistic test data:
+
+```bash
+# Create default test data (50 companies, 100 recruiters, 500 job seekers, 1000 jobs)
+python manage.py create_test_data
+
+# Create custom amounts
+python manage.py create_test_data --companies=20 --recruiters=50 --jobseekers=200 --jobs=500
+
+# Clear existing test data and create fresh
+python manage.py create_test_data --clear
+```
+
+Test users are created with password: `testpass123`
+
+### 5. Frontend Assets
 
 ```bash
 npm install
@@ -237,7 +257,7 @@ sudo chown -R $USER:$USER .
 
 ## Technology Stack
 
-- **Framework**: Django 4.2.22
+- **Framework**: Django 5.x
 - **Database**: PostgreSQL
 - **Cache**: Redis + Celery 5.5.0
 - **Search**: Elasticsearch 7.17.6

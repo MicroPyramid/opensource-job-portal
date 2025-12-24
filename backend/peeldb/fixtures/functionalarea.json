@@ -1,0 +1,2063 @@
+[
+{
+  "model": "peeldb.functionalarea",
+  "pk": 1,
+  "fields": {
+    "name": "IT Software - Application Programming, Maintenance",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 2,
+  "fields": {
+    "name": "IT Software - Other",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 4,
+  "fields": {
+    "name": "Sales, Retail, Business Development",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 5,
+  "fields": {
+    "name": "ITES, BPO, KPO, LPO, Customer Service, Operations",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 6,
+  "fields": {
+    "name": "Production, Manufacturing, Maintenance",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 7,
+  "fields": {
+    "name": "Accounts, Finance, Tax, Company Secretary, Audit",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 8,
+  "fields": {
+    "name": "Analytics & Business Intelligence",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 9,
+  "fields": {
+    "name": "Architecture, Interior Design",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 10,
+  "fields": {
+    "name": "Defence Forces, Security Services",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 11,
+  "fields": {
+    "name": "Design, Creative, User Experience",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 12,
+  "fields": {
+    "name": "Engineering Design, R&D",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 13,
+  "fields": {
+    "name": "Executive Assistant, Front Office, Data Entry",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 14,
+  "fields": {
+    "name": "Export, Import, Merchandising",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 15,
+  "fields": {
+    "name": "Fashion Designing, Merchandising",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 16,
+  "fields": {
+    "name": "Hotels, Restaurants",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 17,
+  "fields": {
+    "name": "HR, Recruitment, Administration, IR",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 18,
+  "fields": {
+    "name": "Financial Services, Banking, Investments, Insurance",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 19,
+  "fields": {
+    "name": "IT Hardware, Technical Support, Telecom Engineering",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 20,
+  "fields": {
+    "name": "IT Software - Client/Server Programming",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 21,
+  "fields": {
+    "name": "IT Software - eCommerce, Internet Technologies",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 22,
+  "fields": {
+    "name": "IT Software - Mainframe",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 23,
+  "fields": {
+    "name": "IT Software - Middleware",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 24,
+  "fields": {
+    "name": "IT Software - Mobile",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 25,
+  "fields": {
+    "name": "IT Software - System Programming",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 26,
+  "fields": {
+    "name": "IT Software - Telecom Software",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 27,
+  "fields": {
+    "name": "IT Software - DBA, Datawarehousing",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 28,
+  "fields": {
+    "name": "IT Software - Embedded, EDA, VLSI, ASIC, Chip Design",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 29,
+  "fields": {
+    "name": "IT Software - ERP, CRM",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 30,
+  "fields": {
+    "name": "IT Software - Network Administration, Security",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 31,
+  "fields": {
+    "name": "IT Software - QA & Testing",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 32,
+  "fields": {
+    "name": "IT Software - Systems, EDP, MIS",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 33,
+  "fields": {
+    "name": "Journalism, Editing, Content",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 34,
+  "fields": {
+    "name": "Legal, Regulatory, Intellectual Property",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 35,
+  "fields": {
+    "name": "Marketing, Advertising, MR, PR, Media Planning",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 36,
+  "fields": {
+    "name": "Medical, Healthcare, R&D, Pharmaceuticals, Biotechnology",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 37,
+  "fields": {
+    "name": "Packaging",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 38,
+  "fields": {
+    "name": "Self Employed, Entrepreneur, Independent Consultant",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 39,
+  "fields": {
+    "name": "Shipping",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 40,
+  "fields": {
+    "name": "Site Engineering, Project Management",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 41,
+  "fields": {
+    "name": "Strategy, Management Consulting, Corporate Planning",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 42,
+  "fields": {
+    "name": "Supply Chain, Logistics, Purchase, Materials",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 43,
+  "fields": {
+    "name": "Teaching, Education, Training, Counselling",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 44,
+  "fields": {
+    "name": "Top Management",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 45,
+  "fields": {
+    "name": "Travel, Tours, Ticketing, Airlines",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 46,
+  "fields": {
+    "name": "TV, Films, Production, Broadcasting",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 50,
+  "fields": {
+    "name": "sales",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 53,
+  "fields": {
+    "name": "Research Analyst",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 54,
+  "fields": {
+    "name": "Academic Field ",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 56,
+  "fields": {
+    "name": "Quality Analyst",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 57,
+  "fields": {
+    "name": "Jewellery Design",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 58,
+  "fields": {
+    "name": "Autocad",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 59,
+  "fields": {
+    "name": "Electronics",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 60,
+  "fields": {
+    "name": "Driving",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 61,
+  "fields": {
+    "name": "Marketing executive",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 62,
+  "fields": {
+    "name": "system operator",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 63,
+  "fields": {
+    "name": "graphical designing",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 64,
+  "fields": {
+    "name": "purchase",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 66,
+  "fields": {
+    "name": "Logistics",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 67,
+  "fields": {
+    "name": "Test Engineer",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 68,
+  "fields": {
+    "name": "Service Desk Analyst",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 69,
+  "fields": {
+    "name": "Backend Operation",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 70,
+  "fields": {
+    "name": "Chartered Accountant",
+    "status": "Active",
+    "slug": "functional-area"
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 71,
+  "fields": {
+    "name": "Delivery",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 72,
+  "fields": {
+    "name": "data entry",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 73,
+  "fields": {
+    "name": "Team Leader",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 74,
+  "fields": {
+    "name": "Education Counselling",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 75,
+  "fields": {
+    "name": "Guard",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 76,
+  "fields": {
+    "name": "networking",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 78,
+  "fields": {
+    "name": "Agriculture",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 79,
+  "fields": {
+    "name": "After Effects",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 80,
+  "fields": {
+    "name": "Promoter",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 81,
+  "fields": {
+    "name": "Doctor",
+    "status": "",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 82,
+  "fields": {
+    "name": "Nurse",
+    "status": "",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 83,
+  "fields": {
+    "name": "Operators, Production Officers and Fitters",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 84,
+  "fields": {
+    "name": "Physical Design Engineer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 85,
+  "fields": {
+    "name": "Warehouse Incharge",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 87,
+  "fields": {
+    "name": "Engineer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 90,
+  "fields": {
+    "name": "Oil & Gas",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 91,
+  "fields": {
+    "name": "Lab technician",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 92,
+  "fields": {
+    "name": "Wellness Advisor",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 93,
+  "fields": {
+    "name": "Information & Technology",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 95,
+  "fields": {
+    "name": "Receptionist ",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 97,
+  "fields": {
+    "name": "Hairdresser & Beautician",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 98,
+  "fields": {
+    "name": "Hospitality",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 99,
+  "fields": {
+    "name": "Writer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 100,
+  "fields": {
+    "name": "Vibro Hammer Operator",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 101,
+  "fields": {
+    "name": "Writing in Content, Stories, Scripts",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 102,
+  "fields": {
+    "name": "Surveying",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 103,
+  "fields": {
+    "name": "Admin",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 104,
+  "fields": {
+    "name": "Creative Writing",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 106,
+  "fields": {
+    "name": "Digital Marketing",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 107,
+  "fields": {
+    "name": "Tendering & Estimation",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 108,
+  "fields": {
+    "name": "Pilot",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 109,
+  "fields": {
+    "name": "Ground Staff",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 110,
+  "fields": {
+    "name": "Business Development Executive",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 111,
+  "fields": {
+    "name": "Operator and Programmer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 112,
+  "fields": {
+    "name": "Hair & Beautician",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 114,
+  "fields": {
+    "name": "Document Controller in Architecture Firm",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 115,
+  "fields": {
+    "name": "Service Staff",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 117,
+  "fields": {
+    "name": "Beautician Course",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 118,
+  "fields": {
+    "name": "FIELD EXECUTIVE",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 119,
+  "fields": {
+    "name": "Associate Sales ",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 120,
+  "fields": {
+    "name": "Telecalling",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 122,
+  "fields": {
+    "name": "Voice Process",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 123,
+  "fields": {
+    "name": "Sales representative",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 126,
+  "fields": {
+    "name": "Front Office Manager",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 127,
+  "fields": {
+    "name": "Real Estate and Valuations",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 128,
+  "fields": {
+    "name": "Translation, Voice Over",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 129,
+  "fields": {
+    "name": "Gym Trainer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 132,
+  "fields": {
+    "name": "Business Development Associate",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 133,
+  "fields": {
+    "name": "Search Engine Optimization",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 135,
+  "fields": {
+    "name": "Customer Service",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 136,
+  "fields": {
+    "name": "Manager",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 139,
+  "fields": {
+    "name": "Data Entry",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 140,
+  "fields": {
+    "name": "Website Designing",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 141,
+  "fields": {
+    "name": "IT Technical Consultants",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 144,
+  "fields": {
+    "name": "Physical Education ",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 146,
+  "fields": {
+    "name": "Cosmetic Manufacturing Chemist",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 147,
+  "fields": {
+    "name": "Web Developer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 148,
+  "fields": {
+    "name": "Tourism",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 149,
+  "fields": {
+    "name": "Public Relations Officer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 150,
+  "fields": {
+    "name": "Security Agnecy",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 151,
+  "fields": {
+    "name": "Automobile Service Manager",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 152,
+  "fields": {
+    "name": "Game Programming",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 153,
+  "fields": {
+    "name": "Process Executive",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 154,
+  "fields": {
+    "name": "Secretary",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 155,
+  "fields": {
+    "name": "Salon & Spa",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 156,
+  "fields": {
+    "name": "eRelationship",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 157,
+  "fields": {
+    "name": "Technician",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 160,
+  "fields": {
+    "name": "Soft Skills Trainer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 162,
+  "fields": {
+    "name": "Gaming",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 163,
+  "fields": {
+    "name": "Chess Coaching",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 165,
+  "fields": {
+    "name": "Hometutor",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 168,
+  "fields": {
+    "name": "Organizers",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 170,
+  "fields": {
+    "name": "Customer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 174,
+  "fields": {
+    "name": "Product Development",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 179,
+  "fields": {
+    "name": "Business Analysis",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 180,
+  "fields": {
+    "name": "Business Development",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 184,
+  "fields": {
+    "name": "Technical Editing",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 189,
+  "fields": {
+    "name": "Content Writing",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 199,
+  "fields": {
+    "name": "Trainee",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 201,
+  "fields": {
+    "name": "Animation",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 211,
+  "fields": {
+    "name": "Airlines",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 223,
+  "fields": {
+    "name": "Wordpress Developing",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 224,
+  "fields": {
+    "name": "Management",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 231,
+  "fields": {
+    "name": "Android",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 233,
+  "fields": {
+    "name": "Computer Operator",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 248,
+  "fields": {
+    "name": "Album Designer",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 252,
+  "fields": {
+    "name": "Sports",
+    "status": "Active",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 258,
+  "fields": {
+    "name": "Laboratorywork",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 259,
+  "fields": {
+    "name": "Other",
+    "status": "",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 260,
+  "fields": {
+    "name": "GoldLoan",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 261,
+  "fields": {
+    "name": "collectionandrecovery",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 262,
+  "fields": {
+    "name": "MobileInternetGaming",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 263,
+  "fields": {
+    "name": "Plumbing",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 264,
+  "fields": {
+    "name": "BusinessDevelopmentManager",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 265,
+  "fields": {
+    "name": "Handlerestaurantkitchen",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 266,
+  "fields": {
+    "name": "OfficeExecutive",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 267,
+  "fields": {
+    "name": "SEO",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 268,
+  "fields": {
+    "name": "OnlinePromotion",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 269,
+  "fields": {
+    "name": "InternetMarketing",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 270,
+  "fields": {
+    "name": "SMO",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 271,
+  "fields": {
+    "name": "TeamLeader",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 272,
+  "fields": {
+    "name": "Relationshipmanagement",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 273,
+  "fields": {
+    "name": "Finance",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 274,
+  "fields": {
+    "name": "Salesandmarketing",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 275,
+  "fields": {
+    "name": "Businessdevelopment",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 276,
+  "fields": {
+    "name": "caterer",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 277,
+  "fields": {
+    "name": "(Gulf",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 278,
+  "fields": {
+    "name": "Malaysia",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 279,
+  "fields": {
+    "name": "Singapore",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 280,
+  "fields": {
+    "name": "AbuDhabi",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 281,
+  "fields": {
+    "name": "Oman",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 282,
+  "fields": {
+    "name": "Muscat",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 283,
+  "fields": {
+    "name": "Dubai)",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 284,
+  "fields": {
+    "name": "manufacturing",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 285,
+  "fields": {
+    "name": "PurchaseFieldwork",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 286,
+  "fields": {
+    "name": "Hotels",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 287,
+  "fields": {
+    "name": "sap",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 288,
+  "fields": {
+    "name": "sapsecurity",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 289,
+  "fields": {
+    "name": "sapsd",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 290,
+  "fields": {
+    "name": "sapmm",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 291,
+  "fields": {
+    "name": "saphana",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 292,
+  "fields": {
+    "name": "sapfico",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 293,
+  "fields": {
+    "name": "Voiceprocessassociate",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 294,
+  "fields": {
+    "name": "Telecaller",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 295,
+  "fields": {
+    "name": "AllFunctionalarea",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 296,
+  "fields": {
+    "name": "marketing",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 297,
+  "fields": {
+    "name": "Fundraising&Communication",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 298,
+  "fields": {
+    "name": "OfficeBoy",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 299,
+  "fields": {
+    "name": "Labor",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 300,
+  "fields": {
+    "name": "credit",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 301,
+  "fields": {
+    "name": "fitness",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 302,
+  "fields": {
+    "name": "house",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 303,
+  "fields": {
+    "name": "Chemicalsalttesting",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 304,
+  "fields": {
+    "name": "Chemicals",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 305,
+  "fields": {
+    "name": "InventoryManagement",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 306,
+  "fields": {
+    "name": "EngineeringServices",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 307,
+  "fields": {
+    "name": "ISO",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 308,
+  "fields": {
+    "name": "Welder",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 309,
+  "fields": {
+    "name": "Electrical",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 310,
+  "fields": {
+    "name": "housekeeping",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 311,
+  "fields": {
+    "name": "targetfreefundraising",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 312,
+  "fields": {
+    "name": "MechanicalandMetallurgy",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 313,
+  "fields": {
+    "name": "operation",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 314,
+  "fields": {
+    "name": "MachineHandling",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 315,
+  "fields": {
+    "name": "Trading",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 316,
+  "fields": {
+    "name": "Computerscience",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 317,
+  "fields": {
+    "name": "Recruitment",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 318,
+  "fields": {
+    "name": "Trainingandconsultant",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 319,
+  "fields": {
+    "name": "HumanResource",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 320,
+  "fields": {
+    "name": "DirectSellingMarketforHomeCare",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 321,
+  "fields": {
+    "name": "Healthcare",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 322,
+  "fields": {
+    "name": "j2eefaculty",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 323,
+  "fields": {
+    "name": "MutualFundConsultant",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 324,
+  "fields": {
+    "name": "maintenance",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 325,
+  "fields": {
+    "name": "transportcoordinator",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 326,
+  "fields": {
+    "name": "jobs",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 327,
+  "fields": {
+    "name": "Coordinator",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 328,
+  "fields": {
+    "name": "VolunteerCoordination",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 329,
+  "fields": {
+    "name": "agent",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 330,
+  "fields": {
+    "name": "gachibowli",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 331,
+  "fields": {
+    "name": "OnSiteQuantityMeasurementsandBilling",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 332,
+  "fields": {
+    "name": "Facilityandsecurity",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 333,
+  "fields": {
+    "name": "WORKFROMHOME",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 334,
+  "fields": {
+    "name": "BPO",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 335,
+  "fields": {
+    "name": "Eventmanagement",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 336,
+  "fields": {
+    "name": "tenderexecutive",
+    "status": "InActive",
+    "slug": ""
+  }
+},
+{
+  "model": "peeldb.functionalarea",
+  "pk": 337,
+  "fields": {
+    "name": "parttimeonlinework",
+    "status": "InActive",
+    "slug": ""
+  }
+}
+]
