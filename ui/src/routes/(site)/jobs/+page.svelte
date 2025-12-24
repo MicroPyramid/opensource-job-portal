@@ -1,7 +1,25 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Search, Filter, SlidersHorizontal, MapPin, Briefcase, DollarSign, Bookmark, Building, Clock, Users, GraduationCap, Factory } from '@lucide/svelte';
+  import {
+    Search,
+    Filter,
+    SlidersHorizontal,
+    MapPin,
+    Briefcase,
+    DollarSign,
+    Bookmark,
+    Building2,
+    Clock,
+    Users,
+    GraduationCap,
+    Factory,
+    ChevronRight,
+    ChevronLeft,
+    Sparkles,
+    TrendingUp,
+    X
+  } from '@lucide/svelte';
   import FilterSection from '$lib/components/FilterSection.svelte';
   import FilterModal from '$lib/components/FilterModal.svelte';
   import FilterChips from '$lib/components/FilterChips.svelte';
@@ -24,23 +42,21 @@
   let { data }: Props = $props();
 
   // Initialize from server data (reactive to changes)
-  let jobs = $state<Job[]>(data.jobs || []);
-  let totalJobs = $derived(data.totalJobs || 0);
-  let totalPages = $derived(data.totalPages || 0);
-  let currentPage = $state(data.currentPage || 1);
-  let filterOptions = $state<JobFilterOptions | null>(data.filterOptions);
-  let error = $derived(data.error);
+  let jobs = $state<Job[]>([]);
+  const totalJobs = $derived(data.totalJobs || 0);
+  const totalPages = $derived(data.totalPages || 0);
+  let currentPage = $state(1);
+  let filterOptions = $state<JobFilterOptions | null>(null);
+  const error = $derived(data.error);
 
-  // Sync jobs when server data changes
+  // Sync jobs and filterOptions when server data changes
   $effect(() => {
     jobs = data.jobs || [];
+    filterOptions = data.filterOptions;
   });
 
-  // Initialize filter state from URL params (SSR-compatible)
-  const initialParams = data.initialParams || {};
-
-  // Search and filter state - initialized from URL
-  let searchTerm = $state(initialParams.search || '');
+  // Search and filter state - initialized empty, synced via $effect
+  let searchTerm = $state('');
   let showFiltersMobile = $state(false);
 
   // Modal states
@@ -49,75 +65,72 @@
   let showIndustryModal = $state(false);
   let showEducationModal = $state(false);
 
-  // Salary filter (INR in Lakhs per Annum) - initialized from URL
-  let salaryMin = $state<number | null>(initialParams.min_salary ?? null);
-  let salaryMax = $state<number | null>(initialParams.max_salary ?? null);
+  // Salary filter (INR in Lakhs per Annum)
+  let salaryMin = $state<number | null>(null);
+  let salaryMax = $state<number | null>(null);
 
-  // Experience range filter (in years) - initialized from URL
-  let experienceMin = $state(initialParams.min_experience ?? 0);
-  let experienceMax = $state(initialParams.max_experience ?? 20);
+  // Experience range filter (in years)
+  let experienceMin = $state(0);
+  let experienceMax = $state(20);
 
-  // Remote filter - initialized from URL
-  let isRemote = $state(initialParams.is_remote ?? false);
+  // Remote filter
+  let isRemote = $state(false);
 
-  // Fresher filter - initialized from URL
-  let isFresher = $state(initialParams.fresher ?? false);
+  // Fresher filter
+  let isFresher = $state(false);
 
   // Track if we're syncing from URL (to prevent triggering navigation)
   let isSyncingFromUrl = $state(false);
 
-  // Initialize filter options from server data immediately (SSR-compatible)
-  // This runs during SSR and on the client
-  // Check initial URL params to pre-select filters
-  const selectedLocations = initialParams.location || [];
-  const selectedSkills = initialParams.skills || [];
-  const selectedIndustries = initialParams.industry || [];
-  const selectedEducation = initialParams.education || [];
-  const selectedJobTypes = initialParams.job_type || [];
+  // Filter options state
+  let locationOptions = $state<FilterOption[]>([]);
+  let skillOptions = $state<FilterOption[]>([]);
+  let industryOptions = $state<FilterOption[]>([]);
+  let educationOptions = $state<FilterOption[]>([]);
+  let jobTypeOptions = $state<{ name: string; value: string; count: number; checked: boolean }[]>([]);
 
-  let locationOptions = $state<FilterOption[]>(
-    filterOptions?.locations.map(opt => ({
+  // Initialize filter options from server data
+  $effect(() => {
+    const params = data.initialParams || {};
+    const opts = data.filterOptions;
+
+    const selectedLocations = params.location || [];
+    const selectedSkills = params.skills || [];
+    const selectedIndustries = params.industry || [];
+    const selectedEducation = params.education || [];
+    const selectedJobTypes = params.job_type || [];
+
+    locationOptions = opts?.locations.map((opt: BaseFilterOption) => ({
       ...opt,
       value: opt.slug,
       checked: selectedLocations.includes(opt.slug)
-    })) || []
-  );
+    })) || [];
 
-  let skillOptions = $state<FilterOption[]>(
-    filterOptions?.skills.map(opt => ({
+    skillOptions = opts?.skills.map((opt: BaseFilterOption) => ({
       ...opt,
       value: opt.slug,
       checked: selectedSkills.includes(opt.slug)
-    })) || []
-  );
+    })) || [];
 
-  let industryOptions = $state<FilterOption[]>(
-    filterOptions?.industries.map(opt => ({
+    industryOptions = opts?.industries.map((opt: BaseFilterOption) => ({
       ...opt,
       value: opt.slug,
       checked: selectedIndustries.includes(opt.slug)
-    })) || []
-  );
+    })) || [];
 
-  let educationOptions = $state<FilterOption[]>(
-    filterOptions?.education.map(opt => ({
+    educationOptions = opts?.education.map((opt: BaseFilterOption) => ({
       ...opt,
       value: opt.slug,
       checked: selectedEducation.includes(opt.slug)
-    })) || []
-  );
+    })) || [];
 
-  let jobTypeOptions = $state<{ name: string; value: string; count: number; checked: boolean }[]>(
-    filterOptions?.job_types.map(opt => ({
+    jobTypeOptions = opts?.job_types.map((opt: { label: string; value: string; count: number }) => ({
       name: opt.label,
       value: opt.value,
       count: opt.count,
       checked: selectedJobTypes.includes(opt.value)
-    })) || []
-  );
+    })) || [];
 
-  // Sync currentPage when data changes
-  $effect(() => {
     currentPage = data.currentPage || 1;
   });
 
@@ -478,18 +491,6 @@
     }
   }
 
-  function timeSince(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) return '1 day ago';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
-    return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
-  }
-
   // Generate array of page numbers to display
   function getPageNumbers(): number[] {
     const maxPagesToShow = 5;
@@ -513,43 +514,85 @@
 </script>
 
 <svelte:head>
-  <title>Job Search - PeelJobs</title>
-  <meta name="description" content="Find your dream job with PeelJobs advanced job search and filtering capabilities" />
+  <title>Find Jobs - PeelJobs</title>
+  <meta name="description" content="Discover your dream job with PeelJobs. Browse thousands of job opportunities with advanced filters for location, skills, salary, and more." />
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50 text-gray-900">
+<div class="min-h-screen bg-surface-50">
+  <!-- Hero Section -->
+  <section class="bg-gray-900 relative overflow-hidden">
+    <!-- Decorative Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl"></div>
+    </div>
 
-  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 py-12 lg:py-16 relative">
+      <div class="text-center max-w-3xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/20 border border-primary-500/30 rounded-full text-primary-300 text-sm font-medium mb-6 animate-fade-in-down" style="opacity: 0; animation-delay: 100ms;">
+          <Sparkles class="w-4 h-4" />
+          <span>{totalJobs.toLocaleString()} Jobs Available</span>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-4 animate-fade-in-up" style="opacity: 0; animation-delay: 200ms;">
+          Find Your Next Opportunity
+        </h1>
+
+        <p class="text-lg text-gray-400 mb-8 animate-fade-in-up" style="opacity: 0; animation-delay: 300ms;">
+          Browse jobs by location, skills, salary, and more
+        </p>
+
+        <!-- Search Bar -->
+        <div class="relative max-w-2xl mx-auto animate-fade-in-up" style="opacity: 0; animation-delay: 400ms;">
+          <span class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+            <Search class="w-5 h-5 text-gray-400" />
+          </span>
+          <input
+            type="text"
+            bind:value={searchTerm}
+            placeholder="Search by job title, company, or keywords..."
+            class="w-full pl-14 pr-5 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:bg-white/15 focus:border-primary-400 focus:ring-2 focus:ring-primary-400/30 transition-all outline-none"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
     <!-- Mobile Filter Toggle -->
-    <div class="md:hidden mb-6 flex justify-between items-center">
+    <div class="lg:hidden mb-6 flex justify-between items-center">
       <button
         onclick={toggleFiltersMobile}
-        class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors"
+        class="flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 rounded-full text-white font-medium transition-colors elevation-1"
       >
-        <SlidersHorizontal size={20} />
-        {showFiltersMobile ? 'Hide Filters' : 'Show Filters'}
+        <SlidersHorizontal class="w-5 h-5" />
+        {showFiltersMobile ? 'Hide Filters' : 'Filters'}
         {#if activeFilterCount > 0}
-          <span class="bg-cyan-400 text-white text-xs px-2 py-1 rounded-full font-medium">{activeFilterCount}</span>
+          <span class="bg-white text-primary-600 text-xs px-2 py-0.5 rounded-full font-semibold">{activeFilterCount}</span>
         {/if}
       </button>
-      <div class="text-sm text-gray-600">
-        {totalJobs.toLocaleString()} job{totalJobs !== 1 ? 's' : ''} found
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <TrendingUp class="w-4 h-4 text-primary-600" />
+        <span class="font-medium">{totalJobs.toLocaleString()}</span> jobs
       </div>
     </div>
 
-    <div class="flex flex-col md:flex-row gap-8">
+    <div class="flex flex-col lg:flex-row gap-8">
       <!-- Filter Sidebar -->
-      <aside class={`${showFiltersMobile ? 'block' : 'hidden'} md:block md:w-80 md:sticky md:top-24 self-start`}>
-        <div class="bg-white border border-gray-200 rounded-lg">
-          <div class="flex justify-between items-center px-4 py-4 border-b border-gray-200">
+      <aside class="{showFiltersMobile ? 'block' : 'hidden'} lg:block lg:w-80 flex-shrink-0">
+        <div class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden lg:sticky lg:top-24">
+          <!-- Filter Header -->
+          <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 bg-surface-50">
             <h2 class="text-base font-semibold text-gray-900 flex items-center gap-2">
-              <Filter size={18} class="text-gray-600" />
-              All Filters
+              <div class="w-8 h-8 rounded-xl bg-primary-50 flex items-center justify-center">
+                <Filter class="w-4 h-4 text-primary-600" />
+              </div>
+              Filters
             </h2>
             {#if hasActiveFilters}
               <button
                 onclick={resetFilters}
-                class="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                class="text-sm text-primary-600 hover:text-primary-700 font-medium px-3 py-1 rounded-full hover:bg-primary-50 transition-colors"
               >
                 Clear ({activeFilterCount})
               </button>
@@ -611,17 +654,19 @@
                 title="Job Type"
                 hasActiveFilter={jobTypeOptions.some(opt => opt.checked)}
               >
-                <div class="space-y-2">
+                <div class="space-y-1">
                   {#each jobTypeOptions as option (option.value)}
-                    <label class="flex items-center gap-2 cursor-pointer">
+                    <label class="flex items-center gap-3 cursor-pointer py-2 px-2 -mx-2 rounded-xl hover:bg-surface-50 transition-colors">
                       <input
                         type="checkbox"
                         checked={option.checked}
                         onchange={() => toggleJobTypeFilter(option.value)}
-                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                        class="w-4 h-4 text-primary-600 border-gray-300 rounded-lg focus:ring-primary-500 cursor-pointer"
                       />
                       <span class="text-gray-700 flex-1 text-sm">{option.name}</span>
-                      <span class="text-gray-500 text-xs">({option.count})</span>
+                      <span class="text-gray-400 text-xs font-medium bg-gray-100 px-2 py-0.5 rounded-full">
+                        {option.count}
+                      </span>
                     </label>
                   {/each}
                 </div>
@@ -633,25 +678,25 @@
               title="Salary (LPA)"
               hasActiveFilter={salaryMin !== null || salaryMax !== null}
             >
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label for="salary-min" class="block text-xs text-gray-600 mb-1 font-medium">Min</label>
+                  <label for="salary-min" class="block text-xs text-gray-500 mb-1.5 font-medium">Min</label>
                   <input
                     id="salary-min"
                     type="number"
                     bind:value={salaryMin}
                     placeholder="0"
-                    class="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 text-sm transition-all"
+                    class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-gray-900 placeholder-gray-400 text-sm transition-all outline-none"
                   />
                 </div>
                 <div>
-                  <label for="salary-max" class="block text-xs text-gray-600 mb-1 font-medium">Max</label>
+                  <label for="salary-max" class="block text-xs text-gray-500 mb-1.5 font-medium">Max</label>
                   <input
                     id="salary-max"
                     type="number"
                     bind:value={salaryMax}
                     placeholder="∞"
-                    class="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 text-sm transition-all"
+                    class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-gray-900 placeholder-gray-400 text-sm transition-all outline-none"
                   />
                 </div>
               </div>
@@ -662,40 +707,40 @@
               title="Experience"
               hasActiveFilter={experienceMin > 0 || experienceMax < 20}
             >
-              <div class="space-y-3">
-                <div class="flex justify-between text-xs text-gray-700 font-semibold">
-                  <span>{experienceMin} {experienceMin === 1 ? 'yr' : 'yrs'}</span>
-                  <span>{experienceMax === 20 ? '20+' : experienceMax} {experienceMax === 1 ? 'yr' : 'yrs'}</span>
+              <div class="space-y-4">
+                <div class="flex justify-between text-sm text-gray-900 font-medium">
+                  <span class="px-2 py-1 bg-primary-50 text-primary-700 rounded-lg">{experienceMin} yr{experienceMin !== 1 ? 's' : ''}</span>
+                  <span class="px-2 py-1 bg-primary-50 text-primary-700 rounded-lg">{experienceMax === 20 ? '20+' : experienceMax} yr{experienceMax !== 1 ? 's' : ''}</span>
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-3">
                   <div>
-                    <label for="min-experience" class="block text-xs text-gray-500 mb-1">Min</label>
+                    <label for="min-experience" class="block text-xs text-gray-500 mb-1.5">Minimum</label>
                     <input
                       id="min-experience"
                       type="range"
                       min="0"
                       max="20"
                       bind:value={experienceMin}
-                      class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+                      class="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer accent-primary-600"
                     />
                   </div>
                   <div>
-                    <label for="max-experience" class="block text-xs text-gray-500 mb-1">Max</label>
+                    <label for="max-experience" class="block text-xs text-gray-500 mb-1.5">Maximum</label>
                     <input
                       id="max-experience"
                       type="range"
                       min="0"
                       max="20"
                       bind:value={experienceMax}
-                      class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+                      class="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer accent-primary-600"
                     />
                   </div>
                 </div>
 
                 <div class="flex justify-between text-xs text-gray-400">
                   <span>Fresher</span>
-                  <span>20+ yrs</span>
+                  <span>20+ years</span>
                 </div>
               </div>
             </CollapsibleFilterSection>
@@ -705,13 +750,13 @@
               title="Work Mode"
               hasActiveFilter={isRemote}
             >
-              <label class="flex items-center gap-2 text-sm cursor-pointer py-1.5 hover:bg-gray-50 -mx-1 px-1 rounded transition-colors">
+              <label class="flex items-center gap-3 cursor-pointer py-2 px-2 -mx-2 rounded-xl hover:bg-surface-50 transition-colors">
                 <input
                   type="checkbox"
                   bind:checked={isRemote}
-                  class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-1 cursor-pointer"
+                  class="w-4 h-4 rounded-lg border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2 cursor-pointer"
                 />
-                <span class="text-gray-700 text-sm leading-tight">Remote Work Only</span>
+                <span class="text-gray-700 text-sm">Remote Work Only</span>
               </label>
             </CollapsibleFilterSection>
           </div>
@@ -719,14 +764,13 @@
       </aside>
 
       <!-- Job Listings -->
-      <main class="flex-1">
-        <div class="hidden md:flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-semibold text-gray-800">
+      <main class="flex-1 min-w-0">
+        <!-- Results Header -->
+        <div class="hidden lg:flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
             Job Opportunities
+            <span class="text-base font-normal text-gray-500">({totalJobs.toLocaleString()} results)</span>
           </h2>
-          <div class="text-sm text-gray-600">
-            {totalJobs.toLocaleString()} job{totalJobs !== 1 ? 's' : ''} found
-          </div>
         </div>
 
         <!-- Active Filter Chips -->
@@ -737,73 +781,111 @@
         />
 
         {#if error}
-          <div class="text-center py-16">
-            <p class="text-red-600 mb-4">{error}</p>
+          <!-- Error State -->
+          <div class="bg-white rounded-2xl elevation-1 border border-gray-100 p-12 text-center">
+            <div class="w-16 h-16 rounded-2xl bg-error-500/10 flex items-center justify-center mx-auto mb-4">
+              <X class="w-8 h-8 text-error-500" />
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h3>
+            <p class="text-gray-600 mb-6">{error}</p>
             <button
               onclick={() => window.location.reload()}
-              class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium transition-colors elevation-1"
             >
-              Retry
+              Try Again
             </button>
           </div>
         {:else if jobs.length > 0}
+          <!-- Job Cards -->
           <div class="space-y-4">
-            {#each jobs as job (job.id)}
-              <article class="relative bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 group hover:shadow-lg hover:shadow-blue-100">
+            {#each jobs as job, index (job.id)}
+              <article
+                class="group bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:elevation-3 border border-gray-100 hover:border-primary-200"
+                style="animation: fade-in-up 0.5s ease forwards; animation-delay: {Math.min(index * 50, 300)}ms; opacity: 0;"
+              >
                 <a
                   href="/jobs/{job.slug.replace(/^\/+/, '')}"
-                  class="block after:absolute after:inset-0"
+                  class="block p-5 lg:p-6"
                   aria-label="View details for {job.title} at {job.company_name}"
                 >
-                  <div class="flex-1">
-                    <div class="flex items-start gap-3 mb-3">
-                      <h3 class="text-xl font-semibold text-blue-600 group-hover:text-blue-700 transition-colors flex-1">
-                        {job.title}
-                      </h3>
-                      {#if !job.accepts_applications}
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-md border border-gray-300 flex-shrink-0">
-                          Closed
-                        </span>
+                  <div class="flex gap-4">
+                    <!-- Company Logo -->
+                    <div class="flex-shrink-0">
+                      {#if job.company_logo}
+                        <img
+                          src={job.company_logo}
+                          alt="{job.company_name} logo"
+                          class="w-14 h-14 rounded-xl object-cover bg-gray-100 border border-gray-100"
+                        />
+                      {:else}
+                        <div class="w-14 h-14 rounded-xl bg-primary-50 flex items-center justify-center border border-primary-100">
+                          <Building2 class="w-7 h-7 text-primary-600" />
+                        </div>
                       {/if}
                     </div>
 
-                    <div class="space-y-2 mb-4">
-                      <div class="flex items-center text-gray-700 text-sm">
-                        <Building size={16} class="mr-2 text-blue-500" />
-                        {job.company_name}
+                    <!-- Job Info -->
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between gap-3 mb-2">
+                        <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2">
+                          {job.title}
+                        </h3>
+                        {#if !job.accepts_applications}
+                          <span class="flex-shrink-0 px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+                            Closed
+                          </span>
+                        {/if}
                       </div>
-                      <div class="flex items-center text-gray-700 text-sm">
-                        <MapPin size={16} class="mr-2 text-blue-500" />
-                        {job.location_display}
-                      </div>
-                      <div class="flex items-center text-gray-700 text-sm">
-                        <DollarSign size={16} class="mr-2 text-green-600" />
-                        {job.salary_display}
-                      </div>
-                    </div>
 
-                    <div class="flex flex-wrap items-center gap-4 text-xs text-gray-600">
-                      <div class="flex items-center gap-1">
-                        <Briefcase size={14} />
-                        {job.job_type}
+                      <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-600 mb-3">
+                        <div class="flex items-center gap-1.5">
+                          <Building2 class="w-4 h-4 text-gray-400" />
+                          <span class="font-medium text-gray-700">{job.company_name}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                          <MapPin class="w-4 h-4 text-gray-400" />
+                          <span>{job.location_display}</span>
+                        </div>
                       </div>
-                      <div class="flex items-center gap-1">
-                        <Users size={14} />
-                        {job.experience_display}
+
+                      <!-- Job Meta -->
+                      <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-success-500/10 text-success-600 rounded-full text-xs font-medium">
+                          <DollarSign class="w-3.5 h-3.5" />
+                          {job.salary_display}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-medium">
+                          <Briefcase class="w-3.5 h-3.5" />
+                          {job.job_type}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                          <Users class="w-3.5 h-3.5" />
+                          {job.experience_display}
+                        </span>
                       </div>
-                      <div class="flex items-center gap-1">
-                        <Clock size={14} />
-                        {job.time_ago}
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <Users size={14} />
-                        {job.applicants_count} applicants
+
+                      <!-- Footer -->
+                      <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center gap-4 text-xs text-gray-500">
+                          <span class="flex items-center gap-1">
+                            <Clock class="w-3.5 h-3.5" />
+                            {job.time_ago}
+                          </span>
+                          <span class="flex items-center gap-1">
+                            <Users class="w-3.5 h-3.5" />
+                            {job.applicants_count} applicants
+                          </span>
+                        </div>
+                        <span class="hidden sm:flex items-center gap-1 text-sm font-medium text-primary-600 group-hover:gap-2 transition-all">
+                          View Job
+                          <ChevronRight class="w-4 h-4" />
+                        </span>
                       </div>
                     </div>
                   </div>
                 </a>
 
-                <!-- Bookmark button with higher z-index to be clickable -->
+                <!-- Bookmark button -->
                 <button
                   type="button"
                   onclick={(event) => {
@@ -811,10 +893,10 @@
                     event.stopPropagation();
                     saveJob(job.id);
                   }}
-                  class="absolute top-6 right-6 z-10 p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-all {job.is_saved ? 'text-blue-600 bg-gray-100' : ''}"
+                  class="absolute top-5 right-5 z-10 p-2.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-primary-600 transition-all {job.is_saved ? 'text-primary-600 bg-primary-50' : ''}"
                   aria-label="Save {job.title}"
                 >
-                  <Bookmark size={20} class={job.is_saved ? 'fill-current' : ''} />
+                  <Bookmark class="w-5 h-5 {job.is_saved ? 'fill-current' : ''}" />
                 </button>
               </article>
             {/each}
@@ -822,45 +904,52 @@
 
           <!-- Pagination -->
           {#if totalPages > 1}
-            <div class="mt-12 flex justify-center">
-              <div class="flex items-center gap-2">
+            <div class="mt-10 flex justify-center">
+              <div class="inline-flex items-center gap-1 bg-white rounded-2xl elevation-1 border border-gray-100 p-2">
                 <button
                   onclick={prevPage}
                   disabled={currentPage === 1}
-                  class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-700 rounded-xl hover:bg-surface-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  <ChevronLeft class="w-4 h-4" />
+                  <span class="hidden sm:inline">Previous</span>
                 </button>
-                <div class="flex gap-1">
+
+                <div class="flex gap-1 px-2">
                   {#each getPageNumbers() as pageNum}
                     <button
                       onclick={() => goToPage(pageNum)}
-                      class="{pageNum === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'} px-3 py-2 rounded-lg transition-colors"
+                      class="w-10 h-10 flex items-center justify-center text-sm font-medium rounded-xl transition-all {pageNum === currentPage ? 'bg-primary-600 text-white elevation-1' : 'text-gray-700 hover:bg-surface-50'}"
                     >
                       {pageNum}
                     </button>
                   {/each}
                 </div>
+
                 <button
                   onclick={nextPage}
                   disabled={currentPage === totalPages}
-                  class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-700 rounded-xl hover:bg-surface-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Next
+                  <span class="hidden sm:inline">Next</span>
+                  <ChevronRight class="w-4 h-4" />
                 </button>
               </div>
             </div>
           {/if}
         {:else}
-          <div class="text-center py-16">
-            <Search size={64} class="mx-auto text-gray-400 mb-4" />
-            <h3 class="text-xl font-semibold text-gray-700 mb-2">No Jobs Found</h3>
-            <p class="text-gray-600 mb-6">
-              Try adjusting your search criteria or filters to find more opportunities.
+          <!-- Empty State -->
+          <div class="bg-white rounded-2xl elevation-1 border border-gray-100 p-12 text-center">
+            <div class="w-20 h-20 rounded-2xl bg-primary-50 flex items-center justify-center mx-auto mb-6">
+              <Search class="w-10 h-10 text-primary-400" />
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No Jobs Found</h3>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">
+              We couldn't find any jobs matching your criteria. Try adjusting your filters or search terms.
             </p>
             <button
               onclick={resetFilters}
-              class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium transition-colors elevation-1 hover:elevation-2"
             >
               Clear All Filters
             </button>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Briefcase, Plus, X, Edit2, Trash2, Save, Loader, Calendar, Building2 } from '@lucide/svelte';
+	import { Briefcase, Plus, X, Pencil, Trash2, Save, Loader, Calendar, Building2 } from '@lucide/svelte';
 	import { toast } from '$lib/stores/toast';
 	import {
 		getMyEmploymentHistory,
@@ -179,67 +179,84 @@
 	}
 </script>
 
-<div class="bg-white rounded-lg shadow-sm p-6">
-	<div class="flex items-center justify-between mb-4">
-		<h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-			<Briefcase class="w-5 h-5" />
-			Employment History
-		</h2>
+<div class="p-5 lg:p-6">
+	<div class="flex items-center justify-between mb-6">
+		<div class="flex items-center gap-3">
+			<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+				<Briefcase size={20} class="text-primary-600" />
+			</div>
+			<div>
+				<h2 class="text-lg font-semibold text-gray-900">Employment History</h2>
+				<p class="text-sm text-gray-600">Your work experience</p>
+			</div>
+		</div>
 		<button
 			type="button"
 			onclick={openAddForm}
-			class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+			class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors elevation-1 text-sm"
 		>
-			<Plus class="w-4 h-4" />
-			Add Experience
+			<Plus size={18} />
+			<span class="hidden sm:inline">Add Experience</span>
 		</button>
 	</div>
 
 	<!-- Loading State -->
 	{#if loading}
-		<div class="flex items-center justify-center py-8">
-			<Loader class="w-6 h-6 animate-spin text-blue-600" />
-			<p class="ml-3 text-gray-600">Loading employment history...</p>
+		<div class="flex flex-col items-center justify-center py-12">
+			<div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+			<p class="text-gray-600">Loading employment history...</p>
 		</div>
 	{:else if employmentHistory.length === 0 && !showAddForm}
 		<!-- Empty State -->
-		<div class="text-center py-8">
-			<Briefcase class="w-12 h-12 mx-auto text-gray-400 mb-3" />
-			<p class="text-gray-600 mb-4">No employment history added yet</p>
+		<div class="text-center py-12">
+			<div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
+				<Briefcase size={36} class="text-gray-400" />
+			</div>
+			<h3 class="text-xl font-semibold text-gray-900 mb-2">No employment history added yet</h3>
+			<p class="text-gray-600 mb-6 max-w-md mx-auto">
+				Add your work experience to showcase your professional background to potential employers.
+			</p>
 			<button
 				type="button"
 				onclick={openAddForm}
-				class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+				class="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors elevation-1"
 			>
-				<Plus class="w-4 h-4" />
-				Add Your First Job
+				<Plus size={18} />
+				<span>Add Your First Job</span>
 			</button>
 		</div>
 	{:else}
 		<!-- Timeline View -->
-		<div class="space-y-6">
+		<div class="space-y-4 mb-6">
 			{#each employmentHistory as employment, index}
-				<div class="relative pl-8 pb-6 {index < employmentHistory.length - 1 ? 'border-l-2 border-gray-200' : ''}">
+				<div
+					class="relative pl-8 animate-fade-in-up"
+					style="opacity: 0; animation-delay: {index * 50}ms;"
+				>
+					<!-- Timeline line -->
+					{#if index < employmentHistory.length - 1}
+						<div class="absolute left-[7px] top-6 bottom-0 w-0.5 bg-gray-200"></div>
+					{/if}
 					<!-- Timeline dot -->
-					<div class="absolute left-0 top-0 -translate-x-1/2 w-4 h-4 rounded-full {employment.current_job ? 'bg-green-500' : 'bg-blue-500'} ring-4 ring-white"></div>
+					<div class="absolute left-0 top-1.5 w-4 h-4 rounded-full {employment.current_job ? 'bg-success-500' : 'bg-primary-500'} ring-4 ring-white"></div>
 
-					<div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
-						<div class="flex items-start justify-between mb-2">
+					<div class="bg-surface-50 border border-gray-100 rounded-2xl p-5 hover:border-primary-200 hover:bg-white transition-all">
+						<div class="flex items-start justify-between mb-3">
 							<div class="flex-1">
-								<h3 class="font-semibold text-gray-900 text-lg flex items-center gap-2">
+								<h3 class="font-semibold text-gray-900 text-lg flex flex-wrap items-center gap-2">
 									{employment.designation}
 									{#if employment.current_job}
-										<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
+										<span class="text-xs bg-success-50 text-success-700 px-2.5 py-1 rounded-full border border-success-200">
 											Current
 										</span>
 									{/if}
 								</h3>
-								<p class="text-blue-600 font-medium flex items-center gap-1 mt-1">
-									<Building2 class="w-4 h-4" />
+								<p class="text-primary-600 font-medium flex items-center gap-1.5 mt-1.5">
+									<Building2 size={16} />
 									{employment.company}
 								</p>
-								<p class="text-sm text-gray-500 flex items-center gap-1 mt-1">
-									<Calendar class="w-4 h-4" />
+								<p class="text-sm text-gray-500 flex items-center gap-1.5 mt-1.5">
+									<Calendar size={14} />
 									{formatDate(employment.from_date)} - {formatDate(employment.to_date)}
 									{#if employment.duration}
 										<span class="text-gray-400">• {employment.duration}</span>
@@ -250,165 +267,187 @@
 								<button
 									type="button"
 									onclick={() => openEditForm(employment)}
-									class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+									class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-colors"
 									title="Edit employment"
 								>
-									<Edit2 class="w-4 h-4" />
+									<Pencil size={16} />
 								</button>
 								<button
 									type="button"
 									onclick={() => handleDeleteEmployment(employment.id, employment.company)}
-									class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+									class="p-2 text-gray-400 hover:text-error-600 hover:bg-error-50 rounded-xl transition-colors"
 									title="Remove employment"
 								>
-									<Trash2 class="w-4 h-4" />
+									<Trash2 size={16} />
 								</button>
 							</div>
 						</div>
 
 						<!-- Job Profile -->
-						<div class="mt-3 text-sm text-gray-700 whitespace-pre-line">
+						<div class="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 whitespace-pre-line leading-relaxed">
 							{employment.job_profile}
 						</div>
 					</div>
 				</div>
 			{/each}
 		</div>
+
+		<!-- Summary Card -->
+		<div class="p-5 bg-primary-50 border border-primary-100 rounded-2xl">
+			<div class="flex items-start gap-4">
+				<div class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0">
+					<Briefcase size={22} class="text-primary-600" />
+				</div>
+				<div>
+					<h3 class="font-semibold text-gray-900 mb-1">
+						{employmentHistory.length} {employmentHistory.length === 1 ? 'Position' : 'Positions'} Added
+					</h3>
+					<p class="text-sm text-gray-600">
+						Keep your employment history updated to showcase your career progression to recruiters.
+					</p>
+				</div>
+			</div>
+		</div>
 	{/if}
 
 	<!-- Add/Edit Form Modal -->
 	{#if showAddForm}
-		<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-			<div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-				<div class="p-6">
-					<div class="flex items-center justify-between mb-4">
-						<h3 class="text-xl font-semibold text-gray-900">
+		<div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+			<div class="bg-white rounded-2xl elevation-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+				<!-- Modal Header -->
+				<div class="flex items-center justify-between p-5 lg:p-6 border-b border-gray-100">
+					<div class="flex items-center gap-3">
+						<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+							<Briefcase size={20} class="text-primary-600" />
+						</div>
+						<h3 class="text-lg font-semibold text-gray-900">
 							{editingEmploymentId ? 'Edit Employment' : 'Add Employment'}
 						</h3>
-						<button
-							type="button"
-							onclick={closeForm}
-							class="p-1 text-gray-400 hover:text-gray-600 rounded"
-						>
-							<X class="w-5 h-5" />
-						</button>
+					</div>
+					<button
+						type="button"
+						onclick={closeForm}
+						class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+					>
+						<X size={20} />
+					</button>
+				</div>
+
+				<!-- Modal Body -->
+				<div class="p-5 lg:p-6 space-y-5">
+					<!-- Company Name -->
+					<div>
+						<label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+							Company Name <span class="text-error-500">*</span>
+						</label>
+						<input
+							type="text"
+							id="company"
+							bind:value={formData.company}
+							placeholder="e.g., Google, Microsoft"
+							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+						/>
 					</div>
 
-					<div class="space-y-4">
-						<!-- Company Name -->
+					<!-- Designation -->
+					<div>
+						<label for="designation" class="block text-sm font-medium text-gray-700 mb-2">
+							Designation/Job Title <span class="text-error-500">*</span>
+						</label>
+						<input
+							type="text"
+							id="designation"
+							bind:value={formData.designation}
+							placeholder="e.g., Senior Software Engineer"
+							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+						/>
+					</div>
+
+					<!-- Dates -->
+					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label for="company" class="block text-sm font-medium text-gray-700 mb-2">
-								Company Name <span class="text-red-500">*</span>
+							<label for="from_date" class="block text-sm font-medium text-gray-700 mb-2">
+								Start Date <span class="text-error-500">*</span>
 							</label>
 							<input
-								type="text"
-								id="company"
-								bind:value={formData.company}
-								placeholder="e.g., Google, Microsoft"
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+								type="date"
+								id="from_date"
+								bind:value={formData.from_date}
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
 						</div>
-
-						<!-- Designation -->
 						<div>
-							<label for="designation" class="block text-sm font-medium text-gray-700 mb-2">
-								Designation/Job Title <span class="text-red-500">*</span>
+							<label for="to_date" class="block text-sm font-medium text-gray-700 mb-2">
+								End Date {formData.current_job ? '' : ''}
 							</label>
 							<input
-								type="text"
-								id="designation"
-								bind:value={formData.designation}
-								placeholder="e.g., Senior Software Engineer"
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+								type="date"
+								id="to_date"
+								bind:value={formData.to_date}
+								disabled={formData.current_job}
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
 							/>
 						</div>
-
-						<!-- Dates -->
-						<div class="grid grid-cols-2 gap-4">
-							<div>
-								<label for="from_date" class="block text-sm font-medium text-gray-700 mb-2">
-									Start Date <span class="text-red-500">*</span>
-								</label>
-								<input
-									type="date"
-									id="from_date"
-									bind:value={formData.from_date}
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-								/>
-							</div>
-							<div>
-								<label for="to_date" class="block text-sm font-medium text-gray-700 mb-2">
-									End Date {formData.current_job ? '(Not applicable)' : '*'}
-								</label>
-								<input
-									type="date"
-									id="to_date"
-									bind:value={formData.to_date}
-									disabled={formData.current_job}
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-								/>
-							</div>
-						</div>
-
-						<!-- Current Job Checkbox -->
-						<div>
-							<label class="flex items-center gap-2 cursor-pointer">
-								<input
-									type="checkbox"
-									bind:checked={formData.current_job}
-									onchange={handleCurrentJobChange}
-									class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-								/>
-								<div>
-									<p class="font-medium text-gray-900">I currently work here</p>
-									<p class="text-sm text-gray-600">Check this if this is your current job</p>
-								</div>
-							</label>
-						</div>
-
-						<!-- Job Profile/Description -->
-						<div>
-							<label for="job_profile" class="block text-sm font-medium text-gray-700 mb-2">
-								Job Profile/Description <span class="text-red-500">*</span>
-							</label>
-							<textarea
-								id="job_profile"
-								bind:value={formData.job_profile}
-								rows="5"
-								placeholder="Describe your key responsibilities, achievements, and projects..."
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-							></textarea>
-							<p class="mt-1 text-xs text-gray-500">
-								Include your main responsibilities, achievements, and technologies used
-							</p>
-						</div>
 					</div>
 
-					<!-- Form Actions -->
-					<div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t">
-						<button
-							type="button"
-							onclick={closeForm}
-							class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-							disabled={saving}
-						>
-							Cancel
-						</button>
-						<button
-							type="button"
-							onclick={handleSaveEmployment}
-							disabled={saving}
-							class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-						>
-							{#if saving}
-								<Loader class="w-4 h-4 animate-spin" />
-								Saving...
-							{:else}
-								<Save class="w-4 h-4" />
-								{editingEmploymentId ? 'Update Employment' : 'Add Employment'}
-							{/if}
-						</button>
+					<!-- Current Job Checkbox -->
+					<div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+						<label class="flex items-start gap-3 cursor-pointer">
+							<input
+								type="checkbox"
+								bind:checked={formData.current_job}
+								onchange={handleCurrentJobChange}
+								class="w-5 h-5 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+							/>
+							<div>
+								<p class="font-medium text-gray-900">I currently work here</p>
+								<p class="text-sm text-gray-600">Check this if this is your current job</p>
+							</div>
+						</label>
 					</div>
+
+					<!-- Job Profile/Description -->
+					<div>
+						<label for="job_profile" class="block text-sm font-medium text-gray-700 mb-2">
+							Job Profile/Description <span class="text-error-500">*</span>
+						</label>
+						<textarea
+							id="job_profile"
+							bind:value={formData.job_profile}
+							rows="5"
+							placeholder="Describe your key responsibilities, achievements, and projects..."
+							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none"
+						></textarea>
+						<p class="mt-2 text-xs text-gray-500">
+							Include your main responsibilities, achievements, and technologies used
+						</p>
+					</div>
+				</div>
+
+				<!-- Modal Footer -->
+				<div class="flex items-center justify-end gap-3 p-5 lg:p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+					<button
+						type="button"
+						onclick={closeForm}
+						class="px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-full font-medium hover:bg-gray-50 transition-colors"
+						disabled={saving}
+					>
+						Cancel
+					</button>
+					<button
+						type="button"
+						onclick={handleSaveEmployment}
+						disabled={saving}
+						class="px-5 py-2.5 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 elevation-1"
+					>
+						{#if saving}
+							<Loader size={18} class="animate-spin" />
+							Saving...
+						{:else}
+							<Save size={18} />
+							{editingEmploymentId ? 'Update Employment' : 'Add Employment'}
+						{/if}
+					</button>
 				</div>
 			</div>
 		</div>

@@ -3,22 +3,19 @@
 	import { authStore } from '$lib/stores/auth';
 	import { toast } from '$lib/stores/toast';
 	import { getProfile, patchProfile, type UserProfile } from '$lib/api/profile';
-	import { Save, Loader } from '@lucide/svelte';
+	import { Save, Loader, User, Sparkles } from '@lucide/svelte';
 
-	// Import components
 	import ProfilePictureSection from '$lib/components/profile/ProfilePictureSection.svelte';
 	import PersonalInfoSection from '$lib/components/profile/PersonalInfoSection.svelte';
 	import AddressInfoSection from '$lib/components/profile/AddressInfoSection.svelte';
 	import LocationSection from '$lib/components/profile/LocationSection.svelte';
 	import ProfessionalInfoSection from '$lib/components/profile/ProfessionalInfoSection.svelte';
 
-	// State
 	let profile: UserProfile | null = null;
 	let loading = true;
 	let saving = false;
 	let validationErrors: Record<string, string> = {};
 
-	// Form data
 	let formData = {
 		first_name: '',
 		last_name: '',
@@ -46,7 +43,6 @@
 		relocation: false
 	};
 
-	// Load profile on mount
 	onMount(async () => {
 		await loadProfile();
 	});
@@ -56,7 +52,6 @@
 			loading = true;
 			profile = await getProfile();
 
-			// Populate form with profile data
 			formData = {
 				first_name: profile.first_name || '',
 				last_name: profile.last_name || '',
@@ -97,7 +92,6 @@
 			saving = true;
 			validationErrors = {};
 
-			// Validate required fields
 			if (!formData.first_name.trim()) {
 				validationErrors.first_name = 'First name is required';
 			}
@@ -119,14 +113,11 @@
 				return;
 			}
 
-			// Build update payload - only include non-empty values
-			const updatePayload: any = {};
+			const updatePayload: Record<string, unknown> = {};
 
-			// Always include required fields
 			updatePayload.first_name = formData.first_name.trim();
 			updatePayload.last_name = formData.last_name.trim();
 
-			// Include optional fields only if they have values
 			if (formData.mobile?.trim()) updatePayload.mobile = formData.mobile.trim();
 			if (formData.alternate_mobile?.trim())
 				updatePayload.alternate_mobile = parseInt(formData.alternate_mobile.replace(/\D/g, ''));
@@ -139,7 +130,6 @@
 				updatePayload.permanent_address = formData.permanent_address.trim();
 			if (formData.pincode?.trim()) updatePayload.pincode = parseInt(formData.pincode);
 
-			// Location fields
 			if (formData.city_id) updatePayload.city_id = formData.city_id;
 			if (formData.state_id) updatePayload.state_id = formData.state_id;
 			if (formData.country_id) updatePayload.country_id = formData.country_id;
@@ -160,13 +150,10 @@
 			if (formData.notice_period?.trim())
 				updatePayload.notice_period = formData.notice_period.trim();
 
-			// Boolean fields - always include
 			updatePayload.relocation = formData.relocation;
 
-			// Update profile
 			profile = await patchProfile(updatePayload);
 
-			// Update auth store with new user data
 			authStore.updateUser({
 				...$authStore.user!,
 				first_name: profile.first_name,
@@ -185,39 +172,76 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Personal Information - Profile - PeelJobs</title>
+	<meta name="description" content="Manage your personal information and preferences" />
+</svelte:head>
+
 <!-- Header -->
-<div class="mb-8">
-	<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Personal Information</h1>
-	<p class="text-gray-600 mt-2">Manage your personal information and preferences</p>
+<div class="mb-6 animate-fade-in-up" style="opacity: 0;">
+	<div class="flex items-center gap-3 mb-2">
+		<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+			<User size={20} class="text-primary-600" />
+		</div>
+		<div>
+			<h2 class="text-xl lg:text-2xl font-bold text-gray-900">Personal Information</h2>
+			<p class="text-sm text-gray-600">Manage your personal information and preferences</p>
+		</div>
+	</div>
 </div>
 
 <!-- Loading State -->
 {#if loading}
-	<div class="bg-white rounded-lg shadow-sm p-8 text-center">
-		<Loader class="w-8 h-8 animate-spin mx-auto text-blue-600" />
-		<p class="mt-4 text-gray-600">Loading your profile...</p>
+	<div
+		class="bg-white rounded-2xl p-12 elevation-1 border border-gray-100 text-center animate-fade-in-up"
+		style="opacity: 0; animation-delay: 100ms;"
+	>
+		<div
+			class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+		></div>
+		<p class="text-gray-600">Loading your profile...</p>
 	</div>
 {:else if profile}
-	<!-- Profile Completion -->
-	<div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-		<div class="flex items-center justify-between mb-3">
-			<h2 class="text-lg font-semibold text-gray-900">Profile Completion</h2>
-			<span class="text-2xl font-bold text-blue-600">
-				{profile.profile_completion_percentage}%
-			</span>
+	<!-- Profile Completion Card -->
+	{#if profile.profile_completion_percentage < 100}
+		<div
+			class="bg-white rounded-2xl p-5 lg:p-6 elevation-1 border border-gray-100 mb-6 animate-fade-in-up"
+			style="opacity: 0; animation-delay: 100ms;"
+		>
+			<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+				<div class="flex items-start gap-4">
+					<div
+						class="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0"
+					>
+						<Sparkles size={24} class="text-primary-600" />
+					</div>
+					<div>
+						<h3 class="text-lg font-semibold text-gray-900 mb-1">Complete Your Profile</h3>
+						<p class="text-sm text-gray-600">
+							A complete profile gets 3x more views from recruiters
+						</p>
+					</div>
+				</div>
+
+				<div class="flex items-center gap-4 lg:gap-6">
+					<div class="flex-1 lg:w-48">
+						<div class="flex justify-between text-sm mb-2">
+							<span class="text-gray-600">Progress</span>
+							<span class="font-semibold text-primary-600"
+								>{profile.profile_completion_percentage}%</span
+							>
+						</div>
+						<div class="w-full bg-gray-100 rounded-full h-2.5">
+							<div
+								class="bg-primary-600 rounded-full h-2.5 transition-all duration-500"
+								style="width: {profile.profile_completion_percentage}%"
+							></div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="w-full bg-gray-200 rounded-full h-3">
-			<div
-				class="bg-blue-600 h-3 rounded-full transition-all duration-500"
-				style="width: {profile.profile_completion_percentage}%"
-			></div>
-		</div>
-		{#if profile.profile_completion_percentage < 100}
-			<p class="mt-2 text-sm text-gray-600">
-				Complete your profile to increase your chances of getting hired
-			</p>
-		{/if}
-	</div>
+	{/if}
 
 	<!-- Profile Form -->
 	<form
@@ -228,36 +252,64 @@
 		class="space-y-6"
 	>
 		<!-- Profile Picture Section -->
-		<ProfilePictureSection
-			profilePicUrl={profile.profile_pic_url}
-			photo={profile.photo}
-			onUploadComplete={loadProfile}
-		/>
+		<div
+			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 150ms;"
+		>
+			<ProfilePictureSection
+				profilePicUrl={profile.profile_pic_url}
+				photo={profile.photo}
+				onUploadComplete={loadProfile}
+			/>
+		</div>
 
 		<!-- Personal Information Section -->
-		<PersonalInfoSection bind:formData email={profile.email} {validationErrors} />
+		<div
+			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 200ms;"
+		>
+			<PersonalInfoSection bind:formData email={profile.email} {validationErrors} />
+		</div>
 
 		<!-- Address Information Section -->
-		<AddressInfoSection bind:formData {validationErrors} />
+		<div
+			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 250ms;"
+		>
+			<AddressInfoSection bind:formData {validationErrors} />
+		</div>
 
 		<!-- Location Preferences Section -->
-		<LocationSection bind:formData {profile} />
+		<div
+			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 300ms;"
+		>
+			<LocationSection bind:formData {profile} />
+		</div>
 
 		<!-- Professional Information Section -->
-		<ProfessionalInfoSection bind:formData />
+		<div
+			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 350ms;"
+		>
+			<ProfessionalInfoSection bind:formData />
+		</div>
 
 		<!-- Save Button -->
-		<div class="flex justify-end gap-4">
+		<div
+			class="flex justify-end gap-4 animate-fade-in-up"
+			style="opacity: 0; animation-delay: 400ms;"
+		>
 			<button
 				type="submit"
 				disabled={saving}
-				class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+				class="px-6 py-3 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 elevation-1"
 			>
 				{#if saving}
-					<Loader class="w-5 h-5 animate-spin" />
+					<Loader size={20} class="animate-spin" />
 					Saving...
 				{:else}
-					<Save class="w-5 h-5" />
+					<Save size={20} />
 					Save Profile
 				{/if}
 			</button>

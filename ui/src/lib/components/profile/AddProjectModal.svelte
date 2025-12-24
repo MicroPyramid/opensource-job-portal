@@ -242,7 +242,7 @@
 		<!-- Backdrop -->
 		<button
 			type="button"
-			class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity cursor-default"
+			class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity cursor-default animate-fade-in"
 			onclick={handleBackdropClick}
 			aria-label="Close modal"
 			tabindex="-1"
@@ -251,63 +251,63 @@
 		<!-- Modal -->
 		<div class="flex min-h-screen items-center justify-center p-4">
 			<div
-				class="relative w-full max-w-3xl transform overflow-hidden rounded-lg bg-white shadow-xl transition-all"
+				class="relative w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white elevation-4 transition-all animate-scale-in"
 			>
 				<!-- Header -->
-				<div class="flex items-center justify-between border-b border-gray-200 px-4 md:px-6 py-4">
+				<div class="flex items-center justify-between border-b border-gray-100 p-5 lg:p-6">
 					<div class="flex items-center gap-3">
-						<div class="p-2 bg-blue-50 rounded-lg">
-							<Rocket class="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+						<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+							<Rocket size={20} class="text-primary-600" />
 						</div>
-						<h3 class="text-lg md:text-xl font-semibold text-gray-900" id="modal-title">
+						<h3 class="text-lg font-semibold text-gray-900" id="modal-title">
 							{project ? 'Edit Project' : 'Add Project'}
 						</h3>
 					</div>
 					<button
 						type="button"
 						onclick={handleClose}
-						class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+						class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
 					>
-						<X class="w-5 h-5 md:w-6 md:h-6" />
+						<X size={20} />
 					</button>
 				</div>
 
 				<!-- Form -->
-				<form onsubmit={handleSubmit} class="px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+				<form onsubmit={handleSubmit} class="p-5 lg:p-6 space-y-5">
 					<!-- Project Name -->
 					<div>
-						<label for="name" class="block text-sm font-medium text-gray-700 mb-1">
-							Project Name <span class="text-red-500">*</span>
+						<label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+							Project Name <span class="text-error-500">*</span>
 						</label>
 						<input
 							type="text"
 							id="name"
 							bind:value={formData.name}
 							placeholder="e.g., E-commerce Platform"
-							class="w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							required
 						/>
 					</div>
 
 					<!-- Description -->
 					<div>
-						<label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-							Description <span class="text-red-500">*</span>
+						<label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+							Description <span class="text-error-500">*</span>
 						</label>
 						<textarea
 							id="description"
 							bind:value={formData.description}
 							placeholder="Describe your project, your responsibilities, and key achievements..."
 							rows="4"
-							class="w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base resize-none"
+							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none"
 							required
 						></textarea>
 					</div>
 
 					<!-- Skills -->
 					<div>
-						<label for="project-skill-search" class="block text-sm font-medium text-gray-700 mb-1">
-							Technologies Used <span class="text-red-500">*</span>
+						<label for="project-skill-search" class="block text-sm font-medium text-gray-700 mb-2">
+							Technologies Used <span class="text-error-500">*</span>
 						</label>
 
 						<!-- Selected Skills -->
@@ -315,16 +315,16 @@
 							<div class="flex flex-wrap gap-2 mb-3">
 								{#each selectedSkills as skill (skill.id)}
 									<span
-										class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200"
+										class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-primary-50 text-primary-700 border border-primary-200"
 									>
 										{skill.name}
 										<button
 											type="button"
 											onclick={() => removeSkill(skill.id)}
-											class="hover:text-blue-900"
+											class="hover:text-primary-900 transition-colors"
 											aria-label="Remove skill"
 										>
-											<Trash2 class="w-3.5 h-3.5" />
+											<Trash2 size={14} />
 										</button>
 									</span>
 								{/each}
@@ -333,32 +333,32 @@
 
 						<!-- Skill Search -->
 						<div class="relative">
+							<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+								<Search size={18} class="text-gray-400" />
+							</span>
 							<input
 								type="text"
 								id="project-skill-search"
 								placeholder="Search technologies (e.g., React, Python, AWS)..."
 								bind:value={skillSearchQuery}
 								oninput={handleSkillSearch}
-								class="w-full px-3 md:px-4 py-2 md:py-2.5 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+								class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
-							<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-								<Search class="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-							</div>
 						</div>
 
 						<!-- Available Skills Dropdown -->
 						{#if availableSkills.length > 0}
 							<div
-								class="mt-2 max-h-48 overflow-y-auto border border-gray-300 rounded-lg bg-white shadow-lg"
+								class="mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-xl bg-white elevation-2"
 							>
 								{#each availableSkills as skill (skill.id)}
 									<button
 										type="button"
 										onclick={() => addSkill(skill)}
-										class="w-full px-3 md:px-4 py-2 text-left text-sm md:text-base hover:bg-blue-50 transition-colors flex items-center justify-between"
+										class="w-full px-4 py-3 text-left text-sm hover:bg-primary-50 transition-colors flex items-center justify-between"
 									>
 										<span>{skill.name}</span>
-										<Plus class="w-4 h-4 text-blue-600" />
+										<Plus size={16} class="text-primary-600" />
 									</button>
 								{/each}
 							</div>
@@ -368,7 +368,7 @@
 					<!-- Role and Team Size -->
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<label for="role" class="block text-sm font-medium text-gray-700 mb-1">
+							<label for="role" class="block text-sm font-medium text-gray-700 mb-2">
 								Your Role
 							</label>
 							<input
@@ -376,12 +376,12 @@
 								id="role"
 								bind:value={formData.role}
 								placeholder="e.g., Full Stack Developer"
-								class="w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
 						</div>
 
 						<div>
-							<label for="size" class="block text-sm font-medium text-gray-700 mb-1">
+							<label for="size" class="block text-sm font-medium text-gray-700 mb-2">
 								Team Size
 							</label>
 							<input
@@ -390,7 +390,7 @@
 								bind:value={formData.size}
 								placeholder="e.g., 4"
 								min="1"
-								class="w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
 						</div>
 					</div>
@@ -398,54 +398,54 @@
 					<!-- Date Range -->
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<label for="from_date" class="block text-sm font-medium text-gray-700 mb-1">
+							<label for="from_date" class="block text-sm font-medium text-gray-700 mb-2">
 								Start Date
 							</label>
 							<input
 								type="date"
 								id="from_date"
 								bind:value={formData.from_date}
-								class="w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
 						</div>
 
 						<div>
-							<label for="to_date" class="block text-sm font-medium text-gray-700 mb-1">
+							<label for="to_date" class="block text-sm font-medium text-gray-700 mb-2">
 								End Date
 							</label>
 							<input
 								type="date"
 								id="to_date"
 								bind:value={formData.to_date}
-								class="w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
-							<p class="mt-1 text-xs text-gray-500">Leave blank if ongoing</p>
+							<p class="mt-2 text-xs text-gray-500">Leave blank if ongoing</p>
 						</div>
 					</div>
 
 					<!-- Location -->
 					<div>
-						<label for="location" class="block text-sm font-medium text-gray-700 mb-1">
+						<label for="location" class="block text-sm font-medium text-gray-700 mb-2">
 							Project Location
 						</label>
 						<div class="relative">
+							<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+								<Search size={18} class="text-gray-400" />
+							</span>
 							<input
 								type="text"
 								placeholder="Search city..."
 								bind:value={citySearchQuery}
 								oninput={handleCitySearch}
-								class="w-full px-3 md:px-4 py-2 md:py-2.5 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+								class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
-							<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-								<Search class="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-							</div>
 						</div>
 
 						{#if cities.length > 0}
 							<select
 								id="location"
 								bind:value={formData.location_id}
-								class="mt-2 w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+								class="mt-3 w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none appearance-none"
 							>
 								<option value={undefined}>Select location...</option>
 								{#each cities as city}
@@ -458,18 +458,18 @@
 					</div>
 
 					<!-- Action Buttons -->
-					<div class="flex flex-col-reverse md:flex-row gap-3 pt-4">
+					<div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
 						<button
 							type="button"
 							onclick={handleClose}
-							class="w-full md:w-auto px-4 md:px-6 py-2 md:py-2.5 border border-gray-300 rounded-lg text-sm md:text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+							class="px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-full font-medium hover:bg-gray-50 transition-colors"
 							disabled={loading}
 						>
 							Cancel
 						</button>
 						<button
 							type="submit"
-							class="w-full md:flex-1 px-4 md:px-6 py-2 md:py-2.5 bg-blue-600 text-white rounded-lg text-sm md:text-base font-medium hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+							class="px-5 py-2.5 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed elevation-1"
 							disabled={loading}
 						>
 							{loading ? 'Saving...' : project ? 'Update Project' : 'Add Project'}

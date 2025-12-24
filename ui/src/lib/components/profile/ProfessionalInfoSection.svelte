@@ -21,13 +21,18 @@
 	}
 </script>
 
-<div class="bg-white rounded-lg shadow-sm p-6">
-	<h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-		<Briefcase class="w-5 h-5" />
-		Professional Information
-	</h2>
+<div class="p-5 lg:p-6">
+	<div class="flex items-center gap-3 mb-6">
+		<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+			<Briefcase size={20} class="text-primary-600" />
+		</div>
+		<div>
+			<h2 class="text-lg font-semibold text-gray-900">Professional Information</h2>
+			<p class="text-sm text-gray-600">Your career details and preferences</p>
+		</div>
+	</div>
 
-	<div class="grid md:grid-cols-2 gap-6">
+	<div class="grid md:grid-cols-2 gap-5">
 		<!-- Job Role -->
 		<div class="md:col-span-2">
 			<label for="job_role" class="block text-sm font-medium text-gray-700 mb-2">
@@ -38,7 +43,7 @@
 				type="text"
 				bind:value={formData.job_role}
 				placeholder="e.g., Full Stack Developer"
-				class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+				class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 			/>
 		</div>
 
@@ -52,7 +57,7 @@
 				bind:value={formData.profile_description}
 				rows="4"
 				placeholder="Brief description of your professional background and goals..."
-				class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+				class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none"
 			></textarea>
 		</div>
 
@@ -67,7 +72,7 @@
 						min="0"
 						max="50"
 						placeholder="Years"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+						class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 					/>
 				</div>
 				<div>
@@ -77,11 +82,11 @@
 						min="0"
 						max="11"
 						placeholder="Months"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+						class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 					/>
 				</div>
 			</div>
-			<p class="mt-1 text-xs text-gray-500">
+			<p class="mt-2 text-xs text-gray-500">
 				{formatExperience(formData.year, formData.month)}
 			</p>
 		</fieldset>
@@ -96,7 +101,7 @@
 				type="text"
 				bind:value={formData.notice_period}
 				placeholder="e.g., 30 days, Immediate"
-				class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+				class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 			/>
 		</div>
 
@@ -105,16 +110,16 @@
 			<label for="current_salary" class="block text-sm font-medium text-gray-700 mb-2">
 				Current Salary (Annual)
 			</label>
-			<div
-				class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500"
-			>
-				<DollarSign class="w-5 h-5 text-gray-400" />
+			<div class="relative">
+				<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+					<DollarSign size={18} class="text-gray-400" />
+				</span>
 				<input
 					id="current_salary"
 					type="text"
 					bind:value={formData.current_salary}
 					placeholder="e.g., 500000"
-					class="flex-1 outline-none"
+					class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 				/>
 			</div>
 		</div>
@@ -124,16 +129,16 @@
 			<label for="expected_salary" class="block text-sm font-medium text-gray-700 mb-2">
 				Expected Salary (Annual)
 			</label>
-			<div
-				class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500"
-			>
-				<DollarSign class="w-5 h-5 text-gray-400" />
+			<div class="relative">
+				<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+					<DollarSign size={18} class="text-gray-400" />
+				</span>
 				<input
 					id="expected_salary"
 					type="text"
 					bind:value={formData.expected_salary}
 					placeholder="e.g., 800000"
-					class="flex-1 outline-none"
+					class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 				/>
 			</div>
 		</div>

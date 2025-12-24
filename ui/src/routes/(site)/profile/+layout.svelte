@@ -7,108 +7,160 @@
 		Briefcase,
 		Award,
 		FileText,
-		Code
+		Code,
+		FolderOpen,
+		ChevronRight
 	} from '@lucide/svelte';
 
-	// Define profile tabs
-	const tabs = [
+	interface Tab {
+		name: string;
+		href: string;
+		icon: typeof User;
+		description: string;
+	}
+
+	const tabs: Tab[] = [
 		{
 			name: 'Profile',
-			href: '/profile',
+			href: '/profile/',
 			icon: User,
 			description: 'Personal information'
 		},
 		{
 			name: 'Education',
-			href: '/profile/education',
+			href: '/profile/education/',
 			icon: GraduationCap,
 			description: 'Educational background'
 		},
 		{
 			name: 'Skills',
-			href: '/profile/skills',
+			href: '/profile/skills/',
 			icon: Code,
 			description: 'Technical skills'
 		},
 		{
 			name: 'Employment',
-			href: '/profile/employment',
+			href: '/profile/employment/',
 			icon: Briefcase,
 			description: 'Work history'
 		},
 		{
 			name: 'Projects',
-			href: '/profile/projects',
-			icon: Briefcase,
+			href: '/profile/projects/',
+			icon: FolderOpen,
 			description: 'Project portfolio'
 		},
 		{
 			name: 'Certifications',
-			href: '/profile/certifications',
+			href: '/profile/certifications/',
 			icon: Award,
 			description: 'Professional certifications'
-		},
-		{
-			name: 'Resume',
-			href: '/profile/resume',
-			icon: FileText,
-			description: 'Resume management'
 		}
 	];
 
-	// Check if current path matches tab
-	function isActive(href: string) {
-		return $page.url.pathname === href;
+	function isActive(href: string): boolean {
+		const pathname = $page.url.pathname;
+		return pathname === href || pathname === href.slice(0, -1);
 	}
 
-	// Handle tab change in mobile dropdown
 	function handleTabChange(event: Event) {
 		const target = event.target as HTMLSelectElement;
 		goto(target.value);
 	}
+
+	function getCurrentTab(): Tab | undefined {
+		return tabs.find((tab) => isActive(tab.href));
+	}
 </script>
 
-<div class="min-h-screen bg-gray-50">
-	<!-- Profile Navigation Tabs -->
-	<div class="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<!-- Mobile: Dropdown -->
-			<div class="block lg:hidden py-4">
-				<label for="profile-tab-select" class="sr-only">Select a tab</label>
-				<select
-					id="profile-tab-select"
-					onchange={handleTabChange}
-					class="block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-				>
-					{#each tabs as tab}
-						<option value={tab.href} selected={isActive(tab.href)}>
-							{tab.name}
-						</option>
-					{/each}
-				</select>
-			</div>
+<!-- Hero Section -->
+<section class="bg-gray-900 text-white py-10 lg:py-12 relative overflow-hidden">
+	<!-- Decorative Elements -->
+	<div class="absolute inset-0 overflow-hidden">
+		<div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl"></div>
+		<div class="absolute bottom-0 right-1/4 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl"></div>
+	</div>
 
-			<!-- Desktop: Horizontal Tabs -->
-			<nav class="hidden lg:flex space-x-8 overflow-x-auto" aria-label="Profile sections">
+	<div class="max-w-7xl mx-auto px-4 lg:px-8 relative">
+		<!-- Breadcrumb -->
+		<nav class="mb-5" aria-label="Breadcrumb">
+			<ol class="flex items-center gap-2 text-sm text-gray-400">
+				<li>
+					<a href="/jobseeker-dashboard/" class="hover:text-white transition-colors">Dashboard</a>
+				</li>
+				<li class="flex items-center gap-2">
+					<ChevronRight size={14} />
+					<span class="text-white font-medium">Profile</span>
+				</li>
+			</ol>
+		</nav>
+
+		<div class="flex items-center gap-4">
+			<div
+				class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center animate-fade-in-up"
+				style="opacity: 0;"
+			>
+				<User size={28} class="text-primary-300" />
+			</div>
+			<div>
+				<h1
+					class="text-2xl lg:text-3xl font-bold tracking-tight mb-1 animate-fade-in-up"
+					style="opacity: 0; animation-delay: 100ms;"
+				>
+					My Profile
+				</h1>
+				<p class="text-gray-300 animate-fade-in-up" style="opacity: 0; animation-delay: 150ms;">
+					Manage your profile and professional information
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Navigation Tabs -->
+<div class="bg-white border-b border-gray-200 sticky top-0 z-10 elevation-1">
+	<div class="max-w-7xl mx-auto px-4 lg:px-8">
+		<!-- Mobile: Dropdown -->
+		<div class="block lg:hidden py-4">
+			<label for="profile-tab-select" class="sr-only">Select a tab</label>
+			<select
+				id="profile-tab-select"
+				onchange={handleTabChange}
+				value={getCurrentTab()?.href || ''}
+				class="block w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+			>
 				{#each tabs as tab}
+					<option value={tab.href} selected={isActive(tab.href)}>
+						{tab.name}
+					</option>
+				{/each}
+			</select>
+		</div>
+
+		<!-- Desktop: Horizontal Tabs -->
+		<nav class="hidden lg:flex items-center gap-1 overflow-x-auto py-1" aria-label="Profile sections">
+			{#each tabs as tab}
 				{@const active = isActive(tab.href)}
 				<a
 					href={tab.href}
-					class="group inline-flex items-center gap-2 px-1 py-4 border-b-2 font-medium text-sm whitespace-nowrap transition-colors {active
-						? 'border-blue-600 text-blue-600'
-						: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+					class="group inline-flex items-center gap-2 px-4 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all my-1 {active
+						? 'bg-primary-50 text-primary-600'
+						: 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}"
 					aria-current={active ? 'page' : undefined}
 				>
-					<tab.icon class="w-5 h-5 {active ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'}" />
+					<tab.icon
+						class="w-5 h-5 {active ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600'}"
+					/>
 					{tab.name}
 				</a>
 			{/each}
-			</nav>
-		</div>
-	</div>
-
-	<!-- Page Content -->
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-		<slot />
+		</nav>
 	</div>
 </div>
+
+<!-- Page Content -->
+<section class="py-6 lg:py-8 bg-surface-50 min-h-[60vh]">
+	<div class="max-w-7xl mx-auto px-4 lg:px-8">
+		<slot />
+	</div>
+</section>

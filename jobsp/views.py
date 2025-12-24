@@ -414,7 +414,7 @@ def set_password(request, user_id, passwd_reset_token):
                 
                 # Determine redirect URL based on user type
                 if user.user_type in ["RR", "RA", "AA", "AR"]:
-                    url = reverse("recruiter:dashboard")
+                    url = "http://localhost:5174/dashboard"
                 else:
                     url = "/"
                 
