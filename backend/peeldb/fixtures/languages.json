@@ -1,0 +1,30 @@
+[
+{
+  "model": "peeldb.language",
+  "pk": 1,
+  "fields": {
+    "name": "Telugu"
+  }
+},
+{
+  "model": "peeldb.language",
+  "pk": 2,
+  "fields": {
+    "name": "English"
+  }
+},
+{
+  "model": "peeldb.language",
+  "pk": 3,
+  "fields": {
+    "name": "Hindi"
+  }
+},
+{
+  "model": "peeldb.language",
+  "pk": 4,
+  "fields": {
+    "name": "Tamil"
+  }
+}
+]

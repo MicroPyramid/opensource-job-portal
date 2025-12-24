@@ -1,323 +1,1559 @@
-[{
-   "model": "peeldb.qualification",
-   "pk": 1,
-   "fields": {
-      "name": "MBA",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 2,
-   "fields": {
-      "name": "B.Tech/B.E.",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 4,
-   "fields": {
-      "name": "B.A",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 5,
-   "fields": {
-      "name": "B.Arch",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 6,
-   "fields": {
-      "name": "B.B.A",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 7,
-   "fields": {
-      "name": "BCA",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 8,
-   "fields": {
-      "name": "B.Com",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 9,
-   "fields": {
-      "name": "BDS",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 11,
-   "fields": {
-      "name": "BHM",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 13,
-   "fields": {
-      "name": "BL/LLB",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 14,
-   "fields": {
-      "name": "B.Pharm",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 15,
-   "fields": {
-      "name": "B.Sc",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 17,
-   "fields": {
-      "name": "BVSC",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 18,
-   "fields": {
-      "name": "Mtech",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 24,
-   "fields": {
-      "name": "MSC",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 26,
-   "fields": {
-      "name": "Any Graduate",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 27,
-   "fields": {
-      "name": "Any Post Graduate",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 33,
-   "fields": {
-      "name": "BBM",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 38,
-   "fields": {
-      "name": "MCA",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 41,
-   "fields": {
-      "name": "Computer Science",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 42,
-   "fields": {
-      "name": "Phd",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 46,
-   "fields": {
-      "name": "M.A",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 54,
-   "fields": {
-      "name": "PGDMA",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 55,
-   "fields": {
-      "name": " MBBS",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 56,
-   "fields": {
-      "name": " ICWA",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 58,
-   "fields": {
-      "name": " BEd",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 59,
-   "fields": {
-      "name": "Any non graduate",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 60,
-   "fields": {
-      "name": "Diploma",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 65,
-   "fields": {
-      "name": "Mphil/Phd",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 66,
-   "fields": {
-      "name": "12thpass(HSE)",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 70,
-   "fields": {
-      "name": "MSW",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 71,
-   "fields": {
-      "name": "M.com",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 73,
-   "fields": {
-      "name": "10thpass(ssc)",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 74,
-   "fields": {
-      "name": "CS",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 78,
-   "fields": {
-      "name": "Any under graduate",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 79,
-   "fields": {
-      "name": "Any doctarate",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 80,
-   "fields": {
-      "name": "MS",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 81,
-   "fields": {
-      "name": "BMS",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 82,
-   "fields": {
-      "name": "MCM",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 83,
-   "fields": {
-      "name": "PGDCA",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 85,
-   "fields": {
-      "name": "MCS",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 86,
-   "fields": {
-      "name": "BCS",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 88,
-   "fields": {
-      "name": "M.Pharm",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 89,
-   "fields": {
-      "name": "Med",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 90,
-   "fields": {
-      "name": "ME",
-      "status": "Active"
-   }
-}, {
-   "model": "peeldb.qualification",
-   "pk": 92,
-   "fields": {
-      "name": "M.Arch",
-      "status": "Active"
-   }
-}]
+[
+{
+  "model": "peeldb.qualification",
+  "pk": 1,
+  "fields": {
+    "name": "MBA",
+    "status": "Active",
+    "slug": "mba"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 2,
+  "fields": {
+    "name": "B.Tech",
+    "status": "Active",
+    "slug": "btech"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 4,
+  "fields": {
+    "name": "B.A",
+    "status": "Active",
+    "slug": "ba"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 5,
+  "fields": {
+    "name": "B.Arch",
+    "status": "Active",
+    "slug": "barch"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 6,
+  "fields": {
+    "name": "B.B.A",
+    "status": "Active",
+    "slug": "bba"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 7,
+  "fields": {
+    "name": "BCA",
+    "status": "Active",
+    "slug": "bca"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 8,
+  "fields": {
+    "name": "B.Com",
+    "status": "Active",
+    "slug": "bcom"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 9,
+  "fields": {
+    "name": "BDS",
+    "status": "Active",
+    "slug": "bds"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 11,
+  "fields": {
+    "name": "BHM",
+    "status": "Active",
+    "slug": "bhm"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 13,
+  "fields": {
+    "name": "BL LLB",
+    "status": "Active",
+    "slug": "bl-llb"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 14,
+  "fields": {
+    "name": "B.Pharm",
+    "status": "Active",
+    "slug": "bpharm"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 15,
+  "fields": {
+    "name": "B.sc",
+    "status": "Active",
+    "slug": "bsc"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 17,
+  "fields": {
+    "name": "BVSC",
+    "status": "Active",
+    "slug": "bvsc"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 18,
+  "fields": {
+    "name": "M.Tech",
+    "status": "Active",
+    "slug": "mtech"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 24,
+  "fields": {
+    "name": "MSC",
+    "status": "Active",
+    "slug": "msc"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 26,
+  "fields": {
+    "name": "Graduate",
+    "status": "Active",
+    "slug": "graduate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 27,
+  "fields": {
+    "name": "Post Graduate",
+    "status": "Active",
+    "slug": "postgraduate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 33,
+  "fields": {
+    "name": "BBM",
+    "status": "Active",
+    "slug": "bbm"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 38,
+  "fields": {
+    "name": "MCA",
+    "status": "Active",
+    "slug": "mca"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 41,
+  "fields": {
+    "name": "Computer Science",
+    "status": "Active",
+    "slug": "computer-science"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 42,
+  "fields": {
+    "name": "PHD",
+    "status": "Active",
+    "slug": "phd"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 46,
+  "fields": {
+    "name": "M.A",
+    "status": "Active",
+    "slug": "ma"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 54,
+  "fields": {
+    "name": "PGDMA",
+    "status": "Active",
+    "slug": "pgdma"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 55,
+  "fields": {
+    "name": "MBBS",
+    "status": "Active",
+    "slug": "mbbs"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 56,
+  "fields": {
+    "name": " ICWA",
+    "status": "Active",
+    "slug": "icwa"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 58,
+  "fields": {
+    "name": "B.Ed",
+    "status": "Active",
+    "slug": "bed"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 59,
+  "fields": {
+    "name": "Non Graduate",
+    "status": "Active",
+    "slug": "nongraduate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 60,
+  "fields": {
+    "name": "Diploma",
+    "status": "Active",
+    "slug": "diploma"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 65,
+  "fields": {
+    "name": "Mphil/Phd",
+    "status": "Active",
+    "slug": "mphil-phd"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 66,
+  "fields": {
+    "name": "12th pass",
+    "status": "Active",
+    "slug": "12thpass"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 70,
+  "fields": {
+    "name": "MSW",
+    "status": "Active",
+    "slug": "msw"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 71,
+  "fields": {
+    "name": "M.com",
+    "status": "Active",
+    "slug": "mcom"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 73,
+  "fields": {
+    "name": "10th pass",
+    "status": "Active",
+    "slug": "10thpass"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 74,
+  "fields": {
+    "name": "CS",
+    "status": "Active",
+    "slug": "cs"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 78,
+  "fields": {
+    "name": "Undergraduate",
+    "status": "Active",
+    "slug": "undergraduate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 79,
+  "fields": {
+    "name": "Doctorate",
+    "status": "Active",
+    "slug": "any-doctarate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 80,
+  "fields": {
+    "name": "MS",
+    "status": "Active",
+    "slug": "ms"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 81,
+  "fields": {
+    "name": "BMS",
+    "status": "Active",
+    "slug": "bms"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 82,
+  "fields": {
+    "name": "MCM",
+    "status": "Active",
+    "slug": "mcm"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 83,
+  "fields": {
+    "name": "PGDCA",
+    "status": "Active",
+    "slug": "pgdca"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 85,
+  "fields": {
+    "name": "MCS",
+    "status": "Active",
+    "slug": "mcs"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 86,
+  "fields": {
+    "name": "BCS",
+    "status": "Active",
+    "slug": "bcs"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 88,
+  "fields": {
+    "name": "M.Pharm",
+    "status": "Active",
+    "slug": "mpharm"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 89,
+  "fields": {
+    "name": "M.ED",
+    "status": "Active",
+    "slug": "med"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 90,
+  "fields": {
+    "name": "ME",
+    "status": "Active",
+    "slug": "me"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 92,
+  "fields": {
+    "name": "M.Arch",
+    "status": "Active",
+    "slug": "march"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 93,
+  "fields": {
+    "name": "ITI",
+    "status": "Active",
+    "slug": "iti"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 94,
+  "fields": {
+    "name": "CA",
+    "status": "Active",
+    "slug": "ca"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 97,
+  "fields": {
+    "name": "CA Inter Jobs",
+    "status": "Active",
+    "slug": "ca-inter-jobs"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 98,
+  "fields": {
+    "name": "CMA Inter",
+    "status": "Active",
+    "slug": "cma-inter"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 99,
+  "fields": {
+    "name": "CMA",
+    "status": "Active",
+    "slug": "cma"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 100,
+  "fields": {
+    "name": "BBI",
+    "status": "Active",
+    "slug": "bbi"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 101,
+  "fields": {
+    "name": "BAF",
+    "status": "Active",
+    "slug": "baf"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 102,
+  "fields": {
+    "name": "MFA",
+    "status": "Active",
+    "slug": "mfa"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 103,
+  "fields": {
+    "name": "BFA",
+    "status": "Active",
+    "slug": "bfa"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 105,
+  "fields": {
+    "name": "Nurse",
+    "status": "Active",
+    "slug": "nurse"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 106,
+  "fields": {
+    "name": "BHMS",
+    "status": "Active",
+    "slug": "bhms"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 107,
+  "fields": {
+    "name": "Bachelor or Diploma in Optometry",
+    "status": "Active",
+    "slug": "bachelor-or-diploma-in-optometry"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 108,
+  "fields": {
+    "name": "CCNA",
+    "status": "Active",
+    "slug": "ccna-certified"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 110,
+  "fields": {
+    "name": "Diploma/Degree in Travel & Tourism",
+    "status": "Active",
+    "slug": "diploma-degree-in-travel-tourism"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 112,
+  "fields": {
+    "name": "D.G.O",
+    "status": "Active",
+    "slug": "dgo"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 114,
+  "fields": {
+    "name": "Diploma in Operation Theatre Technology",
+    "status": "Active",
+    "slug": "diploma-in-operation-theatre-technology"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 115,
+  "fields": {
+    "name": "B.sc in Operation Theatre Technology",
+    "status": "Active",
+    "slug": "bsc-in-operation-theatre-technology"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 116,
+  "fields": {
+    "name": "BE Mech",
+    "status": "Active",
+    "slug": "be-mech"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 117,
+  "fields": {
+    "name": " DME",
+    "status": "Active",
+    "slug": "dme"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 118,
+  "fields": {
+    "name": " PGDM",
+    "status": "Active",
+    "slug": "pgdm"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 121,
+  "fields": {
+    "name": "MPT",
+    "status": "Active",
+    "slug": "mpt"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 122,
+  "fields": {
+    "name": "B.sc multimedia",
+    "status": "Active",
+    "slug": "bsc-multimedia"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 123,
+  "fields": {
+    "name": "BPT",
+    "status": "Active",
+    "slug": "bpt"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 124,
+  "fields": {
+    "name": "ANM",
+    "status": "Active",
+    "slug": "anm"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 125,
+  "fields": {
+    "name": " GNM Nursing ",
+    "status": "Active",
+    "slug": "gnm-nursing"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 126,
+  "fields": {
+    "name": "Bachelor of Library Science - UG / PG",
+    "status": "Active",
+    "slug": "bachelor-of-library-science-ug-pg"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 128,
+  "fields": {
+    "name": "Diploma in Interior",
+    "status": "Active",
+    "slug": "diploma-in-interior"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 130,
+  "fields": {
+    "name": "Journalism",
+    "status": "Active",
+    "slug": "journalism"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 131,
+  "fields": {
+    "name": "English literature",
+    "status": "Active",
+    "slug": "english-literature"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 132,
+  "fields": {
+    "name": "DMLT",
+    "status": "Active",
+    "slug": "dmlt"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 133,
+  "fields": {
+    "name": "BMLT",
+    "status": "Active",
+    "slug": "bmlt"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 137,
+  "fields": {
+    "name": "Hospitality Management",
+    "status": "Active",
+    "slug": "hospitality-management"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 138,
+  "fields": {
+    "name": "Hotel Management",
+    "status": "Active",
+    "slug": "hotel-management"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 147,
+  "fields": {
+    "name": "Masters",
+    "status": "Active",
+    "slug": "masters"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 148,
+  "fields": {
+    "name": "DNB",
+    "status": "Active",
+    "slug": "dnb"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 149,
+  "fields": {
+    "name": "MCH",
+    "status": "Active",
+    "slug": "mch"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 152,
+  "fields": {
+    "name": "MPH",
+    "status": "Active",
+    "slug": "mph"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 154,
+  "fields": {
+    "name": "B.sc IT",
+    "status": "Active",
+    "slug": "bscit"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 156,
+  "fields": {
+    "name": "NIFT",
+    "status": "Active",
+    "slug": "nift"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 159,
+  "fields": {
+    "name": "Diploma in Mechanical Engineering",
+    "status": "Active",
+    "slug": "diploma-in-mechanical-engineering"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 163,
+  "fields": {
+    "name": "BAMS",
+    "status": "Active",
+    "slug": "bams"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 165,
+  "fields": {
+    "name": "MD",
+    "status": "Active",
+    "slug": "md"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 167,
+  "fields": {
+    "name": "Diploma in AutoCAD",
+    "status": "Active",
+    "slug": "diploma-in-autocad"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 172,
+  "fields": {
+    "name": "TransportRelated",
+    "status": "InActive",
+    "slug": "transportrelated"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 174,
+  "fields": {
+    "name": "NotRequire",
+    "status": "InActive",
+    "slug": "notrequire"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 175,
+  "fields": {
+    "name": "below10th",
+    "status": "InActive",
+    "slug": "below10th"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 176,
+  "fields": {
+    "name": "below12",
+    "status": "InActive",
+    "slug": "below12"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 177,
+  "fields": {
+    "name": "MarketingExperience",
+    "status": "InActive",
+    "slug": "marketingexperience"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 178,
+  "fields": {
+    "name": "BE/Diplomacivilengineer",
+    "status": "InActive",
+    "slug": "be-diplomacivilengineer"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 179,
+  "fields": {
+    "name": "PostGraduate",
+    "status": "InActive",
+    "slug": "postgraduate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 180,
+  "fields": {
+    "name": "DiplomaIneducation",
+    "status": "InActive",
+    "slug": "diplomaineducation"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 181,
+  "fields": {
+    "name": "Diplomaindance",
+    "status": "InActive",
+    "slug": "diplomaindance"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 182,
+  "fields": {
+    "name": "music",
+    "status": "InActive",
+    "slug": "music"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 184,
+  "fields": {
+    "name": "BE",
+    "status": "InActive",
+    "slug": "be"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 185,
+  "fields": {
+    "name": "BE/ME/B-Tech/M-Tech",
+    "status": "InActive",
+    "slug": "be-me-b-tech-m-tech"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 186,
+  "fields": {
+    "name": "BE/BTech/ME/M-tech/MBA",
+    "status": "InActive",
+    "slug": "be-btech-me-m-tech-mba"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 187,
+  "fields": {
+    "name": "EEE",
+    "status": "InActive",
+    "slug": "eee"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 188,
+  "fields": {
+    "name": "Machatronics",
+    "status": "InActive",
+    "slug": "machatronics"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 189,
+  "fields": {
+    "name": "ElectricalandCommunicationEngineering",
+    "status": "InActive",
+    "slug": "electricalandcommunicationengineering"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 190,
+  "fields": {
+    "name": "BEChemical",
+    "status": "InActive",
+    "slug": "bechemical"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 192,
+  "fields": {
+    "name": "MBAinfinance",
+    "status": "InActive",
+    "slug": "mbainfinance"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 193,
+  "fields": {
+    "name": "BBMinfinance",
+    "status": "InActive",
+    "slug": "bbminfinance"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 194,
+  "fields": {
+    "name": "BEfromECE",
+    "status": "InActive",
+    "slug": "befromece"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 195,
+  "fields": {
+    "name": "INSTUMENTAL",
+    "status": "InActive",
+    "slug": "instumental"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 196,
+  "fields": {
+    "name": "diplomafromEEE",
+    "status": "InActive",
+    "slug": "diplomafromeee"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 197,
+  "fields": {
+    "name": "ECE",
+    "status": "InActive",
+    "slug": "ece"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 198,
+  "fields": {
+    "name": "INSTRUMENTAL",
+    "status": "InActive",
+    "slug": "instrumental"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 201,
+  "fields": {
+    "name": "Physiotherapy",
+    "status": "InActive",
+    "slug": "physiotherapy"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 203,
+  "fields": {
+    "name": "collegecoursework",
+    "status": "InActive",
+    "slug": "collegecoursework"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 204,
+  "fields": {
+    "name": "anyGraduate",
+    "status": "InActive",
+    "slug": "anygraduate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 205,
+  "fields": {
+    "name": "bca.etc",
+    "status": "InActive",
+    "slug": "bcaetc"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 206,
+  "fields": {
+    "name": "artsandscience",
+    "status": "InActive",
+    "slug": "artsandscience"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 207,
+  "fields": {
+    "name": "begraduate",
+    "status": "InActive",
+    "slug": "begraduate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 208,
+  "fields": {
+    "name": "artsandscience.begraduate",
+    "status": "InActive",
+    "slug": "artsandsciencebegraduate"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 209,
+  "fields": {
+    "name": "begraduate.artsandscience",
+    "status": "InActive",
+    "slug": "begraduateartsandscience"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 210,
+  "fields": {
+    "name": "begraduate/artsandscience",
+    "status": "InActive",
+    "slug": "begraduateartsandscience"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 211,
+  "fields": {
+    "name": "BCOM",
+    "status": "InActive",
+    "slug": "bcom"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 212,
+  "fields": {
+    "name": "non",
+    "status": "InActive",
+    "slug": "non"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 213,
+  "fields": {
+    "name": "BE(CS/IT)",
+    "status": "InActive",
+    "slug": "becsit"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 214,
+  "fields": {
+    "name": "BachelorsinCivilEngineering",
+    "status": "InActive",
+    "slug": "bachelorsincivilengineering"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 215,
+  "fields": {
+    "name": "anydegree",
+    "status": "InActive",
+    "slug": "anydegree"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 216,
+  "fields": {
+    "name": "AnyOther",
+    "status": "InActive",
+    "slug": "anyother"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 217,
+  "fields": {
+    "name": "B.EMECHANICAL",
+    "status": "InActive",
+    "slug": "bemechanical"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 218,
+  "fields": {
+    "name": "Engineering(cs/IT)",
+    "status": "InActive",
+    "slug": "engineeringcsit"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 219,
+  "fields": {
+    "name": "BE-ECE",
+    "status": "InActive",
+    "slug": "be-ece"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 220,
+  "fields": {
+    "name": "Bsc-Electronics",
+    "status": "InActive",
+    "slug": "bsc-electronics"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 221,
+  "fields": {
+    "name": "B-Tech",
+    "status": "InActive",
+    "slug": "b-tech"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 222,
+  "fields": {
+    "name": "M-Tech",
+    "status": "InActive",
+    "slug": "m-tech"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 223,
+  "fields": {
+    "name": "ANY",
+    "status": "InActive",
+    "slug": "any"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 224,
+  "fields": {
+    "name": "MBBS+CIH",
+    "status": "InActive",
+    "slug": "mbbscih"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 225,
+  "fields": {
+    "name": "Bachelor",
+    "status": "InActive",
+    "slug": "bachelor"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 226,
+  "fields": {
+    "name": "10",
+    "status": "InActive",
+    "slug": "10"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 227,
+  "fields": {
+    "name": "12thpassandabove",
+    "status": "InActive",
+    "slug": "12thpassandabove"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 228,
+  "fields": {
+    "name": "AnyGraduation",
+    "status": "InActive",
+    "slug": "anygraduation"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 229,
+  "fields": {
+    "name": "ANYGRADUATES",
+    "status": "InActive",
+    "slug": "anygraduates"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 230,
+  "fields": {
+    "name": "Diploma(Electrical)",
+    "status": "InActive",
+    "slug": "diplomaelectrical"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 231,
+  "fields": {
+    "name": "DiplomainElectricalEngineeringorVocationaltarining",
+    "status": "InActive",
+    "slug": "diplomainelectricalengineeringorvocationaltarining"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 232,
+  "fields": {
+    "name": "B.E",
+    "status": "InActive",
+    "slug": "be"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 233,
+  "fields": {
+    "name": "B.E/B.TCH",
+    "status": "InActive",
+    "slug": "bebtch"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 234,
+  "fields": {
+    "name": "BachelorsInEngineering",
+    "status": "InActive",
+    "slug": "bachelorsinengineering"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 235,
+  "fields": {
+    "name": "MD/DNB/DM/MChNeonatalogy(NICU)",
+    "status": "InActive",
+    "slug": "mddnbdmmchneonatalogynicu"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 236,
+  "fields": {
+    "name": "BE-ECE/EEE",
+    "status": "InActive",
+    "slug": "be-eceeee"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 237,
+  "fields": {
+    "name": "BachelorofEngineeringorDiplomainComputerScience",
+    "status": "InActive",
+    "slug": "bachelorofengineeringordiplomaincomputerscience"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 238,
+  "fields": {
+    "name": "OtherBachelorDegree",
+    "status": "InActive",
+    "slug": "otherbachelordegree"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 239,
+  "fields": {
+    "name": "IfAny",
+    "status": "InActive",
+    "slug": "ifany"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 240,
+  "fields": {
+    "name": "BACHELORINPHARMACY",
+    "status": "InActive",
+    "slug": "bachelorinpharmacy"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 241,
+  "fields": {
+    "name": "MASTERINPHARMACY",
+    "status": "InActive",
+    "slug": "masterinpharmacy"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 242,
+  "fields": {
+    "name": "DIPLOMAINPHARMACY",
+    "status": "InActive",
+    "slug": "diplomainpharmacy"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 243,
+  "fields": {
+    "name": "D.Pharma",
+    "status": "InActive",
+    "slug": "dpharma"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 244,
+  "fields": {
+    "name": "ANYGRADUATES.",
+    "status": "InActive",
+    "slug": "anygraduates"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 245,
+  "fields": {
+    "name": "AnyBachelorDegee",
+    "status": "InActive",
+    "slug": "anybachelordegee"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 246,
+  "fields": {
+    "name": "Graduated",
+    "status": "InActive",
+    "slug": "graduated"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 247,
+  "fields": {
+    "name": "GRADUATEINMECHATRONICSORINSTRUMENTATION",
+    "status": "InActive",
+    "slug": "graduateinmechatronicsorinstrumentation"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 248,
+  "fields": {
+    "name": "GraduatewithComputerScience",
+    "status": "InActive",
+    "slug": "graduatewithcomputerscience"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 249,
+  "fields": {
+    "name": "Labview",
+    "status": "InActive",
+    "slug": "labview"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 250,
+  "fields": {
+    "name": "SoftwareDeveloper",
+    "status": "InActive",
+    "slug": "softwaredeveloper"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 251,
+  "fields": {
+    "name": "VisualProgrammingLanguage",
+    "status": "InActive",
+    "slug": "visualprogramminglanguage"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 252,
+  "fields": {
+    "name": "BECivil/BEElectrical",
+    "status": "InActive",
+    "slug": "becivilbeelectrical"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 253,
+  "fields": {
+    "name": "B.E.",
+    "status": "InActive",
+    "slug": "be"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 254,
+  "fields": {
+    "name": "fresher",
+    "status": "InActive",
+    "slug": "fresher"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 255,
+  "fields": {
+    "name": "trainee",
+    "status": "InActive",
+    "slug": "trainee"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 256,
+  "fields": {
+    "name": "intern",
+    "status": "InActive",
+    "slug": "intern"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 257,
+  "fields": {
+    "name": "Basicelectricalcertification",
+    "status": "InActive",
+    "slug": "basicelectricalcertification"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 258,
+  "fields": {
+    "name": "AnyBachelor'sDegree",
+    "status": "InActive",
+    "slug": "anybachelorsdegree"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 259,
+  "fields": {
+    "name": "AnyTechnicalqualifications",
+    "status": "InActive",
+    "slug": "anytechnicalqualifications"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 260,
+  "fields": {
+    "name": "DiplomaandAnyUGorPG(AlsoArrearsPeopleareApply)",
+    "status": "InActive",
+    "slug": "diplomaandanyugorpgalsoarrearspeopleareapply"
+  }
+},
+{
+  "model": "peeldb.qualification",
+  "pk": 261,
+  "fields": {
+    "name": "8THSTD",
+    "status": "InActive",
+    "slug": "8thstd"
+  }
+}
+]

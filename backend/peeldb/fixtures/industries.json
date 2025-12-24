@@ -1,281 +1,3686 @@
-[{
-    "model": "peeldb.industry",
-    "pk": 1,
-    "fields": {
-        "name": "IT-Software / Software Services\r\n",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 2,
-    "fields": {
-        "name": "IT-Hardware & Networking",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 3,
-    "fields": {
-        "name": "BPO / Call Centre / ITES",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 4,
-    "fields": {
-        "name": "Automobile / Auto Anciliary / Auto Components",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 5,
-    "fields": {
-        "name": "Accounting / Finance",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 6,
-    "fields": {
-        "name": "Advertising / PR / MR / Event Management",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 7,
-    "fields": {
-        "name": "Agriculture / Dairy",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 8,
-    "fields": {
-        "name": "Animation / Gaming",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 9,
-    "fields": {
-        "name": "Architecture / Interior Design",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 10,
-    "fields": {
-        "name": "Aviation / Aerospace Firms",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 11,
-    "fields": {
-        "name": "Banking / Financial Services / Broking",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 12,
-    "fields": {
-        "name": "Broadcasting",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 13,
-    "fields": {
-        "name": "Chemicals / PetroChemical / Plastic / Rubber",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 14,
-    "fields": {
-        "name": "Construction / Engineering / Cement / Metals",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 15,
-    "fields": {
-        "name": "Consumer Electronics / Appliances / Durables",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 16,
-    "fields": {
-        "name": "Education / Teaching / Training",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 17,
-    "fields": {
-        "name": "FMCG / Foods / Beverage",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 18,
-    "fields": {
-        "name": "Fresher / Trainee / Entry Level",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 19,
-    "fields": {
-        "name": "Government / Defence",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 20,
-    "fields": {
-        "name": "Insurance",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 21,
-    "fields": {
-        "name": "KPO / Research / Analytics",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 22,
-    "fields": {
-        "name": "Media / Entertainment / Internet",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 23,
-    "fields": {
-        "name": "Internet / Ecommerce",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 24,
-    "fields": {
-        "name": "Medical / Healthcare / Hospitals",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 25,
-    "fields": {
-        "name": "NGO / Social Services / Regulators / Industry Associations",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 26,
-    "fields": {
-        "name": "Pharma / Biotech / Clinical Research",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 27,
-    "fields": {
-        "name": "Printing / Packaging",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 28,
-    "fields": {
-        "name": "Real Estate / Property",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 29,
-    "fields": {
-        "name": "Recruitment / Staffing",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 30,
-    "fields": {
-        "name": "Retail / Wholesale",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 31,
-    "fields": {
-        "name": "Security / Law Enforcement",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 32,
-    "fields": {
-        "name": "Strategy / Management Consulting Firms",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 33,
-    "fields": {
-        "name": "Telecom/ISP",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 34,
-    "fields": {
-        "name": "Textiles / Garments / Accessories",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 35,
-    "fields": {
-        "name": "Travel / Hotels / Restaurants / Airlines / Railways",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 36,
-    "fields": {
-        "name": "Other",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 40,
-    "fields": {
-        "name": "sales & marketing",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 41,
-    "fields": {
-        "name": "Project manager",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 42,
-    "fields": {
-        "name": "web development industry",
-        "status": "Active"
-    }
-}, {
-    "model": "peeldb.industry",
-    "pk": 44,
-    "fields": {
-        "name": "Embedded systems and semi conductor",
-        "status": "Active"
-    }
-}]
+[
+{
+  "model": "peeldb.industry",
+  "pk": 1,
+  "fields": {
+    "name": "IT-Software / Software Services\r\n",
+    "status": "Active",
+    "slug": "it-software",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 2,
+  "fields": {
+    "name": "IT-Hardware & Networking",
+    "status": "Active",
+    "slug": "it-hardware",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 3,
+  "fields": {
+    "name": "BPO / Call Centre / ITES",
+    "status": "Active",
+    "slug": "bpo",
+    "meta_title": "BPO Openings/Walkins | Latest BPO Jobs Across India in BPO Industry - PeelJobs",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 4,
+  "fields": {
+    "name": "Automobile / Auto Anciliary / Auto Components",
+    "status": "Active",
+    "slug": "automobile",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 5,
+  "fields": {
+    "name": "Accounting / Finance",
+    "status": "Active",
+    "slug": "accounting",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 6,
+  "fields": {
+    "name": "Advertising / PR / MR / Event Management",
+    "status": "Active",
+    "slug": "advertising",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 7,
+  "fields": {
+    "name": "Agriculture / Dairy",
+    "status": "Active",
+    "slug": "agriculture",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 8,
+  "fields": {
+    "name": "Animation / Gaming",
+    "status": "Active",
+    "slug": "animation",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 9,
+  "fields": {
+    "name": "Architecture / Interior Design",
+    "status": "Active",
+    "slug": "architecture",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 10,
+  "fields": {
+    "name": "Aviation / Aerospace Firms",
+    "status": "Active",
+    "slug": "aviation",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 11,
+  "fields": {
+    "name": "Banking / Financial Services / Broking",
+    "status": "Active",
+    "slug": "banking",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 12,
+  "fields": {
+    "name": "Broadcasting",
+    "status": "Active",
+    "slug": "broadcasting",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 13,
+  "fields": {
+    "name": "Chemicals / PetroChemical / Plastic / Rubber",
+    "status": "Active",
+    "slug": "chemicals",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 14,
+  "fields": {
+    "name": "Construction / Engineering / Cement / Metals",
+    "status": "Active",
+    "slug": "construction",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 15,
+  "fields": {
+    "name": "Consumer Electronics / Appliances / Durables",
+    "status": "Active",
+    "slug": "consumer-electronics",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 16,
+  "fields": {
+    "name": "Education / Teaching / Training",
+    "status": "Active",
+    "slug": "education",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 17,
+  "fields": {
+    "name": "Consumer Goods",
+    "status": "Active",
+    "slug": "consumer-goods",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 18,
+  "fields": {
+    "name": "Fresher / Trainee / Entry Level",
+    "status": "Active",
+    "slug": "freshers",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 19,
+  "fields": {
+    "name": "Government / Defence",
+    "status": "Active",
+    "slug": "government",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 20,
+  "fields": {
+    "name": "Insurance",
+    "status": "Active",
+    "slug": "insurance",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 21,
+  "fields": {
+    "name": "KPO / Research / Analytics",
+    "status": "Active",
+    "slug": "kpo",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 22,
+  "fields": {
+    "name": "Media / Entertainment / Internet",
+    "status": "Active",
+    "slug": "media",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 23,
+  "fields": {
+    "name": "Internet / Ecommerce",
+    "status": "Active",
+    "slug": "internet",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 24,
+  "fields": {
+    "name": "Medical / Healthcare / Hospitals",
+    "status": "Active",
+    "slug": "medical",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 25,
+  "fields": {
+    "name": "NGO / Social Services / Regulators / Industry Associations",
+    "status": "Active",
+    "slug": "ngo",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 26,
+  "fields": {
+    "name": "Pharma / Biotech / Clinical Research",
+    "status": "Active",
+    "slug": "pharma",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 27,
+  "fields": {
+    "name": "Printing / Packaging",
+    "status": "Active",
+    "slug": "printing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 28,
+  "fields": {
+    "name": "Real Estate / Property",
+    "status": "Active",
+    "slug": "real-estate",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 29,
+  "fields": {
+    "name": "Recruitment / Staffing",
+    "status": "Active",
+    "slug": "recruitment",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 30,
+  "fields": {
+    "name": "Retail / Wholesale",
+    "status": "Active",
+    "slug": "retail",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 31,
+  "fields": {
+    "name": "Security / Law Enforcement",
+    "status": "Active",
+    "slug": "security",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 32,
+  "fields": {
+    "name": "Strategy / Management Consulting Firms",
+    "status": "Active",
+    "slug": "strategy",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 33,
+  "fields": {
+    "name": "Telecom/ISP",
+    "status": "Active",
+    "slug": "telecom",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 34,
+  "fields": {
+    "name": "Textiles / Garments / Accessories",
+    "status": "Active",
+    "slug": "textiles",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 35,
+  "fields": {
+    "name": "Travel / Hotels / Restaurants / Airlines / Railways",
+    "status": "Active",
+    "slug": "travel",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 36,
+  "fields": {
+    "name": "Other",
+    "status": "Active",
+    "slug": "other",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 40,
+  "fields": {
+    "name": "sales & marketing",
+    "status": "Active",
+    "slug": "sales",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 41,
+  "fields": {
+    "name": "Project manager",
+    "status": "Active",
+    "slug": "project-manager",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 42,
+  "fields": {
+    "name": "Web Development",
+    "status": "Active",
+    "slug": "web-development",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 44,
+  "fields": {
+    "name": "Embedded systems and semi conductor",
+    "status": "Active",
+    "slug": "embedded-systems-and-semi-conductor",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 45,
+  "fields": {
+    "name": "Online Work",
+    "status": "Active",
+    "slug": "online-work",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 47,
+  "fields": {
+    "name": "Inverter/UPS manufacturing",
+    "status": "Active",
+    "slug": "inverterups-manufacturing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 48,
+  "fields": {
+    "name": "Warehousing",
+    "status": "Active",
+    "slug": "ware-housing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 49,
+  "fields": {
+    "name": "Wind Turbine",
+    "status": "Active",
+    "slug": "wind-turbine",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 50,
+  "fields": {
+    "name": "Network Orchestrators in Logistics",
+    "status": "Active",
+    "slug": "network-orchestrators-in-logistics",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 51,
+  "fields": {
+    "name": "Export Import",
+    "status": "Active",
+    "slug": "import-export",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 53,
+  "fields": {
+    "name": "Food Processing",
+    "status": "Active",
+    "slug": "food-processing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 54,
+  "fields": {
+    "name": "SEO",
+    "status": "Active",
+    "slug": "seo",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 55,
+  "fields": {
+    "name": "Semiconductor/Electrical",
+    "status": "Active",
+    "slug": "semiconductorelectrical",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 57,
+  "fields": {
+    "name": "Manufacturing",
+    "status": "Active",
+    "slug": "manufacturing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 58,
+  "fields": {
+    "name": "Wellness",
+    "status": "Active",
+    "slug": "wellness",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 59,
+  "fields": {
+    "name": "Marine Industry",
+    "status": "Active",
+    "slug": "marine-industry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 60,
+  "fields": {
+    "name": "Salon & Spa",
+    "status": "Active",
+    "slug": "salon-spa",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 61,
+  "fields": {
+    "name": "Manufacturing Company",
+    "status": "Active",
+    "slug": "manufacturing-company",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 62,
+  "fields": {
+    "name": "FMCG / Beverages ",
+    "status": "Active",
+    "slug": "fmcg-beverages",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 64,
+  "fields": {
+    "name": "Publishing",
+    "status": "Active",
+    "slug": "publishing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 65,
+  "fields": {
+    "name": "Teacher",
+    "status": "Active",
+    "slug": "teacher",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 69,
+  "fields": {
+    "name": "Telecalling",
+    "status": "Active",
+    "slug": "tele-calling",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 70,
+  "fields": {
+    "name": "Digital Marketing",
+    "status": "Active",
+    "slug": "digital-marketing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 71,
+  "fields": {
+    "name": "Fast Food",
+    "status": "Active",
+    "slug": "fast-food-corner",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 73,
+  "fields": {
+    "name": "International Multidisciplinary Architecture Firm",
+    "status": "Active",
+    "slug": "international-multidisciplinary-architecture-firm",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 74,
+  "fields": {
+    "name": "FMCG",
+    "status": "Active",
+    "slug": "fmcg",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 75,
+  "fields": {
+    "name": "Logistics",
+    "status": "Active",
+    "slug": "logistics",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 76,
+  "fields": {
+    "name": "Beautician",
+    "status": "Active",
+    "slug": "beautician",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 77,
+  "fields": {
+    "name": "Freelancer Makeover",
+    "status": "Active",
+    "slug": "freelancer-makeover",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 78,
+  "fields": {
+    "name": "Make Up Studio",
+    "status": "Active",
+    "slug": "makeup-studio",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 79,
+  "fields": {
+    "name": "Legal Services",
+    "status": "Active",
+    "slug": "legal-service",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 81,
+  "fields": {
+    "name": "GPS Industry",
+    "status": "Active",
+    "slug": "gps-industry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 83,
+  "fields": {
+    "name": "IPR",
+    "status": "Active",
+    "slug": "ipr",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 86,
+  "fields": {
+    "name": "Healthcare",
+    "status": "Active",
+    "slug": "healthcare",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 87,
+  "fields": {
+    "name": "HVAC, VRV, VRF",
+    "status": "Active",
+    "slug": "hvac-vrv-vrf",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 89,
+  "fields": {
+    "name": "Electronics Security System ",
+    "status": "Active",
+    "slug": "electronics-security-system",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 90,
+  "fields": {
+    "name": "Fitness",
+    "status": "Active",
+    "slug": "fitness",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 91,
+  "fields": {
+    "name": "Supermarket",
+    "status": "Active",
+    "slug": "supermarket",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 92,
+  "fields": {
+    "name": "Unique Air Express",
+    "status": "Active",
+    "slug": "unique-air-express",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 93,
+  "fields": {
+    "name": "Export Packing",
+    "status": "Active",
+    "slug": "export-packing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 98,
+  "fields": {
+    "name": "Advertising",
+    "status": "Active",
+    "slug": "advertising",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 99,
+  "fields": {
+    "name": "Food & Beverages",
+    "status": "Active",
+    "slug": "food-beverages",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 101,
+  "fields": {
+    "name": "Sales",
+    "status": "Active",
+    "slug": "sales",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 102,
+  "fields": {
+    "name": "Manufacturing unit",
+    "status": "Active",
+    "slug": "manufacturing-unit",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 105,
+  "fields": {
+    "name": "Oil",
+    "status": "Active",
+    "slug": "oil",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 108,
+  "fields": {
+    "name": "Research and Development",
+    "status": "Active",
+    "slug": "research-and-development",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 109,
+  "fields": {
+    "name": "US Staffing - IT Recruiter",
+    "status": "Active",
+    "slug": "us-staffing-it-recruiter",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 110,
+  "fields": {
+    "name": "Stationery & Housekeeping ",
+    "status": "Active",
+    "slug": "stationery-housekeeping",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 111,
+  "fields": {
+    "name": "Enterprises",
+    "status": "Active",
+    "slug": "enterprises",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 116,
+  "fields": {
+    "name": "FMCG - Sales",
+    "status": "Active",
+    "slug": "fmcg-sales",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 117,
+  "fields": {
+    "name": "Jewellery",
+    "status": "Active",
+    "slug": "jewellery",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 118,
+  "fields": {
+    "name": "Cosmetic Industry",
+    "status": "Active",
+    "slug": "cosmetic-industry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 119,
+  "fields": {
+    "name": "Ajay Exim",
+    "status": "Active",
+    "slug": "ajayexim",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 120,
+  "fields": {
+    "name": "Content Writer",
+    "status": "Active",
+    "slug": "content-writer",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 121,
+  "fields": {
+    "name": "Electronics Marketing",
+    "status": "Active",
+    "slug": "electronics-marketing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 122,
+  "fields": {
+    "name": "E-Commerce",
+    "status": "Active",
+    "slug": "ecommerce",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 125,
+  "fields": {
+    "name": "Security Service",
+    "status": "Active",
+    "slug": "security-service",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 126,
+  "fields": {
+    "name": "Gym",
+    "status": "Active",
+    "slug": "gym",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 127,
+  "fields": {
+    "name": "Mining Industries",
+    "status": "Active",
+    "slug": "mining-industries",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 128,
+  "fields": {
+    "name": "Mining Equipment",
+    "status": "Active",
+    "slug": "mining-equipement",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 129,
+  "fields": {
+    "name": "unity3d game development ",
+    "status": "Active",
+    "slug": "unity-3d-game-development",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 130,
+  "fields": {
+    "name": "HVAC",
+    "status": "Active",
+    "slug": "hvac",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 131,
+  "fields": {
+    "name": "UPVC Profiles",
+    "status": "Active",
+    "slug": "upvc-profiles",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 134,
+  "fields": {
+    "name": "Web Designing",
+    "status": "Active",
+    "slug": "web-designing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 138,
+  "fields": {
+    "name": "Audio Visual",
+    "status": "Active",
+    "slug": "audio-visual",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 145,
+  "fields": {
+    "name": "Career Adviser",
+    "status": "Active",
+    "slug": "career-adviser",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 151,
+  "fields": {
+    "name": "Fashion",
+    "status": "Active",
+    "slug": "fashion",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 168,
+  "fields": {
+    "name": "Business Consultant",
+    "status": "Active",
+    "slug": "businessconsultant",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 171,
+  "fields": {
+    "name": "Automation",
+    "status": "Active",
+    "slug": "automation",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 176,
+  "fields": {
+    "name": "OIL&GAS",
+    "status": "Active",
+    "slug": "oilgas",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 191,
+  "fields": {
+    "name": "Film Industry",
+    "status": "Active",
+    "slug": "film",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 193,
+  "fields": {
+    "name": "Customer Service",
+    "status": "Active",
+    "slug": "customerservice",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 194,
+  "fields": {
+    "name": "Travel & Technology",
+    "status": "Active",
+    "slug": "traveltechnology",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 198,
+  "fields": {
+    "name": "Babysitter",
+    "status": "Active",
+    "slug": "babysitter",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 199,
+  "fields": {
+    "name": "Driver",
+    "status": "Active",
+    "slug": "driver",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 201,
+  "fields": {
+    "name": "Cook",
+    "status": "Active",
+    "slug": "cook",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 202,
+  "fields": {
+    "name": "CarRental/TravelAgency",
+    "status": "Active",
+    "slug": "carrentaltravelagency",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 207,
+  "fields": {
+    "name": "Doctors",
+    "status": "Active",
+    "slug": "doctors",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 214,
+  "fields": {
+    "name": "Consulting",
+    "status": "Active",
+    "slug": "consulting",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 222,
+  "fields": {
+    "name": "Technical Writer",
+    "status": "Active",
+    "slug": "technicalwriter",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 223,
+  "fields": {
+    "name": "Data Entry Operators",
+    "status": "Active",
+    "slug": "dataentryoperators",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 224,
+  "fields": {
+    "name": "Sports",
+    "status": "Active",
+    "slug": "sports",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 225,
+  "fields": {
+    "name": "Laundry",
+    "status": "Active",
+    "slug": "laundry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 227,
+  "fields": {
+    "name": "ServiceAdvisor",
+    "status": "InActive",
+    "slug": "serviceadvisor",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 228,
+  "fields": {
+    "name": "Technician",
+    "status": "InActive",
+    "slug": "technician",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 229,
+  "fields": {
+    "name": "ManpowerOutsourcingFirm",
+    "status": "InActive",
+    "slug": "manpoweroutsourcingfirm",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 230,
+  "fields": {
+    "name": "Interiors",
+    "status": "InActive",
+    "slug": "interiors",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 231,
+  "fields": {
+    "name": "Hospitality",
+    "status": "InActive",
+    "slug": "hospitality",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 232,
+  "fields": {
+    "name": "AnyIndustry",
+    "status": "InActive",
+    "slug": "anyindustry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 233,
+  "fields": {
+    "name": "pegasus",
+    "status": "InActive",
+    "slug": "pegasus",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 234,
+  "fields": {
+    "name": "Onlinetraining",
+    "status": "InActive",
+    "slug": "onlinetraining",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 235,
+  "fields": {
+    "name": "Information Technology and Services",
+    "status": "InActive",
+    "slug": "information-technology-and-services",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 236,
+  "fields": {
+    "name": "engineering",
+    "status": "InActive",
+    "slug": "engineering",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 237,
+  "fields": {
+    "name": "Program Development",
+    "status": "InActive",
+    "slug": "program-development",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 238,
+  "fields": {
+    "name": "Serviceindustry",
+    "status": "InActive",
+    "slug": "serviceindustry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 239,
+  "fields": {
+    "name": "PestControlService",
+    "status": "InActive",
+    "slug": "pestcontrolservice",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 240,
+  "fields": {
+    "name": "Computer Software",
+    "status": "InActive",
+    "slug": "computer-software",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 241,
+  "fields": {
+    "name": "Construction",
+    "status": "InActive",
+    "slug": "construction",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 242,
+  "fields": {
+    "name": "Food Production",
+    "status": "InActive",
+    "slug": "food-production",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 243,
+  "fields": {
+    "name": "photography",
+    "status": "InActive",
+    "slug": "photography",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 244,
+  "fields": {
+    "name": "Mechanical or Industrial Engineering",
+    "status": "InActive",
+    "slug": "mechanical-or-industrial-engineering",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 245,
+  "fields": {
+    "name": "cooperate",
+    "status": "InActive",
+    "slug": "cooperate",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 246,
+  "fields": {
+    "name": "RENEWABLEENERGYSOLAR",
+    "status": "InActive",
+    "slug": "renewableenergysolar",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 247,
+  "fields": {
+    "name": "Computer and Network Security",
+    "status": "InActive",
+    "slug": "computer-and-network-security",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 248,
+  "fields": {
+    "name": "ILETS",
+    "status": "InActive",
+    "slug": "ilets",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 249,
+  "fields": {
+    "name": "PTEandFRENCH",
+    "status": "InActive",
+    "slug": "pteandfrench",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 250,
+  "fields": {
+    "name": "Accounting",
+    "status": "InActive",
+    "slug": "accounting",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 251,
+  "fields": {
+    "name": "Research",
+    "status": "InActive",
+    "slug": "research",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 252,
+  "fields": {
+    "name": "SkillproImmigration",
+    "status": "InActive",
+    "slug": "skillproimmigration",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 253,
+  "fields": {
+    "name": "OfficeAdmin",
+    "status": "InActive",
+    "slug": "officeadmin",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 254,
+  "fields": {
+    "name": "LifCare",
+    "status": "InActive",
+    "slug": "lifcare",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 255,
+  "fields": {
+    "name": "Management Consulting",
+    "status": "InActive",
+    "slug": "management-consulting",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 256,
+  "fields": {
+    "name": "Electrical and Electronic Manufacturing",
+    "status": "InActive",
+    "slug": "electrical-and-electronic-manufacturing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 257,
+  "fields": {
+    "name": "Human Resources",
+    "status": "InActive",
+    "slug": "human-resources",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 258,
+  "fields": {
+    "name": "Semiconductors",
+    "status": "InActive",
+    "slug": "semiconductors",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 259,
+  "fields": {
+    "name": "TeamLeader",
+    "status": "InActive",
+    "slug": "teamleader",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 260,
+  "fields": {
+    "name": "Airlines/Aviation",
+    "status": "InActive",
+    "slug": "airlinesaviation",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 261,
+  "fields": {
+    "name": "Online Publishing",
+    "status": "InActive",
+    "slug": "online-publishing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 262,
+  "fields": {
+    "name": "OnSea",
+    "status": "InActive",
+    "slug": "onsea",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 263,
+  "fields": {
+    "name": "Newspapers",
+    "status": "InActive",
+    "slug": "newspapers",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 264,
+  "fields": {
+    "name": "Computer Networking",
+    "status": "InActive",
+    "slug": "computer-networking",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 265,
+  "fields": {
+    "name": "Education Management",
+    "status": "InActive",
+    "slug": "education-management",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 266,
+  "fields": {
+    "name": "Chemicals",
+    "status": "InActive",
+    "slug": "chemicals",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 267,
+  "fields": {
+    "name": "Telecommunications",
+    "status": "InActive",
+    "slug": "telecommunications",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 268,
+  "fields": {
+    "name": "Secretary",
+    "status": "InActive",
+    "slug": "secretary",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 269,
+  "fields": {
+    "name": "nurse",
+    "status": "InActive",
+    "slug": "nurse",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 270,
+  "fields": {
+    "name": "Automotive",
+    "status": "InActive",
+    "slug": "automotive",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 271,
+  "fields": {
+    "name": "HotelManager/AssistantHotelManager",
+    "status": "InActive",
+    "slug": "hotelmanagerassistanthotelmanager",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 272,
+  "fields": {
+    "name": "(Gulf",
+    "status": "InActive",
+    "slug": "gulf",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 273,
+  "fields": {
+    "name": "Malaysia",
+    "status": "InActive",
+    "slug": "malaysia",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 274,
+  "fields": {
+    "name": "Singapore",
+    "status": "InActive",
+    "slug": "singapore",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 275,
+  "fields": {
+    "name": "AbuDhabi",
+    "status": "InActive",
+    "slug": "abudhabi",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 276,
+  "fields": {
+    "name": "Oman",
+    "status": "InActive",
+    "slug": "oman",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 277,
+  "fields": {
+    "name": "Muscat",
+    "status": "InActive",
+    "slug": "muscat",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 278,
+  "fields": {
+    "name": "Dubai)",
+    "status": "InActive",
+    "slug": "dubai",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 279,
+  "fields": {
+    "name": "Public Safety",
+    "status": "InActive",
+    "slug": "public-safety",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 280,
+  "fields": {
+    "name": "Marketing and Advertising",
+    "status": "InActive",
+    "slug": "marketing-and-advertising",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 281,
+  "fields": {
+    "name": "Thermalelectronics",
+    "status": "InActive",
+    "slug": "thermalelectronics",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 282,
+  "fields": {
+    "name": "E-learning",
+    "status": "InActive",
+    "slug": "e-learning",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 283,
+  "fields": {
+    "name": "Textiles",
+    "status": "InActive",
+    "slug": "textiles",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 284,
+  "fields": {
+    "name": "marketing",
+    "status": "InActive",
+    "slug": "marketing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 285,
+  "fields": {
+    "name": "uis",
+    "status": "InActive",
+    "slug": "uis",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 286,
+  "fields": {
+    "name": "HousingMicrofinance",
+    "status": "InActive",
+    "slug": "housingmicrofinance",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 287,
+  "fields": {
+    "name": "Pharmaceuticals",
+    "status": "InActive",
+    "slug": "pharmaceuticals",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 288,
+  "fields": {
+    "name": "HumanResources/Internet",
+    "status": "InActive",
+    "slug": "humanresourcesinternet",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 289,
+  "fields": {
+    "name": "Restaurantindustry",
+    "status": "InActive",
+    "slug": "restaurantindustry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 290,
+  "fields": {
+    "name": "Oil and Energy",
+    "status": "InActive",
+    "slug": "oil-and-energy",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 291,
+  "fields": {
+    "name": "Airlines",
+    "status": "InActive",
+    "slug": "airlines",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 292,
+  "fields": {
+    "name": "MechanicalDesignEngineer",
+    "status": "InActive",
+    "slug": "mechanicaldesignengineer",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 293,
+  "fields": {
+    "name": "office/it/nonit",
+    "status": "InActive",
+    "slug": "officeitnonit",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 294,
+  "fields": {
+    "name": "Hotel",
+    "status": "InActive",
+    "slug": "hotel",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 295,
+  "fields": {
+    "name": "Industrial Automation",
+    "status": "InActive",
+    "slug": "industrial-automation",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 296,
+  "fields": {
+    "name": "Higher Education",
+    "status": "InActive",
+    "slug": "higher-education",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 297,
+  "fields": {
+    "name": "Logistics and Supply Chain",
+    "status": "InActive",
+    "slug": "logistics-and-supply-chain",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 298,
+  "fields": {
+    "name": "Music",
+    "status": "InActive",
+    "slug": "music",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 299,
+  "fields": {
+    "name": "Civil Engineering",
+    "status": "InActive",
+    "slug": "civil-engineering",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 300,
+  "fields": {
+    "name": "Startup",
+    "status": "InActive",
+    "slug": "startup",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 301,
+  "fields": {
+    "name": "TRADING&CONTRACTINGCOMPANY",
+    "status": "InActive",
+    "slug": "tradingcontractingcompany",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 302,
+  "fields": {
+    "name": "Transportation/Trucking/Railroad",
+    "status": "InActive",
+    "slug": "transportationtruckingrailroad",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 303,
+  "fields": {
+    "name": "Banking",
+    "status": "InActive",
+    "slug": "banking",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 304,
+  "fields": {
+    "name": "engineer",
+    "status": "InActive",
+    "slug": "engineer",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 305,
+  "fields": {
+    "name": "IndustrialProducts",
+    "status": "InActive",
+    "slug": "industrialproducts",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 306,
+  "fields": {
+    "name": "Medical Device",
+    "status": "InActive",
+    "slug": "medical-device",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 307,
+  "fields": {
+    "name": "Graphic Design",
+    "status": "InActive",
+    "slug": "graphic-design",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 308,
+  "fields": {
+    "name": "Building Materials",
+    "status": "InActive",
+    "slug": "building-materials",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 309,
+  "fields": {
+    "name": "Financial Services",
+    "status": "InActive",
+    "slug": "financial-services",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 310,
+  "fields": {
+    "name": "EngineeringServices",
+    "status": "InActive",
+    "slug": "engineeringservices",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 311,
+  "fields": {
+    "name": "Internet",
+    "status": "InActive",
+    "slug": "internet",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 312,
+  "fields": {
+    "name": "ISO",
+    "status": "InActive",
+    "slug": "iso",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 313,
+  "fields": {
+    "name": "Aviation and Aerospace",
+    "status": "InActive",
+    "slug": "aviation-and-aerospace",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 314,
+  "fields": {
+    "name": "Transcriptions",
+    "status": "InActive",
+    "slug": "transcriptions",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 315,
+  "fields": {
+    "name": "Defense and Space",
+    "status": "InActive",
+    "slug": "defense-and-space",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 316,
+  "fields": {
+    "name": "HumanResourse",
+    "status": "InActive",
+    "slug": "humanresourse",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 317,
+  "fields": {
+    "name": "facilitymanagementservices",
+    "status": "InActive",
+    "slug": "facilitymanagementservices",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 318,
+  "fields": {
+    "name": "InfraSolutions",
+    "status": "InActive",
+    "slug": "infrasolutions",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 319,
+  "fields": {
+    "name": "MechanicalEngineering",
+    "status": "InActive",
+    "slug": "mechanicalengineering",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 320,
+  "fields": {
+    "name": "HR",
+    "status": "InActive",
+    "slug": "hr",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 321,
+  "fields": {
+    "name": "Marketresearch",
+    "status": "InActive",
+    "slug": "marketresearch",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 322,
+  "fields": {
+    "name": "Design",
+    "status": "InActive",
+    "slug": "design",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 323,
+  "fields": {
+    "name": "Non-profit Organization Management",
+    "status": "InActive",
+    "slug": "non-profit-organization-management",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 324,
+  "fields": {
+    "name": "Health, Wellness and Fitness",
+    "status": "InActive",
+    "slug": "health-wellness-and-fitness",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 325,
+  "fields": {
+    "name": "facilitymanagement",
+    "status": "InActive",
+    "slug": "facilitymanagement",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 326,
+  "fields": {
+    "name": "Trading",
+    "status": "InActive",
+    "slug": "trading",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 327,
+  "fields": {
+    "name": "Co-workingspace",
+    "status": "InActive",
+    "slug": "co-workingspace",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 328,
+  "fields": {
+    "name": "Media Production",
+    "status": "InActive",
+    "slug": "media-production",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 329,
+  "fields": {
+    "name": "Food and Beverages",
+    "status": "InActive",
+    "slug": "food-and-beverages",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 330,
+  "fields": {
+    "name": "Farming",
+    "status": "InActive",
+    "slug": "farming",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 331,
+  "fields": {
+    "name": "Facilities Services",
+    "status": "InActive",
+    "slug": "facilities-services",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 332,
+  "fields": {
+    "name": "Biotechnology",
+    "status": "InActive",
+    "slug": "biotechnology",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 333,
+  "fields": {
+    "name": "Business Supplies and Equipment",
+    "status": "InActive",
+    "slug": "business-supplies-and-equipment",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 334,
+  "fields": {
+    "name": "Computer Hardware",
+    "status": "InActive",
+    "slug": "computer-hardware",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 335,
+  "fields": {
+    "name": "Humanresource",
+    "status": "InActive",
+    "slug": "humanresource",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 336,
+  "fields": {
+    "name": "marksIndustires",
+    "status": "InActive",
+    "slug": "marksindustires",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 337,
+  "fields": {
+    "name": "Investigation&Riskmanagementservices",
+    "status": "InActive",
+    "slug": "investigationriskmanagementservices",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 338,
+  "fields": {
+    "name": "Landscaping&GardeningServices",
+    "status": "InActive",
+    "slug": "landscapinggardeningservices",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 339,
+  "fields": {
+    "name": "AluminiumandGlassfabrication",
+    "status": "InActive",
+    "slug": "aluminiumandglassfabrication",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 340,
+  "fields": {
+    "name": "Retail",
+    "status": "InActive",
+    "slug": "retail",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 341,
+  "fields": {
+    "name": "Service",
+    "status": "InActive",
+    "slug": "service",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 342,
+  "fields": {
+    "name": "Transport",
+    "status": "InActive",
+    "slug": "transport",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 343,
+  "fields": {
+    "name": "Wholesale",
+    "status": "InActive",
+    "slug": "wholesale",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 344,
+  "fields": {
+    "name": "Market Research",
+    "status": "InActive",
+    "slug": "market-research",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 345,
+  "fields": {
+    "name": "Outsourcing/Offshoring",
+    "status": "InActive",
+    "slug": "outsourcingoffshoring",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 346,
+  "fields": {
+    "name": "Commercial Real Estate",
+    "status": "InActive",
+    "slug": "commercial-real-estate",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 347,
+  "fields": {
+    "name": "Consumer Services",
+    "status": "InActive",
+    "slug": "consumer-services",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 348,
+  "fields": {
+    "name": "Executive Office",
+    "status": "InActive",
+    "slug": "executive-office",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 349,
+  "fields": {
+    "name": "HospitalityIndustry",
+    "status": "InActive",
+    "slug": "hospitalityindustry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 350,
+  "fields": {
+    "name": "SportsBusinessNewsPlatform",
+    "status": "InActive",
+    "slug": "sportsbusinessnewsplatform",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 351,
+  "fields": {
+    "name": "Political Organization",
+    "status": "InActive",
+    "slug": "political-organization",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 352,
+  "fields": {
+    "name": "Real estate",
+    "status": "InActive",
+    "slug": "real-estate",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 353,
+  "fields": {
+    "name": "Government Administration",
+    "status": "InActive",
+    "slug": "government-administration",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 354,
+  "fields": {
+    "name": "Furniture",
+    "status": "InActive",
+    "slug": "furniture",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 355,
+  "fields": {
+    "name": "Fabrication",
+    "status": "InActive",
+    "slug": "fabrication",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 356,
+  "fields": {
+    "name": "Glass, Ceramics and Concrete",
+    "status": "InActive",
+    "slug": "glass-ceramics-and-concrete",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 357,
+  "fields": {
+    "name": "Staffing and Recruiting",
+    "status": "InActive",
+    "slug": "staffing-and-recruiting",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 358,
+  "fields": {
+    "name": "Environmental Services",
+    "status": "InActive",
+    "slug": "environmental-services",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 359,
+  "fields": {
+    "name": "Maritime",
+    "status": "InActive",
+    "slug": "maritime",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 360,
+  "fields": {
+    "name": "Primary/Secondary",
+    "status": "InActive",
+    "slug": "primarysecondary",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 361,
+  "fields": {
+    "name": "Hospital and Health Care",
+    "status": "InActive",
+    "slug": "hospital-and-health-care",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 362,
+  "fields": {
+    "name": "Import and Export",
+    "status": "InActive",
+    "slug": "import-and-export",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 363,
+  "fields": {
+    "name": "Renewables and Environment",
+    "status": "InActive",
+    "slug": "renewables-and-environment",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 364,
+  "fields": {
+    "name": "Public Relations",
+    "status": "InActive",
+    "slug": "public-relations",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 365,
+  "fields": {
+    "name": "Dairy",
+    "status": "InActive",
+    "slug": "dairy",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 366,
+  "fields": {
+    "name": "Architecture and Planning",
+    "status": "InActive",
+    "slug": "architecture-and-planning",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 367,
+  "fields": {
+    "name": "Law Practice",
+    "status": "InActive",
+    "slug": "law-practice",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 368,
+  "fields": {
+    "name": "Libraries",
+    "status": "InActive",
+    "slug": "libraries",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 369,
+  "fields": {
+    "name": "Writing and Editing",
+    "status": "InActive",
+    "slug": "writing-and-editing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 370,
+  "fields": {
+    "name": "Mining and Metals",
+    "status": "InActive",
+    "slug": "mining-and-metals",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 371,
+  "fields": {
+    "name": "Luxury Goods and Jewelry",
+    "status": "InActive",
+    "slug": "luxury-goods-and-jewelry",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 372,
+  "fields": {
+    "name": "Entertainment",
+    "status": "InActive",
+    "slug": "entertainment",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 373,
+  "fields": {
+    "name": "Capital Markets",
+    "status": "InActive",
+    "slug": "capital-markets",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 374,
+  "fields": {
+    "name": "Printing",
+    "status": "InActive",
+    "slug": "printing",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 375,
+  "fields": {
+    "name": "Animation",
+    "status": "InActive",
+    "slug": "animation",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 376,
+  "fields": {
+    "name": "courierdelivery",
+    "status": "InActive",
+    "slug": "courierdelivery",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 377,
+  "fields": {
+    "name": "Leisure and Travel",
+    "status": "InActive",
+    "slug": "leisure-and-travel",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 378,
+  "fields": {
+    "name": "Packaging and Containers",
+    "status": "InActive",
+    "slug": "packaging-and-containers",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 379,
+  "fields": {
+    "name": "Information Services",
+    "status": "InActive",
+    "slug": "information-services",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 380,
+  "fields": {
+    "name": "Wireless",
+    "status": "InActive",
+    "slug": "wireless",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 381,
+  "fields": {
+    "name": "Broadcast Media",
+    "status": "InActive",
+    "slug": "broadcast-media",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 382,
+  "fields": {
+    "name": "Plastics",
+    "status": "InActive",
+    "slug": "plastics",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 383,
+  "fields": {
+    "name": "Computer Games",
+    "status": "InActive",
+    "slug": "computer-games",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 384,
+  "fields": {
+    "name": "Investment Management",
+    "status": "InActive",
+    "slug": "investment-management",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 385,
+  "fields": {
+    "name": "Translation and Localization",
+    "status": "InActive",
+    "slug": "translation-and-localization",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 386,
+  "fields": {
+    "name": "Investigationservices",
+    "status": "InActive",
+    "slug": "investigationservices",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 387,
+  "fields": {
+    "name": "Motion Pictures and Film",
+    "status": "InActive",
+    "slug": "motion-pictures-and-film",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 388,
+  "fields": {
+    "name": "Cosmetics",
+    "status": "InActive",
+    "slug": "cosmetics",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 389,
+  "fields": {
+    "name": "Consumer Electronics",
+    "status": "InActive",
+    "slug": "consumer-electronics",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 390,
+  "fields": {
+    "name": "Security and Investigations",
+    "status": "InActive",
+    "slug": "security-and-investigations",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 391,
+  "fields": {
+    "name": "Machinery",
+    "status": "InActive",
+    "slug": "machinery",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 392,
+  "fields": {
+    "name": "Medical Practice",
+    "status": "InActive",
+    "slug": "medical-practice",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 393,
+  "fields": {
+    "name": "Professional Training",
+    "status": "InActive",
+    "slug": "professional-training",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 394,
+  "fields": {
+    "name": "International Trade and Development",
+    "status": "InActive",
+    "slug": "international-trade-and-development",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 395,
+  "fields": {
+    "name": "ServiceProvider",
+    "status": "InActive",
+    "slug": "serviceprovider",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 396,
+  "fields": {
+    "name": "HRRecruitment",
+    "status": "InActive",
+    "slug": "hrrecruitment",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 397,
+  "fields": {
+    "name": "M.EducorpoPvt.Ltd",
+    "status": "InActive",
+    "slug": "meducorpopvtltd",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 398,
+  "fields": {
+    "name": "M.Edocorpopvtltd",
+    "status": "InActive",
+    "slug": "medocorpopvtltd",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 399,
+  "fields": {
+    "name": "M.EducorpoPvt.Ltd.",
+    "status": "InActive",
+    "slug": "meducorpopvtltd",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 400,
+  "fields": {
+    "name": "ElectricalEngineeer",
+    "status": "InActive",
+    "slug": "electricalengineeer",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 401,
+  "fields": {
+    "name": "Gifting",
+    "status": "InActive",
+    "slug": "gifting",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 402,
+  "fields": {
+    "name": "PestControl",
+    "status": "InActive",
+    "slug": "pestcontrol",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 403,
+  "fields": {
+    "name": "steinbeis",
+    "status": "InActive",
+    "slug": "steinbeis",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 404,
+  "fields": {
+    "name": "Government Relations",
+    "status": "InActive",
+    "slug": "government-relations",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 405,
+  "fields": {
+    "name": "Apparel and Fashion",
+    "status": "InActive",
+    "slug": "apparel-and-fashion",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 406,
+  "fields": {
+    "name": "Overseaseducation",
+    "status": "InActive",
+    "slug": "overseaseducation",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 407,
+  "fields": {
+    "name": "Workfromhome",
+    "status": "InActive",
+    "slug": "workfromhome",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 408,
+  "fields": {
+    "name": "EducationandEntertainment",
+    "status": "InActive",
+    "slug": "educationandentertainment",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 409,
+  "fields": {
+    "name": "housekeeping",
+    "status": "InActive",
+    "slug": "housekeeping",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 410,
+  "fields": {
+    "name": "SoftwareDeveloper",
+    "status": "InActive",
+    "slug": "softwaredeveloper",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 411,
+  "fields": {
+    "name": "TenderExecutive",
+    "status": "InActive",
+    "slug": "tenderexecutive",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 412,
+  "fields": {
+    "name": "Transportation",
+    "status": "InActive",
+    "slug": "transportation",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 413,
+  "fields": {
+    "name": "TFG",
+    "status": "InActive",
+    "slug": "tfg",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+},
+{
+  "model": "peeldb.industry",
+  "pk": 414,
+  "fields": {
+    "name": "IndustrialSales",
+    "status": "InActive",
+    "slug": "industrialsales",
+    "meta_title": "",
+    "meta_description": "",
+    "page_content": ""
+  }
+}
+]
