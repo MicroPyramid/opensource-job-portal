@@ -115,142 +115,145 @@
 </script>
 
 {#if isOpen}
-	<div class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
+	<div class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modal-title">
 		<button
 			type="button"
-			class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity cursor-default"
+			class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity cursor-default animate-fade-in"
 			onclick={handleBackdropClick}
 			aria-label="Close modal"
 			tabindex="-1"
 		></button>
 
 		<div class="flex min-h-screen items-center justify-center p-4">
-			<div class="relative w-full max-w-2xl transform overflow-hidden rounded-lg bg-white shadow-xl">
-				<div class="flex items-center justify-between border-b border-gray-200 px-4 md:px-6 py-4">
+			<div class="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white elevation-4 transition-all animate-scale-in">
+				<div class="flex items-center justify-between border-b border-gray-100 p-5 lg:p-6">
 					<div class="flex items-center gap-3">
-						<div class="p-2 bg-blue-50 rounded-lg">
-							<Award class="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+						<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+							<Award size={20} class="text-primary-600" />
 						</div>
-						<h3 class="text-lg md:text-xl font-semibold text-gray-900">
+						<h3 class="text-lg font-semibold text-gray-900" id="modal-title">
 							{certification ? 'Edit Certification' : 'Add Certification'}
 						</h3>
 					</div>
-					<button type="button" onclick={handleClose} class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100">
-						<X class="w-5 h-5 md:w-6 md:h-6" />
+					<button type="button" onclick={handleClose} class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
+						<X size={20} />
 					</button>
 				</div>
 
-				<form onsubmit={handleSubmit} class="px-4 md:px-6 py-4 md:py-6 space-y-4">
+				<form onsubmit={handleSubmit} class="p-5 lg:p-6 space-y-5">
 					<div>
-						<label for="name" class="block text-sm font-medium text-gray-700 mb-1">
-							Certification Name <span class="text-red-500">*</span>
+						<label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+							Certification Name <span class="text-error-500">*</span>
 						</label>
 						<input
 							type="text"
 							id="name"
 							bind:value={formData.name}
 							placeholder="e.g., AWS Certified Solutions Architect"
-							class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							required
 						/>
 					</div>
 
 					<div>
-						<label for="organization" class="block text-sm font-medium text-gray-700 mb-1">
-							Issuing Organization <span class="text-red-500">*</span>
+						<label for="organization" class="block text-sm font-medium text-gray-700 mb-2">
+							Issuing Organization <span class="text-error-500">*</span>
 						</label>
 						<input
 							type="text"
 							id="organization"
 							bind:value={formData.organization}
 							placeholder="e.g., Amazon Web Services"
-							class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							required
 						/>
 					</div>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<label for="credential_id" class="block text-sm font-medium text-gray-700 mb-1">Credential ID</label>
+							<label for="credential_id" class="block text-sm font-medium text-gray-700 mb-2">Credential ID</label>
 							<input
 								type="text"
 								id="credential_id"
 								bind:value={formData.credential_id}
 								placeholder="e.g., AWS-CSA-12345"
-								class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
 						</div>
 
 						<div>
-							<label for="credential_url" class="block text-sm font-medium text-gray-700 mb-1">Credential URL</label>
+							<label for="credential_url" class="block text-sm font-medium text-gray-700 mb-2">Credential URL</label>
 							<input
 								type="url"
 								id="credential_url"
 								bind:value={formData.credential_url}
 								placeholder="https://..."
-								class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
 						</div>
 					</div>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<label for="issued_date" class="block text-sm font-medium text-gray-700 mb-1">Issued Date</label>
+							<label for="issued_date" class="block text-sm font-medium text-gray-700 mb-2">Issued Date</label>
 							<input
 								type="date"
 								id="issued_date"
 								bind:value={formData.issued_date}
-								class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
 						</div>
 
 						<div>
-							<label for="expiry_date" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+							<label for="expiry_date" class="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
 							<input
 								type="date"
 								id="expiry_date"
 								bind:value={formData.expiry_date}
 								disabled={formData.does_not_expire}
-								class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm md:text-base"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
 							/>
 						</div>
 					</div>
 
-					<div class="flex items-center gap-2">
-						<input
-							type="checkbox"
-							id="does_not_expire"
-							bind:checked={formData.does_not_expire}
-							class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-						/>
-						<label for="does_not_expire" class="text-sm font-medium text-gray-700">
-							This certification does not expire
+					<div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+						<label class="flex items-start gap-3 cursor-pointer">
+							<input
+								type="checkbox"
+								id="does_not_expire"
+								bind:checked={formData.does_not_expire}
+								class="w-5 h-5 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+							/>
+							<div>
+								<p class="font-medium text-gray-900">Does not expire</p>
+								<p class="text-sm text-gray-600">Check this if the certification has no expiry date</p>
+							</div>
 						</label>
 					</div>
 
 					<div>
-						<label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+						<label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
 						<textarea
 							id="description"
 							bind:value={formData.description}
 							placeholder="Additional details about this certification..."
 							rows="3"
-							class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm md:text-base resize-none"
+							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none"
 						></textarea>
 					</div>
 
-					<div class="flex flex-col-reverse md:flex-row gap-3 pt-4">
+					<div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
 						<button
 							type="button"
 							onclick={handleClose}
-							class="w-full md:w-auto px-4 md:px-6 py-2 border border-gray-300 rounded-lg text-sm md:text-base font-medium text-gray-700 hover:bg-gray-50"
+							class="px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-full font-medium hover:bg-gray-50 transition-colors"
 							disabled={loading}
 						>
 							Cancel
 						</button>
 						<button
 							type="submit"
-							class="w-full md:flex-1 px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg text-sm md:text-base font-medium hover:bg-blue-700 disabled:bg-blue-400"
+							class="px-5 py-2.5 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed elevation-1"
 							disabled={loading}
 						>
 							{loading ? 'Saving...' : certification ? 'Update Certification' : 'Add Certification'}

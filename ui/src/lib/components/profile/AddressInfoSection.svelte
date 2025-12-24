@@ -19,13 +19,18 @@
 	}
 </script>
 
-<div class="bg-white rounded-lg shadow-sm p-6">
-	<h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-		<MapPin class="w-5 h-5" />
-		Address Information
-	</h2>
+<div class="p-5 lg:p-6">
+	<div class="flex items-center gap-3 mb-6">
+		<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+			<MapPin size={20} class="text-primary-600" />
+		</div>
+		<div>
+			<h2 class="text-lg font-semibold text-gray-900">Address Information</h2>
+			<p class="text-sm text-gray-600">Your residential details</p>
+		</div>
+	</div>
 
-	<div class="grid md:grid-cols-2 gap-6">
+	<div class="grid md:grid-cols-2 gap-5">
 		<!-- Current Address -->
 		<div class="md:col-span-2">
 			<label for="address" class="block text-sm font-medium text-gray-700 mb-2">
@@ -36,7 +41,7 @@
 				bind:value={formData.address}
 				rows="3"
 				placeholder="Enter your current residential address..."
-				class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+				class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none"
 			></textarea>
 		</div>
 
@@ -51,7 +56,7 @@
 						type="checkbox"
 						bind:checked={sameAsPermanent}
 						onchange={handleSameAsCurrentAddress}
-						class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+						class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
 					/>
 					Same as current address
 				</label>
@@ -62,7 +67,7 @@
 				rows="3"
 				placeholder="Enter your permanent address..."
 				disabled={sameAsPermanent}
-				class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+				class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
 			></textarea>
 		</div>
 
@@ -77,11 +82,10 @@
 				bind:value={formData.pincode}
 				maxlength="6"
 				placeholder="e.g., 560001"
-				class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-				class:border-red-500={validationErrors.pincode}
+				class="w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white transition-all outline-none {validationErrors.pincode ? 'border-error-500 focus:border-error-500 focus:ring-2 focus:ring-error-500/20' : 'border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20'}"
 			/>
 			{#if validationErrors.pincode}
-				<p class="mt-1 text-sm text-red-600">{validationErrors.pincode}</p>
+				<p class="mt-2 text-sm text-error-600">{validationErrors.pincode}</p>
 			{/if}
 		</div>
 	</div>

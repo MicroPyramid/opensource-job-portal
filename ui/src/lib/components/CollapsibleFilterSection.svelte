@@ -23,26 +23,31 @@
   }
 </script>
 
-<div class="border-b border-gray-200">
+<div class="border-b border-gray-100">
   <!-- Header - Clickable to expand/collapse -->
   <button
     type="button"
     onclick={toggleExpanded}
-    class="w-full px-4 py-3 bg-white flex items-center justify-between hover:bg-gray-50 transition-colors text-left"
+    class="w-full px-4 py-3.5 flex items-center justify-between hover:bg-surface-50 transition-colors text-left group"
   >
-    <h3 class="text-sm font-medium text-gray-900">{title}</h3>
-    <div class="flex items-center gap-1">
+    <h3 class="text-sm font-medium text-gray-900 flex items-center gap-2">
+      <span>{title}</span>
+      {#if hasActiveFilter}
+        <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+      {/if}
+    </h3>
+    <div class="flex items-center">
       {#if isExpanded}
-        <ChevronUp class="w-4 h-4 text-gray-500" />
+        <ChevronUp class="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
       {:else}
-        <ChevronDown class="w-4 h-4 text-gray-500" />
+        <ChevronDown class="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
       {/if}
     </div>
   </button>
 
   <!-- Body - Collapsible -->
   {#if isExpanded}
-    <div class="px-4 pb-4 bg-white">
+    <div class="px-4 pb-4">
       {@render children()}
     </div>
   {/if}

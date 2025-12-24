@@ -43,29 +43,37 @@
 	}
 </script>
 
-<div class="bg-white rounded-lg shadow-sm p-6">
-	<h2 class="text-lg font-semibold text-gray-900 mb-4">Profile Picture</h2>
+<div class="p-5 lg:p-6">
+	<div class="flex items-center gap-3 mb-6">
+		<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+			<Camera size={20} class="text-primary-600" />
+		</div>
+		<div>
+			<h2 class="text-lg font-semibold text-gray-900">Profile Picture</h2>
+			<p class="text-sm text-gray-600">Your profile photo</p>
+		</div>
+	</div>
 
-	<div class="flex items-center gap-4">
+	<div class="flex items-center gap-5">
 		<div class="relative">
 			{#if profilePicUrl || photo}
 				<img
 					src={profilePicUrl || photo}
 					alt="Profile"
-					class="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+					class="w-24 h-24 rounded-2xl object-cover border-2 border-gray-100 elevation-1"
 				/>
 			{:else}
 				<div
-					class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center border-2 border-gray-200"
+					class="w-24 h-24 rounded-2xl bg-primary-50 flex items-center justify-center border-2 border-primary-100"
 				>
-					<User class="w-12 h-12 text-blue-600" />
+					<User size={40} class="text-primary-600" />
 				</div>
 			{/if}
 			<label
 				for="profile-pic-upload"
-				class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700 transition-colors"
+				class="absolute -bottom-1 -right-1 bg-primary-600 text-white rounded-xl p-2 cursor-pointer hover:bg-primary-700 transition-colors elevation-1"
 			>
-				<Camera class="w-4 h-4" />
+				<Camera size={16} />
 			</label>
 		</div>
 		<div>
@@ -80,13 +88,14 @@
 			<p class="text-sm text-gray-600">
 				{#if uploadingPic}
 					<span class="flex items-center gap-2">
-						<Loader class="w-4 h-4 animate-spin" />
+						<Loader size={16} class="animate-spin text-primary-600" />
 						Uploading...
 					</span>
 				{:else}
 					JPG, JPEG or PNG (max 5MB)
 				{/if}
 			</p>
+			<p class="mt-1 text-xs text-gray-500">Click the camera icon to upload</p>
 		</div>
 	</div>
 </div>

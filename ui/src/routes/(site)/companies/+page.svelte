@@ -7,13 +7,18 @@
     ChevronDown,
     ChevronRight,
     MapPin,
-    Building,
+    Building2,
     Users,
     Factory,
     Briefcase,
-    Calendar,
-    X
+    Filter,
+    SlidersHorizontal,
+    X,
+    Sparkles,
+    TrendingUp,
+    ChevronLeft
   } from '@lucide/svelte';
+  import CollapsibleFilterSection from '$lib/components/CollapsibleFilterSection.svelte';
   import type { PageData } from './$types';
   import type { Company as APICompany } from '$lib/api/companies';
 
@@ -44,15 +49,10 @@
     currentPage = data.currentPage || 1;
   });
 
-  // Filter state
-  let selectedCategory = $state<string | null>(null);
+  // Mobile filter toggle
+  let showFiltersMobile = $state(false);
 
-  // Filter options with collapsible state
-  let companyTypeExpanded = $state(true);
-  let locationExpanded = $state(false);
-  let industryExpanded = $state(false);
-  let sizeExpanded = $state(false);
-
+  // Search state
   let locationSearchTerm = $state('');
   let industrySearchTerm = $state('');
 
@@ -95,8 +95,6 @@
     hasMounted = true;
   });
 
-  const displayedCompanies = $derived(companies.length);
-
   // Filtered location options based on search
   const filteredLocationOptions = $derived(
     locationSearchTerm
@@ -115,6 +113,16 @@
       : industryOptions
   );
 
+  // Count active filters
+  const activeFilterCount = $derived(
+    companyTypeOptions.filter(opt => opt.checked).length +
+    locationOptions.filter(opt => opt.checked).length +
+    industryOptions.filter(opt => opt.checked).length +
+    sizeOptions.filter(opt => opt.checked).length
+  );
+
+  const hasActiveFilters = $derived(activeFilterCount > 0);
+
   // Functions
   function toggleFilter(options: FilterOption[], value: string): void {
     const option = options.find(opt => opt.value === value);
@@ -122,13 +130,6 @@
       option.checked = !option.checked;
       navigateWithFilters();
     }
-  }
-
-  function formatCount(count: number): string {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K+`;
-    }
-    return count.toString();
   }
 
   // Navigate with filters
@@ -201,6 +202,7 @@
     sizeOptions.forEach(opt => opt.checked = false);
     locationOptions.forEach(opt => opt.checked = false);
     industryOptions.forEach(opt => opt.checked = false);
+    showFiltersMobile = false;
     navigateWithFilters(0);
   }
 
@@ -237,6 +239,18 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function nextPage(): void {
+    if (currentPage < totalPages) {
+      goToPage(currentPage + 1);
+    }
+  }
+
+  function prevPage(): void {
+    if (currentPage > 1) {
+      goToPage(currentPage - 1);
+    }
+  }
+
   function getPageNumbers(): number[] {
     const maxPagesToShow = 5;
     const pages: number[] = [];
@@ -257,6 +271,9 @@
     return pages;
   }
 
+  function toggleFiltersMobile(): void {
+    showFiltersMobile = !showFiltersMobile;
+  }
 </script>
 
 <svelte:head>
@@ -264,344 +281,397 @@
   <meta name="description" content="Discover top companies hiring in India. Browse {totalCompanies.toLocaleString()} companies by industry, location, and company type." />
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50">
-  <!-- Page Header -->
-  <div class="bg-white border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 py-6 md:py-8">
-      <h1 class="text-xl md:text-2xl font-bold text-gray-900">Top companies hiring now</h1>
+<div class="min-h-screen bg-surface-50">
+  <!-- Hero Section -->
+  <section class="bg-gray-900 relative overflow-hidden">
+    <!-- Decorative Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl"></div>
     </div>
-  </div>
 
-  <!-- Category Chips - Horizontal Scroll (TODO: Connect to real data) -->
-  <!-- Temporarily disabled until we have category data from backend
-  <div class="bg-white border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 py-4">
-      <div class="relative">
-        <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-          ...
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 py-12 lg:py-16 relative">
+      <div class="text-center max-w-3xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/20 border border-primary-500/30 rounded-full text-primary-300 text-sm font-medium mb-6 animate-fade-in-down" style="opacity: 0; animation-delay: 100ms;">
+          <Sparkles class="w-4 h-4" />
+          <span>{totalCompanies.toLocaleString()} Companies Listed</span>
         </div>
+
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-4 animate-fade-in-up" style="opacity: 0; animation-delay: 200ms;">
+          Discover Top Companies
+        </h1>
+
+        <p class="text-lg text-gray-400 animate-fade-in-up" style="opacity: 0; animation-delay: 300ms;">
+          Explore companies hiring now and find your perfect workplace
+        </p>
       </div>
     </div>
-  </div>
-  -->
+  </section>
 
-  <!-- Main Content -->
-  <div class="max-w-7xl mx-auto px-4 py-6 md:py-8">
-    <div class="flex flex-col lg:flex-row gap-6">
-      <!-- Filters Sidebar -->
-      <aside class="lg:w-80 flex-shrink-0">
-        <div class="bg-white rounded-lg border border-gray-200 sticky top-6">
-          <div class="p-4 border-b border-gray-200">
-            <h2 class="text-base font-semibold text-gray-900">All Filters</h2>
+  <div class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+    <!-- Mobile Filter Toggle -->
+    <div class="lg:hidden mb-6 flex justify-between items-center">
+      <button
+        onclick={toggleFiltersMobile}
+        class="flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 rounded-full text-white font-medium transition-colors elevation-1"
+      >
+        <SlidersHorizontal class="w-5 h-5" />
+        {showFiltersMobile ? 'Hide Filters' : 'Filters'}
+        {#if activeFilterCount > 0}
+          <span class="bg-white text-primary-600 text-xs px-2 py-0.5 rounded-full font-semibold">{activeFilterCount}</span>
+        {/if}
+      </button>
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <TrendingUp class="w-4 h-4 text-primary-600" />
+        <span class="font-medium">{totalCompanies.toLocaleString()}</span> companies
+      </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Filter Sidebar -->
+      <aside class="{showFiltersMobile ? 'block' : 'hidden'} lg:block lg:w-80 flex-shrink-0">
+        <div class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden lg:sticky lg:top-24">
+          <!-- Filter Header -->
+          <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 bg-surface-50">
+            <h2 class="text-base font-semibold text-gray-900 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-primary-50 flex items-center justify-center">
+                <Filter class="w-4 h-4 text-primary-600" />
+              </div>
+              Filters
+            </h2>
+            {#if hasActiveFilters}
+              <button
+                onclick={clearAllFilters}
+                class="text-sm text-primary-600 hover:text-primary-700 font-medium px-3 py-1 rounded-full hover:bg-primary-50 transition-colors"
+              >
+                Clear ({activeFilterCount})
+              </button>
+            {/if}
           </div>
 
-          <div class="divide-y divide-gray-200">
+          <div>
             <!-- Company Type Filter -->
-            <div class="p-4">
-              <button
-                onclick={() => companyTypeExpanded = !companyTypeExpanded}
-                class="flex items-center justify-between w-full text-left"
+            {#if companyTypeOptions.length > 0}
+              <CollapsibleFilterSection
+                title="Company Type"
+                hasActiveFilter={companyTypeOptions.some(opt => opt.checked)}
               >
-                <h3 class="text-sm font-semibold text-gray-900">Company type</h3>
-                <ChevronDown
-                  size={16}
-                  class="text-gray-500 transition-transform {companyTypeExpanded ? 'rotate-180' : ''}"
-                />
-              </button>
-              {#if companyTypeExpanded}
-                <div class="mt-3 space-y-2">
+                <div class="space-y-1">
                   {#each companyTypeOptions as option (option.value)}
-                    <label class="flex items-start gap-2 cursor-pointer text-sm hover:bg-gray-50 -mx-2 px-2 py-1.5 rounded">
+                    <label class="flex items-center gap-3 cursor-pointer py-2 px-2 -mx-2 rounded-xl hover:bg-surface-50 transition-colors">
                       <input
                         type="checkbox"
                         checked={option.checked}
                         onchange={() => toggleFilter(companyTypeOptions, option.value)}
-                        class="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                        class="w-4 h-4 text-primary-600 border-gray-300 rounded-lg focus:ring-primary-500 cursor-pointer"
                       />
-                      <span class="flex-1 text-gray-700">{option.label}</span>
-                      <span class="text-gray-500 text-xs">({option.count})</span>
+                      <span class="text-gray-700 flex-1 text-sm">{option.label}</span>
+                      <span class="text-gray-400 text-xs font-medium bg-gray-100 px-2 py-0.5 rounded-full">
+                        {option.count}
+                      </span>
                     </label>
                   {/each}
                 </div>
-              {/if}
-            </div>
+              </CollapsibleFilterSection>
+            {/if}
 
             <!-- Location Filter -->
-            <div class="p-4">
-              <button
-                onclick={() => locationExpanded = !locationExpanded}
-                class="flex items-center justify-between w-full text-left"
+            {#if locationOptions.length > 0}
+              <CollapsibleFilterSection
+                title="Location"
+                hasActiveFilter={locationOptions.some(opt => opt.checked)}
               >
-                <h3 class="text-sm font-semibold text-gray-900">Location</h3>
-                <ChevronDown
-                  size={16}
-                  class="text-gray-500 transition-transform {locationExpanded ? 'rotate-180' : ''}"
-                />
-              </button>
-              {#if locationExpanded}
-                <div class="mt-3">
-                  <!-- Search box -->
-                  <div class="relative mb-3">
-                    <Search size={16} class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      bind:value={locationSearchTerm}
-                      placeholder="Search Location"
-                      class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div class="space-y-2 max-h-60 overflow-y-auto">
-                    {#each filteredLocationOptions as option (option.value)}
-                      <label class="flex items-start gap-2 cursor-pointer text-sm hover:bg-gray-50 -mx-2 px-2 py-1.5 rounded">
-                        <input
-                          type="checkbox"
-                          checked={option.checked}
-                          onchange={() => toggleFilter(locationOptions, option.value)}
-                          class="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                        />
-                        <span class="flex-1 text-gray-700">{option.label}</span>
-                        <span class="text-gray-500 text-xs">({option.count})</span>
-                      </label>
-                    {/each}
-                  </div>
-                  <button class="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
-                    +90 more
-                  </button>
+                <!-- Search box -->
+                <div class="relative mb-3">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search class="w-4 h-4 text-gray-400" />
+                  </span>
+                  <input
+                    type="text"
+                    bind:value={locationSearchTerm}
+                    placeholder="Search location..."
+                    class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm text-gray-900 placeholder-gray-400 transition-all outline-none"
+                  />
                 </div>
-              {/if}
-            </div>
+                <div class="space-y-1 max-h-60 overflow-y-auto">
+                  {#each filteredLocationOptions.slice(0, 10) as option (option.value)}
+                    <label class="flex items-center gap-3 cursor-pointer py-2 px-2 -mx-2 rounded-xl hover:bg-surface-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={option.checked}
+                        onchange={() => toggleFilter(locationOptions, option.value)}
+                        class="w-4 h-4 text-primary-600 border-gray-300 rounded-lg focus:ring-primary-500 cursor-pointer"
+                      />
+                      <span class="text-gray-700 flex-1 text-sm">{option.label}</span>
+                      <span class="text-gray-400 text-xs font-medium bg-gray-100 px-2 py-0.5 rounded-full">
+                        {option.count}
+                      </span>
+                    </label>
+                  {/each}
+                </div>
+                {#if filteredLocationOptions.length > 10}
+                  <p class="mt-2 text-xs text-gray-500">
+                    Use search to find more locations
+                  </p>
+                {/if}
+              </CollapsibleFilterSection>
+            {/if}
 
             <!-- Industry Filter -->
-            <div class="p-4">
-              <button
-                onclick={() => industryExpanded = !industryExpanded}
-                class="flex items-center justify-between w-full text-left"
+            {#if industryOptions.length > 0}
+              <CollapsibleFilterSection
+                title="Industry"
+                hasActiveFilter={industryOptions.some(opt => opt.checked)}
               >
-                <h3 class="text-sm font-semibold text-gray-900">Industry</h3>
-                <ChevronDown
-                  size={16}
-                  class="text-gray-500 transition-transform {industryExpanded ? 'rotate-180' : ''}"
-                />
-              </button>
-              {#if industryExpanded}
-                <div class="mt-3">
-                  <!-- Search box -->
-                  <div class="relative mb-3">
-                    <Search size={16} class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      bind:value={industrySearchTerm}
-                      placeholder="Search Industry"
-                      class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div class="space-y-2 max-h-60 overflow-y-auto">
-                    {#each filteredIndustryOptions as option (option.value)}
-                      <label class="flex items-start gap-2 cursor-pointer text-sm hover:bg-gray-50 -mx-2 px-2 py-1.5 rounded">
-                        <input
-                          type="checkbox"
-                          checked={option.checked}
-                          onchange={() => toggleFilter(industryOptions, option.value)}
-                          class="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                        />
-                        <span class="flex-1 text-gray-700">{option.label}</span>
-                        <span class="text-gray-500 text-xs">({option.count})</span>
-                      </label>
-                    {/each}
-                  </div>
-                  <button class="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
-                    +72 more
-                  </button>
+                <!-- Search box -->
+                <div class="relative mb-3">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search class="w-4 h-4 text-gray-400" />
+                  </span>
+                  <input
+                    type="text"
+                    bind:value={industrySearchTerm}
+                    placeholder="Search industry..."
+                    class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm text-gray-900 placeholder-gray-400 transition-all outline-none"
+                  />
                 </div>
-              {/if}
-            </div>
+                <div class="space-y-1 max-h-60 overflow-y-auto">
+                  {#each filteredIndustryOptions.slice(0, 10) as option (option.value)}
+                    <label class="flex items-center gap-3 cursor-pointer py-2 px-2 -mx-2 rounded-xl hover:bg-surface-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={option.checked}
+                        onchange={() => toggleFilter(industryOptions, option.value)}
+                        class="w-4 h-4 text-primary-600 border-gray-300 rounded-lg focus:ring-primary-500 cursor-pointer"
+                      />
+                      <span class="text-gray-700 flex-1 text-sm">{option.label}</span>
+                      <span class="text-gray-400 text-xs font-medium bg-gray-100 px-2 py-0.5 rounded-full">
+                        {option.count}
+                      </span>
+                    </label>
+                  {/each}
+                </div>
+                {#if filteredIndustryOptions.length > 10}
+                  <p class="mt-2 text-xs text-gray-500">
+                    Use search to find more industries
+                  </p>
+                {/if}
+              </CollapsibleFilterSection>
+            {/if}
 
             <!-- Company Size Filter -->
             {#if sizeOptions.length > 0}
-              <div class="p-4">
-                <button
-                  onclick={() => sizeExpanded = !sizeExpanded}
-                  class="flex items-center justify-between w-full text-left"
-                >
-                  <h3 class="text-sm font-semibold text-gray-900">Company Size</h3>
-                  <ChevronDown
-                    size={16}
-                    class="text-gray-500 transition-transform {sizeExpanded ? 'rotate-180' : ''}"
-                  />
-                </button>
-                {#if sizeExpanded}
-                  <div class="mt-3 space-y-2">
-                    {#each sizeOptions as option (option.value)}
-                      <label class="flex items-start gap-2 cursor-pointer text-sm hover:bg-gray-50 -mx-2 px-2 py-1.5 rounded">
-                        <input
-                          type="checkbox"
-                          checked={option.checked}
-                          onchange={() => toggleFilter(sizeOptions, option.value)}
-                          class="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                        />
-                        <span class="flex-1 text-gray-700">{option.label}</span>
-                        <span class="text-gray-500 text-xs">({option.count})</span>
-                      </label>
-                    {/each}
-                  </div>
-                {/if}
-              </div>
+              <CollapsibleFilterSection
+                title="Company Size"
+                hasActiveFilter={sizeOptions.some(opt => opt.checked)}
+              >
+                <div class="space-y-1">
+                  {#each sizeOptions as option (option.value)}
+                    <label class="flex items-center gap-3 cursor-pointer py-2 px-2 -mx-2 rounded-xl hover:bg-surface-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={option.checked}
+                        onchange={() => toggleFilter(sizeOptions, option.value)}
+                        class="w-4 h-4 text-primary-600 border-gray-300 rounded-lg focus:ring-primary-500 cursor-pointer"
+                      />
+                      <span class="text-gray-700 flex-1 text-sm">{option.label}</span>
+                      <span class="text-gray-400 text-xs font-medium bg-gray-100 px-2 py-0.5 rounded-full">
+                        {option.count}
+                      </span>
+                    </label>
+                  {/each}
+                </div>
+              </CollapsibleFilterSection>
             {/if}
           </div>
         </div>
       </aside>
 
       <!-- Companies Grid -->
-      <main class="flex-1">
-        <!-- Applied Filters -->
-        {#if appliedFilters().length > 0}
-          <div class="mb-4 bg-white rounded-lg border border-gray-200 p-4">
-            <div class="flex flex-wrap items-center gap-3">
-              <span class="text-sm font-medium text-gray-700">Applied Filters:</span>
-
-              <!-- Filter Tags -->
-              <div class="flex flex-wrap gap-2">
-                {#each appliedFilters() as filter}
-                  <button
-                    onclick={(e) => { e.stopPropagation(); clearFilter(filter.type as any); }}
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors group"
-                  >
-                    <span>{filter.label}</span>
-                    <X size={14} class="group-hover:text-blue-900" />
-                  </button>
-                {/each}
-              </div>
-
-              <!-- Clear All Button -->
-              <button
-                onclick={clearAllFilters}
-                class="ml-auto text-sm text-red-600 hover:text-red-700 font-medium hover:underline"
-              >
-                Clear all filters
-              </button>
-            </div>
-          </div>
-        {/if}
-
-        <div class="mb-6">
-          <h2 class="text-lg md:text-xl font-semibold text-gray-900">
-            Showing {totalCompanies.toLocaleString()} companies
+      <main class="flex-1 min-w-0">
+        <!-- Results Header -->
+        <div class="hidden lg:flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
+            Companies
+            <span class="text-base font-normal text-gray-500">({totalCompanies.toLocaleString()} results)</span>
           </h2>
         </div>
 
-        <!-- Companies List -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {#each companies as company (company.id)}
-            <article class="bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-md relative group">
-              <a
-                href="/companies/{company.slug}/"
-                class="block p-4 md:p-5 after:absolute after:inset-0"
+        <!-- Applied Filters -->
+        {#if appliedFilters().length > 0}
+          <div class="mb-6 flex flex-wrap items-center gap-2">
+            {#each appliedFilters() as filter}
+              <button
+                onclick={() => clearFilter(filter.type as any)}
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-sm font-medium hover:bg-primary-100 transition-colors group"
               >
-                <div class="flex gap-4">
-                  <!-- Company Logo -->
-                  <div class="flex-shrink-0">
-                    <div class="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded border border-gray-200 overflow-hidden flex items-center justify-center p-2">
-                      <img
-                        src={company.logo}
-                        alt="{company.name} logo"
-                        class="w-full h-full object-contain"
-                        loading="lazy"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- Company Info -->
-                  <div class="flex-1 min-w-0">
-                    <h3 class="text-base md:text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-1">
-                      {company.name}
-                    </h3>
-
-                    <!-- Company Details -->
-                    <div class="flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-600">
-                      <span class="after:content-['•'] after:ml-2 after:text-gray-400 last:after:content-['']">
-                        {company.company_type}
-                      </span>
-                      <span class="after:content-['•'] after:ml-2 after:text-gray-400 last:after:content-['']">
-                        {company.industry_name}
-                      </span>
-                      {#if company.size}
-                        <span class="after:content-['•'] after:ml-2 after:text-gray-400 last:after:content-['']">
-                          {company.size}
-                        </span>
-                      {/if}
-                      {#if company.nature_of_business && company.nature_of_business.length > 0}
-                        {#each company.nature_of_business as business}
-                          <span class="after:content-['•'] after:ml-2 after:text-gray-400 last:after:content-['']">
-                            {business}
-                          </span>
-                        {/each}
-                      {/if}
-                    </div>
-                  </div>
-                </div>
-              </a>
-
-              <!-- Arrow icon -->
-              <div class="absolute top-4 right-4 md:top-5 md:right-5 pointer-events-none">
-                <ChevronRight size={20} class="text-gray-400 group-hover:text-blue-600 transition-colors" />
-              </div>
-            </article>
-          {/each}
-        </div>
-
-        <!-- Pagination -->
-        {#if totalPages > 1}
-          <div class="mt-8 flex items-center justify-center gap-2">
+                <span>{filter.label}</span>
+                <X class="w-3.5 h-3.5 group-hover:text-primary-900" />
+              </button>
+            {/each}
             <button
-              onclick={() => goToPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              class="px-4 py-2 text-sm border border-gray-300 rounded bg-white hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:text-gray-400"
+              onclick={clearAllFilters}
+              class="text-sm text-gray-500 hover:text-gray-700 font-medium px-2 py-1"
             >
-              Previous
-            </button>
-            <div class="flex gap-1">
-              {#each getPageNumbers() as pageNum}
-                <button
-                  onclick={() => goToPage(pageNum)}
-                  class="{pageNum === currentPage ? 'bg-blue-600 text-white' : 'bg-white hover:bg-gray-50 text-gray-700'} px-3 py-2 text-sm border border-gray-300 rounded transition-colors"
-                >
-                  {pageNum}
-                </button>
-              {/each}
-            </div>
-            <button
-              onclick={() => goToPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              class="px-4 py-2 text-sm border border-gray-300 rounded bg-white hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:text-gray-400"
-            >
-              Next
+              Clear all
             </button>
           </div>
+        {/if}
 
-          <div class="mt-4 text-center text-sm text-gray-600">
-            Page {currentPage} of {totalPages}
+        {#if error}
+          <!-- Error State -->
+          <div class="bg-white rounded-2xl elevation-1 border border-gray-100 p-12 text-center">
+            <div class="w-16 h-16 rounded-2xl bg-error-500/10 flex items-center justify-center mx-auto mb-4">
+              <X class="w-8 h-8 text-error-500" />
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h3>
+            <p class="text-gray-600 mb-6">{error}</p>
+            <button
+              onclick={() => window.location.reload()}
+              class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium transition-colors elevation-1"
+            >
+              Try Again
+            </button>
+          </div>
+        {:else if companies.length > 0}
+          <!-- Companies Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {#each companies as company, index (company.id)}
+              <article
+                class="group bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:elevation-3 border border-gray-100 hover:border-primary-200"
+                style="animation: fade-in-up 0.5s ease forwards; animation-delay: {Math.min(index * 50, 300)}ms; opacity: 0;"
+              >
+                <a
+                  href="/companies/{company.slug}/"
+                  class="block p-5 lg:p-6"
+                >
+                  <div class="flex gap-4">
+                    <!-- Company Logo -->
+                    <div class="flex-shrink-0">
+                      {#if company.logo}
+                        <div class="w-16 h-16 lg:w-18 lg:h-18 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden flex items-center justify-center p-2">
+                          <img
+                            src={company.logo}
+                            alt="{company.name} logo"
+                            class="w-full h-full object-contain"
+                            loading="lazy"
+                          />
+                        </div>
+                      {:else}
+                        <div class="w-16 h-16 lg:w-18 lg:h-18 rounded-xl bg-primary-50 flex items-center justify-center border border-primary-100">
+                          <Building2 class="w-8 h-8 text-primary-600" />
+                        </div>
+                      {/if}
+                    </div>
+
+                    <!-- Company Info -->
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-base lg:text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors mb-2 line-clamp-1">
+                        {company.name}
+                      </h3>
+
+                      <!-- Company Details -->
+                      <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500 mb-3">
+                        {#if company.company_type}
+                          <span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-lg">
+                            <Building2 class="w-3 h-3" />
+                            {company.company_type}
+                          </span>
+                        {/if}
+                        {#if company.industry_name}
+                          <span class="inline-flex items-center gap-1 px-2 py-1 bg-primary-50 text-primary-700 rounded-lg">
+                            <Factory class="w-3 h-3" />
+                            {company.industry_name}
+                          </span>
+                        {/if}
+                      </div>
+
+                      <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                        {#if company.size}
+                          <span class="flex items-center gap-1">
+                            <Users class="w-3.5 h-3.5 text-gray-400" />
+                            {company.size}
+                          </span>
+                        {/if}
+                        {#if company.nature_of_business && company.nature_of_business.length > 0}
+                          <span class="flex items-center gap-1">
+                            <Briefcase class="w-3.5 h-3.5 text-gray-400" />
+                            {company.nature_of_business[0]}
+                          </span>
+                        {/if}
+                      </div>
+                    </div>
+
+                    <!-- Arrow -->
+                    <div class="flex-shrink-0 self-center">
+                      <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+                        <ChevronRight class="w-4 h-4 text-gray-400 group-hover:text-primary-600 transition-colors" />
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            {/each}
+          </div>
+
+          <!-- Pagination -->
+          {#if totalPages > 1}
+            <div class="mt-10 flex justify-center">
+              <div class="inline-flex items-center gap-1 bg-white rounded-2xl elevation-1 border border-gray-100 p-2">
+                <button
+                  onclick={prevPage}
+                  disabled={currentPage === 1}
+                  class="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-700 rounded-xl hover:bg-surface-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft class="w-4 h-4" />
+                  <span class="hidden sm:inline">Previous</span>
+                </button>
+
+                <div class="flex gap-1 px-2">
+                  {#each getPageNumbers() as pageNum}
+                    <button
+                      onclick={() => goToPage(pageNum)}
+                      class="w-10 h-10 flex items-center justify-center text-sm font-medium rounded-xl transition-all {pageNum === currentPage ? 'bg-primary-600 text-white elevation-1' : 'text-gray-700 hover:bg-surface-50'}"
+                    >
+                      {pageNum}
+                    </button>
+                  {/each}
+                </div>
+
+                <button
+                  onclick={nextPage}
+                  disabled={currentPage === totalPages}
+                  class="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-700 rounded-xl hover:bg-surface-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <span class="hidden sm:inline">Next</span>
+                  <ChevronRight class="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-4 text-center text-sm text-gray-500">
+              Page {currentPage} of {totalPages}
+            </div>
+          {/if}
+        {:else}
+          <!-- Empty State -->
+          <div class="bg-white rounded-2xl elevation-1 border border-gray-100 p-12 text-center">
+            <div class="w-20 h-20 rounded-2xl bg-primary-50 flex items-center justify-center mx-auto mb-6">
+              <Building2 class="w-10 h-10 text-primary-400" />
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No Companies Found</h3>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">
+              We couldn't find any companies matching your criteria. Try adjusting your filters.
+            </p>
+            <button
+              onclick={clearAllFilters}
+              class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium transition-colors elevation-1 hover:elevation-2"
+            >
+              Clear All Filters
+            </button>
           </div>
         {/if}
       </main>
     </div>
   </div>
 </div>
-
-<style>
-  /* Hide scrollbar but keep functionality */
-  :global(.scrollbar-hide::-webkit-scrollbar) {
-    display: none;
-  }
-  :global(.scrollbar-hide) {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .line-clamp-1 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-    -webkit-box-orient: vertical;
-  }
-</style>
