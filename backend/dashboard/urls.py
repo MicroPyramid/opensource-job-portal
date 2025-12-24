@@ -1,6 +1,9 @@
 from django.urls import re_path as url
 
 from .views import (
+    dashboard_login,
+    dashboard_google_login,
+    dashboard_logout,
     index,
     admin_user_list,
     new_admin_user,
@@ -89,6 +92,11 @@ from .views import (
 app_name = "dashboard"
 
 urlpatterns = [
+    # Authentication
+    url(r"^login/$", dashboard_login, name="login"),
+    url(r"^google-login/$", dashboard_google_login, name="google_login"),
+    url(r"^logout/$", dashboard_logout, name="logout"),
+    # Dashboard home
     url(r"^$", index, name="index"),
     # users
     url(r"^users/list/$", admin_user_list, name="admin_user_list"),

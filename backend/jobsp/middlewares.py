@@ -222,11 +222,18 @@ reg_v = re.compile(
 
 class LowerCased(MiddlewareMixin):
     def process_request(self, request):
-        if not re.match("/social/user/update/$", request.path) and not re.match(
-            "/logout/$", request.path
-        ):
+        # Skip redirect for dashboard, logout, social update, and API paths
+        excluded_paths = [
+            "/social/user/update/",
+            "/logout/",
+            "/dashboard/",
+            "/api/",
+        ]
+        if not any(request.path.startswith(path) for path in excluded_paths):
             if (
                 request.user.is_authenticated
+                and not request.user.is_superuser
+                and not request.user.is_staff
                 and request.user.user_type == "JS"
                 and request.user.registered_from == "Social"
                 and not request.user.mobile

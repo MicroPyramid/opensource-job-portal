@@ -1,20 +1,152 @@
 from datetime import datetime
 
+import requests
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
+from django.conf import settings
 
 from mpcomp.views import permission_required
 from peeldb.models import (
     AppliedJobs,
     City,
     Company,
+    Google,
     JobPost,
     Skill,
     Ticket,
     User,
+    UserEmail,
 )
 from pjob.views import months
+
+
+def dashboard_login(request):
+    """
+    Dashboard login page with Google OAuth option.
+    """
+    if request.user.is_authenticated:
+        if request.user.is_superuser or request.user.is_staff or request.user.has_perm("activity_edit"):
+            return HttpResponseRedirect(reverse("dashboard:index"))
+        else:
+            # User is logged in but doesn't have permission
+            return render(request, "dashboard/login.html", {
+                "error": "You don't have permission to access the dashboard."
+            })
+
+    return render(request, "dashboard/login.html")
+
+
+def dashboard_google_login(request):
+    """
+    Initiates Google OAuth flow for dashboard login.
+    """
+    if "code" in request.GET:
+        # Handle OAuth callback
+        params = {
+            "grant_type": "authorization_code",
+            "code": request.GET.get("code"),
+            "redirect_uri": settings.GOOGLE_LOGIN_HOST + reverse("dashboard:google_login"),
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
+        }
+        info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
+        info = info.json()
+
+        if not info.get("access_token"):
+            return render(
+                request,
+                "dashboard/login.html",
+                {"error": "Authentication failed. Please try again."},
+            )
+
+        # Get user info from Google
+        url = "https://www.googleapis.com/oauth2/v1/userinfo"
+        params = {"access_token": info["access_token"]}
+        response = requests.get(url, params=params, timeout=60)
+        user_document = response.json()
+
+        email = user_document.get("email", "")
+        if not email:
+            return render(
+                request,
+                "dashboard/login.html",
+                {"error": "Could not retrieve email from Google."},
+            )
+
+        # Check if user exists
+        email_match = UserEmail.objects.filter(email__iexact=email).first()
+        if email_match:
+            user = email_match.user
+        else:
+            user = User.objects.filter(email__iexact=email).first()
+
+        if not user:
+            return render(
+                request,
+                "dashboard/login.html",
+                {"error": "No account found with this email. Please contact an administrator."},
+            )
+
+        # Check if user has dashboard permission (superusers always have access)
+        if not user.is_superuser and not user.is_staff and not user.has_perm("activity_edit"):
+            return render(
+                request,
+                "dashboard/login.html",
+                {"error": "You don't have permission to access the dashboard."},
+            )
+
+        # Update or create Google record
+        picture = user_document.get("picture", "")
+        link = user_document.get("link", f"https://plus.google.com/{user_document.get('id', '')}")
+
+        google, created = Google.objects.get_or_create(
+            user=user,
+            defaults={
+                'google_url': link,
+                'verified_email': user_document.get("verified_email", ""),
+                'google_id': user_document.get("id", ""),
+                'family_name': user_document.get("family_name", ""),
+                'name': user_document.get("name", ""),
+                'given_name': user_document.get("given_name", ""),
+                'email': email,
+                'picture': picture,
+            }
+        )
+
+        if not created:
+            google.google_id = user_document.get("id", "")
+            google.name = user_document.get("name", "")
+            google.picture = picture
+            google.save()
+
+        # Login the user
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+
+        return HttpResponseRedirect(reverse("dashboard:index"))
+
+    else:
+        # Redirect to Google OAuth
+        oauth_url = (
+            "https://accounts.google.com/o/oauth2/auth"
+            f"?client_id={settings.GOOGLE_CLIENT_ID}"
+            "&response_type=code"
+            "&scope=https://www.googleapis.com/auth/userinfo.profile "
+            "https://www.googleapis.com/auth/userinfo.email"
+            f"&redirect_uri={settings.GOOGLE_LOGIN_HOST}{reverse('dashboard:google_login')}"
+            "&state=dashboard_login"
+        )
+        return HttpResponseRedirect(oauth_url)
+
+
+def dashboard_logout(request):
+    """
+    Logout from dashboard and redirect to login page.
+    """
+    logout(request)
+    return HttpResponseRedirect(reverse("dashboard:login"))
 
 
 # Functions to move here from main views.py:
@@ -22,10 +154,15 @@ from pjob.views import months
 
 @permission_required("activity_edit")
 def index(request):
+    # Allow superusers/staff, or non-jobseeker/non-recruiter users
     if (
-        not request.user.is_jobseeker
-        and not request.user.is_recruiter
-        and not request.user.is_agency_recruiter
+        request.user.is_superuser
+        or request.user.is_staff
+        or (
+            not request.user.is_jobseeker
+            and not request.user.is_recruiter
+            and not request.user.is_agency_recruiter
+        )
     ):
         current_date = datetime.strptime(
             str(datetime.now().date()), "%Y-%m-%d"
