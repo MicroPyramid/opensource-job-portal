@@ -178,12 +178,13 @@
 					<!-- Features List -->
 					<div class="space-y-4 mb-8">
 						{#each includedFeatures as feature, i}
+							{@const FeatureIcon = feature.icon}
 							<div class="flex items-start gap-3 animate-fade-in-up" style="opacity: 0; animation-delay: {i * 50}ms;">
 								<div class="w-6 h-6 rounded-full bg-success-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
 									<Check size={14} class="text-success-600" />
 								</div>
 								<div class="flex items-center gap-3 flex-1">
-									<svelte:component this={feature.icon} size={18} class="text-primary-600 flex-shrink-0" />
+									<FeatureIcon size={18} class="text-primary-600 flex-shrink-0" />
 									<span class="text-gray-700 font-medium">{feature.name}</span>
 								</div>
 							</div>

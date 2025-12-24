@@ -9,17 +9,38 @@
 		ChevronLeft
 	} from '@lucide/svelte';
 	import { getContext } from 'svelte';
+	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 
 	type AuthLayoutContext = {
 		containerClass: string;
 		mainClass: string;
 	};
 
+	let { form } = $props();
+
 	const layout = getContext<AuthLayoutContext>('authLayout');
 	layout.containerClass = 'max-w-3xl';
 
 	let currentStep = $state(1);
 	const totalSteps = 3;
+	let loading = $state(false);
+
+	// Get error from form action
+	let error = $derived(form?.error || '');
+
+	// Handle skip action without nested form
+	async function handleSkip() {
+		const response = await fetch('?/skip', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			}
+		});
+		if (response.redirected) {
+			goto(response.url);
+		}
+	}
 
 	// Form data
 	let formData = $state({
@@ -89,15 +110,6 @@
 		}
 	}
 
-	function completeOnboarding() {
-		console.log('Completing onboarding...', formData);
-		// API call here
-		window.location.href = '/dashboard/';
-	}
-
-	function skipOnboarding() {
-		window.location.href = '/dashboard/';
-	}
 </script>
 
 <svelte:head>
@@ -126,7 +138,33 @@
 	</div>
 
 	<!-- Form Content -->
-	<form onsubmit={(e) => { e.preventDefault(); if (currentStep === totalSteps) completeOnboarding(); else nextStep(); }}>
+	<form method="POST" action="?/complete" use:enhance={({ cancel }) => {
+		// Only submit on final step, otherwise just navigate
+		if (currentStep !== totalSteps) {
+			cancel();
+			nextStep();
+			return;
+		}
+		loading = true;
+		return async ({ update }) => {
+			loading = false;
+			await update();
+		};
+	}}>
+		<!-- Hidden fields for all form data -->
+		<input type="hidden" name="about" value={formData.about} />
+		<input type="hidden" name="headquarters" value={formData.headquarters} />
+		<input type="hidden" name="founded_year" value={formData.foundedYear} />
+		<input type="hidden" name="invite_emails" value={formData.inviteEmails.filter(e => e).join(',')} />
+		<input type="hidden" name="job_categories" value={formData.jobCategories.join(',')} />
+		<input type="hidden" name="hiring_goals" value={formData.hiringGoals} />
+		<input type="hidden" name="monthly_hires" value={formData.monthlyHires} />
+
+		{#if error}
+			<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+				{error}
+			</div>
+		{/if}
 		{#if currentStep === 1}
 			<!-- Step 1: Company Details -->
 			<div class="space-y-6">
@@ -345,7 +383,7 @@
 				{:else}
 					<button
 						type="button"
-						onclick={skipOnboarding}
+						onclick={handleSkip}
 						class="text-sm text-gray-600 hover:text-gray-900"
 					>
 						Skip for now
@@ -364,10 +402,15 @@
 			{:else}
 				<button
 					type="submit"
-					class="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+					disabled={loading}
+					class="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				>
-					Complete Setup
-					<CheckCircle2 class="w-4 h-4" />
+					{#if loading}
+						Saving...
+					{:else}
+						Complete Setup
+						<CheckCircle2 class="w-4 h-4" />
+					{/if}
 				</button>
 			{/if}
 		</div>

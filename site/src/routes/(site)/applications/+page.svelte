@@ -299,6 +299,7 @@
 			<div class="space-y-4">
 				{#each filteredApplications as app, i}
 					{@const config = statusConfig[app.status]}
+					{@const StatusIcon = config.icon}
 					<div
 						class="group bg-white rounded-2xl p-5 lg:p-6 elevation-1 hover:elevation-3 border border-gray-100 transition-all"
 						style="animation: fade-in-up 0.5s ease forwards; animation-delay: {(i + 1) * 50}ms; opacity: 0;"
@@ -339,7 +340,7 @@
 								<span
 									class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium {config.bgColor} {config.color} w-fit"
 								>
-									<svelte:component this={config.icon} size={14} />
+									<StatusIcon size={14} />
 									{app.status}
 								</span>
 

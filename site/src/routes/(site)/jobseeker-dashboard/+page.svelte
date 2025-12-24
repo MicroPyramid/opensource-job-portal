@@ -367,6 +367,7 @@
 					<div class="divide-y divide-gray-100">
 						{#each appliedJobs.slice(0, 4) as job, i}
 							{@const config = statusConfig[job.status]}
+							{@const StatusIcon = config.icon}
 							<a
 								href="/jobs/{job.id}/"
 								class="group flex items-start justify-between p-5 lg:p-6 hover:bg-surface-50 transition-colors"
@@ -387,7 +388,7 @@
 								<span
 									class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium {config.bgColor} {config.color}"
 								>
-									<svelte:component this={config.icon} size={12} />
+									<StatusIcon size={12} />
 									{job.status.charAt(0).toUpperCase() + job.status.slice(1)}
 								</span>
 							</a>

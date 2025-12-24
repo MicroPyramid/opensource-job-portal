@@ -10,15 +10,13 @@ import { PUBLIC_API_BASE_URL, PUBLIC_SITE_URL } from '$env/static/public';
 
 /**
  * API Base URL for backend requests
- * Default: http://localhost:8000/api/v1
  */
-export const API_BASE_URL = PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+export const API_BASE_URL = PUBLIC_API_BASE_URL;
 
 /**
  * Site URL for frontend
- * Default: http://localhost:5174
  */
-export const SITE_URL = PUBLIC_SITE_URL || 'http://localhost:5174';
+export const SITE_URL = PUBLIC_SITE_URL;
 
 /**
  * Check if we're running in development mode

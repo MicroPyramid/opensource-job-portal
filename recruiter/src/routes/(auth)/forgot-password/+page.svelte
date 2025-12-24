@@ -1,29 +1,24 @@
 <script lang="ts">
 	import { Mail, ArrowLeft, CheckCircle2 } from '@lucide/svelte';
 	import { getContext } from 'svelte';
+	import { enhance } from '$app/forms';
 
 	type AuthLayoutContext = {
 		containerClass: string;
 		mainClass: string;
 	};
 
+	let { form } = $props();
+
 	const layout = getContext<AuthLayoutContext>('authLayout');
 	layout.containerClass = 'max-w-lg';
 
-	let email = $state('');
-	let isSubmitted = $state(false);
+	let email = $state(form?.email || '');
+	let loading = $state(false);
 
-	function handleSubmit(e: Event) {
-		e.preventDefault();
-		console.log('Sending reset link to:', email);
-		// API call here
-		isSubmitted = true;
-	}
-
-	function resendEmail() {
-		console.log('Resending email to:', email);
-		// API call here
-	}
+	// Get success state from form action
+	let isSubmitted = $derived(form?.success || false);
+	let error = $derived(form?.error || '');
 </script>
 
 <svelte:head>
@@ -52,7 +47,19 @@
 			</div>
 
 			<!-- Form -->
-			<form onsubmit={handleSubmit} class="space-y-6">
+			<form method="POST" use:enhance={() => {
+				loading = true;
+				return async ({ update }) => {
+					loading = false;
+					await update();
+				};
+			}} class="space-y-6">
+				{#if error}
+					<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+						{error}
+					</div>
+				{/if}
+
 				<div>
 					<label for="email" class="block text-sm font-medium text-gray-700 mb-2">
 						Email Address
@@ -62,19 +69,22 @@
 						<input
 							type="email"
 							id="email"
+							name="email"
 							bind:value={email}
 							required
+							disabled={loading}
 							placeholder="you@company.com"
-							class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
 						/>
 					</div>
 				</div>
 
 				<button
 					type="submit"
-					class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+					disabled={loading}
+					class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				>
-					Send Reset Link
+					{loading ? 'Sending...' : 'Send Reset Link'}
 				</button>
 			</form>
 		</div>
@@ -91,12 +101,15 @@
 			</p>
 
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-				<p class="text-sm text-blue-800">
+				<div class="text-sm text-blue-800">
 					Didn't receive the email? Check your spam folder or
-					<button onclick={resendEmail} class="font-medium underline hover:no-underline">
-						resend the link
-					</button>
-				</p>
+					<form method="POST" class="inline" use:enhance>
+						<input type="hidden" name="email" value={email} />
+						<button type="submit" class="font-medium underline hover:no-underline">
+							resend the link
+						</button>
+					</form>
+				</div>
 			</div>
 
 			<a

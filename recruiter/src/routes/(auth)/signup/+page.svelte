@@ -1,30 +1,31 @@
 <script lang="ts">
 	import { Building2, Mail, Lock, User, Phone, Eye, EyeOff, UserCircle, Globe, Users } from '@lucide/svelte';
 	import { getContext } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { register, acceptInvitation } from '$lib/api/auth';
-	import type { RegisterData } from '$lib/types';
+	import { enhance } from '$app/forms';
 
 	type AuthLayoutContext = {
 		containerClass: string;
 		mainClass: string;
 	};
 
+	let { data, form } = $props();
+
 	const layout = getContext<AuthLayoutContext>('authLayout');
 	layout.containerClass = 'max-w-6xl';
 	layout.mainClass = 'flex justify-center items-start py-2 px-4 sm:px-5 lg:px-6';
 
-	// Check for invitation token in URL
-	let invitationToken = $state($page.url.searchParams.get('invitation') || '');
+	// Check for invitation token from server data
+	let invitationToken = $derived(data.invitationToken || '');
 	let isInvitationFlow = $derived(!!invitationToken);
 
-	let step = $state(!!invitationToken ? 1 : 0); // Skip account type selection for invitations
-	let userType = $state<'recruiter' | 'company' | null>(!!invitationToken ? 'company' : null);
+	// Get error from form action response
+	let error = $derived(form?.error || '');
+
+	let step = $state(data.invitationToken ? 1 : 0); // Skip account type selection for invitations
+	let userType = $state<'recruiter' | 'company' | null>(data.invitationToken ? 'company' : null);
 	let showPassword = $state(false);
 	let showConfirmPassword = $state(false);
 	let loading = $state(false);
-	let error = $state('');
 	let success = $state(false);
 
 	// Form data
@@ -104,82 +105,16 @@
 		}
 	}
 
-	async function handleSubmit() {
-		loading = true;
-		error = '';
-
-		try {
-			// If invitation flow, use accept-invitation endpoint
-			if (isInvitationFlow) {
-				const inviteData = {
-					token: invitationToken,
-					first_name: formData.firstName,
-					last_name: formData.lastName,
-					password: formData.password,
-					confirm_password: formData.confirmPassword
-				};
-
-				console.log('Accepting invitation...', inviteData);
-				const response = await acceptInvitation(inviteData);
-
-				console.log('Invitation accepted:', response);
-				success = true;
-
-				// Redirect to dashboard after successful invitation acceptance
-				setTimeout(() => {
-					goto('/dashboard/');
-				}, 2000);
-			} else {
-				// Normal registration flow
-				// Map company size to API format
-				const sizeMap: Record<string, string> = {
-					'1-10 employees': '1-10',
-					'11-50 employees': '11-20',
-					'51-200 employees': '50-200',
-					'201-500 employees': '200+',
-					'501-1000 employees': '200+',
-					'1001-5000 employees': '200+',
-					'5000+ employees': '200+'
-				};
-
-				const data: RegisterData = {
-					account_type: formData.accountType,
-					first_name: formData.firstName,
-					last_name: formData.lastName,
-					email: formData.email,
-					phone: formData.phone || undefined,
-					job_title: formData.jobTitle || undefined,
-					password: formData.password,
-					confirm_password: formData.confirmPassword,
-					agree_to_terms: formData.agreeToTerms
-				};
-
-				// Add company fields if company type
-				if (formData.accountType === 'company') {
-					data.company_name = formData.companyName;
-					data.company_website = formData.website;
-					data.company_industry = formData.industry || undefined;
-					data.company_size = sizeMap[formData.companySize] as any;
-				}
-
-				console.log('Registering...', data);
-				const response = await register(data);
-
-				console.log('Registration successful:', response);
-				success = true;
-
-				// Show success message and redirect to verify email page
-				setTimeout(() => {
-					goto('/verify-email?email=' + encodeURIComponent(formData.email));
-				}, 2000);
-			}
-		} catch (err: any) {
-			console.error('Registration error:', err);
-			error = err.message || 'Registration failed. Please try again.';
-		} finally {
-			loading = false;
-		}
-	}
+	// Map company size to API format
+	const sizeMap: Record<string, string> = {
+		'1-10 employees': '1-10',
+		'11-50 employees': '11-20',
+		'51-200 employees': '50-200',
+		'201-500 employees': '200+',
+		'501-1000 employees': '200+',
+		'1001-5000 employees': '200+',
+		'5000+ employees': '200+'
+	};
 
 
 	// Calculate current step number for display
@@ -383,7 +318,30 @@
 			{/if}
 		</div>
 	{:else}
-		<form onsubmit={(e) => { e.preventDefault(); if ((userType === 'company' && step === 3) || (userType === 'recruiter' && step === 2) || (isInvitationFlow && step === 2)) handleSubmit(); else nextStep(); }} class="space-y-5">
+		<form method="POST" action={isInvitationFlow ? '?/acceptInvitation' : '?/register'} use:enhance={({ cancel }) => {
+		// Only submit on final step, otherwise just navigate
+		const isFinalStep = (userType === 'company' && step === 3) || (userType === 'recruiter' && step === 2) || (isInvitationFlow && step === 2);
+		if (!isFinalStep) {
+			cancel();
+			nextStep();
+			return;
+		}
+		loading = true;
+		return async ({ result, update }) => {
+			loading = false;
+			if (result.type === 'redirect') {
+				success = true;
+			}
+			await update();
+		};
+	}} class="space-y-5">
+		<!-- Hidden fields for all form data -->
+		<input type="hidden" name="account_type" value={formData.accountType} />
+		<input type="hidden" name="token" value={invitationToken} />
+		<input type="hidden" name="company_name" value={formData.companyName} />
+		<input type="hidden" name="company_website" value={formData.website} />
+		<input type="hidden" name="company_industry" value={formData.industry} />
+		<input type="hidden" name="company_size" value={sizeMap[formData.companySize] || ''} />
 			{#if error}
 				<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
 					{error}
@@ -563,6 +521,7 @@
 						<input
 							type="text"
 							id="firstName"
+							name="first_name"
 							bind:value={formData.firstName}
 							required
 							placeholder="John"
@@ -577,6 +536,7 @@
 						<input
 							type="text"
 							id="lastName"
+							name="last_name"
 							bind:value={formData.lastName}
 							required
 							placeholder="Doe"
@@ -595,6 +555,7 @@
 							<input
 								type="email"
 								id="email"
+								name="email"
 								bind:value={formData.email}
 								required
 								placeholder={userType === 'company' ? 'john@company.com' : 'john@example.com'}
@@ -615,6 +576,7 @@
 							<input
 								type="tel"
 								id="phone"
+								name="phone"
 								bind:value={formData.phone}
 								required
 								placeholder="+1 (555) 123-4567"
@@ -630,6 +592,7 @@
 						<input
 							type="text"
 							id="jobTitle"
+							name="job_title"
 							bind:value={formData.jobTitle}
 							required
 							placeholder={userType === 'company' ? 'HR Manager, Recruiter, etc.' : 'Senior Recruiter, Talent Acquisition Specialist, etc.'}
@@ -652,6 +615,7 @@
 						<input
 							type={showPassword ? 'text' : 'password'}
 							id="password"
+							name="password"
 							bind:value={formData.password}
 							required
 							placeholder="Create a strong password"
@@ -681,6 +645,7 @@
 						<input
 							type={showConfirmPassword ? 'text' : 'password'}
 							id="confirmPassword"
+							name="confirm_password"
 							bind:value={formData.confirmPassword}
 							required
 							placeholder="Re-enter your password"

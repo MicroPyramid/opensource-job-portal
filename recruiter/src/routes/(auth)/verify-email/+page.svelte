@@ -1,80 +1,28 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { CheckCircle2, XCircle, Loader2, Mail } from '@lucide/svelte';
+	import { CheckCircle2, XCircle, Mail } from '@lucide/svelte';
 	import { getContext } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { verifyEmail, resendVerification as apiResendVerification } from '$lib/api/auth';
-	import { authStore } from '$lib/stores/auth';
+	import { enhance } from '$app/forms';
 
 	type AuthLayoutContext = {
 		containerClass: string;
 		mainClass: string;
 	};
 
+	let { data, form } = $props();
+
 	const layout = getContext<AuthLayoutContext>('authLayout');
 	layout.containerClass = 'max-w-lg';
 
-	let status = $state<'verifying' | 'success' | 'error' | 'expired'>('verifying');
-	let email = $state('');
-	let errorMessage = $state('');
 	let resending = $state(false);
 
-	onMount(async () => {
-		// Get token and email from URL query params
-		const token = $page.url.searchParams.get('token');
-		email = $page.url.searchParams.get('email') || '';
+	// Get status and data from server load
+	let status = $derived(data.status);
+	let email = $derived(data.email);
+	let errorMessage = $derived(data.errorMessage);
 
-		if (!token) {
-			status = 'error';
-			errorMessage = 'No verification token provided';
-			return;
-		}
-
-		// Call API to verify email
-		try {
-			const response = await verifyEmail({ token });
-
-			// Store user and tokens
-			await authStore.login(response.user, response.access, response.refresh);
-
-			status = 'success';
-
-			// Redirect to dashboard after 2 seconds
-			setTimeout(() => {
-				goto('/dashboard/');
-			}, 2000);
-		} catch (err: any) {
-			console.error('Email verification error:', err);
-
-			// Check if token is expired
-			if (err.message?.includes('expired') || err.message?.includes('invalid')) {
-				status = 'expired';
-				errorMessage = err.message;
-			} else {
-				status = 'error';
-				errorMessage = err.message || 'Verification failed';
-			}
-		}
-	});
-
-	async function resendVerificationEmail() {
-		if (!email) {
-			alert('Please provide an email address');
-			return;
-		}
-
-		resending = true;
-
-		try {
-			await apiResendVerification(email);
-			alert('Verification email sent! Please check your inbox.');
-		} catch (err: any) {
-			alert(err.message || 'Failed to resend verification email');
-		} finally {
-			resending = false;
-		}
-	}
+	// Show success message from form action
+	let resendSuccess = $derived(form?.success || false);
+	let resendError = $derived(form?.error || '');
 </script>
 
 <svelte:head>
@@ -82,15 +30,56 @@
 </svelte:head>
 
 <div class="bg-white rounded-lg shadow-lg p-8">
-	{#if status === 'verifying'}
-		<!-- Verifying State -->
+	{#if status === 'waiting'}
+		<!-- Waiting for verification State -->
 		<div class="text-center">
 			<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-				<Loader2 class="w-8 h-8 text-blue-600 animate-spin" />
+				<Mail class="w-8 h-8 text-blue-600" />
 			</div>
 
-			<h1 class="text-2xl font-bold text-gray-900 mb-3">Verifying Your Email</h1>
-			<p class="text-gray-600">Please wait while we verify your email address...</p>
+			<h1 class="text-2xl font-bold text-gray-900 mb-3">Check Your Email</h1>
+			<p class="text-gray-600 mb-6">
+				We've sent a verification link to {#if email}<strong class="text-gray-900">{email}</strong>{:else}your email address{/if}.
+				Please click the link to verify your account.
+			</p>
+
+			{#if resendSuccess}
+				<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm mb-4">
+					Verification email sent! Please check your inbox.
+				</div>
+			{/if}
+
+			{#if resendError}
+				<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+					{resendError}
+				</div>
+			{/if}
+
+			{#if email}
+				<form method="POST" action="?/resend" use:enhance={() => {
+					resending = true;
+					return async ({ update }) => {
+						resending = false;
+						await update();
+					};
+				}}>
+					<input type="hidden" name="email" value={email} />
+					<button
+						type="submit"
+						disabled={resending}
+						class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-4"
+					>
+						{resending ? 'Sending...' : 'Resend Verification Email'}
+					</button>
+				</form>
+			{/if}
+
+			<a
+				href="/login/"
+				class="inline-block text-sm text-gray-600 hover:text-gray-900"
+			>
+				Back to login
+			</a>
 		</div>
 	{:else if status === 'success'}
 		<!-- Success State -->
@@ -131,13 +120,22 @@
 			</p>
 
 			{#if email}
-				<button
-					onclick={resendVerificationEmail}
-					disabled={resending}
-					class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-4"
-				>
-					{resending ? 'Sending...' : 'Resend Verification Email'}
-				</button>
+				<form method="POST" action="?/resend" use:enhance={() => {
+					resending = true;
+					return async ({ update }) => {
+						resending = false;
+						await update();
+					};
+				}}>
+					<input type="hidden" name="email" value={email} />
+					<button
+						type="submit"
+						disabled={resending}
+						class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-4"
+					>
+						{resending ? 'Sending...' : 'Resend Verification Email'}
+					</button>
+				</form>
 			{/if}
 
 			<a
@@ -160,13 +158,22 @@
 			</p>
 
 			{#if email}
-				<button
-					onclick={resendVerificationEmail}
-					disabled={resending}
-					class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-4"
-				>
-					{resending ? 'Sending...' : 'Resend Verification Email'}
-				</button>
+				<form method="POST" action="?/resend" use:enhance={() => {
+					resending = true;
+					return async ({ update }) => {
+						resending = false;
+						await update();
+					};
+				}}>
+					<input type="hidden" name="email" value={email} />
+					<button
+						type="submit"
+						disabled={resending}
+						class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-4"
+					>
+						{resending ? 'Sending...' : 'Resend Verification Email'}
+					</button>
+				</form>
 			{/if}
 
 			<a

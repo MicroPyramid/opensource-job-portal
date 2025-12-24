@@ -1,36 +1,30 @@
 <script lang="ts">
 	import { Lock, Eye, EyeOff, CheckCircle2 } from '@lucide/svelte';
 	import { getContext } from 'svelte';
+	import { enhance } from '$app/forms';
 
 	type AuthLayoutContext = {
 		containerClass: string;
 		mainClass: string;
 	};
 
+	let { data, form } = $props();
+
 	const layout = getContext<AuthLayoutContext>('authLayout');
 	layout.containerClass = 'max-w-lg';
 
 	let showPassword = $state(false);
 	let showConfirmPassword = $state(false);
-	let isSubmitted = $state(false);
+	let loading = $state(false);
 
 	let formData = $state({
 		password: '',
 		confirmPassword: ''
 	});
 
-	function handleSubmit(e: Event) {
-		e.preventDefault();
-
-		if (formData.password !== formData.confirmPassword) {
-			alert('Passwords do not match!');
-			return;
-		}
-
-		console.log('Resetting password...');
-		// API call here with token from URL query params
-		isSubmitted = true;
-	}
+	// Get success state and error from form action
+	let isSubmitted = $derived(form?.success || false);
+	let error = $derived(form?.error || '');
 
 	function validatePassword(password: string) {
 		return {
@@ -59,7 +53,22 @@
 			</div>
 
 			<!-- Form -->
-			<form onsubmit={handleSubmit} class="space-y-6">
+			<form method="POST" use:enhance={() => {
+				loading = true;
+				return async ({ update }) => {
+					loading = false;
+					await update();
+				};
+			}} class="space-y-6">
+				<!-- Hidden field for token -->
+				<input type="hidden" name="token" value={data.token} />
+
+				{#if error}
+					<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+						{error}
+					</div>
+				{/if}
+
 				<div>
 					<label for="password" class="block text-sm font-medium text-gray-700 mb-2">
 						New Password
@@ -69,10 +78,12 @@
 						<input
 							type={showPassword ? 'text' : 'password'}
 							id="password"
+							name="password"
 							bind:value={formData.password}
 							required
+							disabled={loading}
 							placeholder="Create a strong password"
-							class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
 						/>
 						<button
 							type="button"
@@ -146,10 +157,12 @@
 						<input
 							type={showConfirmPassword ? 'text' : 'password'}
 							id="confirmPassword"
+							name="confirm_password"
 							bind:value={formData.confirmPassword}
 							required
+							disabled={loading}
 							placeholder="Re-enter your password"
-							class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
 						/>
 						<button
 							type="button"
@@ -170,10 +183,10 @@
 
 				<button
 					type="submit"
-					disabled={!validation.minLength || !validation.hasUpper || !validation.hasLower || !validation.hasNumber || formData.password !== formData.confirmPassword}
+					disabled={loading || !validation.minLength || !validation.hasUpper || !validation.hasLower || !validation.hasNumber || formData.password !== formData.confirmPassword}
 					class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 				>
-					Reset Password
+					{loading ? 'Resetting...' : 'Reset Password'}
 				</button>
 			</form>
 		</div>

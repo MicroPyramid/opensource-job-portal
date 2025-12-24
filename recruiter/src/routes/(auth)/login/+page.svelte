@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { Mail, Lock, Eye, EyeOff } from '@lucide/svelte';
 	import { getContext } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { login } from '$lib/api/auth';
-	import { authStore } from '$lib/stores/auth';
-	import type { LoginData } from '$lib/types';
+	import { enhance } from '$app/forms';
 
 	type AuthLayoutContext = {
 		containerClass: string;
 		mainClass: string;
 	};
+
+	let { data, form } = $props();
 
 	const layout = getContext<AuthLayoutContext>('authLayout');
 	layout.containerClass = 'max-w-6xl';
@@ -18,44 +17,10 @@
 	let showPassword = $state(false);
 	let rememberMe = $state(false);
 	let loading = $state(false);
-	let error = $state('');
 
-	let formData = $state({
-		email: '',
-		password: ''
-	});
-
-	async function handleLogin(e: Event) {
-		e.preventDefault();
-		loading = true;
-		error = '';
-
-		try {
-			const data: LoginData = {
-				email: formData.email,
-				password: formData.password,
-				remember_me: rememberMe
-			};
-
-			console.log('Logging in...', data);
-			const response = await login(data);
-
-			console.log('Login successful:', response);
-
-			// Store user and tokens in auth store
-			// Tokens will be saved to HttpOnly cookies via SvelteKit server endpoint
-			await authStore.login(response.user, response.access, response.refresh);
-
-			// Redirect to dashboard
-			goto('/dashboard');
-		} catch (err: any) {
-			console.error('Login error:', err);
-			error = err.message || 'Login failed. Please check your credentials.';
-		} finally {
-			loading = false;
-		}
-	}
-
+	// Get error from form action response
+	let error = $derived(form?.error || '');
+	let emailValue = $state(form?.email || '');
 </script>
 
 <svelte:head>
@@ -162,7 +127,16 @@
 			</div>
 
 			<!-- Login Form -->
-			<form onsubmit={handleLogin} class="space-y-5">
+			<form method="POST" use:enhance={() => {
+				loading = true;
+				return async ({ update }) => {
+					loading = false;
+					await update();
+				};
+			}} class="space-y-5">
+				<!-- Hidden field for redirect URL -->
+				<input type="hidden" name="redirect_to" value={data.redirectTo} />
+
 				<!-- Error Message -->
 				{#if error}
 					<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
@@ -179,7 +153,8 @@
 						<input
 							type="email"
 							id="email"
-							bind:value={formData.email}
+							name="email"
+							value={emailValue}
 							required
 							disabled={loading}
 							placeholder="you@company.com"
@@ -197,7 +172,7 @@
 						<input
 							type={showPassword ? 'text' : 'password'}
 							id="password"
-							bind:value={formData.password}
+							name="password"
 							required
 							disabled={loading}
 							placeholder="Enter your password"
@@ -220,7 +195,7 @@
 
 				<div class="flex items-center justify-between">
 					<label class="flex items-center gap-2 cursor-pointer">
-						<input type="checkbox" bind:checked={rememberMe} class="w-4 h-4 text-blue-600 rounded" />
+						<input type="checkbox" name="remember_me" bind:checked={rememberMe} class="w-4 h-4 text-blue-600 rounded" />
 						<span class="text-sm text-gray-700">Remember me</span>
 					</label>
 
