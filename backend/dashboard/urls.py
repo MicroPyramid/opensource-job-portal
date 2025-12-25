@@ -1,6 +1,9 @@
 from django.urls import re_path as url
 
 from .views import (
+    dashboard_login,
+    dashboard_google_login,
+    dashboard_logout,
     index,
     admin_user_list,
     new_admin_user,
@@ -37,7 +40,6 @@ from .views import (
     enable_job,
     delete_job,
     publish_job,
-    new_govt_job,
     edit_govt_job,
     preview_job,
     edit_job_title,
@@ -77,18 +79,18 @@ from .views import (
     delete_menu,
     menu_status,
     menu_order,
-    assessment_skills,
-    new_question,
-    skill_questions,
-    view_question,
     save_meta_data,
-    clear_cache,
     mail_to_recruiter,
 )
 
 app_name = "dashboard"
 
 urlpatterns = [
+    # Authentication
+    url(r"^login/$", dashboard_login, name="login"),
+    url(r"^google-login/$", dashboard_google_login, name="google_login"),
+    url(r"^logout/$", dashboard_logout, name="logout"),
+    # Dashboard home
     url(r"^$", index, name="index"),
     # users
     url(r"^users/list/$", admin_user_list, name="admin_user_list"),
@@ -192,7 +194,6 @@ urlpatterns = [
     url(
         r"^jobpost/publish/(?P<job_post_id>[a-zA-Z0-9]+)/$", publish_job, name="publish"
     ),
-    url(r"^jobpost/(?P<job_type>[-\w]+)/add/$", new_govt_job, name="new_govt_job"),
     url(r"^jobpost/edit/(?P<post_id>[-\w]+)/$", edit_govt_job, name="edit_govt_job"),
     url(r"^jobpost/preview/(?P<post_id>[-\w]+)/$", preview_job, name="preview_job"),
     url(
@@ -327,24 +328,10 @@ urlpatterns = [
         name="menu_status",
     ),
     url(r"^company/(?P<company_id>[-\w]+)/menu/order/$", menu_order, name="menu_order"),
-    # Assessment urls
-    url(r"^assessment/skills/", assessment_skills, name="assessment_skills"),
-    url(r"^assessment/question/new/", new_question, name="new_question"),
-    url(
-        r"^assement/skill/questions/(?P<skill_id>[-\w]+)/$",
-        skill_questions,
-        name="skill_questions",
-    ),
-    url(
-        r"^assement/question/view/(?P<question_id>[-\w]+)/",
-        view_question,
-        name="view_question",
-    ),
     url(r"^save/meta-data/", save_meta_data, name="save_meta_data"),
     url(
         r"^moving/duplicate/(?P<value>[-\w]+)/",
         moving_duplicates,
         name="move_duplicates",
     ),
-    url(r"^clear/cache/", clear_cache, name="clear_cache"),
 ]

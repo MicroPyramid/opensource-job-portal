@@ -4,227 +4,259 @@
 {% load tz %}
 {% load static %}
 {% block stage %}
-<section id='job_detail'>
-  <div class="job_description_wrap">
-    <div class="posted_by_details">
-      <div class="wrap">
-        <span>
-          <span class='name'>{{ company.get_company_admin.email }}</span>
-          <!--<span class='other_details'>Web Designer</span>-->
-          <span class='other_details'>{{ post.user.email }}</span>
-        </span>
-        <img src="{{ company.get_logo_url }}">
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:companies' 'company' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">{{ company.name }}</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">Company Details</p>
       </div>
-      <div class="clearfix"></div>
     </div>
-    <div class="job_details">
-      <!-- post details -->
-      <div class="profile_individual company_profile_detail">
-        <div class="title_profile">
-          <h4><i class="fa fa-list-ul"></i>Company Details</h4>
+    <div class="flex items-center gap-2">
+      <a href="{% url 'dashboard:edit_company' company.id %}" class="btn btn-secondary">
+        <i class="fa fa-edit mr-2"></i>Edit Company
+      </a>
+    </div>
+  </div>
+
+  <!-- Company Profile Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <!-- Header with Logo -->
+    <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-8">
+      <div class="flex items-center gap-5">
+        <div class="w-20 h-20 rounded-xl bg-white shadow-lg flex items-center justify-center overflow-hidden">
+          {% if company.get_logo_url %}
+          <img src="{{ company.get_logo_url }}" class="w-full h-full object-cover" alt="{{ company.name }}">
+          {% else %}
+          <i class="fa fa-building text-3xl text-neutral-300"></i>
+          {% endif %}
         </div>
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>Name</label>
-              <span class="description">
-              <span>{{ company.name }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Type</label>
-              <span class="description">
-              <span>{{ company.company_type }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
+        <div>
+          <h2 class="text-xl font-semibold text-white">{{ company.name }}</h2>
+          {% if company.get_company_admin %}
+          <p class="text-primary-100 text-sm mt-1">
+            <i class="fa fa-user mr-1"></i>{{ company.get_company_admin.email }}
+          </p>
+          {% endif %}
+          {% if company.website %}
+          <a href="{{ company.website }}" target="_blank" class="inline-flex items-center gap-1 text-primary-100 hover:text-white text-sm mt-1 transition-colors">
+            <i class="fa fa-globe"></i>{{ company.website }}
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Company Details -->
+    <div class="p-6">
+      <div class="flex items-center gap-2 mb-6">
+        <i class="fa fa-list-ul text-primary-500"></i>
+        <h3 class="text-lg font-semibold text-neutral-800">Company Details</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-4">
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Company Name</label>
+            <p class="text-neutral-900 mt-1 font-medium">{{ company.name }}</p>
           </div>
-          <div class="right_div">
-            <div class="tile_each">
-              <label>Website</label>
-              <span class="description">
-              <a href="{{ company.website }}" target="_blank"><span>{{ company.website }}</span></a>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            {% if company.level %}
-            <div class="tile_each">
-              <label>Level</label>
-              <span class="description">
-              <span>Level {{ company.level }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Company Type</label>
+            <p class="text-neutral-900 mt-1">{{ company.company_type|default:"Not Specified" }}</p>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-4">
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Website</label>
+            {% if company.website %}
+            <a href="{{ company.website }}" target="_blank" class="text-primary-600 hover:text-primary-700 mt-1 block break-all">{{ company.website }}</a>
+            {% else %}
+            <p class="text-neutral-400 mt-1">Not Specified</p>
             {% endif %}
           </div>
-          <div class="clearfix"></div>
-          <div class="tile_each">
-            <label>Description</label>
-            <span class="description">
-            <span>{{ company.profile|safe }}</span>
-            </span>
-            <div class="clearfix"></div>
+          {% if company.level %}
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Level</label>
+            <p class="text-neutral-900 mt-1">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                Level {{ company.level }}
+              </span>
+            </p>
           </div>
-          <div class="tile_each">
-            <label>Address</label>
-            <span class="description">
-            <span>{{ company.address|linebreaks }}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="view_recruiters">
-            <a href="{% url 'dashboard:company_recruiters' company.id "active" %}" class="view-recruiters">View Recruiters</a>
-            <a href="{% url 'dashboard:company_jobposts' company.id %}" class="view-jobposts">View Job Posts</a>
-            <a href="{% url 'dashboard:company_tickets' company.id %}" class="view-tickets">View Tickets</a>
-          </div>
+          {% endif %}
         </div>
       </div>
-      <!--/ post details -->
+
+      <!-- Full Width Fields -->
+      <div class="mt-6 space-y-4">
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Description</label>
+          <div class="text-neutral-700 mt-2 prose prose-sm max-w-none">{{ company.profile|safe|default:"No description available" }}</div>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Address</label>
+          <div class="text-neutral-700 mt-2">{{ company.address|linebreaks|default:"No address specified" }}</div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-neutral-200">
+        <a href="{% url 'dashboard:company_recruiters' company.id 'active' %}"
+           class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-medium text-sm">
+          <i class="fa fa-users"></i>View Recruiters
+        </a>
+        <a href="{% url 'dashboard:company_jobposts' company.id %}"
+           class="inline-flex items-center gap-2 px-4 py-2.5 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors font-medium text-sm">
+          <i class="fa fa-briefcase"></i>View Job Posts
+        </a>
+        <a href="{% url 'dashboard:company_tickets' company.id %}"
+           class="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition-colors font-medium text-sm">
+          <i class="fa fa-ticket"></i>View Tickets
+        </a>
+      </div>
     </div>
   </div>
-  <div class="profile_individual company_profile_detail">
-    <h4>Menu</h4>
+
+  <!-- Menu Section -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i class="fa fa-bars text-primary-500"></i>
+        <h3 class="text-lg font-semibold text-neutral-800">Menu Items</h3>
+      </div>
+    </div>
+
     {% if company.get_company_menu %}
-    <div class="profile_menu_table">
-      <div class="Table" id="sortable">
-        {% if company.get_company_menu %}
-        <div class="Heading">
-          <div class="Cell">
-            <p>Title</p>
-          </div>
-          <div class="Cell">
-            <p>Url</p>
-          </div>
-          <div class="Cell">
-            <p>Status</p>
-          </div>
-          <div class="Cell">
-            <p>Updated On</p>
-          </div>
-          <div class="Cell">
-            <p>Actions</p>
-          </div>
-        </div>
-        {% endif %}
-        {% for menu in company.get_company_menu %}
-        <div class="Row ui-state-default" id="{{menu.id}}">
-          <div class="Cell">
-            <p>{{menu.title}}</p>
-          </div>
-          <div class="Cell">
-            <p><a href="{{menu.url}}" target="_blank">{{menu.url}}</a></p>
-          </div>
-          <div class="Cell">
-            <p>{% if menu.status %}Active{% else %}In Active{% endif %}</p>
-          </div>
-          <div class="Cell">
-            <p>{{ menu.updated }}</p>
-          </div>
-          <div class="Cell actions">
-            <a href="#" data-toggle="modal" data-target="#myModal_{{menu.id}}" class="edit"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit </a>
-            <a href="#" class="delete" id="{{menu.id}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
-            <a href="{% url 'dashboard:menu_status' company.id menu.id %}" class="status"><i class="fa fa-check" aria-hidden="true"></i>{% if menu.status %}In Active{% else %}Active{% endif %}</a>
-          </div>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="alert alert-danger alert-dismissible fade in" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class='fa fa-times'></i></span></button>
-          <h4>There are no records in the database</h4>
-          </p>
-        </div>
-        {% endif %}
-      </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm" id="sortable">
+        <thead class="bg-neutral-50 border-b border-neutral-200">
+          <tr>
+            <th class="px-6 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Title</th>
+            <th class="px-6 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">URL</th>
+            <th class="px-6 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Updated On</th>
+            <th class="px-6 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-100">
+          {% for menu in company.get_company_menu %}
+          <tr class="hover:bg-neutral-50 transition-colors ui-state-default cursor-move" id="{{ menu.id }}">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <i class="fa fa-grip-vertical text-neutral-300"></i>
+                <span class="font-medium text-neutral-900">{{ menu.title }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <a href="{{ menu.url }}" target="_blank" class="text-primary-600 hover:text-primary-700 break-all text-xs">{{ menu.url }}</a>
+            </td>
+            <td class="px-6 py-4">
+              {% if menu.status %}
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <i class="fa fa-check-circle mr-1"></i>Active
+              </span>
+              {% else %}
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                <i class="fa fa-times-circle mr-1"></i>Inactive
+              </span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 text-neutral-600 text-sm">{{ menu.updated }}</td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-1">
+                <button type="button" data-toggle="modal" data-target="#myModal_{{ menu.id }}"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                        title="Edit">
+                  <i class="fa fa-pencil"></i>
+                </button>
+                <button type="button" class="delete inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        id="{{ menu.id }}" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </button>
+                <a href="{% url 'dashboard:menu_status' company.id menu.id %}"
+                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg transition-colors {% if menu.status %}text-green-600 hover:bg-red-50 hover:text-red-600{% else %}text-red-600 hover:bg-green-50 hover:text-green-600{% endif %}"
+                   title="{% if menu.status %}Deactivate{% else %}Activate{% endif %}">
+                  {% if menu.status %}<i class="fa fa-toggle-on"></i>{% else %}<i class="fa fa-toggle-off"></i>{% endif %}
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+    {% else %}
+    <div class="px-6 py-12 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-100 mb-4">
+        <i class="fa fa-bars text-2xl text-neutral-400"></i>
+      </div>
+      <h4 class="text-neutral-600 font-medium mb-1">No Menu Items</h4>
+      <p class="text-neutral-400 text-sm">There are no menu items configured for this company.</p>
+    </div>
+    {% endif %}
   </div>
-  <!--/ category -->
-</section>
+</div>
 {% endblock %}
+
 {% block script %}
-    <script>
-        $('.delete').click(function (e) {
-            e.stopPropagation();
-            url = $(this).attr('id') + '/'
-            $('#block_question').text('Do you want to delete Menu?')
-            $('#block_question').dialog({
-                modal: true,
-                dialogClass: "no-close",
-                draggable: false,
-                title: "Info!!",
-                buttons: [
-                    {
-                        text: "Yes",
-                        click: function () {
-                            $(this).dialog("close");
-                            $.post('/dashboard/company/' + {{company.id}} +'/delete/' + url, {}, function (data) {
-                                if (data.error) {
-                                } else {
-                                    open_dialog_with_url('Menu Deleted Successfully', 'Success!!!', "{% url 'recruiter:view_company' %}")
-                                }
-                            }, 'json');
-                        }
-                    },
-                    {
-                        text: "No",
-                        click: function () {
-                            $(this).dialog("close");
-                        }
-                    }
-                ]
-            });
-        });
-        var fixHelperModified = function (e, tr) {
-
-                    var $originals = tr.children();
-                    var $helper = tr.clone();
-                    $helper.children().each(function (index) {
-                        $(this).width($originals.eq(index).width())
-                    });
-                    return $helper;
-                },
-                updateIndex = function (e, ui) {
-                    $('td.index', ui.item.parent()).each(function (i) {
-                        $(this).html(i + 1);
-                    });
-                    var prev = ui.item.startPos;
-                    var current = ui.item.index();
-                    $('#block_question').text('prev ' + prev + ' current ' + current)
-                    $('#block_question').dialog({
-                        modal: true,
-                        dialogClass: "no-close",
-                        draggable: false,
-                        title: "Info!!",
-                        buttons: [
-                            {
-                                text: "OK",
-                                click: function () {
-                                    $(this).dialog("close");
-                                }
-                            }
-                        ]
-                    });
-                    if (prev != current) {
-                        $.get("{% url 'dashboard:menu_order' company.id %}" + "?prev=" + prev + "&current=" + current + "&menu_id=" + ui.item.id, function (data) {
-                            if (data.error) {
-                                open_dialog(data.errors, 'Error!!')
-                            }
-                        });
-                    }
-                }
-
-        $("#sortable").sortable({
-            helper: fixHelperModified,
-            stop: updateIndex,
-            start: function (event, ui) {
-                ui.item.startPos = ui.item.index();
-                ui.item.id = ui.item.id;
-            },
-            update: function (event, ui) {
-                ui.item.id = ui.item.attr("id");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    $('.delete').click(function (e) {
+        e.stopPropagation();
+        url = $(this).attr('id') + '/'
+        if (!confirm('Do you want to delete this menu item?')) {
+            return;
+        }
+        $.post('/dashboard/company/' + {{ company.id }} + '/delete/' + url, {}, function (data) {
+            if (data.error) {
+                open_dialog('Error deleting menu item', 'Error!!');
+            } else {
+                open_dialog_with_url('Menu Deleted Successfully', 'Success!!!', "{% url 'dashboard:view_company' company.id %}");
             }
-        }).disableSelection();
-        /* end sotbales */
+        }, 'json');
+    });
 
-    </script>
+    var fixHelperModified = function (e, tr) {
+        var $originals = tr.children();
+        var $helper = tr.clone();
+        $helper.children().each(function (index) {
+            $(this).width($originals.eq(index).width())
+        });
+        return $helper;
+    },
+    updateIndex = function (e, ui) {
+        $('td.index', ui.item.parent()).each(function (i) {
+            $(this).html(i + 1);
+        });
+        var prev = ui.item.startPos;
+        var current = ui.item.index();
+
+        if (prev != current) {
+            $.get("{% url 'dashboard:menu_order' company.id %}" + "?prev=" + prev + "&current=" + current + "&menu_id=" + ui.item.id, function (data) {
+                if (data.error) {
+                    open_dialog(data.errors, 'Error!!');
+                }
+            });
+        }
+    }
+
+    $("#sortable tbody").sortable({
+        helper: fixHelperModified,
+        stop: updateIndex,
+        start: function (event, ui) {
+            ui.item.startPos = ui.item.index();
+            ui.item.id = ui.item.attr("id");
+        },
+        update: function (event, ui) {
+            ui.item.id = ui.item.attr("id");
+        }
+    }).disableSelection();
+</script>
 {% endblock %}

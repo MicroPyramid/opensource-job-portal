@@ -15,7 +15,6 @@ from peeldb.models import (
     MailTemplate,
     Company,
     JobPost,
-    Question,
 )
 
 
@@ -398,36 +397,6 @@ class JobPostTitleForm(ModelForm):
             if not match or len(pincode) != 6:
                 raise forms.ValidationError("Please enter 6 digit valid Pincode")
         return pincode
-
-
-class QuestionForm(ModelForm):
-    answer = forms.CharField(required=False)
-    status = forms.CharField(required=False)
-
-    class Meta:
-        model = Question
-        fields = ["title", "description", "skills", "created_by", "status"]
-
-    def __init__(self, *args, **kwargs):
-        super(QuestionForm, self).__init__(*args, **kwargs)
-        if not self.data.get("form-TOTAL_FORMS"):
-            self.fields["status"].required = True
-
-    def clean_answer(self):
-        if self.data.get("form-TOTAL_FORMS"):
-            num = int(self.data.get("form-TOTAL_FORMS"))
-            for i in range(0, num):
-                answers = self.data.getlist("form-" + str(i) + "-answer")
-                if "" in answers:
-                    raise forms.ValidationError("Answer field Required")
-
-
-class SolutionForm(ModelForm):
-    answer = forms.CharField(required=True)
-
-    class Meta:
-        model = Question
-        fields = ["status"]
 
 
 class MetaForm(ModelForm):

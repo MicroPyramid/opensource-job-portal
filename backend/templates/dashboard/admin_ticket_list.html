@@ -1,52 +1,89 @@
 {% extends 'dashboard/base.html' %}
 {% load tz %}
 {% block stage %}
-<div class="container content_wrapper">
-  <div class="row mt">
-    <!-- CONTENT -->
-    <section id='recruiters'>
-      <div class="list_table">
-      <h4> Ticket List </h4>
-        <table class="table table-hover" id="sample_1">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Ticket Title</th>
-              <th>Priority</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Created_by</th>
-            </tr>
-          </thead>
-          <tbody>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-neutral-900">Ticket List</h1>
+      <p class="text-sm text-neutral-500 mt-0.5">View all support tickets</p>
+    </div>
+  </div>
+
+  <!-- Tickets Table -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full" id="sample_1">
+        <thead>
+          <tr class="bg-neutral-50 border-b border-neutral-200">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider w-16">No</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Ticket Title</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Priority</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Type</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Status</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Created By</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-100">
           {% for ticket in tickets %}
-            <tr>
-              <th scope="row">{{ forloop.counter }}</th>
-              <td>{{ ticket.title }}</td>
-              <td>{{ ticket.priority }}</td>
-              <td>{{ ticket.ticket_type }}</td>
-              <td>{{ ticket.status }}</td>
-              <td>{{ ticket.user.email }}</td>
-            </tr>
+          <tr class="hover:bg-neutral-50 transition-colors">
+            <td class="px-4 py-3">
+              <span class="text-sm text-neutral-500">{{ forloop.counter }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="text-sm font-medium text-neutral-900">{{ ticket.title }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                {% if ticket.priority == 'High' %}bg-red-100 text-red-800
+                {% elif ticket.priority == 'Medium' %}bg-yellow-100 text-yellow-800
+                {% else %}bg-green-100 text-green-800{% endif %}">
+                {{ ticket.priority }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="text-sm text-neutral-600">{{ ticket.ticket_type }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                {% if ticket.status == 'Open' %}bg-blue-100 text-blue-800
+                {% elif ticket.status == 'In Progress' %}bg-yellow-100 text-yellow-800
+                {% elif ticket.status == 'Resolved' %}bg-green-100 text-green-800
+                {% else %}bg-neutral-100 text-neutral-800{% endif %}">
+                {{ ticket.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="text-sm text-neutral-600">{{ ticket.user.email }}</span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="px-4 py-12 text-center">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
+                  <i class="fa fa-ticket text-2xl text-neutral-400"></i>
+                </div>
+                <p class="text-neutral-500">No tickets found</p>
+              </div>
+            </td>
+          </tr>
           {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </section>
-    <!--/ CONTENT -->
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}
 
-{% block script%}
-% block script %}
+{% block script %}
 <script type="text/javascript">
 $('#sample_1').DataTable({
-      "sPaginationType": "full_numbers",
-      "aaSorting": [],
-      "bSort": true,
-      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
-      "pageLength": 20,
-    });
+  "sPaginationType": "full_numbers",
+  "aaSorting": [],
+  "bSort": true,
+  "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+  "pageLength": 20,
+});
 </script>
 {% endblock script %}

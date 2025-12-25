@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.core.cache import cache
 
 from mpcomp.views import permission_required
 from peeldb.models import (
@@ -17,7 +16,6 @@ from peeldb.models import (
     MetaData,
     Project,
     Qualification,
-    Question,
     SearchResult,
     Skill,
     Subscriber,
@@ -203,8 +201,6 @@ def moving_duplicates(request, value):
                     resume.skill.add(original)
                 subscribers = Subscriber.objects.filter(skill__in=duplicates)
                 subscribers.update(skill=original)
-                questions = Question.objects.filter(skills__in=duplicates)
-                questions.update(skills=original)
                 return HttpResponse(
                     json.dumps(
                         {"error": False, "response": "Skills updated successfully"}
@@ -297,9 +293,3 @@ def moving_duplicates(request, value):
     return render(
         request, "dashboard/duplicates.html", {"values": values, "status": value}
     )
-
-
-@permission_required("activity_edit")
-def clear_cache(request):
-    cache.clear()
-    return HttpResponseRedirect("/dashboard/")

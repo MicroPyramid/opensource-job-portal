@@ -3,100 +3,112 @@
 {% load page_tags %}
 {% load tz %}
 {% block stage %}
-<section id='job_detail'>
-  <div class="job_description_wrap">
-    <div class="posted_by_details">
-      <div class="clearfix"></div>
-    </div>
-    <div class="job_details">
-    <!-- post details -->
-      <div class="profile_individual">
-        <div class="title_profile">
-          <h4><i class="fa fa-list-ul"></i>Search Log Details</h4>
-        </div>
-        <div class='specific_detail'>
-          <div class="tile_each">
-            <label>Key Skills</label>
-            <span class="description">
-            <span>{% for skill in search_log.skills.all %}{{ skill }}{% if forloop.last %}{% else %}, {% endif %}{% empty %}N/A{% endfor %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Location</label>
-            <span class="description">
-            <span>{% for loc in search_log.locations.all %}{{ loc }}{% if forloop.last %}{% else %}, {% endif %}{% empty %}N/A{% endfor %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-           <div class="tile_each">
-            <label>Other Skills</label>
-            <span class="description">
-            <span>{% if search_log.other_skill %}{{ search_log.other_skill }}{% else %}N/A{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-           <div class="tile_each">
-            <label>Other Locations</label>
-            <span class="description">
-            <span>{% if search_log.other_location %}{{ search_log.other_location }}{% else %}N/A{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Expierence</label>
-            <span class="description">
-            <span>{% if search_log.expierence %}{{ search_log.expierence }}{% else %}N/A{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Industry</label>
-            <span class="description">
-            <span>{% if search_log.industry %}{{ search_log.industry }}{% else %}N/A{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Functional Area</label>
-            <span class="description">
-            <span>{% if search_log.functional_area %}{{ search_log.functional_area }}{% else %}N/A{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Job Type</label>
-            <span class="description">
-            <span>{% if search_log.job_type %}{{ search_log.job_type }}{% else %}N/A{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Searched By</label>
-            <span class="description">
-            <span>{% if search_log.user %}{{ search_log.user.email }}{% else %}N/A{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Searched On</label>
-            <span class="description">
-            <span>{% if search_log.search_on %}{{ search_log.search_on|timezone:'Asia/Calcutta' }}{% else %}None{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-           <div class="tile_each">
-            <label>Ip Address</label>
-            <span class="description">
-            <span>{% if search_log.user %}{{ search_log.ip_address }}{% else %}N/A{% endif %}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:search_logs' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">Search Log Details</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">View search log information</p>
       </div>
-      <!--/ post details -->
     </div>
   </div>
-</section>
+
+  <!-- Search Log Details Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-neutral-200">
+      <h3 class="text-lg font-semibold text-neutral-800">
+        <i class="fa fa-search text-primary-500 mr-2"></i>Search Information
+      </h3>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Key Skills -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Key Skills</label>
+          <div class="flex flex-wrap gap-1">
+            {% for skill in search_log.skills.all %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
+              {{ skill }}
+            </span>
+            {% empty %}
+            <span class="text-neutral-500 text-sm">N/A</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Location</label>
+          <div class="flex flex-wrap gap-1">
+            {% for loc in search_log.locations.all %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+              {{ loc }}
+            </span>
+            {% empty %}
+            <span class="text-neutral-500 text-sm">N/A</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Other Skills -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Other Skills</label>
+          <p class="text-neutral-900">{% if search_log.other_skill %}{{ search_log.other_skill }}{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- Other Locations -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Other Locations</label>
+          <p class="text-neutral-900">{% if search_log.other_location %}{{ search_log.other_location }}{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- Experience -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Experience</label>
+          <p class="text-neutral-900">{% if search_log.expierence %}{{ search_log.expierence }}{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- Industry -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Industry</label>
+          <p class="text-neutral-900">{% if search_log.industry %}{{ search_log.industry }}{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- Functional Area -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Functional Area</label>
+          <p class="text-neutral-900">{% if search_log.functional_area %}{{ search_log.functional_area }}{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- Job Type -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Job Type</label>
+          <p class="text-neutral-900">{% if search_log.job_type %}{{ search_log.job_type }}{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- Searched By -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Searched By</label>
+          <p class="text-neutral-900">{% if search_log.user %}{{ search_log.user.email }}{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- Searched On -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Searched On</label>
+          <p class="text-neutral-900">{% if search_log.search_on %}{{ search_log.search_on|timezone:'Asia/Calcutta' }}{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- IP Address -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">IP Address</label>
+          <p class="text-neutral-900">{% if search_log.ip_address %}{{ search_log.ip_address }}{% else %}N/A{% endif %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

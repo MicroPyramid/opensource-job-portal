@@ -4,401 +4,403 @@
 {% load static %}
 {% load page_tags %}
 {% block stage %}
-<style type="text/css">
-  .jobposts_table tr{
-    cursor: pointer;
-  }
-</style>
-<section id='job_detail'>
-  <div class="job_description_wrap">
-    <div class="posted_by_details">
-      <div class="wrap">
-        <span>
-          <span class='name'>{{ recruiter.username }}</span>
-          <!--<span class='other_details'>Web Designer</span>-->
-          <span class='other_details'>{{ recruiter.email }}</span>
-        </span>
-        <img src="{% if recruiter.photo %}{{ recruiter.photo }}{% else %}{% static 'dummy.jpg' %}{% endif %}">
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:recruiters_list' 'active' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">{{ recruiter.get_full_name|default:recruiter.username }}</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">Recruiter Profile</p>
       </div>
-      <div class="clearfix"></div>
     </div>
-    <div class="job_details">
-    <!-- post details -->
-      <div class="profile_individual">
-        <div class="title_profile">
-          <h4><i class="fa fa-list-ul"></i>User Details</h4>
-        </div>
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>Name</label>
-              <span class="description">
-              <span>{{ recruiter.first_name }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Email</label>
-              <span class="description">
-              <span>{{ recruiter.email }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Date Of Birth</label>
-              <span class="description">
-              {% if recruiter.dob %}
-                <span>{{ recruiter.dob }}</span>
-              {% else %}
-                <span>None</span>
-              {% endif  %}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Gender</label>
-              <span class="description">
-              {% if recruiter.gender %}
-                <span>{{ recruiter.gender }}</span>
-              {% else %}
-                <span>None</span>
-              {% endif  %}
-
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Registered On<label>
-              <span class="description">
-                {{ recruiter.date_joined|timezone:"Asia/Calcutta"  }}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>User-type<label>
-              <span class="description">
-                {{ recruiter.user_type  }}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="right_div">
-            <div class="tile_each">
-              <label>Last Name</label>
-              <span class="description">
-              {% if recruiter.last_name %}
-                <span>{{ recruiter.last_name }}</span>
-              {% else %}
-                <span>None</span>
-              {% endif  %}
-
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Current Location</label>
-              <span class="description">
-              {% if recruiter.current_location %}
-                <span>{{ recruiter.current_location }}</span>
-              {% else %}
-                <span>None</span>
-              {% endif  %}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Mobile</label>
-              <span class="description">
-              {% if recruiter.mobile %}
-                <span>{{ recruiter.mobile }}</span>
-              {% else %}
-                <span>None</span>
-              {% endif  %}
-
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Martial Status</label>
-              <span class="description">
-              {% if recruiter.marital_status %}
-                <span>{{ recruiter.marital_status }}</span>
-              {% else %}
-                <span>None</span>
-              {% endif  %}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Last Login</label>
-              <span class="description">
-                {{ recruiter.last_login|timezone:"Asia/Calcutta"  }}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-      </div>
-      <!-- tabs -->
-      <div class="tab_button_row">
-      {% if recruiter.company %}
-      <span class='button fb linked active' panelid='user_company'><i class="fa fa-building"></i>Company</span>
-      {% endif %}
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+        {{ recruiter.user_type }}
+      </span>
       {% if recruiter.is_agency_admin %}
-        <span class='button fb linked' panelid='agency_recruiters'><i class="fa fa-user"></i>Agency Recruiters</span>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+        <i class="fa fa-crown mr-1.5"></i>Agency Admin
+      </span>
       {% endif %}
-      <span class='button fb linked' panelid='fb_friends'><i class="fa fa-facebook"></i>Friends</span>
-      <span class='button fb' panelid='fb_pages'><i class="fa fa-facebook"></i>Pages</span>
-      <span class='button fb' panelid='fb_groups'><i class="fa fa-facebook"></i>Groups</span>
-      <span class='button linked job_posts' panelid='job_posts'><i class="fa fa-building"></i>JobPosts</span>
-      {% if recruiter.get_active_jobposts_count >= 100 %}
-        <span class='button gplus linked' panelid='bank_details'><i class="icon-money"></i>Payment Details</span>
-      {% endif %}
-      </div>
-      {% if recruiter.company %}
-      <!-- Recruiter Company -->
-      <div class="tab_content active" id='user_company'>
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>Name</label>
-              <span class="description">
-              <span>{{ recruiter.company.name }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Type</label>
-              <span class="description">
-              <span>{{ recruiter.company.company_type  }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Website</label>
-              <span class="description">
-              {%if recruiter.company.website %}
-               <a href="{{ recruiter.company.website }}" target="_blank"><span>{{ recruiter.company.website }}</span></a>
-               {% else %}Not Specified{% endif %}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Level</label>
-              <span class="description">
-              {% if recruiter.company.level %}
-                <span>{{ recruiter.company.level }}</span>
-              {% else %}
-                <span>N/A</span>
-              {% endif  %}
-
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="right_div">
-            <div class="tile_each">
-              <img src="{{ recruiter.company.get_logo_url }}" width="150" height="150">
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="right_div">
-            <div class="tile_each">
-              <label>Address</label>
-              <span class="description">
-              {% if recruiter.company.address %}
-                <span>{{ recruiter.company.address }}</span>
-              {% else %}
-                <span>N/A</span>
-              {% endif  %}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="tile_each">
-              <label>Description<label>
-              <span class="description">
-                {{ recruiter.company.profile|safe }}
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          <div class="clearfix"></div>
-        </div>
-      </div>
-      <!--/Recruiter Company ends -->
-      {% endif %}
-      <!--/Agency Recruiter starts -->
-      <div class="tab_content" id='agency_recruiters'>
-        {% if agency_recruiters %}
-        <table class="table jobposts_table" id="sample_1">
-          <thead>
-            <tr>
-              <th width="1%"></th>
-              <th width="15%">Email</th>
-              <th width="10%">Name</th>
-              <th width= "25%";>Job Posts</th>
-              <th width="10%">Joined On</th>
-              <th width="10%">Mobile Verified</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for agency in agency_recruiters %}
-              <tr data-href="{% url 'dashboard:view_recruiter' agency.id %}" class="job_detail">
-                <td>{{ forloop.counter }}</td>
-                <td><a>{{ agency.email }}</a></td>
-                <td>{{ agency.get_full_name }}</td>
-                <td><span class="draft-bg">{{ agency.get_total_jobposts|filter_jobposts:'Draft' }}</span><span class="pending-bg">{{ agency.get_total_jobposts|filter_jobposts:'Pending' }}</span><span class="published-bg">{{ agency.get_total_jobposts|filter_jobposts:'Published' }}</span><span class="live-bg">{{ agency.get_total_jobposts|filter_jobposts:'Live' }}</span><span class="deleted-bg">{{ agency.get_total_jobposts|filter_jobposts:'Disabled' }}</span></td>
-                <td>{{ agency.date_joined|timezone:'Asia/Calcutta' }}</td>
-                <td align="center">{% if agency.mobile_verified %}<span class="verified"><i class="fa fa-mobile"></i></span>{% else %}<span class="not_verified"><i class="fa fa-mobile"></i></span>{% endif %}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-            <!--/ post details -->
-            {% else %}
-          No Agency Recruiters available
-      {% endif %}
-      </div>
-      <!--/Agency Recruiter ends -->
-
-      {% if recruiter.get_active_jobposts_count >= 100 %}
-      <div class="tab_content"  id='bank_details'>
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-              <label>Account Holder Name</label>
-              <span class="description">
-              <span>{{ recruiter.account_holder_name }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Account Number</label>
-              <span class="description">
-              <span>{{ recruiter.account_number }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Bank Name</label>
-              <span class="description">
-              <span>{{ recruiter.bank_name }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-
-            <div class="tile_each">
-              <label>Branch Name</label>
-              <span class="description">
-              <span>{{ recruiter.branch_name }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Is Paid</label>
-              <span class="description">
-              <span>{{recruiter.is_paid }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-      </div>
-      {% endif %}
-      <!--/ gplus friends -->
-      <!--JobPosts -->
-      <div class="tab_content" id='job_posts'>
-        {% if posts %}
-        <h4>Job Posts</h4>
-        <table class="table jobposts_table" id="sample_1">
-          <thead>
-            <tr>
-              <th width="8%"></th>
-              <th width="12%">Job Title</th>
-              <th width="25%">Location</th>
-              <th width="5%">Job Status</th>
-              <th width="10%">Posted By</th>
-              <th width="15%">Posted On</th>
-              <th width="10%">Applied Users</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for post in posts %}
-              <tr data-href="{% url 'dashboard:post_detail' post.id %}" class="job_detail">
-                <td>{{ forloop.counter }}</td>
-                <td>{{ post.title }}</td>
-                <td>{% for location in post.location.all %}{% if forloop.last and not forloop.next_element %}{{ location.name }}{% else %}{{ location.name }},{% endif %}{% endfor %}
-                </td>
-                <td>{{ post.status }}</td>
-                <td>{{ post.user.username }}</td>
-                <td>{{ post.published_on|date:"M. d, Y" }}</td>
-                <td>{{ post.responses }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-            <!--/ post details -->
-            <div class="pagination_wrap d-flex justify-content-center mt-4 mb-5">
-              {% get_page current_page last_page as pages %}
-              {% comment %} <nav>
-                  <ul class="pagination">
-                  {% if current_page != 1 %}
-                    <li class="prev"><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
-                    <li class="prev"><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{prev_page}}"><i class="fa fa-angle-left"></i></a></li>
-                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page=1">first</a></li>
-                    {% endif %}
-                    {% for s in pages %}
-                    <li {% if s == current_page %} class="active" {% endif %}><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{s}}">{{s}}</a></li>
-                    {% endfor %}
-                    {% if current_page != last_page %}
-                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{last_page}}">last</a></li>
-                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
-                    <li><a href="?{% if search_value %}search={{ search_value }}&{% endif %}page={{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
-                    {% endif %}
-                  </ul>
-              </nav> {% endcomment %}
-
-              <nav aria-label="Page navigation">
-                <ul class="pagination">
-                  <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                    </a>
-                  </li>
-                  <li class="page-item"><a class="page-link" href="#">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                      <span aria-hidden="true">&raquo;</span>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-            {% else %}
-      No jobposts available
-      {% endif %}
-      </div>
-      <!--JobPosts ends-->
-
-      <!--/ tabs -->
     </div>
   </div>
-</section>
 
+  <!-- Profile Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-8">
+      <div class="flex items-center gap-5">
+        <div class="w-20 h-20 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-4 border-white/30">
+          {% if recruiter.photo %}
+          <img src="{{ recruiter.photo }}" class="w-full h-full object-cover" alt="{{ recruiter.username }}">
+          {% else %}
+          <img src="{% static 'dummy.jpg' %}" class="w-full h-full object-cover" alt="Default">
+          {% endif %}
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-white">{{ recruiter.username }}</h2>
+          <p class="text-blue-100 text-sm mt-1">
+            <i class="fa fa-envelope mr-1"></i>{{ recruiter.email }}
+          </p>
+          {% if recruiter.company %}
+          <p class="text-blue-100 text-sm mt-1">
+            <i class="fa fa-building mr-1"></i>{{ recruiter.company.name }}
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- User Details -->
+    <div class="p-6">
+      <div class="flex items-center gap-2 mb-6">
+        <i class="fa fa-user text-primary-500"></i>
+        <h3 class="text-lg font-semibold text-neutral-800">User Details</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">First Name</label>
+          <p class="text-neutral-900 mt-1">{{ recruiter.first_name|default:"Not Specified" }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Last Name</label>
+          <p class="text-neutral-900 mt-1">{{ recruiter.last_name|default:"Not Specified" }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Email</label>
+          <p class="text-neutral-900 mt-1 break-all">{{ recruiter.email }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Mobile</label>
+          <p class="text-neutral-900 mt-1">{{ recruiter.mobile|default:"Not Specified" }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Date of Birth</label>
+          <p class="text-neutral-900 mt-1">{{ recruiter.dob|default:"Not Specified" }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Gender</label>
+          <p class="text-neutral-900 mt-1">{{ recruiter.gender|default:"Not Specified" }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Current Location</label>
+          <p class="text-neutral-900 mt-1">{{ recruiter.current_location|default:"Not Specified" }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Marital Status</label>
+          <p class="text-neutral-900 mt-1">{{ recruiter.marital_status|default:"Not Specified" }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">User Type</label>
+          <p class="text-neutral-900 mt-1">{{ recruiter.user_type }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Registered On</label>
+          <p class="text-neutral-900 mt-1 text-sm">{{ recruiter.date_joined|timezone:"Asia/Calcutta" }}</p>
+        </div>
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Last Login</label>
+          <p class="text-neutral-900 mt-1 text-sm">{{ recruiter.last_login|timezone:"Asia/Calcutta" }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Section -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <!-- Tab Buttons -->
+    <div class="border-b border-neutral-200 px-6 overflow-x-auto">
+      <div class="flex gap-1 min-w-max">
+        {% if recruiter.company %}
+        <button class="tab-btn px-4 py-3 text-sm font-medium text-primary-600 border-b-2 border-primary-500 transition-colors active" data-tab="user_company">
+          <i class="fa fa-building mr-1.5"></i>Company
+        </button>
+        {% endif %}
+        {% if recruiter.is_agency_admin %}
+        <button class="tab-btn px-4 py-3 text-sm font-medium text-neutral-600 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-300 transition-colors" data-tab="agency_recruiters">
+          <i class="fa fa-users mr-1.5"></i>Agency Recruiters
+        </button>
+        {% endif %}
+        <button class="tab-btn px-4 py-3 text-sm font-medium text-neutral-600 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-300 transition-colors {% if not recruiter.company %}active text-primary-600 border-primary-500{% endif %}" data-tab="job_posts">
+          <i class="fa fa-briefcase mr-1.5"></i>Job Posts
+        </button>
+        {% if recruiter.get_active_jobposts_count >= 100 %}
+        <button class="tab-btn px-4 py-3 text-sm font-medium text-neutral-600 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-300 transition-colors" data-tab="bank_details">
+          <i class="fa fa-money mr-1.5"></i>Payment Details
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="p-6">
+      <!-- Company Tab -->
+      {% if recruiter.company %}
+      <div class="tab-content active" id="user_company">
+        <div class="flex flex-col lg:flex-row gap-6">
+          <!-- Company Logo -->
+          <div class="flex-shrink-0">
+            <div class="w-32 h-32 rounded-xl border border-neutral-200 overflow-hidden bg-neutral-50">
+              {% if recruiter.company.get_logo_url %}
+              <img src="{{ recruiter.company.get_logo_url }}" class="w-full h-full object-cover" alt="{{ recruiter.company.name }}">
+              {% else %}
+              <div class="w-full h-full flex items-center justify-center">
+                <i class="fa fa-building text-4xl text-neutral-300"></i>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <!-- Company Details -->
+          <div class="flex-1 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-neutral-50 rounded-lg p-4">
+                <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Company Name</label>
+                <p class="text-neutral-900 mt-1 font-medium">{{ recruiter.company.name }}</p>
+              </div>
+              <div class="bg-neutral-50 rounded-lg p-4">
+                <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Company Type</label>
+                <p class="text-neutral-900 mt-1">{{ recruiter.company.company_type }}</p>
+              </div>
+              <div class="bg-neutral-50 rounded-lg p-4">
+                <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Website</label>
+                {% if recruiter.company.website %}
+                <a href="{{ recruiter.company.website }}" target="_blank" class="text-primary-600 hover:text-primary-700 mt-1 block break-all">{{ recruiter.company.website }}</a>
+                {% else %}
+                <p class="text-neutral-400 mt-1">Not Specified</p>
+                {% endif %}
+              </div>
+              <div class="bg-neutral-50 rounded-lg p-4">
+                <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Level</label>
+                <p class="text-neutral-900 mt-1">{{ recruiter.company.level|default:"N/A" }}</p>
+              </div>
+            </div>
+            <div class="bg-neutral-50 rounded-lg p-4">
+              <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Address</label>
+              <p class="text-neutral-900 mt-1">{{ recruiter.company.address|default:"Not Specified" }}</p>
+            </div>
+            {% if recruiter.company.profile %}
+            <div class="bg-neutral-50 rounded-lg p-4">
+              <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Description</label>
+              <div class="text-neutral-700 mt-2 prose prose-sm max-w-none">{{ recruiter.company.profile|safe }}</div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Agency Recruiters Tab -->
+      {% if recruiter.is_agency_admin %}
+      <div class="tab-content hidden" id="agency_recruiters">
+        {% if agency_recruiters %}
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-neutral-50 border-b border-neutral-200">
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider w-12">#</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Email</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Name</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Job Posts</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Joined On</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Mobile Verified</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+              {% for agency in agency_recruiters %}
+              <tr class="hover:bg-neutral-50 transition-colors cursor-pointer job_detail" data-href="{% url 'dashboard:view_recruiter' agency.id %}">
+                <td class="px-4 py-3 text-neutral-500">{{ forloop.counter }}</td>
+                <td class="px-4 py-3">
+                  <a href="{% url 'dashboard:view_recruiter' agency.id %}" class="text-primary-600 hover:text-primary-700 font-medium">{{ agency.email }}</a>
+                </td>
+                <td class="px-4 py-3 text-neutral-900">{{ agency.get_full_name }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex gap-1">
+                    <span class="inline-flex items-center justify-center min-w-[24px] px-1.5 py-0.5 text-xs font-medium rounded bg-neutral-100 text-neutral-600">{{ agency.get_total_jobposts|filter_jobposts:'Draft' }}</span>
+                    <span class="inline-flex items-center justify-center min-w-[24px] px-1.5 py-0.5 text-xs font-medium rounded bg-yellow-100 text-yellow-800">{{ agency.get_total_jobposts|filter_jobposts:'Pending' }}</span>
+                    <span class="inline-flex items-center justify-center min-w-[24px] px-1.5 py-0.5 text-xs font-medium rounded bg-blue-100 text-blue-800">{{ agency.get_total_jobposts|filter_jobposts:'Published' }}</span>
+                    <span class="inline-flex items-center justify-center min-w-[24px] px-1.5 py-0.5 text-xs font-medium rounded bg-green-100 text-green-800">{{ agency.get_total_jobposts|filter_jobposts:'Live' }}</span>
+                    <span class="inline-flex items-center justify-center min-w-[24px] px-1.5 py-0.5 text-xs font-medium rounded bg-red-100 text-red-800">{{ agency.get_total_jobposts|filter_jobposts:'Disabled' }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-neutral-600 text-sm">{{ agency.date_joined|timezone:'Asia/Calcutta' }}</td>
+                <td class="px-4 py-3">
+                  {% if agency.mobile_verified %}
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <i class="fa fa-check-circle mr-1"></i>Verified
+                  </span>
+                  {% else %}
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <i class="fa fa-times-circle mr-1"></i>Not Verified
+                  </span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+          <i class="fa fa-users text-4xl text-neutral-300 mb-3"></i>
+          <p class="text-neutral-500">No agency recruiters available</p>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Job Posts Tab -->
+      <div class="tab-content {% if recruiter.company %}hidden{% else %}active{% endif %}" id="job_posts">
+        {% if posts %}
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-neutral-50 border-b border-neutral-200">
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider w-12">#</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Job Title</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Location</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Posted By</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Posted On</th>
+                <th class="px-4 py-3 text-left font-semibold text-neutral-700 text-xs uppercase tracking-wider">Applied</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+              {% for post in posts %}
+              <tr class="hover:bg-neutral-50 transition-colors cursor-pointer job_detail" data-href="{% url 'dashboard:post_detail' post.id %}">
+                <td class="px-4 py-3 text-neutral-500">{{ forloop.counter }}</td>
+                <td class="px-4 py-3">
+                  <a href="{% url 'dashboard:post_detail' post.id %}" class="text-primary-600 hover:text-primary-700 font-medium">{{ post.title }}</a>
+                </td>
+                <td class="px-4 py-3 text-neutral-600 text-sm">
+                  {% for location in post.location.all %}{{ location.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                    {% if post.status == 'Live' %}bg-green-100 text-green-800
+                    {% elif post.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                    {% elif post.status == 'Published' %}bg-blue-100 text-blue-800
+                    {% elif post.status == 'Draft' %}bg-neutral-100 text-neutral-600
+                    {% else %}bg-red-100 text-red-800{% endif %}">
+                    {{ post.status }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-neutral-600">{{ post.user.username }}</td>
+                <td class="px-4 py-3 text-neutral-600 text-sm">{{ post.published_on|date:"M. d, Y" }}</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center justify-center min-w-[28px] px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">{{ post.responses }}</span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if last_page > 1 %}
+        <div class="mt-6 pt-4 border-t border-neutral-200">
+          {% get_page current_page last_page as pages %}
+          <nav class="flex items-center justify-center gap-1">
+            {% if current_page != 1 %}
+            <a href="?page=1" class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors">
+              <i class="fa fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ prev_page }}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors">
+              <i class="fa fa-angle-left"></i>
+            </a>
+            {% endif %}
+            {% for s in pages %}
+            <a href="?page={{ s }}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium transition-colors {% if s == current_page %}bg-primary-500 text-white{% else %}text-neutral-600 hover:bg-neutral-100{% endif %}">
+              {{ s }}
+            </a>
+            {% endfor %}
+            {% if current_page != last_page %}
+            <a href="?page={{ aft_page }}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors">
+              <i class="fa fa-angle-right"></i>
+            </a>
+            <a href="?page={{ last_page }}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors">
+              <i class="fa fa-angle-double-right"></i>
+            </a>
+            {% endif %}
+          </nav>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-12">
+          <i class="fa fa-briefcase text-4xl text-neutral-300 mb-3"></i>
+          <p class="text-neutral-500">No job posts available</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Payment Details Tab -->
+      {% if recruiter.get_active_jobposts_count >= 100 %}
+      <div class="tab-content hidden" id="bank_details">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Account Holder Name</label>
+            <p class="text-neutral-900 mt-1">{{ recruiter.account_holder_name|default:"Not Specified" }}</p>
+          </div>
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Account Number</label>
+            <p class="text-neutral-900 mt-1">{{ recruiter.account_number|default:"Not Specified" }}</p>
+          </div>
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Bank Name</label>
+            <p class="text-neutral-900 mt-1">{{ recruiter.bank_name|default:"Not Specified" }}</p>
+          </div>
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Branch Name</label>
+            <p class="text-neutral-900 mt-1">{{ recruiter.branch_name|default:"Not Specified" }}</p>
+          </div>
+          <div class="bg-neutral-50 rounded-lg p-4">
+            <label class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Payment Status</label>
+            <p class="mt-1">
+              {% if recruiter.is_paid %}
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <i class="fa fa-check-circle mr-1"></i>Paid
+              </span>
+              {% else %}
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                <i class="fa fa-clock mr-1"></i>Unpaid
+              </span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock %}
+
 {% block script %}
 <script type="text/javascript">
-  $(".job_detail").click(function() {
-      window.document.location = $(this).data("href");
+  // Tab switching
+  $('.tab-btn').click(function() {
+    $('.tab-btn').removeClass('active text-primary-600 border-primary-500').addClass('text-neutral-600 border-transparent');
+    $(this).addClass('active text-primary-600 border-primary-500').removeClass('text-neutral-600 border-transparent');
+
+    var tabId = $(this).data('tab');
+    $('.tab-content').addClass('hidden').removeClass('active');
+    $('#' + tabId).removeClass('hidden').addClass('active');
   });
+
+  // Row click navigation
+  $(".job_detail").click(function() {
+    window.document.location = $(this).data("href");
+  });
+
+  // If page param exists, show job posts tab
   {% if 'page' in request.GET %}
-    $('.tab_button_row').find('span').removeClass('active')
-    $('.tab_content').removeClass('active')
-    $('.job_posts, #job_posts').addClass('active')
+    $('.tab-btn').removeClass('active text-primary-600 border-primary-500').addClass('text-neutral-600 border-transparent');
+    $('.tab-btn[data-tab="job_posts"]').addClass('active text-primary-600 border-primary-500').removeClass('text-neutral-600 border-transparent');
+    $('.tab-content').addClass('hidden').removeClass('active');
+    $('#job_posts').removeClass('hidden').addClass('active');
   {% endif %}
 </script>
 {% endblock %}

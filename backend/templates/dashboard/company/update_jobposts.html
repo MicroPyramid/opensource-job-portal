@@ -1,73 +1,89 @@
 {% extends 'dashboard/base.html' %}
 {% load thumbnail %}
-
 {% block stage %}
-  <div class="content_wrapper">
-    <div class="row mt">
-      <!-- CONTENT -->
-      <section id='blog-post-create'>
-        <h4>Company Jobposts & Recruiters Update</h4>
-        <form name="companyform" id="companyform" method="post">
-        <div class="form-horizontal mail_form">
-          <div class="row mb-3">
-            <label for="colFormLabelSm" class="col-sm-4 control-label">Company - Jobposts - Recruiters</label>
-            <div class="col-sm-8">
-            <select class="input company-select2" name="company" id="company">
-              <option value="">Select A Company</option>
-              {% for all_duplicate_company in all_duplicate_companies %}
-              <option value="{{all_duplicate_company.id}}">{{all_duplicate_company.name}} - {{ all_duplicate_company.get_total_jobposts|length }} - {{ all_duplicate_company.get_company_recruiters|length }} - {{ all_duplicate_company.company_type }} - {% if all_duplicate_company.is_active %}Active{% else %}Inactive{% endif %} - {% if all_duplicate_company.get_company_menu %}Menu{% endif %}</option>
-              {% endfor %}
-            </select>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <label for="colFormLabelSm" class="col-sm-4 control-label">Duplicate Companies - Jobposts - Recruiters</label>
-            <div class="col-sm-8">
-            <select class="input select2" multiple name="duplicate_companies" id="duplicate_companies">
-            </select>
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <label for="colFormLabelSm" class="col-sm-2 control-label">&nbsp;</label>
-            <div class="col-sm-10">
-              <button type="submit"><i class="fa-solid fa-floppy-disk"></i>Save</button>
-              <button class="cancelbutton"><i class="fa-solid fa-floppy-disk"></i>Cancel</button>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!--/ CONTENT -->
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:companies' 'company' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">Update Company Jobposts</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">Merge duplicate companies and their jobposts</p>
+      </div>
     </div>
   </div>
+
+  <!-- Update Form -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-neutral-200">
+      <h3 class="text-lg font-semibold text-neutral-800">
+        <i class="fa fa-refresh text-primary-500 mr-2"></i>Company & Jobposts Update
+      </h3>
+    </div>
+    <div class="p-6">
+      <form name="companyform" id="companyform" method="post" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-neutral-700 mb-2">Company - Jobposts - Recruiters</label>
+          <select class="form-control company-select2" name="company" id="company">
+            <option value="">Select A Company</option>
+            {% for all_duplicate_company in all_duplicate_companies %}
+            <option value="{{ all_duplicate_company.id }}">
+              {{ all_duplicate_company.name }} - {{ all_duplicate_company.get_total_jobposts|length }} - {{ all_duplicate_company.get_company_recruiters|length }} - {{ all_duplicate_company.company_type }} - {% if all_duplicate_company.is_active %}Active{% else %}Inactive{% endif %} - {% if all_duplicate_company.get_company_menu %}Menu{% endif %}
+            </option>
+            {% endfor %}
+          </select>
+          <p class="text-xs text-neutral-500 mt-1">Select the primary company to keep</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-neutral-700 mb-2">Duplicate Companies - Jobposts - Recruiters</label>
+          <select class="form-control select2" multiple name="duplicate_companies" id="duplicate_companies">
+          </select>
+          <p class="text-xs text-neutral-500 mt-1">Select duplicate companies to merge into the primary company</p>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save mr-2"></i>Save
+          </button>
+          <button type="button" class="cancelbutton btn btn-secondary">
+            <i class="fa fa-times mr-2"></i>Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock stage %}
 
-{% block script%}
-  <script type="text/javascript">
-  $('.select2').select2({'placeholder': 'Select A Duplicate Companies'});
-  $('.company-select2').select2({'placeholder': 'Select A Company'});
+{% block script %}
+<script type="text/javascript">
+$('.select2').select2({'placeholder': 'Select Duplicate Companies'});
+$('.company-select2').select2({'placeholder': 'Select A Company'});
 
-  $(".cancelbutton").click(function(e){
-    e.preventDefault();
-    window.location='{% url "dashboard:companies" 'company' %}';
-  });
+$(".cancelbutton").click(function(e) {
+  e.preventDefault();
+  window.location = '{% url "dashboard:companies" "company" %}';
+});
 
-$(document).ready(function () {
-    $(function(){
+$(document).ready(function() {
+  $(function() {
     var $options = $("#company > option").clone();
     $('#duplicate_companies').append($options);
   })
 });
 
-  $('form#companyform').ajaxForm({
-    dataType: 'json',
-    success: function(data) {
-      if (data.error) {
-        open_dialog(data.response, 'Error!')
-      } else {
-        open_dialog_with_url(data.response, 'Success!!!', ".")
-      }
+$('form#companyform').ajaxForm({
+  dataType: 'json',
+  success: function(data) {
+    if (data.error) {
+      open_dialog(data.response, 'Error!')
+    } else {
+      open_dialog_with_url(data.response, 'Success!!!', ".")
     }
-  });
+  }
+});
 </script>
 {% endblock script %}

@@ -230,8 +230,11 @@ def facebook_login(request):
 
 
 def google_login(request):
+    """
+    Google OAuth login - only for admin/staff and recruiters.
+    Job seeker login is handled by frontend.
+    """
     if "code" in request.GET:
-
         params = {
             "grant_type": "authorization_code",
             "code": request.GET.get("code"),
@@ -241,6 +244,7 @@ def google_login(request):
         }
         info = requests.post("https://accounts.google.com/o/oauth2/token", data=params)
         info = info.json()
+
         if not info.get("access_token"):
             return render(
                 request,
@@ -252,165 +256,110 @@ def google_login(request):
                 },
                 status=404,
             )
+
         url = "https://www.googleapis.com/oauth2/v1/userinfo"
         params = {"access_token": info["access_token"]}
-        kw = dict(params=params, headers={}, timeout=60)
-        response = requests.request("GET", url, **kw)
+        response = requests.get(url, params=params, timeout=60)
         user_document = response.json()
-        email_matches = UserEmail.objects.filter(email__iexact=user_document["email"])
-        link = "https://plus.google.com/" + user_document["id"]
+
+        email = user_document.get("email", "")
+        if not email:
+            return render(
+                request,
+                "404.html",
+                {
+                    "message": "Could not retrieve email",
+                    "reason": "Please try again",
+                    "email": settings.DEFAULT_FROM_EMAIL,
+                },
+                status=404,
+            )
+
+        link = user_document.get("link", f"https://plus.google.com/{user_document.get('id', '')}")
         picture = user_document.get("picture", "")
         dob = user_document.get("birthday", "")
         gender = user_document.get("gender", "")
-        link = user_document.get("link", link)
-        if email_matches:
-            user = email_matches[0].user
-            if user.is_recruiter or user.is_agency_recruiter:
-                # Handle recruiter login properly instead of redirecting to registration
-                google, created = Google.objects.get_or_create(
-                    user=user,
-                    defaults={
-                        'google_url': link,
-                        'verified_email': user_document.get("verified_email", ""),
-                        'google_id': user_document.get("id", ""),
-                        'family_name': user_document.get("family_name", ""),
-                        'name': user_document.get("name", ""),
-                        'given_name': user_document.get("given_name", ""),
-                        'dob': dob,
-                        'email': user_document.get("email", ""),
-                        'gender': gender,
-                        'picture': picture,
-                    }
-                )
-                if not created:
-                    # Update existing Google record
-                    google.google_url = link
-                    google.verified_email = user_document.get("verified_email", "")
-                    google.google_id = user_document.get("id", "")
-                    google.family_name = user_document.get("family_name", "")
-                    google.name = user_document.get("name", "")
-                    google.given_name = user_document.get("given_name", "")
-                    google.dob = dob
-                    google.email = user_document.get("email", "")
-                    google.gender = gender
-                    google.picture = picture
-                    google.save()
-                
-                # Authenticate and login the recruiter
-                user = authenticate(username=user.username)
-                user.is_active = True
-                user.save()
-                login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
-                # Redirect to recruiter dashboard
-                return HttpResponseRedirect("http://localhost:5174/dashboard")
-
-            # Email associated with the user but Google is not connected
-            if not user.is_gp_connected:
-                Google.objects.create(
-                    user=user,
-                    google_url=link,
-                    verified_email=user_document.get("verified_email", ""),
-                    google_id=user_document.get("id", ""),
-                    family_name=user_document.get("family_name", ""),
-                    name=user_document.get("name", ""),
-                    given_name=user_document.get("given_name", ""),
-                    dob=dob,
-                    email=user_document.get("email", ""),
-                    gender=gender,
-                    picture=picture,
-                )
-            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+        # Find user by email
+        email_match = UserEmail.objects.filter(email__iexact=email).first()
+        if email_match:
+            user = email_match.user
         else:
-            user = User.objects.filter(
-                email__iexact=user_document.get("email", "")
-            ).first()
-            if user:
-                user.first_name = user_document.get("given_name", "")
-                user.last_name = user_document.get("family_name", "")
-                user.photo = picture
-                user.profile_pic = picture
-                user.profile_updated = timezone.now()
-                user.is_active = True
-                user.save()
-            else:
-                user = User.objects.create(
-                    username=user_document.get("email", ""),
-                    email=user_document.get("email", ""),
-                    first_name=user_document.get("given_name", ""),
-                    last_name=user_document.get("family_name", ""),
-                    photo=picture,
-                    user_type="JS",
-                    profile_updated=timezone.now(),
-                    is_active=True,
-                    registered_from="Social",
-                )
-            if user_document.get("gender"):
-                user.gender = "M" if user_document.get("gender") == "male" else "F"
-                user.save()
+            user = User.objects.filter(email__iexact=email).first()
 
-            Google.objects.create(
-                user=user,
-                google_url=link,
-                verified_email=user_document.get("verified_email", ""),
-                google_id=user_document.get("id", ""),
-                family_name=user_document.get("family_name", ""),
-                name=user_document.get("name", ""),
-                given_name=user_document.get("given_name", ""),
-                dob=dob,
-                email=user_document.get("email", ""),
-                gender=gender,
-                picture=picture,
+        if not user:
+            # No user found - don't create new users via this endpoint
+            return render(
+                request,
+                "404.html",
+                {
+                    "message": "Account not found",
+                    "reason": "No account exists with this email. Please contact an administrator.",
+                    "email": settings.DEFAULT_FROM_EMAIL,
+                },
+                status=404,
             )
 
-            UserEmail.objects.create(
-                user=user, email=user_document.get("email", ""), is_primary=True
-            )
+        # Update/create Google record
+        Google.objects.get_or_create(
+            user=user,
+            defaults={
+                'google_url': link,
+                'verified_email': user_document.get("verified_email", ""),
+                'google_id': user_document.get("id", ""),
+                'family_name': user_document.get("family_name", ""),
+                'name': user_document.get("name", ""),
+                'given_name': user_document.get("given_name", ""),
+                'dob': dob,
+                'email': email,
+                'gender': gender,
+                'picture': picture,
+            }
+        )
 
-            # login(request, user)
-            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-            user.is_bounce = False
-            user.referer = request.session.get("referer", "")
-            user.save()
-            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-            # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
-            return HttpResponseRedirect("/social/user/update/")
+        # Ensure UserEmail exists
+        UserEmail.objects.get_or_create(
+            user=user,
+            email=email,
+            defaults={'is_primary': True}
+        )
 
-        # user.last_login = datetime.now()
+        user.is_active = True
         user.save()
-        # login(request, user)
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-        # gpinfo.delay(id_value,user_document,picture,gender,dob,link,"login")
-        # Google Calendar integration removed
-        # if request.session.get("job_event"):
-        #     return HttpResponseRedirect(reverse("pjob:job_add_event"))
-        # if request.is_mobile == "mobile":
-        #     return HttpResponseRedirect("/jobs/")
 
-        if request.session.get("job_id"):
-            log_apply = login_and_apply(request)
-            if log_apply:
-                return HttpResponseRedirect(
-                    log_apply[0].slug + "?job_apply=" + log_apply[1]
-                )
-        if user.profile_completion_percentage < 50:
-            return HttpResponseRedirect(reverse("my:profile"))
-        return HttpResponseRedirect("/")
+        # Redirect based on user type
+        if user.is_superuser or user.is_staff:
+            return HttpResponseRedirect("/dashboard/")
+
+        if user.is_recruiter or user.is_agency_recruiter:
+            return HttpResponseRedirect("http://localhost:5174/dashboard")
+
+        # TODO: Job seeker login - commented out, will be removed later
+        # For now, redirect to home or show error
+        return render(
+            request,
+            "404.html",
+            {
+                "message": "Access denied",
+                "reason": "This login is only for administrators and recruiters.",
+                "email": settings.DEFAULT_FROM_EMAIL,
+            },
+            status=403,
+        )
+
     else:
-        rty = (
-            "https://accounts.google.com/o/oauth2/auth?client_id="
-            + settings.GOOGLE_CLIENT_ID
-            + "&response_type=code"
+        # Redirect to Google OAuth
+        oauth_url = (
+            "https://accounts.google.com/o/oauth2/auth"
+            f"?client_id={settings.GOOGLE_CLIENT_ID}"
+            "&response_type=code"
+            "&scope=https://www.googleapis.com/auth/userinfo.profile "
+            "https://www.googleapis.com/auth/userinfo.email"
+            f"&redirect_uri={settings.GOOGLE_LOGIN_HOST}{reverse('social:google_login')}"
+            "&state=1235dfghjkf123"
         )
-        rty += (
-            "&scope=https://www.googleapis.com/auth/userinfo.profile \
-               https://www.googleapis.com/auth/userinfo.email&redirect_uri="
-            + settings.GOOGLE_LOGIN_HOST
-            + reverse("social:google_login")
-            + "&state=1235dfghjkf123"
-        )
-
-        return HttpResponseRedirect(rty)
+        return HttpResponseRedirect(oauth_url)
 
 
 # TODO: need to think about this a lot because github will return lot of email ids including no-reply.github.com.

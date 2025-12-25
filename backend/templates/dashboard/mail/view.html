@@ -3,46 +3,51 @@
 {% load page_tags %}
 {% load tz %}
 {% block stage %}
-<section id='job_detail'>
-  <div class="job_description_wrap">
-    <div class="posted_by_details">
-      <div class="clearfix"></div>
-    </div>
-    <div class="job_details">
-    <!-- post details -->
-      <div class="profile_individual">
-        <div class="title_profile">
-          <h4><i class="fa fa-list-ul"></i>Email Tempalte Details</h4>
-        </div>
-        <div class='specific_detail'>
-          <div class="tile_each">
-            <label>Title</label>
-            <span class="description">
-            <span>{{ mail_template.title }}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Subject</label>
-            <span class="description">
-            <span>{{ mail_template.subject }}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="tile_each">
-            <label>Message</label>
-            <span class="description">
-            <span>{{ mail_template.message|safe }}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:emailtemplates' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">Email Template Details</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">View template information</p>
       </div>
-      <!--/ post details -->
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="{% url 'dashboard:edit_mailtemplate' mail_template.id %}" class="btn btn-secondary">
+        <i class="fa fa-edit mr-2"></i>Edit
+      </a>
+      <a href="{% url 'dashboard:send_mail' mail_template.id %}" class="btn btn-primary">
+        <i class="fa fa-envelope mr-2"></i>Send Mail
+      </a>
     </div>
   </div>
-</section>
+
+  <!-- Template Details Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="p-6 space-y-6">
+      <!-- Title -->
+      <div class="bg-neutral-50 rounded-lg p-4">
+        <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Title</label>
+        <p class="text-neutral-900 font-medium">{{ mail_template.title }}</p>
+      </div>
+
+      <!-- Subject -->
+      <div class="bg-neutral-50 rounded-lg p-4">
+        <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Subject</label>
+        <p class="text-neutral-900">{{ mail_template.subject }}</p>
+      </div>
+
+      <!-- Message -->
+      <div class="bg-neutral-50 rounded-lg p-4">
+        <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">Message</label>
+        <div class="prose prose-sm max-w-none text-neutral-700 bg-white rounded-lg p-4 border border-neutral-200">
+          {{ mail_template.message|safe }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
-<script type="text/javascript">
-</script>

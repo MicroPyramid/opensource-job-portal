@@ -1,100 +1,186 @@
 {% extends 'dashboard/base.html' %}
 
 {% block stage %}
-  <div class="content_wrapper">
-    <div class="row mt">
-      <!-- CONTENT -->
-      <section id='blog-post-create'>
-        <h4>{% if company %}Edit{% else %}New{% endif %} Company</h4>
-        <form name="companyform" id="companyform" method="post">
-        <div class="form-horizontal mail_form">
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Logo</label>
-            <div class="col-sm-10">
-              <input type="file" class="form-control" placeholder='Company Name' name="profile_pic" id="profile_pic" value="{{ company.profile_pic }}" accept="image/*">
-              {% if company.profile_pic %}
-                <img src="{% if 'http' in company.profile_pic|slugify %}{{company.profile_pic}}{% else %}https://peeljobs.s3.amazonaws.com/{{company.profile_pic}}{% endif %}" width="60" height="60">
-              {% endif %}
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Campaign Icon</label>
-            <div class="col-sm-10">
-              <input type="file" class="form-control" placeholder='Company Name' name="campaign_icon" id="campaign_icon" value="{{ company.campaign_icon }}" accept="image/*">
-              {% if company.campaign_icon %}<img src="{{company.campaign_icon}}" width="60" height="60">{% endif %}
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Title<span class="error">*</span></label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder='Company Name' name="name" id="name" value="{{ company.name }}">
-            </div>
-          </div>
-          {% if company %}
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Slug</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" placeholder='Company Slug' name="slug" id="slug" value="{{ company.slug }}">
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:companies' 'company' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">{% if company %}Edit{% else %}New{% endif %} Company</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">{% if company %}Update company information{% else %}Add a new company to the system{% endif %}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <form name="companyform" id="companyform" method="post" enctype="multipart/form-data">
+      <div class="p-6 space-y-6">
+        <!-- Branding Section -->
+        <div class="border-b border-neutral-200 pb-6">
+          <h3 class="text-lg font-semibold text-neutral-800 mb-4">
+            <i class="fa fa-image text-primary-500 mr-2"></i>Branding
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Logo -->
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">Company Logo</label>
+              <div class="flex items-center gap-4">
+                {% if company.profile_pic %}
+                <div class="w-16 h-16 rounded-lg border border-neutral-200 overflow-hidden bg-neutral-50 flex-shrink-0">
+                  <img src="{% if 'http' in company.profile_pic|slugify %}{{company.profile_pic}}{% else %}https://peeljobs.s3.amazonaws.com/{{company.profile_pic}}{% endif %}"
+                       class="w-full h-full object-cover" alt="Current Logo">
+                </div>
+                {% else %}
+                <div class="w-16 h-16 rounded-lg border border-dashed border-neutral-300 bg-neutral-50 flex items-center justify-center flex-shrink-0">
+                  <i class="fa fa-building text-neutral-400"></i>
+                </div>
+                {% endif %}
+                <div class="flex-1">
+                  <input type="file" name="profile_pic" id="profile_pic" accept="image/*"
+                         class="block w-full text-sm text-neutral-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
+                  <p class="text-xs text-neutral-500 mt-1">PNG, JPG up to 2MB</p>
+                </div>
               </div>
             </div>
-          {% endif %}
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Website</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder='Website' name="website" id="website" value="{% if company.website %}{{ company.website }}{% endif %}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Address<span class="error">*</span></label>
-            <div class="col-sm-10">
-              <textarea class="form-control" name='address' id='address' placeholder='Address'>{{ company.address }}</textarea>
-           </div>
-          </div>
-           <div class="form-group">
-            <label class="col-sm-2 control-label">Profile<span class="error">*</span></label>
-            <div class="col-sm-10">
-              <textarea class="form-control" name='tetareacontents' id='textareacontents' placeholder='Description'>{{ company.profile }}</textarea>
-              <input type="hidden" name="profile" id="profile" value="{{ company.profile }}">
-              <br>
-              <input type="checkbox" name="is_active" id="is_active" {% if company.is_active %}checked{% endif %}><b>Is Active</b>
-            </div>
-          </div>
-           <div class="form-group">
-            <label class="col-sm-2 control-label">Meta Title</label>
-            <div class="col-sm-10">
-            <textarea class="form-control" name='meta_title' id='meta_title' placeholder='Meta Title'>{{ company.meta_title }}</textarea>
-             </div>
-           </div>
-           <div class="form-group">
-            <label class="col-sm-2 control-label">Meta Description</label>
-            <div class="col-sm-10">
-             <textarea class="form-control" name='meta_description' id='meta_description' placeholder='Meta Description'>{{ company.meta_description }}</textarea>
-             </div>
-           </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">&nbsp;</label>
-            <div class="col-sm-10">
-              <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
-              <button class="cancelbutton">Cancel</button>
+            <!-- Campaign Icon -->
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">Campaign Icon</label>
+              <div class="flex items-center gap-4">
+                {% if company.campaign_icon %}
+                <div class="w-16 h-16 rounded-lg border border-neutral-200 overflow-hidden bg-neutral-50 flex-shrink-0">
+                  <img src="{{company.campaign_icon}}" class="w-full h-full object-cover" alt="Campaign Icon">
+                </div>
+                {% else %}
+                <div class="w-16 h-16 rounded-lg border border-dashed border-neutral-300 bg-neutral-50 flex items-center justify-center flex-shrink-0">
+                  <i class="fa fa-flag text-neutral-400"></i>
+                </div>
+                {% endif %}
+                <div class="flex-1">
+                  <input type="file" name="campaign_icon" id="campaign_icon" accept="image/*"
+                         class="block w-full text-sm text-neutral-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
+                  <p class="text-xs text-neutral-500 mt-1">PNG, JPG up to 2MB</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </section>
-      <!--/ CONTENT -->
-    </div>
+
+        <!-- Basic Information -->
+        <div class="border-b border-neutral-200 pb-6">
+          <h3 class="text-lg font-semibold text-neutral-800 mb-4">
+            <i class="fa fa-info-circle text-primary-500 mr-2"></i>Basic Information
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Company Name -->
+            <div>
+              <label for="name" class="block text-sm font-medium text-neutral-700 mb-2">
+                Company Name <span class="text-red-500">*</span>
+              </label>
+              <input type="text" name="name" id="name" value="{{ company.name }}"
+                     placeholder="Enter company name"
+                     class="form-control">
+            </div>
+            <!-- Website -->
+            <div>
+              <label for="website" class="block text-sm font-medium text-neutral-700 mb-2">Website</label>
+              <input type="url" name="website" id="website" value="{% if company.website %}{{ company.website }}{% endif %}"
+                     placeholder="https://example.com"
+                     class="form-control">
+            </div>
+            {% if company %}
+            <!-- Slug (Edit only) -->
+            <div>
+              <label for="slug" class="block text-sm font-medium text-neutral-700 mb-2">URL Slug</label>
+              <input type="text" name="slug" id="slug" value="{{ company.slug }}"
+                     placeholder="company-slug"
+                     class="form-control">
+            </div>
+            {% endif %}
+            <!-- Is Active -->
+            <div class="flex items-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="is_active" id="is_active" {% if company.is_active %}checked{% endif %} class="sr-only peer">
+                <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                <span class="ml-3 text-sm font-medium text-neutral-700">Active Company</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="mt-6">
+            <label for="address" class="block text-sm font-medium text-neutral-700 mb-2">
+              Address <span class="text-red-500">*</span>
+            </label>
+            <textarea name="address" id="address" rows="3" placeholder="Enter company address"
+                      class="form-control">{{ company.address }}</textarea>
+          </div>
+        </div>
+
+        <!-- Profile/Description -->
+        <div class="border-b border-neutral-200 pb-6">
+          <h3 class="text-lg font-semibold text-neutral-800 mb-4">
+            <i class="fa fa-file-alt text-primary-500 mr-2"></i>Company Profile
+          </h3>
+          <div>
+            <label for="textareacontents" class="block text-sm font-medium text-neutral-700 mb-2">
+              Description <span class="text-red-500">*</span>
+            </label>
+            <textarea name="textareacontents" id="textareacontents" rows="8" placeholder="Enter company description"
+                      class="form-control">{{ company.profile }}</textarea>
+            <input type="hidden" name="profile" id="profile" value="{{ company.profile }}">
+            <p class="text-xs text-neutral-500 mt-2">Use the editor to format your company description</p>
+          </div>
+        </div>
+
+        <!-- SEO Settings -->
+        <div>
+          <h3 class="text-lg font-semibold text-neutral-800 mb-4">
+            <i class="fa fa-search text-primary-500 mr-2"></i>SEO Settings
+          </h3>
+          <div class="space-y-4">
+            <div>
+              <label for="meta_title" class="block text-sm font-medium text-neutral-700 mb-2">Meta Title</label>
+              <textarea name="meta_title" id="meta_title" rows="2" placeholder="SEO title for search engines"
+                        class="form-control">{{ company.meta_title }}</textarea>
+              <p class="text-xs text-neutral-500 mt-1">Recommended: 50-60 characters</p>
+            </div>
+            <div>
+              <label for="meta_description" class="block text-sm font-medium text-neutral-700 mb-2">Meta Description</label>
+              <textarea name="meta_description" id="meta_description" rows="3" placeholder="SEO description for search engines"
+                        class="form-control">{{ company.meta_description }}</textarea>
+              <p class="text-xs text-neutral-500 mt-1">Recommended: 150-160 characters</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex items-center justify-end gap-3">
+        <button type="button" class="cancelbutton btn btn-secondary">
+          <i class="fa fa-times mr-2"></i>Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-save mr-2"></i>{% if company %}Update{% else %}Create{% endif %} Company
+        </button>
+      </div>
+    </form>
   </div>
+</div>
 {% endblock stage %}
 
-{% block script%}
-  <script type="text/javascript">
-
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
+<script type="text/javascript">
   CKEDITOR.config.allowedContent = true;
   CKEDITOR.config.forcePasteAsPlainText = true;
   CKEDITOR.config.pasteFromWordRemoveFontStyles = true;
   CKEDITOR.config.pasteFromWordRemoveStyles = true;
 
-  var editor = CKEDITOR.replace('textareacontents', {
-  });
+  var editor = CKEDITOR.replace('textareacontents', {});
 
   $(".cancelbutton").click(function(e){
     e.preventDefault();
@@ -108,19 +194,19 @@
     dataType: 'json',
     success: function(data) {
       if (data.error) {
-        $('p.error').remove();
+        $('p.error-msg').remove();
         for (var key in data.response) {
-          $('#' + key).after('<p class="error">' + data.response[key] + '</p>');
+          $('#' + key).after('<p class="error-msg text-red-500 text-sm mt-1">' + data.response[key] + '</p>');
         }
       } else {
-          if (data.edit){
-            window.location = '{% url "dashboard:companies" 'company' %}?active=' + data.company_active;
-          }
-          else{
-            window.location = '{% url "dashboard:companies" 'company' %}';
-          }
+        if (data.edit){
+          window.location = '{% url "dashboard:companies" 'company' %}?active=' + data.company_active;
+        }
+        else{
+          window.location = '{% url "dashboard:companies" 'company' %}';
         }
       }
+    }
   });
 </script>
 {% endblock script %}

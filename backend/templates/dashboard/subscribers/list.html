@@ -1,58 +1,79 @@
 {% extends 'dashboard/base.html' %}
 {% load tz %}
 {% block stage %}
-<section id='recruiters'>
-  <div class="list_table">
-    <div class="title_div">
-               <h4>Subscribers</h4>
-               <div class="records">
-                  <div class="form-inline">
-                  </div>
-               </div>
-               <div class="clearfix"></div>
-            </div>
-    <table class="table table-hover" id="sample_1">
-      <thead>
-        <tr>
-          <th width="10%">#</th>
-          <th width="20%">Skills(No of Job Posts)</th>
-          <th width="10%">No of Subscribers</th>
-          <th width="20%">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for skill in skills %}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-          <td>{{ skill.name }}({{ skill.get_no_of_jobposts|length }})</td>
-          <td>{{ skill.get_no_of_subscriptions|length }}</td>
-          <td><a href="{% url 'dashboard:view_subscribers' skill.id %}"><i class="fa fa-eye view" title="View" data-toggle="modal" data-target="#myModal"></i></a></td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-<!--
-  <div class="pagination">
-  {% if recruiters.has_previous %}
-    <span class='pagintion_btn'><a href="?page={{ recruiters.previous_page_number }}">Previous</a></span>
-  {% endif %}
-  <span class='pagination_text'>Page <b>{{ recruiters.number }}</b> of <b>{{ recruiters.paginator.num_pages }}</b></span>
-  {% if recruiters.has_next %}
-  <span class='pagintion_btn'><a href="?page={{ recruiters.next_page_number }}">Next</a></span>
-  {% endif %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-neutral-900">Subscribers</h1>
+      <p class="text-sm text-neutral-500 mt-0.5">View skill subscriptions</p>
+    </div>
   </div>
-  !-->
+
+  <!-- Subscribers Table -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full" id="sample_1">
+        <thead>
+          <tr class="bg-neutral-50 border-b border-neutral-200">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider w-16">#</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Skills (No of Job Posts)</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">No of Subscribers</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-100">
+          {% for skill in skills %}
+          <tr class="hover:bg-neutral-50 transition-colors">
+            <td class="px-4 py-3">
+              <span class="text-sm text-neutral-500">{{ forloop.counter }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-neutral-900">{{ skill.name }}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
+                  {{ skill.get_no_of_jobposts|length }} jobs
+                </span>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+                {{ skill.get_no_of_subscriptions|length }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <a href="{% url 'dashboard:view_subscribers' skill.id %}" class="p-1.5 rounded-md hover:bg-neutral-100 text-neutral-600 transition-colors" title="View Subscribers">
+                <i class="fa fa-eye"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="px-4 py-12 text-center">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
+                  <i class="fa fa-users text-2xl text-neutral-400"></i>
+                </div>
+                <p class="text-neutral-500">No subscribers found</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-</section>
+</div>
 {% endblock stage %}
+
 {% block script %}
 <script type="text/javascript">
 $('#sample_1').DataTable({
-      "sPaginationType": "full_numbers",
-      "aaSorting": [],
-      "bSort": true,
-      "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
-      "pageLength": 20,
-    });
+  "sPaginationType": "full_numbers",
+  "aaSorting": [],
+  "bSort": true,
+  "aLengthMenu": [[20, 50, 75, -1], [20, 50, 75, "All"]],
+  "pageLength": 20,
+});
 </script>
 {% endblock script %}

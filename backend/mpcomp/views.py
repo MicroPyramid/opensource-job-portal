@@ -26,7 +26,8 @@ from django.conf import settings
 
 def permission_required(*perms):
     return user_passes_test(
-        lambda u: any(u.has_perm(perm) for perm in perms), login_url="/"
+        lambda u: u.is_superuser or u.is_staff or any(u.has_perm(perm) for perm in perms),
+        login_url="/dashboard/login/"
     )
 
 
