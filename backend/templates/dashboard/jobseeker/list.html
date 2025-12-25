@@ -2,183 +2,291 @@
 {% load page_tags %}
 {% load tz %}
 {% block stage %}
-<section id='recruiters'>
-  <div class="list_table">
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-neutral-900">Job Seekers</h1>
+      <div class="flex flex-wrap items-center gap-2 mt-3">
+        <!-- Login Type Filters -->
+        <div class="flex items-center gap-1">
+          <a href="{% url 'dashboard:applicants' 'all' %}"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full transition-colors {% if status == 'all' %}bg-primary-500 text-white{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            All Logins
+          </a>
+          <a href="{% url 'dashboard:applicants' 'social' %}"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full transition-colors {% if status == 'social' %}bg-primary-500 text-white{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            Social Logins
+          </a>
+          <a href="{% url 'dashboard:applicants' 'email' %}"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full transition-colors {% if status == 'email' %}bg-primary-500 text-white{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            Registrations
+          </a>
+          <a href="{% url 'dashboard:applicants' 'resume' %}"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full transition-colors {% if status == 'resume' %}bg-primary-500 text-white{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            Resume Users
+          </a>
+          <a href="{% url 'dashboard:applicants' 'resume-pool' %}"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full transition-colors {% if status == 'resume-pool' %}bg-primary-500 text-white{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            Resume Pool
+          </a>
+        </div>
+        <span class="text-neutral-300">|</span>
+        <!-- Status Filters -->
+        <div class="flex items-center gap-1">
+          <a href="{% url 'dashboard:applicants' status %}"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+            All
+          </a>
+          <a href="{% url 'dashboard:applicants' status %}?resume_uploaded=true"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200">
+            Resume Uploaded
+          </a>
+          <a href="{% url 'dashboard:applicants' status %}?profile_completed=true"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200">
+            Profile Completed
+          </a>
+          <a href="{% url 'dashboard:applicants' status %}?appliedto_jobs=true"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full bg-green-100 text-green-700 hover:bg-green-200">
+            Applied to Jobs
+          </a>
+          <a href="{% url 'dashboard:applicants' status %}?login_once=true"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full bg-red-100 text-red-700 hover:bg-red-200">
+            Login Only Once
+          </a>
+        </div>
+        {% if status != "social" %}
+        <span class="text-neutral-300">|</span>
+        <div class="flex items-center gap-1">
+          <a href="{% if request.GET.resume_uploaded %}?resume_uploaded=true&active=true{% elif request.GET.profile_completed %}?profile_completed=true&active=true{% elif request.GET.appliedto_jobs %}?appliedto_jobs=true&active=true{% elif request.GET.login_once %}?login_once=true&active=true{% else %}?active=true{% endif %}"
+             class="filter_active inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full bg-green-100 text-green-700 hover:bg-green-200">
+            Active
+          </a>
+          <a href="{% if request.GET.resume_uploaded %}?resume_uploaded=true&inactive=true{% elif request.GET.profile_completed %}?profile_completed=true&inactive=true{% elif request.GET.appliedto_jobs %}?appliedto_jobs=true&inactive=true{% elif request.GET.login_once %}?login_once=true&inactive=true{% else %}?inactive=true{% endif %}"
+             class="filter_inactive inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full bg-red-100 text-red-700 hover:bg-red-200">
+            Inactive
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
- <span>
-        <a class="badge {% if status == 'all' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'all' %}">All Logins</a>/
-        <a class="badge {% if status == 'social' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'social' %}">Social Logins</a> /
-        <a class="badge {% if status == 'email' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'email' %}">Registrations</a> /
-         <a class="badge {% if status == 'resume' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'resume' %}">Resume Users</a> /
-         <a class="badge {% if status == 'resume-pool' %}bg-primary{% else %}bg-secondary{% endif %}" href="{% url "dashboard:applicants" 'resume-pool' %}">Resume Pool</a>
-      </span>
-  <!-- Tab panes -->
-          <h4>Job Seekers<span>
-        <a class="badge bg-primary" href="{% url 'dashboard:applicants' status %}">All</a>
-        <a class="badge bg-primary" href="{% url 'dashboard:applicants' status %}?resume_uploaded=true">Resume Uploaded</a>
-        <a class="badge bg-secondary" href="{% url 'dashboard:applicants' status %}?profile_completed=true">Profile Completed</a>
-        <a class="badge bg-success" href="{% url 'dashboard:applicants' status %}?appliedto_jobs=true">Apllied to Jobs</a>
-        <a class="badge bg-danger" href="{% url 'dashboard:applicants' status %}?login_once=true">Login Only Once</a>
-      </span>
-      {% if status != "social" %}
-        <span>
-        <a class="badge bg-secondary filter_active" href="{% if request.GET.resume_uploaded %}?resume_uploaded=true&active=true{% elif request.GET.profile_completed %}?profile_completed=true&active=true{% elif request.GET.appliedto_jobs %}?appliedto_jobs=true&active=true{% elif request.GET.login_once %}?login_once=true&active=true{% else %}?active=true{% endif %}">Active</a> /
-        <a class="badge bg-secondary filter_inactive" href="{% if request.GET.resume_uploaded %}?resume_uploaded=true&inactive=true{% elif request.GET.profile_completed %}?profile_completed=true&inactive=true{% elif request.GET.appliedto_jobs %}?appliedto_jobs=true&inactive=true{% elif request.GET.login_once %}?login_once=true&inactive=true{% else %}?inactive=true{% endif %}">Inactive</a>
-      </span>
-      {% endif %}
-      </h4>
-
-      <form id="search_form" name="adv-search-form" class="search-form" method="POST">
-    <div class="col-md-12 search_form">
-      <div class="row">
-        <div class="col-md-2 pad_lr_0">
-          <input type="text" name="search" id="search" class="form-control" placeholder="Enter The search value here" value="{{ request.POST.search }}"/>
+  <!-- Main Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <!-- Search & Filter -->
+    <div class="p-4 border-b border-neutral-200">
+      <form id="search_form" name="adv-search-form" method="POST" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div class="relative">
+          <input type="text"
+                 name="search"
+                 id="search"
+                 class="form-control pl-10"
+                 placeholder="Search..."
+                 value="{{ request.POST.search }}"/>
+          <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"></i>
         </div>
-        <div class="col-md-2 pad_lr_0">
-          <input type="number" name="profile_completion" id="profile_completion" class="form-control" placeholder="Profile completion" value="{{ request.POST.profile_completion }}"/>
+        <div>
+          <input type="number"
+                 name="profile_completion"
+                 id="profile_completion"
+                 class="form-control"
+                 placeholder="Profile %"
+                 value="{{ request.POST.profile_completion }}"/>
         </div>
-        <div class="col-md-2 pad_lr_0">
-          <select class="form-control" multiple name="location" id="location">
-          {% get_locations as cities %}
-              {% for city in cities %}
-              <option value="{{city.id}}" {% if city.id|slugify in search_location %} selected {% endif %}>{{city.name}}</option>
-              {% endfor %}
-          </select>
-        </div>
-        <div class="col-md-2 pad_lr_0">
-          <select class="form-control" multiple name="skills" id="skills">
-          {% get_all_skills as skills %}
-            {% for skill in skills %}
-              <option value="{{skill.id}}" {% if skill.id|slugify in search_skills %} selected {% endif %}>{{skill.name}}</option>
+        <div>
+          <select class="form-select" multiple name="location" id="location">
+            {% get_locations as cities %}
+            {% for city in cities %}
+            <option value="{{city.id}}" {% if city.id|slugify in search_location %} selected {% endif %}>{{city.name}}</option>
             {% endfor %}
           </select>
         </div>
-        <div class="col-md-2 pad_lr_0">
+        <div>
+          <select class="form-select" multiple name="skills" id="skills">
+            {% get_all_skills as skills %}
+            {% for skill in skills %}
+            <option value="{{skill.id}}" {% if skill.id|slugify in search_skills %} selected {% endif %}>{{skill.name}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="relative">
           <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
           <input type="hidden" name="page" id="page" value="{{ request.POST.page }}"/>
-          <input type="text" class="form-control" aria-describedby="basic-addon2" id="reportrange" name="timestamp" value="{{request.POST.timestamp}}" placeholder="Select the date">
+          <input type="text"
+                 class="form-control pl-10"
+                 id="reportrange"
+                 name="timestamp"
+                 value="{{request.POST.timestamp}}"
+                 placeholder="Date range">
+          <i class="fa fa-calendar absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"></i>
         </div>
-        <div class="col-md-2 pad_lr_0">
-          <button type="submit" class="form-control submit">Submit</button>
+        <div>
+          <button type="submit" class="btn btn-primary w-full">
+            <i class="fa fa-search mr-2"></i>Search
+          </button>
         </div>
+      </form>
+    </div>
+
+    {% if applicants %}
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 border-b border-neutral-200">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold text-neutral-700 w-10">#</th>
+            <th class="px-4 py-3 text-left font-semibold text-neutral-700">Email</th>
+            <th class="px-4 py-3 text-left font-semibold text-neutral-700">User Name</th>
+            <th class="px-4 py-3 text-left font-semibold text-neutral-700">Date Joined</th>
+            <th class="px-4 py-3 text-center font-semibold text-neutral-700 w-20">Profile %</th>
+            <th class="px-4 py-3 text-left font-semibold text-neutral-700">Referer</th>
+            <th class="px-4 py-3 text-center font-semibold text-neutral-700 w-20">Status</th>
+            <th class="px-4 py-3 text-center font-semibold text-neutral-700 w-20">Applied</th>
+            <th class="px-4 py-3 text-center font-semibold text-neutral-700">Social</th>
+            <th class="px-4 py-3 text-left font-semibold text-neutral-700 w-24">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-100">
+          {% for applicant in applicants %}
+          <tr class="hover:bg-neutral-50 transition-colors">
+            <td class="px-4 py-3 text-neutral-500">{{ forloop.counter }}</td>
+            <td class="px-4 py-3">
+              <a href="{% url 'dashboard:view_applicant' applicant.id %}" class="font-medium text-primary-600 hover:text-primary-700">
+                {{ applicant.email }}
+              </a>
+            </td>
+            <td class="px-4 py-3 text-neutral-700">
+              {% if applicant.username %}{{ applicant.username }}{% else %}{{ applicant.get_full_name}}{% endif %}
+            </td>
+            <td class="px-4 py-3 text-neutral-600 text-xs">
+              {{ applicant.date_joined|timezone:"Asia/Calcutta" }}
+            </td>
+            <td class="px-4 py-3 text-center">
+              <div class="inline-flex items-center gap-1">
+                <div class="w-12 h-2 rounded-full bg-neutral-200 overflow-hidden">
+                  <div class="h-full rounded-full {% if applicant.profile_completion_percentage >= 80 %}bg-green-500{% elif applicant.profile_completion_percentage >= 50 %}bg-yellow-500{% else %}bg-red-500{% endif %}"
+                       style="width: {{ applicant.profile_completion_percentage }}%"></div>
+                </div>
+                <span class="text-xs text-neutral-600">{{ applicant.profile_completion_percentage }}%</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-neutral-600 text-xs break-all max-w-[150px] truncate" title="{{ applicant.referer }}">
+              {% if applicant.referer %}{{ applicant.referer }}{% else %}<span class="text-neutral-400">N/A</span>{% endif %}
+            </td>
+            <td class="px-4 py-3 text-center">
+              {% if applicant.is_active %}
+              <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Active</span>
+              {% else %}
+              <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3 text-center">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold">
+                {{ applicant.get_all_applied_jobs|length }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center justify-center gap-2">
+                {% if applicant.is_fb_connected %}
+                <i class="fa-brands fa-facebook-f text-blue-600"></i>
+                {% else %}
+                <i class="fa-brands fa-facebook-f text-neutral-300"></i>
+                {% endif %}
+                {% if applicant.is_gh_connected %}
+                <i class="fa-brands fa-github text-neutral-800"></i>
+                {% else %}
+                <i class="fa-brands fa-github text-neutral-300"></i>
+                {% endif %}
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-1">
+                {% if status != "social" and applicant.registered_from == 'Email' %}
+                  {% if not applicant.is_active %}
+                  <a href="#" data-href="{% url 'dashboard:applicant_actions' applicant.id %}?action_type=enable"
+                     class="perform-actions inline-flex items-center justify-center w-8 h-8 rounded-lg text-green-600 hover:bg-green-50 transition-colors"
+                     title="Enable">
+                    <i class="fa fa-check"></i>
+                  </a>
+                  {% else %}
+                  <a href="#" data-href="{% url 'dashboard:applicant_actions' applicant.id %}?action_type=disable"
+                     class="perform-actions inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                     title="Disable">
+                    <i class="fa fa-times"></i>
+                  </a>
+                  {% endif %}
+                {% endif %}
+                <a href="#" data-href="{% url 'dashboard:applicant_actions' applicant.id %}?action_type=delete"
+                   class="perform-actions inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                   title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if last_page > 1 %}
+    <div class="px-4 py-4 border-t border-neutral-200">
+      {% get_page current_page last_page as pages %}
+      <nav class="flex items-center justify-center gap-1">
+        {% if current_page != 1 %}
+        <a href="#" class="{{previous_page}} page-nav inline-flex items-center justify-center w-9 h-9 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors">
+          <i class="fa fa-angle-double-left"></i>
+        </a>
+        <a href="#" class="{{prev_page}} page-nav inline-flex items-center justify-center w-9 h-9 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors">
+          <i class="fa fa-angle-left"></i>
+        </a>
+        <a href="#" class="1 page-nav inline-flex items-center justify-center px-3 h-9 rounded-lg text-sm text-neutral-600 hover:bg-neutral-100 transition-colors">first</a>
+        {% endif %}
+
+        {% for s in pages %}
+        <a href="#" class="{{s}} page-nav inline-flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium transition-colors {% if s == current_page %}bg-primary-500 text-white{% else %}text-neutral-600 hover:bg-neutral-100{% endif %}">
+          {{s}}
+        </a>
+        {% endfor %}
+
+        {% if current_page != last_page %}
+        <a href="#" class="{{last_page}} page-nav inline-flex items-center justify-center px-3 h-9 rounded-lg text-sm text-neutral-600 hover:bg-neutral-100 transition-colors">last</a>
+        <a href="#" class="{{ aft_page }} page-nav inline-flex items-center justify-center w-9 h-9 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors">
+          <i class="fa fa-angle-right"></i>
+        </a>
+        <a href="#" class="{{ after_page }} page-nav inline-flex items-center justify-center w-9 h-9 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors">
+          <i class="fa fa-angle-double-right"></i>
+        </a>
+        {% endif %}
+      </nav>
+    </div>
+    {% endif %}
+    {% else %}
+    <!-- Empty State -->
+    <div class="px-4 py-16 text-center">
+      <div class="flex flex-col items-center">
+        <i class="fa fa-users text-5xl text-neutral-300 mb-4"></i>
+        <h3 class="text-lg font-medium text-neutral-700 mb-1">No Job Seekers Found</h3>
+        <p class="text-neutral-500">Try adjusting your search filters</p>
       </div>
     </div>
-  </form>
-      {% if applicants %}
-    <table class="table table-hover" id="sample_1">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Email</th>
-          <th>User Name</th>
-          <th>Date Joined</th>
-          <th>Profile Completion Percentage</th>
-          <th>Referer</th>
-          <th>Status</th>
-          <th>No of AppliedJobs</th>
-          <th>Social Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for applicant in applicants %}
-        <tr>
-          <th scope="row">{{ forloop.counter }}</th>
-          <td><a href="{% url 'dashboard:view_applicant' applicant.id %}">{{ applicant.email }}</a></td>
-          <td>{% if applicant.username %}{{ applicant.username }}{% else %}{{ applicant.get_full_name}}{% endif %}</td>
-          <td>{{ applicant.date_joined|timezone:"Asia/Calcutta" }}</td>
-          <td width="5%">{{ applicant.profile_completion_percentage }}%</td>
-          <td style="word-break: break-all;">{% if applicant.referer %}{{ applicant.referer }}{% else %}N/A{% endif %}</td>
-          <td>{% if applicant.is_active %}Active{% else %}InActive{% endif %}</td>
-          <td>{{ applicant.get_all_applied_jobs|length }}</td>
-          <td>
-            <ul class="social_integration">
-              <li>
-                {% if applicant.is_fb_connected %}
-                <i class="fa-brands fa-facebook-f fb"></i>
-                {% else %}
-                <i class="fa-brands fa-facebook-f"></i></a>
-                {% endif %}
-              </li>
-              <li>
-                {% if applicant.is_gh_connected %}
-                <i class="fa-brands fa-github gh"></i>
-                {% else %}
-                <i class="fa-brands fa-github"></i>
-                {% endif %}
-              </li>
-            </ul>
-          </td>
-          <td>
-          {% if status != "social" and applicant.registered_from == 'Email' %}
-          {% if not applicant.is_active %}
-          <a href="#" data-href="{% url 'dashboard:applicant_actions' applicant.id %}?action_type=enable" id="{{applicant.id}}"  title="Enable" class="perform-actions"><i class="fa fa-times delete" title="Enable"></i></a>
-          {% else %}
-          <a href="#" data-href="{% url 'dashboard:applicant_actions' applicant.id %}?action_type=disable" id="{{applicant.id}}" title="Disable" class="perform-actions"><i class="fa fa-check edit" title="Disable"></i></a>
-          {% endif %}
-          {% endif %}
-          <a href="#" data-href="{% url 'dashboard:applicant_actions' applicant.id %}?action_type=delete" id="{{applicant.id}}" title="Delete" class="perform-actions"><i class="fa fa-trash edit" title="Delete"></i></a></td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-        <div class="pagination_wrap d-flex justify-content-center mt-4 mb-4">
-        {% get_page current_page last_page as pages %}
-        {% comment %} <nav>
-            <ul class="pagination">
-            {% if current_page != 1 %}
-              <li class="prev"><a href="#" class="{{previous_page}}"><i class="fa fa-angle-double-left"></i></a></li>
-              <li class="prev"><a class="{{prev_page}}" href="#"><i class="fa fa-angle-left"></i></a></li>
-              <li><a href="#" class="1">first</a></li>
-              {% endif %}
-              {% for s in pages %}
-              <li {% if s == current_page %} class="active" {% endif %}><a href="#" class="{{s}}">{{s}}</a></li>
-              {% endfor %}
-              {% if current_page != last_page %}
-              <li><a href="#" class="{{last_page}}">last</a></li>
-              <li><a href="#" class="{{ aft_page }}"><i class="fa fa-angle-right pagination-next"></i></a></li>
-              <li><a href="#" class="{{ after_page }}"><i class="fa fa-angle-double-right"></i></a></li>
-              {% endif %}
-            </ul>
-        </nav> {% endcomment %}
-
-        <nav aria-label="Page navigation">
-          <ul class="pagination">
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
+    {% endif %}
   </div>
-  {% else%}
-  <div class="row  mt">
-              <div class="page-404 text-center"  style="height:400px;width:100%">
-<!--                  <h1>{{ message_type }},</h1>
-                    <h4>{{ message }}</h4>!-->
-                    <h1><span> Sorry, No users available with this search</span></h1>
-                </div>
-            </div>
-  {% endif %}
-</section>
+</div>
 {% endblock stage %}
+
 {% block script %}
 <script type="text/javascript">
 $("#skills").select2({'placeholder': 'Search by Skills'})
 $("#location").select2({'placeholder': 'Search by Location'})
-$('.pagination li a').click(function(e) {
-    e.preventDefault();
-    $('#page').val($(this).attr('class'))
-    $('#search_form').submit();
+
+$('.page-nav').click(function(e) {
+  e.preventDefault();
+  var pageClass = $(this).attr('class').split(' ')[0];
+  $('#page').val(pageClass);
+  $('#search_form').submit();
 });
 
 $('.perform-actions').click(function(e){
@@ -189,13 +297,13 @@ $('.perform-actions').click(function(e){
   href = $(this).attr('data-href')
   title = $(this).attr('title')
   $.post(href, function(data) {
-          if (data.error) {
-            open_dialog(data.response, 'Error!')
-          } else {
-            open_dialog("Job Seeker "+title+" Successfully", 'Success!')
-            $('#search_form').submit();
-          }
-        }, 'json');
-  });
+    if (data.error) {
+      open_dialog(data.response, 'Error!')
+    } else {
+      open_dialog("Job Seeker "+title+" Successfully", 'Success!')
+      $('#search_form').submit();
+    }
+  }, 'json');
+});
 </script>
 {% endblock script %}

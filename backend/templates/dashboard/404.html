@@ -1,22 +1,46 @@
 {% extends 'dashboard/base.html' %}
 {% block page_title %}
-     <title>{% if meta_title %}{{ meta_title|safe }}{% else %}404 - Page Not Found - PeelJobs{% endif %}</title>
-    <meta name="description" content="{% if meta_description %}{{ meta_description|safe }}{% else %}404 - Page Not Found - Peeljobs{% endif %}"/>
+<title>{% if meta_title %}{{ meta_title|safe }}{% else %}404 - Page Not Found - PeelJobs{% endif %}</title>
+<meta name="description" content="{% if meta_description %}{{ meta_description|safe }}{% else %}404 - Page Not Found - Peeljobs{% endif %}"/>
 {% endblock %}
+
 {% block stage %}
-<div class="row	 mt">
-<div class="col-md-12 stats">
+<div class="min-h-[60vh] flex items-center justify-center">
+  <div class="text-center">
+    <!-- Error Icon -->
+    <div class="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
+      <i class="fa fa-exclamation-triangle text-4xl text-red-500"></i>
+    </div>
 
-  <div class="statistics_graphs" style="margin-top:-15px;">
+    <!-- Error Code -->
+    <h1 class="text-6xl font-bold text-neutral-900 mb-2">
+      {% if message_type %}{{ message_type }}{% else %}404{% endif %}
+    </h1>
 
+    <!-- Error Message -->
+    <p class="text-xl text-neutral-600 mb-4">
+      {% if message %}{{ message }}{% else %}Sorry, the page you requested can not be found{% endif %}
+    </p>
 
-	<div class="page-404">
-	    <h1>{% if message_type %}{{message_type}}{% else %}404{% endif %}<span> {% if message %}{{ message }}{% else %}Sorry, the page you requested can not be found{% endif %}</span></h1>
-	    <h4>{% if reason %}{{ reason }}{% else %}The URL may be misspelled or the page you're looking for is no longer available.{% endif %}</h4>
-	    <h4>Email: peeljobs@micropyramid.com</h4>
-	    <a href="/dashboard/"><i class="fa fa-home"></i> Back to Home Page</a>
-	</div>
-</div>
-</div>
+    <!-- Additional Info -->
+    <p class="text-neutral-500 mb-8 max-w-md mx-auto">
+      {% if reason %}{{ reason }}{% else %}The URL may be misspelled or the page you're looking for is no longer available.{% endif %}
+    </p>
+
+    <!-- Contact Info -->
+    <div class="bg-neutral-50 rounded-lg p-4 inline-block mb-8">
+      <p class="text-sm text-neutral-600">
+        <i class="fa fa-envelope text-primary-500 mr-2"></i>
+        Need help? Contact us at <a href="mailto:peeljobs@micropyramid.com" class="text-primary-600 hover:text-primary-700 font-medium">peeljobs@micropyramid.com</a>
+      </p>
+    </div>
+
+    <!-- Action Button -->
+    <div>
+      <a href="/dashboard/" class="btn btn-primary">
+        <i class="fa fa-home mr-2"></i>Back to Dashboard
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}

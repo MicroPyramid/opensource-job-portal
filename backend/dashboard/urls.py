@@ -40,7 +40,6 @@ from .views import (
     enable_job,
     delete_job,
     publish_job,
-    new_govt_job,
     edit_govt_job,
     preview_job,
     edit_job_title,
@@ -85,7 +84,6 @@ from .views import (
     skill_questions,
     view_question,
     save_meta_data,
-    clear_cache,
     mail_to_recruiter,
 )
 
@@ -200,7 +198,6 @@ urlpatterns = [
     url(
         r"^jobpost/publish/(?P<job_post_id>[a-zA-Z0-9]+)/$", publish_job, name="publish"
     ),
-    url(r"^jobpost/(?P<job_type>[-\w]+)/add/$", new_govt_job, name="new_govt_job"),
     url(r"^jobpost/edit/(?P<post_id>[-\w]+)/$", edit_govt_job, name="edit_govt_job"),
     url(r"^jobpost/preview/(?P<post_id>[-\w]+)/$", preview_job, name="preview_job"),
     url(
@@ -354,5 +351,4 @@ urlpatterns = [
         moving_duplicates,
         name="move_duplicates",
     ),
-    url(r"^clear/cache/", clear_cache, name="clear_cache"),
 ]

@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.core.cache import cache
 
 from mpcomp.views import permission_required
 from peeldb.models import (
@@ -297,9 +296,3 @@ def moving_duplicates(request, value):
     return render(
         request, "dashboard/duplicates.html", {"values": values, "status": value}
     )
-
-
-@permission_required("activity_edit")
-def clear_cache(request):
-    cache.clear()
-    return HttpResponseRedirect("/dashboard/")

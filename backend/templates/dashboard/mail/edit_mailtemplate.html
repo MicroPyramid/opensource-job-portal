@@ -1,104 +1,123 @@
 {% extends 'dashboard/base.html' %}
 {% block stage %}
-    <!-- CONTENT WRAPPER -->
-    <div class="content_wrapper">
-        <div class="row mt">
-            <!-- CONTENT -->
-            <section id='mail_template'>
-                <h4>Edit Mail Template</h4>
-                <form name="emailtemplateform" id="emailtemplateform" method="post">
-                    <div class="form-horizontal mail_form">
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label">Title</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" placeholder='Title' name="title" id="title"
-                                       value="{{ email_template.title }}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label">Subject</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" placeholder='Subject' name='subject'
-                                       id='subject' value="{{ email_template.subject }}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label">Message</label>
-                            <div class="col-sm-10">
-                                <textarea class="form-control" name='textareacontents' id='textareacontents'
-                                          placeholder='Message'> {{ email_template.message }}</textarea>
-                                <input type="hidden" name="message" id="message"
-                                       value="{{ email_template.message }}"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label">Show To Recruiter</label>
-                            <div class="col-sm-10">
-                                <input type="checkbox" name="show_recruiter" id="show_recruiter" value="True"
-                                       {% if email_template.show_recruiter %}checked{% endif %}/>
-                            </div>
-                        </div>
-                        <div class="form-group applicant {% if not email_template.show_recruiter %}hidden{% endif %}">
-                            <label class="col-sm-1 control-label">Applicant Status</label>
-                            <div class="col-sm-10">
-                                <select class="applicant_status form-control" placeholder="Applicant Status"
-                                        name="applicant_status" id="applicant_status">
-                                    {% for status in applicant_status %}
-                                        <option value="{{ status.0 }}" class=""
-                                                {% if status.0 == email_template.applicant_status %}selected{% endif %}>{{ status.1 }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">&nbsp;</label>
-                            <div class="col-sm-10">
-                                <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
-                                <button class="cancelbutton"><i class="fa fa-floppy-o"></i>Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-        </div>
-        </form>
-        </section>
-        <!--/ CONTENT -->
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:emailtemplates' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">Edit Email Template</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">Update email template details</p>
+      </div>
     </div>
-    </div>
-    <!--/ CONTENT WRAPPER -->
-{% endblock stage %}
-{% block script %}
-    <script type="text/javascript">
+  </div>
 
-        $(".cancelbutton").click(function (e) {
-            e.preventDefault();
-            window.location = "{% url 'dashboard:emailtemplates' %}";
-        });
-        $(document).ready(function (e) {
-            $("#show_recruiter").click(function (e) {
-                if ($("#show_recruiter").is(':checked')) {
-                    $(".applicant").removeClass('hidden');
-                }
-                else {
-                    $(".applicant").addClass('hidden');
-                }
-            });
-        });
-        $('form#emailtemplateform').ajaxForm({
-            beforeSerialize: function () {
-                $("input[name='message']").val(CKEDITOR.instances.textareacontents.getData());
-            },
-            dataType: 'json',
-            success: function (data) {
-                if (data.error) {
-                    $('p.hint').remove();
-                    $('p.help-block').remove();
-                    for (var key in data.message) {
-                        $('#' + key).after('<p class="hint">' + data.message[key] + '</p>');
-                    }
-                } else {
-                    open_dialog_with_url(data.message, 'Success!!!', "{% url 'dashboard:emailtemplates' %}")
-                }
-            }
-        });
-    </script>
+  <!-- Form Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <form name="emailtemplateform" id="emailtemplateform" method="post">
+      <div class="p-6 space-y-6">
+        <!-- Title -->
+        <div>
+          <label for="title" class="block text-sm font-medium text-neutral-700 mb-2">
+            Title <span class="text-red-500">*</span>
+          </label>
+          <input type="text" name="title" id="title" value="{{ email_template.title }}" placeholder="Enter template title" class="form-control">
+        </div>
+
+        <!-- Subject -->
+        <div>
+          <label for="subject" class="block text-sm font-medium text-neutral-700 mb-2">
+            Subject <span class="text-red-500">*</span>
+          </label>
+          <input type="text" name="subject" id="subject" value="{{ email_template.subject }}" placeholder="Enter email subject" class="form-control">
+        </div>
+
+        <!-- Message Body -->
+        <div>
+          <label for="textareacontents" class="block text-sm font-medium text-neutral-700 mb-2">
+            Message Body <span class="text-red-500">*</span>
+          </label>
+          <textarea name="textareacontents" id="textareacontents" rows="10" placeholder="Enter email message" class="form-control">{{ email_template.message }}</textarea>
+          <input type="hidden" name="message" id="message" value="{{ email_template.message }}">
+        </div>
+
+        <!-- Show To Recruiter -->
+        <div class="flex items-center gap-3">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" name="show_recruiter" id="show_recruiter" value="True" {% if email_template.show_recruiter %}checked{% endif %} class="sr-only peer">
+            <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+            <span class="ml-3 text-sm font-medium text-neutral-700">Show To Recruiter</span>
+          </label>
+        </div>
+
+        <!-- Applicant Status (conditional) -->
+        <div class="applicant {% if not email_template.show_recruiter %}hidden{% endif %}">
+          <label for="applicant_status" class="block text-sm font-medium text-neutral-700 mb-2">
+            Applicant Status
+          </label>
+          <select name="applicant_status" id="applicant_status" class="form-control">
+            {% for status in applicant_status %}
+            <option value="{{ status.0 }}" {% if status.0 == email_template.applicant_status %}selected{% endif %}>{{ status.1 }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex items-center justify-end gap-3">
+        <button type="button" class="cancelbutton btn btn-secondary">
+          <i class="fa fa-times mr-2"></i>Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-save mr-2"></i>Update Template
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock stage %}
+
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
+<script type="text/javascript">
+  $(".cancelbutton").click(function (e) {
+    e.preventDefault();
+    window.location = "{% url 'dashboard:emailtemplates' %}";
+  });
+
+  $(document).ready(function (e) {
+    $("#show_recruiter").click(function (e) {
+      if ($("#show_recruiter").is(':checked')) {
+        $(".applicant").removeClass('hidden');
+      } else {
+        $(".applicant").addClass('hidden');
+      }
+    });
+  });
+
+  $(document).ready(function (e) {
+    CKEDITOR.config.allowedContent = true;
+    var config = {};
+    var editor = CKEDITOR.replace('textareacontents', config);
+  });
+
+  $('form#emailtemplateform').ajaxForm({
+    beforeSerialize: function () {
+      $("input[name='message']").val(CKEDITOR.instances.textareacontents.getData());
+    },
+    dataType: 'json',
+    success: function (data) {
+      if (data.error) {
+        $('p.error-msg').remove();
+        for (var key in data.message) {
+          $('#' + key).after('<p class="error-msg text-red-500 text-sm mt-1">' + data.message[key] + '</p>');
+        }
+      } else {
+        open_dialog_with_url(data.message, 'Success!!!', "{% url 'dashboard:emailtemplates' %}")
+      }
+    }
+  });
+</script>
 {% endblock script %}

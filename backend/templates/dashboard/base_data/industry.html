@@ -1,296 +1,243 @@
 {% extends 'dashboard/base.html' %}
 {% load page_tags %}
 {% block stage %}
-<section id='tech_skills' class="container-fluid">
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Industries Management</h3>
-        <div class="btn-group" role="group">
-          <a class="btn {% if status == 'active' %}btn-primary{% else %}btn-outline-primary{% endif %}"
-            href="{% url 'dashboard:industries' %}?status=active">Active</a>
-          <a class="btn {% if status == 'inactive' %}btn-primary{% else %}btn-outline-primary{% endif %}"
-            href="{% url 'dashboard:industries' %}?status=inactive">Inactive</a>
-          <a class="btn {% if not status %}btn-primary{% else %}btn-outline-primary{% endif %}"
-            href="{% url 'dashboard:industries' %}">All</a>
-        </div>
-      </div>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold text-neutral-900">Industries Management</h1>
+      <p class="text-sm text-neutral-500 mt-0.5">Manage industries for job classification</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="{% url 'dashboard:industries' %}?status=active" class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors {% if status == 'active' %}bg-primary-500 text-white{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">Active</a>
+      <a href="{% url 'dashboard:industries' %}?status=inactive" class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors {% if status == 'inactive' %}bg-primary-500 text-white{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">Inactive</a>
+      <a href="{% url 'dashboard:industries' %}" class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors {% if not status %}bg-primary-500 text-white{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">All</a>
     </div>
   </div>
 
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <form id="addform" method="post" action="." class="d-flex gap-2">
-        <input type="text" class="form-control" id="industry_name" placeholder="Enter industry name" required>
-        <button type="submit" class="btn btn-success">
-          <i class="fa fa-plus"></i> Add New
+  <!-- Add & Search Forms -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Add Form -->
+      <form id="addform" method="post" action="." class="flex gap-2 items-end">
+        <div class="flex-1">
+          <label class="block text-xs font-medium text-neutral-500 mb-1">Industry Name</label>
+          <input type="text" class="form-control" id="industry_name" placeholder="Enter industry name" required>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-plus mr-1"></i>Add New
+        </button>
+      </form>
+
+      <!-- Search Form -->
+      <form id="search_form" method="GET" class="flex gap-2 items-end justify-end">
+        <div class="flex-1 max-w-xs">
+          <label class="block text-xs font-medium text-neutral-500 mb-1">Search</label>
+          <input type="text" name="search" class="form-control" placeholder="Search industries..." value="{{ request.GET.search }}">
+        </div>
+        <input type="hidden" name="status" value="{% if request.GET.status %}{{ request.GET.status }}{% endif %}">
+        <button type="submit" class="btn btn-secondary">
+          <i class="fa fa-search mr-1"></i>Search
         </button>
       </form>
     </div>
-    <div class="col-md-6">
-      <form id="search_form" method="GET" class="d-flex gap-2">
-        <input type="text" name="search" class="form-control" placeholder="Search industries..."
-          value="{{ request.GET.search }}" />
-        <input type="hidden" name="status" value="{% if request.GET.status %}{{ request.GET.status }}{% endif %}">
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
+  </div>
+
+  <!-- Industries Table -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-neutral-50 border-b border-neutral-200">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Industry Name</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider w-24">Job Posts</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider w-24">Status</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider w-48">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-100">
+          {% for industry in industries %}
+          <tr class="hover:bg-neutral-50 transition-colors">
+            <td class="px-4 py-3">
+              <div>
+                <span class="font-medium text-neutral-900">{{ industry.name }}</span>
+                <!-- Edit Panel -->
+                <div class="edit_panel hidden mt-4 pt-4 border-t border-neutral-200">
+                  <form id="editform{{ industry.id }}" method="post" action=".">
+                    <input type="hidden" name="id" value="{{ industry.id }}">
+                    <input type="hidden" name="mode" value="edit_industry">
+                    <input type="hidden" name="page" value="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}">
+                    <div class="space-y-3">
+                      <div>
+                        <input type="text" name="name" value="{{ industry.name }}" class="form-control" placeholder="Industry Name" required>
+                      </div>
+                      <div>
+                        <input type="text" name="slug" value="{{ industry.slug }}" class="form-control" placeholder="Slug">
+                      </div>
+                      <div>
+                        <input type="text" name="meta_title" value="{{ industry.meta_title }}" class="form-control" placeholder="Meta Title">
+                      </div>
+                      <div>
+                        <textarea name="meta_description" class="form-control" rows="2" placeholder="Meta Description">{{ industry.meta_description }}</textarea>
+                      </div>
+                      <div>
+                        <textarea class="form-control ckeditor_page_content" name="ckeditor_page_content_{{ industry.id }}" id="ckeditor_page_content_{{ industry.id }}" rows="4" placeholder="Page Content">{{ industry.page_content }}</textarea>
+                        <input type="hidden" name="page_content" id="page_content_{{ industry.id }}">
+                      </div>
+                      <div class="flex gap-2">
+                        <button type="button" id="{{ industry.id }}" class="btn btn-primary btn-sm update_btn">
+                          <i class="fa fa-check mr-1"></i>Update
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm cancel_edit">
+                          <i class="fa fa-times mr-1"></i>Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full bg-primary-100 text-primary-700 text-sm font-medium">
+                {{ industry.get_no_of_jobposts|length }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              {% if industry.status == 'Active' %}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+              {% else %}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-1">
+                {% if industry.status == 'Active' %}
+                <a href="/{{ industry.slug }}-industry-jobs/" target="_blank" class="p-1.5 rounded-md hover:bg-neutral-100 text-neutral-600 transition-colors" title="View Jobs">
+                  <i class="fa fa-eye"></i>
+                </a>
+                {% endif %}
+                <button type="button" class="edit_btn p-1.5 rounded-md hover:bg-blue-100 text-blue-600 transition-colors" title="Edit">
+                  <i class="fa fa-edit"></i>
+                </button>
+                {% if industry.get_no_of_jobposts|length > 0 %}
+                <button type="button" class="move-jobs-btn p-1.5 rounded-md hover:bg-purple-100 text-purple-600 transition-colors"
+                        data-industry-id="{{ industry.id }}"
+                        data-industry-name="{{ industry.name }}"
+                        data-job-count="{{ industry.get_no_of_jobposts|length }}"
+                        title="Move Jobs">
+                  <i class="fa fa-exchange"></i>
+                </button>
+                {% endif %}
+                {% if industry.status == 'InActive' %}
+                <button type="button" class="enable-industry p-1.5 rounded-md hover:bg-green-100 text-green-600 transition-colors" id="{{ industry.id }}" data-page="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}" title="Activate">
+                  <i class="fa fa-check"></i>
+                </button>
+                {% else %}
+                <button type="button" class="deactivate-industry p-1.5 rounded-md hover:bg-yellow-100 text-yellow-600 transition-colors" id="{{ industry.id }}" data-page="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}" title="Deactivate">
+                  <i class="fa fa-times"></i>
+                </button>
+                {% endif %}
+                <a href="{% url 'dashboard:delete_industry' industry_id=industry.id %}" class="p-1.5 rounded-md hover:bg-red-100 text-red-600 transition-colors" title="Delete" onclick="return confirm('Are you sure?')">
+                  <i class="fa fa-trash-o"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="px-4 py-12 text-center">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
+                  <i class="fa fa-industry text-2xl text-neutral-400"></i>
+                </div>
+                <p class="text-neutral-500">No industries found</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          {% if industries %}
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>Industry Name</th>
-                  <th>Job Posts</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for industry in industries %}
-                <tr>
-                  <td>
-                    <strong>{{ industry.name }}</strong>
-                    <div class="edit_panel" style="display: none;">
-                      <form id="editform{{ industry.id }}" method="post" action="." class="mt-2">
-                        <input type="hidden" name="id" value="{{ industry.id }}">
-                        <input type="hidden" name="mode" value="edit_industry">
-                        <input type="hidden" name="page"
-                          value="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}">
-
-                        <div class="mb-2">
-                          <input type="text" class="form-control" name="name" value="{{ industry.name }}"
-                            placeholder="Industry Name" required>
-                        </div>
-                        <div class="mb-2">
-                          <input type="text" class="form-control" name="slug" value="{{ industry.slug }}"
-                            placeholder="Slug">
-                        </div>
-                        <div class="mb-2">
-                          <input type="text" class="form-control" name="meta_title" value="{{ industry.meta_title }}"
-                            placeholder="Meta Title">
-                        </div>
-                        <div class="mb-2">
-                          <textarea class="form-control" name="meta_description" placeholder="Meta Description"
-                            rows="2">{{ industry.meta_description }}</textarea>
-                        </div>
-                        <div class="mb-2">
-                          <textarea class="form-control ckeditor_page_content"
-                            name="ckeditor_page_content_{{ industry.id }}" id="ckeditor_page_content_{{ industry.id }}"
-                            placeholder="Page Content" rows="4">{{ industry.page_content }}</textarea>
-                          <input type="hidden" name="page_content" id="page_content_{{ industry.id }}">
-                        </div>
-                        <div class="d-flex gap-2">
-                          <button type="button" id="{{ industry.id }}" class="btn btn-success btn-sm update_btn">
-                            <i class="fa fa-check"></i> Update
-                          </button>
-                          <button type="button" class="btn btn-secondary btn-sm cancel_edit">
-                            <i class="fa fa-times"></i> Cancel
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="badge bg-info">{{ industry.get_no_of_jobposts|length }}</span>
-                  </td>
-                  <td>
-                    {% if industry.status == 'Active' %}
-                    <span class="badge bg-success">Active</span>
-                    {% else %}
-                    <span class="badge bg-secondary">Inactive</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <div class="btn-group btn-group-sm" role="group">
-                      {% if industry.status == 'Active' %}
-                      <a href="/{{ industry.slug }}-industry-jobs/" target="_blank" class="btn btn-outline-primary"
-                        title="View Jobs">
-                        <i class="fa fa-eye"></i>
-                      </a>
-                      {% endif %}
-                      <button type="button" class="btn btn-outline-warning edit_btn" title="Edit">
-                        <i class="fa fa-edit"></i>
-                      </button>
-                      {% if industry.get_no_of_jobposts|length > 0 %}
-                      <button type="button" class="btn btn-outline-info move-jobs-btn" 
-                              data-industry-id="{{ industry.id }}" 
-                              data-industry-name="{{ industry.name }}"
-                              data-job-count="{{ industry.get_no_of_jobposts|length }}"
-                              title="Move Jobs to Another Industry">
-                        <i class="fa fa-exchange"></i>
-                      </button>
-                      {% endif %}
-                      {% if industry.status == 'InActive' %}
-                      <button type="button" class="btn btn-outline-success enable-industry" id="{{ industry.id }}"
-                        data-page="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}"
-                        title="Activate Industry">
-                        <i class="fa fa-check"></i>
-                      </button>
-                      {% else %}
-                      <button type="button" class="btn btn-outline-danger deactivate-industry" id="{{ industry.id }}"
-                        data-page="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}"
-                        title="Deactivate Industry">
-                        <i class="fa fa-times"></i>
-                      </button>
-                      {% endif %}
-                      <a href="{% url 'dashboard:delete_industry' industry_id=industry.id %}"
-                        class="btn btn-outline-danger" title="Delete"
-                        onclick="return confirm('Are you sure you want to delete this industry?')">
-                        <i class="fa fa-trash"></i>
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          {% else %}
-          <div class="text-center py-4">
-            <p class="text-muted">No industries found.</p>
-          </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <!-- Pagination -->
   {% if industries %}
-  <div class="row mt-4">
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="text-muted">
-          <small>
-            Showing {{ industries|length }} of {{ total_count|default:"0" }} industries
-          </small>
-        </div>
-        
-        <nav aria-label="Industry pagination">
-          <ul class="pagination pagination-sm mb-0">
-            {% if current_page > 1 %}
-              <li class="page-item">
-                <a class="page-link" 
-                   href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page=1" 
-                   aria-label="First">
-                  <i class="fa fa-angle-double-left"></i>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" 
-                   href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ prev_page }}" 
-                   aria-label="Previous">
-                  <i class="fa fa-angle-left"></i>
-                </a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <span class="page-link">
-                  <i class="fa fa-angle-double-left"></i>
-                </span>
-              </li>
-              <li class="page-item disabled">
-                <span class="page-link">
-                  <i class="fa fa-angle-left"></i>
-                </span>
-              </li>
-            {% endif %}
-
-            {% get_page current_page last_page as pages %}
-            {% for page_num in pages %}
-              <li class="page-item {% if page_num == current_page %}active{% endif %}">
-                <a class="page-link" 
-                   href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_num }}">
-                  {{ page_num }}
-                </a>
-              </li>
-            {% endfor %}
-
-            {% if current_page < last_page %}
-              <li class="page-item">
-                <a class="page-link" 
-                   href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ aft_page }}" 
-                   aria-label="Next">
-                  <i class="fa fa-angle-right"></i>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" 
-                   href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ last_page }}" 
-                   aria-label="Last">
-                  <i class="fa fa-angle-double-right"></i>
-                </a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <span class="page-link">
-                  <i class="fa fa-angle-right"></i>
-                </span>
-              </li>
-              <li class="page-item disabled">
-                <span class="page-link">
-                  <i class="fa fa-angle-double-right"></i>
-                </span>
-              </li>
-            {% endif %}
-          </ul>
-        </nav>
-
-        <div class="text-muted">
-          <small>Page {{ current_page }} of {{ last_page }}</small>
-        </div>
-      </div>
-    </div>
+  {% get_page current_page last_page as pages %}
+  {% if last_page > 1 %}
+  <div class="flex items-center justify-between">
+    <p class="text-sm text-neutral-500">
+      Showing {{ industries|length }} of {{ total_count|default:"0" }} industries | Page {{ current_page }} of {{ last_page }}
+    </p>
+    <nav class="inline-flex items-center gap-1">
+      {% if current_page > 1 %}
+      <a href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page=1" class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 transition-colors">
+        <i class="fa fa-angle-double-left"></i>
+      </a>
+      <a href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ prev_page }}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 transition-colors">
+        <i class="fa fa-angle-left"></i>
+      </a>
+      {% endif %}
+      {% for page_num in pages %}
+      <a href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_num }}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg border text-sm font-medium transition-colors {% if page_num == current_page %}border-primary-500 bg-primary-500 text-white{% else %}border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50{% endif %}">
+        {{ page_num }}
+      </a>
+      {% endfor %}
+      {% if current_page < last_page %}
+      <a href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ aft_page }}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 transition-colors">
+        <i class="fa fa-angle-right"></i>
+      </a>
+      <a href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ last_page }}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 transition-colors">
+        <i class="fa fa-angle-double-right"></i>
+      </a>
+      {% endif %}
+    </nav>
   </div>
   {% endif %}
-</section>
+  {% endif %}
+</div>
 
 <!-- Move Jobs Modal -->
-<div class="modal fade" id="moveJobsModal" tabindex="-1" aria-labelledby="moveJobsModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="moveJobsModalLabel">Move Jobs to Another Industry</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div id="moveJobsModal" class="fixed inset-0 z-50 hidden">
+  <div class="fixed inset-0 bg-black/50" onclick="$('#moveJobsModal').addClass('hidden')"></div>
+  <div class="fixed inset-0 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full relative">
+      <div class="p-6 border-b border-neutral-200">
+        <h3 class="text-lg font-semibold text-neutral-900">Move Jobs to Another Industry</h3>
       </div>
-      <div class="modal-body">
+      <div class="p-6">
         <form id="moveJobsForm">
           <input type="hidden" id="fromIndustryId" name="from_industry_id">
           <input type="hidden" name="mode" value="move_jobs">
           <input type="hidden" name="page" value="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}">
-          
-          <div class="mb-3">
-            <label class="form-label">From Industry:</label>
-            <p class="fw-bold text-primary" id="fromIndustryName"></p>
-            <small class="text-muted">Jobs to move: <span id="jobCount" class="fw-bold"></span></small>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-neutral-700 mb-1">From Industry:</label>
+            <p class="font-semibold text-primary-600" id="fromIndustryName"></p>
+            <p class="text-sm text-neutral-500">Jobs to move: <span id="jobCount" class="font-semibold"></span></p>
           </div>
-          
-          <div class="mb-3">
-            <label for="toIndustrySelect" class="form-label">Move to Industry:</label>
-            <select class="form-select" id="toIndustrySelect" name="to_industry_id" required>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-neutral-700 mb-1">Move to Industry:</label>
+            <select class="form-control" id="toIndustrySelect" name="to_industry_id" required>
               <option value="">Select target industry...</option>
               {% for industry in all_active_industries %}
               <option value="{{ industry.id }}">{{ industry.name }}</option>
               {% endfor %}
             </select>
           </div>
-          
-          <div class="alert alert-warning">
-            <i class="fa fa-exclamation-triangle"></i>
-            <strong>Warning:</strong> This action will move all job posts from the source industry to the target industry. This action cannot be undone.
+
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p class="text-sm text-yellow-800">
+              <i class="fa fa-exclamation-triangle mr-1"></i>
+              <strong>Warning:</strong> This will move all job posts. This action cannot be undone.
+            </p>
           </div>
         </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="confirmMoveJobs">
-          <i class="fa fa-exchange"></i> Move Jobs
+      <div class="p-6 border-t border-neutral-200 flex justify-end gap-3">
+        <button type="button" onclick="$('#moveJobsModal').addClass('hidden')" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="confirmMoveJobs" class="btn btn-primary">
+          <i class="fa fa-exchange mr-1"></i>Move Jobs
         </button>
       </div>
     </div>
@@ -300,214 +247,115 @@
 
 {% block script %}
 <script type="text/javascript">
-  $(document).ready(function () {
-    // Edit button click handler
-    $('.edit_btn').click(function (e) {
-      e.preventDefault();
-      const editPanel = $(this).closest('tr').find('.edit_panel');
-      editPanel.slideToggle('fast');
+$(document).ready(function() {
+  // Edit button toggle
+  $('.edit_btn').click(function(e) {
+    e.preventDefault();
+    const editPanel = $(this).closest('tr').find('.edit_panel');
+    editPanel.toggleClass('hidden');
 
-      if (editPanel.is(':visible')) {
-        const ckeditorName = editPanel.find('.ckeditor_page_content').attr('name');
-        if (ckeditorName && !CKEDITOR.instances[ckeditorName]) {
-          CKEDITOR.config.allowedContent = true;
-          CKEDITOR.replace(ckeditorName);
-        }
+    if (!editPanel.hasClass('hidden')) {
+      const ckeditorName = editPanel.find('.ckeditor_page_content').attr('name');
+      if (ckeditorName && !CKEDITOR.instances[ckeditorName]) {
+        CKEDITOR.config.allowedContent = true;
+        CKEDITOR.replace(ckeditorName);
       }
-    });
+    }
+  });
 
-    // Cancel edit button
-    $('.cancel_edit').click(function (e) {
-      e.preventDefault();
-      $(this).closest('.edit_panel').slideUp('fast');
-    });
+  // Cancel edit
+  $('.cancel_edit').click(function(e) {
+    e.preventDefault();
+    $(this).closest('.edit_panel').addClass('hidden');
+  });
 
-    // Add industry form
-    $("#addform").submit(function (e) {
-      e.preventDefault();
-      const industryName = $('#industry_name').val().trim();
-
-      if (!industryName) {
-        alert('Please enter industry name');
-        return;
+  // Add form
+  $("#addform").submit(function(e) {
+    e.preventDefault();
+    const industryName = $('#industry_name').val().trim();
+    if (!industryName) {
+      alert('Please enter industry name');
+      return;
+    }
+    $.post('.', { mode: 'add_industry', name: industryName }, function(data) {
+      if (data.error == false) {
+        alert(data.message);
+        location.reload();
+      } else {
+        alert('Error: ' + JSON.stringify(data.message));
       }
+    }, 'json');
+  });
 
-      $.post('.', {
-        mode: 'add_industry',
-        name: industryName
-      }, function (data) {
-        if (data.error == false) {
-          alert(data.message);
-          location.reload();
+  // Update industry
+  $(".update_btn").click(function(e) {
+    e.preventDefault();
+    const industryId = $(this).attr('id');
+    const ckeditorName = 'ckeditor_page_content_' + industryId;
+    if (CKEDITOR.instances[ckeditorName]) {
+      $('#page_content_' + industryId).val(CKEDITOR.instances[ckeditorName].getData());
+    }
+    $.post('.', $("#editform" + industryId).serialize(), function(data) {
+      if (data.error == false) {
+        alert(data.message);
+        window.location.href = "{% url 'dashboard:industries' %}?page=" + data.page;
+      } else {
+        alert('Error: ' + (typeof data.message === 'object' ? JSON.stringify(data.message) : data.message));
+      }
+    }, 'json');
+  });
+
+  // Deactivate/Enable industry
+  $('.deactivate-industry, .enable-industry').click(function(e) {
+    e.preventDefault();
+    const industryId = $(this).attr('id');
+    const page = $(this).data('page');
+    const action = $(this).hasClass('deactivate-industry') ? 'deactivate' : 'activate';
+    if (confirm('Do you want to ' + action + ' this industry?')) {
+      $.post('/dashboard/industry/status/' + industryId + '/', { "page": page }, function(data) {
+        if (data.error) {
+          alert('Error: ' + data.response);
         } else {
-          alert('Error: ' + JSON.stringify(data.message));
+          alert('Industry ' + action + 'd successfully!');
+          window.location.href = "{% url 'dashboard:industries' %}?page=" + data.page;
         }
-      }, 'json').fail(function () {
-        alert('Error occurred while adding industry');
-      });
-    });
+      }, 'json');
+    }
+  });
 
-    // Update industry
-    $(".update_btn").click(function (e) {
-      e.preventDefault();
-      const industryId = $(this).attr('id');
-      const ckeditorName = 'ckeditor_page_content_' + industryId;
+  // Move jobs modal
+  $('.move-jobs-btn').click(function(e) {
+    e.preventDefault();
+    $('#fromIndustryId').val($(this).data('industry-id'));
+    $('#fromIndustryName').text($(this).data('industry-name'));
+    $('#jobCount').text($(this).data('job-count'));
+    $('#toIndustrySelect option[value="' + $(this).data('industry-id') + '"]').hide();
+    $('#toIndustrySelect').val('');
+    $('#moveJobsModal').removeClass('hidden');
+  });
 
-      if (CKEDITOR.instances[ckeditorName]) {
-        const content = CKEDITOR.instances[ckeditorName].getData();
-        $('#page_content_' + industryId).val(content);
-      }
-
-      $.post('.', $("#editform" + industryId).serialize(), function (data) {
+  // Confirm move jobs
+  $('#confirmMoveJobs').click(function(e) {
+    e.preventDefault();
+    const toIndustryId = $('#toIndustrySelect').val();
+    if (!toIndustryId) {
+      alert('Please select a target industry');
+      return;
+    }
+    if (confirm('Are you sure you want to move all jobs?')) {
+      $(this).prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr-1"></i>Moving...');
+      $.post('.', $('#moveJobsForm').serialize(), function(data) {
         if (data.error == false) {
           alert(data.message);
+          $('#moveJobsModal').addClass('hidden');
           window.location.href = "{% url 'dashboard:industries' %}?page=" + data.page;
         } else {
-          let errorMsg = 'Error updating industry:\n';
-          if (typeof data.message === 'object') {
-            for (let key in data.message) {
-              errorMsg += key + ': ' + data.message[key] + '\n';
-            }
-          } else {
-            errorMsg += data.message;
-          }
-          alert(errorMsg);
+          alert('Error: ' + data.message);
+          $('#confirmMoveJobs').prop('disabled', false).html('<i class="fa fa-exchange mr-1"></i>Move Jobs');
         }
-      }, 'json').fail(function () {
-        alert('Error occurred while updating industry');
-      });
-    });
-
-    // Deactivate industry
-    $('.deactivate-industry').click(function (e) {
-      e.preventDefault();
-      const industryId = $(this).attr('id');
-      const page = $(this).data('page');
-
-      if (confirm('Do you want to deactivate this industry?')) {
-        $.post('/dashboard/industry/status/' + industryId + '/', {
-          "page": page
-        }, function (data) {
-          if (data.error) {
-            alert('Error: ' + data.response);
-          } else {
-            alert('Industry deactivated successfully!');
-            window.location.href = "{% url 'dashboard:industries' %}?page=" + data.page;
-          }
-        }, 'json').fail(function () {
-          alert('Error occurred while deactivating industry');
-        });
-      }
-    });
-
-    // Enable industry
-    $('.enable-industry').click(function (e) {
-      e.preventDefault();
-      const industryId = $(this).attr('id');
-      const page = $(this).data('page');
-
-      if (confirm('Do you want to activate this industry?')) {
-        $.post('/dashboard/industry/status/' + industryId + '/', {
-          "page": page
-        }, function (data) {
-          if (data.error) {
-            alert('Error: ' + data.response);
-          } else {
-            alert('Industry activated successfully!');
-            window.location.href = "{% url 'dashboard:industries' %}?page=" + data.page;
-          }
-        }, 'json').fail(function () {
-          alert('Error occurred while activating industry');
-        });
-      }
-    });
-
-    // Move jobs button click handler
-    $('.move-jobs-btn').click(function (e) {
-      e.preventDefault();
-      const industryId = $(this).data('industry-id');
-      const industryName = $(this).data('industry-name');
-      const jobCount = $(this).data('job-count');
-
-      $('#fromIndustryId').val(industryId);
-      $('#fromIndustryName').text(industryName);
-      $('#jobCount').text(jobCount);
-      
-      // Remove the source industry from the target dropdown
-      $('#toIndustrySelect option').show();
-      $('#toIndustrySelect option[value="' + industryId + '"]').hide();
-      $('#toIndustrySelect').val('');
-      
-      $('#moveJobsModal').modal('show');
-    });
-
-    // Confirm move jobs
-    $('#confirmMoveJobs').click(function (e) {
-      e.preventDefault();
-      const toIndustryId = $('#toIndustrySelect').val();
-      
-      if (!toIndustryId) {
-        alert('Please select a target industry');
-        return;
-      }
-
-      const toIndustryName = $('#toIndustrySelect option:selected').text();
-      const fromIndustryName = $('#fromIndustryName').text();
-      
-      if (confirm(`Are you sure you want to move all jobs from "${fromIndustryName}" to "${toIndustryName}"?`)) {
-        $(this).prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Moving...');
-        
-        $.post('.', $('#moveJobsForm').serialize(), function (data) {
-          if (data.error == false) {
-            alert(data.message);
-            $('#moveJobsModal').modal('hide');
-            window.location.href = "{% url 'dashboard:industries' %}?page=" + data.page;
-          } else {
-            alert('Error: ' + data.message);
-            $('#confirmMoveJobs').prop('disabled', false).html('<i class="fa fa-exchange"></i> Move Jobs');
-          }
-        }, 'json').fail(function () {
-          alert('Error occurred while moving jobs');
-          $('#confirmMoveJobs').prop('disabled', false).html('<i class="fa fa-exchange"></i> Move Jobs');
-        });
-      }
-    });
-
-    // Reset modal when closed
-    $('#moveJobsModal').on('hidden.bs.modal', function () {
-      $('#moveJobsForm')[0].reset();
-      $('#confirmMoveJobs').prop('disabled', false).html('<i class="fa fa-exchange"></i> Move Jobs');
-    });
+      }, 'json');
+    }
   });
+});
 </script>
 {% endblock script %}
-
-<style>
-.pagination-sm .page-link {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  border-color: #dee2e6;
-}
-
-.pagination-sm .page-item.active .page-link {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-  color: #fff;
-}
-
-.pagination-sm .page-item.disabled .page-link {
-  color: #6c757d;
-  background-color: #fff;
-  border-color: #dee2e6;
-}
-
-.pagination-sm .page-link:hover {
-  color: #0a58ca;
-  background-color: #e9ecef;
-  border-color: #dee2e6;
-}
-
-.pagination-sm .page-link:focus {
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-</style>

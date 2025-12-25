@@ -1,157 +1,157 @@
 {% extends 'dashboard/base.html' %}
 
 {% block stage %}
-  <div class="content_wrapper">
-    <div class="row mt">
-      <!-- CONTENT -->
-      <section id='blog-post-create'>
-        <h4>New User Creation</h4>
-        <form name="personalform" id="personalform" method="post" enctype="multipart/form-data">
-        <div class="form-horizontal mail_form">
-          <div class="form-group">
-              <label class="col-sm-2 control-label">Profile Pic</label>
-              <div class="col-sm-10">
-              <input type="file" class="form-control" id="profile_pic" name="profile_pic" accept="image/*">
-              </div>
-            </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Email</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder='Email Address' name='email' id='email'>
-            </div>
-          </div>
-          <!--<div class="form-group">
-            <label class="col-sm-2 control-label">Password</label>
-            <div class="col-sm-10">
-              <input type="password" class="form-control" placeholder='Password' name='password' id='password'>
-            </div>
-          </div>-->
-
-          <div class="form-group">
-            <label class="col-sm-2 control-label">First Name</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder='First Name' name='first_name' id='first_name'>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Last Name</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder='Last Name' name='last_name' id='last_name'>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Mobile</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder='Mobile' name='mobile' id='mobile'>
-            </div>
-          </div>
-            <div class="form-group">
-              <label for="inputEmail3" class="col-sm-2 control-label">Gender</label>
-              <div class="col-sm-10">
-                <span class='radio_wrap'>
-                <input type="radio" name="gender" id="gender" value="M" {% if request.user.gender == 'M' %} checked {% endif %}>
-                <span>Male</span>
-                </span>
-                <span class='radio_wrap'>
-                <input type="radio" name="gender" id="gender" value="F" {% if request.user.gender == 'F' %} checked {% endif %}>
-                <span>FeMale</span>
-                </span>
-              </div>
-            </div>
-
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Current Address</label>
-            <div class="col-sm-10">
-              <textarea class="form-control" name='address' id='address' placeholder='Current Address'></textarea>
-              <input type="hidden" name="description" id="description">
-            </div>If present address is same as current address
-            <input type="checkbox" name="present_address" id="present_address">
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Permanent Address</label>
-            <div class="col-sm-10">
-              <textarea class="form-control" name='permanent_address' id='permanent_address' placeholder='Permanent Address'></textarea>
-              <input type="hidden" name="description" id="description">
-            </div>
-          </div>
-          <div class="form-group">
-              <label class="col-sm-2 control-label">User Role</label>
-              <div class="col-sm-10">
-              <select class="form-control user_type" name="user_type" style='height:100px'id="user_type" multiple>
-                <option value="">Select A Permission</option>
-                {% for permission in permissions %}
-                <option value="{{ permission.id }}" id="{{ permission.id }}">{{ permission.codename }}</option>
-                {% endfor%}
-              </select>
-              </div>
-            </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">&nbsp;</label>
-            <div class="col-sm-10">
-              <button type="submit"><i class="fa fa-floppy-o"></i>Save</button>
-              <button class="cancelbutton"><i class="fa fa-floppy-o"></i>Cancel</button>
-            </div>
-          </div>
-        </div>
-        </form>
-      </section>
-      <!--/ CONTENT -->
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:admin_user_list' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">New User</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">Create a new admin user</p>
+      </div>
     </div>
   </div>
+
+  <!-- Form Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <form name="personalform" id="personalform" method="post" enctype="multipart/form-data">
+      <div class="p-6 space-y-6">
+        <!-- Profile Picture -->
+        <div>
+          <label for="profile_pic" class="block text-sm font-medium text-neutral-700 mb-2">Profile Picture</label>
+          <input type="file" name="profile_pic" id="profile_pic" accept="image/*"
+                 class="block w-full text-sm text-neutral-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-neutral-700 mb-2">
+            Email <span class="text-red-500">*</span>
+          </label>
+          <input type="email" name="email" id="email" placeholder="Enter email address" class="form-control">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- First Name -->
+          <div>
+            <label for="first_name" class="block text-sm font-medium text-neutral-700 mb-2">First Name</label>
+            <input type="text" name="first_name" id="first_name" placeholder="Enter first name" class="form-control">
+          </div>
+
+          <!-- Last Name -->
+          <div>
+            <label for="last_name" class="block text-sm font-medium text-neutral-700 mb-2">Last Name</label>
+            <input type="text" name="last_name" id="last_name" placeholder="Enter last name" class="form-control">
+          </div>
+        </div>
+
+        <!-- Mobile -->
+        <div>
+          <label for="mobile" class="block text-sm font-medium text-neutral-700 mb-2">Mobile</label>
+          <input type="text" name="mobile" id="mobile" placeholder="Enter mobile number" class="form-control">
+        </div>
+
+        <!-- Gender -->
+        <div>
+          <label class="block text-sm font-medium text-neutral-700 mb-2">Gender</label>
+          <div class="flex items-center gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="gender" value="M" class="w-4 h-4 text-primary-600 border-neutral-300 focus:ring-primary-500">
+              <span class="ml-2 text-sm text-neutral-700">Male</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="gender" value="F" class="w-4 h-4 text-primary-600 border-neutral-300 focus:ring-primary-500">
+              <span class="ml-2 text-sm text-neutral-700">Female</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Current Address -->
+        <div>
+          <label for="address" class="block text-sm font-medium text-neutral-700 mb-2">Current Address</label>
+          <textarea name="address" id="address" rows="3" placeholder="Enter current address" class="form-control"></textarea>
+          <div class="flex items-center gap-2 mt-2">
+            <input type="checkbox" name="present_address" id="present_address" class="w-4 h-4 text-primary-600 border-neutral-300 rounded focus:ring-primary-500">
+            <label for="present_address" class="text-sm text-neutral-600">Same as permanent address</label>
+          </div>
+        </div>
+
+        <!-- Permanent Address -->
+        <div>
+          <label for="permanent_address" class="block text-sm font-medium text-neutral-700 mb-2">Permanent Address</label>
+          <textarea name="permanent_address" id="permanent_address" rows="3" placeholder="Enter permanent address" class="form-control"></textarea>
+        </div>
+
+        <!-- User Role -->
+        <div>
+          <label for="user_type" class="block text-sm font-medium text-neutral-700 mb-2">User Role</label>
+          <select name="user_type" id="user_type" class="user_type form-control" multiple>
+            <option value="">Select A Permission</option>
+            {% for permission in permissions %}
+            <option value="{{ permission.id }}" id="{{ permission.id }}">{{ permission.codename }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex items-center justify-end gap-3">
+        <button type="button" class="cancelbutton btn btn-secondary">
+          <i class="fa fa-times mr-2"></i>Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-save mr-2"></i>Create User
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock stage %}
 
-{% block script%}
-
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
 <script type="text/javascript">
+  $("select.user_type").select2({ placeholder: "Select User Role Here", maximumSelectionSize: 6 });
 
- $( "select.user_type" ).select2( { placeholder: "Select User Role Here", maximumSelectionSize: 6 } );
-
- $( "select.user_type" ).change(function(e) {
-    console.log($("select.user_type").select2("val").length)
+  $("select.user_type").change(function(e) {
     $('select.user_type option').removeAttr('disabled', 'disabled')
-    if ($("select.user_type").select2("val").length != 0){
-      console.log("....................")
-      if ($("select.user_type").select2("val") == 'Admin'){
-        console.log("hello..........")
+    if ($("select.user_type").select2("val").length != 0) {
+      if ($("select.user_type").select2("val") == 'Admin') {
         $('select.user_type option').attr('disabled', true)
-      }
-      else{
-        console.log("bye")
+      } else {
         $('select.user_type option[id=Admin]').attr('disabled', true)
       }
-    }
-    else{
-      console.log("hello")
+    } else {
       $("select.user_type").select2("val", "")
       $('select.user_type option').removeAttr('disabled', 'disabled')
     }
-
-});
-
-
-  $(".cancelbutton").click(function(e){
-    e.preventDefault();
-    window.location="{% url 'dashboard:admin_user_list' %}";
   });
+
+  $(".cancelbutton").click(function(e) {
+    e.preventDefault();
+    window.location = "{% url 'dashboard:admin_user_list' %}";
+  });
+
   $('#present_address').click(function () {
-   if(document.getElementById('present_address').checked) {
-      $( "#permanent_address").val('');
-      console.log($("#address").val())
-      $("#permanent_address").val($( "#address").val());
+    if (document.getElementById('present_address').checked) {
+      $("#permanent_address").val('');
+      $("#permanent_address").val($("#address").val());
+    } else {
+      $("#permanent_address").val('');
     }
-   else{
-      $( "#permanent_address").val('');
-    }
-});
+  });
 
   $('form#personalform').ajaxForm({
-    type:'POST',
-    dataType:'json',
+    type: 'POST',
+    dataType: 'json',
     success: function(data) {
       if (data.error) {
-        $('p.help-block').remove();
+        $('p.error-msg').remove();
         for (var key in data.response) {
-          $('#' + key).after('<p class="help-block" style="color:red;">' + data.response[key] + '</p>');
+          $('#' + key).after('<p class="error-msg text-red-500 text-sm mt-1">' + data.response[key] + '</p>');
         }
       } else {
         window.location = "{% url 'dashboard:admin_user_list' %}";

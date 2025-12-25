@@ -23,11 +23,13 @@ venv/
 secret
 staticfiles/CACHE
 backend/staticfiles/
+backend/node_modules/
 media/
 peeljobs_22032021.sql
 static/antivirus.png
 static/sfdc.png
 tailwind-output.css
+backend/static/css/tailwind-output.css
 .ruff_cache
 TODO.md
 CLAUDE.md

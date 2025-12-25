@@ -2,317 +2,361 @@
 {% load thumbnail %}
 {% load tz %}
 {% load page_tags %}
-{% block stage %}
 {% load static %}
-<section id='job_detail'>
-  <div class="job_description_wrap">
-    <div class="posted_by_details">
-      <div class="clearfix"></div>
+{% block stage %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'dashboard:admin_ticket_list' %}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="text-2xl font-semibold text-neutral-900">Ticket Details</h1>
+        <p class="text-sm text-neutral-500 mt-0.5">View and manage ticket</p>
+      </div>
     </div>
-    <div class="job_details">
-    <!-- post details -->
-      <div class="profile_individual">
-        <div class="title_profile">
-          <h4><i class="fa fa-list-ul"></i>Ticket Details</h4>
-        </div>
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each col-md-6">
-              <label>Ticket Title</label>
-              <span class="description">
-              <span>{{ ticket.title }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Status</label>
-              <span class="description">
-              <span>{{ ticket.status }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Created By</label>
-              <span class="description">
-              <span>{{ ticket.user.email }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="right_div">
-            <div class="tile_each">
-              <label>Ticket Type</label>
-              <span class="description">
-                <span>{{ ticket.ticket_type }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Priority</label>
-              <span class="description">
-                <span>{{ ticket.priority }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-            <div class="tile_each">
-              <label>Created On</label>
-              <span class="description">
-              <span>{{ ticket.created_on }}</span>
-              </span>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="tile_each">
-            <label>Ticket Description</label>
-            <span class="description">
-            <span>{{ ticket.description }}</span>
-            </span>
-            <div class="clearfix"></div>
-          </div>
-          <div class="form-group">
-            <label>Status</label>
-            <select class="form-control" name="status" id="status">
-              <option value="">Select a ticket status</option>
-              {% for status in status %}
-              <option value="{{ status.0 }}" {% if status.0|slugify == ticket.status|slugify %}selected{% endif %}>{{ status.1 }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-      </div>
-      {% if ticket.attachments.all %}
-      <div class="profile_individual">
-        <div class="title_profile">
-          <h4><i class="fa fa-list-ul"></i>Attachments</h4>
-        </div>
-        <div class='specific_detail'>
-          <div class="left_div">
-            <div class="tile_each">
-                <div class="img_wrap">
-                  {% for attachment in ticket.attachments.all %}
-                   <div class="img-item" >
-                    <a href="#" class="img-url" id="{{ attachment.attached_file }}"><img src="{% if attachment.attached_file %}{% thumbnail attachment.attached_file "100x100" upscale=True padding=True %}{% else %}{% static 'dummy.jpg' %}{% endif %}"></a>
-                    <span class='attachment-close close-item' id="{{ attachment.id }}"><i class="fa fa-close"></i></span>
-                    </div>
-                  {% endfor %}
-                  <br clear="all">
-                </div>
-              <div class="clearfix"></div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-      </div>
-      {% endif   %}
-      <div class="profile_individual">
-        <div class="title_profile">
-          <h4><i class="fa fa-list-ul"></i>New Comment</h4>
-        </div>
-        <form id="ticketform" name="ticketform" method="post">
-          <label>Comment</label>
-          <div class="form-group">
-            <textarea class="form-control" name="comment" id="comment"></textarea>
-          </div>
-          <div class="form-group file_attachments">
-            <input type="file" class="form-control attachments" placeholder="Ticket Title" name="attachment_1" id="attachment_1">
-          </div>
-          <span class="other_attachment">another attachments</span>
-          <button><i class='fa fa-paper-plane-o'></i>Send</button>
-        </form>
-        {% for comment in ticket.get_ticket_comments %}
-          <div id="{{ comment.id }}"  class="editcomment edit">
-            <form id="ticketeditform" name="ticketeditform" method="post">
-            <label>Comment</label>
-            <div class="form-group">
-              <textarea class="form-control" name="comment" id="comment">{{ comment.comment }}</textarea>
-              <input type="hidden" name="comment_id" id="comment_id" value="{{ comment.id }}">
-            </div>
-            <div class="form-group file_attachments">
-              <input type="file" class="form-control attachments" placeholder="Ticket Title" name="attachment_1" id="attachment_1">
-            </div>
-            <span class="other_attachment">another attachments</span>
-            <button><i class='fa fa-paper-plane-o'></i>Send</button>
-            </form>
-          </div>
-        {% endfor %}
-        </div>
-      <div class="profile_individual">
-        <div class="title_profile">
-          <h4><i class="fa fa-list-ul"></i>Comments</h4>
-        </div>
-        {% if ticket.get_ticket_comments %}
-          <div class="comments_div">
-            {% for comment in ticket.get_ticket_comments %}
-              <div class="{% if ticket.user.is_staff %}ticket_admin{%else%}ticket_user{%endif%}" style="position:relative;">
-              <span class='comment-close' id="{{ comment.id }}"><i class="fa fa-close"></i></span>
+  </div>
 
-              <div class="user_details">
-                <span class="user"><i class="fa fa-user"></i>{{ comment.commented_by.email }}</span>
-                <span class="posted"><i class="fa fa-calendar"></i>{{ comment.created_on|timezone:"Asia/Calcutta" }}</span>
-                <span class="comment-edit" id="{{ comment.id }}"><i class="fa fa-pencil"></i></span>
-              </div>
-              <div class="comment">
-                {{ comment.comment }}
-              </div>
-              </div>
-            <div class="img_wrap">
+  <!-- Ticket Details Card -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-neutral-200">
+      <h3 class="text-lg font-semibold text-neutral-800">
+        <i class="fa fa-ticket text-primary-500 mr-2"></i>Ticket Information
+      </h3>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- Ticket Title -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Ticket Title</label>
+          <p class="text-neutral-900 font-medium">{{ ticket.title }}</p>
+        </div>
+
+        <!-- Ticket Type -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Ticket Type</label>
+          <p class="text-neutral-900">{{ ticket.ticket_type }}</p>
+        </div>
+
+        <!-- Status -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Status</label>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+            {% if ticket.status == 'Open' %}bg-blue-100 text-blue-800
+            {% elif ticket.status == 'In Progress' %}bg-yellow-100 text-yellow-800
+            {% elif ticket.status == 'Resolved' %}bg-green-100 text-green-800
+            {% else %}bg-neutral-100 text-neutral-800{% endif %}">
+            {{ ticket.status }}
+          </span>
+        </div>
+
+        <!-- Priority -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Priority</label>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+            {% if ticket.priority == 'High' %}bg-red-100 text-red-800
+            {% elif ticket.priority == 'Medium' %}bg-yellow-100 text-yellow-800
+            {% else %}bg-green-100 text-green-800{% endif %}">
+            {{ ticket.priority }}
+          </span>
+        </div>
+
+        <!-- Created By -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Created By</label>
+          <p class="text-neutral-900">{{ ticket.user.email }}</p>
+        </div>
+
+        <!-- Created On -->
+        <div class="bg-neutral-50 rounded-lg p-4">
+          <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1">Created On</label>
+          <p class="text-neutral-900">{{ ticket.created_on }}</p>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="bg-neutral-50 rounded-lg p-4 mb-6">
+        <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">Description</label>
+        <p class="text-neutral-700">{{ ticket.description }}</p>
+      </div>
+
+      <!-- Update Status -->
+      <div class="bg-neutral-50 rounded-lg p-4">
+        <label class="block text-sm font-medium text-neutral-700 mb-2">Update Status</label>
+        <select class="form-control max-w-xs" name="status" id="status">
+          <option value="">Select a ticket status</option>
+          {% for status in status %}
+          <option value="{{ status.0 }}" {% if status.0|slugify == ticket.status|slugify %}selected{% endif %}>{{ status.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attachments -->
+  {% if ticket.attachments.all %}
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-neutral-200">
+      <h3 class="text-lg font-semibold text-neutral-800">
+        <i class="fa fa-paperclip text-primary-500 mr-2"></i>Attachments
+      </h3>
+    </div>
+    <div class="p-6">
+      <div class="flex flex-wrap gap-4">
+        {% for attachment in ticket.attachments.all %}
+        <div class="relative group">
+          <a href="#" class="img-url block" id="{{ attachment.attached_file }}">
+            <img src="{% if attachment.attached_file %}{% thumbnail attachment.attached_file '100x100' upscale=True padding=True %}{% else %}{% static 'dummy.jpg' %}{% endif %}"
+                 class="w-24 h-24 object-cover rounded-lg border border-neutral-200" alt="Attachment">
+          </a>
+          <button class="attachment-close absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" id="{{ attachment.id }}">
+            <i class="fa fa-times text-xs"></i>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- New Comment Form -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-neutral-200">
+      <h3 class="text-lg font-semibold text-neutral-800">
+        <i class="fa fa-comment text-primary-500 mr-2"></i>Add Comment
+      </h3>
+    </div>
+    <div class="p-6">
+      <form id="ticketform" name="ticketform" method="post">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-neutral-700 mb-2">Comment</label>
+          <textarea class="form-control" name="comment" id="comment" rows="4" placeholder="Enter your comment..."></textarea>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-neutral-700 mb-2">Attachments</label>
+          <div class="file_attachments">
+            <input type="file" name="attachment_1" id="attachment_1" class="attachments text-sm">
+          </div>
+          <button type="button" class="other_attachment text-sm text-primary-600 hover:text-primary-700 mt-2">
+            <i class="fa fa-plus mr-1"></i>Add another attachment
+          </button>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-paper-plane mr-2"></i>Send
+        </button>
+      </form>
+
+      <!-- Edit Forms (hidden) -->
+      {% for comment in ticket.get_ticket_comments %}
+      <div id="{{ comment.id }}" class="editcomment hidden mt-4 p-4 border border-neutral-200 rounded-lg">
+        <form id="ticketeditform" name="ticketeditform" method="post">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-neutral-700 mb-2">Edit Comment</label>
+            <textarea class="form-control" name="comment" rows="4">{{ comment.comment }}</textarea>
+            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+          </div>
+          <div class="mb-4 file_attachments">
+            <input type="file" name="attachment_1" class="attachments text-sm">
+          </div>
+          <button type="button" class="other_attachment text-sm text-primary-600 hover:text-primary-700 mb-4">
+            <i class="fa fa-plus mr-1"></i>Add another attachment
+          </button>
+          <div class="flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa fa-save mr-2"></i>Update
+            </button>
+          </div>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Comments List -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-neutral-200">
+      <h3 class="text-lg font-semibold text-neutral-800">
+        <i class="fa fa-comments text-primary-500 mr-2"></i>Comments
+      </h3>
+    </div>
+    <div class="p-6">
+      {% if ticket.get_ticket_comments %}
+      <div class="space-y-4">
+        {% for comment in ticket.get_ticket_comments %}
+        <div class="relative bg-neutral-50 rounded-lg p-4 {% if ticket.user.is_staff %}border-l-4 border-primary-500{% else %}border-l-4 border-neutral-300{% endif %}">
+          <button class="comment-close absolute top-2 right-2 w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors" id="{{ comment.id }}">
+            <i class="fa fa-times text-xs"></i>
+          </button>
+          <div class="flex items-center gap-4 mb-2">
+            <span class="text-sm font-medium text-neutral-900">
+              <i class="fa fa-user text-neutral-400 mr-1"></i>{{ comment.commented_by.email }}
+            </span>
+            <span class="text-sm text-neutral-500">
+              <i class="fa fa-calendar text-neutral-400 mr-1"></i>{{ comment.created_on|timezone:"Asia/Calcutta" }}
+            </span>
+            <button class="comment-edit text-sm text-primary-600 hover:text-primary-700" id="{{ comment.id }}">
+              <i class="fa fa-pencil mr-1"></i>Edit
+            </button>
+          </div>
+          <p class="text-neutral-700">{{ comment.comment }}</p>
+
+          {% if comment.get_comments_attatchments %}
+          <div class="flex flex-wrap gap-2 mt-3">
             {% for attachment in comment.get_comments_attatchments %}
-             <div class="img-item" >
-              <a href="#" class="img-url" id="{{ attachment.attached_file }}"><img src="{% if attachment.attached_file %}{% thumbnail attachment.attached_file "100x100" upscale=True padding=True %}{% else %}{% static 'dummy.jpg' %}{% endif %}"></a>
-              <span class='attachment-close close-item' id="{{ attachment.id }}"><i class="fa fa-close"></i></span>
-              </div>
-                {% endfor %}
-                <br clear="all">
+            <div class="relative group">
+              <a href="#" class="img-url block" id="{{ attachment.attached_file }}">
+                <img src="{% if attachment.attached_file %}{% thumbnail attachment.attached_file '60x60' upscale=True padding=True %}{% else %}{% static 'dummy.jpg' %}{% endif %}"
+                     class="w-16 h-16 object-cover rounded border border-neutral-200" alt="Attachment">
+              </a>
+              <button class="attachment-close absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs" id="{{ attachment.id }}">
+                <i class="fa fa-times"></i>
+              </button>
             </div>
             {% endfor %}
           </div>
-        {% else %}
-          No Comments Available
-        {% endif %}
+          {% endif %}
+        </div>
+        {% endfor %}
       </div>
-      <!--/ post details -->
+      {% else %}
+      <p class="text-neutral-500 text-center py-4">No comments available</p>
+      {% endif %}
     </div>
   </div>
-</section>
-
+</div>
 {% endblock %}
 
 {% block script %}
-    <script type="text/javascript">
-        $('.other_attachment').click(function (e) {
-            attachments_count = $('.attachments').length + 1
-            $('.file_attachments').after('<div class="form-group"><input type="file" class="form-control attachments" placeholder="Ticket Title" name="attachment_' + attachments_count + '" id="attachment_' + attachments_count + '"></div>')
-        });
-
-$('.attachment-close').click(function (e) {
-    href = "/tickets/attachment/delete/" + $(this).attr('id') + '/'
-    console.log(href)
-    $('#block_question').text('Do you want to delete Attachment?')
-    $('#block_question').dialog({
-        modal: true,
-        dialogClass: "no-close",
-        draggable: false,
-        title: "Info!!",
-        buttons: [
-            {
-                text: "Yes",
-                click: function () {
-                    $(this).dialog("close");
-                    $.post(href, {}, function (data) {
-                        console.log(data.error), console.log(data.response)
-                        if (data.error == false) {
-                            open_dialog_with_url(data.response, 'Success!!!', ".")
-                        } else {
-                            open_dialog(data.response, 'Error!!')
-                        }
-                    }, 'json');
-                }
-            },
-            {
-                text: "No",
-                click: function () {
-                    $(this).dialog("close");
-                }
-            }
-        ]
-    });
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
+<script type="text/javascript">
+$('.other_attachment').click(function(e) {
+  var count = $('.attachments').length + 1;
+  $(this).before('<div class="mb-2"><input type="file" class="attachments text-sm" name="attachment_' + count + '" id="attachment_' + count + '"></div>');
 });
 
-    $("select#status").on('change', function (e) {
-        $.post('/tickets/status/' + {{ ticket.id }} +'/', {
-            'ticket_status': $(this).val(),
-            'mode': 'status'
-        }, function (data) {
+$('.attachment-close').click(function(e) {
+  var href = "/tickets/attachment/delete/" + $(this).attr('id') + '/';
+  $('#block_question').text('Do you want to delete this attachment?');
+  $('#block_question').dialog({
+    modal: true,
+    dialogClass: "no-close",
+    draggable: false,
+    title: "Confirm",
+    buttons: [
+      {
+        text: "Yes",
+        click: function() {
+          $(this).dialog("close");
+          $.post(href, {}, function(data) {
             if (data.error == false) {
-                open_dialog_with_url(data.response, 'Success!!!', ".")
+              open_dialog_with_url(data.response, 'Success!!!', ".");
             } else {
-                open_dialog(data.response, 'Error!!')
+              open_dialog(data.response, 'Error!');
             }
-        }, 'json');
-    });
-
-    $('.comment-close').click(function (e) {
-        href = $(this).attr('id') + '/'
-        $('#block_question').text('Do you want to delete Comment?')
-        $('#block_question').dialog({
-            modal: true,
-            dialogClass: "no-close",
-            draggable: false,
-            title: "Info!!",
-            buttons: [
-                {
-                    text: "Yes",
-                    click: function () {
-                        $(this).dialog("close");
-                        $.post("/tickets/comment/delete/" + href, {}, function (data) {
-                            if (data.error == false) {
-                                open_dialog_with_url(data.response, 'Success!!!', ".")
-
-                            } else {
-                                open_dialog(data.response, 'Error!!')
-                            }
-
-                        }, 'json');
-                    }
-                },
-                {
-                    text: "No",
-                    click: function () {
-                        $(this).dialog("close");
-                    }
-                }
-            ]
-        });
-    });
-    $('.comment-edit').click(function (e) {
-        id = $(this).attr('id')
-        $('div.editcomment').addClass('edit')
-        $('div#' + id).removeClass('edit')
-        $('form#ticketform').addClass('edit')
-    });
-
-    $('form#ticketeditform').ajaxForm({
-        type: 'POST',
-        dataType: 'json',
-        data: $('#ticketeditform').serialize(),
-        url: '/tickets/comment/edit/',
-        success: function (data) {
-            if (data.error == false) {
-                open_dialog_with_url(data.response, 'Success!!!', ".")
-            } else {
-                $('div.error').remove();
-                if (data.response_message) {
-                    open_dialog(data.response_message, 'Info!!')
-                }
-                for (var key in data.response) {
-                    $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
-                }
-            }
+          }, 'json');
         }
-    });
-
-    $('form#ticketform').ajaxForm({
-        type: 'POST',
-        dataType: 'json',
-        data: $('#ticketform').serialize(),
-        url: '/tickets/comment/' + {{ ticket.id }}+'/',
-        success: function (data) {
-            if (data.error == false) {
-                open_dialog_with_url(data.response, 'Success!!!', ".")
-            } else {
-                $('div.error').remove();
-                for (var key in data.response) {
-                    $('#' + key).after('<div class="error">' + data.response[key] + '</div>');
-                }
-            }
+      },
+      {
+        text: "No",
+        click: function() {
+          $(this).dialog("close");
         }
-    });
+      }
+    ]
+  });
+});
 
-        $('.img-url').click(function (e) {
-            e.preventDefault();
-            window.location = 'https://peeljobs.s3.amazonaws.com/' + $(this).attr('id')
-        })
+$("select#status").on('change', function(e) {
+  $.post('/tickets/status/' + {{ ticket.id }} + '/', {
+    'ticket_status': $(this).val(),
+    'mode': 'status'
+  }, function(data) {
+    if (data.error == false) {
+      open_dialog_with_url(data.response, 'Success!!!', ".");
+    } else {
+      open_dialog(data.response, 'Error!');
+    }
+  }, 'json');
+});
 
-    </script>
+$('.comment-close').click(function(e) {
+  var href = $(this).attr('id') + '/';
+  $('#block_question').text('Do you want to delete this comment?');
+  $('#block_question').dialog({
+    modal: true,
+    dialogClass: "no-close",
+    draggable: false,
+    title: "Confirm",
+    buttons: [
+      {
+        text: "Yes",
+        click: function() {
+          $(this).dialog("close");
+          $.post("/tickets/comment/delete/" + href, {}, function(data) {
+            if (data.error == false) {
+              open_dialog_with_url(data.response, 'Success!!!', ".");
+            } else {
+              open_dialog(data.response, 'Error!');
+            }
+          }, 'json');
+        }
+      },
+      {
+        text: "No",
+        click: function() {
+          $(this).dialog("close");
+        }
+      }
+    ]
+  });
+});
+
+$('.comment-edit').click(function(e) {
+  var id = $(this).attr('id');
+  $('div.editcomment').addClass('hidden');
+  $('div#' + id).removeClass('hidden');
+  $('form#ticketform').addClass('hidden');
+});
+
+$('form#ticketeditform').ajaxForm({
+  type: 'POST',
+  dataType: 'json',
+  url: '/tickets/comment/edit/',
+  success: function(data) {
+    if (data.error == false) {
+      open_dialog_with_url(data.response, 'Success!!!', ".");
+    } else {
+      $('div.error').remove();
+      if (data.response_message) {
+        open_dialog(data.response_message, 'Info!');
+      }
+      for (var key in data.response) {
+        $('#' + key).after('<div class="error text-red-500 text-sm mt-1">' + data.response[key] + '</div>');
+      }
+    }
+  }
+});
+
+$('form#ticketform').ajaxForm({
+  type: 'POST',
+  dataType: 'json',
+  url: '/tickets/comment/' + {{ ticket.id }} + '/',
+  success: function(data) {
+    if (data.error == false) {
+      open_dialog_with_url(data.response, 'Success!!!', ".");
+    } else {
+      $('div.error').remove();
+      for (var key in data.response) {
+        $('#' + key).after('<div class="error text-red-500 text-sm mt-1">' + data.response[key] + '</div>');
+      }
+    }
+  }
+});
+
+$('.img-url').click(function(e) {
+  e.preventDefault();
+  window.location = 'https://peeljobs.s3.amazonaws.com/' + $(this).attr('id');
+});
+</script>
 {% endblock %}

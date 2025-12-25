@@ -1,92 +1,120 @@
 {% extends "dashboard/base.html" %}
 
 {% block stage %}
-    <div class="content_wrapper">
-        <div class="row mt">
-            <!-- CONTENT -->
-            <section id='recruiters'>
-
-                <div class="list_table">
-                    <div class="title_div">
-                        <div class="records">
-                            <div class="form-inline">
-                            </div>
-                        </div>
-                        <!-- <div class='filter'>
-                            <div class="form-inline">
-                                <div class="form-group">
-                                    <span><a href="{% url 'dashboard:new_admin_user' %}"><button
-                                            class="btn btn-warning"><i class="fa fa-plus"></i> Add New User</button></a></span>
-                                </div>
-                            </div>
-                        </div> -->
-                        <div class="clearfix"></div>
-                    </div>
-                    <h3>Users List</h3>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th width="8%">No</th>
-                            <th width="12%">Email</th>
-                            <th width="30%">Username</th>
-                            <th width="15%">User Type</th>
-                            <th width="25%">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for user in users_list %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ user.email }}</td>
-                                <td>{{ user.first_name }} {% if user.last_name %}{{ user.last_name }}{% endif %}
-                                </td>
-                                <td>{% for permission in user.user_permissions.all %}
-                                    {% if forloop.last and not forloop.next_element %}{{ permission.codename }}
-                                        {% else %}{{ permission.codename }},&nbsp;{% endif %}{% endfor %}</td>
-                                <td>
-                                    <a href="{% url 'dashboard:view_user' user.id %}"><i class="fa fa-eye view"
-                                                                                         title="View"
-                                                                                         data-toggle="modal"
-                                                                                         data-target="#myModal"></i></a>
-                                    {% if request.user.id != user.id %}
-                                    <a href="{% url 'dashboard:edit_user' user.id %}" id="{{ user.id }}"
-                                       class="edit-user"><i class="fa fa-edit delete" title="Edit User"></i></a>
-                                    <a href="#" id="{{ user.id }}" class="delete-user"><i class="fa fa-trash-o delete"
-                                                                                      title="Delete User"></i></a>{% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    <!--<div class="pagination">
-                        {% if users_list.has_previous %}
-                            <span class='pagintion_btn'><a
-                                    href="?page={{ users_list.previous_page_number }}">Previous</a></span>
-                        {% endif %}
-                        <span class='pagination_text'>Page <b>{{ users_list.number }}</b> of <b>{{ users_list.paginator.num_pages }}</b></span>
-                        {% if users_list.has_next %}
-                            <span class='pagintion_btn'><a
-                                    href="?page={{ users_list.next_page_number }}">Next</a></span>
-                        {% endif %}
-                    </div>-->
-                </div>
-            </section>
-        </div>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-neutral-900">Users List</h1>
+      <p class="text-sm text-neutral-500 mt-0.5">Manage admin users</p>
     </div>
+    <a href="{% url 'dashboard:new_admin_user' %}" class="btn btn-primary">
+      <i class="fa fa-plus mr-2"></i>Add New User
+    </a>
+  </div>
+
+  <!-- Users Table -->
+  <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full" id="sample_1">
+        <thead>
+          <tr class="bg-neutral-50 border-b border-neutral-200">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider w-16">No</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Email</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Username</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">User Type</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-100">
+          {% for user in users_list %}
+          <tr class="hover:bg-neutral-50 transition-colors">
+            <td class="px-4 py-3">
+              <span class="text-sm text-neutral-500">{{ forloop.counter }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="text-sm text-neutral-900">{{ user.email }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="text-sm text-neutral-600">{{ user.first_name }} {% if user.last_name %}{{ user.last_name }}{% endif %}</span>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex flex-wrap gap-1">
+                {% for permission in user.user_permissions.all %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-700">
+                  {{ permission.codename }}
+                </span>
+                {% endfor %}
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <a href="{% url 'dashboard:view_user' user.id %}" class="p-1.5 rounded-md hover:bg-neutral-100 text-neutral-600 transition-colors" title="View">
+                  <i class="fa fa-eye"></i>
+                </a>
+                {% if request.user.id != user.id %}
+                <a href="{% url 'dashboard:edit_user' user.id %}" id="{{ user.id }}" class="edit-user p-1.5 rounded-md hover:bg-blue-100 text-blue-600 transition-colors" title="Edit User">
+                  <i class="fa fa-edit"></i>
+                </a>
+                <a href="#" id="{{ user.id }}" class="delete-user p-1.5 rounded-md hover:bg-red-100 text-red-600 transition-colors" title="Delete User">
+                  <i class="fa fa-trash-o"></i>
+                </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="px-4 py-12 text-center">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
+                  <i class="fa fa-users text-2xl text-neutral-400"></i>
+                </div>
+                <p class="text-neutral-500">No users found</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock stage %}
+
 {% block script %}
-
-    <script type="text/javascript">
-        $('.delete-user').click(function (e) {
-            e.preventDefault();
-            $.post('/dashboard/users/delete/' + $(this).attr('id') + '/', {}, function (data) {
-                if (data.error) {
-                    open_dialog(data.response, 'Error!')
-                } else {
-                    open_dialog_with_url('User Deleted Successfully', 'Success!!!', "{% url 'dashboard:admin_user_list' %}")
-                }
+<script type="text/javascript">
+  $('.delete-user').click(function (e) {
+    e.preventDefault();
+    var userId = $(this).attr('id');
+    $('#block_question').text('Do you want to delete this User?')
+    $('#block_question').dialog({
+      modal: true,
+      dialogClass: "no-close",
+      draggable: false,
+      title: "Info!!",
+      buttons: [
+        {
+          text: "Yes",
+          click: function () {
+            $.post('/dashboard/users/delete/' + userId + '/', {}, function (data) {
+              if (data.error) {
+                open_dialog(data.response, 'Error!')
+              } else {
+                open_dialog_with_url('User Deleted Successfully', 'Success!!!', "{% url 'dashboard:admin_user_list' %}")
+              }
             }, 'json');
-        });
-
-    </script>
+            $(this).dialog("close");
+          }
+        },
+        {
+          text: "No",
+          click: function () {
+            $(this).dialog("close");
+          }
+        }
+      ]
+    });
+  });
+</script>
 {% endblock script %}
