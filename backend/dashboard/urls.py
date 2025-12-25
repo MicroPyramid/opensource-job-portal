@@ -79,10 +79,6 @@ from .views import (
     delete_menu,
     menu_status,
     menu_order,
-    assessment_skills,
-    new_question,
-    skill_questions,
-    view_question,
     save_meta_data,
     mail_to_recruiter,
 )
@@ -332,19 +328,6 @@ urlpatterns = [
         name="menu_status",
     ),
     url(r"^company/(?P<company_id>[-\w]+)/menu/order/$", menu_order, name="menu_order"),
-    # Assessment urls
-    url(r"^assessment/skills/", assessment_skills, name="assessment_skills"),
-    url(r"^assessment/question/new/", new_question, name="new_question"),
-    url(
-        r"^assement/skill/questions/(?P<skill_id>[-\w]+)/$",
-        skill_questions,
-        name="skill_questions",
-    ),
-    url(
-        r"^assement/question/view/(?P<question_id>[-\w]+)/",
-        view_question,
-        name="view_question",
-    ),
     url(r"^save/meta-data/", save_meta_data, name="save_meta_data"),
     url(
         r"^moving/duplicate/(?P<value>[-\w]+)/",

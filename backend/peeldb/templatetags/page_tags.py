@@ -20,7 +20,6 @@ from peeldb.models import (
     Industry,
     Company,
     Qualification,
-    AssessmentData,
     DEGREE_TYPES,
     UserMessage,
 )
@@ -717,38 +716,6 @@ def is_events_created(request, job):
     max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
     expiry_date = job.published_on.date() + timedelta(days=max_age_days)
     return date.today() >= expiry_date
-
-
-@register.filter()
-def is_liked_question(user, question):
-    likes = AssessmentData.objects.filter(
-        question__id=question, user=user, comment="", like=True
-    )
-    return likes.exists()
-
-
-@register.filter()
-def is_disliked_question(user, question):
-    likes = AssessmentData.objects.filter(
-        question__id=question, user=user, comment="", dislike=True
-    )
-    return likes.exists()
-
-
-@register.filter()
-def is_liked_answer(user, answer):
-    likes = AssessmentData.objects.filter(
-        solution__id=answer, user=user, comment="", like=True
-    )
-    return likes.exists()
-
-
-@register.filter()
-def is_disliked_answer(user, answer):
-    likes = AssessmentData.objects.filter(
-        solution__id=answer, user=user, comment="", dislike=True
-    )
-    return likes.exists()
 
 
 @register.simple_tag()

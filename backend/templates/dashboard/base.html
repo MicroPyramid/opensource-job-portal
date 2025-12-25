@@ -321,19 +321,6 @@
             </div>
         </div>
 
-        <!-- Assessments -->
-        <div class="nav-group">
-            <div class="nav-item" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                <i class="fa fa-clipboard-check"></i>
-                <span>Assessments</span>
-                <i class="fa fa-chevron-down text-xs ml-auto"></i>
-            </div>
-            <div class="sub-nav hidden">
-                <a href="{% url 'dashboard:assessment_skills' %}">Skills</a>
-                <a href="{% url 'dashboard:new_question' %}">Post A New Question</a>
-            </div>
-        </div>
-
         {% if request.user|check_perm %}
         <!-- Support -->
         <div class="nav-group">

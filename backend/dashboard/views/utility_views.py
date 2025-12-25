@@ -16,7 +16,6 @@ from peeldb.models import (
     MetaData,
     Project,
     Qualification,
-    Question,
     SearchResult,
     Skill,
     Subscriber,
@@ -202,8 +201,6 @@ def moving_duplicates(request, value):
                     resume.skill.add(original)
                 subscribers = Subscriber.objects.filter(skill__in=duplicates)
                 subscribers.update(skill=original)
-                questions = Question.objects.filter(skills__in=duplicates)
-                questions.update(skills=original)
                 return HttpResponse(
                     json.dumps(
                         {"error": False, "response": "Skills updated successfully"}

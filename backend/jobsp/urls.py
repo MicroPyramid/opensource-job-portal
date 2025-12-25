@@ -50,11 +50,8 @@ from search.views import (
 )
 from candidate.views import (
     bounces,
-    assessment_changes,
     applicant_unsubscribing,
     applicant_email_unsubscribing,
-    question_view,
-    assessments_questions,
     alert_subscribe_verification,
 )
 from recruiter.views import post_job
@@ -226,16 +223,6 @@ urlpatterns = [
     url(r"^internship-jobs/(?P<page_num>[0-9]+)/$", internship_jobs),
     url(r"^government-jobs/$", government_jobs, name="government_jobs"),
     url(r"^government-jobs/(?P<page_num>[0-9]+)/$", government_jobs),
-    url(
-        r"^assessment/question/view/(?P<que_id>[0-9]+)/$",
-        question_view,
-        name="question_view",
-    ),
-    url(
-        r"^assessment-questions/$", assessments_questions, name="assessments_questions"
-    ),
-    url(r"^assessment-questions/(?P<page_num>[0-9]+)/$", assessments_questions),
-    url(r"^assessment-changes/$", assessment_changes),
     # OLD: url(r"^sitemap.xml$", sitemap_xml, name="sitemap_xml"),  # Replaced with Django sitemaps
     # url(r"^login/$", users_login, name="users_login"),
     url(r"^contact/$", contact, name="contact"),

@@ -15,8 +15,6 @@ from .project_views import *
 
 from .alert_views import *
 
-from .assessment_views import *
-
 from .message_views import *
 
 from .my_views import *
