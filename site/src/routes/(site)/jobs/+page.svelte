@@ -273,7 +273,7 @@
 
       // Only navigate if URL actually changed
       if ($page.url.pathname + ($page.url.search || '') !== newUrl) {
-        goto(newUrl);
+        goto(newUrl, { replaceState: true, noScroll: true, keepFocus: true });
       }
     }, delay);
   }
@@ -580,7 +580,7 @@
     <div class="flex flex-col lg:flex-row gap-8">
       <!-- Filter Sidebar -->
       <aside class="{showFiltersMobile ? 'block' : 'hidden'} lg:block lg:w-80 flex-shrink-0">
-        <div class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden lg:sticky lg:top-24">
+        <div class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
           <!-- Filter Header -->
           <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 bg-surface-50">
             <h2 class="text-base font-semibold text-gray-900 flex items-center gap-2">
@@ -968,6 +968,7 @@
   onClose={() => showLocationModal = false}
   onToggle={toggleLocationFilter}
   onApply={() => showLocationModal = false}
+  closeOnSelect={true}
 />
 
 <FilterModal
@@ -977,6 +978,7 @@
   onClose={() => showSkillsModal = false}
   onToggle={toggleSkillFilter}
   onApply={() => showSkillsModal = false}
+  closeOnSelect={true}
 />
 
 <FilterModal
@@ -986,6 +988,7 @@
   onClose={() => showIndustryModal = false}
   onToggle={toggleIndustryFilter}
   onApply={() => showIndustryModal = false}
+  closeOnSelect={true}
 />
 
 <FilterModal
@@ -995,4 +998,5 @@
   onClose={() => showEducationModal = false}
   onToggle={toggleEducationFilter}
   onApply={() => showEducationModal = false}
+  closeOnSelect={true}
 />

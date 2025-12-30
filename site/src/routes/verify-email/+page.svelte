@@ -1,77 +1,49 @@
 <script>
-  import { onMount } from 'svelte';
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { Mail, CheckCircle, XCircle, Loader2, RefreshCw, Clock } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
 
-  let verificationStatus = 'verifying';
-  let email = '';
-  let isResending = false;
-  let resendSuccess = false;
-  let errorMessage = '';
+  /** @type {{ data?: { status?: string; message?: string; email?: string }; form?: { success?: boolean; message?: string } }} */
+  let { data, form } = $props();
 
-  $: token = $page.url.searchParams.get('token');
-  $: email = $page.url.searchParams.get('email') || '';
+  let verificationStatus = $state(data?.status || 'pending');
+  let email = $state(data?.email || '');
+  let isResending = $state(false);
+  let resendSuccess = $state(false);
+  let errorMessage = $state(data?.message || '');
 
-  onMount(() => {
-    if (token) {
-      verifyEmail(token);
-    } else {
-      verificationStatus = 'error';
-      errorMessage = 'No verification token provided';
+  // Update state when data changes
+  $effect(() => {
+    if (data?.status) {
+      verificationStatus = data.status;
+    }
+    if (data?.email) {
+      email = data.email;
+    }
+    if (data?.message && data.status !== 'success') {
+      errorMessage = data.message;
     }
   });
 
-  /**
-   * @param {string} token
-   */
-  async function verifyEmail(token) {
-    try {
-      console.log('Verifying email with token:', token);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const random = Math.random();
-      if (random > 0.8) {
-        verificationStatus = 'expired';
-        errorMessage = 'This verification link has expired';
-      } else if (random > 0.9) {
-        verificationStatus = 'error';
-        errorMessage = 'Invalid verification token';
-      } else {
-        verificationStatus = 'success';
-
-        setTimeout(() => {
-          goto('/jobseeker-dashboard');
-        }, 3000);
-      }
-    } catch (error) {
-      console.error('Email verification error:', error);
-      verificationStatus = 'error';
-      errorMessage = 'Failed to verify email. Please try again.';
-    }
-  }
-
-  async function handleResend() {
-    if (!email) {
-      errorMessage = 'Email address not found. Please register again.';
-      return;
-    }
-
-    isResending = true;
-    resendSuccess = false;
-
-    try {
-      console.log('Resending verification email to:', email);
-      await new Promise(resolve => setTimeout(resolve, 1500));
+  // Handle resend form result
+  $effect(() => {
+    if (form?.success) {
       resendSuccess = true;
       errorMessage = '';
-    } catch (error) {
-      console.error('Resend verification error:', error);
-      errorMessage = 'Failed to resend verification email. Please try again.';
-    } finally {
-      isResending = false;
+    } else if (form?.message) {
+      errorMessage = form.message;
     }
-  }
+    isResending = false;
+  });
+
+  // Redirect on success after delay
+  $effect(() => {
+    if (verificationStatus === 'success') {
+      setTimeout(() => {
+        goto('/');
+      }, 3000);
+    }
+  });
 </script>
 
 <svelte:head>
@@ -118,6 +90,82 @@
           </div>
         </div>
 
+      {:else if verificationStatus === 'pending'}
+        <!-- Pending - Waiting for user to check email -->
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-6">
+            <Mail size={32} class="text-primary-600" />
+          </div>
+
+          <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mb-3">
+            Check Your Email
+          </h2>
+
+          <p class="text-gray-600 mb-6">
+            We've sent a verification link to your email address. Please click the link to verify your account.
+          </p>
+
+          {#if email}
+            <div class="bg-primary-50 rounded-xl p-4 mb-6">
+              <p class="text-sm text-gray-700 mb-1">
+                Verification email sent to:
+              </p>
+              <p class="text-primary-600 font-medium">
+                {email}
+              </p>
+            </div>
+          {/if}
+
+          {#if resendSuccess}
+            <div class="p-4 bg-success-500/10 border border-success-500/20 rounded-xl mb-4 animate-scale-in">
+              <div class="flex items-center gap-2 text-success-700">
+                <CheckCircle size={16} />
+                <span class="text-sm font-medium">Verification email sent! Check your inbox.</span>
+              </div>
+            </div>
+          {/if}
+
+          {#if errorMessage}
+            <div class="p-4 bg-error-500/10 border border-error-500/20 rounded-xl mb-4">
+              <p class="text-sm text-error-600">{errorMessage}</p>
+            </div>
+          {/if}
+
+          <form
+            method="POST"
+            action="?/resend"
+            use:enhance={() => {
+              isResending = true;
+              resendSuccess = false;
+              return async ({ update }) => {
+                await update();
+              };
+            }}
+          >
+            <input type="hidden" name="email" value={email} />
+            <button
+              type="submit"
+              disabled={isResending || !email}
+              class="w-full px-5 py-3 border border-primary-600 text-primary-600 font-medium rounded-full hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
+            >
+              {#if isResending}
+                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Sending...
+              {:else}
+                <RefreshCw size={18} />
+                Resend Verification Email
+              {/if}
+            </button>
+          </form>
+
+          <p class="text-sm text-gray-500">
+            Didn't receive the email? Check your spam folder or request a new verification link above.
+          </p>
+        </div>
+
       {:else if verificationStatus === 'success'}
         <!-- Success State -->
         <div class="text-center animate-scale-in">
@@ -138,15 +186,15 @@
               Welcome to PeelJobs!
             </p>
             <p class="text-sm text-gray-600">
-              Redirecting you to your dashboard...
+              Redirecting you to home page...
             </p>
           </div>
 
           <a
-            href="/jobseeker-dashboard/"
+            href="/"
             class="inline-block w-full px-5 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-full transition-all elevation-1 hover:elevation-2 text-center"
           >
-            Continue to Dashboard
+            Go to Home
           </a>
         </div>
 
@@ -191,23 +239,35 @@
             </div>
           {/if}
 
-          <button
-            type="button"
-            onclick={handleResend}
-            disabled={isResending || !email}
-            class="w-full px-5 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-full transition-all elevation-1 hover:elevation-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
+          <form
+            method="POST"
+            action="?/resend"
+            use:enhance={() => {
+              isResending = true;
+              resendSuccess = false;
+              return async ({ update }) => {
+                await update();
+              };
+            }}
           >
-            {#if isResending}
-              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Sending...
-            {:else}
-              <RefreshCw size={18} />
-              Resend Verification Email
-            {/if}
-          </button>
+            <input type="hidden" name="email" value={email} />
+            <button
+              type="submit"
+              disabled={isResending || !email}
+              class="w-full px-5 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-full transition-all elevation-1 hover:elevation-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
+            >
+              {#if isResending}
+                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Sending...
+              {:else}
+                <RefreshCw size={18} />
+                Resend Verification Email
+              {/if}
+            </button>
+          </form>
 
           <a href="/login/" class="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors">
             Back to Sign In
@@ -265,23 +325,35 @@
           {/if}
 
           {#if email}
-            <button
-              type="button"
-              onclick={handleResend}
-              disabled={isResending}
-              class="w-full px-5 py-3 border border-primary-600 text-primary-600 font-medium rounded-full hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
+            <form
+              method="POST"
+              action="?/resend"
+              use:enhance={() => {
+                isResending = true;
+                resendSuccess = false;
+                return async ({ update }) => {
+                  await update();
+                };
+              }}
             >
-              {#if isResending}
-                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Sending...
-              {:else}
-                <RefreshCw size={18} />
-                Request New Verification Email
-              {/if}
-            </button>
+              <input type="hidden" name="email" value={email} />
+              <button
+                type="submit"
+                disabled={isResending}
+                class="w-full px-5 py-3 border border-primary-600 text-primary-600 font-medium rounded-full hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
+              >
+                {#if isResending}
+                  <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Sending...
+                {:else}
+                  <RefreshCw size={18} />
+                  Request New Verification Email
+                {/if}
+              </button>
+            </form>
           {/if}
 
           <div class="flex flex-col gap-2">

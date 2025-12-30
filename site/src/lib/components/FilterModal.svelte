@@ -15,6 +15,7 @@
     onClose: () => void;
     onToggle: (value: string) => void;
     onApply: () => void;
+    closeOnSelect?: boolean; // New prop to close after selection
   }
 
   let {
@@ -23,7 +24,8 @@
     isOpen = $bindable(),
     onClose,
     onToggle,
-    onApply
+    onApply,
+    closeOnSelect = false
   }: Props = $props();
 
   let searchTerm = $state('');
@@ -44,6 +46,17 @@
   function handleApply() {
     searchTerm = '';
     onApply();
+  }
+
+  function handleToggle(value: string) {
+    onToggle(value);
+    // If closeOnSelect is true, close the modal after toggling
+    if (closeOnSelect) {
+      // Close immediately using multiple methods to ensure it works
+      searchTerm = '';
+      isOpen = false;
+      onClose();
+    }
   }
 
   function handleBackdropClick(event: MouseEvent) {
@@ -121,7 +134,7 @@
               <input
                 type="checkbox"
                 checked={option.checked}
-                onchange={() => onToggle(option.value)}
+                onchange={() => handleToggle(option.value)}
                 class="w-4 h-4 text-primary-600 rounded-lg border-gray-300 focus:ring-primary-500 focus:ring-2"
                 aria-label="Filter by {option.name}"
               />

@@ -36,12 +36,13 @@ export interface EducationDetails {
 }
 
 export interface EducationDetailsCreateUpdate {
-	institute_id: number;
+	institute_id?: number;
 	degree_id: number;
 	from_date: string;
 	to_date?: string;
 	score: string;
 	current_education: boolean;
+	custom_institute_name?: string;
 }
 
 /**

@@ -33,7 +33,8 @@
 		from_date: '',
 		to_date: '',
 		score: '',
-		current_education: false
+		current_education: false,
+		custom_institute_name: ''
 	});
 
 	// Lookup data
@@ -48,6 +49,7 @@
 	let instituteSearchQuery = $state('');
 	let degreeSearchQuery = $state('');
 	let searchingInstitutes = $state(false);
+	let isOtherInstitute = $state(false);
 
 	// Reactive degree filtering based on selected qualification
 	let filteredDegrees = $derived(
@@ -135,8 +137,10 @@
 				from_date: education.from_date,
 				to_date: education.to_date || '',
 				score: education.score,
-				current_education: education.current_education
+				current_education: education.current_education,
+				custom_institute_name: ''
 			};
+			isOtherInstitute = false;
 
 			// Find qualification ID from degree
 			const degree = degrees.find((d) => d.id === education.degree_id);
@@ -151,9 +155,11 @@
 				from_date: '',
 				to_date: '',
 				score: '',
-				current_education: false
+				current_education: false,
+				custom_institute_name: ''
 			};
 			selectedQualificationId = 0;
+			isOtherInstitute = false;
 		}
 	});
 
@@ -173,8 +179,13 @@
 		e.preventDefault();
 
 		// Validation
-		if (!formData.institute_id) {
-			toast.error('Please select an institute');
+		if (!isOtherInstitute && !formData.institute_id) {
+			toast.error('Please select an institute or choose "Other"');
+			return;
+		}
+
+		if (isOtherInstitute && !formData.custom_institute_name?.trim()) {
+			toast.error('Please enter your institute name');
 			return;
 		}
 
@@ -196,13 +207,23 @@
 		loading = true;
 
 		try {
+			// Prepare data for submission
+			const submitData = { ...formData };
+			if (isOtherInstitute) {
+				// Clear institute_id when using custom name
+				delete submitData.institute_id;
+			} else {
+				// Clear custom name when using selected institute
+				delete submitData.custom_institute_name;
+			}
+
 			if (education) {
 				// Update existing education
-				await updateEducation(education.id, formData);
+				await updateEducation(education.id, submitData);
 				toast.success('Education updated successfully!');
 			} else {
 				// Add new education
-				await addEducation(formData);
+				await addEducation(submitData);
 				toast.success('Education added successfully!');
 			}
 
@@ -231,10 +252,12 @@
 			from_date: '',
 			to_date: '',
 			score: '',
-			current_education: false
+			current_education: false,
+			custom_institute_name: ''
 		};
 		selectedQualificationId = 0;
 		instituteSearchQuery = '';
+		isOtherInstitute = false;
 	}
 
 	/**
@@ -338,32 +361,56 @@
 						<label for="institute" class="block text-sm font-medium text-gray-700 mb-2">
 							Institute <span class="text-error-500">*</span>
 						</label>
-						<div class="relative">
-							<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-								<Search size={18} class="text-gray-400" />
-							</span>
+
+						{#if !isOtherInstitute}
+							<div class="relative">
+								<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+									<Search size={18} class="text-gray-400" />
+								</span>
+								<input
+									type="text"
+									placeholder="Search institute..."
+									bind:value={instituteSearchQuery}
+									oninput={handleInstituteSearch}
+									class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+								/>
+							</div>
+							<select
+								id="institute"
+								bind:value={formData.institute_id}
+								class="mt-3 w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none appearance-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+								disabled={loadingLookups || searchingInstitutes}
+							>
+								<option value={0}>Select institute...</option>
+								{#each institutes as institute}
+									<option value={institute.id}>
+										{institute.name} {institute.city_name ? `(${institute.city_name})` : ''}
+									</option>
+								{/each}
+							</select>
+							<button
+								type="button"
+								onclick={() => { isOtherInstitute = true; formData.institute_id = 0; }}
+								class="mt-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+							>
+								Can't find your institute? Click here to enter manually
+							</button>
+						{:else}
 							<input
 								type="text"
-								placeholder="Search institute..."
-								bind:value={instituteSearchQuery}
-								oninput={handleInstituteSearch}
-								class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+								id="custom_institute"
+								bind:value={formData.custom_institute_name}
+								placeholder="Enter your institute name..."
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 							/>
-						</div>
-						<select
-							id="institute"
-							bind:value={formData.institute_id}
-							class="mt-3 w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none appearance-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-							required
-							disabled={loadingLookups || searchingInstitutes}
-						>
-							<option value={0}>Select institute...</option>
-							{#each institutes as institute}
-								<option value={institute.id}>
-									{institute.name} {institute.city_name ? `(${institute.city_name})` : ''}
-								</option>
-							{/each}
-						</select>
+							<button
+								type="button"
+								onclick={() => { isOtherInstitute = false; formData.custom_institute_name = ''; }}
+								class="mt-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+							>
+								← Back to search from list
+							</button>
+						{/if}
 					</div>
 
 					<!-- Date Range -->

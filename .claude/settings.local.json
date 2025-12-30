@@ -1,0 +1,8 @@
+{
+  "enabledMcpjsonServers": [
+    "context7",
+    "playwright",
+    "svelte"
+  ],
+  "enableAllProjectMcpServers": true
+}

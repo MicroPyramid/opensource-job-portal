@@ -20,6 +20,7 @@ env
 env/
 venv/
 .env
+.venv
 secret
 staticfiles/CACHE
 backend/staticfiles/

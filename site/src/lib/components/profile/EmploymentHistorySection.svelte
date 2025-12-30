@@ -312,142 +312,161 @@
 
 	<!-- Add/Edit Form Modal -->
 	{#if showAddForm}
-		<div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-			<div class="bg-white rounded-2xl elevation-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
-				<!-- Modal Header -->
-				<div class="flex items-center justify-between p-5 lg:p-6 border-b border-gray-100">
-					<div class="flex items-center gap-3">
-						<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
-							<Briefcase size={20} class="text-primary-600" />
-						</div>
-						<h3 class="text-lg font-semibold text-gray-900">
-							{editingEmploymentId ? 'Edit Employment' : 'Add Employment'}
-						</h3>
-					</div>
-					<button
-						type="button"
-						onclick={closeForm}
-						class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-					>
-						<X size={20} />
-					</button>
-				</div>
+		<div
+			class="fixed inset-0 z-50 overflow-y-auto"
+			aria-labelledby="modal-title"
+			role="dialog"
+			aria-modal="true"
+		>
+			<!-- Backdrop -->
+			<div
+				class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity animate-fade-in"
+				onclick={closeForm}
+				onkeydown={(e) => e.key === 'Escape' && closeForm()}
+				role="button"
+				tabindex="-1"
+				aria-label="Close modal"
+			></div>
 
-				<!-- Modal Body -->
-				<div class="p-5 lg:p-6 space-y-5">
-					<!-- Company Name -->
-					<div>
-						<label for="company" class="block text-sm font-medium text-gray-700 mb-2">
-							Company Name <span class="text-error-500">*</span>
-						</label>
-						<input
-							type="text"
-							id="company"
-							bind:value={formData.company}
-							placeholder="e.g., Google, Microsoft"
-							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-						/>
-					</div>
-
-					<!-- Designation -->
-					<div>
-						<label for="designation" class="block text-sm font-medium text-gray-700 mb-2">
-							Designation/Job Title <span class="text-error-500">*</span>
-						</label>
-						<input
-							type="text"
-							id="designation"
-							bind:value={formData.designation}
-							placeholder="e.g., Senior Software Engineer"
-							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-						/>
-					</div>
-
-					<!-- Dates -->
-					<div class="grid grid-cols-2 gap-4">
-						<div>
-							<label for="from_date" class="block text-sm font-medium text-gray-700 mb-2">
-								Start Date <span class="text-error-500">*</span>
-							</label>
-							<input
-								type="date"
-								id="from_date"
-								bind:value={formData.from_date}
-								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-							/>
-						</div>
-						<div>
-							<label for="to_date" class="block text-sm font-medium text-gray-700 mb-2">
-								End Date {formData.current_job ? '' : ''}
-							</label>
-							<input
-								type="date"
-								id="to_date"
-								bind:value={formData.to_date}
-								disabled={formData.current_job}
-								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-							/>
-						</div>
-					</div>
-
-					<!-- Current Job Checkbox -->
-					<div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-						<label class="flex items-start gap-3 cursor-pointer">
-							<input
-								type="checkbox"
-								bind:checked={formData.current_job}
-								onchange={handleCurrentJobChange}
-								class="w-5 h-5 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-							/>
-							<div>
-								<p class="font-medium text-gray-900">I currently work here</p>
-								<p class="text-sm text-gray-600">Check this if this is your current job</p>
+			<!-- Modal -->
+			<div class="flex min-h-screen items-center justify-center p-4">
+				<div
+					class="relative w-full max-w-2xl transform rounded-2xl bg-white elevation-4 transition-all animate-scale-in my-8"
+				>
+					<!-- Header -->
+					<div class="flex items-center justify-between border-b border-gray-100 p-5 lg:p-6">
+						<div class="flex items-center gap-3">
+							<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+								<Briefcase size={20} class="text-primary-600" />
 							</div>
-						</label>
+							<h3 class="text-lg font-semibold text-gray-900" id="modal-title">
+								{editingEmploymentId ? 'Edit Employment' : 'Add Employment'}
+							</h3>
+						</div>
+						<button
+							type="button"
+							onclick={closeForm}
+							class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+						>
+							<X size={20} />
+						</button>
 					</div>
 
-					<!-- Job Profile/Description -->
-					<div>
-						<label for="job_profile" class="block text-sm font-medium text-gray-700 mb-2">
-							Job Profile/Description <span class="text-error-500">*</span>
-						</label>
-						<textarea
-							id="job_profile"
-							bind:value={formData.job_profile}
-							rows="5"
-							placeholder="Describe your key responsibilities, achievements, and projects..."
-							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none"
-						></textarea>
-						<p class="mt-2 text-xs text-gray-500">
-							Include your main responsibilities, achievements, and technologies used
-						</p>
-					</div>
-				</div>
+					<!-- Form -->
+					<form onsubmit={(e) => { e.preventDefault(); handleSaveEmployment(); }} class="p-5 lg:p-6 space-y-5">
+						<!-- Company Name -->
+						<div>
+							<label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+								Company Name <span class="text-error-500">*</span>
+							</label>
+							<input
+								type="text"
+								id="company"
+								bind:value={formData.company}
+								placeholder="e.g., Google, Microsoft"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+							/>
+						</div>
 
-				<!-- Modal Footer -->
-				<div class="flex items-center justify-end gap-3 p-5 lg:p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-					<button
-						type="button"
-						onclick={closeForm}
-						class="px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-full font-medium hover:bg-gray-50 transition-colors"
-						disabled={saving}
-					>
-						Cancel
-					</button>
-					<button
-						type="button"
-						onclick={handleSaveEmployment}
-						disabled={saving}
-						class="px-5 py-2.5 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 elevation-1"
-					>
-						{#if saving}
-							<Loader size={18} class="animate-spin" />
-							Saving...
-						{:else}
-							<Save size={18} />
-							{editingEmploymentId ? 'Update Employment' : 'Add Employment'}
-						{/if}
-					</button>
+						<!-- Designation -->
+						<div>
+							<label for="designation" class="block text-sm font-medium text-gray-700 mb-2">
+								Designation/Job Title <span class="text-error-500">*</span>
+							</label>
+							<input
+								type="text"
+								id="designation"
+								bind:value={formData.designation}
+								placeholder="e.g., Senior Software Engineer"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+							/>
+						</div>
+
+						<!-- Dates -->
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<label for="from_date" class="block text-sm font-medium text-gray-700 mb-2">
+									Start Date <span class="text-error-500">*</span>
+								</label>
+								<input
+									type="date"
+									id="from_date"
+									bind:value={formData.from_date}
+									class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+								/>
+							</div>
+							<div>
+								<label for="to_date" class="block text-sm font-medium text-gray-700 mb-2">
+									End Date {#if !formData.current_job}<span class="text-error-500">*</span>{/if}
+								</label>
+								<input
+									type="date"
+									id="to_date"
+									bind:value={formData.to_date}
+									disabled={formData.current_job}
+									class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+								/>
+							</div>
+						</div>
+
+						<!-- Current Job Checkbox -->
+						<div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+							<label class="flex items-start gap-3 cursor-pointer">
+								<input
+									type="checkbox"
+									bind:checked={formData.current_job}
+									onchange={handleCurrentJobChange}
+									class="w-5 h-5 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+								/>
+								<div>
+									<p class="font-medium text-gray-900">I currently work here</p>
+									<p class="text-sm text-gray-600">Check this if this is your current job</p>
+								</div>
+							</label>
+						</div>
+
+						<!-- Job Profile/Description -->
+						<div>
+							<label for="job_profile" class="block text-sm font-medium text-gray-700 mb-2">
+								Job Profile/Description <span class="text-error-500">*</span>
+							</label>
+							<textarea
+								id="job_profile"
+								bind:value={formData.job_profile}
+								rows="5"
+								placeholder="Describe your key responsibilities, achievements, and projects..."
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none"
+							></textarea>
+							<p class="mt-2 text-xs text-gray-500">
+								Include your main responsibilities, achievements, and technologies used
+							</p>
+						</div>
+
+						<!-- Action Buttons -->
+						<div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+							<button
+								type="button"
+								onclick={closeForm}
+								class="px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-full font-medium hover:bg-gray-50 transition-colors"
+								disabled={saving}
+							>
+								Cancel
+							</button>
+							<button
+								type="submit"
+								disabled={saving}
+								class="px-5 py-2.5 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 elevation-1"
+							>
+								{#if saving}
+									<Loader size={18} class="animate-spin" />
+									Saving...
+								{:else}
+									<Save size={18} />
+									{editingEmploymentId ? 'Update Employment' : 'Add Employment'}
+								{/if}
+							</button>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>

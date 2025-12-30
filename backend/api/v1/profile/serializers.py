@@ -118,7 +118,9 @@ class EducationDetailsSerializer(serializers.ModelSerializer):
     institute_id = serializers.PrimaryKeyRelatedField(
         queryset=EducationInstitue.objects.all(),
         source='institute',
-        write_only=True
+        write_only=True,
+        required=False,
+        allow_null=True
     )
     degree_id = serializers.PrimaryKeyRelatedField(
         queryset=Degree.objects.all(),
@@ -126,12 +128,21 @@ class EducationDetailsSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
+    # Custom institute name for "Other" option
+    custom_institute_name = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True,
+        max_length=500
+    )
+
     class Meta:
         model = EducationDetails
         fields = [
             'id', 'institute_id', 'institute_name', 'institute_address',
             'degree_id', 'degree_name', 'degree_type', 'specialization',
-            'from_date', 'to_date', 'score', 'current_education'
+            'from_date', 'to_date', 'score', 'current_education',
+            'custom_institute_name'
         ]
 
     def validate(self, data):
@@ -139,6 +150,25 @@ class EducationDetailsSerializer(serializers.ModelSerializer):
         from_date = data.get('from_date')
         to_date = data.get('to_date')
         current_education = data.get('current_education', False)
+        institute = data.get('institute')
+        custom_institute_name = data.get('custom_institute_name', '').strip()
+
+        # Validate institute - either select existing or provide custom name
+        if not institute and not custom_institute_name:
+            raise serializers.ValidationError({
+                'institute_id': 'Please select an institute or enter a custom institute name'
+            })
+
+        # If custom institute name provided, create or get the institute
+        if custom_institute_name and not institute:
+            institute, created = EducationInstitue.objects.get_or_create(
+                name__iexact=custom_institute_name,
+                defaults={'name': custom_institute_name, 'address': ''}
+            )
+            data['institute'] = institute
+
+        # Remove custom_institute_name from data as it's not a model field
+        data.pop('custom_institute_name', None)
 
         # If current education, to_date should be None
         if current_education and to_date:

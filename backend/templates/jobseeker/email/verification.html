@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2563eb;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: #f9fafb;
+            padding: 40px 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .button {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: #2563eb;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .code {
+            background-color: #e5e7eb;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 16px;
+            display: inline-block;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="margin: 0;">Welcome to PeelJobs</h1>
+    </div>
+    <div class="content">
+        <h2>Hello {{ user.first_name }}{% if user.last_name %} {{ user.last_name }}{% endif %},</h2>
+        <p>Thank you for registering with PeelJobs! We're excited to help you find your next great opportunity.</p>
+        <p>Please verify your email address by clicking the button below:</p>
+        <div style="text-align: center;">
+            <a href="{{ verification_url }}" class="button">Verify Email Address</a>
+        </div>
+        <p>Or copy and paste this link into your browser:</p>
+        <p class="code">{{ verification_url }}</p>
+        <p><strong>This verification link will expire in 24 hours.</strong></p>
+        <p>Once verified, you'll be able to:</p>
+        <ul>
+            <li>Browse thousands of job listings</li>
+            <li>Apply to jobs with one click</li>
+            <li>Save jobs and track applications</li>
+            <li>Get personalized job recommendations</li>
+        </ul>
+        <p>If you didn't create this account, please ignore this email.</p>
+        <div class="footer">
+            <p>&copy; {{ current_year }} PeelJobs. All rights reserved.</p>
+            <p>Need help? Contact us at support@peeljobs.com</p>
+        </div>
+    </div>
+</body>
+</html>

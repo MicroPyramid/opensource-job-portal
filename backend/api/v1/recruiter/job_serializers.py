@@ -250,11 +250,25 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
     )
 
     # Override model fields to make them not required for drafts
-    description = serializers.CharField(required=False, allow_blank=True)
+    title = serializers.CharField(required=True, allow_blank=False)
+    job_role = serializers.CharField(required=False, allow_blank=True, default='')
+    description = serializers.CharField(required=False, allow_blank=True, default='')
+    company_name = serializers.CharField(required=False, allow_blank=True, default='')
+    job_type = serializers.CharField(required=False, allow_blank=True)
+    work_mode = serializers.CharField(required=False, allow_blank=True)
     company_description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     company_address = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     company_links = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     company_emails = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+
+    # Numeric fields with defaults
+    vacancies = serializers.IntegerField(required=False, default=1)
+    min_salary = serializers.IntegerField(required=False, default=0)
+    max_salary = serializers.IntegerField(required=False, default=0)
+    min_year = serializers.IntegerField(required=False, default=0)
+    max_year = serializers.IntegerField(required=False, default=0)
+    min_month = serializers.IntegerField(required=False, default=0)
+    max_month = serializers.IntegerField(required=False, default=0)
 
     class Meta:
         model = JobPost
@@ -352,11 +366,30 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
 
         # Generate slug
         if not validated_data.get('slug'):
-            validated_data['slug'] = slugify(validated_data['title'])
+            title = validated_data.get('title', 'untitled-job')
+            validated_data['slug'] = slugify(title) if title else 'untitled-job'
 
         # Set default status to Draft
         if 'status' not in validated_data:
             validated_data['status'] = 'Draft'
+
+        # Set default values for required fields
+        if 'vacancies' not in validated_data or validated_data['vacancies'] is None:
+            validated_data['vacancies'] = 1
+
+        if 'job_type' not in validated_data or not validated_data['job_type']:
+            validated_data['job_type'] = 'full-time'
+
+        if 'work_mode' not in validated_data or not validated_data['work_mode']:
+            validated_data['work_mode'] = 'in-office'
+
+        # Set default meta fields (required by model but auto-generated)
+        if 'meta_title' not in validated_data:
+            validated_data['meta_title'] = validated_data.get('title', '')
+        if 'meta_description' not in validated_data:
+            # Use first 160 chars of description as meta description
+            desc = validated_data.get('description', '')
+            validated_data['meta_description'] = desc[:160] if desc else ''
 
         # Create job
         job = JobPost.objects.create(**validated_data)
