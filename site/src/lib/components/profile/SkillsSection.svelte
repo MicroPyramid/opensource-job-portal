@@ -346,37 +346,55 @@
 
 	<!-- Add/Edit Form Modal -->
 	{#if showAddForm}
-		<div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-			<div class="bg-white rounded-2xl elevation-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
-				<!-- Modal Header -->
-				<div class="flex items-center justify-between p-5 lg:p-6 border-b border-gray-100">
-					<div class="flex items-center gap-3">
-						<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
-							<Code size={20} class="text-primary-600" />
-						</div>
-						<h3 class="text-lg font-semibold text-gray-900">
-							{editingSkillId ? 'Edit Skill' : 'Add Skill'}
-						</h3>
-					</div>
-					<button
-						type="button"
-						onclick={closeForm}
-						class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-					>
-						<X size={20} />
-					</button>
-				</div>
+		<div
+			class="fixed inset-0 z-50 overflow-y-auto"
+			aria-labelledby="modal-title"
+			role="dialog"
+			aria-modal="true"
+		>
+			<!-- Backdrop -->
+			<div
+				class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity animate-fade-in"
+				onclick={closeForm}
+				onkeydown={(e) => e.key === 'Escape' && closeForm()}
+				role="button"
+				tabindex="-1"
+				aria-label="Close modal"
+			></div>
 
-				<!-- Modal Body -->
-				<div class="p-5 lg:p-6 space-y-5">
-					<!-- Skill Search -->
-					<div>
-						<label for="skill_search" class="block text-sm font-medium text-gray-700 mb-2">
-							Skill Name <span class="text-error-500">*</span>
-						</label>
+			<!-- Modal -->
+			<div class="flex min-h-screen items-center justify-center p-4">
+				<div
+					class="relative w-full max-w-2xl transform rounded-2xl bg-white elevation-4 transition-all animate-scale-in my-8"
+				>
+					<!-- Header -->
+					<div class="flex items-center justify-between border-b border-gray-100 p-5 lg:p-6">
+						<div class="flex items-center gap-3">
+							<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+								<Code size={20} class="text-primary-600" />
+							</div>
+							<h3 class="text-lg font-semibold text-gray-900" id="modal-title">
+								{editingSkillId ? 'Edit Skill' : 'Add Skill'}
+							</h3>
+						</div>
+						<button
+							type="button"
+							onclick={closeForm}
+							class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+						>
+							<X size={20} />
+						</button>
+					</div>
+
+					<!-- Form -->
+					<form onsubmit={(e) => { e.preventDefault(); handleSaveSkill(); }} class="p-5 lg:p-6 space-y-5">
+						<!-- Skill Search -->
 						<div class="relative">
+							<label for="skill_search" class="block text-sm font-medium text-gray-700 mb-2">
+								Skill Name <span class="text-error-500">*</span>
+							</label>
 							<div class="relative">
-								<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+								<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
 									<Search size={18} class="text-gray-400" />
 								</span>
 								<input
@@ -384,27 +402,26 @@
 									id="skill_search"
 									bind:value={skillSearch}
 									onfocus={() => (showSearchDropdown = true)}
-									onblur={() => setTimeout(() => (showSearchDropdown = false), 200)}
-									placeholder="Search for a skill..."
+									placeholder="Search for a skill (e.g., Python, Java, React)..."
 									class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
 									disabled={editingSkillId !== null}
+									autocomplete="off"
 								/>
+								{#if searchingSkills}
+									<div class="absolute right-4 top-3.5">
+										<Loader size={18} class="animate-spin text-primary-600" />
+									</div>
+								{/if}
 							</div>
-
-							{#if searchingSkills}
-								<div class="absolute right-4 top-3.5">
-									<Loader size={18} class="animate-spin text-primary-600" />
-								</div>
-							{/if}
 
 							<!-- Search Dropdown -->
 							{#if showSearchDropdown && searchResults.length > 0 && !editingSkillId}
-								<div class="absolute z-10 w-full mt-2 bg-white border border-gray-100 rounded-2xl elevation-3 max-h-60 overflow-y-auto">
+								<div class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-2xl shadow-xl max-h-60 overflow-y-auto">
 									{#each searchResults as skill}
 										<button
 											type="button"
-											onclick={() => selectSkill(skill)}
-											class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center justify-between transition-colors first:rounded-t-2xl last:rounded-b-2xl"
+											onmousedown={() => selectSkill(skill)}
+											class="w-full text-left px-4 py-3 hover:bg-primary-50 flex items-center justify-between transition-colors first:rounded-t-2xl last:rounded-b-2xl border-b border-gray-50 last:border-b-0"
 										>
 											<div>
 												<div class="font-medium text-gray-900">{skill.name}</div>
@@ -414,129 +431,140 @@
 										</button>
 									{/each}
 								</div>
+							{:else if showSearchDropdown && skillSearch.length >= 2 && searchResults.length === 0 && !searchingSkills}
+								<div class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-2xl shadow-xl p-4 text-center text-gray-500">
+									No skills found for "{skillSearch}"
+								</div>
+							{:else if showSearchDropdown && skillSearch.length < 2 && skillSearch.length > 0}
+								<div class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-2xl shadow-xl p-4 text-center text-gray-500">
+									Type at least 2 characters to search
+								</div>
+							{/if}
+
+							{#if formData.skill}
+								<p class="mt-2 text-sm text-success-600 font-medium">✓ Selected: {formData.skillName}</p>
+							{/if}
+							{#if editingSkillId}
+								<p class="mt-2 text-xs text-gray-500">Skill cannot be changed when editing</p>
 							{/if}
 						</div>
-						{#if editingSkillId}
-							<p class="mt-2 text-xs text-gray-500">Skill cannot be changed when editing</p>
-						{/if}
-					</div>
 
-					<!-- Experience -->
-					<div class="grid grid-cols-2 gap-4">
-						<div>
-							<label for="years" class="block text-sm font-medium text-gray-700 mb-2">
-								Years of Experience
-							</label>
-							<input
-								type="number"
-								id="years"
-								bind:value={formData.year}
-								min="0"
-								max="50"
-								placeholder="0-50"
-								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-							/>
-						</div>
-						<div>
-							<label for="months" class="block text-sm font-medium text-gray-700 mb-2">
-								Months
-							</label>
-							<input
-								type="number"
-								id="months"
-								bind:value={formData.month}
-								min="0"
-								max="11"
-								placeholder="0-11"
-								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-							/>
-						</div>
-					</div>
-
-					<!-- Proficiency -->
-					<div>
-						<label for="proficiency" class="block text-sm font-medium text-gray-700 mb-2">
-							Proficiency Level
-						</label>
-						<select
-							id="proficiency"
-							bind:value={formData.proficiency}
-							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none appearance-none"
-						>
-							<option value="">Select proficiency</option>
-							{#each proficiencyLevels as level}
-								<option value={level.value}>{level.label}</option>
-							{/each}
-						</select>
-					</div>
-
-					<!-- Version -->
-					<div>
-						<label for="version" class="block text-sm font-medium text-gray-700 mb-2">
-							Version (Optional)
-						</label>
-						<input
-							type="text"
-							id="version"
-							bind:value={formData.version}
-							placeholder="e.g., 5.0, ES6, 3.x"
-							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-						/>
-					</div>
-
-					<!-- Last Used -->
-					<div>
-						<label for="last_used" class="block text-sm font-medium text-gray-700 mb-2">
-							Last Used (Optional)
-						</label>
-						<input
-							type="date"
-							id="last_used"
-							bind:value={formData.last_used}
-							class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-						/>
-					</div>
-
-					<!-- Is Major Skill -->
-					<div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-						<label class="flex items-start gap-3 cursor-pointer">
-							<input
-								type="checkbox"
-								bind:checked={formData.is_major}
-								class="w-5 h-5 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-							/>
+						<!-- Experience -->
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 							<div>
-								<p class="font-medium text-gray-900">Major Skill</p>
-								<p class="text-sm text-gray-600">Mark this as one of your primary skills to highlight it on your profile</p>
+								<label for="years" class="block text-sm font-medium text-gray-700 mb-2">
+									Years of Experience
+								</label>
+								<input
+									type="number"
+									id="years"
+									bind:value={formData.year}
+									min="0"
+									max="50"
+									placeholder="0-50"
+									class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+								/>
 							</div>
-						</label>
-					</div>
-				</div>
+							<div>
+								<label for="months" class="block text-sm font-medium text-gray-700 mb-2">
+									Months
+								</label>
+								<input
+									type="number"
+									id="months"
+									bind:value={formData.month}
+									min="0"
+									max="11"
+									placeholder="0-11"
+									class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+								/>
+							</div>
+						</div>
 
-				<!-- Modal Footer -->
-				<div class="flex items-center justify-end gap-3 p-5 lg:p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-					<button
-						type="button"
-						onclick={closeForm}
-						class="px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-full font-medium hover:bg-gray-50 transition-colors"
-						disabled={saving}
-					>
-						Cancel
-					</button>
-					<button
-						type="button"
-						onclick={handleSaveSkill}
-						disabled={saving || !formData.skill}
-						class="px-5 py-2.5 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 elevation-1"
-					>
-						{#if saving}
-							<Loader size={18} class="animate-spin" />
-							Saving...
-						{:else}
-							<Save size={18} />
-							{editingSkillId ? 'Update Skill' : 'Add Skill'}
-						{/if}
-					</button>
+						<!-- Proficiency -->
+						<div>
+							<label for="proficiency" class="block text-sm font-medium text-gray-700 mb-2">
+								Proficiency Level
+							</label>
+							<select
+								id="proficiency"
+								bind:value={formData.proficiency}
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none appearance-none"
+							>
+								<option value="">Select proficiency</option>
+								{#each proficiencyLevels as level}
+									<option value={level.value}>{level.label}</option>
+								{/each}
+							</select>
+						</div>
+
+						<!-- Version -->
+						<div>
+							<label for="version" class="block text-sm font-medium text-gray-700 mb-2">
+								Version (Optional)
+							</label>
+							<input
+								type="text"
+								id="version"
+								bind:value={formData.version}
+								placeholder="e.g., 5.0, ES6, 3.x"
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+							/>
+						</div>
+
+						<!-- Last Used -->
+						<div>
+							<label for="last_used" class="block text-sm font-medium text-gray-700 mb-2">
+								Last Used (Optional)
+							</label>
+							<input
+								type="date"
+								id="last_used"
+								bind:value={formData.last_used}
+								class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+							/>
+						</div>
+
+						<!-- Is Major Skill -->
+						<div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+							<label class="flex items-start gap-3 cursor-pointer">
+								<input
+									type="checkbox"
+									bind:checked={formData.is_major}
+									class="w-5 h-5 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+								/>
+								<div>
+									<p class="font-medium text-gray-900">Major Skill</p>
+									<p class="text-sm text-gray-600">Mark this as one of your primary skills to highlight it on your profile</p>
+								</div>
+							</label>
+						</div>
+
+						<!-- Action Buttons -->
+						<div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+							<button
+								type="button"
+								onclick={closeForm}
+								class="px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-full font-medium hover:bg-gray-50 transition-colors"
+								disabled={saving}
+							>
+								Cancel
+							</button>
+							<button
+								type="submit"
+								disabled={saving || !formData.skill}
+								class="px-5 py-2.5 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 elevation-1"
+							>
+								{#if saving}
+									<Loader size={18} class="animate-spin" />
+									Saving...
+								{:else}
+									<Save size={18} />
+									{editingSkillId ? 'Update Skill' : 'Add Skill'}
+								{/if}
+							</button>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>

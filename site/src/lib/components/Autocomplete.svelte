@@ -157,7 +157,7 @@
             <li>
               <button
                 type="button"
-                onclick={() => handleSelect(suggestion)}
+                onmousedown={(e) => { e.preventDefault(); handleSelect(suggestion); }}
                 class="w-full px-4 py-2.5 text-left transition-colors flex items-center justify-between group/item {selectedIndex === index ? 'bg-primary-50' : 'hover:bg-gray-50'}"
               >
                 <span class="text-sm font-medium text-gray-900 group-hover/item:text-primary-700 {selectedIndex === index ? 'text-primary-700' : ''}">

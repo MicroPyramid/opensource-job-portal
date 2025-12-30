@@ -6,7 +6,7 @@
  * Variables must be prefixed with PUBLIC_ to be accessible in client-side code.
  */
 
-import { PUBLIC_API_BASE_URL, PUBLIC_SITE_URL } from '$env/static/public';
+import { PUBLIC_API_BASE_URL, PUBLIC_SITE_URL, PUBLIC_RECRUITER_URL } from '$env/static/public';
 
 /**
  * API Base URL for backend requests
@@ -19,6 +19,12 @@ export const API_BASE_URL = PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1
  * Default: http://localhost:5173
  */
 export const SITE_URL = PUBLIC_SITE_URL || 'http://localhost:5173';
+
+/**
+ * Recruiter Site URL for recruiter portal
+ * Default: http://localhost:5174
+ */
+export const RECRUITER_URL = PUBLIC_RECRUITER_URL || 'http://localhost:5174';
 
 /**
  * Check if we're running in development mode

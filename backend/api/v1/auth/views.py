@@ -4,6 +4,7 @@ Google OAuth 2.0 integration for modern frontend clients
 """
 import requests
 from django.conf import settings
+from django.utils.crypto import get_random_string
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,16 +13,263 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 
-from peeldb.models import Google
+from peeldb.models import Google, User
 from .serializers import (
     GoogleAuthSerializer,
     TokenResponseSerializer,
     UserSerializer,
     GoogleUrlRequestSerializer,
     ChangePasswordSerializer,
+    RegisterSerializer,
+    VerifyEmailSerializer,
+    ResendVerificationSerializer,
+    ForgotPasswordSerializer,
+    ResetPasswordSerializer,
 )
 from .utils import create_or_update_google_user, get_tokens_for_user
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+
+
+def send_verification_email(user, request):
+    """Send email verification link for job seeker"""
+    from datetime import datetime
+    from django.template import loader
+    from dashboard.tasks import send_email
+
+    # Use site UI URL for verification
+    frontend_url = settings.SITE_FRONTEND_URL if hasattr(settings, 'SITE_FRONTEND_URL') else 'http://localhost:5173'
+    verification_url = f"{frontend_url}/verify-email/?token={user.activation_code}"
+
+    # Render email template
+    template = loader.get_template('jobseeker/email/verification.html')
+    context = {
+        'user': user,
+        'verification_url': verification_url,
+        'current_year': datetime.now().year
+    }
+    html_content = template.render(context)
+
+    # Send email via Celery task
+    send_email.delay(
+        mto=[user.email],
+        msubject="Verify your PeelJobs account",
+        mbody=html_content
+    )
+
+
+def send_password_reset_email(user, request):
+    """Send password reset link for job seeker"""
+    from datetime import datetime
+    from django.template import loader
+    from dashboard.tasks import send_email
+
+    # Use site UI URL for password reset
+    frontend_url = settings.SITE_FRONTEND_URL if hasattr(settings, 'SITE_FRONTEND_URL') else 'http://localhost:5173'
+    reset_url = f"{frontend_url}/reset-password/?token={user.activation_code}"
+
+    # Render email template
+    template = loader.get_template('jobseeker/email/password_reset.html')
+    context = {
+        'user': user,
+        'reset_url': reset_url,
+        'current_year': datetime.now().year
+    }
+    html_content = template.render(context)
+
+    # Send email via Celery task
+    send_email.delay(
+        mto=[user.email],
+        msubject="Reset your PeelJobs password",
+        mbody=html_content
+    )
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Register New Job Seeker",
+    description="Create new job seeker account with email and password",
+    request=RegisterSerializer,
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register(request):
+    """
+    Register new job seeker account
+
+    Creates user and sends verification email
+    """
+    serializer = RegisterSerializer(data=request.data)
+
+    if serializer.is_valid():
+        result = serializer.save()
+        user = result['user']
+
+        # Send verification email
+        try:
+            send_verification_email(user, request)
+        except Exception as e:
+            # Log error but don't fail registration
+            print(f"Failed to send verification email: {e}")
+
+        return Response({
+            "success": True,
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "user_type": user.user_type,
+                "is_active": user.is_active
+            },
+            "message": "Registration successful. Please check your email to verify your account."
+        }, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Verify Email",
+    description="Verify job seeker email with token from verification email",
+    request=VerifyEmailSerializer,
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_email(request):
+    """
+    Verify job seeker email address
+
+    Activates user account and returns JWT tokens
+    """
+    serializer = VerifyEmailSerializer(data=request.data)
+
+    if serializer.is_valid():
+        user = serializer.user
+        user.is_active = True
+        user.email_verified = True
+        user.activation_code = ''  # Clear the token
+        user.save()
+
+        # Generate JWT tokens
+        tokens = get_tokens_for_user(user)
+
+        return Response({
+            "success": True,
+            "user": UserSerializer(user).data,
+            "access": tokens["access"],
+            "refresh": tokens["refresh"],
+            "message": "Email verified successfully"
+        }, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Resend Verification Email",
+    description="Resend verification email to unverified job seeker",
+    request=ResendVerificationSerializer,
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def resend_verification(request):
+    """
+    Resend verification email
+
+    Generates new verification token and sends email
+    """
+    serializer = ResendVerificationSerializer(data=request.data)
+
+    if serializer.is_valid():
+        user = serializer.user
+
+        # Generate new activation code
+        user.activation_code = get_random_string(32)
+        user.save()
+
+        # Send verification email
+        try:
+            send_verification_email(user, request)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": "Failed to send verification email. Please try again."
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({
+            "success": True,
+            "message": "Verification email sent successfully"
+        }, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Forgot Password",
+    description="Request password reset email for job seeker",
+    request=ForgotPasswordSerializer,
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def forgot_password(request):
+    """
+    Request password reset
+
+    Sends password reset email if user exists
+    """
+    serializer = ForgotPasswordSerializer(data=request.data)
+
+    if serializer.is_valid():
+        # Check if user was found
+        if hasattr(serializer, 'user'):
+            user = serializer.user
+
+            # Generate new reset token
+            user.activation_code = get_random_string(32)
+            user.save()
+
+            # Send reset email
+            try:
+                send_password_reset_email(user, request)
+            except Exception as e:
+                print(f"Failed to send password reset email: {e}")
+
+        # Always return success to prevent email enumeration
+        return Response({
+            "success": True,
+            "message": "If an account with that email exists, you will receive a password reset link."
+        }, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Reset Password",
+    description="Reset password using token from email",
+    request=ResetPasswordSerializer,
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password(request):
+    """
+    Reset password with token
+
+    Updates password and clears reset token
+    """
+    serializer = ResetPasswordSerializer(data=request.data)
+
+    if serializer.is_valid():
+        user = serializer.user
+        user.set_password(serializer.validated_data['password'])
+        user.activation_code = ''  # Clear the token
+        user.save()
+
+        return Response({
+            "success": True,
+            "message": "Password reset successfully. You can now login with your new password."
+        }, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(

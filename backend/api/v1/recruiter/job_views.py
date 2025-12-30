@@ -145,6 +145,11 @@ def create_job(request):
         # Allow individual recruiters to post jobs with company name
         pass
 
+    # Debug: Log incoming data
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"Creating job with data: {request.data}")
+
     serializer = RecruiterJobCreateSerializer(
         data=request.data,
         context={'request': request, 'user': user}
@@ -159,6 +164,10 @@ def create_job(request):
             "job": response_serializer.data,
             "message": "Job created successfully"
         }, status=status.HTTP_201_CREATED)
+
+    # Debug: Log validation errors
+    logger.error(f"Job creation validation errors: {serializer.errors}")
+    print(f"Job creation validation errors: {serializer.errors}")
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

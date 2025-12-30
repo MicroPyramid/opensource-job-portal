@@ -318,7 +318,7 @@
 			{/if}
 		</div>
 	{:else}
-		<form method="POST" action={isInvitationFlow ? '?/acceptInvitation' : '?/register'} use:enhance={({ cancel }) => {
+		<form method="POST" action={isInvitationFlow ? '?/acceptInvitation' : '?/register'} use:enhance={({ cancel, formData: submitData }) => {
 		// Only submit on final step, otherwise just navigate
 		const isFinalStep = (userType === 'company' && step === 3) || (userType === 'recruiter' && step === 2) || (isInvitationFlow && step === 2);
 		if (!isFinalStep) {
@@ -326,6 +326,27 @@
 			nextStep();
 			return;
 		}
+
+		// Explicitly set all form data from state to ensure values are submitted
+		submitData.set('account_type', formData.accountType);
+		submitData.set('token', invitationToken);
+		submitData.set('first_name', formData.firstName);
+		submitData.set('last_name', formData.lastName);
+		submitData.set('email', formData.email);
+		submitData.set('phone', formData.phone);
+		submitData.set('job_title', formData.jobTitle);
+		submitData.set('password', formData.password);
+		submitData.set('confirm_password', formData.confirmPassword);
+		submitData.set('agree_to_terms', formData.agreeToTerms ? 'true' : '');
+
+		// Company fields
+		if (formData.accountType === 'company') {
+			submitData.set('company_name', formData.companyName);
+			submitData.set('company_website', formData.website);
+			submitData.set('company_industry', formData.industry);
+			submitData.set('company_size', sizeMap[formData.companySize] || '');
+		}
+
 		loading = true;
 		return async ({ result, update }) => {
 			loading = false;
@@ -335,13 +356,6 @@
 			await update();
 		};
 	}} class="space-y-5">
-		<!-- Hidden fields for all form data -->
-		<input type="hidden" name="account_type" value={formData.accountType} />
-		<input type="hidden" name="token" value={invitationToken} />
-		<input type="hidden" name="company_name" value={formData.companyName} />
-		<input type="hidden" name="company_website" value={formData.website} />
-		<input type="hidden" name="company_industry" value={formData.industry} />
-		<input type="hidden" name="company_size" value={sizeMap[formData.companySize] || ''} />
 			{#if error}
 				<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
 					{error}
@@ -521,7 +535,6 @@
 						<input
 							type="text"
 							id="firstName"
-							name="first_name"
 							bind:value={formData.firstName}
 							required
 							placeholder="John"
@@ -536,7 +549,6 @@
 						<input
 							type="text"
 							id="lastName"
-							name="last_name"
 							bind:value={formData.lastName}
 							required
 							placeholder="Doe"
@@ -555,7 +567,6 @@
 							<input
 								type="email"
 								id="email"
-								name="email"
 								bind:value={formData.email}
 								required
 								placeholder={userType === 'company' ? 'john@company.com' : 'john@example.com'}
@@ -576,7 +587,6 @@
 							<input
 								type="tel"
 								id="phone"
-								name="phone"
 								bind:value={formData.phone}
 								required
 								placeholder="+1 (555) 123-4567"
@@ -592,7 +602,6 @@
 						<input
 							type="text"
 							id="jobTitle"
-							name="job_title"
 							bind:value={formData.jobTitle}
 							required
 							placeholder={userType === 'company' ? 'HR Manager, Recruiter, etc.' : 'Senior Recruiter, Talent Acquisition Specialist, etc.'}

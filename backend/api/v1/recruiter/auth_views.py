@@ -59,12 +59,21 @@ def send_verification_email(user, request, company=None):
     }
     html_content = template.render(context)
 
-    # Send email via Celery task
-    send_email.delay(
-        mto=[user.email],
-        msubject="Verify your PeelJobs Recruiter account",
-        mbody=html_content
-    )
+    # Send email - use .delay() for Celery async, or direct call for sync
+    if settings.DEBUG:
+        # Synchronous email for development (no Celery needed)
+        send_email(
+            mto=[user.email],
+            msubject="Verify your PeelJobs Recruiter account",
+            mbody=html_content
+        )
+    else:
+        # Async email via Celery for production
+        send_email.delay(
+            mto=[user.email],
+            msubject="Verify your PeelJobs Recruiter account",
+            mbody=html_content
+        )
 
 
 def send_password_reset_email(user, request):
@@ -86,12 +95,21 @@ def send_password_reset_email(user, request):
     }
     html_content = template.render(context)
 
-    # Send email via Celery task
-    send_email.delay(
-        mto=[user.email],
-        msubject="Reset your PeelJobs Recruiter password",
-        mbody=html_content
-    )
+    # Send email - use .delay() for Celery async, or direct call for sync
+    if settings.DEBUG:
+        # Synchronous email for development (no Celery needed)
+        send_email(
+            mto=[user.email],
+            msubject="Reset your PeelJobs Recruiter password",
+            mbody=html_content
+        )
+    else:
+        # Async email via Celery for production
+        send_email.delay(
+            mto=[user.email],
+            msubject="Reset your PeelJobs Recruiter password",
+            mbody=html_content
+        )
 
 
 @extend_schema(

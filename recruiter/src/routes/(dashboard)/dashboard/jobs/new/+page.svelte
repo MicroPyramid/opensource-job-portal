@@ -1216,10 +1216,24 @@
 			{/if}
 		</div>
 
-		<!-- Hidden fields for form submission -->
+		<!-- Hidden fields for form submission - these ensure data is sent even when inputs are not visible -->
+		<!-- Step 1: Basics -->
+		<input type="hidden" name="title" value={formData.jobTitle} />
+		<input type="hidden" name="company_name" value={formData.companyName} />
+		<input type="hidden" name="job_role" value={formData.department} />
+		<input type="hidden" name="job_type" value={formData.employmentType} />
+		<input type="hidden" name="seniority_level" value={formData.seniorityLevel} />
+		<input type="hidden" name="vacancies" value={formData.positions} />
+
+		<!-- Step 2: Location -->
+		<input type="hidden" name="work_mode" value={formData.workMode} />
+		<input type="hidden" name="company_address" value={formData.officeAddress} />
 		{#each formData.selectedLocationIds as cityId}
 			<input type="hidden" name="location_ids" value={cityId} />
 		{/each}
+
+		<!-- Step 3: Details -->
+		<input type="hidden" name="description" value={formData.description} />
 		{#each formData.selectedSkillIds as skillId}
 			<input type="hidden" name="skill_ids" value={skillId} />
 		{/each}
@@ -1229,6 +1243,24 @@
 		{#each formData.selectedQualificationIds as qualId}
 			<input type="hidden" name="qualification_ids" value={qualId} />
 		{/each}
+		<input type="hidden" name="required_certifications" value={formData.requiredCertifications} />
+		<input type="hidden" name="preferred_certifications" value={formData.preferredCertifications} />
+
+		<!-- Step 4: Compensation -->
+		<input type="hidden" name="min_salary" value={formData.salaryMin} />
+		<input type="hidden" name="max_salary" value={formData.salaryMax} />
+		<input type="hidden" name="salary_type" value={formData.salaryType} />
+		<input type="hidden" name="show_salary" value={formData.showSalary} />
+
+		<!-- Step 5: Application -->
+		<input type="hidden" name="application_method" value={formData.applicationMethod} />
+		<input type="hidden" name="application_url" value={formData.applicationUrl} />
+
+		<!-- Step 6: Settings -->
+		<input type="hidden" name="relocation_required" value={formData.relocationRequired} />
+		<input type="hidden" name="travel_percentage" value={formData.travelPercentage} />
+		<input type="hidden" name="hiring_timeline" value={formData.hiringTimeline} />
+		<input type="hidden" name="hiring_priority" value={formData.hiringPriority} />
 
 		<!-- Experience fields (computed from experience level) -->
 		<input type="hidden" name="min_year" value={formData.minYear} />

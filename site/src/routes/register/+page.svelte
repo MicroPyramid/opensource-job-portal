@@ -1,35 +1,49 @@
 <script>
   import { goto } from '$app/navigation';
+  import { enhance } from '$app/forms';
+  import { RECRUITER_URL } from '$lib/config/env';
   import {
     User,
     Mail,
     Lock,
     Eye,
     EyeOff,
-    CheckCircle,
     Building2,
     UserCircle,
     ArrowLeft,
     Briefcase,
     Users,
     TrendingUp,
-    Target
+    Target,
+    ExternalLink
   } from '@lucide/svelte';
 
-  let step = 1;
-  let userType = '';
-  let email = '';
-  let password = '';
-  let confirmPassword = '';
-  let fullName = '';
-  let companyName = '';
-  let acceptTerms = false;
-  let showPassword = false;
-  let showConfirmPassword = false;
-  let isLoading = false;
+  /** @type {{ form?: { message?: string; email?: string; success?: boolean } }} */
+  let { form } = $props();
+
+  let step = $state(1);
+  let userType = $state('');
+  let email = $state(form?.email || '');
+  let password = $state('');
+  let confirmPassword = $state('');
+  let fullName = $state('');
+  let acceptTerms = $state(false);
+  let showPassword = $state(false);
+  let showConfirmPassword = $state(false);
+  let isLoading = $state(false);
 
   /** @type {Record<string, string>} */
-  let errors = {};
+  let errors = $state({});
+
+  // Handle form result
+  $effect(() => {
+    if (form?.success && form?.email) {
+      goto(`/verify-email/?email=${encodeURIComponent(form.email)}`);
+    } else if (form?.message) {
+      errors = { submit: form.message };
+      isLoading = false;
+    }
+  });
 
   const userTypes = [
     {
@@ -54,7 +68,8 @@
         { icon: Users, text: 'Access qualified candidates' },
         { icon: Target, text: 'Post unlimited listings' },
         { icon: TrendingUp, text: 'Build employer brand' }
-      ]
+      ],
+      externalUrl: `${RECRUITER_URL}/signup/`
     }
   ];
 
@@ -62,6 +77,12 @@
    * @param {string} type
    */
   function selectUserType(type) {
+    // Recruiters go to the dedicated recruiter portal
+    const selectedType = userTypes.find(t => t.id === type);
+    if (selectedType?.externalUrl) {
+      window.location.href = selectedType.externalUrl;
+      return;
+    }
     userType = type;
     step = 2;
   }
@@ -119,11 +140,6 @@
       isValid = false;
     }
 
-    if (userType === 'recruiter' && !companyName.trim()) {
-      errors.companyName = 'Company name is required';
-      isValid = false;
-    }
-
     if (!acceptTerms) {
       errors.terms = 'You must accept the terms and conditions';
       isValid = false;
@@ -132,36 +148,13 @@
     return isValid;
   }
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (!validateForm()) {
-      return;
+      return false;
     }
-
     isLoading = true;
-
-    try {
-      const formData = {
-        userType,
-        email,
-        password,
-        fullName,
-        ...(userType === 'recruiter' && { companyName })
-      };
-
-      console.log('Registration data:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      if (userType === 'jobseeker') {
-        goto('/jobseeker-dashboard');
-      } else {
-        goto('/recruiter');
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      errors.submit = 'Registration failed. Please try again.';
-    } finally {
-      isLoading = false;
-    }
+    errors = {};
+    return true;
   }
 
   /**
@@ -190,13 +183,15 @@
     }
   }
 
-  $: passwordStrength = password.length === 0 ? 0 :
+  let passwordStrength = $derived(
+    password.length === 0 ? 0 :
     password.length < 8 ? 1 :
     !validatePassword(password) ? 2 :
-    3;
+    3
+  );
 
-  $: passwordStrengthText = ['', 'Weak', 'Fair', 'Strong'][passwordStrength];
-  $: passwordStrengthColor = ['bg-gray-200', 'bg-error-500', 'bg-warning-500', 'bg-success-500'][passwordStrength];
+  let passwordStrengthText = $derived(['', 'Weak', 'Fair', 'Strong'][passwordStrength]);
+  let passwordStrengthColor = $derived(['bg-gray-200', 'bg-error-500', 'bg-warning-500', 'bg-success-500'][passwordStrength]);
 </script>
 
 <svelte:head>
@@ -269,10 +264,15 @@
 
               <div class="mt-6 pt-6 border-t border-gray-100">
                 <span class="inline-flex items-center gap-2 text-primary-600 font-medium group-hover:gap-3 transition-all">
-                  Get Started
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
+                  {#if type.externalUrl}
+                    Go to Recruiter Portal
+                    <ExternalLink size={16} />
+                  {:else}
+                    Get Started
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  {/if}
                 </span>
               </div>
             </button>
@@ -354,7 +354,29 @@
           </div>
 
           <!-- Registration Form -->
-          <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-5">
+          <form
+            method="POST"
+            action="?/register"
+            use:enhance={() => {
+              if (!handleSubmit()) {
+                return () => {};
+              }
+              return async ({ result, update }) => {
+                isLoading = false;
+                if (result.type === 'success' && result.data?.success) {
+                  goto(`/verify-email/?email=${encodeURIComponent(email)}`);
+                } else {
+                  await update();
+                }
+              };
+            }}
+            class="space-y-5"
+          >
+            <!-- Hidden fields for form action -->
+            <input type="hidden" name="full_name" value={fullName} />
+            <input type="hidden" name="email" value={email} />
+            <input type="hidden" name="password" value={password} />
+            <input type="hidden" name="confirm_password" value={confirmPassword} />
             <!-- Full Name -->
             <div>
               <label for="fullName" class="block text-sm font-medium text-gray-700 mb-2">
@@ -376,30 +398,6 @@
                 <p class="mt-1.5 text-sm text-error-600">{errors.fullName}</p>
               {/if}
             </div>
-
-            <!-- Company Name (Recruiters only) -->
-            {#if userType === 'recruiter'}
-              <div class="animate-fade-in-up" style="opacity: 0; animation-fill-mode: forwards;">
-                <label for="companyName" class="block text-sm font-medium text-gray-700 mb-2">
-                  Company Name
-                </label>
-                <div class="relative">
-                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Building2 size={18} class="text-gray-400" />
-                  </span>
-                  <input
-                    id="companyName"
-                    type="text"
-                    bind:value={companyName}
-                    placeholder="Acme Corporation"
-                    class="w-full pl-11 pr-4 py-3 border rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none {errors.companyName ? 'border-error-500' : 'border-gray-200'}"
-                  />
-                </div>
-                {#if errors.companyName}
-                  <p class="mt-1.5 text-sm text-error-600">{errors.companyName}</p>
-                {/if}
-              </div>
-            {/if}
 
             <!-- Email -->
             <div>

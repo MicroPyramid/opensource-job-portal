@@ -151,7 +151,7 @@
     <nav class="max-w-7xl mx-auto px-4 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
-        <a href="/" class="flex items-center gap-2 group">
+        <a href="/" data-sveltekit-reload class="flex items-center gap-2 group">
           <img src="/logo.png" alt="PeelJobs" class="h-9 w-auto transition-transform group-hover:scale-105" />
           <span class="text-xl font-bold text-gray-900 tracking-tight">PeelJobs</span>
         </a>
