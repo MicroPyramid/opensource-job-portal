@@ -36,7 +36,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
     def get_stats(self, obj):
         """Calculate team member statistics"""
-        from pjob.models import JobPost
+        from peeldb.models import JobPost
 
         jobs = JobPost.objects.filter(user=obj)
         active_jobs = jobs.filter(status='Live')
@@ -62,12 +62,12 @@ class TeamMemberDetailSerializer(TeamMemberSerializer):
 
     def get_recent_jobs(self, obj):
         """Get recent jobs posted by this member"""
-        from pjob.models import JobPost
+        from peeldb.models import JobPost
 
         jobs = JobPost.objects.filter(user=obj).order_by('-created_on')[:5]
         return [{
             'id': job.id,
-            'title': job.job_title,
+            'title': job.title,
             'status': job.status,
             'posted_date': job.created_on,
             'applicants_count': job.appliedjobs_set.count()

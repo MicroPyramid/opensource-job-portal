@@ -1,0 +1,316 @@
+{
+  "superuser": {
+    "email": "ashwin@micropyramid.com",
+    "username": "ashwin",
+    "first_name": "Ashwin",
+    "last_name": "Kumar"
+  },
+  "company_admin": {
+    "email": "ashwin.company@micropyramid.com",
+    "username": "ashwin.company",
+    "first_name": "Ashwin",
+    "last_name": "Company",
+    "password": "123456",
+    "mobile": "+919959166265",
+    "job_title": "HR Director",
+    "profile_description": "HR Director at MicroPyramid Tech overseeing all recruitment operations.",
+    "city": "Hyderabad",
+    "is_admin": true,
+    "company": {
+      "name": "MicroPyramid Tech",
+      "slug": "micropyramid-tech",
+      "website": "https://www.micropyramid.com",
+      "address": "HITEC City, Hyderabad",
+      "profile": "<p>MicroPyramid is a leading technology company specializing in web development, cloud solutions, and IT consulting.</p>",
+      "phone_number": "+919876543210",
+      "email": "hr@micropyramid.com",
+      "size": "50-200",
+      "company_type": "Company"
+    },
+    "industries": ["IT", "Software", "Technology"],
+    "skills": ["Python", "Django", "JavaScript", "React", "AWS"],
+    "job_posts": [
+      {
+        "title": "Senior Python Developer",
+        "description": "We are looking for a Senior Python Developer to join our team. You will be responsible for building scalable web applications using Python and Django.",
+        "skills": ["Python", "Django", "PostgreSQL", "REST API"],
+        "min_year": 3,
+        "max_year": 7,
+        "min_salary": 1000000,
+        "max_salary": 2000000,
+        "job_type": "full-time",
+        "vacancies": 2,
+        "city": "Hyderabad"
+      },
+      {
+        "title": "Full Stack Developer",
+        "description": "Looking for a Full Stack Developer with React and Django experience. You will work on both frontend and backend development.",
+        "skills": ["Python", "Django", "React", "JavaScript"],
+        "min_year": 2,
+        "max_year": 5,
+        "min_salary": 800000,
+        "max_salary": 1500000,
+        "job_type": "full-time",
+        "vacancies": 3,
+        "city": "Hyderabad"
+      },
+      {
+        "title": "Junior Software Engineer",
+        "description": "Entry-level position for fresh graduates. Great opportunity to learn and grow with our experienced team.",
+        "skills": ["Python", "JavaScript", "SQL"],
+        "min_year": 0,
+        "max_year": 2,
+        "min_salary": 400000,
+        "max_salary": 700000,
+        "job_type": "full-time",
+        "vacancies": 5,
+        "city": "Hyderabad"
+      },
+      {
+        "title": "DevOps Engineer",
+        "description": "We need a DevOps Engineer to manage our cloud infrastructure and CI/CD pipelines.",
+        "skills": ["AWS", "Docker", "Kubernetes", "Jenkins", "Linux"],
+        "min_year": 2,
+        "max_year": 5,
+        "min_salary": 900000,
+        "max_salary": 1800000,
+        "job_type": "full-time",
+        "vacancies": 1,
+        "city": "Hyderabad"
+      },
+      {
+        "title": "React Frontend Developer",
+        "description": "Looking for a skilled React developer to build modern, responsive user interfaces.",
+        "skills": ["React", "JavaScript", "TypeScript", "CSS", "HTML"],
+        "min_year": 2,
+        "max_year": 4,
+        "min_salary": 700000,
+        "max_salary": 1400000,
+        "job_type": "full-time",
+        "vacancies": 2,
+        "city": "Bangalore"
+      }
+    ]
+  },
+  "recruiter": {
+    "email": "ashwin.recruiter@micropyramid.com",
+    "username": "ashwin.recruiter",
+    "first_name": "Ashwin",
+    "last_name": "Recruiter",
+    "password": "123456",
+    "mobile": "+919959166266",
+    "job_title": "Senior HR Manager",
+    "profile_description": "Senior HR Manager at MicroPyramid Tech with expertise in IT recruitment.",
+    "city": "Hyderabad",
+    "is_admin": false,
+    "company_slug": "micropyramid-tech",
+    "industries": ["IT", "Software", "Technology"],
+    "skills": ["Python", "Django", "JavaScript", "React", "AWS"],
+    "job_posts": [
+      {
+        "title": "Backend Developer",
+        "description": "We are looking for a Backend Developer to work on our Django-based applications.",
+        "skills": ["Python", "Django", "PostgreSQL"],
+        "min_year": 2,
+        "max_year": 5,
+        "min_salary": 800000,
+        "max_salary": 1500000,
+        "job_type": "full-time",
+        "vacancies": 2,
+        "city": "Hyderabad"
+      },
+      {
+        "title": "QA Engineer",
+        "description": "Looking for a QA Engineer to ensure quality of our software products.",
+        "skills": ["Selenium", "Python", "API Testing"],
+        "min_year": 1,
+        "max_year": 4,
+        "min_salary": 500000,
+        "max_salary": 1000000,
+        "job_type": "full-time",
+        "vacancies": 2,
+        "city": "Hyderabad"
+      },
+      {
+        "title": "UI/UX Designer",
+        "description": "Seeking a creative UI/UX Designer to design intuitive user interfaces.",
+        "skills": ["Figma", "Adobe XD", "CSS", "HTML"],
+        "min_year": 2,
+        "max_year": 5,
+        "min_salary": 600000,
+        "max_salary": 1200000,
+        "job_type": "full-time",
+        "vacancies": 1,
+        "city": "Hyderabad"
+      },
+      {
+        "title": "Technical Writer",
+        "description": "Looking for a Technical Writer to create documentation for our products.",
+        "skills": ["Technical Writing", "Documentation", "API Documentation"],
+        "min_year": 1,
+        "max_year": 3,
+        "min_salary": 400000,
+        "max_salary": 800000,
+        "job_type": "full-time",
+        "vacancies": 1,
+        "city": "Hyderabad"
+      },
+      {
+        "title": "Project Manager",
+        "description": "Experienced Project Manager needed to lead software development projects.",
+        "skills": ["Agile", "Scrum", "JIRA", "Project Management"],
+        "min_year": 5,
+        "max_year": 10,
+        "min_salary": 1500000,
+        "max_salary": 2500000,
+        "job_type": "full-time",
+        "vacancies": 1,
+        "city": "Hyderabad"
+      }
+    ]
+  },
+  "individual": {
+    "email": "ashwin.individual@micropyramid.com",
+    "username": "ashwin.individual",
+    "first_name": "Ashwin",
+    "last_name": "Consultant",
+    "password": "123456",
+    "mobile": "+919959166267",
+    "job_title": "Independent IT Recruiter",
+    "profile_description": "Freelance IT Recruiter with 10+ years experience in tech hiring.",
+    "city": "Bangalore",
+    "industries": ["IT", "Software", "Consulting"],
+    "skills": ["Java", "Python", ".NET", "Cloud", "DevOps"],
+    "job_posts": [
+      {
+        "title": "Java Backend Developer",
+        "description": "Client is looking for a Java Backend Developer for their fintech product. Strong experience with microservices architecture required.",
+        "skills": ["Java", "Spring Boot", "Microservices"],
+        "min_year": 2,
+        "max_year": 5,
+        "min_salary": 900000,
+        "max_salary": 1600000,
+        "job_type": "full-time",
+        "vacancies": 1,
+        "city": "Bangalore"
+      },
+      {
+        "title": "Cloud DevOps Engineer",
+        "description": "Looking for a DevOps Engineer for a leading e-commerce company. Must have hands-on experience with AWS and container orchestration.",
+        "skills": ["AWS", "Docker", "Kubernetes", "CI/CD"],
+        "min_year": 3,
+        "max_year": 6,
+        "min_salary": 1200000,
+        "max_salary": 2200000,
+        "job_type": "contract",
+        "vacancies": 2,
+        "city": "Bangalore"
+      },
+      {
+        "title": "Data Engineer",
+        "description": "Seeking a Data Engineer for a healthcare startup. You will build data pipelines and work with large datasets.",
+        "skills": ["Python", "Apache Spark", "SQL", "AWS", "ETL"],
+        "min_year": 3,
+        "max_year": 7,
+        "min_salary": 1100000,
+        "max_salary": 2000000,
+        "job_type": "full-time",
+        "vacancies": 1,
+        "city": "Bangalore"
+      },
+      {
+        "title": "Senior .NET Developer",
+        "description": "Enterprise client needs a Senior .NET Developer for their banking application modernization project.",
+        "skills": [".NET", "C#", "Azure", "SQL Server", "Microservices"],
+        "min_year": 5,
+        "max_year": 10,
+        "min_salary": 1500000,
+        "max_salary": 2800000,
+        "job_type": "full-time",
+        "vacancies": 2,
+        "city": "Chennai"
+      },
+      {
+        "title": "QA Automation Engineer",
+        "description": "Looking for a QA Automation Engineer to set up and maintain test automation frameworks for a SaaS product.",
+        "skills": ["Selenium", "Python", "Java", "API Testing", "CI/CD"],
+        "min_year": 2,
+        "max_year": 5,
+        "min_salary": 700000,
+        "max_salary": 1400000,
+        "job_type": "contract",
+        "vacancies": 3,
+        "city": "Pune"
+      }
+    ]
+  },
+  "jobseeker": {
+    "email": "ashwin.jobseeker@micropyramid.com",
+    "username": "ashwin.jobseeker",
+    "first_name": "Ashwin",
+    "last_name": "Jobseeker",
+    "password": "123456",
+    "mobile": "+919959166268",
+    "gender": "M",
+    "city": "Hyderabad",
+    "experience_years": 5,
+    "experience_months": 6,
+    "current_salary": "1200000",
+    "expected_salary": "1500000",
+    "notice_period": "1 Month",
+    "profile_description": "Experienced Full Stack Developer with 5+ years in Python, Django, and JavaScript. Passionate about building scalable web applications.",
+    "resume_title": "Ashwin Jobseeker - Full Stack Developer",
+    "is_looking_for_job": true,
+    "is_open_to_offers": true,
+    "relocation": true,
+    "preferred_cities": ["Hyderabad", "Bangalore", "Chennai", "Pune"],
+    "skills": [
+      {"name": "Python", "years": 5, "proficiency": "Expert", "is_major": true},
+      {"name": "Django", "years": 4, "proficiency": "Expert", "is_major": false},
+      {"name": "JavaScript", "years": 4, "proficiency": "Good", "is_major": false},
+      {"name": "React", "years": 3, "proficiency": "Good", "is_major": false},
+      {"name": "PostgreSQL", "years": 4, "proficiency": "Good", "is_major": false},
+      {"name": "AWS", "years": 2, "proficiency": "Average", "is_major": false},
+      {"name": "Docker", "years": 2, "proficiency": "Average", "is_major": false}
+    ],
+    "employment_history": [
+      {
+        "company": "TechCorp Solutions",
+        "designation": "Senior Software Engineer",
+        "years_ago_start": 2,
+        "current_job": true,
+        "job_profile": "Leading development of web applications using Python/Django. Mentoring junior developers and conducting code reviews."
+      },
+      {
+        "company": "StartupXYZ",
+        "designation": "Software Developer",
+        "years_ago_start": 4,
+        "years_ago_end": 2,
+        "current_job": false,
+        "job_profile": "Developed RESTful APIs and frontend components using Django and React. Implemented CI/CD pipelines."
+      },
+      {
+        "company": "InfoTech Services",
+        "designation": "Junior Developer",
+        "years_ago_start": 5.5,
+        "years_ago_end": 4,
+        "current_job": false,
+        "job_profile": "Started career as a junior developer. Worked on Python scripts and basic web development."
+      }
+    ],
+    "education": {
+      "institute": "Indian Institute of Technology, Hyderabad",
+      "institute_address": "Kandi, Sangareddy, Telangana",
+      "qualification": "B.Tech",
+      "specialization": "Computer Science and Engineering",
+      "score": "8.5 CGPA",
+      "years_ago_start": 9,
+      "years_ago_end": 5.5
+    },
+    "languages": [
+      {"name": "English", "read": true, "write": true, "speak": true},
+      {"name": "Hindi", "read": true, "write": true, "speak": true},
+      {"name": "Telugu", "read": true, "write": false, "speak": true}
+    ]
+  }
+}

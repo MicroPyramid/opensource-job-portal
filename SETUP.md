@@ -59,6 +59,7 @@ pip install -r requirements.txt
 ### 2. Environment Configuration
 
 Create `.env` file:
+
 ```env
 DEBUG=True
 SECRET_KEY="$(openssl rand -base64 50)"
@@ -85,9 +86,36 @@ python manage.py createsuperuser
 python manage.py create_test_data
 ```
 
-### 4. Test Data (Optional)
+### 4. Test Users (Optional)
 
-For development, you can populate the database with realistic test data:
+Create test users with known credentials for development:
+
+```bash
+# Create test users (loads from backend/peeldb/fixtures/test-users.json)
+python manage.py create_test_users
+
+# Recreate test users (delete and create fresh)
+python manage.py create_test_users --clear
+
+# Use custom config file
+python manage.py create_test_users --config /path/to/custom-users.json
+```
+
+**Default test user credentials** (defined in `backend/peeldb/fixtures/test-users.json`):
+
+| User Type     | Email                                | Password                      | Description                                    |
+| ------------- | ------------------------------------ | ----------------------------- | ---------------------------------------------- |
+| Superuser     | ashwin@micropyramid.com              | _auto-generated (shown once)_ | Django admin                                   |
+| Company Admin | ashwin.company@micropyramid.com      | 123456                        | Company admin (is_admin=True, owns company)    |
+| Recruiter     | ashwin.recruiter@micropyramid.com    | 123456                        | Company recruiter (is_admin=False, same company) |
+| Individual    | ashwin.individual@micropyramid.com   | 123456                        | Independent recruiter (no company)             |
+| Jobseeker     | ashwin.jobseeker@micropyramid.com    | 123456                        | Job seeker with full profile                   |
+
+Each recruiter type creates 5 sample job posts. Customize by editing `test-users.json`.
+
+### 5. Test Data (Optional)
+
+For development, populate the database with bulk test data:
 
 ```bash
 # Create default test data (50 companies, 100 recruiters, 500 job seekers, 1000 jobs)
@@ -100,9 +128,9 @@ python manage.py create_test_data --companies=20 --recruiters=50 --jobseekers=20
 python manage.py create_test_data --clear
 ```
 
-Test users are created with password: `testpass123`
+Bulk test users are created with password: `testpass123`
 
-### 5. Frontend Assets
+### 6. Frontend Assets
 
 ```bash
 npm install
@@ -127,16 +155,17 @@ celery -A jobsp beat --loglevel=info
 ```
 
 **Access Points:**
+
 - Main App: http://localhost:8000
 - Admin: http://localhost:8000/admin/
 - Schema Viewer: http://localhost:8000/schema-viewer/
 
 ## Management Scripts
 
-| Environment | Command | Settings |
-|-------------|---------|----------|
-| Development | `python manage.py` | `settings_local.py` |
-| Production | `python manage_server.py` | `settings_server.py` |
+| Environment | Command                   | Settings             |
+| ----------- | ------------------------- | -------------------- |
+| Development | `python manage.py`        | `settings_local.py`  |
+| Production  | `python manage_server.py` | `settings_server.py` |
 
 ## Production Deployment
 
@@ -154,6 +183,7 @@ SENTRY_DSN=your_sentry_dsn_here
 ### Systemd Services
 
 **Django Service** (`/etc/systemd/system/peeljobs.service`):
+
 ```ini
 [Unit]
 Description=PeelJobs Django Application
@@ -171,6 +201,7 @@ WantedBy=multi-user.target
 ```
 
 **Celery Service** (`/etc/systemd/system/peeljobs-celery.service`):
+
 ```ini
 [Unit]
 Description=PeelJobs Celery Worker
@@ -198,7 +229,7 @@ server {
         root /var/www/peeljobs;
         expires 30d;
     }
-    
+
     location /media/ {
         root /var/www/peeljobs;
         expires 30d;
@@ -232,6 +263,7 @@ python manage.py update_index
 ## Troubleshooting
 
 ### Service Issues
+
 ```bash
 # Check services
 sudo systemctl status postgresql redis-server
@@ -244,6 +276,7 @@ redis-cli ping
 ```
 
 ### Common Fixes
+
 ```bash
 # Reset migrations (dev only)
 python manage.py migrate --fake-initial
