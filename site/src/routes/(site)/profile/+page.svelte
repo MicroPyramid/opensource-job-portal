@@ -178,14 +178,14 @@
 </svelte:head>
 
 <!-- Header -->
-<div class="mb-6 animate-fade-in-up" style="opacity: 0;">
+<div class="mb-6 animate-fade-in-up" style="opacity: 0; animation-fill-mode: forwards;">
 	<div class="flex items-center gap-3 mb-2">
-		<div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
-			<User size={20} class="text-primary-600" />
+		<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+			<User size={20} class="text-primary" />
 		</div>
 		<div>
-			<h2 class="text-xl lg:text-2xl font-bold text-gray-900">Personal Information</h2>
-			<p class="text-sm text-gray-600">Manage your personal information and preferences</p>
+			<h2 class="text-xl lg:text-2xl font-semibold text-black">Personal Information</h2>
+			<p class="text-sm text-muted">Manage your personal information and preferences</p>
 		</div>
 	</div>
 </div>
@@ -193,31 +193,31 @@
 <!-- Loading State -->
 {#if loading}
 	<div
-		class="bg-white rounded-2xl p-12 elevation-1 border border-gray-100 text-center animate-fade-in-up"
-		style="opacity: 0; animation-delay: 100ms;"
+		class="bg-white rounded-lg p-12 shadow-sm border border-border text-center animate-fade-in-up"
+		style="opacity: 0; animation-delay: 100ms; animation-fill-mode: forwards;"
 	>
 		<div
-			class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+			class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"
 		></div>
-		<p class="text-gray-600">Loading your profile...</p>
+		<p class="text-muted">Loading your profile...</p>
 	</div>
 {:else if profile}
 	<!-- Profile Completion Card -->
 	{#if profile.profile_completion_percentage < 100}
 		<div
-			class="bg-white rounded-2xl p-5 lg:p-6 elevation-1 border border-gray-100 mb-6 animate-fade-in-up"
-			style="opacity: 0; animation-delay: 100ms;"
+			class="bg-white rounded-lg p-5 lg:p-6 shadow-sm border border-border mb-6 animate-fade-in-up"
+			style="opacity: 0; animation-delay: 100ms; animation-fill-mode: forwards;"
 		>
 			<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 				<div class="flex items-start gap-4">
 					<div
-						class="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0"
+						class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0"
 					>
-						<Sparkles size={24} class="text-primary-600" />
+						<Sparkles size={24} class="text-primary" />
 					</div>
 					<div>
-						<h3 class="text-lg font-semibold text-gray-900 mb-1">Complete Your Profile</h3>
-						<p class="text-sm text-gray-600">
+						<h3 class="text-lg font-semibold text-black mb-1">Complete Your Profile</h3>
+						<p class="text-sm text-muted">
 							A complete profile gets 3x more views from recruiters
 						</p>
 					</div>
@@ -226,14 +226,14 @@
 				<div class="flex items-center gap-4 lg:gap-6">
 					<div class="flex-1 lg:w-48">
 						<div class="flex justify-between text-sm mb-2">
-							<span class="text-gray-600">Progress</span>
-							<span class="font-semibold text-primary-600"
+							<span class="text-muted">Progress</span>
+							<span class="font-semibold text-primary"
 								>{profile.profile_completion_percentage}%</span
 							>
 						</div>
-						<div class="w-full bg-gray-100 rounded-full h-2.5">
+						<div class="w-full bg-surface rounded-full h-2.5">
 							<div
-								class="bg-primary-600 rounded-full h-2.5 transition-all duration-500"
+								class="bg-primary rounded-full h-2.5 transition-all duration-500"
 								style="width: {profile.profile_completion_percentage}%"
 							></div>
 						</div>
@@ -253,8 +253,8 @@
 	>
 		<!-- Profile Picture Section -->
 		<div
-			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
-			style="opacity: 0; animation-delay: 150ms;"
+			class="bg-white rounded-lg shadow-sm border border-border overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 150ms; animation-fill-mode: forwards;"
 		>
 			<ProfilePictureSection
 				profilePicUrl={profile.profile_pic_url}
@@ -265,32 +265,32 @@
 
 		<!-- Personal Information Section -->
 		<div
-			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
-			style="opacity: 0; animation-delay: 200ms;"
+			class="bg-white rounded-lg shadow-sm border border-border overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 200ms; animation-fill-mode: forwards;"
 		>
 			<PersonalInfoSection bind:formData email={profile.email} {validationErrors} />
 		</div>
 
 		<!-- Address Information Section -->
 		<div
-			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
-			style="opacity: 0; animation-delay: 250ms;"
+			class="bg-white rounded-lg shadow-sm border border-border overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 250ms; animation-fill-mode: forwards;"
 		>
 			<AddressInfoSection bind:formData {validationErrors} />
 		</div>
 
 		<!-- Location Preferences Section -->
 		<div
-			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
-			style="opacity: 0; animation-delay: 300ms;"
+			class="bg-white rounded-lg shadow-sm border border-border overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 300ms; animation-fill-mode: forwards;"
 		>
 			<LocationSection bind:formData {profile} />
 		</div>
 
 		<!-- Professional Information Section -->
 		<div
-			class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden animate-fade-in-up"
-			style="opacity: 0; animation-delay: 350ms;"
+			class="bg-white rounded-lg shadow-sm border border-border overflow-hidden animate-fade-in-up"
+			style="opacity: 0; animation-delay: 350ms; animation-fill-mode: forwards;"
 		>
 			<ProfessionalInfoSection bind:formData />
 		</div>
@@ -298,12 +298,12 @@
 		<!-- Save Button -->
 		<div
 			class="flex justify-end gap-4 animate-fade-in-up"
-			style="opacity: 0; animation-delay: 400ms;"
+			style="opacity: 0; animation-delay: 400ms; animation-fill-mode: forwards;"
 		>
 			<button
 				type="submit"
 				disabled={saving}
-				class="px-6 py-3 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 elevation-1"
+				class="px-6 py-3 bg-primary text-white rounded-full font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm"
 			>
 				{#if saving}
 					<Loader size={20} class="animate-spin" />

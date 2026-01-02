@@ -53,17 +53,17 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="bg-gray-900 text-white py-16 lg:py-20 relative overflow-hidden">
+<section class="bg-[#1D2226] text-white py-16 lg:py-20 relative overflow-hidden">
 	<!-- Decorative Elements -->
 	<div class="absolute inset-0 overflow-hidden">
-		<div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl"></div>
-		<div class="absolute bottom-0 right-1/4 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl"></div>
+		<div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
+		<div class="absolute bottom-0 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
 	</div>
 
 	<div class="max-w-7xl mx-auto px-4 lg:px-8 relative">
 		<!-- Breadcrumb -->
 		<nav class="mb-8" aria-label="Breadcrumb">
-			<ol class="flex items-center gap-2 text-sm text-gray-400">
+			<ol class="flex items-center gap-2 text-sm text-muted">
 				<li>
 					<a href="/" class="hover:text-white transition-colors">Home</a>
 				</li>
@@ -76,45 +76,45 @@
 
 		<div class="max-w-4xl mx-auto text-center">
 			<div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-fade-in-up" style="opacity: 0;">
-				<Shield size={40} class="text-primary-400" />
+				<Shield size={40} class="text-primary" />
 			</div>
-			<h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in-up" style="opacity: 0; animation-delay: 100ms;">
+			<h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-6 animate-fade-in-up" style="opacity: 0; animation-delay: 100ms;">
 				Privacy Policy
 			</h1>
 			<p class="text-lg md:text-xl text-gray-300 mb-4 animate-fade-in-up" style="opacity: 0; animation-delay: 200ms;">
 				Your privacy is important to us. Learn how we collect, use, and protect your personal information.
 			</p>
-			<p class="text-sm text-gray-400 animate-fade-in-up" style="opacity: 0; animation-delay: 300ms;">Last Updated: {lastUpdated}</p>
+			<p class="text-sm text-muted animate-fade-in-up" style="opacity: 0; animation-delay: 300ms;">Last Updated: {lastUpdated}</p>
 		</div>
 	</div>
 </section>
 
 <!-- Quick Summary -->
-<section class="py-12 lg:py-16 bg-surface-50">
+<section class="py-12 lg:py-16 bg-surface">
 	<div class="max-w-7xl mx-auto px-4 lg:px-8">
 		<div class="max-w-4xl mx-auto">
-			<div class="bg-primary-50 rounded-2xl p-6 lg:p-8 border border-primary-100">
+			<div class="bg-primary/10 rounded-lg p-6 lg:p-8 border border-primary/20">
 				<div class="flex items-start gap-4">
-					<div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-						<Shield size={24} class="text-primary-600" />
+					<div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+						<Shield size={24} class="text-primary" />
 					</div>
 					<div>
-						<h2 class="text-xl font-bold text-gray-900 mb-3">Privacy at a Glance</h2>
-						<ul class="space-y-2 text-gray-600">
+						<h2 class="text-xl font-semibold text-black mb-3">Privacy at a Glance</h2>
+						<ul class="space-y-2 text-muted">
 							<li class="flex items-center gap-2">
-								<Lock size={16} class="text-primary-600 flex-shrink-0" />
+								<Lock size={16} class="text-primary flex-shrink-0" />
 								We use industry-standard encryption to protect your data
 							</li>
 							<li class="flex items-center gap-2">
-								<Eye size={16} class="text-primary-600 flex-shrink-0" />
+								<Eye size={16} class="text-primary flex-shrink-0" />
 								We don't sell your personal information to third parties
 							</li>
 							<li class="flex items-center gap-2">
-								<UserCheck size={16} class="text-primary-600 flex-shrink-0" />
+								<UserCheck size={16} class="text-primary flex-shrink-0" />
 								You control what information is visible on your profile
 							</li>
 							<li class="flex items-center gap-2">
-								<Database size={16} class="text-primary-600 flex-shrink-0" />
+								<Database size={16} class="text-primary flex-shrink-0" />
 								You can request deletion of your data at any time
 							</li>
 						</ul>
@@ -131,15 +131,15 @@
 		<div class="grid lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
 			<!-- Sticky Sidebar -->
 			<div class="lg:col-span-1 hidden lg:block">
-				<div class="bg-surface-50 rounded-2xl p-6 border border-gray-100 sticky top-6">
-					<h2 class="text-lg font-bold text-gray-900 mb-5">Table of Contents</h2>
+				<div class="bg-surface rounded-lg p-6 border border-border sticky top-6">
+					<h2 class="text-lg font-semibold text-black mb-5">Table of Contents</h2>
 					<nav class="space-y-1">
 						{#each sections as section}
 							<button
 								onclick={() => scrollToSection(section.id)}
-								class="w-full text-left text-sm text-gray-600 hover:text-primary-600 hover:bg-primary-50 px-3 py-2.5 rounded-xl transition-colors flex items-center gap-3"
+								class="w-full text-left text-sm text-muted hover:text-primary hover:bg-primary/10 px-3 py-2.5 rounded-xl transition-colors flex items-center gap-3"
 							>
-								<svelte:component this={section.icon} size={14} class="text-gray-400" />
+								<svelte:component this={section.icon} size={14} class="text-muted" />
 								<span>{section.title}</span>
 							</button>
 						{/each}
@@ -149,16 +149,16 @@
 
 			<!-- Privacy Policy Content -->
 			<div class="lg:col-span-3">
-				<div class="bg-white rounded-2xl elevation-1 border border-gray-100 p-6 lg:p-10">
+				<div class="bg-white rounded-lg shadow-sm border border-border p-6 lg:p-10">
 					<!-- Introduction -->
 					<article id="introduction" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<Shield size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<Shield size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">1. Introduction</h2>
+							<h2 class="text-2xl font-semibold text-black">1. Introduction</h2>
 						</div>
-						<div class="space-y-4 text-gray-600 leading-relaxed">
+						<div class="space-y-4 text-muted leading-relaxed">
 							<p>
 								At PeelJobs, we are committed to respecting your online privacy and recognize your need
 								for appropriate protection and management of any personally identifiable information
@@ -177,13 +177,13 @@
 					<!-- Cookies Section -->
 					<article id="cookies" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<Cookie size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<Cookie size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">2. Cookies and Tracking Technologies</h2>
+							<h2 class="text-2xl font-semibold text-black">2. Cookies and Tracking Technologies</h2>
 						</div>
-						<div class="bg-surface-50 rounded-2xl p-6 border border-gray-100">
-							<div class="space-y-4 text-gray-600 leading-relaxed">
+						<div class="bg-surface rounded-lg p-6 border border-border">
+							<div class="space-y-4 text-muted leading-relaxed">
 								<p>
 									Some of our web pages utilize "cookies" and other tracking technologies. A
 									"cookie" is a small text file that may be used, for example, to collect
@@ -211,12 +211,12 @@
 					<!-- Third Party Services -->
 					<article id="third-party" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<Globe size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<Globe size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">3. Third Party Services</h2>
+							<h2 class="text-2xl font-semibold text-black">3. Third Party Services</h2>
 						</div>
-						<div class="space-y-4 text-gray-600 leading-relaxed">
+						<div class="space-y-4 text-muted leading-relaxed">
 							<p>
 								Third parties provide certain services available on PeelJobs. We may provide
 								information, including Personal Information, that we collect to third-party service
@@ -236,13 +236,13 @@
 					<!-- Your Consent -->
 					<article id="consent" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<UserCheck size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<UserCheck size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">4. Your Consent</h2>
+							<h2 class="text-2xl font-semibold text-black">4. Your Consent</h2>
 						</div>
-						<div class="bg-primary-50 rounded-2xl p-6 border border-primary-100">
-							<p class="text-gray-700 leading-relaxed">
+						<div class="bg-primary/10 rounded-lg p-6 border border-primary/20">
+							<p class="text-muted leading-relaxed">
 								By using this website, you consent to the terms of our Privacy Policy and to our
 								processing of Personal Information for the purposes given above as well as those
 								explained where we collect Personal Information on the web.
@@ -253,20 +253,20 @@
 					<!-- Information Security -->
 					<article id="security" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-success-500/20 rounded-xl flex items-center justify-center">
-								<Lock size={24} class="text-success-600" />
+							<div class="w-12 h-12 bg-success-light rounded-xl flex items-center justify-center">
+								<Lock size={24} class="text-success" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">5. Information Security</h2>
+							<h2 class="text-2xl font-semibold text-black">5. Information Security</h2>
 						</div>
-						<div class="bg-success-500/10 rounded-2xl p-6 border border-success-500/20">
-							<ul class="space-y-4 text-gray-700">
+						<div class="bg-success-light rounded-lg p-6 border border-success/20">
+							<ul class="space-y-4 text-muted">
 								<li class="flex items-start gap-3">
-									<div class="w-2 h-2 bg-success-600 rounded-full mt-2 flex-shrink-0"></div>
+									<div class="w-2 h-2 bg-success rounded-full mt-2 flex-shrink-0"></div>
 									<span>We take appropriate security measures to protect against unauthorized access to or
 									unauthorized alteration, disclosure or destruction of data.</span>
 								</li>
 								<li class="flex items-start gap-3">
-									<div class="w-2 h-2 bg-success-600 rounded-full mt-2 flex-shrink-0"></div>
+									<div class="w-2 h-2 bg-success rounded-full mt-2 flex-shrink-0"></div>
 									<span>We restrict access to your personally identifying information to employees who need
 									to know that information in order to operate, develop or improve our services.</span>
 								</li>
@@ -277,12 +277,12 @@
 					<!-- Updating Information -->
 					<article id="updating" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<Database size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<Database size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">6. Updating Your Information</h2>
+							<h2 class="text-2xl font-semibold text-black">6. Updating Your Information</h2>
 						</div>
-						<p class="text-gray-600 leading-relaxed">
+						<p class="text-muted leading-relaxed">
 							We provide mechanisms for updating and correcting your personally identifying
 							information for many of our services. For more information, please see the help
 							documentation for each service.
@@ -292,12 +292,12 @@
 					<!-- Children -->
 					<article id="children" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<Users size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<Users size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">7. Children</h2>
+							<h2 class="text-2xl font-semibold text-black">7. Children</h2>
 						</div>
-						<p class="text-gray-600 leading-relaxed">
+						<p class="text-muted leading-relaxed">
 							PeelJobs will not contact children under age 13 about special offers or for marketing
 							purposes without a parent's permission.
 						</p>
@@ -306,19 +306,19 @@
 					<!-- Information Sharing -->
 					<article id="sharing" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<Eye size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<Eye size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">8. Information Sharing and Disclosure</h2>
+							<h2 class="text-2xl font-semibold text-black">8. Information Sharing and Disclosure</h2>
 						</div>
-						<div class="bg-surface-50 rounded-2xl p-6 border border-gray-100 mb-6">
-							<p class="font-semibold text-gray-900 mb-4">
+						<div class="bg-surface rounded-lg p-6 border border-border mb-6">
+							<p class="font-semibold text-black mb-4">
 								PeelJobs does not rent, sell, or share personal information about you with other
 								people (save with your consent) or non-affiliated companies except to provide products
 								or services you've requested, when we have your permission, or under the following
 								circumstances:
 							</p>
-							<ol class="space-y-3 text-gray-700 list-decimal list-inside">
+							<ol class="space-y-3 text-muted list-decimal list-inside">
 								<li>
 									We provide the information to trusted partners who work on behalf of or with
 									PeelJobs under confidentiality agreements.
@@ -338,14 +338,14 @@
 								</li>
 							</ol>
 						</div>
-						<ul class="space-y-3 text-gray-600">
+						<ul class="space-y-3 text-muted">
 							<li class="flex items-start gap-3">
-								<div class="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
+								<div class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
 								<span>PeelJobs does not provide any personal information to advertisers when you interact
 								with or view a targeted ad.</span>
 							</li>
 							<li class="flex items-start gap-3">
-								<div class="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
+								<div class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
 								<span>Our advertisers include financial service providers and non-financial companies.</span>
 							</li>
 						</ul>
@@ -354,19 +354,19 @@
 					<!-- Confidentiality -->
 					<article id="confidentiality" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<Shield size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<Shield size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">9. Confidentiality and Security</h2>
+							<h2 class="text-2xl font-semibold text-black">9. Confidentiality and Security</h2>
 						</div>
-						<ul class="space-y-3 text-gray-600 leading-relaxed">
+						<ul class="space-y-3 text-muted leading-relaxed">
 							<li class="flex items-start gap-3">
-								<div class="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
+								<div class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
 								<span>We limit access to personal information about you to employees who we believe reasonably
 								need to come into contact with that information.</span>
 							</li>
 							<li class="flex items-start gap-3">
-								<div class="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
+								<div class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
 								<span>We have physical, electronic, and procedural safeguards that comply with Indian laws to
 								protect personal information about you.</span>
 							</li>
@@ -376,13 +376,13 @@
 					<!-- Policy Changes -->
 					<article id="changes" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-warning-500/20 rounded-xl flex items-center justify-center">
-								<Bell size={24} class="text-warning-600" />
+							<div class="w-12 h-12 bg-warning-light rounded-xl flex items-center justify-center">
+								<Bell size={24} class="text-warning" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">10. Changes to This Privacy Policy</h2>
+							<h2 class="text-2xl font-semibold text-black">10. Changes to This Privacy Policy</h2>
 						</div>
-						<div class="bg-warning-500/10 rounded-2xl p-6 border border-warning-500/20">
-							<p class="text-gray-700 leading-relaxed">
+						<div class="bg-warning-light rounded-lg p-6 border border-warning/20">
+							<p class="text-muted leading-relaxed">
 								PeelJobs reserves the right to update, change or modify this policy at any time. The
 								policy shall come into effect from the date of such update, change or modification.
 							</p>
@@ -392,19 +392,19 @@
 					<!-- Disclaimer -->
 					<article id="disclaimer" class="mb-12 scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-error-500/20 rounded-xl flex items-center justify-center">
-								<AlertTriangle size={24} class="text-error-600" />
+							<div class="w-12 h-12 bg-error-light rounded-xl flex items-center justify-center">
+								<AlertTriangle size={24} class="text-error" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">11. Disclaimer</h2>
+							<h2 class="text-2xl font-semibold text-black">11. Disclaimer</h2>
 						</div>
-						<div class="bg-error-500/10 rounded-2xl p-6 border border-error-500/20">
-							<div class="space-y-4 text-gray-700 leading-relaxed">
+						<div class="bg-error-light rounded-lg p-6 border border-error/20">
+							<div class="space-y-4 text-muted leading-relaxed">
 								<p>
 									PeelJobs does not store or keep credit card data in a location that is accessible via
 									the Internet. Once a credit card transaction has been completed, all credit card data
 									is moved offline to ensure maximum security.
 								</p>
-								<p class="font-semibold text-gray-900">
+								<p class="font-semibold text-black">
 									PeelJobs shall not be liable for any loss or damage sustained by reason of any
 									disclosure of any information concerning the user's account and/or information
 									relating to online transactions using credit cards/debit cards.
@@ -416,25 +416,25 @@
 					<!-- Contact Information -->
 					<article id="contact" class="scroll-mt-6">
 						<div class="flex items-center gap-4 mb-6">
-							<div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
-								<MessageCircle size={24} class="text-primary-600" />
+							<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+								<MessageCircle size={24} class="text-primary" />
 							</div>
-							<h2 class="text-2xl font-bold text-gray-900">12. Contact Information</h2>
+							<h2 class="text-2xl font-semibold text-black">12. Contact Information</h2>
 						</div>
-						<div class="bg-surface-50 rounded-2xl p-6 border border-gray-100">
-							<p class="text-gray-700 leading-relaxed mb-4">
+						<div class="bg-surface rounded-lg p-6 border border-border">
+							<p class="text-muted leading-relaxed mb-4">
 								PeelJobs welcomes your comments regarding this privacy statement. Should there be any
 								concerns about contravention of this Privacy Policy, we will employ all commercially
 								reasonable efforts to address the same.
 							</p>
 							<a
 								href="/contact/"
-								class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
+								class="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-medium"
 							>
 								Contact Us
 								<ArrowRight size={16} />
 							</a>
-							<p class="text-sm text-gray-500 mt-4">
+							<p class="text-sm text-muted mt-4">
 								<strong>Note:</strong> The terms in this agreement may be changed by PeelJobs at any time.
 								PeelJobs is free to offer its services to any client/prospective client without restriction.
 							</p>
@@ -442,9 +442,9 @@
 					</article>
 
 					<!-- Acknowledgment -->
-					<div class="bg-primary-50 rounded-2xl p-6 mt-10 border border-primary-100">
-						<h3 class="font-bold text-primary-900 mb-2">Your Consent</h3>
-						<p class="text-primary-800">
+					<div class="bg-primary/10 rounded-lg p-6 mt-10 border border-primary/20">
+						<h3 class="font-semibold text-primary mb-2">Your Consent</h3>
+						<p class="text-primary/80">
 							By using PeelJobs, you acknowledge that you have read and understood this Privacy Policy
 							and consent to the collection, use, and disclosure of your information as described
 							herein.
@@ -457,16 +457,16 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-12 lg:py-16 bg-gray-900 text-white">
+<section class="py-12 lg:py-16 bg-[#1D2226] text-white">
 	<div class="max-w-7xl mx-auto px-4 lg:px-8 text-center">
 		<div class="max-w-2xl mx-auto">
-			<h2 class="text-2xl font-bold tracking-tight mb-4">Have Questions About Your Privacy?</h2>
+			<h2 class="text-2xl font-semibold tracking-tight mb-4">Have Questions About Your Privacy?</h2>
 			<p class="text-gray-300 mb-8">
 				We're here to help. Reach out to our team for any privacy-related questions or concerns.
 			</p>
 			<a
 				href="/contact/"
-				class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-gray-900 font-medium rounded-full hover:bg-gray-100 transition-colors elevation-1"
+				class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition-colors shadow-sm"
 			>
 				Contact Support
 				<ArrowRight size={18} />

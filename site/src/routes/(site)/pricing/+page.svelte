@@ -79,17 +79,17 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="bg-gray-900 text-white py-16 lg:py-24 relative overflow-hidden">
+<section class="bg-[#1D2226] text-white py-16 lg:py-24 relative overflow-hidden">
 	<!-- Decorative Elements -->
 	<div class="absolute inset-0 overflow-hidden">
-		<div class="absolute top-0 left-1/4 w-96 h-96 bg-success-500/20 rounded-full blur-3xl"></div>
-		<div class="absolute bottom-0 right-1/4 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl"></div>
+		<div class="absolute top-0 left-1/4 w-96 h-96 bg-success/20 rounded-full blur-3xl"></div>
+		<div class="absolute bottom-0 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
 	</div>
 
 	<div class="max-w-7xl mx-auto px-4 lg:px-8 relative">
 		<!-- Breadcrumb -->
 		<nav class="mb-8" aria-label="Breadcrumb">
-			<ol class="flex items-center gap-2 text-sm text-gray-400">
+			<ol class="flex items-center gap-2 text-sm text-muted">
 				<li>
 					<a href="/" class="hover:text-white transition-colors">Home</a>
 				</li>
@@ -102,14 +102,14 @@
 
 		<div class="max-w-4xl mx-auto text-center">
 			<!-- Free Badge -->
-			<div class="inline-flex items-center gap-2 px-4 py-2 bg-success-500/20 text-success-500 rounded-full text-sm font-medium mb-6 animate-fade-in-down" style="opacity: 0;">
+			<div class="inline-flex items-center gap-2 px-4 py-2 bg-success/20 text-success rounded-full text-sm font-medium mb-6 animate-fade-in-down" style="opacity: 0;">
 				<Sparkles size={16} />
 				<span>100% Free Forever</span>
 			</div>
 
-			<h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in-up" style="opacity: 0; animation-delay: 100ms;">
+			<h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-6 animate-fade-in-up" style="opacity: 0; animation-delay: 100ms;">
 				Hire the Best Talent in India
-				<span class="block text-success-500 mt-2">Without Spending a Rupee</span>
+				<span class="block text-success mt-2">Without Spending a Rupee</span>
 			</h1>
 
 			<p class="text-lg md:text-xl text-gray-300 leading-relaxed mb-10 max-w-3xl mx-auto animate-fade-in-up" style="opacity: 0; animation-delay: 200ms;">
@@ -118,7 +118,7 @@
 
 			<!-- CTA Buttons -->
 			<div class="flex flex-col sm:flex-row gap-4 justify-center mb-10 animate-fade-in-up" style="opacity: 0; animation-delay: 300ms;">
-				<a href="/employer/" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-gray-900 font-medium rounded-full hover:bg-gray-100 transition-colors elevation-1">
+				<a href="/employer/" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition-colors shadow-sm">
 					Start Hiring Free
 					<ArrowRight size={18} />
 				</a>
@@ -128,17 +128,17 @@
 			</div>
 
 			<!-- Trust Indicators -->
-			<div class="flex flex-wrap justify-center gap-6 text-sm text-gray-400 animate-fade-in-up" style="opacity: 0; animation-delay: 400ms;">
+			<div class="flex flex-wrap justify-center gap-6 text-sm text-muted animate-fade-in-up" style="opacity: 0; animation-delay: 400ms;">
 				<div class="flex items-center gap-2">
-					<Check size={16} class="text-success-500" />
+					<Check size={16} class="text-success" />
 					<span>No Credit Card Required</span>
 				</div>
 				<div class="flex items-center gap-2">
-					<Check size={16} class="text-success-500" />
+					<Check size={16} class="text-success" />
 					<span>No Hidden Fees</span>
 				</div>
 				<div class="flex items-center gap-2">
-					<Check size={16} class="text-success-500" />
+					<Check size={16} class="text-success" />
 					<span>Setup in 5 Minutes</span>
 				</div>
 			</div>
@@ -147,32 +147,32 @@
 </section>
 
 <!-- Pricing Card Section -->
-<section id="features" class="py-16 lg:py-24 bg-surface-50">
+<section id="features" class="py-16 lg:py-24 bg-surface">
 	<div class="max-w-7xl mx-auto px-4 lg:px-8">
 		<div class="text-center mb-12">
-			<h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mb-4">One Simple Plan. Everything Included.</h2>
-			<p class="text-base lg:text-lg text-gray-600 max-w-3xl mx-auto">
+			<h2 class="text-2xl lg:text-3xl font-semibold text-black tracking-tight mb-4">One Simple Plan. Everything Included.</h2>
+			<p class="text-base lg:text-lg text-muted max-w-3xl mx-auto">
 				No tiers, no upsells, no complicated pricing. Just one powerful platform with everything you need to hire great people.
 			</p>
 		</div>
 
 		<!-- Main Pricing Card -->
 		<div class="max-w-2xl mx-auto">
-			<div class="bg-white rounded-2xl elevation-3 overflow-hidden border-2 border-primary-600 relative">
+			<div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-primary relative">
 				<!-- Popular Badge -->
-				<div class="absolute top-0 right-0 bg-primary-600 text-white px-5 py-2 text-sm font-medium rounded-bl-2xl">
+				<div class="absolute top-0 right-0 bg-primary text-white px-5 py-2 text-sm font-medium rounded-bl-lg">
 					Most Popular
 				</div>
 
 				<div class="p-8 lg:p-10">
 					<!-- Plan Header -->
 					<div class="text-center mb-8">
-						<h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">Free Forever Plan</h3>
+						<h3 class="text-2xl lg:text-3xl font-semibold text-black mb-4">Free Forever Plan</h3>
 						<div class="mb-4">
-							<span class="text-6xl lg:text-7xl font-bold text-primary-600">₹0</span>
-							<span class="text-2xl text-gray-500 ml-2">forever</span>
+							<span class="text-6xl lg:text-7xl font-semibold text-primary">₹0</span>
+							<span class="text-2xl text-muted ml-2">forever</span>
 						</div>
-						<p class="text-gray-600 text-lg">Everything you need to build your team. No catch.</p>
+						<p class="text-muted text-lg">Everything you need to build your team. No catch.</p>
 					</div>
 
 					<!-- Features List -->
@@ -180,19 +180,19 @@
 						{#each includedFeatures as feature, i}
 							{@const FeatureIcon = feature.icon}
 							<div class="flex items-start gap-3 animate-fade-in-up" style="opacity: 0; animation-delay: {i * 50}ms;">
-								<div class="w-6 h-6 rounded-full bg-success-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-									<Check size={14} class="text-success-600" />
+								<div class="w-6 h-6 rounded-full bg-success-light flex items-center justify-center flex-shrink-0 mt-0.5">
+									<Check size={14} class="text-success" />
 								</div>
 								<div class="flex items-center gap-3 flex-1">
-									<FeatureIcon size={18} class="text-primary-600 flex-shrink-0" />
-									<span class="text-gray-700 font-medium">{feature.name}</span>
+									<FeatureIcon size={18} class="text-primary flex-shrink-0" />
+									<span class="text-muted font-medium">{feature.name}</span>
 								</div>
 							</div>
 						{/each}
 					</div>
 
 					<!-- CTA Button -->
-					<a href="/employer/" class="w-full flex items-center justify-center gap-2 px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-full transition-colors elevation-1 hover:elevation-2">
+					<a href="/employer/" class="w-full flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-hover text-white font-medium rounded-full transition-colors shadow-sm hover:shadow-md">
 						Get Started Free
 						<ArrowRight size={18} />
 					</a>
@@ -206,52 +206,52 @@
 <section class="py-16 lg:py-24 bg-white">
 	<div class="max-w-7xl mx-auto px-4 lg:px-8">
 		<div class="text-center mb-12">
-			<h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mb-4">How We Compare</h2>
-			<p class="text-base lg:text-lg text-gray-600 max-w-3xl mx-auto">
+			<h2 class="text-2xl lg:text-3xl font-semibold text-black tracking-tight mb-4">How We Compare</h2>
+			<p class="text-base lg:text-lg text-muted max-w-3xl mx-auto">
 				See what other platforms charge thousands for - and what we give you for free.
 			</p>
 		</div>
 
 		<div class="max-w-4xl mx-auto">
-			<div class="bg-white rounded-2xl elevation-1 overflow-hidden border border-gray-100">
+			<div class="bg-white rounded-lg shadow-sm overflow-hidden border border-border">
 				<!-- Header Row -->
-				<div class="grid grid-cols-3 bg-surface-50 border-b border-gray-100">
+				<div class="grid grid-cols-3 bg-surface border-b border-border">
 					<div class="p-4 lg:p-6"></div>
-					<div class="p-4 lg:p-6 text-center border-l border-gray-100">
-						<div class="font-bold text-primary-600 text-lg lg:text-xl">PeelJobs</div>
-						<div class="text-xs lg:text-sm text-gray-500 mt-1">Free Forever</div>
+					<div class="p-4 lg:p-6 text-center border-l border-border">
+						<div class="font-semibold text-primary text-lg lg:text-xl">PeelJobs</div>
+						<div class="text-xs lg:text-sm text-muted mt-1">Free Forever</div>
 					</div>
-					<div class="p-4 lg:p-6 text-center border-l border-gray-100">
-						<div class="font-bold text-gray-900 text-lg lg:text-xl">Competitors</div>
-						<div class="text-xs lg:text-sm text-gray-500 mt-1">₹10K-50K/month</div>
+					<div class="p-4 lg:p-6 text-center border-l border-border">
+						<div class="font-semibold text-black text-lg lg:text-xl">Competitors</div>
+						<div class="text-xs lg:text-sm text-muted mt-1">₹10K-50K/month</div>
 					</div>
 				</div>
 
 				<!-- Feature Rows -->
 				{#each competitorFeatures as feature}
-					<div class="grid grid-cols-3 border-b border-gray-100 last:border-b-0 hover:bg-surface-50 transition-colors">
-						<div class="p-4 lg:p-6 font-medium text-gray-700 text-sm lg:text-base">{feature.name}</div>
-						<div class="p-4 lg:p-6 text-center border-l border-gray-100">
+					<div class="grid grid-cols-3 border-b border-border last:border-b-0 hover:bg-surface transition-colors">
+						<div class="p-4 lg:p-6 font-medium text-muted text-sm lg:text-base">{feature.name}</div>
+						<div class="p-4 lg:p-6 text-center border-l border-border">
 							{#if feature.free}
-								<div class="inline-flex items-center justify-center w-8 h-8 bg-success-500/10 rounded-full">
-									<Check size={16} class="text-success-600" />
+								<div class="inline-flex items-center justify-center w-8 h-8 bg-success-light rounded-full">
+									<Check size={16} class="text-success" />
 								</div>
 							{:else}
-								<div class="inline-flex items-center justify-center w-8 h-8 bg-error-500/10 rounded-full">
-									<X size={16} class="text-error-600" />
+								<div class="inline-flex items-center justify-center w-8 h-8 bg-error-light rounded-full">
+									<X size={16} class="text-error" />
 								</div>
 							{/if}
 						</div>
-						<div class="p-4 lg:p-6 text-center border-l border-gray-100">
+						<div class="p-4 lg:p-6 text-center border-l border-border">
 							{#if feature.competitors}
-								<div class="inline-flex items-center justify-center w-8 h-8 bg-success-500/10 rounded-full">
-									<Check size={16} class="text-success-600" />
+								<div class="inline-flex items-center justify-center w-8 h-8 bg-success-light rounded-full">
+									<Check size={16} class="text-success" />
 								</div>
 							{:else}
-								<div class="inline-flex items-center justify-center w-8 h-8 bg-error-500/10 rounded-full">
-									<X size={16} class="text-error-600" />
+								<div class="inline-flex items-center justify-center w-8 h-8 bg-error-light rounded-full">
+									<X size={16} class="text-error" />
 								</div>
-								<div class="text-xs text-gray-500 mt-1 hidden lg:block">Extra Cost</div>
+								<div class="text-xs text-muted mt-1 hidden lg:block">Extra Cost</div>
 							{/if}
 						</div>
 					</div>
@@ -262,42 +262,42 @@
 </section>
 
 <!-- Why Free Section -->
-<section class="py-16 lg:py-24 bg-surface-50">
+<section class="py-16 lg:py-24 bg-surface">
 	<div class="max-w-7xl mx-auto px-4 lg:px-8">
 		<div class="text-center mb-12">
-			<h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mb-4">Why Is PeelJobs Free?</h2>
-			<p class="text-base lg:text-lg text-gray-600 max-w-3xl mx-auto">
+			<h2 class="text-2xl lg:text-3xl font-semibold text-black tracking-tight mb-4">Why Is PeelJobs Free?</h2>
+			<p class="text-base lg:text-lg text-muted max-w-3xl mx-auto">
 				Our mission is simple: connect employers with the best talent in India without financial barriers.
 			</p>
 		</div>
 
 		<div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-			<div class="bg-white rounded-2xl p-8 elevation-1 hover:elevation-3 transition-all border border-gray-100">
-				<div class="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6">
-					<Heart size={28} class="text-primary-600" />
+			<div class="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all border border-border">
+				<div class="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+					<Heart size={28} class="text-primary" />
 				</div>
-				<h3 class="text-xl font-bold text-gray-900 mb-4">Our Mission</h3>
-				<p class="text-gray-600 leading-relaxed">
+				<h3 class="text-xl font-semibold text-black mb-4">Our Mission</h3>
+				<p class="text-muted leading-relaxed">
 					We believe every company, from startups to enterprises, deserves access to top talent without budget constraints limiting their growth.
 				</p>
 			</div>
 
-			<div class="bg-white rounded-2xl p-8 elevation-1 hover:elevation-3 transition-all border border-gray-100">
-				<div class="w-14 h-14 bg-success-500/20 rounded-2xl flex items-center justify-center mb-6">
-					<Users size={28} class="text-success-600" />
+			<div class="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all border border-border">
+				<div class="w-14 h-14 bg-success-light rounded-lg flex items-center justify-center mb-6">
+					<Users size={28} class="text-success" />
 				</div>
-				<h3 class="text-xl font-bold text-gray-900 mb-4">More Opportunities</h3>
-				<p class="text-gray-600 leading-relaxed">
+				<h3 class="text-xl font-semibold text-black mb-4">More Opportunities</h3>
+				<p class="text-muted leading-relaxed">
 					By eliminating posting fees, we create more job opportunities for seekers and help employers find candidates they otherwise couldn't afford to reach.
 				</p>
 			</div>
 
-			<div class="bg-white rounded-2xl p-8 elevation-1 hover:elevation-3 transition-all border border-gray-100">
-				<div class="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6">
-					<TrendingUp size={28} class="text-primary-600" />
+			<div class="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all border border-border">
+				<div class="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+					<TrendingUp size={28} class="text-primary" />
 				</div>
-				<h3 class="text-xl font-bold text-gray-900 mb-4">Better Outcomes</h3>
-				<p class="text-gray-600 leading-relaxed">
+				<h3 class="text-xl font-semibold text-black mb-4">Better Outcomes</h3>
+				<p class="text-muted leading-relaxed">
 					When more employers can afford to post jobs and more candidates apply, everyone wins. We measure success by successful hires, not revenue.
 				</p>
 			</div>
@@ -309,23 +309,23 @@
 <section class="py-16 lg:py-24 bg-white">
 	<div class="max-w-7xl mx-auto px-4 lg:px-8">
 		<div class="text-center mb-12">
-			<h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mb-4">Frequently Asked Questions</h2>
-			<p class="text-base lg:text-lg text-gray-600 max-w-3xl mx-auto">
+			<h2 class="text-2xl lg:text-3xl font-semibold text-black tracking-tight mb-4">Frequently Asked Questions</h2>
+			<p class="text-base lg:text-lg text-muted max-w-3xl mx-auto">
 				Everything you need to know about our free platform
 			</p>
 		</div>
 
 		<div class="max-w-3xl mx-auto space-y-3">
 			{#each faqs as faq, index}
-				<div class="bg-surface-50 rounded-2xl border border-gray-100 hover:border-primary-200 transition-colors overflow-hidden">
+				<div class="bg-surface rounded-lg border border-border hover:border-primary/30 transition-colors overflow-hidden">
 					<button onclick={() => toggleFaq(index)} class="w-full px-6 py-5 text-left flex justify-between items-center gap-4">
-						<span class="font-semibold text-gray-900 text-base lg:text-lg">{faq.question}</span>
-						<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center">
-							<ChevronDown size={18} class="text-primary-600 transform transition-transform {openFaqIndex === index ? 'rotate-180' : ''}" />
+						<span class="font-semibold text-black text-base lg:text-lg">{faq.question}</span>
+						<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+							<ChevronDown size={18} class="text-primary transform transition-transform {openFaqIndex === index ? 'rotate-180' : ''}" />
 						</div>
 					</button>
 					{#if openFaqIndex === index}
-						<div class="px-6 pb-5 text-gray-600 leading-relaxed animate-fade-in">
+						<div class="px-6 pb-5 text-muted leading-relaxed animate-fade-in">
 							{faq.answer}
 						</div>
 					{/if}
@@ -336,16 +336,16 @@
 </section>
 
 <!-- Final CTA Section -->
-<section class="py-16 lg:py-24 bg-gray-900 text-white">
+<section class="py-16 lg:py-24 bg-[#1D2226] text-white">
 	<div class="max-w-7xl mx-auto px-4 lg:px-8 text-center">
 		<div class="max-w-3xl mx-auto">
-			<h2 class="text-2xl lg:text-3xl font-bold tracking-tight mb-6">Ready to Start Hiring?</h2>
+			<h2 class="text-2xl lg:text-3xl font-semibold tracking-tight mb-6">Ready to Start Hiring?</h2>
 			<p class="text-lg text-gray-300 mb-10 leading-relaxed">
 				Join thousands of employers who are building amazing teams without spending a rupee. Create your free account in minutes and post your first job today.
 			</p>
 
 			<div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-				<a href="/employer/" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-gray-900 font-medium rounded-full hover:bg-gray-100 transition-colors elevation-1">
+				<a href="/employer/" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition-colors shadow-sm">
 					Create Free Account
 					<ArrowRight size={18} />
 				</a>
@@ -354,21 +354,21 @@
 				</a>
 			</div>
 
-			<div class="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+			<div class="flex flex-wrap justify-center gap-6 text-sm text-muted">
 				<div class="flex items-center gap-2">
-					<Check size={16} class="text-success-500" />
+					<Check size={16} class="text-success" />
 					<span>Free Forever</span>
 				</div>
 				<div class="flex items-center gap-2">
-					<Check size={16} class="text-success-500" />
+					<Check size={16} class="text-success" />
 					<span>No Credit Card</span>
 				</div>
 				<div class="flex items-center gap-2">
-					<Check size={16} class="text-success-500" />
+					<Check size={16} class="text-success" />
 					<span>5 Minute Setup</span>
 				</div>
 				<div class="flex items-center gap-2">
-					<Check size={16} class="text-success-500" />
+					<Check size={16} class="text-success" />
 					<span>Unlimited Postings</span>
 				</div>
 			</div>

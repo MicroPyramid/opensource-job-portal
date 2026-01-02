@@ -38,22 +38,22 @@
 	<div class="flex items-center gap-4">
 		<a
 			href="/dashboard/team/"
-			class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+			class="p-2 hover:bg-surface rounded-lg transition-colors"
 			title="Back to Team"
 		>
 			<ArrowLeft class="w-5 h-5" />
 		</a>
 		<div>
-			<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Team Member Details</h1>
-			<p class="text-gray-600 mt-1">View performance and activity history</p>
+			<h1 class="text-2xl md:text-3xl font-bold text-black">Team Member Details</h1>
+			<p class="text-muted mt-1">View performance and activity history</p>
 		</div>
 	</div>
 
 	<!-- Member Profile Card -->
-	<div class="bg-white rounded-lg border border-gray-200 p-6">
+	<div class="bg-white rounded-lg border border-border p-6">
 		<div class="flex items-start gap-6">
 			<!-- Avatar -->
-			<div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+			<div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
 				{#if member.profile_pic}
 					<img
 						src={member.profile_pic}
@@ -61,7 +61,7 @@
 						class="w-full h-full rounded-full object-cover"
 					/>
 				{:else}
-					<span class="text-3xl font-bold text-blue-600">
+					<span class="text-3xl font-bold text-primary">
 						{getInitials(member.first_name, member.last_name)}
 					</span>
 				{/if}
@@ -70,7 +70,7 @@
 			<!-- Member Info -->
 			<div class="flex-1">
 				<div class="flex items-center gap-3 mb-2">
-					<h2 class="text-2xl font-bold text-gray-900">
+					<h2 class="text-2xl font-bold text-black">
 						{member.first_name}
 						{member.last_name}
 					</h2>
@@ -81,40 +81,40 @@
 						</span>
 					{/if}
 					{#if member.is_active}
-						<span class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+						<span class="inline-flex items-center gap-1 px-3 py-1 bg-success-light text-success text-sm font-medium rounded-full">
 							<CheckCircle class="w-4 h-4" />
 							Active
 						</span>
 					{:else}
-						<span class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full">
+						<span class="inline-flex items-center gap-1 px-3 py-1 bg-surface text-black text-sm font-medium rounded-full">
 							<Clock class="w-4 h-4" />
 							Inactive
 						</span>
 					{/if}
 				</div>
 
-				<p class="text-lg text-gray-700 mb-4">{member.job_title || 'No job title set'}</p>
+				<p class="text-lg text-muted mb-4">{member.job_title || 'No job title set'}</p>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-					<div class="flex items-center gap-2 text-gray-600">
+					<div class="flex items-center gap-2 text-muted">
 						<Mail class="w-4 h-4" />
-						<a href="mailto:{member.email}" class="hover:text-blue-600">{member.email}</a>
+						<a href="mailto:{member.email}" class="hover:text-primary">{member.email}</a>
 					</div>
 
 					{#if member.mobile}
-						<div class="flex items-center gap-2 text-gray-600">
+						<div class="flex items-center gap-2 text-muted">
 							<Phone class="w-4 h-4" />
-							<a href="tel:{member.mobile}" class="hover:text-blue-600">{member.mobile}</a>
+							<a href="tel:{member.mobile}" class="hover:text-primary">{member.mobile}</a>
 						</div>
 					{/if}
 
-					<div class="flex items-center gap-2 text-gray-600">
+					<div class="flex items-center gap-2 text-muted">
 						<Calendar class="w-4 h-4" />
 						<span>Joined {formatDate(member.date_joined)}</span>
 					</div>
 
 					{#if member.last_login}
-						<div class="flex items-center gap-2 text-gray-600">
+						<div class="flex items-center gap-2 text-muted">
 							<Clock class="w-4 h-4" />
 							<span>Last active {formatDate(member.last_login)}</span>
 						</div>
@@ -126,67 +126,67 @@
 
 	<!-- Stats Cards -->
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-		<div class="bg-white rounded-lg border border-gray-200 p-6">
+		<div class="bg-white rounded-lg border border-border p-6">
 			<div class="flex items-center gap-3 mb-3">
-				<div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-					<Briefcase class="w-5 h-5 text-blue-600" />
+				<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+					<Briefcase class="w-5 h-5 text-primary" />
 				</div>
-				<h3 class="text-sm font-medium text-gray-600">Jobs Posted</h3>
+				<h3 class="text-sm font-medium text-muted">Jobs Posted</h3>
 			</div>
-			<div class="text-3xl font-bold text-gray-900">{member.stats?.jobs_posted || 0}</div>
-			<div class="flex items-center gap-1 mt-2 text-sm text-gray-600">
+			<div class="text-3xl font-bold text-black">{member.stats?.jobs_posted || 0}</div>
+			<div class="flex items-center gap-1 mt-2 text-sm text-muted">
 				<TrendingUp class="w-4 h-4" />
 				<span>{member.stats?.active_jobs || 0} currently active</span>
 			</div>
 		</div>
 
-		<div class="bg-white rounded-lg border border-gray-200 p-6">
+		<div class="bg-white rounded-lg border border-border p-6">
 			<div class="flex items-center gap-3 mb-3">
-				<div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-					<Users class="w-5 h-5 text-green-600" />
+				<div class="w-10 h-10 bg-success-light rounded-lg flex items-center justify-center">
+					<Users class="w-5 h-5 text-success" />
 				</div>
-				<h3 class="text-sm font-medium text-gray-600">Total Applicants</h3>
+				<h3 class="text-sm font-medium text-muted">Total Applicants</h3>
 			</div>
-			<div class="text-3xl font-bold text-gray-900">{member.stats?.total_applicants || 0}</div>
-			<div class="text-sm text-gray-600 mt-2">Across all jobs</div>
+			<div class="text-3xl font-bold text-black">{member.stats?.total_applicants || 0}</div>
+			<div class="text-sm text-muted mt-2">Across all jobs</div>
 		</div>
 
-		<div class="bg-white rounded-lg border border-gray-200 p-6">
+		<div class="bg-white rounded-lg border border-border p-6">
 			<div class="flex items-center gap-3 mb-3">
 				<div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
 					<Eye class="w-5 h-5 text-purple-600" />
 				</div>
-				<h3 class="text-sm font-medium text-gray-600">Total Views</h3>
+				<h3 class="text-sm font-medium text-muted">Total Views</h3>
 			</div>
-			<div class="text-3xl font-bold text-gray-900">{member.stats?.total_views || 0}</div>
-			<div class="text-sm text-gray-600 mt-2">On all job postings</div>
+			<div class="text-3xl font-bold text-black">{member.stats?.total_views || 0}</div>
+			<div class="text-sm text-muted mt-2">On all job postings</div>
 		</div>
 	</div>
 
 	<!-- Recent Jobs -->
 	{#if member.recent_jobs && member.recent_jobs.length > 0}
-		<div class="bg-white rounded-lg border border-gray-200">
-			<div class="p-6 border-b border-gray-200">
-				<h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+		<div class="bg-white rounded-lg border border-border">
+			<div class="p-6 border-b border-border">
+				<h3 class="text-lg font-semibold text-black flex items-center gap-2">
 					<FileText class="w-5 h-5" />
 					Recent Job Postings
 				</h3>
 			</div>
-			<div class="divide-y divide-gray-200">
+			<div class="divide-y divide-border">
 				{#each member.recent_jobs as job}
 					<a
 						href="/dashboard/jobs/{job.id}/"
-						class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+						class="flex items-center justify-between p-4 hover:bg-surface transition-colors"
 					>
 						<div class="flex-1">
-							<h4 class="font-medium text-gray-900 hover:text-blue-600">{job.title}</h4>
-							<div class="flex items-center gap-4 mt-1 text-sm text-gray-600">
+							<h4 class="font-medium text-black hover:text-primary">{job.title}</h4>
+							<div class="flex items-center gap-4 mt-1 text-sm text-muted">
 								<span class="inline-flex items-center gap-1">
 									<span class="px-2 py-0.5 rounded text-xs font-medium {job.status === 'Live'
-										? 'bg-green-100 text-green-800'
+										? 'bg-success-light text-success'
 										: job.status === 'Draft'
-											? 'bg-gray-100 text-gray-800'
-											: 'bg-red-100 text-red-800'}">
+											? 'bg-surface text-black'
+											: 'bg-error-light text-error'}">
 										{job.status}
 									</span>
 								</span>
@@ -194,11 +194,11 @@
 							</div>
 						</div>
 						<div class="flex items-center gap-6 text-sm">
-							<div class="flex items-center gap-1 text-gray-600">
+							<div class="flex items-center gap-1 text-muted">
 								<Users class="w-4 h-4" />
 								<span>{job.applicants_count}</span>
 							</div>
-							<div class="flex items-center gap-1 text-gray-600">
+							<div class="flex items-center gap-1 text-muted">
 								<Eye class="w-4 h-4" />
 								<span>{job.views_count || 0}</span>
 							</div>
@@ -208,50 +208,50 @@
 			</div>
 		</div>
 	{:else}
-		<div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-			<Briefcase class="w-12 h-12 text-gray-400 mx-auto mb-4" />
-			<h3 class="text-lg font-semibold text-gray-900 mb-2">No jobs posted yet</h3>
-			<p class="text-gray-600">This team member hasn't posted any jobs</p>
+		<div class="bg-white rounded-lg border border-border p-12 text-center">
+			<Briefcase class="w-12 h-12 text-muted mx-auto mb-4" />
+			<h3 class="text-lg font-semibold text-black mb-2">No jobs posted yet</h3>
+			<p class="text-muted">This team member hasn't posted any jobs</p>
 		</div>
 	{/if}
 
 	<!-- Permissions Section -->
-	<div class="bg-white rounded-lg border border-gray-200 p-6">
-		<h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+	<div class="bg-white rounded-lg border border-border p-6">
+		<h3 class="text-lg font-semibold text-black mb-4 flex items-center gap-2">
 			<Shield class="w-5 h-5" />
 			Permissions
 		</h3>
 		<div class="space-y-2">
 			<div class="flex items-center justify-between py-2">
-				<span class="text-gray-700">Post Jobs</span>
+				<span class="text-muted">Post Jobs</span>
 				{#if member.permissions?.can_post_jobs}
-					<CheckCircle class="w-5 h-5 text-green-600" />
+					<CheckCircle class="w-5 h-5 text-success" />
 				{:else}
-					<span class="text-sm text-gray-500">No access</span>
+					<span class="text-sm text-muted">No access</span>
 				{/if}
 			</div>
 			<div class="flex items-center justify-between py-2">
-				<span class="text-gray-700">Manage Team</span>
+				<span class="text-muted">Manage Team</span>
 				{#if member.permissions?.can_manage_team}
-					<CheckCircle class="w-5 h-5 text-green-600" />
+					<CheckCircle class="w-5 h-5 text-success" />
 				{:else}
-					<span class="text-sm text-gray-500">No access</span>
+					<span class="text-sm text-muted">No access</span>
 				{/if}
 			</div>
 			<div class="flex items-center justify-between py-2">
-				<span class="text-gray-700">Edit Company Profile</span>
+				<span class="text-muted">Edit Company Profile</span>
 				{#if member.permissions?.can_edit_company}
-					<CheckCircle class="w-5 h-5 text-green-600" />
+					<CheckCircle class="w-5 h-5 text-success" />
 				{:else}
-					<span class="text-sm text-gray-500">No access</span>
+					<span class="text-sm text-muted">No access</span>
 				{/if}
 			</div>
 			<div class="flex items-center justify-between py-2">
-				<span class="text-gray-700">Company Admin</span>
+				<span class="text-muted">Company Admin</span>
 				{#if member.permissions?.is_company_admin}
-					<CheckCircle class="w-5 h-5 text-green-600" />
+					<CheckCircle class="w-5 h-5 text-success" />
 				{:else}
-					<span class="text-sm text-gray-500">No access</span>
+					<span class="text-sm text-muted">No access</span>
 				{/if}
 			</div>
 		</div>

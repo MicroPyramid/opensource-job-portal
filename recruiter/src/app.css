@@ -1,15 +1,31 @@
-/* Google Fonts - Outfit (must be first @import) */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-/* Base Styles */
-:root {
-  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+/* Design System Theme */
+@theme {
+  /* Primary Colors */
+  --color-primary: #0A66C2;
+  --color-primary-hover: #004182;
+
+  /* Neutral Colors */
+  --color-muted: #666666;
+  --color-border: #E5E5E5;
+  --color-surface: #F5F5F5;
+
+  /* Semantic Colors */
+  --color-success: #057642;
+  --color-success-light: #DFF2E7;
+  --color-warning: #915907;
+  --color-warning-light: #FCF0DC;
+  --color-error: #CC1016;
+  --color-error-light: #FBEAEB;
+
+  /* Font Family - System Fonts */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
+/* Base Styles */
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -18,4 +34,10 @@ html {
 
 body {
   font-family: var(--font-sans);
+}
+
+/* Focus visible styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

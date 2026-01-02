@@ -198,17 +198,17 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="bg-gray-900 text-white py-12 lg:py-16 relative overflow-hidden">
+<section class="bg-[#1D2226] text-white py-12 lg:py-16 relative overflow-hidden">
 	<!-- Decorative Elements -->
 	<div class="absolute inset-0 overflow-hidden">
-		<div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl"></div>
-		<div class="absolute bottom-0 right-1/4 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl"></div>
+		<div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
+		<div class="absolute bottom-0 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
 	</div>
 
 	<div class="max-w-7xl mx-auto px-4 lg:px-8 relative">
 		<!-- Breadcrumb -->
 		<nav class="mb-6" aria-label="Breadcrumb">
-			<ol class="flex items-center gap-2 text-sm text-gray-400">
+			<ol class="flex items-center gap-2 text-sm text-muted">
 				<li>
 					<a href="/jobseeker-dashboard/" class="hover:text-white transition-colors">Dashboard</a>
 				</li>
@@ -222,14 +222,14 @@
 		<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 			<div class="flex items-center gap-4">
 				<div
-					class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center animate-fade-in-up"
+					class="w-14 h-14 rounded-lg bg-white/10 flex items-center justify-center animate-fade-in-up"
 					style="opacity: 0;"
 				>
-					<MessageSquare size={28} class="text-primary-300" />
+					<MessageSquare size={28} class="text-white/80" />
 				</div>
 				<div>
 					<h1
-						class="text-3xl lg:text-4xl font-bold tracking-tight mb-1 animate-fade-in-up"
+						class="text-3xl lg:text-4xl font-semibold tracking-tight mb-1 animate-fade-in-up"
 						style="opacity: 0; animation-delay: 100ms;"
 					>
 						Messages
@@ -253,7 +253,7 @@
 				<button
 					onclick={() => (filterType = 'all')}
 					class="px-4 py-2.5 rounded-full text-sm font-medium transition-all {filterType === 'all'
-						? 'bg-white text-gray-900'
+						? 'bg-white text-black'
 						: 'bg-white/10 text-white hover:bg-white/20'}"
 				>
 					All
@@ -262,15 +262,15 @@
 					onclick={() => (filterType = 'unread')}
 					class="px-4 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 {filterType ===
 					'unread'
-						? 'bg-white text-gray-900'
+						? 'bg-white text-black'
 						: 'bg-white/10 text-white hover:bg-white/20'}"
 				>
 					Unread
 					{#if totalUnread > 0}
 						<span
 							class="text-xs px-2 py-0.5 rounded-full {filterType === 'unread'
-								? 'bg-primary-600 text-white'
-								: 'bg-primary-500 text-white'}">{totalUnread}</span
+								? 'bg-primary text-white'
+								: 'bg-primary text-white'}">{totalUnread}</span
 						>
 					{/if}
 				</button>
@@ -278,7 +278,7 @@
 					onclick={() => (filterType = 'starred')}
 					class="px-4 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 {filterType ===
 					'starred'
-						? 'bg-white text-gray-900'
+						? 'bg-white text-black'
 						: 'bg-white/10 text-white hover:bg-white/20'}"
 				>
 					<Star size={14} />
@@ -288,7 +288,7 @@
 					onclick={() => (filterType = 'archived')}
 					class="px-4 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 {filterType ===
 					'archived'
-						? 'bg-white text-gray-900'
+						? 'bg-white text-black'
 						: 'bg-white/10 text-white hover:bg-white/20'}"
 				>
 					<Archive size={14} />
@@ -300,7 +300,7 @@
 </section>
 
 <!-- Main Content -->
-<section class="py-8 lg:py-12 bg-surface-50 min-h-[60vh]">
+<section class="py-8 lg:py-12 bg-surface min-h-[60vh]">
 	<div class="max-w-4xl mx-auto px-4 lg:px-8">
 		<!-- Mobile Filter Tabs -->
 		<div
@@ -311,8 +311,8 @@
 				onclick={() => (filterType = 'all')}
 				class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all {filterType ===
 				'all'
-					? 'bg-primary-600 text-white elevation-1'
-					: 'bg-white text-gray-700'}"
+					? 'bg-primary text-white shadow-sm'
+					: 'bg-white text-muted'}"
 			>
 				All
 			</button>
@@ -320,15 +320,15 @@
 				onclick={() => (filterType = 'unread')}
 				class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 flex items-center gap-2 transition-all {filterType ===
 				'unread'
-					? 'bg-primary-600 text-white elevation-1'
-					: 'bg-white text-gray-700'}"
+					? 'bg-primary text-white shadow-sm'
+					: 'bg-white text-muted'}"
 			>
 				Unread
 				{#if totalUnread > 0}
 					<span
 						class="text-xs px-2 py-0.5 rounded-full {filterType === 'unread'
-							? 'bg-white text-primary-600'
-							: 'bg-primary-600 text-white'}">{totalUnread}</span
+							? 'bg-white text-primary'
+							: 'bg-primary text-white'}">{totalUnread}</span
 					>
 				{/if}
 			</button>
@@ -336,8 +336,8 @@
 				onclick={() => (filterType = 'starred')}
 				class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 flex items-center gap-2 transition-all {filterType ===
 				'starred'
-					? 'bg-primary-600 text-white elevation-1'
-					: 'bg-white text-gray-700'}"
+					? 'bg-primary text-white shadow-sm'
+					: 'bg-white text-muted'}"
 			>
 				<Star size={14} />
 				Starred
@@ -346,8 +346,8 @@
 				onclick={() => (filterType = 'archived')}
 				class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 flex items-center gap-2 transition-all {filterType ===
 				'archived'
-					? 'bg-primary-600 text-white elevation-1'
-					: 'bg-white text-gray-700'}"
+					? 'bg-primary text-white shadow-sm'
+					: 'bg-white text-muted'}"
 			>
 				<Archive size={14} />
 				Archived
@@ -356,18 +356,18 @@
 
 		<!-- Search Bar -->
 		<div
-			class="bg-white rounded-2xl p-4 lg:p-5 elevation-1 border border-gray-100 mb-6 animate-fade-in-up"
+			class="bg-white rounded-lg p-4 lg:p-5 shadow-sm border border-border mb-6 animate-fade-in-up"
 			style="opacity: 0; animation-delay: 50ms;"
 		>
 			<div class="relative">
 				<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-					<Search size={18} class="text-gray-400" />
+					<Search size={18} class="text-muted" />
 				</div>
 				<input
 					type="text"
 					bind:value={searchQuery}
 					placeholder="Search conversations by name, company, job title, or message..."
-					class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-500 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+					class="w-full pl-11 pr-4 py-3 border border-border rounded-xl bg-gray-50 text-black placeholder-muted focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
 				/>
 			</div>
 		</div>
@@ -375,14 +375,14 @@
 		<!-- Conversations List -->
 		{#if filteredConversations.length > 0}
 			<div
-				class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden divide-y divide-gray-100 animate-fade-in-up"
+				class="bg-white rounded-lg shadow-sm border border-border overflow-hidden divide-y divide-border animate-fade-in-up"
 				style="opacity: 0; animation-delay: 100ms;"
 			>
 				{#each filteredConversations as conversation, i (conversation.id)}
 					<div
-						class="group flex items-start gap-4 p-5 lg:p-6 hover:bg-surface-50 transition-colors cursor-pointer {conversation.unread >
+						class="group flex items-start gap-4 p-5 lg:p-6 hover:bg-surface transition-colors cursor-pointer {conversation.unread >
 						0
-							? 'bg-primary-50/50'
+							? 'bg-primary/5'
 							: ''}"
 						onclick={() => openConversation(conversation.id)}
 						onkeydown={(e) => e.key === 'Enter' && openConversation(conversation.id)}
@@ -394,17 +394,17 @@
 						<div class="relative flex-shrink-0">
 							<div
 								class="w-12 h-12 {conversation.unread > 0
-									? 'bg-primary-600'
-									: 'bg-gray-200'} rounded-xl flex items-center justify-center text-lg font-bold {conversation.unread >
+									? 'bg-primary'
+									: 'bg-gray-200'} rounded-xl flex items-center justify-center text-lg font-semibold {conversation.unread >
 								0
 									? 'text-white'
-									: 'text-gray-600'}"
+									: 'text-muted'}"
 							>
 								{conversation.recruiter.name.charAt(0)}
 							</div>
 							{#if conversation.recruiter.online}
 								<div
-									class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-success-500 border-2 border-white rounded-full"
+									class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-success border-2 border-white rounded-full"
 								></div>
 							{/if}
 						</div>
@@ -414,27 +414,27 @@
 							<div class="flex items-start justify-between mb-1.5">
 								<div class="flex items-center gap-2 min-w-0">
 									{#if conversation.unread > 0}
-										<Circle size={8} class="text-primary-600 fill-primary-600 flex-shrink-0" />
+										<Circle size={8} class="text-primary fill-primary flex-shrink-0" />
 									{/if}
 									<h3
-										class="font-semibold text-gray-900 truncate {conversation.unread > 0
+										class="font-semibold text-black truncate {conversation.unread > 0
 											? ''
-											: 'text-gray-700'}"
+											: 'text-muted'}"
 									>
 										{conversation.recruiter.name}
 									</h3>
 									{#if conversation.starred}
-										<Star size={14} class="text-warning-500 fill-warning-500 flex-shrink-0" />
+										<Star size={14} class="text-warning fill-warning flex-shrink-0" />
 									{/if}
 								</div>
 								<div class="flex items-center gap-2 flex-shrink-0 ml-2">
-									<span class="text-xs text-gray-500 flex items-center gap-1">
+									<span class="text-xs text-muted flex items-center gap-1">
 										<Clock size={12} />
 										{formatTimestamp(conversation.timestamp)}
 									</span>
 									{#if conversation.unread > 0}
 										<span
-											class="bg-primary-600 text-white text-xs px-2 py-0.5 rounded-full font-medium"
+											class="bg-primary text-white text-xs px-2 py-0.5 rounded-full font-medium"
 										>
 											{conversation.unread}
 										</span>
@@ -442,22 +442,22 @@
 								</div>
 							</div>
 
-							<div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
-								<Building2 size={14} class="text-gray-400 flex-shrink-0" />
+							<div class="flex items-center gap-2 text-sm text-muted mb-2">
+								<Building2 size={14} class="text-muted flex-shrink-0" />
 								<span class="truncate"
 									>{conversation.recruiter.position} at {conversation.recruiter.company}</span
 								>
 							</div>
 
 							<div class="flex items-center gap-2 mb-2">
-								<span class="text-xs bg-primary-50 text-primary-700 px-2.5 py-1 rounded-full">
+								<span class="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full">
 									{conversation.jobTitle}
 								</span>
 							</div>
 
-							<p class="text-sm text-gray-600 line-clamp-1">
+							<p class="text-sm text-muted line-clamp-1">
 								{#if conversation.lastMessageSender === 'me'}
-									<span class="text-gray-500 font-medium">You: </span>
+									<span class="text-muted font-medium">You: </span>
 								{/if}
 								{conversation.lastMessage}
 							</p>
@@ -475,8 +475,8 @@
 								<Star
 									size={16}
 									class={conversation.starred
-										? 'text-warning-500 fill-warning-500'
-										: 'text-gray-400'}
+										? 'text-warning fill-warning'
+										: 'text-muted'}
 								/>
 							</button>
 							{#if !conversation.archived}
@@ -485,22 +485,22 @@
 									class="p-2 hover:bg-gray-100 rounded-xl transition-colors"
 									title="Archive"
 								>
-									<Archive size={16} class="text-gray-400" />
+									<Archive size={16} class="text-muted" />
 								</button>
 							{/if}
 							<button
 								onclick={(e) => deleteConversation(conversation.id, e)}
-								class="p-2 hover:bg-error-500/10 rounded-xl transition-colors"
+								class="p-2 hover:bg-error-light rounded-xl transition-colors"
 								title="Delete"
 							>
-								<Trash2 size={16} class="text-error-500" />
+								<Trash2 size={16} class="text-error" />
 							</button>
 						</div>
 
 						<!-- Arrow -->
 						<ChevronRight
 							size={20}
-							class="text-gray-300 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all flex-shrink-0 self-center"
+							class="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0 self-center"
 						/>
 					</div>
 				{/each}
@@ -508,23 +508,23 @@
 		{:else}
 			<!-- Empty State -->
 			<div
-				class="bg-white rounded-2xl p-12 elevation-1 border border-gray-100 text-center animate-fade-in-up"
+				class="bg-white rounded-lg p-12 shadow-sm border border-border text-center animate-fade-in-up"
 				style="opacity: 0; animation-delay: 100ms;"
 			>
 				<div
 					class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6"
 				>
 					{#if filterType === 'archived'}
-						<Archive size={36} class="text-gray-400" />
+						<Archive size={36} class="text-muted" />
 					{:else if filterType === 'starred'}
-						<Star size={36} class="text-gray-400" />
+						<Star size={36} class="text-muted" />
 					{:else if filterType === 'unread'}
-						<Mail size={36} class="text-gray-400" />
+						<Mail size={36} class="text-muted" />
 					{:else}
-						<Inbox size={36} class="text-gray-400" />
+						<Inbox size={36} class="text-muted" />
 					{/if}
 				</div>
-				<h3 class="text-xl font-semibold text-gray-900 mb-2">
+				<h3 class="text-xl font-semibold text-black mb-2">
 					{#if filterType === 'archived'}
 						No Archived Conversations
 					{:else if filterType === 'starred'}
@@ -537,7 +537,7 @@
 						No Messages Yet
 					{/if}
 				</h3>
-				<p class="text-gray-600 max-w-md mx-auto">
+				<p class="text-muted max-w-md mx-auto">
 					{#if searchQuery}
 						Try adjusting your search terms or filters
 					{:else if filterType === 'all'}
@@ -556,18 +556,18 @@
 		<!-- Info Card -->
 		{#if filteredConversations.length > 0}
 			<div
-				class="mt-8 bg-primary-50 rounded-2xl p-5 lg:p-6 border border-primary-100 animate-fade-in-up"
+				class="mt-8 bg-primary/10 rounded-lg p-5 lg:p-6 border border-primary/20 animate-fade-in-up"
 				style="opacity: 0; animation-delay: 400ms;"
 			>
 				<div class="flex items-start gap-4">
 					<div
-						class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0"
+						class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0"
 					>
-						<MessageSquare size={22} class="text-primary-600" />
+						<MessageSquare size={22} class="text-primary" />
 					</div>
 					<div>
-						<h3 class="font-semibold text-gray-900 mb-1">Stay Responsive</h3>
-						<p class="text-sm text-gray-600">
+						<h3 class="font-semibold text-black mb-1">Stay Responsive</h3>
+						<p class="text-sm text-muted">
 							Quick responses to recruiters can improve your chances. Try to reply within 24-48
 							hours to keep the conversation going and make a great impression.
 						</p>
