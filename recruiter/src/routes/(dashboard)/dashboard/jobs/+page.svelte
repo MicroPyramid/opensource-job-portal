@@ -18,6 +18,7 @@
 		Archive,
 		Copy
 	} from '@lucide/svelte';
+	import { Button, Card, Badge } from '$lib/components/ui';
 	import type { JobStatus } from '$lib/types';
 
 	// Get data from server-side load function
@@ -65,18 +66,18 @@
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	}
 
-	function getStatusBadgeClass(status: JobStatus): string {
+	function getStatusVariant(status: JobStatus): 'success' | 'warning' | 'error' | 'neutral' {
 		switch (status) {
 			case 'Live':
-				return 'bg-green-100 text-green-800';
+				return 'success';
 			case 'Draft':
-				return 'bg-gray-100 text-gray-800';
+				return 'neutral';
 			case 'Disabled':
-				return 'bg-red-100 text-red-800';
+				return 'error';
 			case 'Expired':
-				return 'bg-orange-100 text-orange-800';
+				return 'warning';
 			default:
-				return 'bg-blue-100 text-blue-800';
+				return 'neutral';
 		}
 	}
 
@@ -121,50 +122,44 @@
 	<!-- Header -->
 	<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 		<div>
-			<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Jobs</h1>
-			<p class="text-gray-600 mt-1">Manage your job postings</p>
+			<h1 class="text-2xl md:text-3xl font-bold text-black">Jobs</h1>
+			<p class="text-muted mt-1">Manage your job postings</p>
 		</div>
 		<div class="flex gap-3">
-			<a
-				href="/dashboard/jobs/inactive/"
-				class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-			>
+			<Button href="/dashboard/jobs/inactive/" variant="secondary">
 				<Archive class="w-4 h-4" />
 				Inactive Jobs
-			</a>
-			<a
-				href="/dashboard/jobs/new/"
-				class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-			>
+			</Button>
+			<Button href="/dashboard/jobs/new/">
 				<Plus class="w-4 h-4" />
 				Post New Job
-			</a>
+			</Button>
 		</div>
 	</div>
 
 	<!-- Filters and Search -->
-	<div class="bg-white rounded-lg border border-gray-200 p-4">
+	<Card padding="md">
 		<form onsubmit={(e) => { e.preventDefault(); updateFilters(); }} class="flex flex-col md:flex-row gap-4">
 			<!-- Search -->
 			<div class="flex-1 relative">
-				<Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+				<Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
 				<input
 					type="text"
 					bind:value={searchQuery}
 					onchange={updateFilters}
 					placeholder="Search jobs by title..."
-					class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+					class="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 				/>
 			</div>
 
 			<!-- Filter -->
 			<div class="flex items-center gap-3">
 				<div class="relative">
-					<Filter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+					<Filter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
 					<select
 						bind:value={selectedFilter}
 						onchange={updateFilters}
-						class="pl-9 pr-8 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
+						class="pl-9 pr-8 py-2 border border-border rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none cursor-pointer"
 					>
 						{#each filterOptions as option}
 							<option value={option.value}>{option.label}</option>
@@ -172,11 +167,11 @@
 					</select>
 				</div>
 
-				<div class="flex border border-gray-300 rounded-lg overflow-hidden">
+				<div class="flex border border-border rounded-lg overflow-hidden">
 					<button
 						type="button"
 						onclick={() => (viewMode = 'list')}
-						class="px-3 py-2 {viewMode === 'list' ? 'bg-gray-100' : 'bg-white'} hover:bg-gray-50"
+						class="px-3 py-2 {viewMode === 'list' ? 'bg-primary/10 text-primary' : 'bg-white text-muted'} hover:bg-surface transition-colors"
 						aria-label="List view"
 					>
 						<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -190,7 +185,7 @@
 					<button
 						type="button"
 						onclick={() => (viewMode = 'grid')}
-						class="px-3 py-2 {viewMode === 'grid' ? 'bg-gray-100' : 'bg-white'} hover:bg-gray-50"
+						class="px-3 py-2 {viewMode === 'grid' ? 'bg-primary/10 text-primary' : 'bg-white text-muted'} hover:bg-surface transition-colors"
 						aria-label="Grid view"
 					>
 						<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -202,69 +197,66 @@
 				</div>
 			</div>
 		</form>
-	</div>
+	</Card>
 
 	<!-- Empty State -->
 	{#if data.jobs.length === 0}
-		<div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-			<Briefcase class="w-12 h-12 text-gray-400 mx-auto mb-4" />
-			<h3 class="text-lg font-semibold text-gray-900 mb-2">No jobs found</h3>
-			<p class="text-gray-600 mb-6">
+		<Card padding="lg" class="text-center">
+			<Briefcase class="w-12 h-12 text-muted mx-auto mb-4" />
+			<h3 class="text-lg font-semibold text-black mb-2">No jobs found</h3>
+			<p class="text-muted mb-6">
 				{searchQuery || selectedFilter !== 'all'
 					? 'Try adjusting your filters or search query'
 					: 'Get started by posting your first job'}
 			</p>
-			<a
-				href="/dashboard/jobs/new/"
-				class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-			>
+			<Button href="/dashboard/jobs/new/">
 				<Plus class="w-4 h-4" />
 				Post New Job
-			</a>
-		</div>
+			</Button>
+		</Card>
 	{:else if viewMode === 'list'}
 		<!-- List View -->
-		<div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+		<Card padding="none">
 			<div class="overflow-x-auto">
 				<table class="w-full">
-					<thead class="bg-gray-50 border-b border-gray-200">
+					<thead class="bg-surface border-b border-border">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
 								Job Details
 							</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
 								Status
 							</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
 								Posted
 							</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
 								Expires
 							</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
 								Performance
 							</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
 								Actions
 							</th>
 						</tr>
 					</thead>
-					<tbody class="divide-y divide-gray-200">
+					<tbody class="divide-y divide-border">
 						{#each data.jobs as job}
-							<tr class="hover:bg-gray-50">
+							<tr class="hover:bg-surface transition-colors">
 								<td class="px-6 py-4">
 									<div class="flex items-start gap-3">
-										<div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-											<Briefcase class="w-5 h-5 text-blue-600" />
+										<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+											<Briefcase class="w-5 h-5 text-primary" />
 										</div>
 										<div>
 											<a
 												href="/dashboard/jobs/{job.id}/{job.status === 'Draft' ? '' : 'applicants/'}"
-												class="font-medium text-gray-900 hover:text-blue-600"
+												class="font-medium text-black hover:text-primary transition-colors"
 											>
 												{job.title}
 											</a>
-											<div class="flex items-center gap-3 mt-1 text-sm text-gray-500">
+											<div class="flex items-center gap-3 mt-1 text-sm text-muted">
 												<span>{job.company_name}</span>
 												<span>•</span>
 												<span class="flex items-center gap-1">
@@ -275,7 +267,7 @@
 												<span>{job.job_type}</span>
 											</div>
 											{#if job.is_expiring_soon}
-												<span class="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded">
+												<span class="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-warning-light text-warning text-xs font-medium rounded">
 													<Calendar class="w-3 h-3" />
 													Expires in {job.days_until_expiry} days
 												</span>
@@ -284,14 +276,14 @@
 									</div>
 								</td>
 								<td class="px-6 py-4">
-									<span class="inline-flex px-2 py-1 text-xs font-medium rounded {getStatusBadgeClass(job.status)}">
+									<Badge variant={getStatusVariant(job.status)}>
 										{job.status}
-									</span>
+									</Badge>
 								</td>
-								<td class="px-6 py-4 text-sm text-gray-600">
+								<td class="px-6 py-4 text-sm text-muted">
 									{job.time_ago}
 								</td>
-								<td class="px-6 py-4 text-sm text-gray-600">
+								<td class="px-6 py-4 text-sm text-muted">
 									{#if job.days_until_expiry !== null && job.days_until_expiry !== undefined}
 										{job.days_until_expiry} days left
 									{:else}
@@ -300,13 +292,13 @@
 								</td>
 								<td class="px-6 py-4">
 									<div class="flex items-center gap-4 text-sm">
-										<div class="flex items-center gap-1 text-gray-600">
+										<div class="flex items-center gap-1 text-muted">
 											<Eye class="w-4 h-4" />
 											{job.views_count.toLocaleString()}
 										</div>
 										<a
 											href="/dashboard/jobs/{job.id}/applicants/"
-											class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium"
+											class="flex items-center gap-1 text-primary hover:text-primary-hover font-medium transition-colors"
 										>
 											<Users class="w-4 h-4" />
 											{job.applicants_count}
@@ -327,7 +319,7 @@
 												<button
 													type="submit"
 													disabled={submittingAction === job.id}
-													class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+													class="p-2 text-success hover:bg-success-light rounded-lg transition-colors disabled:opacity-50"
 													title="Publish"
 												>
 													<Send class="w-4 h-4" />
@@ -346,7 +338,7 @@
 												<button
 													type="submit"
 													disabled={submittingAction === job.id}
-													class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50"
+													class="p-2 text-warning hover:bg-warning-light rounded-lg transition-colors disabled:opacity-50"
 													title="Close"
 												>
 													<Archive class="w-4 h-4" />
@@ -356,7 +348,7 @@
 										{#if job.status === 'Draft'}
 											<a
 												href="/dashboard/jobs/{job.id}/edit/"
-												class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+												class="p-2 text-muted hover:bg-surface rounded-lg transition-colors"
 												title="Edit"
 											>
 												<Edit class="w-4 h-4" />
@@ -364,14 +356,14 @@
 										{/if}
 										<a
 											href="/dashboard/jobs/{job.id}/"
-											class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+											class="p-2 text-muted hover:bg-surface rounded-lg transition-colors"
 											title="View"
 										>
 											<ExternalLink class="w-4 h-4" />
 										</a>
 										<a
 											href="/dashboard/jobs/new/?copy_from={job.id}"
-											class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+											class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
 											title="Copy Job"
 										>
 											<Copy class="w-4 h-4" />
@@ -380,7 +372,7 @@
 											<button
 												onclick={() => handleDelete(job.id, job.title)}
 												disabled={submittingAction === job.id}
-												class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+												class="p-2 text-error hover:bg-error-light rounded-lg transition-colors disabled:opacity-50"
 												title="Delete"
 											>
 												<XCircle class="w-4 h-4" />
@@ -393,31 +385,31 @@
 					</tbody>
 				</table>
 			</div>
-		</div>
+		</Card>
 	{:else}
 		<!-- Grid View -->
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{#each data.jobs as job}
-				<div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+				<Card hover padding="md">
 					<div class="flex items-start justify-between mb-4">
-						<div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
-							<Briefcase class="w-6 h-6 text-blue-600" />
+						<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+							<Briefcase class="w-6 h-6 text-primary" />
 						</div>
-						<span class="px-2 py-1 text-xs font-medium rounded {getStatusBadgeClass(job.status)}">
+						<Badge variant={getStatusVariant(job.status)}>
 							{job.status}
-						</span>
+						</Badge>
 					</div>
 
 					<a
 						href="/dashboard/jobs/{job.id}/{job.status === 'Draft' ? '' : 'applicants/'}"
 						class="block mb-3"
 					>
-						<h3 class="text-lg font-semibold text-gray-900 hover:text-blue-600 line-clamp-2">
+						<h3 class="text-lg font-semibold text-black hover:text-primary transition-colors line-clamp-2">
 							{job.title}
 						</h3>
 					</a>
 
-					<div class="space-y-2 text-sm text-gray-600 mb-4">
+					<div class="space-y-2 text-sm text-muted mb-4">
 						<div class="flex items-center gap-2">
 							<MapPin class="w-4 h-4" />
 							{job.location_display}
@@ -430,21 +422,21 @@
 
 					{#if job.is_expiring_soon}
 						<div class="mb-4">
-							<span class="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded">
+							<span class="inline-flex items-center gap-1 px-2 py-1 bg-warning-light text-warning text-xs font-medium rounded">
 								<Calendar class="w-3 h-3" />
 								Expires in {job.days_until_expiry} days
 							</span>
 						</div>
 					{/if}
 
-					<div class="flex items-center justify-between mb-4 pt-4 border-t border-gray-200">
-						<div class="flex items-center gap-1 text-sm text-gray-600">
+					<div class="flex items-center justify-between mb-4 pt-4 border-t border-border">
+						<div class="flex items-center gap-1 text-sm text-muted">
 							<Eye class="w-4 h-4" />
 							{job.views_count.toLocaleString()}
 						</div>
 						<a
 							href="/dashboard/jobs/{job.id}/applicants/"
-							class="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium"
+							class="flex items-center gap-1 text-sm text-primary hover:text-primary-hover font-medium transition-colors"
 						>
 							<Users class="w-4 h-4" />
 							{job.applicants_count} applicants
@@ -457,7 +449,7 @@
 								<input type="hidden" name="jobId" value={job.id} />
 								<button
 									type="submit"
-									class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-green-600 rounded-lg text-sm font-medium text-white hover:bg-green-700 transition-colors"
+									class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-success rounded-full text-sm font-medium text-white hover:opacity-90 transition-opacity"
 								>
 									<Send class="w-4 h-4" />
 									Publish
@@ -468,7 +460,7 @@
 								<input type="hidden" name="jobId" value={job.id} />
 								<button
 									type="submit"
-									class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-orange-600 rounded-lg text-sm font-medium text-white hover:bg-orange-700 transition-colors"
+									class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-warning rounded-full text-sm font-medium text-white hover:opacity-90 transition-opacity"
 								>
 									<Archive class="w-4 h-4" />
 									Close
@@ -476,49 +468,47 @@
 							</form>
 						{/if}
 						{#if job.status === 'Draft'}
-							<a
-								href="/dashboard/jobs/{job.id}/edit/"
-								class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-							>
+							<Button href="/dashboard/jobs/{job.id}/edit/" variant="secondary" size="sm" class="flex-1">
 								<Edit class="w-4 h-4" />
 								Edit
-							</a>
+							</Button>
 						{/if}
-						<a
-							href="/dashboard/jobs/{job.id}/"
-							class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-						>
+						<Button href="/dashboard/jobs/{job.id}/" size="sm" class="flex-1">
 							View
-						</a>
+						</Button>
 					</div>
-				</div>
+				</Card>
 			{/each}
 		</div>
 	{/if}
 
 	<!-- Pagination -->
 	{#if data.jobs.length > 0 && (data.next || data.previous)}
-		<div class="flex items-center justify-between bg-white rounded-lg border border-gray-200 px-6 py-4">
-			<div class="text-sm text-gray-600">
-				Showing {data.jobs.length} of {data.count} jobs
+		<Card padding="md">
+			<div class="flex items-center justify-between">
+				<div class="text-sm text-muted">
+					Showing {data.jobs.length} of {data.count} jobs
+				</div>
+				<div class="flex items-center gap-2">
+					<Button
+						variant="secondary"
+						size="sm"
+						onclick={() => goToPage(data.currentPage - 1)}
+						disabled={!data.previous}
+					>
+						Previous
+					</Button>
+					<span class="text-sm text-muted px-2">Page {data.currentPage}</span>
+					<Button
+						variant="secondary"
+						size="sm"
+						onclick={() => goToPage(data.currentPage + 1)}
+						disabled={!data.next}
+					>
+						Next
+					</Button>
+				</div>
 			</div>
-			<div class="flex items-center gap-2">
-				<button
-					onclick={() => goToPage(data.currentPage - 1)}
-					disabled={!data.previous}
-					class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-				>
-					Previous
-				</button>
-				<span class="text-sm text-gray-600">Page {data.currentPage}</span>
-				<button
-					onclick={() => goToPage(data.currentPage + 1)}
-					disabled={!data.next}
-					class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-				>
-					Next
-				</button>
-			</div>
-		</div>
+		</Card>
 	{/if}
 </div>

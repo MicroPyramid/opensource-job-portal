@@ -1,8 +1,26 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Skill(frontend-design)",
+      "Bash(cd:*)",
+      "Bash(source:*)",
+      "Bash(python manage.py shell:*)",
+      "Bash(head:*)",
+      "Bash(cat:*)",
+      "mcp__svelte__svelte-autofixer",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_click"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "context7",
     "playwright",
     "svelte"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

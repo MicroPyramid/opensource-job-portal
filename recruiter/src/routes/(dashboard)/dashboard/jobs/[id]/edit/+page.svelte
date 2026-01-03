@@ -170,24 +170,24 @@
 <div class="max-w-5xl mx-auto space-y-6">
 	<!-- Header -->
 	<div>
-		<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Edit Job</h1>
-		<p class="text-gray-600 mt-1">Update details for: {data.job.title}</p>
-		<div class="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-			<span class="font-medium text-blue-800">Status:</span>
-			<span class="text-blue-600">{data.job.status}</span>
+		<h1 class="text-2xl md:text-3xl font-bold text-black">Edit Job</h1>
+		<p class="text-muted mt-1">Update details for: {data.job.title}</p>
+		<div class="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-lg text-sm">
+			<span class="font-medium text-primary">Status:</span>
+			<span class="text-primary">{data.job.status}</span>
 		</div>
 	</div>
 
 	<!-- Success/Error Messages -->
 	{#if form?.success}
-		<div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-			<CheckCircle class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+		<div class="bg-success-light border border-success/30 rounded-lg p-4 flex items-start gap-3">
+			<CheckCircle class="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
 			<div class="flex-1">
-				<p class="text-sm font-medium text-green-800">{form.message || 'Job updated successfully!'}</p>
+				<p class="text-sm font-medium text-success">{form.message || 'Job updated successfully!'}</p>
 			</div>
 			<button
 				onclick={() => (form = null)}
-				class="text-green-600 hover:text-green-800 transition-colors"
+				class="text-success hover:text-success transition-colors"
 				aria-label="Dismiss"
 			>
 				<X class="w-4 h-4" />
@@ -196,14 +196,14 @@
 	{/if}
 
 	{#if form?.error}
-		<div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-			<AlertCircle class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+		<div class="bg-error-light border border-error/30 rounded-lg p-4 flex items-start gap-3">
+			<AlertCircle class="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
 			<div class="flex-1">
-				<p class="text-sm font-medium text-red-800">{form.error}</p>
+				<p class="text-sm font-medium text-error">{form.error}</p>
 			</div>
 			<button
 				onclick={() => (form = null)}
-				class="text-red-600 hover:text-red-800 transition-colors"
+				class="text-error hover:text-error transition-colors"
 				aria-label="Dismiss"
 			>
 				<X class="w-4 h-4" />
@@ -212,7 +212,7 @@
 	{/if}
 
 	<!-- Progress Steps -->
-	<div class="bg-white rounded-lg border border-gray-200 p-6">
+	<div class="bg-white rounded-lg border border-border p-6">
 		<div class="flex items-center justify-between">
 			{#each steps as step, index}
 				<div class="flex items-center {index < steps.length - 1 ? 'flex-1' : ''}">
@@ -222,10 +222,10 @@
 							onclick={() => (currentStep = step.number)}
 							class="w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-colors {currentStep ===
 							step.number
-								? 'bg-blue-600 text-white'
+								? 'bg-primary text-white'
 								: currentStep > step.number
-									? 'bg-green-600 text-white'
-									: 'bg-gray-200 text-gray-600'}"
+									? 'bg-success text-white'
+									: 'bg-surface text-muted'}"
 						>
 							{#if currentStep > step.number}
 								✓
@@ -235,15 +235,15 @@
 						</button>
 						<span
 							class="text-xs mt-2 {currentStep === step.number
-								? 'text-blue-600 font-medium'
-								: 'text-gray-600'} hidden md:block"
+								? 'text-primary font-medium'
+								: 'text-muted'} hidden md:block"
 						>
 							{step.title}
 						</span>
 					</div>
 					{#if index < steps.length - 1}
 						<div
-							class="flex-1 h-0.5 mx-2 {currentStep > step.number ? 'bg-green-600' : 'bg-gray-200'}"
+							class="flex-1 h-0.5 mx-2 {currentStep > step.number ? 'bg-success' : 'bg-surface'}"
 						></div>
 					{/if}
 				</div>
@@ -304,19 +304,19 @@
 		<input type="hidden" name="company_description" bind:value={formData.benefits} />
 
 		<!-- Form Content -->
-		<div class="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
+		<div class="bg-white rounded-lg border border-border p-6 md:p-8">
 			{#if currentStep === 1}
 			<!-- Step 1: Job Basics -->
 			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+				<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 					<Briefcase class="w-6 h-6" />
 					Job Basics
 				</h2>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div class="md:col-span-2">
-						<label for="edit-job-title" class="block text-sm font-medium text-gray-700 mb-2">
-							Job Title <span class="text-red-500">*</span>
+						<label for="edit-job-title" class="block text-sm font-medium text-muted mb-2">
+							Job Title <span class="text-error">*</span>
 						</label>
 						<input
 							id="edit-job-title"
@@ -325,13 +325,13 @@
 							bind:value={formData.jobTitle}
 							placeholder="e.g., Senior Frontend Developer"
 							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						/>
 					</div>
 
 					<div>
-						<label for="edit-company-name" class="block text-sm font-medium text-gray-700 mb-2">
-							Company Name <span class="text-red-500">*</span>
+						<label for="edit-company-name" class="block text-sm font-medium text-muted mb-2">
+							Company Name <span class="text-error">*</span>
 						</label>
 						<input
 							id="edit-company-name"
@@ -340,13 +340,13 @@
 							bind:value={formData.companyName}
 							placeholder="e.g., Acme Inc."
 							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						/>
 					</div>
 
 					<div>
-						<label for="edit-department" class="block text-sm font-medium text-gray-700 mb-2">
-							Department <span class="text-red-500">*</span>
+						<label for="edit-department" class="block text-sm font-medium text-muted mb-2">
+							Department <span class="text-error">*</span>
 						</label>
 						<input
 							id="edit-department"
@@ -355,20 +355,20 @@
 							bind:value={formData.department}
 							placeholder="e.g., Engineering"
 							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						/>
 					</div>
 
 					<div>
-						<label for="edit-employment-type" class="block text-sm font-medium text-gray-700 mb-2">
-							Employment Type <span class="text-red-500">*</span>
+						<label for="edit-employment-type" class="block text-sm font-medium text-muted mb-2">
+							Employment Type <span class="text-error">*</span>
 						</label>
 						<select
 							id="edit-employment-type"
 							name="job_type"
 							bind:value={formData.employmentType}
 							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						>
 							{#each employmentTypes as type}
 								<option value={type.toLowerCase()}>{type}</option>
@@ -377,15 +377,15 @@
 					</div>
 
 					<div>
-						<label for="edit-experience-level" class="block text-sm font-medium text-gray-700 mb-2">
-							Experience Level <span class="text-red-500">*</span>
+						<label for="edit-experience-level" class="block text-sm font-medium text-muted mb-2">
+							Experience Level <span class="text-error">*</span>
 						</label>
 						<select
 							id="edit-experience-level"
 							name="experience_level"
 							bind:value={formData.experienceLevel}
 							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						>
 							<option value="">Select experience level</option>
 							{#each experienceLevels as level}
@@ -395,8 +395,8 @@
 					</div>
 
 					<div>
-						<label for="edit-positions" class="block text-sm font-medium text-gray-700 mb-2">
-							Number of Positions <span class="text-red-500">*</span>
+						<label for="edit-positions" class="block text-sm font-medium text-muted mb-2">
+							Number of Positions <span class="text-error">*</span>
 						</label>
 						<input
 							id="edit-positions"
@@ -405,7 +405,7 @@
 							bind:value={formData.positions}
 							min="1"
 							required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						/>
 					</div>
 				</div>
@@ -413,14 +413,14 @@
 		{:else if currentStep === 2}
 			<!-- Step 2: Location & Work Mode -->
 			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+				<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 					<MapPin class="w-6 h-6" />
 					Location & Work Mode
 				</h2>
 
 				<div>
-					<label for="edit-work-mode" class="block text-sm font-medium text-gray-700 mb-2">
-						Work Mode <span class="text-red-500">*</span>
+					<label for="edit-work-mode" class="block text-sm font-medium text-muted mb-2">
+						Work Mode <span class="text-error">*</span>
 					</label>
 					<div class="grid grid-cols-3 gap-3">
 						{#each workModes as mode}
@@ -429,8 +429,8 @@
 								onclick={() => (formData.workMode = mode.value)}
 								class="px-4 py-3 rounded-lg border-2 font-medium text-sm transition-colors {formData.workMode ===
 								mode.value
-									? 'border-blue-600 bg-blue-50 text-blue-600'
-									: 'border-gray-300 text-gray-700 hover:border-gray-400'}"
+									? 'border-primary bg-primary/10 text-primary'
+									: 'border-border text-muted hover:border-primary/50'}"
 							>
 								{mode.label}
 							</button>
@@ -439,68 +439,68 @@
 				</div>
 
 				<div>
-					<label for="edit-current-locations" class="block text-sm font-medium text-gray-700 mb-3">Current Locations</label>
+					<label for="edit-current-locations" class="block text-sm font-medium text-muted mb-3">Current Locations</label>
 					{#if data.job.locations && data.job.locations.length > 0}
 						<div class="flex flex-wrap gap-2 mb-3">
 							{#each data.job.locations as location}
-								<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+								<span class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
 									{location.name}, {location.state}
 								</span>
 							{/each}
 						</div>
 					{:else}
-						<p class="text-sm text-gray-500 mb-3">No locations set</p>
+						<p class="text-sm text-muted mb-3">No locations set</p>
 					{/if}
-					<p class="text-xs text-gray-500">Note: Location editing coming soon. Please contact support to change locations.</p>
+					<p class="text-xs text-muted">Note: Location editing coming soon. Please contact support to change locations.</p>
 				</div>
 
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div>
-						<label for="edit-country" class="block text-sm font-medium text-gray-700 mb-2">Country</label>
+						<label for="edit-country" class="block text-sm font-medium text-muted mb-2">Country</label>
 						<input
 							id="edit-country"
 							type="text"
 							bind:value={formData.country}
 							placeholder="e.g., United States"
 							disabled
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+							class="w-full px-4 py-2 border border-border rounded-lg bg-surface"
 						/>
 					</div>
 
 					<div>
-						<label for="edit-state" class="block text-sm font-medium text-gray-700 mb-2">State</label>
+						<label for="edit-state" class="block text-sm font-medium text-muted mb-2">State</label>
 						<input
 							id="edit-state"
 							type="text"
 							bind:value={formData.state}
 							placeholder="e.g., California"
 							disabled
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+							class="w-full px-4 py-2 border border-border rounded-lg bg-surface"
 						/>
 					</div>
 
 					<div>
-						<label for="edit-city" class="block text-sm font-medium text-gray-700 mb-2">City</label>
+						<label for="edit-city" class="block text-sm font-medium text-muted mb-2">City</label>
 						<input
 							id="edit-city"
 							type="text"
 							bind:value={formData.city}
 							placeholder="e.g., San Francisco"
 							disabled
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+							class="w-full px-4 py-2 border border-border rounded-lg bg-surface"
 						/>
 					</div>
 				</div>
 
 				{#if formData.workMode !== 'remote'}
 					<div>
-						<label for="edit-office-address" class="block text-sm font-medium text-gray-700 mb-2">Office Address</label>
+						<label for="edit-office-address" class="block text-sm font-medium text-muted mb-2">Office Address</label>
 						<textarea
 							id="edit-office-address"
 							bind:value={formData.officeAddress}
 							rows="3"
 							placeholder="Enter the full office address"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						></textarea>
 					</div>
 				{/if}
@@ -508,14 +508,14 @@
 		{:else if currentStep === 3}
 			<!-- Step 3: Job Details -->
 			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+				<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 					<FileText class="w-6 h-6" />
 					Job Details
 				</h2>
 
 				<div>
-					<label for="edit-description" class="block text-sm font-medium text-gray-700 mb-2">
-						Job Description <span class="text-red-500">*</span>
+					<label for="edit-description" class="block text-sm font-medium text-muted mb-2">
+						Job Description <span class="text-error">*</span>
 					</label>
 					<textarea
 						id="edit-description"
@@ -524,37 +524,37 @@
 						rows="6"
 						placeholder="Describe the role and what the candidate will be doing..."
 						required
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 					></textarea>
 				</div>
 
 				<div>
-					<label for="edit-responsibilities" class="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
+					<label for="edit-responsibilities" class="block text-sm font-medium text-muted mb-2">Responsibilities</label>
 					<textarea
 						id="edit-responsibilities"
 						bind:value={formData.responsibilities}
 						rows="5"
 						placeholder="List the key responsibilities (one per line)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 					></textarea>
 				</div>
 
 				<div>
-					<label for="edit-requirements" class="block text-sm font-medium text-gray-700 mb-2">
-						Requirements <span class="text-red-500">*</span>
+					<label for="edit-requirements" class="block text-sm font-medium text-muted mb-2">
+						Requirements <span class="text-error">*</span>
 					</label>
 					<textarea
 						id="edit-requirements"
 						bind:value={formData.requirements}
 						rows="5"
 						placeholder="List the requirements and qualifications (one per line)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 					></textarea>
 				</div>
 
 				<div>
-					<label for="edit-search-skill" class="block text-sm font-medium text-gray-700 mb-2">
-						Key Skills <span class="text-gray-500 text-xs">(Max 8)</span>
+					<label for="edit-search-skill" class="block text-sm font-medium text-muted mb-2">
+						Key Skills <span class="text-muted text-xs">(Max 8)</span>
 					</label>
 					<div class="space-y-3">
 						<input
@@ -562,7 +562,7 @@
 							type="text"
 							bind:value={searchSkill}
 							placeholder="Search skills... (e.g., Python, React, AWS)"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						/>
 
 						{#if formData.selectedSkillIds.length > 0}
@@ -570,12 +570,12 @@
 								{#each formData.selectedSkillIds as skillId}
 									{@const skill = data.metadata.skills.find(s => s.id === skillId)}
 									{#if skill}
-										<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+										<span class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
 											{skill.name}
 											<button
 												type="button"
 												onclick={() => toggleSkill(skillId)}
-												class="hover:text-blue-900"
+												class="hover:text-primary-hover"
 											>
 												<X class="w-4 h-4" />
 											</button>
@@ -586,7 +586,7 @@
 						{/if}
 
 						{#if searchSkill.length > 0}
-							<div class="border border-gray-300 rounded-lg max-h-60 overflow-y-auto">
+							<div class="border border-border rounded-lg max-h-60 overflow-y-auto">
 								{#each filteredSkills as skill}
 									<button
 										type="button"
@@ -597,123 +597,123 @@
 											}
 										}}
 										disabled={formData.selectedSkillIds.length >= 8 && !formData.selectedSkillIds.includes(skill.id)}
-										class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center justify-between {formData.selectedSkillIds.includes(skill.id) ? 'bg-blue-50 text-blue-700' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
+										class="w-full text-left px-4 py-2 hover:bg-surface flex items-center justify-between {formData.selectedSkillIds.includes(skill.id) ? 'bg-primary/10 text-primary' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
 									>
 										<span class="text-sm">{skill.name}</span>
 										{#if formData.selectedSkillIds.includes(skill.id)}
-											<CheckCircle class="w-4 h-4 text-blue-600" />
+											<CheckCircle class="w-4 h-4 text-primary" />
 										{/if}
 									</button>
 								{/each}
 							</div>
 						{/if}
 					</div>
-					<p class="text-xs text-gray-500 mt-1">Select up to 8 key skills required for this role</p>
+					<p class="text-xs text-muted mt-1">Select up to 8 key skills required for this role</p>
 				</div>
 
 				<div>
-					<label for="edit-education" class="block text-sm font-medium text-gray-700 mb-2">Education Requirements</label>
+					<label for="edit-education" class="block text-sm font-medium text-muted mb-2">Education Requirements</label>
 					<input
 						id="edit-education"
 						type="text"
 						bind:value={formData.education}
 						placeholder="e.g., Bachelor's degree in Computer Science or related field"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 					/>
 				</div>
 			</div>
 		{:else if currentStep === 4}
 			<!-- Step 4: Compensation & Benefits -->
 			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+				<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 					<DollarSign class="w-6 h-6" />
 					Compensation & Benefits
 				</h2>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
-						<label for="edit-salary-min" class="block text-sm font-medium text-gray-700 mb-2">Minimum Salary</label>
+						<label for="edit-salary-min" class="block text-sm font-medium text-muted mb-2">Minimum Salary</label>
 						<input
 							id="edit-salary-min"
 							type="number"
 							bind:value={formData.salaryMin}
 							placeholder="50000"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						/>
 					</div>
 
 					<div>
-						<label for="edit-salary-max" class="block text-sm font-medium text-gray-700 mb-2">Maximum Salary</label>
+						<label for="edit-salary-max" class="block text-sm font-medium text-muted mb-2">Maximum Salary</label>
 						<input
 							id="edit-salary-max"
 							type="number"
 							bind:value={formData.salaryMax}
 							placeholder="80000"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						/>
 					</div>
 				</div>
 
 				<div>
 					<label for="edit-hide-salary" class="flex items-center gap-2 cursor-pointer">
-						<input id="edit-hide-salary" type="checkbox" bind:checked={formData.hideSalary} class="w-4 h-4 text-blue-600 rounded" />
-						<span class="text-sm text-gray-700">Hide salary range from public job posting</span>
+						<input id="edit-hide-salary" type="checkbox" bind:checked={formData.hideSalary} class="w-4 h-4 text-primary rounded" />
+						<span class="text-sm text-muted">Hide salary range from public job posting</span>
 					</label>
 				</div>
 
 				<div>
-					<label for="edit-benefits" class="block text-sm font-medium text-gray-700 mb-2">Benefits</label>
+					<label for="edit-benefits" class="block text-sm font-medium text-muted mb-2">Benefits</label>
 					<textarea
 						id="edit-benefits"
 						bind:value={formData.benefits}
 						rows="4"
 						placeholder="List the benefits (e.g., Health insurance, 401k, etc.)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 					></textarea>
 				</div>
 
 				<div>
-					<label for="edit-perks" class="block text-sm font-medium text-gray-700 mb-2">Perks</label>
+					<label for="edit-perks" class="block text-sm font-medium text-muted mb-2">Perks</label>
 					<textarea
 						id="edit-perks"
 						bind:value={formData.perks}
 						rows="4"
 						placeholder="List additional perks (e.g., Flexible hours, Remote work, etc.)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 					></textarea>
 				</div>
 			</div>
 		{:else if currentStep === 5}
 			<!-- Step 5: Application Settings -->
 			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+				<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 					<Settings class="w-6 h-6" />
 					Application Settings
 				</h2>
 
 				<div>
-					<label for="edit-auto-reply" class="block text-sm font-medium text-gray-700 mb-2">Auto-Reply Email Template</label>
+					<label for="edit-auto-reply" class="block text-sm font-medium text-muted mb-2">Auto-Reply Email Template</label>
 					<textarea
 						id="edit-auto-reply"
 						bind:value={formData.autoReplyTemplate}
 						rows="4"
 						placeholder="Thank you for applying! We have received your application and will review it shortly..."
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 					></textarea>
 				</div>
 			</div>
 		{:else if currentStep === 6}
 			<!-- Step 6: Preview -->
 			<div class="space-y-6">
-				<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+				<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 					<Eye class="w-6 h-6" />
 					Preview & Update
 				</h2>
 
-				<div class="bg-gray-50 rounded-lg p-6 space-y-4">
+				<div class="bg-surface rounded-lg p-6 space-y-4">
 					<div>
-						<h3 class="text-2xl font-bold text-gray-900">{formData.jobTitle || 'Job Title'}</h3>
-						<div class="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
+						<h3 class="text-2xl font-bold text-black">{formData.jobTitle || 'Job Title'}</h3>
+						<div class="flex flex-wrap gap-3 mt-2 text-sm text-muted">
 							<span>{formData.department || 'Department'}</span>
 							<span>•</span>
 							<span>{formData.companyName || 'Company'}</span>
@@ -726,31 +726,31 @@
 
 					{#if formData.description}
 						<div>
-							<h4 class="font-semibold text-gray-900 mb-2">Description</h4>
-							<p class="text-gray-700 whitespace-pre-line">{formData.description}</p>
+							<h4 class="font-semibold text-black mb-2">Description</h4>
+							<p class="text-muted whitespace-pre-line">{formData.description}</p>
 						</div>
 					{/if}
 
 					{#if formData.responsibilities}
 						<div>
-							<h4 class="font-semibold text-gray-900 mb-2">Responsibilities</h4>
-							<p class="text-gray-700 whitespace-pre-line">{formData.responsibilities}</p>
+							<h4 class="font-semibold text-black mb-2">Responsibilities</h4>
+							<p class="text-muted whitespace-pre-line">{formData.responsibilities}</p>
 						</div>
 					{/if}
 
 					{#if formData.requirements}
 						<div>
-							<h4 class="font-semibold text-gray-900 mb-2">Requirements</h4>
-							<p class="text-gray-700 whitespace-pre-line">{formData.requirements}</p>
+							<h4 class="font-semibold text-black mb-2">Requirements</h4>
+							<p class="text-muted whitespace-pre-line">{formData.requirements}</p>
 						</div>
 					{/if}
 
 					{#if data.job.skills && data.job.skills.length > 0}
 						<div>
-							<h4 class="font-semibold text-gray-900 mb-2">Required Skills</h4>
+							<h4 class="font-semibold text-black mb-2">Required Skills</h4>
 							<div class="flex flex-wrap gap-2">
 								{#each data.job.skills as skill}
-									<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{skill.name}</span>
+									<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">{skill.name}</span>
 								{/each}
 							</div>
 						</div>
@@ -759,8 +759,8 @@
 					{#if formData.salaryMin || formData.salaryMax}
 						{#if !formData.hideSalary}
 							<div>
-								<h4 class="font-semibold text-gray-900 mb-2">Salary Range</h4>
-								<p class="text-gray-700">
+								<h4 class="font-semibold text-black mb-2">Salary Range</h4>
+								<p class="text-muted">
 									${formData.salaryMin || '0'} - ${formData.salaryMax || '0'}
 								</p>
 							</div>
@@ -768,8 +768,8 @@
 					{/if}
 				</div>
 
-				<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-					<p class="text-sm text-blue-800">
+				<div class="bg-primary/10 border border-primary/30 rounded-lg p-4">
+					<p class="text-sm text-primary">
 						<strong>Note:</strong> Changes will be saved to this job posting. If you publish, it will be visible to job seekers.
 					</p>
 				</div>
@@ -778,12 +778,12 @@
 	</div>
 
 		<!-- Navigation Buttons -->
-		<div class="flex items-center justify-between bg-white rounded-lg border border-gray-200 p-4">
+		<div class="flex items-center justify-between bg-white rounded-lg border border-border p-4">
 			<button
 				type="button"
 				onclick={prevStep}
 				disabled={currentStep === 1}
-				class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+				class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg text-sm font-medium text-muted hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 			>
 				<ChevronLeft class="w-4 h-4" />
 				Previous
@@ -794,7 +794,7 @@
 					type="submit"
 					formaction="?/saveDraft"
 					disabled={isSubmitting}
-					class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+					class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg text-sm font-medium text-muted hover:bg-surface disabled:opacity-50 transition-colors"
 				>
 					<Save class="w-4 h-4" />
 					{isSubmitting ? 'Saving...' : 'Save Changes'}
@@ -804,7 +804,7 @@
 					<button
 						type="button"
 						onclick={nextStep}
-						class="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+						class="inline-flex items-center gap-2 px-6 py-2 bg-primary rounded-lg text-sm font-medium text-white hover:bg-primary-hover transition-colors"
 					>
 						Next
 						<ChevronRight class="w-4 h-4" />
@@ -814,7 +814,7 @@
 						type="submit"
 						formaction="?/publish"
 						disabled={isSubmitting}
-						class="inline-flex items-center gap-2 px-6 py-2 bg-green-600 rounded-lg text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
+						class="inline-flex items-center gap-2 px-6 py-2 bg-success rounded-lg text-sm font-medium text-white hover:bg-success disabled:opacity-50 transition-colors"
 					>
 						<Send class="w-4 h-4" />
 						{isSubmitting ? 'Publishing...' : data.job.status === 'Live' ? 'Update & Republish' : 'Update & Publish'}

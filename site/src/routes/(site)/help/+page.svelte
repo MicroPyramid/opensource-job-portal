@@ -228,17 +228,17 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="bg-gray-900 text-white py-16 lg:py-24 relative overflow-hidden">
+<section class="bg-[#1D2226] text-white py-16 lg:py-24 relative overflow-hidden">
 	<!-- Decorative Elements -->
 	<div class="absolute inset-0 overflow-hidden">
-		<div class="absolute top-0 left-1/3 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl"></div>
-		<div class="absolute bottom-0 right-1/3 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl"></div>
+		<div class="absolute top-0 left-1/3 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
+		<div class="absolute bottom-0 right-1/3 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
 	</div>
 
 	<div class="max-w-7xl mx-auto px-4 lg:px-8 relative">
 		<!-- Breadcrumb -->
 		<nav class="mb-8" aria-label="Breadcrumb">
-			<ol class="flex items-center gap-2 text-sm text-gray-400">
+			<ol class="flex items-center gap-2 text-sm text-muted">
 				<li>
 					<a href="/" class="hover:text-white transition-colors">Home</a>
 				</li>
@@ -251,21 +251,21 @@
 
 		<div class="max-w-3xl mx-auto text-center">
 			<div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-fade-in-up" style="opacity: 0;">
-				<HelpCircle size={40} class="text-primary-400" />
+				<HelpCircle size={40} class="text-primary" />
 			</div>
-			<h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in-up" style="opacity: 0; animation-delay: 100ms;">How Can We Help?</h1>
+			<h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-6 animate-fade-in-up" style="opacity: 0; animation-delay: 100ms;">How Can We Help?</h1>
 			<p class="text-lg md:text-xl text-gray-300 mb-10 animate-fade-in-up" style="opacity: 0; animation-delay: 200ms;">Search our knowledge base for quick answers to your questions</p>
 
 			<!-- Search Bar -->
 			<div class="relative max-w-2xl mx-auto animate-fade-in-up" style="opacity: 0; animation-delay: 300ms;">
 				<div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-					<Search size={20} class="text-gray-400" />
+					<Search size={20} class="text-muted" />
 				</div>
 				<input
 					type="text"
 					bind:value={searchQuery}
 					placeholder="Search for help articles, FAQs..."
-					class="w-full pl-14 pr-5 py-4 bg-white text-gray-900 rounded-full focus:outline-none focus:ring-4 focus:ring-primary-500/30 text-base placeholder-gray-500 elevation-2"
+					class="w-full pl-14 pr-5 py-4 bg-white text-black rounded-full focus:outline-none focus:ring-4 focus:ring-primary/30 text-base placeholder-muted shadow-md"
 				/>
 			</div>
 		</div>
@@ -274,28 +274,28 @@
 
 <!-- Popular Articles -->
 {#if searchQuery === ''}
-	<section class="py-12 lg:py-16 bg-surface-50">
+	<section class="py-12 lg:py-16 bg-surface">
 		<div class="max-w-7xl mx-auto px-4 lg:px-8">
 			<div class="max-w-6xl mx-auto">
 				<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
 					<div>
-						<h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Popular Articles</h2>
-						<p class="text-gray-600 mt-2">Quick guides to get you started</p>
+						<h2 class="text-2xl lg:text-3xl font-semibold text-black tracking-tight">Popular Articles</h2>
+						<p class="text-muted mt-2">Quick guides to get you started</p>
 					</div>
 				</div>
 
 				<div class="grid md:grid-cols-3 gap-6">
 					{#each popularArticles as article, i}
 						<div
-							class="group bg-white rounded-2xl p-6 elevation-1 hover:elevation-3 transition-all border border-gray-100 cursor-pointer animate-fade-in-up"
+							class="group bg-white rounded-lg p-6 shadow-sm hover:shadow-lg transition-all border border-border cursor-pointer animate-fade-in-up"
 							style="opacity: 0; animation-delay: {i * 100}ms;"
 						>
 							<div class="mb-4">
-								<span class="px-3 py-1 bg-primary-50 text-primary-700 text-xs font-medium rounded-full">{article.category}</span>
+								<span class="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">{article.category}</span>
 							</div>
-							<h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">{article.title}</h3>
-							<p class="text-sm text-gray-600 mb-4">{article.description}</p>
-							<p class="text-xs text-gray-500">{article.readTime}</p>
+							<h3 class="text-lg font-semibold text-black mb-2 group-hover:text-primary transition-colors">{article.title}</h3>
+							<p class="text-sm text-muted mb-4">{article.description}</p>
+							<p class="text-xs text-muted">{article.readTime}</p>
 						</div>
 					{/each}
 				</div>
@@ -310,15 +310,15 @@
 		<div class="max-w-6xl mx-auto">
 			<!-- Category Filters -->
 			<div class="mb-10">
-				<h2 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mb-6">Browse by Category</h2>
+				<h2 class="text-2xl lg:text-3xl font-semibold text-black tracking-tight mb-6">Browse by Category</h2>
 
 				<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
 					{#each categories as category, i}
 						<button
 							onclick={() => selectCategory(category.id)}
-							class="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all {selectedCategory === category.id
-								? 'bg-primary-600 text-white elevation-2'
-								: 'bg-surface-50 text-gray-700 border border-gray-100 hover:border-primary-200 hover:bg-primary-50'}"
+							class="flex flex-col items-center gap-2 p-4 rounded-lg transition-all {selectedCategory === category.id
+								? 'bg-primary text-white shadow-md'
+								: 'bg-surface text-muted border border-border hover:border-primary/30 hover:bg-primary/10'}"
 						>
 							<category.icon size={22} />
 							<span class="text-xs font-medium text-center">{category.name}</span>
@@ -330,8 +330,8 @@
 			<!-- Results Count -->
 			{#if searchQuery !== ''}
 				<div class="mb-6">
-					<p class="text-gray-600">
-						Found <span class="font-semibold text-gray-900">{filteredFaqs().length}</span>
+					<p class="text-muted">
+						Found <span class="font-semibold text-black">{filteredFaqs().length}</span>
 						result{filteredFaqs().length !== 1 ? 's' : ''} for "{searchQuery}"
 					</p>
 				</div>
@@ -339,24 +339,24 @@
 
 			<!-- FAQs -->
 			{#if filteredFaqs().length > 0}
-				<div class="bg-white rounded-2xl elevation-1 border border-gray-100 overflow-hidden">
+				<div class="bg-white rounded-lg shadow-sm border border-border overflow-hidden">
 					{#each filteredFaqs() as faq, index (faq.id)}
-						<div class="border-b border-gray-100 last:border-b-0">
-							<button onclick={() => toggleFaq(faq.id)} class="w-full px-6 lg:px-8 py-5 lg:py-6 text-left hover:bg-surface-50 transition-colors flex items-center justify-between gap-4">
+						<div class="border-b border-border last:border-b-0">
+							<button onclick={() => toggleFaq(faq.id)} class="w-full px-6 lg:px-8 py-5 lg:py-6 text-left hover:bg-surface transition-colors flex items-center justify-between gap-4">
 								<div class="flex-1">
-									<h3 class="text-base lg:text-lg font-semibold text-gray-900 pr-4">{faq.question}</h3>
+									<h3 class="text-base lg:text-lg font-semibold text-black pr-4">{faq.question}</h3>
 								</div>
-								<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center">
+								<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
 									{#if expandedFaqId === faq.id}
-										<ChevronUp size={18} class="text-primary-600" />
+										<ChevronUp size={18} class="text-primary" />
 									{:else}
-										<ChevronDown size={18} class="text-gray-400" />
+										<ChevronDown size={18} class="text-muted" />
 									{/if}
 								</div>
 							</button>
 
 							{#if expandedFaqId === faq.id}
-								<div class="px-6 lg:px-8 pb-6 text-gray-600 leading-relaxed animate-fade-in">
+								<div class="px-6 lg:px-8 pb-6 text-muted leading-relaxed animate-fade-in">
 									{faq.answer}
 								</div>
 							{/if}
@@ -364,18 +364,18 @@
 					{/each}
 				</div>
 			{:else}
-				<div class="bg-white rounded-2xl elevation-1 p-12 text-center border border-gray-100">
-					<div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-						<Search size={32} class="text-gray-400" />
+				<div class="bg-white rounded-lg shadow-sm p-12 text-center border border-border">
+					<div class="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-4">
+						<Search size={32} class="text-muted" />
 					</div>
-					<h2 class="text-2xl font-bold text-gray-900 mb-2">No Results Found</h2>
-					<p class="text-gray-600 mb-6">We couldn't find any FAQs matching your search. Try different keywords or browse by category.</p>
+					<h2 class="text-2xl font-semibold text-black mb-2">No Results Found</h2>
+					<p class="text-muted mb-6">We couldn't find any FAQs matching your search. Try different keywords or browse by category.</p>
 					<button
 						onclick={() => {
 							searchQuery = '';
 							selectedCategory = 'all';
 						}}
-						class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-full transition-colors"
+						class="px-6 py-2.5 bg-primary hover:bg-primary-hover text-white font-medium rounded-full transition-colors"
 					>
 						Clear Search
 					</button>
@@ -386,16 +386,16 @@
 </section>
 
 <!-- Still Need Help -->
-<section class="py-12 lg:py-20 bg-gray-900 text-white">
+<section class="py-12 lg:py-20 bg-[#1D2226] text-white">
 	<div class="max-w-7xl mx-auto px-4 lg:px-8">
 		<div class="max-w-4xl mx-auto text-center">
 			<div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-				<MessageCircle size={32} class="text-primary-400" />
+				<MessageCircle size={32} class="text-primary" />
 			</div>
-			<h2 class="text-2xl lg:text-3xl font-bold tracking-tight mb-4">Still Need Help?</h2>
+			<h2 class="text-2xl lg:text-3xl font-semibold tracking-tight mb-4">Still Need Help?</h2>
 			<p class="text-lg text-gray-300 mb-8">Can't find what you're looking for? Our support team is here to help.</p>
 			<div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-				<a href="/contact/" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-gray-900 font-medium rounded-full hover:bg-gray-100 transition-colors elevation-1">
+				<a href="/contact/" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition-colors shadow-sm">
 					Contact Support
 					<ArrowRight size={18} />
 				</a>
@@ -408,7 +408,7 @@
 			</div>
 
 			<div class="pt-8 border-t border-white/10">
-				<p class="text-gray-400">
+				<p class="text-muted">
 					<span class="font-medium text-gray-300">Response Time:</span> We typically respond within 24 hours during business days
 				</p>
 			</div>

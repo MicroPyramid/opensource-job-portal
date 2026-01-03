@@ -57,16 +57,16 @@
 	function getStatusBadgeClass(status: string): string {
 		switch (status) {
 			case 'Pending':
-				return 'bg-yellow-100 text-yellow-800';
+				return 'bg-warning-light text-warning';
 			case 'Shortlisted':
-				return 'bg-blue-100 text-blue-800';
+				return 'bg-primary/10 text-primary';
 			case 'Hired':
 			case 'Selected':
-				return 'bg-green-100 text-green-800';
+				return 'bg-success-light text-success';
 			case 'Rejected':
-				return 'bg-red-100 text-red-800';
+				return 'bg-error-light text-error';
 			default:
-				return 'bg-gray-100 text-gray-800';
+				return 'bg-surface text-black';
 		}
 	}
 
@@ -163,17 +163,17 @@
 		<div class="flex items-center gap-4">
 			<a
 				href="/dashboard/jobs/"
-				class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+				class="p-2 hover:bg-surface rounded-lg transition-colors"
 				title="Back to Jobs"
 			>
 				<ArrowLeft class="w-5 h-5" />
 			</a>
 			<div>
-				<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Applicants</h1>
-				<p class="text-gray-600 mt-1">{data.job.title}</p>
+				<h1 class="text-2xl md:text-3xl font-bold text-black">Applicants</h1>
+				<p class="text-muted mt-1">{data.job.title}</p>
 			</div>
 		</div>
-		<div class="flex items-center gap-2 text-sm text-gray-600">
+		<div class="flex items-center gap-2 text-sm text-muted">
 			<Users class="w-4 h-4" />
 			<span class="font-medium">{data.totalApplicants} total applicants</span>
 		</div>
@@ -188,22 +188,22 @@
 					selectedFilter = filter.value;
 					updateFilters();
 				}}
-				class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow text-left {selectedFilter ===
+				class="bg-white rounded-lg border border-border p-4 hover:shadow-md transition-shadow text-left {selectedFilter ===
 				filter.value
-					? 'ring-2 ring-blue-500'
+					? 'ring-2 ring-primary'
 					: ''}"
 			>
 				<div class="flex items-center justify-between mb-2">
-					<span class="text-sm text-gray-600">{filter.label}</span>
-					<StatusIcon class="w-4 h-4 text-gray-400" />
+					<span class="text-sm text-muted">{filter.label}</span>
+					<StatusIcon class="w-4 h-4 text-muted" />
 				</div>
-				<div class="text-2xl font-bold text-gray-900">{filter.count}</div>
+				<div class="text-2xl font-bold text-black">{filter.count}</div>
 			</button>
 		{/each}
 	</div>
 
 	<!-- Filters -->
-	<div class="bg-white rounded-lg border border-gray-200 p-4">
+	<div class="bg-white rounded-lg border border-border p-4">
 		<div class="flex flex-col md:flex-row gap-4">
 			<form
 				onsubmit={(e) => {
@@ -214,25 +214,25 @@
 			>
 				<!-- Search -->
 				<div class="flex-1 relative">
-					<Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+					<Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
 					<input
 						id="applicant-search"
 						type="text"
 						bind:value={searchQuery}
 						onchange={updateFilters}
 						placeholder="Search applicants by name or email..."
-						class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+						class="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
 					/>
 				</div>
 
 				<!-- Status Filter -->
 				<div class="relative">
-					<Filter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+					<Filter class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
 					<select
 						id="applicant-status-filter"
 						bind:value={selectedFilter}
 						onchange={updateFilters}
-						class="pl-9 pr-8 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
+						class="pl-9 pr-8 py-2 border border-border rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary appearance-none cursor-pointer"
 					>
 						{#each statusFilters as option}
 							<option value={option.value}>{option.label} ({option.count})</option>
@@ -244,7 +244,7 @@
 			<!-- Download CSV Button -->
 			<a
 				href="/dashboard/jobs/{data.job.id}/applicants/download?status={selectedFilter !== 'all' ? selectedFilter : ''}&search={searchQuery}"
-				class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium whitespace-nowrap"
+				class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-success transition-colors text-sm font-medium whitespace-nowrap"
 				title="Download applicants as CSV"
 			>
 				<Download class="w-4 h-4" />
@@ -256,10 +256,10 @@
 
 	<!-- Applicants List -->
 	{#if data.applications.length === 0}
-		<div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-			<Users class="w-12 h-12 text-gray-400 mx-auto mb-4" />
-			<h3 class="text-lg font-semibold text-gray-900 mb-2">No applicants found</h3>
-			<p class="text-gray-600">
+		<div class="bg-white rounded-lg border border-border p-12 text-center">
+			<Users class="w-12 h-12 text-muted mx-auto mb-4" />
+			<h3 class="text-lg font-semibold text-black mb-2">No applicants found</h3>
+			<p class="text-muted">
 				{searchQuery || selectedFilter !== 'all'
 					? 'Try adjusting your filters'
 					: 'No one has applied to this job yet'}
@@ -269,12 +269,12 @@
 		<div class="grid grid-cols-1 gap-4">
 			{#each data.applications as application}
 				{@const applicant = application.applicant}
-				<div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+				<div class="bg-white rounded-lg border border-border p-6 hover:shadow-md transition-shadow">
 					<div class="flex items-start justify-between gap-4">
 						<!-- Applicant Info -->
 						<div class="flex items-start gap-4 flex-1">
 							<!-- Avatar -->
-							<div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+							<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
 								{#if applicant.profile_pic}
 									<img
 										src={applicant.profile_pic}
@@ -282,7 +282,7 @@
 										class="w-full h-full rounded-full object-cover"
 									/>
 								{:else}
-									<span class="text-xl font-semibold text-blue-600">
+									<span class="text-xl font-semibold text-primary">
 										{applicant.name.charAt(0).toUpperCase()}
 									</span>
 								{/if}
@@ -291,13 +291,13 @@
 							<!-- Details -->
 							<div class="flex-1 min-w-0">
 								<div class="flex items-center gap-3 mb-2">
-									<h3 class="text-lg font-semibold text-gray-900">{applicant.name}</h3>
+									<h3 class="text-lg font-semibold text-black">{applicant.name}</h3>
 									<span class="px-2 py-1 text-xs font-medium rounded {getStatusBadgeClass(application.status)}">
 										{application.status}
 									</span>
 								</div>
 
-								<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
+								<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted mb-3">
 									<div class="flex items-center gap-2">
 										<Mail class="w-4 h-4" />
 										{applicant.email}
@@ -320,13 +320,13 @@
 									{/if}
 								</div>
 
-								<div class="text-xs text-gray-500">
+								<div class="text-xs text-muted">
 									Applied {application.applied_time_ago}
 								</div>
 
 								{#if application.remarks}
-									<div class="mt-3 p-3 bg-gray-50 rounded-lg">
-										<p class="text-sm text-gray-700"><strong>Remarks:</strong> {application.remarks}</p>
+									<div class="mt-3 p-3 bg-surface rounded-lg">
+										<p class="text-sm text-muted"><strong>Remarks:</strong> {application.remarks}</p>
 									</div>
 								{/if}
 							</div>
@@ -336,7 +336,7 @@
 						<div class="flex flex-col gap-2">
 							<button
 								onclick={() => viewApplicantDetail(application.id)}
-								class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+								class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors text-sm font-medium"
 							>
 								<Eye class="w-4 h-4" />
 								View Profile
@@ -346,7 +346,7 @@
 								<a
 									href={applicant.resume_url}
 									target="_blank"
-									class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+									class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors text-sm font-medium"
 								>
 									<Download class="w-4 h-4" />
 									Resume
@@ -357,7 +357,7 @@
 								<button
 									onclick={() => updateApplicantStatus(application.id, 'Shortlisted')}
 									disabled={submittingAction === application.id}
-									class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium disabled:opacity-50"
+									class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-success transition-colors text-sm font-medium disabled:opacity-50"
 								>
 									<UserCheck class="w-4 h-4" />
 									Shortlist
@@ -366,7 +366,7 @@
 								<button
 									onclick={() => updateApplicantStatus(application.id, 'Rejected')}
 									disabled={submittingAction === application.id}
-									class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
+									class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-error text-white rounded-lg hover:bg-error transition-colors text-sm font-medium disabled:opacity-50"
 								>
 									<UserX class="w-4 h-4" />
 									Reject
@@ -377,7 +377,7 @@
 								<button
 									onclick={() => updateApplicantStatus(application.id, 'Hired')}
 									disabled={submittingAction === application.id}
-									class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium disabled:opacity-50"
+									class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-success transition-colors text-sm font-medium disabled:opacity-50"
 								>
 									<CheckCircle class="w-4 h-4" />
 									Mark Hired

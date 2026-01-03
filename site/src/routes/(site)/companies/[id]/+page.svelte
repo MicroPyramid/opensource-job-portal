@@ -126,14 +126,14 @@
   })}</script>`}
 </svelte:head>
 
-<div class="min-h-screen bg-surface-50">
+<div class="min-h-screen bg-surface">
   <!-- Breadcrumb Navigation -->
-  <div class="bg-white border-b border-gray-100">
+  <div class="bg-white border-b border-border">
     <div class="max-w-7xl mx-auto px-4 lg:px-8 py-4">
       <div class="flex items-center justify-between">
         <button
           onclick={goBack}
-          class="inline-flex items-center gap-2 text-gray-600 hover:text-primary-600 font-medium transition-colors group"
+          class="inline-flex items-center gap-2 text-muted hover:text-primary font-medium transition-colors group"
         >
           <ArrowLeft class="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
           <span>Back to Companies</span>
@@ -142,7 +142,7 @@
         <!-- Desktop Share Button -->
         <button
           onclick={handleShare}
-          class="hidden md:flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-full font-medium transition-all"
+          class="hidden md:flex items-center gap-2 h-10 px-4 text-muted hover:text-primary hover:bg-primary/5 rounded-full font-medium transition-all"
         >
           <Share2 class="w-5 h-5" />
           <span>Share</span>
@@ -152,49 +152,49 @@
   </div>
 
   <!-- Company Header -->
-  <section class="bg-gray-900 relative overflow-hidden">
+  <section class="bg-[#1D2226] relative overflow-hidden">
     <!-- Decorative Elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl"></div>
-      <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl"></div>
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 lg:px-8 py-12 lg:py-16 relative">
       <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
         <!-- Company Logo -->
         {#if company.logo}
-          <div class="w-24 h-24 lg:w-28 lg:h-28 bg-white rounded-2xl p-3 elevation-2 flex items-center justify-center animate-fade-in-up" style="opacity: 0; animation-delay: 100ms;">
+          <div class="w-24 h-24 lg:w-28 lg:h-28 bg-white rounded-lg p-3 shadow-md flex items-center justify-center animate-fade-in-up" style="opacity: 0; animation-delay: 100ms; animation-fill-mode: forwards;">
             <img src={company.logo} alt="{company.name} logo" class="w-full h-full object-contain" />
           </div>
         {:else}
-          <div class="w-24 h-24 lg:w-28 lg:h-28 bg-primary-500/20 rounded-2xl flex items-center justify-center border-2 border-white/20 animate-fade-in-up" style="opacity: 0; animation-delay: 100ms;">
-            <Building2 class="w-12 h-12 text-primary-300" />
+          <div class="w-24 h-24 lg:w-28 lg:h-28 bg-primary/20 rounded-lg flex items-center justify-center border-2 border-white/20 animate-fade-in-up" style="opacity: 0; animation-delay: 100ms; animation-fill-mode: forwards;">
+            <Building2 class="w-12 h-12 text-white/60" />
           </div>
         {/if}
 
         <!-- Company Info -->
-        <div class="flex-1 animate-fade-in-up" style="opacity: 0; animation-delay: 200ms;">
+        <div class="flex-1 animate-fade-in-up" style="opacity: 0; animation-delay: 200ms; animation-fill-mode: forwards;">
           <div class="flex items-start justify-between flex-wrap gap-4">
             <div>
-              <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-3">
+              <h1 class="text-3xl md:text-4xl font-semibold text-white tracking-tight mb-3">
                 {company.name}
               </h1>
 
               <div class="flex flex-wrap gap-3 text-sm md:text-base">
                 {#if company.industry?.name}
-                  <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-primary-200">
+                  <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-white/80">
                     <Factory class="w-4 h-4" />
                     <span>{company.industry.name}</span>
                   </div>
                 {/if}
                 {#if company.company_type}
-                  <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-gray-300">
+                  <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-white/70">
                     <Building2 class="w-4 h-4" />
                     <span>{company.company_type}</span>
                   </div>
                 {/if}
                 {#if company.address}
-                  <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-gray-300">
+                  <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-white/70">
                     <MapPin class="w-4 h-4" />
                     <span class="line-clamp-1">{company.address}</span>
                   </div>
@@ -203,19 +203,19 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex gap-3 animate-fade-in-up" style="opacity: 0; animation-delay: 300ms;">
+            <div class="flex gap-3 animate-fade-in-up" style="opacity: 0; animation-delay: 300ms; animation-fill-mode: forwards;">
               <button
                 onclick={toggleFollow}
-                class="flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-200 elevation-1 hover:elevation-2 {isFollowing
-                  ? 'bg-white text-primary-600'
-                  : 'bg-primary-600 text-white hover:bg-primary-700'}"
+                class="flex items-center gap-2 h-10 px-6 rounded-full font-medium transition-all duration-200 shadow-sm hover:shadow-md {isFollowing
+                  ? 'bg-white text-primary'
+                  : 'bg-primary text-white hover:bg-primary-hover'}"
               >
                 <Heart class="w-5 h-5 {isFollowing ? 'fill-current' : ''}" />
                 {isFollowing ? 'Following' : 'Follow'}
               </button>
               <button
                 onclick={handleShare}
-                class="md:hidden flex items-center justify-center w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all"
+                class="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all"
               >
                 <Share2 class="w-5 h-5" />
               </button>
@@ -227,21 +227,21 @@
   </section>
 
   <!-- Company Stats -->
-  <section class="py-6 bg-white border-b border-gray-100">
+  <section class="py-6 bg-white border-b border-border">
     <div class="max-w-7xl mx-auto px-4 lg:px-8">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
         {#each stats as stat, index}
           <div
             class="text-center p-4 animate-fade-in-up"
-            style="opacity: 0; animation-delay: {100 + index * 50}ms;"
+            style="opacity: 0; animation-delay: {100 + index * 50}ms; animation-fill-mode: forwards;"
           >
             <div class="flex justify-center mb-3">
-              <div class="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center">
-                <stat.icon class="w-6 h-6 text-primary-600" />
+              <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                <stat.icon class="w-6 h-6 text-primary" />
               </div>
             </div>
-            <div class="text-xl lg:text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-            <div class="text-sm text-gray-500">{stat.label}</div>
+            <div class="text-xl lg:text-2xl font-semibold text-black mb-1">{stat.value}</div>
+            <div class="text-sm text-muted">{stat.label}</div>
           </div>
         {/each}
       </div>
@@ -256,14 +256,14 @@
         <!-- About Company -->
         {#if company.profile}
           <div
-            class="bg-white rounded-2xl elevation-1 border border-gray-100 p-6 animate-fade-in-up"
-            style="opacity: 0; animation-delay: 100ms;"
+            class="bg-white rounded-lg shadow-sm border border-border p-6 animate-fade-in-up"
+            style="opacity: 0; animation-delay: 100ms; animation-fill-mode: forwards;"
           >
-            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <FileText class="w-5 h-5 text-primary-600" />
+            <h2 class="text-lg font-semibold text-black mb-4 flex items-center gap-2">
+              <FileText class="w-5 h-5 text-primary" />
               About {company.name}
             </h2>
-            <p class="text-gray-700 leading-relaxed whitespace-pre-line">
+            <p class="text-muted leading-relaxed whitespace-pre-line">
               {company.profile}
             </p>
           </div>
@@ -272,16 +272,16 @@
         <!-- Nature of Business -->
         {#if company.nature_of_business && company.nature_of_business.length > 0}
           <div
-            class="bg-white rounded-2xl elevation-1 border border-gray-100 p-6 animate-fade-in-up"
-            style="opacity: 0; animation-delay: 150ms;"
+            class="bg-white rounded-lg shadow-sm border border-border p-6 animate-fade-in-up"
+            style="opacity: 0; animation-delay: 150ms; animation-fill-mode: forwards;"
           >
-            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Target class="w-5 h-5 text-primary-600" />
+            <h2 class="text-lg font-semibold text-black mb-4 flex items-center gap-2">
+              <Target class="w-5 h-5 text-primary" />
               Nature of Business
             </h2>
             <div class="flex flex-wrap gap-2">
               {#each company.nature_of_business as business}
-                <span class="px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-medium border border-primary-100">
+                <span class="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">
                   {business}
                 </span>
               {/each}
@@ -291,16 +291,16 @@
 
         <!-- Open Positions -->
         <div
-          class="bg-white rounded-2xl elevation-1 border border-gray-100 p-6 animate-fade-in-up"
-          style="opacity: 0; animation-delay: 200ms;"
+          class="bg-white rounded-lg shadow-sm border border-border p-6 animate-fade-in-up"
+          style="opacity: 0; animation-delay: 200ms; animation-fill-mode: forwards;"
         >
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Sparkles class="w-5 h-5 text-primary-600" />
+            <h2 class="text-lg font-semibold text-black flex items-center gap-2">
+              <Sparkles class="w-5 h-5 text-primary" />
               Open Positions
             </h2>
             {#if jobs.length > 0}
-              <span class="px-3 py-1 bg-primary-50 text-primary-700 text-sm font-medium rounded-full">
+              <span class="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
                 {jobs.length} {jobs.length === 1 ? 'Job' : 'Jobs'}
               </span>
             {/if}
@@ -311,15 +311,15 @@
               {#each jobs as job, index}
                 <a
                   href="/jobs/{job.slug.replace(/^\/+/, '')}/"
-                  class="group block p-5 border border-gray-100 rounded-xl hover:border-primary-200 hover:elevation-2 transition-all duration-200"
+                  class="group block p-4 border border-border rounded-lg hover:border-primary/30 hover:shadow-md transition-all duration-200"
                   style="animation: fade-in-up 0.5s ease forwards; animation-delay: {250 + index * 50}ms; opacity: 0;"
                 >
                   <div class="flex items-start justify-between mb-3">
                     <div class="flex-1">
-                      <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">
+                      <h3 class="text-base font-semibold text-black mb-1 group-hover:text-primary transition-colors">
                         {job.title}
                       </h3>
-                      <div class="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                      <div class="flex flex-wrap items-center gap-2 text-sm text-muted">
                         <span class="flex items-center gap-1">
                           <MapPin class="w-4 h-4" />
                           {job.location_display}
@@ -333,22 +333,22 @@
                   </div>
 
                   <div class="flex flex-wrap items-center gap-2 mb-3">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-success-500/10 text-success-600 rounded-full text-xs font-medium">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-success-light text-success rounded-full text-xs font-medium">
                       <DollarSign class="w-3.5 h-3.5" />
                       {job.salary_display}
                     </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface text-muted rounded-full text-xs font-medium">
                       <Target class="w-3.5 h-3.5" />
                       {job.experience_display}
                     </span>
                   </div>
 
                   <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-400 flex items-center gap-1">
+                    <span class="text-muted flex items-center gap-1">
                       <Clock class="w-4 h-4" />
                       {job.time_ago}
                     </span>
-                    <span class="text-primary-600 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <span class="text-primary font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                       View Job
                       <ChevronRight class="w-4 h-4" />
                     </span>
@@ -361,7 +361,7 @@
               <div class="mt-6 text-center">
                 <a
                   href="/jobs/?company={company.slug}"
-                  class="inline-flex items-center gap-2 px-6 py-3 bg-primary-50 text-primary-700 font-medium rounded-full hover:bg-primary-100 transition-colors"
+                  class="inline-flex items-center gap-2 h-10 px-6 bg-primary/10 text-primary font-medium rounded-full hover:bg-primary/20 transition-colors"
                 >
                   View All Open Positions
                   <ChevronRight class="w-5 h-5" />
@@ -370,11 +370,11 @@
             {/if}
           {:else}
             <div class="text-center py-12">
-              <div class="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                <Briefcase class="w-8 h-8 text-gray-400" />
+              <div class="w-16 h-16 rounded-lg bg-surface flex items-center justify-center mx-auto mb-4">
+                <Briefcase class="w-8 h-8 text-muted" />
               </div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-2">No Open Positions</h3>
-              <p class="text-gray-600">
+              <h3 class="text-lg font-semibold text-black mb-2">No Open Positions</h3>
+              <p class="text-muted">
                 This company doesn't have any open positions at the moment.
               </p>
             </div>
@@ -387,56 +387,56 @@
         <div class="lg:sticky lg:top-24 space-y-6">
           <!-- Company Info Card -->
           <div
-            class="bg-white rounded-2xl elevation-1 border border-gray-100 p-6 animate-fade-in-up"
-            style="opacity: 0; animation-delay: 150ms;"
+            class="bg-white rounded-lg shadow-sm border border-border p-6 animate-fade-in-up"
+            style="opacity: 0; animation-delay: 150ms; animation-fill-mode: forwards;"
           >
-            <h3 class="text-base font-semibold text-gray-900 mb-4">Company Information</h3>
+            <h3 class="text-base font-semibold text-black mb-4">Company Information</h3>
 
             <div class="space-y-4">
               {#if company.industry?.name}
                 <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
-                    <Factory class="w-5 h-5 text-primary-600" />
+                  <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Factory class="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p class="text-xs text-gray-500 font-medium mb-0.5">Industry</p>
-                    <p class="text-sm text-gray-900 font-medium">{company.industry.name}</p>
+                    <p class="text-xs text-muted font-medium mb-0.5">Industry</p>
+                    <p class="text-sm text-black font-medium">{company.industry.name}</p>
                   </div>
                 </div>
               {/if}
 
               {#if company.company_type}
                 <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <Building2 class="w-5 h-5 text-gray-600" />
+                  <div class="w-10 h-10 rounded-lg bg-surface flex items-center justify-center flex-shrink-0">
+                    <Building2 class="w-5 h-5 text-muted" />
                   </div>
                   <div>
-                    <p class="text-xs text-gray-500 font-medium mb-0.5">Company Type</p>
-                    <p class="text-sm text-gray-900 font-medium">{company.company_type}</p>
+                    <p class="text-xs text-muted font-medium mb-0.5">Company Type</p>
+                    <p class="text-sm text-black font-medium">{company.company_type}</p>
                   </div>
                 </div>
               {/if}
 
               {#if company.size}
                 <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
+                  <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
                     <Users class="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
-                    <p class="text-xs text-gray-500 font-medium mb-0.5">Company Size</p>
-                    <p class="text-sm text-gray-900 font-medium">{company.size} employees</p>
+                    <p class="text-xs text-muted font-medium mb-0.5">Company Size</p>
+                    <p class="text-sm text-black font-medium">{company.size} employees</p>
                   </div>
                 </div>
               {/if}
 
               {#if company.address}
                 <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-warning-500/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin class="w-5 h-5 text-warning-600" />
+                  <div class="w-10 h-10 rounded-lg bg-warning-light flex items-center justify-center flex-shrink-0">
+                    <MapPin class="w-5 h-5 text-warning" />
                   </div>
                   <div>
-                    <p class="text-xs text-gray-500 font-medium mb-0.5">Location</p>
-                    <p class="text-sm text-gray-900">{company.address}</p>
+                    <p class="text-xs text-muted font-medium mb-0.5">Location</p>
+                    <p class="text-sm text-black">{company.address}</p>
                   </div>
                 </div>
               {/if}
@@ -446,10 +446,10 @@
           <!-- Contact Card -->
           {#if company.website || company.email || company.phone}
             <div
-              class="bg-white rounded-2xl elevation-1 border border-gray-100 p-6 animate-fade-in-up"
-              style="opacity: 0; animation-delay: 200ms;"
+              class="bg-white rounded-lg shadow-sm border border-border p-6 animate-fade-in-up"
+              style="opacity: 0; animation-delay: 200ms; animation-fill-mode: forwards;"
             >
-              <h3 class="text-base font-semibold text-gray-900 mb-4">Contact</h3>
+              <h3 class="text-base font-semibold text-black mb-4">Contact</h3>
 
               <div class="space-y-3">
                 {#if company.website}
@@ -457,7 +457,7 @@
                     href={company.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="flex items-center gap-3 p-3 rounded-xl bg-surface-50 hover:bg-primary-50 text-gray-700 hover:text-primary-600 transition-colors group"
+                    class="flex items-center gap-3 p-3 rounded-lg bg-surface hover:bg-primary/10 text-muted hover:text-primary transition-colors group"
                   >
                     <Globe class="w-5 h-5" />
                     <span class="text-sm font-medium flex-1 truncate">Visit Website</span>
@@ -468,7 +468,7 @@
                 {#if company.email}
                   <a
                     href="mailto:{company.email}"
-                    class="flex items-center gap-3 p-3 rounded-xl bg-surface-50 hover:bg-primary-50 text-gray-700 hover:text-primary-600 transition-colors"
+                    class="flex items-center gap-3 p-3 rounded-lg bg-surface hover:bg-primary/10 text-muted hover:text-primary transition-colors"
                   >
                     <Mail class="w-5 h-5" />
                     <span class="text-sm truncate">{company.email}</span>
@@ -478,7 +478,7 @@
                 {#if company.phone}
                   <a
                     href="tel:{company.phone}"
-                    class="flex items-center gap-3 p-3 rounded-xl bg-surface-50 hover:bg-primary-50 text-gray-700 hover:text-primary-600 transition-colors"
+                    class="flex items-center gap-3 p-3 rounded-lg bg-surface hover:bg-primary/10 text-muted hover:text-primary transition-colors"
                   >
                     <Phone class="w-5 h-5" />
                     <span class="text-sm">{company.phone}</span>
@@ -491,22 +491,22 @@
           <!-- Call to Action -->
           {#if jobs.length > 0}
             <div
-              class="bg-gray-900 rounded-2xl elevation-2 p-6 relative overflow-hidden animate-fade-in-up"
-              style="opacity: 0; animation-delay: 250ms;"
+              class="bg-[#1D2226] rounded-lg shadow-md p-6 relative overflow-hidden animate-fade-in-up"
+              style="opacity: 0; animation-delay: 250ms; animation-fill-mode: forwards;"
             >
               <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="absolute -top-12 -right-12 w-48 h-48 bg-primary-500/20 rounded-full blur-3xl"></div>
+                <div class="absolute -top-12 -right-12 w-48 h-48 bg-primary/20 rounded-full blur-3xl"></div>
               </div>
 
               <div class="relative">
-                <h3 class="text-lg font-bold text-white mb-2">Interested in joining?</h3>
+                <h3 class="text-lg font-semibold text-white mb-2">Interested in joining?</h3>
                 <p class="text-sm text-gray-400 mb-5">
                   Explore open positions and find your perfect role at {company.name}.
                 </p>
                 <a
                   href="#open-positions"
                   onclick={(e) => { e.preventDefault(); document.querySelector('.lg\\:col-span-2 > div:last-child')?.scrollIntoView({ behavior: 'smooth' }); }}
-                  class="block w-full py-3 px-6 bg-white text-gray-900 font-medium rounded-full hover:bg-gray-100 transition-colors text-center elevation-1"
+                  class="block w-full h-10 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition-colors text-center shadow-sm flex items-center justify-center"
                 >
                   View Open Positions
                 </a>

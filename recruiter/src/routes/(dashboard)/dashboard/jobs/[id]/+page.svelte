@@ -22,6 +22,8 @@
 	} from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import { Button, Card, Badge } from '$lib/components/ui';
+	import type { JobStatus } from '$lib/types';
 
 	let { data } = $props();
 	let togglingNotifications = $state(false);
@@ -40,18 +42,18 @@
 		return `${range} per ${type === 'Month' ? 'month' : 'year'}`;
 	}
 
-	function getStatusBadgeClass(status: string): string {
+	function getStatusVariant(status: JobStatus): 'success' | 'warning' | 'error' | 'neutral' {
 		switch (status) {
 			case 'Live':
-				return 'bg-green-100 text-green-800';
+				return 'success';
 			case 'Draft':
-				return 'bg-gray-100 text-gray-800';
+				return 'neutral';
 			case 'Disabled':
-				return 'bg-red-100 text-red-800';
+				return 'error';
 			case 'Expired':
-				return 'bg-orange-100 text-orange-800';
+				return 'warning';
 			default:
-				return 'bg-blue-100 text-blue-800';
+				return 'neutral';
 		}
 	}
 </script>
@@ -65,68 +67,66 @@
 	<div class="flex items-center gap-4">
 		<a
 			href="/dashboard/jobs/"
-			class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+			class="p-2 hover:bg-surface rounded-lg transition-colors"
 			title="Back to Jobs"
 		>
 			<ArrowLeft class="w-5 h-5" />
 		</a>
 		<div class="flex-1">
 			<div class="flex items-center gap-3 mb-2">
-				<h1 class="text-2xl md:text-3xl font-bold text-gray-900">{data.job.title}</h1>
-				<span class="px-3 py-1 text-sm font-medium rounded {getStatusBadgeClass(data.job.status)}">
-					{data.job.status}
-				</span>
+				<h1 class="text-2xl md:text-3xl font-bold text-black">{data.job.title}</h1>
+				<Badge variant={getStatusVariant(data.job.status)}>{data.job.status}</Badge>
 			</div>
-			<p class="text-gray-600">{data.job.company_name || 'Your Company'}</p>
+			<p class="text-muted">{data.job.company_name || 'Your Company'}</p>
 		</div>
 	</div>
 
 	<!-- Stats Cards -->
 	<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-		<div class="bg-white rounded-lg border border-gray-200 p-4">
+		<div class="bg-white rounded-lg border border-border p-4">
 			<div class="flex items-center gap-3">
-				<div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-					<Users class="w-5 h-5 text-blue-600" />
+				<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+					<Users class="w-5 h-5 text-primary" />
 				</div>
 				<div>
-					<div class="text-2xl font-bold text-gray-900">{data.totalApplicants}</div>
-					<div class="text-sm text-gray-600">Total Applicants</div>
+					<div class="text-2xl font-bold text-black">{data.totalApplicants}</div>
+					<div class="text-sm text-muted">Total Applicants</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="bg-white rounded-lg border border-gray-200 p-4">
+		<div class="bg-white rounded-lg border border-border p-4">
 			<div class="flex items-center gap-3">
-				<div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-					<Clock class="w-5 h-5 text-yellow-600" />
+				<div class="w-10 h-10 bg-warning-light rounded-lg flex items-center justify-center">
+					<Clock class="w-5 h-5 text-warning" />
 				</div>
 				<div>
-					<div class="text-2xl font-bold text-gray-900">{data.applicantsStats.pending}</div>
-					<div class="text-sm text-gray-600">Pending</div>
+					<div class="text-2xl font-bold text-black">{data.applicantsStats.pending}</div>
+					<div class="text-sm text-muted">Pending</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="bg-white rounded-lg border border-gray-200 p-4">
+		<div class="bg-white rounded-lg border border-border p-4">
 			<div class="flex items-center gap-3">
-				<div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-					<Users class="w-5 h-5 text-blue-600" />
+				<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+					<Users class="w-5 h-5 text-primary" />
 				</div>
 				<div>
-					<div class="text-2xl font-bold text-gray-900">{data.applicantsStats.shortlisted}</div>
-					<div class="text-sm text-gray-600">Shortlisted</div>
+					<div class="text-2xl font-bold text-black">{data.applicantsStats.shortlisted}</div>
+					<div class="text-sm text-muted">Shortlisted</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="bg-white rounded-lg border border-gray-200 p-4">
+		<div class="bg-white rounded-lg border border-border p-4">
 			<div class="flex items-center gap-3">
-				<div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-					<Users class="w-5 h-5 text-green-600" />
+				<div class="w-10 h-10 bg-success-light rounded-lg flex items-center justify-center">
+					<Users class="w-5 h-5 text-success" />
 				</div>
 				<div>
-					<div class="text-2xl font-bold text-gray-900">{data.applicantsStats.selected}</div>
-					<div class="text-sm text-gray-600">Hired</div>
+					<div class="text-2xl font-bold text-black">{data.applicantsStats.selected}</div>
+					<div class="text-sm text-muted">Hired</div>
 				</div>
 			</div>
 		</div>
@@ -134,35 +134,35 @@
 
 	<!-- Analytics Section (30-day period) -->
 	{#if data.analytics}
-		<div class="bg-white rounded-lg border border-gray-200 p-6">
-			<h2 class="text-lg font-semibold text-gray-900 mb-4">Application Analytics (Last 30 Days)</h2>
+		<div class="bg-white rounded-lg border border-border p-6">
+			<h2 class="text-lg font-semibold text-black mb-4">Application Analytics (Last 30 Days)</h2>
 			<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 				<div class="text-center">
-					<div class="text-2xl font-bold text-blue-600">{data.analytics.metrics.total_applications}</div>
-					<div class="text-sm text-gray-600 mt-1">Total Applications</div>
+					<div class="text-2xl font-bold text-primary">{data.analytics.metrics.total_applications}</div>
+					<div class="text-sm text-muted mt-1">Total Applications</div>
 				</div>
 				<div class="text-center">
 					<div class="text-2xl font-bold text-purple-600">{data.analytics.pipeline.pending}</div>
-					<div class="text-sm text-gray-600 mt-1">Pending Review</div>
+					<div class="text-sm text-muted mt-1">Pending Review</div>
 				</div>
 				<div class="text-center">
-					<div class="text-2xl font-bold text-green-600">{data.analytics.pipeline.hired}</div>
-					<div class="text-sm text-gray-600 mt-1">Hired</div>
+					<div class="text-2xl font-bold text-success">{data.analytics.pipeline.hired}</div>
+					<div class="text-sm text-muted mt-1">Hired</div>
 				</div>
 				<div class="text-center">
 					<div class="flex items-center justify-center gap-1">
-						<Target class="w-5 h-5 text-green-600" />
-						<div class="text-2xl font-bold text-green-600">{data.analytics.pipeline.conversion_rate}%</div>
+						<Target class="w-5 h-5 text-success" />
+						<div class="text-2xl font-bold text-success">{data.analytics.pipeline.conversion_rate}%</div>
 					</div>
-					<div class="text-sm text-gray-600 mt-1">Conversion Rate</div>
+					<div class="text-sm text-muted mt-1">Conversion Rate</div>
 				</div>
 			</div>
 
 			{#if data.analytics.metrics.avg_per_day > 0}
-				<div class="mt-4 pt-4 border-t border-gray-200">
-					<div class="flex items-center justify-center gap-2 text-sm text-gray-600">
-						<TrendingUp class="w-4 h-4 text-blue-600" />
-						<span>Average <span class="font-semibold text-gray-900">{data.analytics.metrics.avg_per_day}</span> applications per day</span>
+				<div class="mt-4 pt-4 border-t border-border">
+					<div class="flex items-center justify-center gap-2 text-sm text-muted">
+						<TrendingUp class="w-4 h-4 text-primary" />
+						<span>Average <span class="font-semibold text-black">{data.analytics.metrics.avg_per_day}</span> applications per day</span>
 					</div>
 				</div>
 			{/if}
@@ -173,7 +173,7 @@
 	<div class="flex flex-wrap gap-3">
 		<a
 			href="/dashboard/jobs/{data.job.id}/applicants/"
-			class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+			class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
 		>
 			<Users class="w-4 h-4" />
 			View Applicants
@@ -182,7 +182,7 @@
 		{#if data.job.status === 'Draft'}
 			<a
 				href="/dashboard/jobs/{data.job.id}/edit/"
-				class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+				class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors"
 			>
 				<Edit class="w-4 h-4" />
 				Edit Job
@@ -202,14 +202,14 @@
 			<button
 				type="submit"
 				disabled={togglingNotifications}
-				class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+				class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				title={data.job.send_email_notifications ? 'Disable email notifications' : 'Enable email notifications'}
 			>
 				{#if data.job.send_email_notifications}
-					<Bell class="w-4 h-4 text-green-600" />
+					<Bell class="w-4 h-4 text-success" />
 					<span>Notifications On</span>
 				{:else}
-					<BellOff class="w-4 h-4 text-gray-400" />
+					<BellOff class="w-4 h-4 text-muted" />
 					<span>Notifications Off</span>
 				{/if}
 			</button>
@@ -217,7 +217,7 @@
 
 		<a
 			href="/dashboard/jobs/{data.job.id}/preview/"
-			class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+			class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors"
 		>
 			<Eye class="w-4 h-4" />
 			Preview
@@ -225,14 +225,14 @@
 
 		<a
 			href="/dashboard/jobs/new/?copy_from={data.job.id}"
-			class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+			class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors"
 		>
 			<Copy class="w-4 h-4" />
 			Copy Job
 		</a>
 
 		<button
-			class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+			class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors"
 		>
 			<Share2 class="w-4 h-4" />
 			Share Job
@@ -242,7 +242,7 @@
 			<a
 				href="/jobs/{data.job.id}/"
 				target="_blank"
-				class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+				class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors"
 			>
 				<ExternalLink class="w-4 h-4" />
 				View Public Page
@@ -255,23 +255,23 @@
 		<!-- Main Content -->
 		<div class="lg:col-span-2 space-y-6">
 			<!-- Job Information -->
-			<div class="bg-white rounded-lg border border-gray-200 p-6">
-				<h2 class="text-lg font-semibold text-gray-900 mb-4">Job Information</h2>
+			<div class="bg-white rounded-lg border border-border p-6">
+				<h2 class="text-lg font-semibold text-black mb-4">Job Information</h2>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
-						<div class="text-sm font-medium text-gray-500 mb-1">Job Type</div>
-						<div class="text-gray-900 capitalize">{data.job.job_type.replace('-', ' ')}</div>
+						<div class="text-sm font-medium text-muted mb-1">Job Type</div>
+						<div class="text-black capitalize">{data.job.job_type.replace('-', ' ')}</div>
 					</div>
 
 					<div>
-						<div class="text-sm font-medium text-gray-500 mb-1">Work Mode</div>
-						<div class="text-gray-900 capitalize">{data.job.work_mode.replace('-', ' ')}</div>
+						<div class="text-sm font-medium text-muted mb-1">Work Mode</div>
+						<div class="text-black capitalize">{data.job.work_mode.replace('-', ' ')}</div>
 					</div>
 
 					<div>
-						<div class="text-sm font-medium text-gray-500 mb-1">Experience</div>
-						<div class="text-gray-900">
+						<div class="text-sm font-medium text-muted mb-1">Experience</div>
+						<div class="text-black">
 							{#if data.job.fresher}
 								Fresher
 							{:else}
@@ -281,41 +281,41 @@
 					</div>
 
 					<div>
-						<div class="text-sm font-medium text-gray-500 mb-1">Vacancies</div>
-						<div class="text-gray-900">{data.job.vacancies}</div>
+						<div class="text-sm font-medium text-muted mb-1">Vacancies</div>
+						<div class="text-black">{data.job.vacancies}</div>
 					</div>
 
 					<div>
-						<div class="text-sm font-medium text-gray-500 mb-1">Salary</div>
-						<div class="text-gray-900">
+						<div class="text-sm font-medium text-muted mb-1">Salary</div>
+						<div class="text-black">
 							{formatSalary(data.job.min_salary, data.job.max_salary, data.job.salary_type)}
 						</div>
 					</div>
 
 					{#if data.job.seniority_level}
 						<div>
-							<div class="text-sm font-medium text-gray-500 mb-1">Seniority Level</div>
-							<div class="text-gray-900 capitalize">{data.job.seniority_level}</div>
+							<div class="text-sm font-medium text-muted mb-1">Seniority Level</div>
+							<div class="text-black capitalize">{data.job.seniority_level}</div>
 						</div>
 					{/if}
 				</div>
 			</div>
 
 			<!-- Description -->
-			<div class="bg-white rounded-lg border border-gray-200 p-6">
-				<h2 class="text-lg font-semibold text-gray-900 mb-4">Job Description</h2>
-				<div class="prose prose-sm max-w-none text-gray-700">
+			<div class="bg-white rounded-lg border border-border p-6">
+				<h2 class="text-lg font-semibold text-black mb-4">Job Description</h2>
+				<div class="prose prose-sm max-w-none text-muted">
 					{@html data.job.description}
 				</div>
 			</div>
 
 			<!-- Skills -->
 			{#if data.job.skills && data.job.skills.length > 0}
-				<div class="bg-white rounded-lg border border-gray-200 p-6">
-					<h2 class="text-lg font-semibold text-gray-900 mb-4">Required Skills</h2>
+				<div class="bg-white rounded-lg border border-border p-6">
+					<h2 class="text-lg font-semibold text-black mb-4">Required Skills</h2>
 					<div class="flex flex-wrap gap-2">
 						{#each data.job.skills as skill}
-							<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+							<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
 								{skill.name}
 							</span>
 						{/each}
@@ -325,8 +325,8 @@
 
 			<!-- Qualifications -->
 			{#if data.job.qualifications && data.job.qualifications.length > 0}
-				<div class="bg-white rounded-lg border border-gray-200 p-6">
-					<h2 class="text-lg font-semibold text-gray-900 mb-4">Educational Qualifications</h2>
+				<div class="bg-white rounded-lg border border-border p-6">
+					<h2 class="text-lg font-semibold text-black mb-4">Educational Qualifications</h2>
 					<div class="flex flex-wrap gap-2">
 						{#each data.job.qualifications as qual}
 							<span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
@@ -339,12 +339,12 @@
 
 			<!-- Benefits -->
 			{#if data.job.benefits && data.job.benefits.length > 0}
-				<div class="bg-white rounded-lg border border-gray-200 p-6">
-					<h2 class="text-lg font-semibold text-gray-900 mb-4">Benefits & Perks</h2>
+				<div class="bg-white rounded-lg border border-border p-6">
+					<h2 class="text-lg font-semibold text-black mb-4">Benefits & Perks</h2>
 					<ul class="space-y-2">
 						{#each data.job.benefits as benefit}
-							<li class="flex items-center gap-2 text-gray-700">
-								<div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+							<li class="flex items-center gap-2 text-muted">
+								<div class="w-1.5 h-1.5 bg-success rounded-full"></div>
 								{benefit}
 							</li>
 						{/each}
@@ -356,22 +356,20 @@
 		<!-- Sidebar -->
 		<div class="space-y-6">
 			<!-- Job Status -->
-			<div class="bg-white rounded-lg border border-gray-200 p-6">
-				<h3 class="text-sm font-semibold text-gray-900 mb-4">Job Status</h3>
+			<div class="bg-white rounded-lg border border-border p-6">
+				<h3 class="text-sm font-semibold text-black mb-4">Job Status</h3>
 				<div class="space-y-3 text-sm">
 					<div class="flex items-center justify-between">
-						<span class="text-gray-600">Status</span>
-						<span class="px-2 py-1 text-xs font-medium rounded {getStatusBadgeClass(data.job.status)}">
-							{data.job.status}
-						</span>
+						<span class="text-muted">Status</span>
+						<Badge variant={getStatusVariant(data.job.status)} size="sm">{data.job.status}</Badge>
 					</div>
 					<div class="flex items-center justify-between">
-						<span class="text-gray-600">Posted</span>
-						<span class="text-gray-900">{data.job.time_ago}</span>
+						<span class="text-muted">Posted</span>
+						<span class="text-black">{data.job.time_ago}</span>
 					</div>
 					<div class="flex items-center justify-between">
-						<span class="text-gray-600">Expires</span>
-						<span class="text-gray-900">
+						<span class="text-muted">Expires</span>
+						<span class="text-black">
 						{#if data.job.published_on}
 							{formatDate(new Date(new Date(data.job.published_on).getTime() + 30*24*60*60*1000).toISOString())}
 						{:else}
@@ -381,8 +379,8 @@
 					</div>
 					{#if data.job.days_until_expiry !== null}
 						<div class="flex items-center justify-between">
-							<span class="text-gray-600">Days Left</span>
-							<span class="text-gray-900 font-medium">{data.job.days_until_expiry}</span>
+							<span class="text-muted">Days Left</span>
+							<span class="text-black font-medium">{data.job.days_until_expiry}</span>
 						</div>
 					{/if}
 				</div>
@@ -390,14 +388,14 @@
 
 			<!-- Locations -->
 			{#if data.job.locations && data.job.locations.length > 0}
-				<div class="bg-white rounded-lg border border-gray-200 p-6">
-					<h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+				<div class="bg-white rounded-lg border border-border p-6">
+					<h3 class="text-sm font-semibold text-black mb-4 flex items-center gap-2">
 						<MapPin class="w-4 h-4" />
 						Job Locations
 					</h3>
 					<div class="space-y-2">
 						{#each data.job.locations as location}
-							<div class="text-sm text-gray-700">
+							<div class="text-sm text-muted">
 								{location.name}, {location.state || ''}
 							</div>
 						{/each}
@@ -407,14 +405,14 @@
 
 			<!-- Industries -->
 			{#if data.job.industries && data.job.industries.length > 0}
-				<div class="bg-white rounded-lg border border-gray-200 p-6">
-					<h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+				<div class="bg-white rounded-lg border border-border p-6">
+					<h3 class="text-sm font-semibold text-black mb-4 flex items-center gap-2">
 						<Building class="w-4 h-4" />
 						Industries
 					</h3>
 					<div class="flex flex-wrap gap-2">
 						{#each data.job.industries as industry}
-							<span class="text-sm px-2 py-1 bg-gray-100 text-gray-700 rounded">
+							<span class="text-sm px-2 py-1 bg-surface text-muted rounded">
 								{industry.name}
 							</span>
 						{/each}
@@ -424,9 +422,9 @@
 
 			<!-- Company Info -->
 			{#if data.job.company_description}
-				<div class="bg-white rounded-lg border border-gray-200 p-6">
-					<h3 class="text-sm font-semibold text-gray-900 mb-4">About Company</h3>
-					<p class="text-sm text-gray-700 leading-relaxed">{data.job.company_description}</p>
+				<div class="bg-white rounded-lg border border-border p-6">
+					<h3 class="text-sm font-semibold text-black mb-4">About Company</h3>
+					<p class="text-sm text-muted leading-relaxed">{data.job.company_description}</p>
 				</div>
 			{/if}
 		</div>

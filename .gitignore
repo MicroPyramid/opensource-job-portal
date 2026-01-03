@@ -20,7 +20,6 @@ env
 env/
 venv/
 .env
-.venv
 secret
 staticfiles/CACHE
 backend/staticfiles/
@@ -35,3 +34,5 @@ backend/static/css/tailwind-output.css
 TODO.md
 CLAUDE.md
 .playwright-mcp
+.svelte-kit
+build

@@ -344,34 +344,34 @@
 <div class="max-w-5xl mx-auto space-y-6">
 	<!-- Header -->
 	<div>
-		<h1 class="text-2xl md:text-3xl font-bold text-gray-900">Post New Job</h1>
-		<p class="text-gray-600 mt-1">Fill in the details to create a new job posting</p>
+		<h1 class="text-2xl md:text-3xl font-bold text-black">Post New Job</h1>
+		<p class="text-muted mt-1">Fill in the details to create a new job posting</p>
 	</div>
 
 	<!-- Success/Error Messages -->
 	{#if form?.success}
-		<div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-			<CheckCircle class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+		<div class="bg-success-light border border-success/30 rounded-lg p-4 flex items-start gap-3">
+			<CheckCircle class="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
 			<div>
-				<p class="text-sm font-medium text-green-800">{form.message || 'Success!'}</p>
+				<p class="text-sm font-medium text-success">{form.message || 'Success!'}</p>
 				{#if form.warning}
-					<p class="text-sm text-green-700 mt-1">{form.warning}</p>
+					<p class="text-sm text-success mt-1">{form.warning}</p>
 				{/if}
 			</div>
 		</div>
 	{/if}
 
 	{#if form?.error}
-		<div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-			<AlertCircle class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+		<div class="bg-error-light border border-error/30 rounded-lg p-4 flex items-start gap-3">
+			<AlertCircle class="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
 			<div>
-				<p class="text-sm font-medium text-red-800">{form.error}</p>
+				<p class="text-sm font-medium text-error">{form.error}</p>
 			</div>
 		</div>
 	{/if}
 
 	<!-- Progress Steps -->
-	<div class="bg-white rounded-lg border border-gray-200 p-6">
+	<div class="bg-white rounded-lg border border-border p-6">
 		<div class="flex items-center justify-between">
 			{#each steps as step, index}
 				<div class="flex items-center {index < steps.length - 1 ? 'flex-1' : ''}">
@@ -381,10 +381,10 @@
 							onclick={() => (currentStep = step.number)}
 							class="w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-colors {currentStep ===
 							step.number
-								? 'bg-blue-600 text-white'
+								? 'bg-primary text-white'
 								: currentStep > step.number
-									? 'bg-green-600 text-white'
-									: 'bg-gray-200 text-gray-600'}"
+									? 'bg-success text-white'
+									: 'bg-surface text-muted'}"
 						>
 							{#if currentStep > step.number}
 								✓
@@ -394,15 +394,15 @@
 						</button>
 						<span
 							class="text-xs mt-2 {currentStep === step.number
-								? 'text-blue-600 font-medium'
-								: 'text-gray-600'} hidden md:block"
+								? 'text-primary font-medium'
+								: 'text-muted'} hidden md:block"
 						>
 							{step.title}
 						</span>
 					</div>
 					{#if index < steps.length - 1}
 						<div
-							class="flex-1 h-0.5 mx-2 {currentStep > step.number ? 'bg-green-600' : 'bg-gray-200'}"
+							class="flex-1 h-0.5 mx-2 {currentStep > step.number ? 'bg-success' : 'bg-surface'}"
 						></div>
 					{/if}
 				</div>
@@ -423,19 +423,19 @@
 		}}
 	>
 		<!-- Form Content -->
-		<div class="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
+		<div class="bg-white rounded-lg border border-border p-6 md:p-8">
 			{#if currentStep === 1}
 				<!-- Step 1: Job Basics -->
 				<div class="space-y-6">
-					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+					<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 						<Briefcase class="w-6 h-6" />
 						Job Basics
 					</h2>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div class="md:col-span-2">
-							<label for="job-title" class="block text-sm font-medium text-gray-700 mb-2">
-								Job Title <span class="text-red-500">*</span>
+							<label for="job-title" class="block text-sm font-medium text-muted mb-2">
+								Job Title <span class="text-error">*</span>
 							</label>
 							<input
 								id="job-title"
@@ -444,13 +444,13 @@
 								bind:value={formData.jobTitle}
 								placeholder="e.g., Senior Frontend Developer"
 								required
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							/>
 						</div>
 
 						<div>
-							<label for="company-name" class="block text-sm font-medium text-gray-700 mb-2">
-								Company Name <span class="text-red-500">*</span>
+							<label for="company-name" class="block text-sm font-medium text-muted mb-2">
+								Company Name <span class="text-error">*</span>
 							</label>
 							<input
 								id="company-name"
@@ -459,13 +459,13 @@
 								bind:value={formData.companyName}
 								placeholder="e.g., Acme Inc."
 								required
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							/>
 						</div>
 
 						<div>
-							<label for="job-department" class="block text-sm font-medium text-gray-700 mb-2">
-								Department <span class="text-red-500">*</span>
+							<label for="job-department" class="block text-sm font-medium text-muted mb-2">
+								Department <span class="text-error">*</span>
 							</label>
 							<input
 								id="job-department"
@@ -474,20 +474,20 @@
 								bind:value={formData.department}
 								placeholder="e.g., Engineering"
 								required
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							/>
 						</div>
 
 						<div>
-							<label for="employment-type" class="block text-sm font-medium text-gray-700 mb-2">
-								Employment Type <span class="text-red-500">*</span>
+							<label for="employment-type" class="block text-sm font-medium text-muted mb-2">
+								Employment Type <span class="text-error">*</span>
 							</label>
 							<select
 								id="employment-type"
 								name="job_type"
 								bind:value={formData.employmentType}
 								required
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							>
 								{#each employmentTypes as type}
 									<option value={type.value}>{type.label}</option>
@@ -496,14 +496,14 @@
 						</div>
 
 						<div>
-							<label for="seniority-level" class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="seniority-level" class="block text-sm font-medium text-muted mb-2">
 								Seniority Level
 							</label>
 							<select
 								id="seniority-level"
 								name="seniority_level"
 								bind:value={formData.seniorityLevel}
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							>
 								<option value="">Select level</option>
 								{#each seniorityLevels as level}
@@ -513,15 +513,15 @@
 						</div>
 
 						<div>
-							<label for="experience-level" class="block text-sm font-medium text-gray-700 mb-2">
-								Experience Level <span class="text-red-500">*</span>
+							<label for="experience-level" class="block text-sm font-medium text-muted mb-2">
+								Experience Level <span class="text-error">*</span>
 							</label>
 							<select
 								id="experience-level"
 								name="experience_level"
 								bind:value={formData.experienceLevel}
 								required
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							>
 								<option value="">Select experience level</option>
 								{#each experienceLevels as level}
@@ -531,8 +531,8 @@
 						</div>
 
 						<div>
-							<label for="number-of-positions" class="block text-sm font-medium text-gray-700 mb-2">
-								Number of Positions <span class="text-red-500">*</span>
+							<label for="number-of-positions" class="block text-sm font-medium text-muted mb-2">
+								Number of Positions <span class="text-error">*</span>
 							</label>
 							<input
 								id="number-of-positions"
@@ -541,7 +541,7 @@
 								bind:value={formData.positions}
 								min="1"
 								required
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							/>
 						</div>
 					</div>
@@ -550,15 +550,15 @@
 			{:else if currentStep === 2}
 				<!-- Step 2: Location & Work Mode -->
 				<div class="space-y-6">
-					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+					<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 						<MapPin class="w-6 h-6" />
 						Location & Work Mode
 					</h2>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div class="md:col-span-2">
-							<label for="work-mode" class="block text-sm font-medium text-gray-700 mb-2">
-								Work Mode <span class="text-red-500">*</span>
+							<label for="work-mode" class="block text-sm font-medium text-muted mb-2">
+								Work Mode <span class="text-error">*</span>
 							</label>
 							<div id="work-mode" class="grid grid-cols-3 gap-3">
 								{#each workModes as mode}
@@ -570,8 +570,8 @@
 											bind:group={formData.workMode}
 											class="peer sr-only"
 										/>
-										<div class="w-full py-3 px-4 text-center border-2 border-gray-200 rounded-lg peer-checked:border-blue-600 peer-checked:bg-blue-50 transition-colors">
-											<span class="text-sm font-medium text-gray-700 peer-checked:text-blue-600">{mode.label}</span>
+										<div class="w-full py-3 px-4 text-center border-2 border-border rounded-lg peer-checked:border-primary peer-checked:bg-primary/10 transition-colors">
+											<span class="text-sm font-medium text-muted peer-checked:text-primary">{mode.label}</span>
 										</div>
 									</label>
 								{/each}
@@ -579,8 +579,8 @@
 						</div>
 
 						<div class="md:col-span-2">
-							<label for="job-locations-search" class="block text-sm font-medium text-gray-700 mb-2">
-								Job Location(s) <span class="text-red-500">*</span> <span class="text-gray-500 text-xs">(Max 3)</span>
+							<label for="job-locations-search" class="block text-sm font-medium text-muted mb-2">
+								Job Location(s) <span class="text-error">*</span> <span class="text-muted text-xs">(Max 3)</span>
 							</label>
 							<div class="space-y-3">
 								<input
@@ -588,7 +588,7 @@
 									type="text"
 									bind:value={formData.searchCity}
 									placeholder="Search city... (e.g., Bangalore, Mumbai)"
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 									disabled={formData.selectedLocationIds.length >= 3}
 								/>
 
@@ -597,12 +597,12 @@
 										{#each formData.selectedLocationIds as cityId}
 											{@const city = data.metadata.cities.find(c => c.id === cityId)}
 											{#if city}
-												<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+												<span class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
 													{city.name}, {city.state?.name}
 													<button
 														type="button"
 														onclick={() => toggleLocation(cityId)}
-														class="hover:text-blue-900"
+														class="hover:text-primary-hover"
 													>
 														<X class="w-4 h-4" />
 													</button>
@@ -613,11 +613,11 @@
 								{/if}
 
 								{#if formData.selectedLocationIds.length >= 3}
-									<p class="text-sm text-orange-600">Maximum 3 locations reached. Remove a location to add another.</p>
+									<p class="text-sm text-warning">Maximum 3 locations reached. Remove a location to add another.</p>
 								{/if}
 
 								{#if formData.searchCity.length > 0}
-									<div class="border border-gray-300 rounded-lg max-h-60 overflow-y-auto">
+									<div class="border border-border rounded-lg max-h-60 overflow-y-auto">
 										{#each filteredCities as city}
 											<button
 												type="button"
@@ -628,23 +628,23 @@
 													}
 												}}
 												disabled={formData.selectedLocationIds.length >= 3 && !formData.selectedLocationIds.includes(city.id)}
-												class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center justify-between {formData.selectedLocationIds.includes(city.id) ? 'bg-blue-50 text-blue-700' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
+												class="w-full text-left px-4 py-2 hover:bg-surface flex items-center justify-between {formData.selectedLocationIds.includes(city.id) ? 'bg-primary/10 text-primary' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
 											>
 												<span class="text-sm">{city.name}, {city.state?.name || 'N/A'}</span>
 												{#if formData.selectedLocationIds.includes(city.id)}
-													<CheckCircle class="w-4 h-4 text-blue-600" />
+													<CheckCircle class="w-4 h-4 text-primary" />
 												{/if}
 											</button>
 										{/each}
 									</div>
 								{/if}
 							</div>
-							<p class="text-xs text-gray-500 mt-1">Select up to 3 cities where the job is available</p>
+							<p class="text-xs text-muted mt-1">Select up to 3 cities where the job is available</p>
 						</div>
 
 						{#if formData.workMode !== 'remote'}
 							<div class="md:col-span-2">
-								<label for="new-office-address" class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="new-office-address" class="block text-sm font-medium text-muted mb-2">
 									Office Address
 								</label>
 								<textarea
@@ -653,7 +653,7 @@
 									bind:value={formData.officeAddress}
 									rows="2"
 									placeholder="Office address"
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								></textarea>
 							</div>
 						{/if}
@@ -663,15 +663,15 @@
 			{:else if currentStep === 3}
 				<!-- Step 3: Details & Requirements -->
 				<div class="space-y-6">
-					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+					<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 						<FileText class="w-6 h-6" />
 						Job Details & Requirements
 					</h2>
 
 					<div class="space-y-6">
 						<div>
-							<label for="job-description" class="block text-sm font-medium text-gray-700 mb-2">
-								Job Description <span class="text-red-500">*</span>
+							<label for="job-description" class="block text-sm font-medium text-muted mb-2">
+								Job Description <span class="text-error">*</span>
 							</label>
 							<textarea
 								id="job-description"
@@ -680,13 +680,13 @@
 								rows="6"
 								required
 								placeholder="Describe the role, responsibilities, and what you're looking for..."
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							></textarea>
 						</div>
 
 						<div>
-							<label for="key-skills-search" class="block text-sm font-medium text-gray-700 mb-2">
-								Key Skills <span class="text-gray-500 text-xs">(Max 8)</span>
+							<label for="key-skills-search" class="block text-sm font-medium text-muted mb-2">
+								Key Skills <span class="text-muted text-xs">(Max 8)</span>
 							</label>
 							<div class="space-y-3">
 								<input
@@ -694,7 +694,7 @@
 									type="text"
 									bind:value={formData.searchSkill}
 									placeholder="Search skills... (e.g., Python, React, AWS)"
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								/>
 
 								{#if formData.selectedSkillIds.length > 0}
@@ -702,12 +702,12 @@
 										{#each formData.selectedSkillIds as skillId}
 											{@const skill = data.metadata.skills.find(s => s.id === skillId)}
 											{#if skill}
-												<span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+												<span class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
 													{skill.name}
 													<button
 														type="button"
 														onclick={() => toggleSkill(skillId)}
-														class="hover:text-blue-900"
+														class="hover:text-primary-hover"
 													>
 														<X class="w-4 h-4" />
 													</button>
@@ -718,7 +718,7 @@
 								{/if}
 
 								{#if formData.searchSkill.length > 0}
-									<div class="border border-gray-300 rounded-lg max-h-60 overflow-y-auto">
+									<div class="border border-border rounded-lg max-h-60 overflow-y-auto">
 										{#each filteredSkills as skill}
 											<button
 												type="button"
@@ -729,69 +729,69 @@
 													}
 												}}
 												disabled={formData.selectedSkillIds.length >= 8 && !formData.selectedSkillIds.includes(skill.id)}
-												class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center justify-between {formData.selectedSkillIds.includes(skill.id) ? 'bg-blue-50 text-blue-700' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
+												class="w-full text-left px-4 py-2 hover:bg-surface flex items-center justify-between {formData.selectedSkillIds.includes(skill.id) ? 'bg-primary/10 text-primary' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
 											>
 												<span class="text-sm">{skill.name}</span>
 												{#if formData.selectedSkillIds.includes(skill.id)}
-													<CheckCircle class="w-4 h-4 text-blue-600" />
+													<CheckCircle class="w-4 h-4 text-primary" />
 												{/if}
 											</button>
 										{/each}
 									</div>
 								{/if}
 							</div>
-							<p class="text-xs text-gray-500 mt-1">Select up to 8 key skills required for this role</p>
+							<p class="text-xs text-muted mt-1">Select up to 8 key skills required for this role</p>
 						</div>
 
 						<!-- Industries -->
 						<div>
-							<label for="industry-preferences" class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="industry-preferences" class="block text-sm font-medium text-muted mb-2">
 								Industry/Domain Preference
 							</label>
-							<div id="industry-preferences" class="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto">
+							<div id="industry-preferences" class="border border-border rounded-lg p-3 max-h-60 overflow-y-auto">
 								<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
 									{#each data.metadata.industries as industry}
-										<label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+										<label class="flex items-center gap-2 cursor-pointer hover:bg-surface p-2 rounded">
 											<input
 												type="checkbox"
 												checked={formData.selectedIndustryIds.includes(industry.id)}
 												onchange={() => toggleIndustry(industry.id)}
-												class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+												class="w-4 h-4 text-primary border-border rounded focus:ring-primary/20"
 											/>
-											<span class="text-sm text-gray-700">{industry.name}</span>
+											<span class="text-sm text-muted">{industry.name}</span>
 										</label>
 									{/each}
 								</div>
 							</div>
-							<p class="text-xs text-gray-500 mt-1">Select preferred industries for candidates</p>
+							<p class="text-xs text-muted mt-1">Select preferred industries for candidates</p>
 						</div>
 
 						<!-- Education/Qualifications -->
 						<div>
-							<label for="education-qualifications" class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="education-qualifications" class="block text-sm font-medium text-muted mb-2">
 								Education Qualification
 							</label>
-							<div id="education-qualifications" class="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto">
+							<div id="education-qualifications" class="border border-border rounded-lg p-3 max-h-60 overflow-y-auto">
 								<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
 									{#each data.metadata.qualifications as qual}
-										<label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+										<label class="flex items-center gap-2 cursor-pointer hover:bg-surface p-2 rounded">
 											<input
 												type="checkbox"
 												checked={formData.selectedQualificationIds.includes(qual.id)}
 												onchange={() => toggleQualification(qual.id)}
-												class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+												class="w-4 h-4 text-primary border-border rounded focus:ring-primary/20"
 											/>
-											<span class="text-sm text-gray-700">{qual.name}</span>
+											<span class="text-sm text-muted">{qual.name}</span>
 										</label>
 									{/each}
 								</div>
 							</div>
-							<p class="text-xs text-gray-500 mt-1">Select minimum education qualifications required</p>
+							<p class="text-xs text-muted mt-1">Select minimum education qualifications required</p>
 						</div>
 
 						<!-- Language Requirements -->
 						<div>
-							<label for="language-requirements" class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="language-requirements" class="block text-sm font-medium text-muted mb-2">
 								Language Requirements
 							</label>
 							<div id="language-requirements" class="space-y-3">
@@ -802,12 +802,12 @@
 											type="text"
 											bind:value={lang.language}
 											placeholder="Language (e.g., English)"
-											class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+											class="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 										/>
 										<select
 											id="proficiency-{index}"
 											bind:value={lang.proficiency}
-											class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+											class="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 										>
 											{#each languageProficiencies as prof}
 												<option value={prof.value}>{prof.label}</option>
@@ -816,7 +816,7 @@
 										<button
 											type="button"
 											onclick={() => removeLanguage(index)}
-											class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+											class="p-2 text-error hover:bg-error-light rounded-lg"
 										>
 											<X class="w-5 h-5" />
 										</button>
@@ -825,7 +825,7 @@
 								<button
 									type="button"
 									onclick={addLanguage}
-									class="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-2"
+									class="text-sm text-primary hover:text-primary flex items-center gap-2"
 								>
 									<Plus class="w-4 h-4" />
 									Add Language
@@ -836,7 +836,7 @@
 						<!-- Certifications -->
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<label for="required-certifications" class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="required-certifications" class="block text-sm font-medium text-muted mb-2">
 									Required Certifications
 								</label>
 								<textarea
@@ -845,13 +845,13 @@
 									bind:value={formData.requiredCertifications}
 									placeholder="e.g., AWS Solutions Architect, Azure Administrator"
 									rows="3"
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								></textarea>
-								<p class="text-xs text-gray-500 mt-1">Comma-separated list</p>
+								<p class="text-xs text-muted mt-1">Comma-separated list</p>
 							</div>
 
 							<div>
-								<label for="preferred-certifications" class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="preferred-certifications" class="block text-sm font-medium text-muted mb-2">
 									Preferred Certifications
 								</label>
 								<textarea
@@ -860,9 +860,9 @@
 									bind:value={formData.preferredCertifications}
 									placeholder="e.g., PMP, ISTQB"
 									rows="3"
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								></textarea>
-								<p class="text-xs text-gray-500 mt-1">Nice-to-have certifications</p>
+								<p class="text-xs text-muted mt-1">Nice-to-have certifications</p>
 							</div>
 						</div>
 					</div>
@@ -871,14 +871,14 @@
 			{:else if currentStep === 4}
 				<!-- Step 4: Compensation & Benefits -->
 				<div class="space-y-6">
-					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+					<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 						<DollarSign class="w-6 h-6" />
 						Compensation & Benefits
 					</h2>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div>
-							<label for="minimum-salary" class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="minimum-salary" class="block text-sm font-medium text-muted mb-2">
 								Minimum Salary (INR)
 							</label>
 							<input
@@ -887,12 +887,12 @@
 								name="min_salary"
 								bind:value={formData.salaryMin}
 								placeholder="e.g., 500000"
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							/>
 						</div>
 
 						<div>
-							<label for="maximum-salary" class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="maximum-salary" class="block text-sm font-medium text-muted mb-2">
 								Maximum Salary (INR)
 							</label>
 							<input
@@ -901,7 +901,7 @@
 								name="max_salary"
 								bind:value={formData.salaryMax}
 								placeholder="e.g., 800000"
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							/>
 						</div>
 
@@ -912,9 +912,9 @@
 									type="checkbox"
 									name="show_salary"
 									bind:checked={formData.showSalary}
-									class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+									class="w-4 h-4 text-primary border-border rounded focus:ring-primary/20"
 								/>
-								<span class="text-sm font-medium text-gray-700">
+								<span class="text-sm font-medium text-muted">
 									Show salary range to job seekers
 								</span>
 							</label>
@@ -922,7 +922,7 @@
 
 						<!-- Benefits & Perks -->
 						<div class="md:col-span-2">
-							<label for="benefits-perks" class="block text-sm font-medium text-gray-700 mb-3">
+							<label for="benefits-perks" class="block text-sm font-medium text-muted mb-3">
 								Benefits & Perks
 							</label>
 							<div id="benefits-perks" class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -932,9 +932,9 @@
 											type="checkbox"
 											checked={formData.benefits.includes(benefit)}
 											onchange={() => toggleBenefit(benefit)}
-											class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+											class="w-4 h-4 text-primary border-border rounded focus:ring-primary/20"
 										/>
-										<span class="text-sm text-gray-700">{benefit}</span>
+										<span class="text-sm text-muted">{benefit}</span>
 									</label>
 								{/each}
 							</div>
@@ -945,7 +945,7 @@
 			{:else if currentStep === 5}
 				<!-- Step 5: Application Settings -->
 				<div class="space-y-6">
-					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+					<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 						<Send class="w-6 h-6" />
 						Application Settings
 					</h2>
@@ -953,47 +953,47 @@
 					<div class="space-y-6">
 						<!-- Application Method -->
 						<div>
-							<label for="application-method" class="block text-sm font-medium text-gray-700 mb-3">
-								Application Method <span class="text-red-500">*</span>
+							<label for="application-method" class="block text-sm font-medium text-muted mb-3">
+								Application Method <span class="text-error">*</span>
 							</label>
 							<div id="application-method" class="space-y-3">
-								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition-colors {formData.applicationMethod === 'portal' ? 'border-blue-600 bg-blue-50' : ''}">
+								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-border rounded-lg hover:border-primary/50 transition-colors {formData.applicationMethod === 'portal' ? 'border-primary bg-primary/10' : ''}">
 									<input
 										type="radio"
 										name="application_method"
 										value="portal"
 										bind:group={formData.applicationMethod}
-										class="w-4 h-4 text-blue-600"
+										class="w-4 h-4 text-primary"
 									/>
 									<div>
-										<div class="text-sm font-medium text-gray-900">Apply on PeelJobs Portal</div>
-										<div class="text-xs text-gray-500">Candidates apply through our platform</div>
+										<div class="text-sm font-medium text-black">Apply on PeelJobs Portal</div>
+										<div class="text-xs text-muted">Candidates apply through our platform</div>
 									</div>
 								</label>
-								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition-colors {formData.applicationMethod === 'external' ? 'border-blue-600 bg-blue-50' : ''}">
+								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-border rounded-lg hover:border-primary/50 transition-colors {formData.applicationMethod === 'external' ? 'border-primary bg-primary/10' : ''}">
 									<input
 										type="radio"
 										name="application_method"
 										value="external"
 										bind:group={formData.applicationMethod}
-										class="w-4 h-4 text-blue-600"
+										class="w-4 h-4 text-primary"
 									/>
 									<div>
-										<div class="text-sm font-medium text-gray-900">External URL</div>
-										<div class="text-xs text-gray-500">Redirect to your company careers page</div>
+										<div class="text-sm font-medium text-black">External URL</div>
+										<div class="text-xs text-muted">Redirect to your company careers page</div>
 									</div>
 								</label>
-								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition-colors {formData.applicationMethod === 'email' ? 'border-blue-600 bg-blue-50' : ''}">
+								<label class="flex items-center gap-3 cursor-pointer p-3 border-2 border-border rounded-lg hover:border-primary/50 transition-colors {formData.applicationMethod === 'email' ? 'border-primary bg-primary/10' : ''}">
 									<input
 										type="radio"
 										name="application_method"
 										value="email"
 										bind:group={formData.applicationMethod}
-										class="w-4 h-4 text-blue-600"
+										class="w-4 h-4 text-primary"
 									/>
 									<div>
-										<div class="text-sm font-medium text-gray-900">Email</div>
-										<div class="text-xs text-gray-500">Candidates apply via email</div>
+										<div class="text-sm font-medium text-black">Email</div>
+										<div class="text-xs text-muted">Candidates apply via email</div>
 									</div>
 								</label>
 							</div>
@@ -1007,14 +1007,14 @@
 										name="application_url"
 										bind:value={formData.applicationUrl}
 										placeholder="https://example.com/apply"
-										class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+										class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 									/>
 								</div>
 							{/if}
 						</div>
 
 						<div>
-							<label for="application-deadline" class="block text-sm font-medium text-gray-700 mb-2">
+							<label for="application-deadline" class="block text-sm font-medium text-muted mb-2">
 								Application Deadline
 							</label>
 							<input
@@ -1022,7 +1022,7 @@
 								type="date"
 								name="deadline"
 								bind:value={formData.deadline}
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							/>
 						</div>
 					</div>
@@ -1031,7 +1031,7 @@
 			{:else if currentStep === 6}
 				<!-- Step 6: Additional Settings -->
 				<div class="space-y-6">
-					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+					<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 						<Settings class="w-6 h-6" />
 						Additional Settings
 					</h2>
@@ -1046,23 +1046,23 @@
 										type="checkbox"
 										name="relocation_required"
 										bind:checked={formData.relocationRequired}
-										class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+										class="w-4 h-4 text-primary border-border rounded focus:ring-primary/20"
 									/>
-									<span class="text-sm font-medium text-gray-700">
+									<span class="text-sm font-medium text-muted">
 										Relocation Required
 									</span>
 								</label>
 							</div>
 
 							<div>
-								<label for="travel-requirements" class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="travel-requirements" class="block text-sm font-medium text-muted mb-2">
 									Travel Requirements
 								</label>
 								<select
 									id="travel-requirements"
 									name="travel_percentage"
 									bind:value={formData.travelPercentage}
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								>
 									<option value="">No travel required</option>
 									<option value="0-10%">0-10%</option>
@@ -1076,14 +1076,14 @@
 						<!-- Hiring Urgency -->
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<label for="hiring-timeline" class="block text-sm font-medium text-gray-700 mb-2">
+								<label for="hiring-timeline" class="block text-sm font-medium text-muted mb-2">
 									Hiring Timeline
 								</label>
 								<select
 									id="hiring-timeline"
 									name="hiring_timeline"
 									bind:value={formData.hiringTimeline}
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								>
 									<option value="">Select timeline</option>
 									{#each hiringTimelines as timeline}
@@ -1093,15 +1093,15 @@
 							</div>
 
 							<div>
-								<label for="hiring-priority" class="block text-sm font-medium text-gray-700 mb-2">
-									Priority <span class="text-red-500">*</span>
+								<label for="hiring-priority" class="block text-sm font-medium text-muted mb-2">
+									Priority <span class="text-error">*</span>
 								</label>
 								<select
 									id="hiring-priority"
 									name="hiring_priority"
 									bind:value={formData.hiringPriority}
 									required
-									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+									class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								>
 									{#each hiringPriorities as priority}
 										<option value={priority.value}>{priority.label}</option>
@@ -1115,39 +1115,39 @@
 			{:else if currentStep === 7}
 				<!-- Step 7: Preview -->
 				<div class="space-y-6">
-					<h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+					<h2 class="text-xl font-semibold text-black flex items-center gap-2">
 						<Eye class="w-6 h-6" />
 						Preview & Submit
 					</h2>
 
-					<div class="space-y-6 border border-gray-200 rounded-lg p-6">
+					<div class="space-y-6 border border-border rounded-lg p-6">
 						<!-- Job Basics -->
 						<div>
-							<h3 class="font-semibold text-gray-900 mb-3">Job Basics</h3>
+							<h3 class="font-semibold text-black mb-3">Job Basics</h3>
 							<dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
 								<div>
-									<dt class="text-gray-500">Job Title</dt>
-									<dd class="text-gray-900 font-medium">{formData.jobTitle || 'Not set'}</dd>
+									<dt class="text-muted">Job Title</dt>
+									<dd class="text-black font-medium">{formData.jobTitle || 'Not set'}</dd>
 								</div>
 								<div>
-									<dt class="text-gray-500">Company</dt>
-									<dd class="text-gray-900 font-medium">{formData.companyName || 'Not set'}</dd>
+									<dt class="text-muted">Company</dt>
+									<dd class="text-black font-medium">{formData.companyName || 'Not set'}</dd>
 								</div>
 								<div>
-									<dt class="text-gray-500">Employment Type</dt>
-									<dd class="text-gray-900 font-medium capitalize">{formData.employmentType}</dd>
+									<dt class="text-muted">Employment Type</dt>
+									<dd class="text-black font-medium capitalize">{formData.employmentType}</dd>
 								</div>
 								<div>
-									<dt class="text-gray-500">Seniority Level</dt>
-									<dd class="text-gray-900 font-medium capitalize">{formData.seniorityLevel || 'Not set'}</dd>
+									<dt class="text-muted">Seniority Level</dt>
+									<dd class="text-black font-medium capitalize">{formData.seniorityLevel || 'Not set'}</dd>
 								</div>
 								<div>
-									<dt class="text-gray-500">Work Mode</dt>
-									<dd class="text-gray-900 font-medium capitalize">{formData.workMode}</dd>
+									<dt class="text-muted">Work Mode</dt>
+									<dd class="text-black font-medium capitalize">{formData.workMode}</dd>
 								</div>
 								<div>
-									<dt class="text-gray-500">Positions</dt>
-									<dd class="text-gray-900 font-medium">{formData.positions}</dd>
+									<dt class="text-muted">Positions</dt>
+									<dd class="text-black font-medium">{formData.positions}</dd>
 								</div>
 							</dl>
 						</div>
@@ -1155,17 +1155,17 @@
 						<!-- Compensation -->
 						{#if formData.salaryMin || formData.salaryMax}
 							<div>
-								<h3 class="font-semibold text-gray-900 mb-3">Compensation</h3>
-								<p class="text-sm text-gray-700">
+								<h3 class="font-semibold text-black mb-3">Compensation</h3>
+								<p class="text-sm text-muted">
 									INR {formData.salaryMin || '0'} - {formData.salaryMax || '0'} per year
-									{#if !formData.showSalary}<span class="text-gray-500">(Hidden from candidates)</span>{/if}
+									{#if !formData.showSalary}<span class="text-muted">(Hidden from candidates)</span>{/if}
 								</p>
 								{#if formData.benefits.length > 0}
 									<div class="mt-2">
-										<p class="text-sm text-gray-500 mb-1">Benefits:</p>
+										<p class="text-sm text-muted mb-1">Benefits:</p>
 										<div class="flex flex-wrap gap-2">
 											{#each formData.benefits as benefit}
-												<span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded">{benefit}</span>
+												<span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded">{benefit}</span>
 											{/each}
 										</div>
 									</div>
@@ -1176,12 +1176,12 @@
 						<!-- Skills & Requirements -->
 						{#if formData.selectedSkillIds.length > 0}
 							<div>
-								<h3 class="font-semibold text-gray-900 mb-3">Skills</h3>
+								<h3 class="font-semibold text-black mb-3">Skills</h3>
 								<div class="flex flex-wrap gap-2">
 									{#each formData.selectedSkillIds as skillId}
 										{@const skill = data.metadata.skills.find(s => s.id === skillId)}
 										{#if skill}
-											<span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded">{skill.name}</span>
+											<span class="px-3 py-1 bg-surface text-muted text-sm rounded">{skill.name}</span>
 										{/if}
 									{/each}
 								</div>
@@ -1191,12 +1191,12 @@
 						<!-- Locations -->
 						{#if formData.selectedLocationIds.length > 0}
 							<div>
-								<h3 class="font-semibold text-gray-900 mb-3">Locations</h3>
+								<h3 class="font-semibold text-black mb-3">Locations</h3>
 								<div class="flex flex-wrap gap-2">
 									{#each formData.selectedLocationIds as cityId}
 										{@const city = data.metadata.cities.find(c => c.id === cityId)}
 										{#if city}
-											<span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded">{city.name}, {city.state?.name}</span>
+											<span class="px-3 py-1 bg-surface text-muted text-sm rounded">{city.name}, {city.state?.name}</span>
 										{/if}
 									{/each}
 								</div>
@@ -1205,10 +1205,10 @@
 
 						<!-- Application Method -->
 						<div>
-							<h3 class="font-semibold text-gray-900 mb-3">Application Method</h3>
-							<p class="text-sm text-gray-700 capitalize">{formData.applicationMethod}</p>
+							<h3 class="font-semibold text-black mb-3">Application Method</h3>
+							<p class="text-sm text-muted capitalize">{formData.applicationMethod}</p>
 							{#if formData.applicationMethod === 'external' && formData.applicationUrl}
-								<p class="text-sm text-blue-600 mt-1">{formData.applicationUrl}</p>
+								<p class="text-sm text-primary mt-1">{formData.applicationUrl}</p>
 							{/if}
 						</div>
 					</div>
@@ -1286,7 +1286,7 @@
 					type="button"
 					onclick={prevStep}
 					disabled={currentStep === 1}
-					class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+					class="px-6 py-2 border border-border rounded-lg text-muted hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
 				>
 					<ChevronLeft class="w-4 h-4" />
 					Previous
@@ -1297,7 +1297,7 @@
 						type="submit"
 						onclick={() => (currentAction = 'saveDraft')}
 						disabled={isSubmitting}
-						class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 flex items-center gap-2"
+						class="px-6 py-2 border border-border rounded-lg text-muted hover:bg-surface disabled:opacity-50 flex items-center gap-2"
 					>
 						<Save class="w-4 h-4" />
 						{isSubmitting && currentAction === 'saveDraft' ? 'Saving...' : 'Save Draft'}
@@ -1309,7 +1309,7 @@
 				<button
 					type="button"
 					onclick={nextStep}
-					class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+					class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover flex items-center gap-2"
 				>
 					Next
 					<ChevronRight class="w-4 h-4" />
@@ -1320,7 +1320,7 @@
 						type="submit"
 						onclick={() => (currentAction = 'saveDraft')}
 						disabled={isSubmitting}
-						class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 flex items-center gap-2"
+						class="px-6 py-2 border border-border rounded-lg text-muted hover:bg-surface disabled:opacity-50 flex items-center gap-2"
 					>
 						<Save class="w-4 h-4" />
 						{isSubmitting && currentAction === 'saveDraft' ? 'Saving...' : 'Save as Draft'}
@@ -1329,7 +1329,7 @@
 						type="submit"
 						onclick={() => (currentAction = 'publish')}
 						disabled={isSubmitting}
-						class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+						class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 flex items-center gap-2"
 					>
 						<Send class="w-4 h-4" />
 						{isSubmitting && currentAction === 'publish' ? 'Publishing...' : 'Publish Job'}

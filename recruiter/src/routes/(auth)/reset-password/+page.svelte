@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Lock, Eye, EyeOff, CheckCircle2 } from '@lucide/svelte';
+	import { Lock, Eye, EyeOff, CheckCircle } from '@lucide/svelte';
 	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
+	import { Button, Input, Card, FormField } from '$lib/components/ui';
 
 	type AuthLayoutContext = {
 		containerClass: string;
@@ -22,7 +23,6 @@
 		confirmPassword: ''
 	});
 
-	// Get success state and error from form action
 	let isSubmitted = $derived(form?.success || false);
 	let error = $derived(form?.error || '');
 
@@ -36,20 +36,22 @@
 	}
 
 	let validation = $derived(validatePassword(formData.password));
+	let isValid = $derived(validation.minLength && validation.hasUpper && validation.hasLower && validation.hasNumber && formData.password === formData.confirmPassword);
 </script>
 
 <svelte:head>
 	<title>Reset Password - PeelJobs Recruiter</title>
+	<meta name="description" content="Create a new password for your PeelJobs employer account." />
 </svelte:head>
 
-<div class="bg-white rounded-lg shadow-lg p-8">
+<Card padding="lg" class="shadow-lg">
 	{#if !isSubmitted}
 		<!-- Reset Password Form -->
 		<div>
 			<!-- Header -->
 			<div class="mb-8">
-				<h1 class="text-2xl font-bold text-gray-900">Reset Password</h1>
-				<p class="text-gray-600 mt-2">Create a new password for your account</p>
+				<h1 class="text-2xl font-semibold text-black">Reset Password</h1>
+				<p class="text-muted mt-2">Create a new password for your account</p>
 			</div>
 
 			<!-- Form -->
@@ -64,18 +66,14 @@
 				<input type="hidden" name="token" value={data.token} />
 
 				{#if error}
-					<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+					<div class="bg-error-light border border-error/20 text-error px-4 py-3 rounded-lg text-sm">
 						{error}
 					</div>
 				{/if}
 
-				<div>
-					<label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-						New Password
-					</label>
+				<FormField label="New Password">
 					<div class="relative">
-						<Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-						<input
+						<Input
 							type={showPassword ? 'text' : 'password'}
 							id="password"
 							name="password"
@@ -83,12 +81,18 @@
 							required
 							disabled={loading}
 							placeholder="Create a strong password"
-							class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-						/>
+							size="lg"
+							class="pr-12"
+						>
+							{#snippet iconLeft()}
+								<Lock class="w-5 h-5" />
+							{/snippet}
+						</Input>
 						<button
 							type="button"
 							onclick={() => (showPassword = !showPassword)}
-							class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+							class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-black transition-colors"
+							aria-label={showPassword ? 'Hide password' : 'Show password'}
 						>
 							{#if showPassword}
 								<EyeOff class="w-5 h-5" />
@@ -101,44 +105,36 @@
 					<!-- Password Requirements -->
 					{#if formData.password}
 						<div class="mt-3 space-y-2">
-							<p class="text-xs font-medium text-gray-700">Password must contain:</p>
+							<p class="text-xs font-medium text-black">Password must contain:</p>
 							<div class="space-y-1">
-								<div class="flex items-center gap-2 text-xs {validation.minLength ? 'text-green-600' : 'text-gray-600'}">
-									<div class="w-4 h-4 rounded-full border-2 {validation.minLength ? 'border-green-600 bg-green-600' : 'border-gray-300'} flex items-center justify-center">
+								<div class="flex items-center gap-2 text-xs {validation.minLength ? 'text-success' : 'text-muted'}">
+									<div class="w-4 h-4 rounded-full border-2 {validation.minLength ? 'border-success bg-success' : 'border-border'} flex items-center justify-center">
 										{#if validation.minLength}
-											<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-											</svg>
+											<CheckCircle class="w-3 h-3 text-white" />
 										{/if}
 									</div>
 									At least 8 characters
 								</div>
-								<div class="flex items-center gap-2 text-xs {validation.hasUpper ? 'text-green-600' : 'text-gray-600'}">
-									<div class="w-4 h-4 rounded-full border-2 {validation.hasUpper ? 'border-green-600 bg-green-600' : 'border-gray-300'} flex items-center justify-center">
+								<div class="flex items-center gap-2 text-xs {validation.hasUpper ? 'text-success' : 'text-muted'}">
+									<div class="w-4 h-4 rounded-full border-2 {validation.hasUpper ? 'border-success bg-success' : 'border-border'} flex items-center justify-center">
 										{#if validation.hasUpper}
-											<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-											</svg>
+											<CheckCircle class="w-3 h-3 text-white" />
 										{/if}
 									</div>
 									One uppercase letter
 								</div>
-								<div class="flex items-center gap-2 text-xs {validation.hasLower ? 'text-green-600' : 'text-gray-600'}">
-									<div class="w-4 h-4 rounded-full border-2 {validation.hasLower ? 'border-green-600 bg-green-600' : 'border-gray-300'} flex items-center justify-center">
+								<div class="flex items-center gap-2 text-xs {validation.hasLower ? 'text-success' : 'text-muted'}">
+									<div class="w-4 h-4 rounded-full border-2 {validation.hasLower ? 'border-success bg-success' : 'border-border'} flex items-center justify-center">
 										{#if validation.hasLower}
-											<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-											</svg>
+											<CheckCircle class="w-3 h-3 text-white" />
 										{/if}
 									</div>
 									One lowercase letter
 								</div>
-								<div class="flex items-center gap-2 text-xs {validation.hasNumber ? 'text-green-600' : 'text-gray-600'}">
-									<div class="w-4 h-4 rounded-full border-2 {validation.hasNumber ? 'border-green-600 bg-green-600' : 'border-gray-300'} flex items-center justify-center">
+								<div class="flex items-center gap-2 text-xs {validation.hasNumber ? 'text-success' : 'text-muted'}">
+									<div class="w-4 h-4 rounded-full border-2 {validation.hasNumber ? 'border-success bg-success' : 'border-border'} flex items-center justify-center">
 										{#if validation.hasNumber}
-											<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-											</svg>
+											<CheckCircle class="w-3 h-3 text-white" />
 										{/if}
 									</div>
 									One number
@@ -146,15 +142,11 @@
 							</div>
 						</div>
 					{/if}
-				</div>
+				</FormField>
 
-				<div>
-					<label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
-						Confirm Password
-					</label>
+				<FormField label="Confirm Password" error={formData.confirmPassword && formData.password !== formData.confirmPassword ? 'Passwords do not match' : undefined}>
 					<div class="relative">
-						<Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-						<input
+						<Input
 							type={showConfirmPassword ? 'text' : 'password'}
 							id="confirmPassword"
 							name="confirm_password"
@@ -162,12 +154,19 @@
 							required
 							disabled={loading}
 							placeholder="Re-enter your password"
-							class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-						/>
+							size="lg"
+							error={formData.confirmPassword && formData.password !== formData.confirmPassword}
+							class="pr-12"
+						>
+							{#snippet iconLeft()}
+								<Lock class="w-5 h-5" />
+							{/snippet}
+						</Input>
 						<button
 							type="button"
 							onclick={() => (showConfirmPassword = !showConfirmPassword)}
-							class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+							class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-black transition-colors"
+							aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
 						>
 							{#if showConfirmPassword}
 								<EyeOff class="w-5 h-5" />
@@ -176,38 +175,28 @@
 							{/if}
 						</button>
 					</div>
-					{#if formData.confirmPassword && formData.password !== formData.confirmPassword}
-						<p class="text-xs text-red-600 mt-1">Passwords do not match</p>
-					{/if}
-				</div>
+				</FormField>
 
-				<button
-					type="submit"
-					disabled={loading || !validation.minLength || !validation.hasUpper || !validation.hasLower || !validation.hasNumber || formData.password !== formData.confirmPassword}
-					class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-				>
+				<Button type="submit" size="lg" {loading} disabled={loading || !isValid} class="w-full">
 					{loading ? 'Resetting...' : 'Reset Password'}
-				</button>
+				</Button>
 			</form>
 		</div>
 	{:else}
 		<!-- Success Message -->
 		<div class="text-center">
-			<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-				<CheckCircle2 class="w-8 h-8 text-green-600" />
+			<div class="w-16 h-16 bg-success-light rounded-full flex items-center justify-center mx-auto mb-6">
+				<CheckCircle class="w-8 h-8 text-success" />
 			</div>
 
-			<h1 class="text-2xl font-bold text-gray-900 mb-3">Password Reset Successful!</h1>
-			<p class="text-gray-600 mb-8">
+			<h1 class="text-2xl font-semibold text-black mb-3">Password Reset Successful!</h1>
+			<p class="text-muted mb-8">
 				Your password has been successfully reset. You can now sign in with your new password.
 			</p>
 
-			<a
-				href="/login/"
-				class="inline-block w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-			>
+			<Button size="lg" class="w-full" onclick={() => window.location.href = '/login/'}>
 				Sign In
-			</a>
+			</Button>
 		</div>
 	{/if}
-</div>
+</Card>
