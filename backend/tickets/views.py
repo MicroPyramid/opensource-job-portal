@@ -5,9 +5,8 @@ email to recruiter when admin gives suggestions
 
 import json
 from django.shortcuts import render
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
 from django.template import loader
 
 from peeldb.models import (
@@ -70,7 +69,6 @@ def index(request):
         temp = loader.get_template("email/new_ticket.html")
         subject = "Service Request | Peeljobs"
         rendered = temp.render({"ticket": ticket})
-        user_active = True if ticket.user.is_active else False
         mto = [ticket.user.email]
         send_email.delay(mto, subject, rendered)
         data = {"error": False, "response": "New Ticket Created Successfully"}
@@ -115,7 +113,6 @@ def new_ticket(request):
         temp = loader.get_template("email/new_ticket.html")
         subject = "Service Request | Peeljobs"
         rendered = temp.render({"ticket": ticket})
-        user_active = True if ticket.user.is_active else False
         mto = ticket.user.email
         send_email.delay(mto, subject, rendered)
         data = {"error": False, "response": "New Ticket Created Successfully"}
@@ -315,7 +312,6 @@ def ticket_status(request, ticket_id):
                 subject = "Your Ticket Status | Peeljobs"
                 rendered = temp.render({"ticket": ticket, "status": True})
                 mto = ticket.user.email
-                user_active = True if ticket.user.is_active else False
                 send_email.delay(mto, subject, rendered)
                 data = {
                     "error": False,
@@ -365,7 +361,6 @@ def ticket_comment(request, ticket_id):
                     subject = "Acknowledgement For Your Request | Peeljobs"
                     rendered = temp.render({"ticket": ticket, "comment": comment})
                     mto = ticket.user.email
-                    user_active = True if ticket.user.is_active else False
                     send_email.delay(mto, subject, rendered)
                 return HttpResponse(
                     json.dumps(

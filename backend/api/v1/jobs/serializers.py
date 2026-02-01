@@ -14,7 +14,6 @@ from peeldb.models import (
     FunctionalArea,
 )
 from django.utils import timezone
-from datetime import datetime, timedelta
 
 
 class LocationSerializer(serializers.ModelSerializer):

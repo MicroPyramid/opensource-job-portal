@@ -79,7 +79,7 @@ def get_per_day_jobposts(context, year, month, date):
     import datetime
 
     if context["jobs_list"]:
-        day = datetime.date(int(year), int(month), int(date))
+        datetime.date(int(year), int(month), int(date))
         if context["jobs_list"]:
             # Filter by published_on date instead of removed last_date field
             jobs_list = context["jobs_list"].filter(

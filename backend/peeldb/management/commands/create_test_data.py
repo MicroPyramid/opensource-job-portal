@@ -15,10 +15,10 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from peeldb.models import (
-    Company, User, JobPost, AppliedJobs, City, State, Country,
+    Company, User, JobPost, AppliedJobs, City, Country,
     Skill, Industry, Qualification, Language,
     TechnicalSkill, EmploymentHistory, EducationDetails,
-    EducationInstitue, Degree, UserLanguage, InterviewLocation,
+    EducationInstitue, Degree, UserLanguage,
 )
 
 from .test_data.indian_names import (
@@ -27,7 +27,7 @@ from .test_data.indian_names import (
 )
 from .test_data.company_names import (
     COMPANY_PREFIXES, COMPANY_SUFFIXES, COMPANY_TYPE_SUFFIXES,
-    BUSINESS_PARKS, BUILDINGS, AREAS, COMPANY_PROFILES,
+    BUSINESS_PARKS, COMPANY_PROFILES,
 )
 from .test_data.job_titles import (
     JOB_TITLES_BY_SKILL, DEFAULT_JOB_TITLES, JOB_DESCRIPTION_TEMPLATES,
@@ -35,11 +35,10 @@ from .test_data.job_titles import (
 )
 from .test_data.constants import (
     COMPANY_SIZES, COMPANY_TYPES, USER_TYPE_JOBSEEKER, USER_TYPE_EMPLOYER,
-    GENDERS, JOB_TYPES, COMMON_JOB_TYPES, WORK_MODES, JOB_POST_STATUSES,
-    COMMON_JOB_STATUSES, JOB_STATUS_WEIGHTS, APPLICATION_STATUSES,
+    GENDERS, COMMON_JOB_TYPES, WORK_MODES, COMMON_JOB_STATUSES, JOB_STATUS_WEIGHTS, APPLICATION_STATUSES,
     APPLICATION_STATUS_WEIGHTS, SENIORITY_LEVELS, SKILL_PROFICIENCIES,
     SKILL_PROFICIENCY_WEIGHTS, NOTICE_PERIODS, SALARY_RANGES,
-    TEST_DATA_MARKER, TEST_PASSWORD, BATCH_SIZE,
+    TEST_DATA_MARKER, TEST_PASSWORD,
 )
 
 
@@ -437,7 +436,7 @@ class Command(BaseCommand):
                 from_date=from_date,
                 to_date=None if is_current else to_date,
                 current_job=is_current,
-                job_profile=f"Worked on various software development projects.",
+                job_profile="Worked on various software development projects.",
             )
             history.append(emp)
 

@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.core.cache import cache
-from django.db.models import Q
 
 from mpcomp.views import get_social_referer, get_meta
 from peeldb.models import JobPost, State, JOB_TYPE

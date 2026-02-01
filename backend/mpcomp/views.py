@@ -1,7 +1,5 @@
 import string
 import random
-import urllib
-import requests
 from math import floor
 import arrow
 import datetime
@@ -17,9 +15,8 @@ from lxml import etree
 from subprocess import Popen, PIPE
 
 from django.contrib.auth.decorators import user_passes_test, login_required
-from django.template import Template, Context, loader
-from django.utils.crypto import get_random_string
-from peeldb.models import MetaData, Skill, City, Qualification, User, TechnicalSkill
+from django.template import Template, Context
+from peeldb.models import MetaData, Skill, City, Qualification
 from django.core.mail import EmailMessage
 from django.conf import settings
 
@@ -237,7 +234,7 @@ def get_resume_data(file):
                 if m:
                     email = m.group(0)
             text = "\n\n".join(text)
-        except:
+        except Exception:
             text = ""
     elif file_format == "doc":
         text = document_to_text(file_name, settings.BASE_DIR + "/resume/" + file_name)

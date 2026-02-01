@@ -47,7 +47,7 @@ def recruiters_list(request, status):
     page = request.POST.get("page") or request.GET.get("page")
     try:
         page = 1 if int(page) > (no_pages + 1) else int(page)
-    except:
+    except Exception:
         page = 1
     recruiters = recruiters[(page - 1) * items_per_page : page * items_per_page]
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(

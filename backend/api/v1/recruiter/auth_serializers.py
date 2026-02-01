@@ -5,11 +5,9 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
-from peeldb.models import User, Company, Google, TeamInvitation
+from peeldb.models import User, Company
 from django.utils.crypto import get_random_string
-from django.utils import timezone
-from datetime import timedelta
-from .serializers import CompanyBasicSerializer, AcceptInvitationSerializer
+from .serializers import CompanyBasicSerializer
 
 
 class RegisterSerializer(serializers.Serializer):

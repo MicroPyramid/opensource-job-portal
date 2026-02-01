@@ -1,16 +1,12 @@
-import datetime
 import json
 import random
-from django.shortcuts import render
 from django.http.response import HttpResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from zoneinfo import ZoneInfo
 
 from mpcomp.s3_utils import S3Connection
 from mpcomp.views import (
-    jobseeker_login_required,
     get_resume_data,
     handle_uploaded_file,
 )

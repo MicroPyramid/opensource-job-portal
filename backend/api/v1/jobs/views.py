@@ -11,7 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters as drf_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Q
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 
 from peeldb.models import JobPost, City, Skill, Industry, Qualification, SavedJobs, AppliedJobs

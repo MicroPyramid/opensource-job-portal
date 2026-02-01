@@ -14,8 +14,7 @@ django.setup()
 
 from django.contrib.auth import get_user_model
 from peeldb.models import (
-    JobPost, Company, City, Skill, Industry, Qualification,
-    Country, State
+    JobPost, Company, City, Skill, Industry, Qualification
 )
 
 User = get_user_model()

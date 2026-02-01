@@ -68,7 +68,7 @@ def get_formatted_salary(value):
     try:
         salary = locale.format("%d", int(value), grouping=True)
         return salary
-    except:
+    except Exception:
         return value
 
 
@@ -285,7 +285,7 @@ def get_refine_skills(skills):
             try:
                 all_refine_skills.remove(each)
                 all_refine_skills.insert(0, each)
-            except:
+            except Exception:
                 pass
     return all_refine_skills
 
@@ -308,7 +308,7 @@ def get_refine_locations(locations):
             try:
                 all_refine_locations.remove(each)
                 all_refine_locations.insert(0, each)
-            except:
+            except Exception:
                 pass
     return all_refine_locations
 
@@ -331,7 +331,7 @@ def get_refine_states(states):
             try:
                 all_refine_states.remove(each)
                 all_refine_states.insert(0, each)
-            except:
+            except Exception:
                 pass
     return all_refine_states[:8]
 
@@ -354,7 +354,7 @@ def get_refine_industries(industry):
             try:
                 all_refine_industries.remove(each)
                 all_refine_industries.insert(0, each)
-            except:
+            except Exception:
                 pass
     return all_refine_industries
 
@@ -375,7 +375,7 @@ def get_refine_educations(education):
             try:
                 all_refine_educations.remove(each)
                 all_refine_educations.insert(0, each)
-            except:
+            except Exception:
                 pass
     return all_refine_educations
 
@@ -506,7 +506,7 @@ def get_job_skills(job, skill):
     skills = list(job.skills.all())
     try:
         index = skills.index(skill)
-    except:
+    except Exception:
         index = 0
     if index != 0:
         skills[0], skills[index] = skills[index], skills[0]
@@ -518,7 +518,7 @@ def get_job_location(job, location):
     locations = list(job.location.all())
     try:
         index = locations.index(location)
-    except:
+    except Exception:
         index = 0
     if index != 0:
         locations[0], locations[index] = locations[index], locations[0]

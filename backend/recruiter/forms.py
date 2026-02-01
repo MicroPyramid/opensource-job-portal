@@ -583,7 +583,7 @@ class JobPostForm(ModelForm):
             try:
                 min_sal = int(self.cleaned_data["min_salary"])
                 return min_sal
-            except:
+            except Exception:
                 raise forms.ValidationError("Minimum salary must be an Integer")
         else:
             return 0

@@ -502,7 +502,7 @@ def resume_upload_path(instance, filename):
     Path format: resume/user_{user_id}/{year}/{month}/{uuid}_{original_filename}
     """
     # Get file extension
-    file_extension = os.path.splitext(filename)[1].lower()
+    os.path.splitext(filename)[1].lower()
     
     # Generate UUID for uniqueness
     unique_id = uuid.uuid4().hex
@@ -1507,7 +1507,6 @@ class JobPost(models.Model):
         2. Published within the last 30 days (or configured max age)
         """
         from django.conf import settings
-        from datetime import timedelta
 
         # Only Live jobs can accept applications
         if self.status != 'Live':

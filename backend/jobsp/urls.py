@@ -61,8 +61,6 @@ from psite.views import (
     get_out,
     pages,
     custom_500,
-    sitemap_xml,
-    # users_login,
     custom_404,
     auth_return,
 )

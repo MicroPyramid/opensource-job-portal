@@ -2,8 +2,7 @@
 Company Serializers for API v1
 """
 from rest_framework import serializers
-from peeldb.models import Company, JobPost, Industry
-from django.db.models import Count, Q
+from peeldb.models import Company, JobPost
 
 
 class CompanyListSerializer(serializers.ModelSerializer):
@@ -38,7 +37,7 @@ class CompanyListSerializer(serializers.ModelSerializer):
             if request:
                 try:
                     return request.build_absolute_uri(obj.profile_pic.url)
-                except:
+                except Exception:
                     pass
         # Return default logo
         return 'https://cdn.peeljobs.com/static/company_logo.png'
@@ -129,7 +128,7 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
             if request:
                 try:
                     return request.build_absolute_uri(obj.profile_pic.url)
-                except:
+                except Exception:
                     pass
         return 'https://cdn.peeljobs.com/static/company_logo.png'
 

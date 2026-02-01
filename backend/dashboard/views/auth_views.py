@@ -1,8 +1,7 @@
 from datetime import datetime
 
 import requests
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse

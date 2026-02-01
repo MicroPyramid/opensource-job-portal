@@ -1,6 +1,5 @@
 import re
 from django.shortcuts import redirect
-from django.core.cache import cache
 
 try:
     import resource  # Not available on Win32 systems

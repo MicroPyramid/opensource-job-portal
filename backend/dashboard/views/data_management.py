@@ -1,10 +1,9 @@
 import json
 import math
 import re
-import json
 
 from django.urls import reverse
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template.defaultfilters import slugify
@@ -27,7 +26,6 @@ from peeldb.models import (
     Skill,
     State,
     SKILL_TYPE,
-    User,
 )
 from dashboard.forms import CityForm
 

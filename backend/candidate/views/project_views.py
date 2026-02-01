@@ -1,10 +1,8 @@
-import datetime
 import json
 from django.shortcuts import render
 from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from zoneinfo import ZoneInfo
 
 from candidate.forms import ProjectForm
 from peeldb.models import Project, Skill, City, User

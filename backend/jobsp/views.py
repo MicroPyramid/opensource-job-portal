@@ -1,16 +1,11 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
-from django.views.decorators.http import require_http_methods
-from datetime import datetime
 from django.utils import timezone
-from zoneinfo import ZoneInfo
 from dashboard.tasks import send_email
 from psite.forms import AuthenticationForm, ForgotPassForm, UserEmailRegisterForm, UserPassChangeForm
-from django.http import HttpResponse
 from django.urls import reverse
 from django.conf import settings
-import json
 import logging
 import boto3
 import random

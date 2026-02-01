@@ -1,4 +1,4 @@
-from peeldb.models import JobPost, City, Skill, Qualification, Industry, State, Country
+from peeldb.models import JobPost, City, Skill, Qualification, Industry, Country
 from haystack.query import SQ, SearchQuerySet
 
 

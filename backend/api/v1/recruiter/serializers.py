@@ -3,7 +3,6 @@ Serializers for Recruiter/Employer API endpoints
 """
 from rest_framework import serializers
 from peeldb.models import User, Company, TeamInvitation
-from django.contrib.auth import authenticate
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from datetime import timedelta
@@ -244,7 +243,7 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
             if request:
                 try:
                     return request.build_absolute_uri(obj.profile_pic.url)
-                except:
+                except Exception:
                     pass
         return 'https://cdn.peeljobs.com/static/company_logo.png'
 

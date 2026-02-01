@@ -247,12 +247,10 @@ if __name__ == "__main__":
     print("-" * 50)
 
     # Disconnect Haystack signals temporarily
-    from haystack import signals
     from django.db.models import signals as django_signals
 
     # Try to disconnect the haystack signal processor
     try:
-        from haystack.signals import RealtimeSignalProcessor
         # Haystack uses post_save and post_delete signals
         django_signals.post_save.receivers = [
             r for r in django_signals.post_save.receivers
