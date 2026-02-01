@@ -4,7 +4,6 @@ from django.shortcuts import render
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from zoneinfo import ZoneInfo
 
 from mpcomp.views import jobseeker_login_required
 from candidate.forms import (
@@ -16,7 +15,6 @@ from candidate.forms import (
     MAR_TYPES,
 )
 from peeldb.models import (
-    User,
     City,
     Country,
     UserEmail,

@@ -1,5 +1,3 @@
-from django.shortcuts import redirect
-from django.contrib.auth import logout
 from django.conf import settings
 
 # from administration.models import Company, Profile
@@ -29,7 +27,6 @@ class TokenAuthentication(BaseAuthentication):
     def get_model(self):
         if self.model is not None:
             return self.model
-        from rest_framework.authtoken.models import Token
 
         return Token
 

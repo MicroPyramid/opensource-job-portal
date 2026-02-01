@@ -1,6 +1,5 @@
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
 from peeldb.models import City, User, Company

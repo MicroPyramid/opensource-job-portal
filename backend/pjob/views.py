@@ -18,7 +18,6 @@ from django.db.models import Count
 from django.core import serializers
 from django.contrib.auth import authenticate, login
 from django.utils.crypto import get_random_string
-from django.template.defaultfilters import slugify
 from django.http import QueryDict
 from django.contrib.auth import load_backend
 
@@ -88,7 +87,7 @@ def get_page_number(request, kwargs, no_pages):
             page = page
         else:
             page = False
-    except:
+    except Exception:
         page = False
     return page
 
@@ -989,7 +988,6 @@ def job_apply(request, job_id):
                     to_email = job_post.user.email
                     
                     # Handle resume attachment if exists
-                    attachment_data = None
                     if request.user.resume:
                         try:
                             import urllib.request
@@ -1005,9 +1003,9 @@ def job_apply(request, job_id):
                             )
                             if os.path.exists(resume_filename):
                                 with open(resume_filename, "rb") as f:
-                                    attachment_data = f.read()
+                                    f.read()
                                 os.remove(resume_filename)
-                        except Exception as e:
+                        except Exception:
                             # Log error but continue without attachment
                             pass
                     
@@ -1033,7 +1031,7 @@ def job_apply(request, job_id):
                         # Send email (attachment handling would need additional implementation)
                         ses_client.send_email(**email_data)
                         
-                    except Exception as e:
+                    except Exception:
                         # Log error but don't fail the application process
                         pass
                     
@@ -2459,7 +2457,7 @@ def register_using_email(request):
 def user_activation(request, user_id):
     user = User.objects.filter(activation_code__iexact=str(user_id)).first()
     if user:
-        registered_user = authenticate(username=user.username)
+        authenticate(username=user.username)
         if not request.user.is_authenticated:
             if not hasattr(user, "backend"):
                 for backend in settings.AUTHENTICATION_BACKENDS:

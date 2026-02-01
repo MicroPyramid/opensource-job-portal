@@ -2,8 +2,6 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils import timezone
-from datetime import timedelta
 
 
 class Migration(migrations.Migration):

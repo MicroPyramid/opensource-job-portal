@@ -1,14 +1,13 @@
 import json
 import math
 from django.utils import timezone
-from zoneinfo import ZoneInfo
 from datetime import datetime
 from django.http.response import JsonResponse
 from django.db.models import Q, Count
 from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from django.template import loader, Template, Context
+from django.template import loader
 
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
@@ -26,15 +25,12 @@ from peeldb.models import (
     AGENCY_JOB_TYPE,
     AgencyResume,
     AgencyRecruiterJobposts,
-    AppliedJobs,
     MARTIAL_STATUS,
 )
 from recruiter.permissions import RecruiterRequiredPermission
 from recruiter import status
 from mpcomp.views import (
-    rand_string,
     get_prev_after_pages_count,
-    get_next_month,
     get_aws_file_path,
 )
 from dashboard.tasks import send_email
@@ -465,7 +461,6 @@ def save_job_post(validate_post, request):
             t = loader.get_template("email/assign_jobpost.html")
             subject = "PeelJobs New JobPost"
             rendered = t.render(c)
-            user_active = True if user.is_active else False
             mto = [user.email]
             send_email.delay(mto, subject, rendered)
 
@@ -681,10 +676,8 @@ def edit_job(request, job_post_id):
                 )
             else:
                 message = "Sorry, No Job Posts Found"
-                reason = "The URL may be misspelled or the job you're looking for is no longer available."
         else:
             message = "Sorry, Your mobile number is not verified"
-            reason = "Please verify your mobile number"
         return JsonResponse(
             {"error": True, "message": message}, status=status.HTTP_404_NOT_FOUND
         )
@@ -797,7 +790,7 @@ def edit_profile(request):
         user.email_notifications = request.data.get("email_notifications") == "on"
 
         user_login = False
-        password_reset_diff = int(
+        int(
             (datetime.now() - user.last_mobile_code_verified_on).seconds
         )
       

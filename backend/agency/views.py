@@ -5,7 +5,7 @@ from math import ceil
 
 from django.urls import reverse
 from django.db.models import Q
-from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from mpcomp.views import (
@@ -297,7 +297,7 @@ def dashboard(request):
             return HttpResponseRedirect(reverse("jobs:index"))
         else:
             page = int(request.GET.get("page"))
-    except:
+    except Exception:
         page = 1
     job_posts = job_posts[(page - 1) * items_per_page : page * items_per_page]
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
@@ -396,7 +396,7 @@ def view_resumes(request, job_post_id):
             return HttpResponseRedirect(reverse("jobs:index"))
         else:
             page = int(request.GET.get("page"))
-    except:
+    except Exception:
         page = 1
     agency_resumes = agency_resumes[(page - 1) * items_per_page : page * items_per_page]
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
@@ -507,7 +507,7 @@ def hired_candidates(request, job_post_id):
             return HttpResponseRedirect(reverse("jobs:index"))
         else:
             page = int(request.GET.get("page"))
-    except:
+    except Exception:
         page = 1
     agency_resumes = agency_resumes[(page - 1) * items_per_page : page * items_per_page]
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(

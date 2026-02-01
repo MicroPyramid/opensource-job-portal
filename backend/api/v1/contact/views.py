@@ -10,7 +10,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiExample
 
-from peeldb.models import simplecontact
 from dashboard.tasks import send_email
 from .serializers import ContactSerializer, ContactResponseSerializer
 

@@ -1,7 +1,3 @@
-from django.conf import settings
-from datetime import datetime, timedelta
-from django.core import management
-from django.contrib.contenttypes.models import ContentType
 from peeldb.models import Skill, City, State, Country
 
 

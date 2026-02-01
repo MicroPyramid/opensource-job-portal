@@ -1,8 +1,6 @@
 import math
 from datetime import datetime, timedelta
-from functools import reduce
 from itertools import chain
-from operator import __or__ as OR
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -132,7 +130,6 @@ def job_alerts_to_users():
             subject = "Top Matching Jobs for your Profile - PeelJobs"
             rendered = t.render(c)
             mto = [user.email]
-            user_active = True if user.is_active else False
             send_email.delay(mto, subject, rendered)
 
 
@@ -169,7 +166,6 @@ def job_alerts_to_subscribers():
             subject = "Top Matching jobs for your subscription - PeelJobs"
             rendered = t.render(c)
             mto = [sub.email]
-            user_active = False
             send_email.delay(mto, subject, rendered)
 
 
@@ -208,7 +204,6 @@ def job_alerts_to_alerts():
             subject = "Top Matching Jobs For your alert " + alert.name
             rendered = t.render(c)
             mto = [alert.email]
-            user_active = False
             send_email.delay(mto, subject, rendered)
 
 
@@ -247,7 +242,6 @@ def sending_mail(emailtemplate, recruiters):
         recruiter = User.objects.get(id=recruiter)
         sent_mail.recruiter.add(recruiter)
         mto = recruiter.email
-        user_active = True if recruiter.is_active else False
         send_email.delay(mto, subject, rendered)
     return ""
 
@@ -347,7 +341,6 @@ def recruiter_jobpost_applicants():
                     subject = "No. Of Applicants Applied For Your Job"
                     rendered = t.render(c)
                     mto = [each.email]
-                    user_active = True if each.is_active else False
                     send_email.delay(mto, subject, rendered)
 
 
@@ -717,10 +710,9 @@ def applicants_profile_update_notifications():
             else:
                 subject = "Update Your Profile To Get Top Matching Jobs - Peeljobs"
             rendered = temp.render({"user": each, "job_posts": job_posts})
-            user_active = True if each.is_active else False
             mto = [each.email]
             send_email.delay(mto, subject, rendered)
-    recruiters = User.objects.filter(
+    User.objects.filter(
         Q(Q(user_type="RR") | Q(user_type="AA"))
         & Q(
             email_notifications=True,
@@ -751,7 +743,6 @@ def applicants_profile_update_notifications():
         temp = loader.get_template("email/user_profile_alert.html")
         subject = "Upload your Resume/cv - Peeljobs"
         rendered = temp.render({"user": user, "resume_update": True})
-        user_active = True if user.is_active else False
         mto = [user.email]
         send_email.delay(mto, subject, rendered)
 
@@ -772,7 +763,6 @@ def recruiter_profile_update_notifications():
         subject = "Update Your Profile To Get More Applicants - Peeljobs"
         mto = [recruiter.email]
         rendered = temp.render({"user": recruiter, "recruiter": True})
-        user_active = True if recruiter.is_active else False
         send_email.delay(mto, subject, rendered)
 
 
@@ -789,7 +779,6 @@ def applicants_all_job_notifications():
         subject = "Top matching jobs for you - Peeljobs"
         mto = [each.email]
         rendered = temp.render({"job_posts": job_posts[:10], "user": each})
-        user_active = True if each.is_active else False
         send_email.delay(mto, subject, rendered)
 
 
@@ -816,7 +805,6 @@ def applicants_job_notifications():
         subject = "Top matching jobs for you - Peeljobs"
         mto = [user.email]
         rendered = temp.render({"jobposts": job_posts[:10], "user": user})
-        user_active = True if user.is_active else False
         send_email.delay(mto, subject, rendered)
 
 
@@ -880,7 +868,7 @@ def sitemap_generation():
 
     try:
         os.system("rm sitemap/*")
-    except:
+    except Exception:
         pass
     xml_cont = """<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
@@ -905,7 +893,7 @@ def sitemap_generation():
 
     try:
         open("sitemap/")
-    except:
+    except Exception:
         os.makedirs("sitemap", exist_ok=True)
     jobs_xml_file = open("sitemap/sitemap-jobs.xml", "w")
     jobs_xml_file.write(jobs_xml_cont.encode("ascii", "ignore").decode("ascii"))
@@ -1046,7 +1034,8 @@ def sitemap_generation():
     no_job_skills_walkin_xml_file.write(no_job_skills_walkin_xml_cont)
 
     # skill locations
-    lol = lambda lst, sz: [locations[i : i + sz] for i in range(0, len(locations), sz)]
+    def lol(lst, sz):
+        return [locations[i : i + sz] for i in range(0, len(locations), sz)]
     locations = lol(locations, 40)
     for index, each in enumerate(locations):
         skills_locations_xml_cont = xml_cont

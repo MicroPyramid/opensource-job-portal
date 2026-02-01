@@ -6,7 +6,6 @@ from django import forms
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet, SQ
 
-from peeldb.models import City
 
 VALID_TIME_FORMATS = ["%Y-%m-%d 00:00:00"]
 

@@ -18,8 +18,8 @@ def migrate_user_types_forward(apps, schema_editor):
         # Migrate all recruiter types to EM
         updated = old_types.update(user_type='EM')
         print(f"✅ Migrated {updated} users from old recruiter types to EM")
-        print(f"   - Company admins (RA/AA): Now EM with is_admin=True")
-        print(f"   - Recruiters (RR/AR): Now EM with is_admin=False")
+        print("   - Company admins (RA/AA): Now EM with is_admin=True")
+        print("   - Recruiters (RR/AR): Now EM with is_admin=False")
     else:
         print("ℹ️  No users to migrate (no old recruiter types found)")
 

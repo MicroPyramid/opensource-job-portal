@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models import Count
 from peeldb.models import (
     User,
     Google,

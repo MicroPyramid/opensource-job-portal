@@ -6,7 +6,7 @@ from django.conf import settings
 class PJBehaveTestCase(DjangoBehaveTestCase):
     def __init__(self, **kwargs):
         super(PJBehaveTestCase, self).__init__(**kwargs)
-        if settings.DEBUG == False:
+        if not settings.DEBUG:
             settings.DEBUG = True
 
 

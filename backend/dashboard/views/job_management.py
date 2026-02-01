@@ -28,7 +28,6 @@ from peeldb.models import (
     Keyword,
     Qualification,
     Skill,
-    TechnicalSkill,
     User,
 )
 from recruiter.forms import MONTHS, YEARS, JobPostForm
@@ -142,7 +141,6 @@ def status_change(request, post_id):
     subject = "PeelJobs JobPost Status"
     rendered = t.render(c)
     mto = post.user.email
-    user_active = True if post.user.is_active else False
     send_email.delay(mto, subject, rendered)
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
@@ -780,7 +778,6 @@ def edit_job_title(request, post_id):
                 subject = "PeelJobs JobPost Status"
                 rendered = t.render(c)
                 mto = [job_post.user.email]
-                user_active = True if job_post.user.is_active else False
                 send_email.delay(mto, subject, rendered)
             data = {"error": False, "response": "Company Updated successfully"}
             return HttpResponse(json.dumps(data))

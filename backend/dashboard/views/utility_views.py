@@ -1,7 +1,7 @@
 import json
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from mpcomp.views import permission_required

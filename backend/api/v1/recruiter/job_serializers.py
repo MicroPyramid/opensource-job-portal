@@ -85,7 +85,7 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
                 return "Recently created"
 
             diff = now - created_datetime
-        except Exception as e:
+        except Exception:
             # If anything goes wrong, just return a default
             return "Recently created"
 
@@ -548,7 +548,7 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
 
     def get_application(self, obj):
         """Get application details for this job"""
-        request = self.context.get('request')
+        self.context.get('request')
         job_id = self.context.get('job_id')
 
         if job_id:

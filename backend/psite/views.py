@@ -4,13 +4,12 @@ import math
 
 from django.shortcuts import render
 from django.contrib.auth import logout
-from django.http.response import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http.response import HttpResponseRedirect, HttpResponse
 from django.conf import settings
 from itertools import chain
 from django.template import loader
 from django.template.exceptions import TemplateDoesNotExist
 
-from django.urls import reverse
 
 from peeldb.models import JobPost, ENQUERY_TYPES, Skill, City, Qualification, State
 from .forms import SimpleContactForm

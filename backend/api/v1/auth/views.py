@@ -13,7 +13,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 
-from peeldb.models import Google, User
+from peeldb.models import Google
 from .serializers import (
     GoogleAuthSerializer,
     TokenResponseSerializer,
@@ -188,7 +188,7 @@ def resend_verification(request):
         # Send verification email
         try:
             send_verification_email(user, request)
-        except Exception as e:
+        except Exception:
             return Response({
                 "success": False,
                 "message": "Failed to send verification email. Please try again."
@@ -792,7 +792,6 @@ class CookieTokenRefreshView(TokenRefreshView):
             request.data._mutable = False
         else:
             # It's a regular dict, create a new mutable copy
-            from rest_framework.request import Request
             request._full_data = {'refresh': refresh_token}
 
         # Call parent class to perform token refresh

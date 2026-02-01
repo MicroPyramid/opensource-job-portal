@@ -11,7 +11,7 @@ from drf_spectacular.utils import extend_schema
 
 from django.conf import settings
 from django.utils.crypto import get_random_string
-from peeldb.models import User, Google, TeamInvitation
+from peeldb.models import User, Google
 
 from .auth_serializers import (
     RegisterSerializer,
@@ -471,7 +471,7 @@ def google_callback(request):
     if serializer.is_valid():
         code = serializer.validated_data['code']
         redirect_uri = serializer.validated_data['redirect_uri']
-        account_type = serializer.validated_data['account_type']
+        serializer.validated_data['account_type']
 
         try:
             # Exchange code for tokens

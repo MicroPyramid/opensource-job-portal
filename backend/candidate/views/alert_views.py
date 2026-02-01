@@ -94,9 +94,6 @@ def job_alert(request):
             "redirect_url": url,
         }
         rendered = temp.render(c)
-        user_active = (
-            True if request.user.is_authenticated and request.user.is_active else False
-        )
         mto = request.POST.get("email")
         send_email.delay(mto, subject, rendered)
         return HttpResponse(

@@ -17,7 +17,7 @@ from peeldb.models import (
 )
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate
-from mpcomp.views import get_asia_time, custom_password_check
+from mpcomp.views import get_asia_time
 
 
 valid_time_formats = ["%H:%M", "%I:%M%p", "%I:%M %p"]
@@ -370,7 +370,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             try:
                 min_sal = int(self.cleaned_data["min_salary"])
                 return min_sal
-            except:
+            except Exception:
                 raise serializers.ValidationError("Minimum salary must be an Integer")
         else:
             return 0

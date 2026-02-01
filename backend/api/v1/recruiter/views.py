@@ -8,11 +8,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
 from dashboard.tasks import send_email
 
-from peeldb.models import User, Company, TeamInvitation
+from peeldb.models import User, TeamInvitation
 from .serializers import (
     TeamMemberSerializer,
     TeamMemberDetailSerializer,

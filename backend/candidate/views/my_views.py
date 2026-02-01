@@ -1,16 +1,10 @@
 import json
-import random
 import os
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
-from django.conf import settings
-from django.core.files.storage import default_storage
 from datetime import datetime
 
 from mpcomp.views import jobseeker_login_required
@@ -22,12 +16,6 @@ from candidate.forms import (
     MONTHS,
     MAR_TYPES,
     ProjectForm,
-    WorkExperienceForm,
-    EducationForm,
-    DegreeForm,
-    EducationInstitueForm,
-    TechnicalSkillForm,
-    CertificationForm,
 )
 
 @jobseeker_login_required
@@ -140,7 +128,7 @@ def edit_profile_description(request):
             'success': False,
             'error': 'Invalid data format.'
         })
-    except Exception as e:
+    except Exception:
         return JsonResponse({
             'success': False,
             'error': 'An error occurred while updating your profile description.'
@@ -239,7 +227,7 @@ def edit_personal_info(request):
             'success': False,
             'error': 'Invalid data format.'
         })
-    except Exception as e:
+    except Exception:
         return JsonResponse({
             'success': False,
             'error': 'An error occurred while updating your personal information.'
@@ -750,7 +738,7 @@ def add_experience_modal(request):
             })
         # Create new experience
         with transaction.atomic():
-            new_exp = EmploymentHistory.objects.create(
+            EmploymentHistory.objects.create(
                 user=request.user,
                 designation=data.get('designation', '').strip(),
                 company=data.get('company', '').strip(),
@@ -1205,7 +1193,7 @@ def add_skill_modal(request):
                 'message': 'Technical skill added successfully!'
             })
             
-        except Exception as e:
+        except Exception:
             return JsonResponse({
                 'success': False,
                 'message': 'An error occurred while adding the skill.'
@@ -1327,13 +1315,13 @@ def edit_skill_modal(request, skill_id):
                     'message': 'Technical skill updated successfully!'
                 })
                 
-            except Exception as e:
+            except Exception:
                 return JsonResponse({
                     'success': False,
                     'message': 'An error occurred while updating the skill.'
                 })
             
-    except Exception as e:
+    except Exception:
         return JsonResponse({
             'success': False,
             'message': 'An error occurred while processing your request.'
@@ -1368,7 +1356,7 @@ def delete_skill_modal(request, skill_id):
             'message': 'Technical skill deleted successfully!'
         })
         
-    except Exception as e:
+    except Exception:
         return JsonResponse({
             'success': False,
             'message': 'An error occurred while deleting the skill.'
@@ -1422,7 +1410,7 @@ def edit_job_preferences(request):
                 }
             })
             
-        except Exception as e:
+        except Exception:
             return JsonResponse({
                 'success': False,
                 'error': 'Failed to load job preferences data.'
@@ -1479,7 +1467,7 @@ def edit_job_preferences(request):
                 'success': False,
                 'error': 'Invalid data format.'
             })
-        except Exception as e:
+        except Exception:
             return JsonResponse({
                 'success': False,
                 'error': 'An error occurred while updating job preferences.'
@@ -1539,7 +1527,7 @@ def edit_account_settings(request):
                 'success': False,
                 'error': 'Invalid data format.'
             })
-        except Exception as e:
+        except Exception:
             return JsonResponse({
                 'success': False,
                 'error': 'An error occurred while updating account settings.'
@@ -1630,7 +1618,7 @@ def add_certification_modal(request):
                 'success': False,
                 'error': 'Invalid data format.'
             })
-        except Exception as e:
+        except Exception:
             return JsonResponse({
                 'success': False,
                 'error': 'An error occurred while adding the certification.'
@@ -1741,7 +1729,7 @@ def edit_certification_modal(request, certification_id):
                 'success': False,
                 'error': 'Invalid data format.'
             })
-        except Exception as e:
+        except Exception:
             return JsonResponse({
                 'success': False,
                 'error': 'An error occurred while updating the certification.'
@@ -1836,7 +1824,7 @@ def upload_resume_modal(request):
                 if not request.user.mobile and mobile:
                     request.user.mobile = mobile
                     
-            except Exception as e:
+            except Exception:
                 # Continue even if text extraction fails
                 pass
             
@@ -2017,7 +2005,7 @@ def update_resume_modal(request):
                 if not request.user.mobile and mobile:
                     request.user.mobile = mobile
                     
-            except Exception as e:
+            except Exception:
                 # Continue even if text extraction fails
                 pass
             

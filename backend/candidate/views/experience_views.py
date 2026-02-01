@@ -4,7 +4,6 @@ from django.shortcuts import render
 from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from zoneinfo import ZoneInfo
 
 from candidate.forms import WorkExperienceForm
 from peeldb.models import EmploymentHistory

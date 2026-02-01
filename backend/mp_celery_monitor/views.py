@@ -10,7 +10,7 @@ def celery_check(request):
     if project_key == request.POST.get("project_key"):
         i = app.control.inspect()
         status = i.ping()
-        if status == None:
+        if status is None:
             celery_status = "down"
         else:
             celery_status = "up"

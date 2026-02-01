@@ -42,11 +42,11 @@ def get_messages(request):
     job = JobPost.objects.filter(id=request.POST.get("job_id")).first()
     try:
         user_pic = user.profile_pic.url
-    except:
+    except Exception:
         user_pic = user.photo
     try:
         profile_pic = request.user.profile_pic.url
-    except:
+    except Exception:
         profile_pic = request.user.photo
     if not user_pic:
         user_pic = "https://cdn.peeljobs.com/dummy.jpg"
