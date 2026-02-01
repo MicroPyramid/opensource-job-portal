@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { enhance } from '$app/forms';
@@ -24,8 +25,9 @@
 	// Get data from server-side load function
 	let { data } = $props();
 
-	let searchQuery = $state(data.filters.search);
-	let selectedFilter = $state<JobStatus | 'all'>(data.filters.status as JobStatus | 'all');
+	// Initialize filters from URL params (one-time snapshot, not reactive)
+	let searchQuery = $state(untrack(() => data.filters.search));
+	let selectedFilter = $state<JobStatus | 'all'>(untrack(() => data.filters.status as JobStatus | 'all'));
 	let viewMode = $state<'grid' | 'list'>('list');
 	let submittingAction = $state<number | null>(null);
 

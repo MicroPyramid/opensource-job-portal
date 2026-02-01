@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { enhance } from '$app/forms';
@@ -25,20 +26,22 @@
 
 	let { data } = $props();
 
-	let searchQuery = $state(data.filters.search);
-	let selectedFilter = $state(data.filters.status);
+	// Initialize filters from URL params (one-time snapshot, not reactive)
+	let searchQuery = $state(untrack(() => data.filters.search));
+	let selectedFilter = $state(untrack(() => data.filters.status));
 	let selectedApplicant = $state<any>(null);
 	let showDetailModal = $state(false);
 	let submittingAction = $state<number | null>(null);
 	let remarksText = $state('');
 
-	const statusFilters = [
+	// Derived status filters that react to data changes
+	const statusFilters = $derived([
 		{ value: 'all', label: 'All Applicants', count: data.totalApplicants },
 		{ value: 'Pending', label: 'Pending', count: data.stats.pending },
 		{ value: 'Shortlisted', label: 'Shortlisted', count: data.stats.shortlisted },
 		{ value: 'Hired', label: 'Hired', count: data.stats.selected },
 		{ value: 'Rejected', label: 'Rejected', count: data.stats.rejected }
-	];
+	]);
 
 	function updateFilters() {
 		const params = new URLSearchParams();

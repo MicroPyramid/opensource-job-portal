@@ -846,7 +846,7 @@
                   class="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-surface text-muted hover:text-primary-600 transition-all {job.is_saved ? 'text-primary-600 bg-primary-50' : ''}"
                   aria-label="Save {job.title}"
                 >
-                  <Bookmark size={18} class="{job.is_saved ? 'fill-current' : ''}" />
+                  <Bookmark size={18} class={job.is_saved ? 'fill-current' : ''} />
                 </button>
               </article>
             {/each}

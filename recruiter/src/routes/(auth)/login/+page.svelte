@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { Mail, Lock, Eye, EyeOff, Briefcase, Users, BarChart3, MessageSquare, Shield, Clock, CheckCircle } from '@lucide/svelte';
 	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
@@ -20,7 +21,7 @@
 	let loading = $state(false);
 
 	let error = $derived(form?.error || '');
-	let emailValue = $state(form?.email || '');
+	let emailValue = $state(untrack(() => form?.email || ''));
 </script>
 
 <svelte:head>

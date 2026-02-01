@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import {
 		Building2,
 		Upload,
@@ -13,8 +14,8 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	// Form data initialized from loaded company data
-	let formData = $state({
+	// Form data initialized from loaded company data (one-time snapshot, not reactive)
+	let formData = $state(untrack(() => ({
 		companyName: data.company?.name || '',
 		logo: data.company?.logo_url || null as string | null,
 		companySize: data.company?.size || '1-10',
@@ -23,7 +24,7 @@
 		primaryEmail: data.company?.email || '',
 		phone: data.company?.phone_number || '',
 		address: data.company?.address || ''
-	});
+	})));
 
 	const companySizes = [
 		'1-10',

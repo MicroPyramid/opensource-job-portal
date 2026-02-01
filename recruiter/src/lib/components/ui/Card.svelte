@@ -19,7 +19,7 @@
 
 	const baseClasses = 'bg-white border border-border rounded-lg';
 
-	const hoverClasses = hover ? 'hover:shadow-md transition-shadow cursor-pointer' : 'shadow-sm';
+	const hoverClasses = $derived(hover ? 'hover:shadow-md transition-shadow cursor-pointer' : 'shadow-sm');
 
 	const paddingClasses: Record<string, string> = {
 		none: '',

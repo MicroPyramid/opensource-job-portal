@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { Building2, Mail, Lock, Phone, Eye, EyeOff, UserCircle, Globe, Users, Zap, Target, UserCheck, Headphones, CheckCircle, Shield, Clock } from '@lucide/svelte';
 	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
@@ -19,8 +20,8 @@
 	let isInvitationFlow = $derived(!!invitationToken);
 	let error = $derived(form?.error || '');
 
-	let step = $state(data.invitationToken ? 1 : 0);
-	let userType = $state<'recruiter' | 'company' | null>(data.invitationToken ? 'company' : null);
+	let step = $state(untrack(() => invitationToken ? 1 : 0));
+	let userType = $state<'recruiter' | 'company' | null>(untrack(() => invitationToken ? 'company' : null));
 	let showPassword = $state(false);
 	let showConfirmPassword = $state(false);
 	let loading = $state(false);

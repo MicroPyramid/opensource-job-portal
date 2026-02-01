@@ -313,6 +313,7 @@
 
           <!-- Job Type Pills -->
           <div class="mb-6">
+            <!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="block text-sm font-medium text-black mb-3"
               >Job type</label
             >
