@@ -35,7 +35,6 @@ from django.contrib.auth import load_backend
 from mpcomp.aws import AWS
 from dashboard.tasks import sending_mail, send_email
 from django.utils.crypto import get_random_string
-from mpcomp.facebook import GraphAPI, get_access_token_from_code
 from mpcomp.views import get_absolute_url
 from pjob.views import save_codes_and_send_mail
 from peeldb.models import (
@@ -55,7 +54,6 @@ from peeldb.models import (
     UserEmail,
     MARTIAL_STATUS,
     Google,
-    Facebook,
     Company,
     MailTemplate,
     SentMail,

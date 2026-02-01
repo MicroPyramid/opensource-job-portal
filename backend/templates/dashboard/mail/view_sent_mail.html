@@ -88,15 +88,6 @@
               <span class="text-sm text-neutral-600">{{ recruiter.date_joined|timezone:'Asia/Calcutta' }}</span>
             </td>
             <td class="px-4 py-3">
-              {% if recruiter.is_fb_connected %}
-              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600">
-                <i class="fa fa-facebook"></i>
-              </span>
-              {% else %}
-              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-neutral-400">
-                <i class="fa fa-facebook"></i>
-              </span>
-              {% endif %}
             </td>
           </tr>
           {% empty %}

@@ -74,15 +74,10 @@ def get_formatted_salary(value):
 
 @register.filter
 def get_social_connections_count(user):
-    connected = 0
-    if user.github.all():
-        connected += 1
-    if user.facebook.all():
-        connected += 1
-    if connected >= 2:
+    # Only Google OAuth is supported now
+    if user.google_user.all():
         return True
-    else:
-        return False
+    return False
 
 
 @register.filter
