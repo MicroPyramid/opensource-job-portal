@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { Mail, ArrowLeft, CheckCircle } from '@lucide/svelte';
 	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
@@ -14,7 +15,7 @@
 	const layout = getContext<AuthLayoutContext>('authLayout');
 	layout.containerClass = 'max-w-lg';
 
-	let email = $state(form?.email || '');
+	let email = $state(untrack(() => form?.email || ''));
 	let loading = $state(false);
 
 	let isSubmitted = $derived(form?.success || false);

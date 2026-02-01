@@ -1,4 +1,5 @@
 <script>
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
   import { RECRUITER_URL } from '$lib/config/env';
@@ -26,7 +27,7 @@
 
   let step = $state(1);
   let userType = $state('');
-  let email = $state(form?.email || '');
+  let email = $state(untrack(() => form?.email || ''));
   let password = $state('');
   let confirmPassword = $state('');
   let fullName = $state('');

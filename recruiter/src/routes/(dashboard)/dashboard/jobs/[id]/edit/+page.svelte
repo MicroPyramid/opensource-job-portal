@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import {
 		Briefcase,
 		MapPin,
@@ -28,45 +29,48 @@
 	// State for form submission
 	let isSubmitting = $state(false);
 
-	// Initialize form data from loaded job
-	let formData = $state({
-		// Step 1: Basics
-		jobTitle: data.job.title || '',
-		department: data.job.job_role || '',
-		companyName: data.job.company_name || '',
-		employmentType: data.job.job_type || 'full-time',
-		experienceLevel: '',
-		positions: data.job.vacancies || 1,
+	// Initialize form data from loaded job (one-time snapshot, not reactive)
+	let formData = $state(untrack(() => {
+		const job = data.job;
+		return {
+			// Step 1: Basics
+			jobTitle: job.title || '',
+			department: job.job_role || '',
+			companyName: job.company_name || '',
+			employmentType: job.job_type || 'full-time',
+			experienceLevel: '',
+			positions: job.vacancies || 1,
 
-		// Step 2: Location
-		country: '',
-		state: '',
-		city: '',
-		workMode: (data.job.work_mode || 'in-office') as WorkMode,
-		officeAddress: data.job.company_address || '',
-		selectedLocationIds: data.job.locations?.map(loc => loc.id) || [],
+			// Step 2: Location
+			country: '',
+			state: '',
+			city: '',
+			workMode: (job.work_mode || 'in-office') as WorkMode,
+			officeAddress: job.company_address || '',
+			selectedLocationIds: job.locations?.map(loc => loc.id) || [],
 
-		// Step 3: Details
-		description: data.job.description || '',
-		responsibilities: '',
-		requirements: '',
-		skills: data.job.skills?.map(s => s.name) || [],
-		selectedSkillIds: data.job.skills?.map(s => s.id) || [],
-		education: '',
-		selectedQualificationIds: data.job.qualifications?.map(q => q.id) || [],
-		selectedIndustryIds: data.job.industries?.map(i => i.id) || [],
+			// Step 3: Details
+			description: job.description || '',
+			responsibilities: '',
+			requirements: '',
+			skills: job.skills?.map(s => s.name) || [],
+			selectedSkillIds: job.skills?.map(s => s.id) || [],
+			education: '',
+			selectedQualificationIds: job.qualifications?.map(q => q.id) || [],
+			selectedIndustryIds: job.industries?.map(i => i.id) || [],
 
-		// Step 4: Compensation
-		salaryMin: data.job.min_salary?.toString() || '',
-		salaryMax: data.job.max_salary?.toString() || '',
-		hideSalary: false,
-		benefits: '',
-		perks: '',
+			// Step 4: Compensation
+			salaryMin: job.min_salary?.toString() || '',
+			salaryMax: job.max_salary?.toString() || '',
+			hideSalary: false,
+			benefits: '',
+			perks: '',
 
-		// Step 5: Application Settings
-		assignedRecruiters: [] as string[],
-		autoReplyTemplate: ''
-	});
+			// Step 5: Application Settings
+			assignedRecruiters: [] as string[],
+			autoReplyTemplate: ''
+		};
+	}));
 
 	// Derive experience level from job data
 	$effect(() => {

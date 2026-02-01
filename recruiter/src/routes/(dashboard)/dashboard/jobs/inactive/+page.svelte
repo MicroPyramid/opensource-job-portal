@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { enhance } from '$app/forms';
@@ -22,8 +23,9 @@
 
 	let { data } = $props();
 
-	let searchQuery = $state(data.filters.search);
-	let selectedFilter = $state(data.filters.status);
+	// Initialize filters from URL params (one-time snapshot, not reactive)
+	let searchQuery = $state(untrack(() => data.filters.search));
+	let selectedFilter = $state(untrack(() => data.filters.status));
 	let submittingAction = $state<number | null>(null);
 
 	const filterOptions = [

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import {
 		XCircle,
 		Download,
@@ -26,8 +27,9 @@
 	let { applicant, jobId, onClose, onStatusUpdate }: Props = $props();
 
 	let activeTab = $state<'profile' | 'experience' | 'education' | 'skills'>('profile');
-	let newStatus = $state(applicant.application?.status || 'Pending');
-	let remarksText = $state(applicant.application?.remarks || '');
+	// Initialize form with current values (one-time snapshot, not reactive)
+	let newStatus = $state(untrack(() => applicant.application?.status || 'Pending'));
+	let remarksText = $state(untrack(() => applicant.application?.remarks || ''));
 	let isUpdating = $state(false);
 
 	async function handleStatusUpdate() {

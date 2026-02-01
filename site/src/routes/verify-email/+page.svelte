@@ -1,4 +1,5 @@
 <script>
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { Mail, CheckCircle, XCircle, Loader2, RefreshCw, Clock } from '@lucide/svelte';
   import { enhance } from '$app/forms';
@@ -6,11 +7,12 @@
   /** @type {{ data?: { status?: string; message?: string; email?: string }; form?: { success?: boolean; message?: string } }} */
   let { data, form } = $props();
 
-  let verificationStatus = $state(data?.status || 'pending');
-  let email = $state(data?.email || '');
+  // Initial state (will be updated by $effect when data changes)
+  let verificationStatus = $state(untrack(() => data?.status || 'pending'));
+  let email = $state(untrack(() => data?.email || ''));
   let isResending = $state(false);
   let resendSuccess = $state(false);
-  let errorMessage = $state(data?.message || '');
+  let errorMessage = $state(untrack(() => data?.message || ''));
 
   // Update state when data changes
   $effect(() => {
