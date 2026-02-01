@@ -684,22 +684,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         return user_type_dict.get(self.user_type, self.user_type)
 
     @property
-    def is_fb_connected(self):
-        if self.facebook_user.all():
-            return True
-        else:
-            return False
-
-    @property
     def is_gp_connected(self):
         if self.google_user.all():
-            return True
-        else:
-            return False
-
-    @property
-    def is_gh_connected(self):
-        if self.github.all():
             return True
         else:
             return False
@@ -712,10 +698,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_connect_social_networks(self):
-        if (
-            self.facebook_user.all()
-            and self.google_user.all()
-        ):
+        # Only Google OAuth is supported now
+        if self.google_user.all():
             return True
         else:
             return False
@@ -846,14 +830,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_all_applied_jobs(self):
         return AppliedJobs.objects.filter(user=self).select_related("job_post")
 
-    def get_facebook_id(self):
-        return Facebook.objects.filter(user=self).first().facebook_id
-
-    def get_facebook_url(self):
-        return Facebook.objects.filter(user=self).first().facebook_url
-
     def get_google_url(self):
-        return Google.objects.filter(user=self).first().google_url
+        google = Google.objects.filter(user=self).first()
+        return google.google_url if google else None
 
     def get_user_emails(self):
         return UserEmail.objects.filter(user=self)
@@ -875,13 +854,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_visited_jobs(self):
         return VisitedJobs.objects.filter(user=self)
 
-    def get_facebook_object(self):
-        return self.facebook_user.all().first()
-
     def get_google_object(self):
-        return self.google_user.all().first()
-
-    def get_github_object(self):
         return self.google_user.all().first()
 
     def get_subscribed_skills(self):
@@ -1065,24 +1038,7 @@ class UserEmail(models.Model):
     is_primary = models.BooleanField(default=False)
 
 
-class Facebook(models.Model):
-    user = models.ForeignKey(
-        User, related_name="facebook_user", on_delete=models.CASCADE
-    )
-    facebook_id = models.CharField(max_length=100)
-    facebook_url = models.CharField(max_length=200, default="")
-    first_name = models.CharField(max_length=200, default="")
-    last_name = models.CharField(max_length=200, default="")
-    verified = models.CharField(max_length=200, default="")
-    name = models.CharField(max_length=200, default="")
-    language = models.CharField(max_length=200, default="")
-    hometown = models.CharField(max_length=200, default="")
-    email = models.CharField(max_length=200, default="", db_index=True)
-    gender = models.CharField(max_length=200, default="")
-    dob = models.DateField(null=True, blank=True)
-    location = models.CharField(max_length=200, default="")
-    timezone = models.CharField(max_length=200, default="")
-    accesstoken = models.CharField(max_length=2000, default="")
+# Facebook model removed - social login deprecated
 
 
 class Google(models.Model):
@@ -1099,22 +1055,7 @@ class Google(models.Model):
     email = models.CharField(max_length=200, default="", db_index=True)
 
 
-class GitHub(models.Model):
-    user = models.ForeignKey(User, related_name="github", on_delete=models.CASCADE)
-    git_url = models.URLField()
-    git_id = models.CharField(max_length=50)
-    disk_usage = models.CharField(max_length=200)
-    private_gists = models.IntegerField(default=0)
-    public_gists = models.IntegerField(default=0)
-    public_repos = models.IntegerField(default=0)
-    hireable = models.BooleanField(default=False)
-    total_private_repos = models.IntegerField(default=0)
-    owned_private_repos = models.IntegerField(default=0)
-    following = models.IntegerField(default=0)
-    followers = models.IntegerField(default=0)
-    company = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
-    user_from = models.DateTimeField()
+# GitHub model removed - social login deprecated
 
 
 class InterviewLocation(models.Model):

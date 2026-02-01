@@ -428,16 +428,6 @@
     <!-- Social Post -->
     <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-6">
       <div class="flex items-center gap-4">
-        {% if request.user.is_fb_connected %}
-        <label class="inline-flex items-center cursor-pointer">
-          <input type="checkbox" name="fb_post" id="fb_post" checked class="w-4 h-4 text-blue-600 rounded border-neutral-300">
-          <span class="ml-2 text-sm font-medium text-neutral-700"><i class="fa-brands fa-facebook text-blue-600 mr-1"></i>Post to Facebook</span>
-        </label>
-        {% else %}
-        <a href="{% url 'recruiter:facebook_login' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <i class="fa-brands fa-facebook"></i>Connect with Facebook
-        </a>
-        {% endif %}
       </div>
     </div>
   </form>

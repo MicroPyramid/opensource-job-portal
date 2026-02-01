@@ -112,13 +112,6 @@ LOGGING = {
     },
 }
 
-# Local-specific cache settings (if different)
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#         'LOCATION': 'unique-snowflake',
-#     }
-# }
 
 # Development-specific static/media settings
 # Use local file storage instead of S3 for development

@@ -753,7 +753,7 @@ def edit_profile(request):
         functional_areas = FunctionalArea.objects.all()
         user = (
             User.objects.filter(id=request.user.id)
-            .prefetch_related("technical_skills", "industry", "functional_area")
+            .prefetch_related("technical_skills", "industry")
             .first()
         )
         return JsonResponse(
@@ -844,7 +844,7 @@ def user_profile(request):
         return JsonResponse(data)
     user = (
         User.objects.filter(id=request.user.id)
-        .prefetch_related("technical_skills", "industry", "functional_area")
+        .prefetch_related("technical_skills", "industry")
         .first()
     )
     return JsonResponse(

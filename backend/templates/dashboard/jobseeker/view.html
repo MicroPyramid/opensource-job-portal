@@ -48,24 +48,7 @@
           </p>
           <!-- Social Links -->
           <div class="flex items-center gap-3 mt-3">
-            {% if applicant.is_fb_connected %}
-            <a href="{{ applicant.get_facebook_object.facebook_url }}" target="_blank" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white hover:bg-blue-700 transition-colors">
-              <i class="fa-brands fa-facebook-f text-sm"></i>
-            </a>
-            {% else %}
-            <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white/50">
-              <i class="fa-brands fa-facebook-f text-sm"></i>
-            </span>
-            {% endif %}
-            {% if applicant.is_gh_connected %}
-            <a href="{{ applicant.get_github_object.git_url }}" target="_blank" class="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white hover:bg-neutral-900 transition-colors">
-              <i class="fa-brands fa-github text-sm"></i>
-            </a>
-            {% else %}
-            <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white/50">
-              <i class="fa-brands fa-github text-sm"></i>
-            </span>
-            {% endif %}
+            <!-- Facebook/GitHub removed -->
             {% if applicant.is_so_connected %}
             <a href="{{ applicant.get_stack_overflow_object.link }}" target="_blank" class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors">
               <i class="fa-brands fa-stack-overflow text-sm"></i>
@@ -183,9 +166,7 @@
         <button class="tab-btn px-4 py-3 text-sm font-medium text-neutral-600 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-300 transition-colors active" data-tab="user_profile">
           <i class="fa fa-user mr-1.5"></i>Profile
         </button>
-        <button class="tab-btn px-4 py-3 text-sm font-medium text-neutral-600 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-300 transition-colors {% if applicant.is_gh_connected %}text-neutral-900{% endif %}" data-tab="github">
-          <i class="fa-brands fa-github mr-1.5"></i>Github
-        </button>
+        <!-- GitHub tab removed -->
         <button class="tab-btn px-4 py-3 text-sm font-medium text-neutral-600 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-300 transition-colors" data-tab="applied_jobs">
           <i class="fa fa-check-square mr-1.5"></i>Applied Jobs
         </button>
@@ -445,32 +426,7 @@
         </div>
       </div>
 
-      <!-- GitHub Tab -->
-      <div class="tab-content hidden" id="github">
-        {% if applicant.is_gh_connected %}
-        {% with applicant.get_github_object as github %}
-        <div class="bg-neutral-50 rounded-lg p-6">
-          <div class="flex items-center gap-4 mb-4">
-            <div class="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center">
-              <i class="fa-brands fa-github text-white text-xl"></i>
-            </div>
-            <div>
-              <a href="{{ github.git_url }}" target="_blank" class="text-lg font-semibold text-neutral-900 hover:text-primary-600">{{ github.name }}</a>
-              <p class="text-sm text-neutral-500">GitHub ID: {{ github.id }}</p>
-            </div>
-          </div>
-          {% if github.company %}
-          <div class="text-sm"><span class="text-neutral-500">Company:</span> <span class="text-neutral-900 ml-2">{{ github.company }}</span></div>
-          {% endif %}
-        </div>
-        {% endwith %}
-        {% else %}
-        <div class="text-center py-12">
-          <i class="fa-brands fa-github text-4xl text-neutral-300 mb-3"></i>
-          <p class="text-neutral-500">User not connected to GitHub</p>
-        </div>
-        {% endif %}
-      </div>
+      <!-- GitHub Tab removed -->
 
       <!-- Applied Jobs Tab -->
       <div class="tab-content hidden" id="applied_jobs">
