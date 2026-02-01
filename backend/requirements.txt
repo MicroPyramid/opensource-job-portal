@@ -1,5 +1,5 @@
 # Core Framework
-django==5.2.9
+django==5.2.10
 python-dotenv==1.2.1
 
 # Database
@@ -7,7 +7,7 @@ psycopg[binary]==3.3.2
 pymemcache==4.0.0
 
 # Task Queue & Background Jobs
-celery==5.6.0
+celery==5.6.2
 django-celery-beat==2.8.1
 redis==7.1.0
 
@@ -18,18 +18,18 @@ elasticsearch==7.17.12
 # REST API
 djangorestframework==3.16.1
 djangorestframework-simplejwt==5.5.1
-dj-rest-auth==7.0.1
+dj-rest-auth==7.0.2
 drf-spectacular==0.29.0
 django-filter==25.2
 
 # Storage & Media
-boto3==1.42.16
+boto3==1.42.39
 django-storages==1.14.6
-sorl-thumbnail==12.11.0
-pillow==12.0.0
+sorl-thumbnail==13.0.0
+pillow==12.1.0
 
 # Email
-django-ses==4.5.0
+django-ses==4.6.0
 
 # Frontend & Assets
 django-compressor==4.6.0
@@ -42,7 +42,7 @@ requests==2.32.5
 pytz==2025.2
 
 # Monitoring & Error Tracking
-sentry-sdk[django]==2.48.0
+sentry-sdk[django]==2.51.0
 
 # Production Server
-gunicorn==23.0.0
+gunicorn==25.0.0
