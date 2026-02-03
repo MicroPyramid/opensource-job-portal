@@ -1,5 +1,5 @@
 # Core Framework
-django==5.2.10
+django==5.2.11
 python-dotenv==1.2.1
 
 # Database
