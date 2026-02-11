@@ -26,7 +26,7 @@ django-filter==25.2
 boto3==1.42.39
 django-storages==1.14.6
 sorl-thumbnail==13.0.0
-pillow==12.1.0
+pillow==12.1.1
 
 # Email
 django-ses==4.6.0
