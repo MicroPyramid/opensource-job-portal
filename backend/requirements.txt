@@ -38,7 +38,7 @@ django-cors-headers==4.9.0
 # Utilities
 arrow==1.4.0
 lxml==6.0.2
-requests==2.32.5
+requests==2.33.0
 pytz==2025.2
 
 # Monitoring & Error Tracking
