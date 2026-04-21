@@ -1,6 +1,6 @@
 # Core Framework
 django==5.2.10
-python-dotenv==1.2.1
+python-dotenv==1.2.2
 
 # Database
 psycopg[binary]==3.3.2
