@@ -148,10 +148,10 @@ Start services in separate terminals:
 uv run manage.py runserver
 
 # Celery worker
-uv run celery -A jobsp worker --loglevel=info
+DJANGO_SETTINGS_MODULE=jobsp.settings_local uv run celery -A jobsp worker --loglevel=info
 
 # Celery beat
-uv run celery -A jobsp beat --loglevel=info
+DJANGO_SETTINGS_MODULE=jobsp.settings_local uv run celery -A jobsp beat --loglevel=info
 ```
 
 **Access Points:**
@@ -193,6 +193,7 @@ After=network.target
 User=www-data
 WorkingDirectory=/var/www/peeljobs/backend
 Environment="PATH=/var/www/peeljobs/backend/.venv/bin"
+Environment="DJANGO_SETTINGS_MODULE=jobsp.settings_server"
 ExecStart=/var/www/peeljobs/backend/.venv/bin/gunicorn --workers 3 --bind unix:/run/peeljobs/peeljobs.sock jobsp.wsgi:application
 Restart=on-failure
 
@@ -211,6 +212,7 @@ After=network.target
 User=www-data
 WorkingDirectory=/var/www/peeljobs/backend
 Environment="PATH=/var/www/peeljobs/backend/.venv/bin"
+Environment="DJANGO_SETTINGS_MODULE=jobsp.settings_server"
 ExecStart=/var/www/peeljobs/backend/.venv/bin/celery -A jobsp worker --loglevel=info
 Restart=on-failure
 
@@ -238,6 +240,10 @@ server {
     location / {
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # REQUIRED: settings_server.py sets SECURE_SSL_REDIRECT together with
+        # SECURE_PROXY_SSL_HEADER. Without this header Django cannot tell that
+        # the original request was HTTPS and will redirect in a loop.
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_pass http://unix:/run/peeljobs/peeljobs.sock;
     }
 }
