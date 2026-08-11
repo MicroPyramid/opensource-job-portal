@@ -173,7 +173,7 @@ def document_to_text(filename, file_path):
     if filename[-4:] == ".doc":
         cmd = ["antiword", file_path]
         p = Popen(cmd, stdout=PIPE)
-        stdout, stderr = p.communicate()
+        stdout, _stderr = p.communicate()
         return stdout.decode("ascii", "ignore")
     elif filename[-4:] == ".odt":
         cmd = ["odt2txt", file_path]
@@ -320,11 +320,10 @@ def get_valid_skills_list(skill):
                 if j == "":
                     break
                 sk = Skill.objects.filter(slug__iexact=j, status="Active")
-                if sk.exists():
-                    # skill = [l for l in skill if l not in j]
-                    # final_skill = [x for x in final_skill if x not in dupes]
-                    if sk[0].name not in final_skill:
-                        final_skill.append(sk[0].name)
+                # skill = [l for l in skill if l not in j]
+                # final_skill = [x for x in final_skill if x not in dupes]
+                if sk.exists() and sk[0].name not in final_skill:
+                    final_skill.append(sk[0].name)
                 i = i + 1
                 if i < len(skill):
                     # dupes.append(skill[i])
@@ -375,10 +374,9 @@ def get_valid_qualifications(skill):
                 if j == "":
                     break
                 edu = Qualification.objects.filter(slug__iexact=j, status="Active")
-                if edu.exists():
-                    # skill = [l for l in skill if l not in j]
-                    if edu[0].name not in final_edu:
-                        final_edu.append(edu[0].name)
+                # skill = [l for l in skill if l not in j]
+                if edu.exists() and edu[0].name not in final_edu:
+                    final_edu.append(edu[0].name)
                 i = i + 1
                 if i < len(skill):
                     j = j + "-" + skill[i]

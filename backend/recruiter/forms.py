@@ -437,9 +437,8 @@ class JobPostForm(ModelForm):
                 self.fields["edu_qualification"].required = False
             else:
                 self.fields["edu_qualification"].required = True
-        if "other_location" in self.data:
-            if len(self.data["other_location"]) != 0:
-                self.fields["location"].required = False
+        if "other_location" in self.data and len(self.data["other_location"]) != 0:
+            self.fields["location"].required = False
 
         if self.data.get("visa_required"):
             self.fields["visa_country"].required = True

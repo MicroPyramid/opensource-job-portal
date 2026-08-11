@@ -217,11 +217,10 @@ class EducationDetailsSerializer(serializers.ModelSerializer):
             )
 
         # If not current, to_date should be >= from_date
-        if not current_education and to_date and from_date:
-            if to_date < from_date:
-                raise serializers.ValidationError(
-                    {"to_date": "End date must be after start date"}
-                )
+        if not current_education and to_date and from_date and to_date < from_date:
+            raise serializers.ValidationError(
+                {"to_date": "End date must be after start date"}
+            )
 
         return data
 

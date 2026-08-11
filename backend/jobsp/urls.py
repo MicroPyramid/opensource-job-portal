@@ -377,14 +377,21 @@ urlpatterns += [
 handler404 = custom_404
 handler500 = custom_500
 
-# Include local development URLs if available
-try:
+# Include local development URLs -- only when DEBUG is on.
+#
+# This used to be an unguarded `try: from .urls_local import ...` with an
+# `except ImportError: pass`. urls_local is tracked in git, so it ships to
+# production, and it unconditionally routes "schema-viewer/" -- a browsable dump
+# of the entire database schema. Production was protected only incidentally,
+# because django-schema-viewer is a dev-only dependency and the failed import
+# was swallowed. That protection disappears the moment dev dependencies are
+# installed in production, which the pre-uv deploy did (`pipenv install -d`).
+# Gate on DEBUG so the guarantee comes from configuration, not from a missing
+# package.
+if settings.DEBUG:
     from .urls_local import local_urlpatterns
 
     urlpatterns += local_urlpatterns
-    print("Local development URLs loaded")
-except ImportError:
-    pass  # urls_local.py doesn't exist or has import errors
 
 # Serve media files in development
 if settings.DEBUG:

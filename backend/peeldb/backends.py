@@ -102,9 +102,13 @@ class CustomElasticsearchSearchQuery(ElasticsearchSearchQuery):
                     prepared_value = Exact(prepared_value).prepare(self)
                 query_frag = filter_types[filter_type] % prepared_value
 
-        if len(query_frag) and not isinstance(value, Raw):
-            if not query_frag.startswith("(") and not query_frag.endswith(")"):
-                query_frag = f"({query_frag})"
+        if (
+            len(query_frag)
+            and not isinstance(value, Raw)
+            and not query_frag.startswith("(")
+            and not query_frag.endswith(")")
+        ):
+            query_frag = f"({query_frag})"
         return f"{index_fieldname}{query_frag}"
 
 

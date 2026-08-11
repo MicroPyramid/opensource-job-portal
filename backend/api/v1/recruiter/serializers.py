@@ -2,6 +2,7 @@
 Serializers for Recruiter/Employer API endpoints
 """
 
+import contextlib
 from datetime import timedelta
 
 from django.utils import timezone
@@ -288,10 +289,8 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
         if obj.profile_pic:
             request = self.context.get("request")
             if request:
-                try:
+                with contextlib.suppress(Exception):
                     return request.build_absolute_uri(obj.profile_pic.url)
-                except Exception:
-                    pass
         return "https://cdn.peeljobs.com/static/company_logo.png"
 
 

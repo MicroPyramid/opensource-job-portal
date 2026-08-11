@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 import locale
 import re
@@ -277,11 +278,9 @@ def get_refine_skills(skills):
     if skills:
         each_skill = skills.annotate(num_posts=Count("jobpost")).order_by("num_posts")
         for each in each_skill.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_skills.remove(each)
                 all_refine_skills.insert(0, each)
-            except Exception:
-                pass
     return all_refine_skills
 
 
@@ -300,11 +299,9 @@ def get_refine_locations(locations):
             "num_posts"
         )
         for each in each_location.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_locations.remove(each)
                 all_refine_locations.insert(0, each)
-            except Exception:
-                pass
     return all_refine_locations
 
 
@@ -323,11 +320,9 @@ def get_refine_states(states):
             "num_posts"
         )
         for each in each_location.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_states.remove(each)
                 all_refine_states.insert(0, each)
-            except Exception:
-                pass
     return all_refine_states[:8]
 
 
@@ -346,11 +341,9 @@ def get_refine_industries(industry):
             "num_posts"
         )
         for each in each_industry.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_industries.remove(each)
                 all_refine_industries.insert(0, each)
-            except Exception:
-                pass
     return all_refine_industries
 
 
@@ -367,11 +360,9 @@ def get_refine_educations(education):
     if education:
         each_edu = education.annotate(num_posts=Count("jobpost")).order_by("num_posts")
         for each in each_edu.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_educations.remove(each)
                 all_refine_educations.insert(0, each)
-            except Exception:
-                pass
     return all_refine_educations
 
 

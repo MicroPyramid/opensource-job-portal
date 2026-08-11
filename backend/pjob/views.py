@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import json
 import math
 import os
@@ -80,9 +83,7 @@ def get_page_number(request, kwargs, no_pages):
     page = request.POST.get("page") or kwargs.get("page_num", 1)
     try:
         page = int(page)
-        if page == 1 or page > 0 and page < (no_pages + 1):
-            page = page
-        else:
+        if not (page == 1 or (0 < page < no_pages + 1)):
             page = False
     except Exception:
         page = False
@@ -1003,8 +1004,7 @@ def job_apply(request, job_id):
                                     f.read()
                                 os.remove(resume_filename)
                         except Exception:
-                            # Log error but continue without attachment
-                            pass
+                            logger.exception("Resume attachment handling failed")
 
                     # Use SES to send email
                     try:
@@ -1035,8 +1035,7 @@ def job_apply(request, job_id):
                         ses_client.send_email(**email_data)
 
                     except Exception:
-                        # Log error but don't fail the application process
-                        pass
+                        logger.exception("Failed to send application email")
 
                     data = {
                         "error": False,

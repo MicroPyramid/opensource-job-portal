@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import json
 import os
 from datetime import datetime
@@ -953,7 +956,7 @@ def edit_education_modal(request, education_id):
                     education.institute.name != institute_name
                     or education.institute.city != institute_city
                 ):
-                    institute, created = EducationInstitue.objects.get_or_create(
+                    institute, _created = EducationInstitue.objects.get_or_create(
                         name=institute_name,
                         city=institute_city,
                         defaults={"address": ""},
@@ -1068,7 +1071,7 @@ def add_education_modal(request):
                     {"success": False, "error": "Invalid city selected"}
                 )
 
-            institute, created = EducationInstitue.objects.get_or_create(
+            institute, _created = EducationInstitue.objects.get_or_create(
                 name=institute_name, city=institute_city, defaults={"address": ""}
             )
 
@@ -1689,14 +1692,17 @@ def add_certification_modal(request):
                     }
                 )
 
-            if certification.issued_date and certification.expiry_date:
-                if certification.issued_date > certification.expiry_date:
-                    return JsonResponse(
-                        {
-                            "success": False,
-                            "error": "Issue date cannot be later than expiry date.",
-                        }
-                    )
+            if (
+                certification.issued_date
+                and certification.expiry_date
+                and certification.issued_date > certification.expiry_date
+            ):
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "Issue date cannot be later than expiry date.",
+                    }
+                )
 
             if not certification.does_not_expire and not certification.expiry_date:
                 return JsonResponse(
@@ -1823,14 +1829,17 @@ def edit_certification_modal(request, certification_id):
                         }
                     )
 
-                if certification.issued_date and certification.expiry_date:
-                    if certification.issued_date > certification.expiry_date:
-                        return JsonResponse(
-                            {
-                                "success": False,
-                                "error": "Issue date cannot be later than expiry date.",
-                            }
-                        )
+                if (
+                    certification.issued_date
+                    and certification.expiry_date
+                    and certification.issued_date > certification.expiry_date
+                ):
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "error": "Issue date cannot be later than expiry date.",
+                        }
+                    )
 
                 if not certification.does_not_expire and not certification.expiry_date:
                     return JsonResponse(
@@ -1967,7 +1976,7 @@ def upload_resume_modal(request):
 
             except Exception:
                 # Continue even if text extraction fails
-                pass
+                logger.exception("Resume text extraction failed")
 
             request.user.save()
 
@@ -2157,7 +2166,7 @@ def update_resume_modal(request):
 
             except Exception:
                 # Continue even if text extraction fails
-                pass
+                logger.exception("Resume text extraction failed")
 
             request.user.save()
 

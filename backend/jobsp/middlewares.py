@@ -228,15 +228,15 @@ class LowerCased(MiddlewareMixin):
             "/dashboard/",
             "/api/",
         ]
-        if not any(request.path.startswith(path) for path in excluded_paths):
-            if (
-                request.user.is_authenticated
-                and not request.user.is_superuser
-                and not request.user.is_staff
-                and request.user.user_type == "JS"
-                and request.user.registered_from == "Social"
-                and not request.user.mobile
-            ):
-                return redirect("/social/user/update/", permanent=False)
+        if (
+            not any(request.path.startswith(path) for path in excluded_paths)
+            and request.user.is_authenticated
+            and not request.user.is_superuser
+            and not request.user.is_staff
+            and request.user.user_type == "JS"
+            and request.user.registered_from == "Social"
+            and not request.user.mobile
+        ):
+            return redirect("/social/user/update/", permanent=False)
         # if request.path == "/recruiter/":
         #     return redirect("/post-job/", permanent=False)

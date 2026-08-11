@@ -1,3 +1,4 @@
+import contextlib
 import math
 from datetime import datetime, timedelta
 from itertools import chain
@@ -874,10 +875,8 @@ def sitemap_generation():
     print("Sitemap Generation started")
     import os
 
-    try:
+    with contextlib.suppress(Exception):
         os.system("rm sitemap/*")
-    except Exception:
-        pass
     xml_cont = """<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
 

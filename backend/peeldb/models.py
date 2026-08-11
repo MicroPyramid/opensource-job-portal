@@ -94,8 +94,6 @@ def img_url(self, filename):
         # parsed_target_url = urlparse(self.website)
         # domain = str(parsed_target_url.netloc).split('.')[0]
         filename = self.slug + "." + str(filename.split(".")[-1])
-    else:
-        filename = filename
     return f"{self.file_prepend}{file_hash}/{filename}"
 
 

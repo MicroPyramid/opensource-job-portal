@@ -145,11 +145,12 @@ def job_alert_results(request, job_alert_id):
     else:
         job_alerts = JobAlert.objects.filter(id=job_alert_id)
 
-    if request.user.is_authenticated:
-        if request.user.is_staff or request.user.user_type == "RR":
-            message = "Sorry, No Job Alerts Availableble"
-            template = "404.html"
-            return render(request, template, {"message": message}, status=404)
+    if request.user.is_authenticated and (
+        request.user.is_staff or request.user.user_type == "RR"
+    ):
+        message = "Sorry, No Job Alerts Availableble"
+        template = "404.html"
+        return render(request, template, {"message": message}, status=404)
 
     if job_alerts:
         job_alert = job_alerts[0]

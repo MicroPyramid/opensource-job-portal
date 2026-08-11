@@ -409,11 +409,13 @@ def country(request):
                 if cities:
                     cities.update(status="Disabled")
 
-                if not State.objects.filter(country=state.country, status="Enabled"):
-                    if state.country.status != "Disabled":
-                        state.country.status = "Disabled"
-                        country_status = True
-                        state.country.save()
+                if (
+                    not State.objects.filter(country=state.country, status="Enabled")
+                    and state.country.status != "Disabled"
+                ):
+                    state.country.status = "Disabled"
+                    country_status = True
+                    state.country.save()
 
                 data = {
                     "error": False,

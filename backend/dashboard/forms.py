@@ -22,22 +22,19 @@ from peeldb.models import (
 
 def validation_name(self, model):
     form_cleaned_data = self.cleaned_data
-    if model == "Country":
-        if Country.objects.filter(name__iexact=form_cleaned_data["name"]).exclude(
-            id=self.instance.id
-        ):
-            raise forms.ValidationError(model + " name Should be unique")
+    if model == "Country" and Country.objects.filter(
+        name__iexact=form_cleaned_data["name"]
+    ).exclude(id=self.instance.id):
+        raise forms.ValidationError(model + " name Should be unique")
 
-    if model == "State":
-        if State.objects.filter(name__iexact=form_cleaned_data["name"]).exclude(
-            id=self.instance.id
-        ):
-            raise forms.ValidationError(model + " name Should be unique")
-    if model == "City":
-        if City.objects.filter(name__iexact=form_cleaned_data["name"]).exclude(
-            id=self.instance.id
-        ):
-            raise forms.ValidationError(model + " name Should be unique")
+    if model == "State" and State.objects.filter(
+        name__iexact=form_cleaned_data["name"]
+    ).exclude(id=self.instance.id):
+        raise forms.ValidationError(model + " name Should be unique")
+    if model == "City" and City.objects.filter(
+        name__iexact=form_cleaned_data["name"]
+    ).exclude(id=self.instance.id):
+        raise forms.ValidationError(model + " name Should be unique")
 
     if bool(
         re.search(r"[~\!@#\$%\^&\*\(\)_\+{}\":;'\[\]]", form_cleaned_data["name"])

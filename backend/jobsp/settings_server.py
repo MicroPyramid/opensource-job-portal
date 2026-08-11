@@ -6,6 +6,9 @@ from .settings import *
 # from sentry_sdk.integrations.celery import CeleryIntegration
 
 DEBUG = False
+# Set explicitly rather than inherited: TEMPLATE_DEBUG previously came from
+# settings_local via the base module and stayed True in production.
+TEMPLATE_DEBUG = DEBUG
 
 CELERY_IMPORTS = "dashboard.tasks"
 

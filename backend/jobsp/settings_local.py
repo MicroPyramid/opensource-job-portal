@@ -30,8 +30,12 @@ TEMPLATE_DEBUG = DEBUG
 # Use console email backend for local development
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-# Test runner for BDD tests
-TEST_RUNNER = "django_behave.runner.DjangoBehaveTestSuiteRunner"
+# No TEST_RUNNER override: this used to point at
+# "django_behave.runner.DjangoBehaveTestSuiteRunner", but django-behave is not a
+# dependency of this project and the module does not exist, so `manage.py test`
+# died on ModuleNotFoundError before collecting anything. The declared
+# dependency is behave-django, which exposes BDD tests through its own
+# management command (`manage.py behave`) rather than through TEST_RUNNER.
 
 # Internal IPs for debug toolbar and other dev tools
 INTERNAL_IPS = ("127.0.0.1", "localhost")

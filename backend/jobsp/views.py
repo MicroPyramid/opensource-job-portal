@@ -102,8 +102,8 @@ def user_login(request):
 
             return JsonResponse(data)
 
-        except Exception as e:
-            logger.error(f"Exception during login: {e!s}", exc_info=True)
+        except Exception:
+            logger.exception("Exception during login")
             data = {
                 "error": True,
                 "message": "An error occurred during login. Please try again.",
@@ -209,8 +209,8 @@ def user_register(request):
                             user.resume = path
                             user.profile_updated = timezone.now()
                             user.save()
-                        except Exception as e:
-                            logger.error(f"Resume upload failed: {e!s}", exc_info=True)
+                        except Exception:
+                            logger.exception("Resume upload failed")
 
                     # Authenticate and login user
                     registered_user = authenticate(username=user.username)
@@ -251,8 +251,8 @@ def user_register(request):
                 }
                 return JsonResponse(data)
 
-        except Exception as e:
-            logger.error(f"Exception during registration: {e!s}", exc_info=True)
+        except Exception:
+            logger.exception("Exception during registration")
             data = {
                 "error": True,
                 "message": "An error occurred during registration. Please try again.",
@@ -317,10 +317,8 @@ def forgot_password(request):
                         logger.info(
                             f"Password reset email task queued successfully for: {mto}"
                         )
-                    except Exception as e:
-                        logger.error(
-                            f"Failed to queue email task: {e!s}", exc_info=True
-                        )
+                    except Exception:
+                        logger.exception("Failed to queue email task")
                         # Fallback: send email directly if Celery is not available
                         from django.core.mail import EmailMessage
 
@@ -347,7 +345,7 @@ def forgot_password(request):
                 return JsonResponse(data)
 
         except Exception as e:
-            logger.error(f"Exception during password reset: {e!s}", exc_info=True)
+            logger.error(f"Exception during password reset: {e!s}")
             data = {
                 "error": True,
                 "message": "An error occurred while processing your request. Please try again.",
@@ -457,8 +455,8 @@ def set_password(request, user_id, passwd_reset_token):
                 }
                 return JsonResponse(data)
 
-        except Exception as e:
-            logger.error(f"Exception during password reset: {e!s}", exc_info=True)
+        except Exception:
+            logger.exception("Exception during password reset")
             data = {
                 "error": True,
                 "message": "An error occurred while setting password. Please try again.",

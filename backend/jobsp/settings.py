@@ -529,10 +529,19 @@ CELERY_MONITOR_URL = os.getenv("CELERY_MONITOR_URL")
 # Tailwind CSS Configuration
 TAILWIND_CSS_FILE = "css/tailwind-output.css"
 
-# Try to load local settings for development
-try:
-    from .settings_local import *
-
-    print("Local development settings loaded")
-except ImportError:
-    pass  # settings_local.py doesn't exist or has import errors
+# NOTE: this module must NOT import settings_local.
+#
+# It used to end with `from .settings_local import *`. Because settings_local is
+# tracked in git it ships to production, and settings_server does
+# `from .settings import *` -- so every development override leaked into
+# production. Most seriously it replaced EMAIL_BACKEND (set to
+# django_ses.SESBackend ten lines above) with the console backend, meaning
+# production printed mail to stdout instead of sending it. It also forced
+# TEMPLATE_DEBUG = True and COMPRESS_ENABLED = False in production, and created a
+# circular import (settings_local starts with `from .settings import *`), which
+# is why "Local development settings loaded" printed twice.
+#
+# Settings modules are now selected only via DJANGO_SETTINGS_MODULE:
+#   jobsp.settings         -- shared base, production-safe on its own
+#   jobsp.settings_local   -- development (manage.py)
+#   jobsp.settings_server  -- production (manage_server.py, wsgi.py)

@@ -232,9 +232,11 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
                 self.fields["functional_area"].required = False
             else:
                 self.fields["functional_area"].required = True
-        if "other_location" in kwargs["data"]:
-            if len(kwargs["data"]["other_location"]) != 0:
-                self.fields["location"].required = False
+        if (
+            "other_location" in kwargs["data"]
+            and len(kwargs["data"]["other_location"]) != 0
+        ):
+            self.fields["location"].required = False
 
         if "visa_required" in kwargs["data"] and kwargs["data"]["visa_required"]:
             self.fields["visa_country"].required = True

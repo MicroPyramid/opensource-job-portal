@@ -2,6 +2,8 @@
 Company Serializers for API v1
 """
 
+import contextlib
+
 from rest_framework import serializers
 
 from peeldb.models import Company, JobPost
@@ -38,10 +40,8 @@ class CompanyListSerializer(serializers.ModelSerializer):
         if obj.profile_pic:
             request = self.context.get("request")
             if request:
-                try:
+                with contextlib.suppress(Exception):
                     return request.build_absolute_uri(obj.profile_pic.url)
-                except Exception:
-                    pass
         # Return default logo
         return "https://cdn.peeljobs.com/static/company_logo.png"
 
@@ -125,10 +125,8 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
         if obj.profile_pic:
             request = self.context.get("request")
             if request:
-                try:
+                with contextlib.suppress(Exception):
                     return request.build_absolute_uri(obj.profile_pic.url)
-                except Exception:
-                    pass
         return "https://cdn.peeljobs.com/static/company_logo.png"
 
     def get_job_count(self, obj):
