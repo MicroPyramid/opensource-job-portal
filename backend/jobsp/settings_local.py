@@ -6,8 +6,8 @@ from .settings import *
 
 # Development-specific installed apps
 LOCAL_INSTALLED_APPS = [
-    # "schema_viewer",  # Install with: pip install -r dev-requirements.txt
-    # "behave_django",  # Install with: pip install -r dev-requirements.txt
+    # "schema_viewer",  # Installed by: uv sync
+    # "behave_django",  # Installed by: uv sync
     # Uncomment the following for debug toolbar support
     # "debug_toolbar",
     # "template_profiler_panel",

@@ -112,25 +112,24 @@ PeelJobs implements a comprehensive role-based access control system with distin
 
 ### Prerequisites
 - Python 3.12+, PostgreSQL, Node.js, Redis
+- [uv](https://docs.astral.sh/uv/) for Python dependency management
 
 ### Basic Setup
 ```bash
 # Clone repository
 git clone https://github.com/MicroPyramid/opensource-job-portal.git
-cd opensource-job-portal
+cd opensource-job-portal/backend
 
-# Setup environment
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+# Install dependencies (uv creates and manages .venv for you)
+uv sync
 
 # Configure database
 createdb peeljobs_dev
-python manage.py migrate
-python manage.py createsuperuser
+uv run manage.py migrate
+uv run manage.py createsuperuser
 
 # Start development server
-python manage.py runserver
+uv run manage.py runserver
 ```
 
 **Access Points:**
