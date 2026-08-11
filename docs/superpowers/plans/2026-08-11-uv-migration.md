@@ -4,14 +4,14 @@
 
 **Goal:** Replace pip/`requirements.txt` dependency management in `backend/` with a uv-managed project using `pyproject.toml` and a committed `uv.lock`.
 
-**Architecture:** `backend/pyproject.toml` becomes the single dependency manifest, declaring 30 runtime dependencies under `[project.dependencies]` and 8 dev dependencies under a PEP 735 `[dependency-groups] dev` group. No `[build-system]` is declared, so uv treats the project as a non-package ("virtual") project — it installs dependencies into `backend/.venv` without building or installing the project itself. `uv run` replaces manual venv activation everywhere.
+**Architecture:** `backend/pyproject.toml` becomes the single dependency manifest, declaring 27 runtime dependencies under `[project.dependencies]` and 8 dev dependencies under a PEP 735 `[dependency-groups] dev` group. No `[build-system]` is declared, so uv treats the project as a non-package ("virtual") project — it installs dependencies into `backend/.venv` without building or installing the project itself. `uv run` replaces manual venv activation everywhere.
 
 **Tech Stack:** uv 0.12.1, Python 3.12, Django 5.2.10, PEP 621 project metadata, PEP 735 dependency groups.
 
 ## Global Constraints
 
 - `requires-python = ">=3.12"`; `backend/.python-version` contains exactly `3.12`.
-- All 37 existing version pins (30 runtime + 7 dev) carry over **byte-identical**. No version may change.
+- All 34 existing version pins (27 runtime + 7 dev) carry over **byte-identical**. No version may change.
 - `ruff==0.16.2` is the only permitted addition, to the `dev` group.
 - Comment groupings from `requirements.txt` are preserved inline in `pyproject.toml`.
 - `[build-system]` must NOT be declared. `[tool.uv] package = false` must be.
@@ -205,24 +205,51 @@ Expected: PASS — `System check identified no issues (0 silenced).`
 This is the load-bearing check. It is what proves this was a tooling change and not an
 accidental dependency change.
 
+A naive `grep -E '^[a-zA-Z0-9._-]+=='` silently drops the two bracketed-extra lines
+(`psycopg[binary]`, `sentry-sdk[django]`) and would report a false pass on 25 of 27 deps.
+Strip the extras from the name before comparing:
+
 ```bash
 cd backend
-uv export --no-dev --no-hashes --no-emit-project 2>/dev/null \
-  | grep -E '^[a-zA-Z0-9._-]+==' | sed 's/;.*//' | tr -d ' ' | sort > /tmp/uv-runtime.txt
-grep -E '^[a-zA-Z0-9._-]+==' requirements.txt | tr -d ' ' | sort > /tmp/pip-runtime.txt
-comm -3 /tmp/pip-runtime.txt /tmp/uv-runtime.txt
+grep -vE '^\s*#|^\s*$' requirements.txt | sed 's/#.*//' | tr -d ' ' | sort > /tmp/pip-all.txt
+fail=0
+while read -r line; do
+  name="${line%%[[=]*}"; ver="${line##*==}"
+  got=$(uv export --no-dev --no-hashes 2>/dev/null \
+        | grep -iE "^${name}(\[[^]]*\])?==" | head -1 | sed 's/;.*//' | tr -d ' ')
+  gotver="${got##*==}"
+  if [ "$gotver" = "$ver" ]; then printf "  OK   %-40s %s\n" "$name" "$ver"
+  else printf "  FAIL %-40s declared=%s resolved=%s\n" "$name" "$ver" "${gotver:-MISSING}"; fail=1; fi
+done < /tmp/pip-all.txt
+[ $fail -eq 0 ] && echo "PARITY CONFIRMED" || echo "PARITY FAILED"
 ```
 
-Expected: every line from `requirements.txt` appears in the uv export at the identical
-version. Extra lines on the uv side are transitive dependencies the lockfile now pins
-explicitly — those are expected and correct. Any line present in `requirements.txt` but
-absent or at a different version in the uv export is a FAILURE and must be resolved before
-proceeding.
+Expected: `PARITY CONFIRMED`, with all 27 declared runtime deps listed `OK`. The uv export
+contains ~69 lines total; the surplus are transitive dependencies the lockfile now pins
+explicitly, which is expected and correct.
 
-- [ ] **Step 6: Gate — migrations unchanged**
+Note that the hand-built `../../env` venv is NOT a valid reference point for this check — it
+had drifted from `requirements.txt` on 20 of 27 packages (Django 5.2.2 vs declared 5.2.10,
+simplejwt absent entirely). Compare against the declared pins, not against what happens to
+be installed.
 
-Run: `cd backend && uv run manage.py showmigrations --plan | grep -c '^\[ \]'`
-Expected: `0`
+- [ ] **Step 6: Gate — unapplied migrations are enumerated and explained**
+
+Run: `cd backend && uv run manage.py showmigrations --plan | grep '^\[ \]'`
+
+Expected: exactly two, both explainable and neither caused by the migration:
+
+- `peeldb.0072_remove_facebook_github_models` — pre-existing. Arrived with upstream PR #211
+  and is unapplied under the old venv too.
+- `token_blacklist.0013_alter_blacklistedtoken_options_and_more` — appears because uv
+  installs the *declared* `djangorestframework-simplejwt==5.5.1`, while the hand-built
+  `../../env` venv was still on 5.5.0 (which ships one fewer migration). uv is correct;
+  the old venv had drifted.
+
+Any migration outside these two is a FAILURE and must be explained before proceeding.
+
+**Do not apply these migrations as part of this task.** `0072` drops tables. Applying it is
+a database decision for the repository owner, not a step in a packaging migration.
 
 - [ ] **Step 7: Gitignore the uv venv**
 

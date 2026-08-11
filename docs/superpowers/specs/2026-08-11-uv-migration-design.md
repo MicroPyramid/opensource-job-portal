@@ -11,7 +11,7 @@ installs, and `uv run` as the command entrypoint.
 
 ## Non-goals
 
-- Changing any dependency version. All 37 existing pins (30 runtime + 7 dev) carry over
+- Changing any dependency version. All 34 existing pins (27 runtime + 7 dev) carry over
   unchanged, so that any post-migration breakage is attributable to tooling, not a version
   bump. `ruff` is the single *addition*, and only because it is already in use undeclared.
 - Consolidating lint tooling. `black` and `prospector` stay as-is; whether ruff replaces them
@@ -25,7 +25,7 @@ installs, and `uv run` as the command entrypoint.
 
 | Item | State |
 |---|---|
-| `backend/requirements.txt` | 30 pinned deps, grouped by comment headers |
+| `backend/requirements.txt` | 27 pinned deps, grouped by comment headers |
 | `backend/dev-requirements.txt` | 7 pinned dev deps |
 | `backend/setup.py` | **Dead code.** Opens a non-existent `README.rst` (crashes if run); `install_requires=[]`; referenced by nothing |
 | `.gitlab-ci.yml` | **Broken.** Runs `pip install pipenv && pipenv install -d`, but the Pipfile was deleted in `8fac0de` |
@@ -235,7 +235,7 @@ The migration is done when all of the following pass:
 4. `uv run manage.py runserver` starts and serves `http://localhost:8000/api/docs/`.
 5. `uv run celery -A jobsp worker --loglevel=info` starts without import errors.
 6. The dependency set is unchanged: `uv export --no-dev --no-hashes` diffed against the
-   deleted `requirements.txt` shows the same 30 packages at the same versions, modulo
+   deleted `requirements.txt` shows the same 27 packages at the same versions, modulo
    transitive pins the lockfile now makes explicit.
 7. `git grep -n "requirements.txt"` returns only historical/changelog references.
 

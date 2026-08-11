@@ -36,3 +36,4 @@ CLAUDE.md
 .playwright-mcp
 .svelte-kit
 build
+.venv/
