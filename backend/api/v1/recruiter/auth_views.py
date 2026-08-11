@@ -25,9 +25,9 @@ from .auth_serializers import (
     GoogleCallbackSerializer,
     GoogleCompleteSerializer,
     UserSerializer,
-    AcceptInvitationSerializer,
     UpdateProfileSerializer
 )
+from .serializers import AcceptInvitationSerializer
 
 
 def get_tokens_for_user(user):
@@ -471,7 +471,6 @@ def google_callback(request):
     if serializer.is_valid():
         code = serializer.validated_data['code']
         redirect_uri = serializer.validated_data['redirect_uri']
-        serializer.validated_data['account_type']
 
         try:
             # Exchange code for tokens
