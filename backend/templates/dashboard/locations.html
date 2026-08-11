@@ -22,6 +22,7 @@
   <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
     <div class="p-4">
       <form id="search_form" name="adv-search-form" method="POST">
+        {% csrf_token %}
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
           <div class="md:col-span-5">
             <label class="block text-sm font-medium text-neutral-700 mb-2">Search</label>
@@ -77,6 +78,7 @@
         <!-- Edit Panel (hidden by default) -->
         <div class="edit_panel hidden bg-neutral-50 border-t border-neutral-200 p-4">
           <form id="editform{{ location.id }}" method="post" action="." class="space-y-4">
+            {% csrf_token %}
             <input type="hidden" name="id" value="{{ location.id }}">
             <input type="hidden" name="mode" value="edit">
 

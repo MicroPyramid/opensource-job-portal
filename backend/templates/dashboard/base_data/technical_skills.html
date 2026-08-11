@@ -23,6 +23,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <!-- Add Form -->
       <form id="addform" method="post" enctype="multipart/form-data" class="flex flex-wrap gap-2 items-end">
+        {% csrf_token %}
         <div class="flex-1 min-w-[150px]">
           <label class="block text-xs font-medium text-neutral-500 mb-1">Skill Name</label>
           <input type="text" class="form-control" id="name" name="name" placeholder="Enter skill name">
@@ -112,6 +113,7 @@
         <!-- Edit Panel -->
         <div class="edit_panel hidden mt-4 pt-4 border-t border-neutral-200">
           <form class="editform" id="{{ skill.id }}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             <input type="hidden" name="id" value="{{ skill.id }}">
             <input type="hidden" name="mode" value="edit_skill">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

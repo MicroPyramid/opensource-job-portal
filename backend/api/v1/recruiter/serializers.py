@@ -7,6 +7,7 @@ from datetime import timedelta
 
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 
 from peeldb.models import Company, TeamInvitation, User
@@ -36,6 +37,16 @@ class TeamMemberStatsSerializer(serializers.Serializer):
     total_applicants = serializers.IntegerField()
 
 
+class TeamMemberRecentJobSerializer(serializers.Serializer):
+    """One entry of ``TeamMemberDetailSerializer.get_recent_jobs`` (5 most recent)."""
+
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    status = serializers.CharField()
+    posted_date = serializers.DateField()
+    applicants_count = serializers.IntegerField()
+
+
 class TeamMemberSerializer(serializers.ModelSerializer):
     """Team member details"""
 
@@ -56,6 +67,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             "stats",
         ]
 
+    @extend_schema_field(TeamMemberStatsSerializer)
     def get_stats(self, obj):
         """Calculate team member statistics"""
         from peeldb.models import JobPost
@@ -83,6 +95,7 @@ class TeamMemberDetailSerializer(TeamMemberSerializer):
     class Meta(TeamMemberSerializer.Meta):
         fields = TeamMemberSerializer.Meta.fields + ["recent_jobs"]
 
+    @extend_schema_field(TeamMemberRecentJobSerializer(many=True))
     def get_recent_jobs(self, obj):
         """Get recent jobs posted by this member"""
         from peeldb.models import JobPost
@@ -121,10 +134,10 @@ class TeamInvitationSerializer(serializers.ModelSerializer):
             "days_remaining",
         ]
 
-    def get_invited_by_name(self, obj):
+    def get_invited_by_name(self, obj) -> str:
         return f"{obj.invited_by.first_name} {obj.invited_by.last_name}".strip()
 
-    def get_days_remaining(self, obj):
+    def get_days_remaining(self, obj) -> int:
         """Calculate days until expiration"""
         if obj.status != "pending":
             return 0
@@ -260,6 +273,7 @@ class AcceptInvitationSerializer(serializers.Serializer):
         return user
 
 
+@extend_schema_serializer(component_name="RecruiterCompanyDetail")
 class CompanyDetailSerializer(serializers.ModelSerializer):
     """Detailed company information for recruiters"""
 
@@ -284,7 +298,7 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "slug", "registered_date"]
 
-    def get_logo_url(self, obj):
+    def get_logo_url(self, obj) -> str:
         """Get company logo URL"""
         if obj.profile_pic:
             request = self.context.get("request")
@@ -331,3 +345,54 @@ class CompanyUpdateSerializer(serializers.ModelSerializer):
         if value:
             value = value.strip().lower()
         return value
+
+
+# --- Response serializers ---------------------------------------------------
+#
+# Envelopes returned by api/v1/recruiter/views.py. Documentation only — DRF does
+# not validate outgoing responses against these.
+
+
+class TeamMemberListResponseSerializer(serializers.Serializer):
+    """200 response from ``list_team_members``."""
+
+    company = CompanyBasicSerializer()
+    members = TeamMemberSerializer(many=True)
+    total_members = serializers.IntegerField()
+
+
+class TeamInvitationMutationResponseSerializer(serializers.Serializer):
+    """Shared shape for ``invite_team_member`` and ``resend_invitation``."""
+
+    success = serializers.BooleanField()
+    invitation = TeamInvitationSerializer()
+    message = serializers.CharField()
+
+
+class TeamInvitationListResponseSerializer(serializers.Serializer):
+    """200 response from ``list_invitations``, with counts by state."""
+
+    invitations = TeamInvitationSerializer(many=True)
+    total = serializers.IntegerField()
+    pending_count = serializers.IntegerField()
+    expired_count = serializers.IntegerField()
+
+
+class TeamMemberUpdateResponseSerializer(serializers.Serializer):
+    """200 response from ``update_team_member``."""
+
+    success = serializers.BooleanField()
+    user = TeamMemberSerializer()
+    message = serializers.CharField()
+
+
+class CompanyProfileUpdateResponseSerializer(serializers.Serializer):
+    """200 response from ``update_company_profile``.
+
+    Note the key order differs from the team endpoints: message precedes the
+    payload here. Only the shape matters to clients, but it is mirrored as-is.
+    """
+
+    success = serializers.BooleanField()
+    message = serializers.CharField()
+    company = CompanyDetailSerializer()

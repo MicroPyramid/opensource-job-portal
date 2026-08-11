@@ -163,18 +163,30 @@ INSTALLED_APPS = (
     "api",  # New API app for job seekers
 )
 
+# Ordering follows Django's documented recommendation. SecurityMiddleware,
+# CsrfViewMiddleware and XFrameOptionsMiddleware were all absent, which
+# `check --deploy` reported as security.W001/W002/W003. CorsMiddleware stays
+# near the top, as django-cors-headers requires, ahead of CommonMiddleware.
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     # "hmin.middleware.MinMiddleware",
     # "hmin.middleware.MarkMiddleware",
     # "jobsp.middlewares.DetectMobileBrowser",
     "jobsp.middlewares.LowerCased",
 ]
+
+# DENY: no page in this project is embedded in a frame. Every <iframe> in the
+# templates embeds third-party content (Facebook page plugins) *into* our pages,
+# which X-Frame-Options does not affect.
+X_FRAME_OPTIONS = "DENY"
 
 
 CORS_ALLOWED_ORIGINS = [
@@ -502,6 +514,18 @@ SPECTACULAR_SETTINGS = {
     ],
     "COMPONENT_SPLIT_REQUEST": True,
     "SCHEMA_PATH_PREFIX": "/api/v[0-9]",
+    # Without these, three different "status" choice sets all wanted the name
+    # StatusEnum and drf-spectacular fell back to hash suffixes (Status370Enum,
+    # Status4a7Enum, Status75bEnum) that change whenever the choices change —
+    # which would churn every generated client. COMPANY_SIZE is listed because
+    # the same choice set is reached under two field names (Company.size and the
+    # recruiter registration serializer's company_size).
+    "ENUM_NAME_OVERRIDES": {
+        "JobPostStatusEnum": "peeldb.models.JobPost.POST_STATUS",
+        "ApplicationStatusEnum": "peeldb.models.POST_STATUS",
+        "LocationStatusEnum": "peeldb.models.STATUS_TYPES",
+        "CompanySizeEnum": "peeldb.models.COMPANY_SIZE",
+    },
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
         "persistAuthorization": True,

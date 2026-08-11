@@ -30,6 +30,7 @@
                     <div class="card-header text-center text-uppercase">EDIT PROFESSIONAL DETAILS</div>
                     <div class="card-body">
                     <form name="professionalform" id="professionalform" method="post">
+                      {% csrf_token %}
                         <div class="row">
                           <label for="colFormLabelSm" class="col-sm-3 control-label">Experience<span class="important">*</span></label>
                           <div class="col-sm-9 profile_exp">

@@ -18,6 +18,7 @@
     </div>
     <div class="p-6">
       <form id="search_form" name="adv-search-form" method="POST" action=".">
+        {% csrf_token %}
         <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
         <input type="hidden" name="page" id="page" value="{{ page }}"/>
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">

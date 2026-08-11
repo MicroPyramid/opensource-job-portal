@@ -97,6 +97,7 @@
               </div>
             {% endif %}
               <form name="menuform" id="menuform" method="post">
+                {% csrf_token %}
                 <div class="modal-body">
                       <div class="form-group">
                         <label for="exampleInputEmail1">Title</label>
@@ -129,6 +130,7 @@
                 <h4 class="modal-title" id="myModalLabel">Add Menu</h4>
               </div>
               <form name="menueditform" id="menueditform" class="menueditform" method="post" data-href="{% url "recruiter:edit_menu" menu.id%}">
+                {% csrf_token %}
                 <div class="modal-body">
                       <div class="form-group">
                         <label for="exampleInputEmail1">Title</label>

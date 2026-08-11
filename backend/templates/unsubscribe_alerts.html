@@ -35,6 +35,7 @@
                 <button type="button" class="cancelbutton">Cancel</button>
               </div>
               <form name="UnsubsribeForm" id="UnsubsribeForm" style='display:none' method="post">
+                {% csrf_token %}
                 <div class="text-center">
                   <a><strong>Reason For Unsubscribing</strong></a>
                   <p>This will help us improve our Services.</p>

@@ -277,3 +277,70 @@ class ChangePasswordSerializer(serializers.Serializer):
             )
 
         return data
+
+
+# --- Response serializers ---------------------------------------------------
+#
+# These describe what the auth views actually return. They are documentation
+# only: DRF does not pass a response through the serializer named in
+# ``@extend_schema(responses=...)``, so these shapes are not enforced at
+# runtime and can drift from the views unless a contract test checks them.
+
+
+class RegisteredUserSerializer(serializers.Serializer):
+    """The trimmed user object returned by ``register``.
+
+    Deliberately not ``UserSerializer``: the register view hand-builds a
+    four-key dict rather than serializing the full profile.
+    """
+
+    id = serializers.IntegerField(help_text="New user's primary key")
+    email = serializers.EmailField(help_text="Registered email address")
+    user_type = serializers.CharField(help_text="Always 'JS' for job seekers")
+    is_active = serializers.BooleanField(help_text="False until the email is verified")
+
+
+class RegisterResponseSerializer(serializers.Serializer):
+    """201 response from ``register``."""
+
+    success = serializers.BooleanField()
+    user = RegisteredUserSerializer()
+    message = serializers.CharField()
+
+
+class VerifyEmailResponseSerializer(serializers.Serializer):
+    """200 response from ``verify_email``: activates the account and logs in."""
+
+    success = serializers.BooleanField()
+    user = UserSerializer()
+    access = serializers.CharField(help_text="JWT access token")
+    refresh = serializers.CharField(help_text="JWT refresh token")
+    message = serializers.CharField()
+
+
+class LogoutResponseSerializer(serializers.Serializer):
+    """
+    200 response from ``logout``.
+
+    ``logout`` returns 200 even when blacklisting fails, adding ``detail`` with
+    the error text, so ``detail`` is optional rather than a separate 4xx shape.
+    """
+
+    message = serializers.CharField()
+    detail = serializers.CharField(
+        required=False, help_text="Present only when logout completed with errors"
+    )
+
+
+class ChangePasswordErrorSerializer(serializers.Serializer):
+    """
+    400 response from ``change_password``.
+
+    Unlike most views here, this one wraps DRF's field-error mapping in an
+    ``error`` key instead of returning ``serializer.errors`` at the top level.
+    """
+
+    error = serializers.DictField(
+        child=serializers.ListField(child=serializers.CharField()),
+        help_text="Field name to list of validation messages",
+    )

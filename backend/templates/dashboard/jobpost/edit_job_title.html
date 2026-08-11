@@ -35,6 +35,7 @@
 
   <!-- Job Form -->
   <form id="jobform" name="jobform" method="post">
+    {% csrf_token %}
     <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-neutral-200">
         <h3 class="text-lg font-semibold text-neutral-800">

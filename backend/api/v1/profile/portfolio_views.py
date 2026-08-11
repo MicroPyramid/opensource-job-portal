@@ -25,6 +25,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAuthenticated]
     serializer_class = ProjectSerializer
+    # Schema-introspection only; get_queryset() below is what serves requests.
+    queryset = Project.objects.none()
 
     def get_queryset(self):
         """Get projects for authenticated user only"""
@@ -247,6 +249,8 @@ class CertificationViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAuthenticated]
     serializer_class = CertificationSerializer
+    # Schema-introspection only; get_queryset() below is what serves requests.
+    queryset = Certification.objects.none()
 
     def get_queryset(self):
         """Get certifications for authenticated user only"""

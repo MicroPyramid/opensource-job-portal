@@ -15,12 +15,24 @@ from rest_framework.response import Response
 from dashboard.tasks import send_email
 from peeldb.models import TeamInvitation, User
 
+from ..common.responses import (
+    VALIDATION_ERROR_RESPONSE,
+    ErrorResponseSerializer,
+    SuccessMessageResponseSerializer,
+)
 from .serializers import (
     CompanyBasicSerializer,
+    CompanyDetailSerializer,
+    CompanyProfileUpdateResponseSerializer,
+    CompanyUpdateSerializer,
     SendInvitationSerializer,
+    TeamInvitationListResponseSerializer,
+    TeamInvitationMutationResponseSerializer,
     TeamInvitationSerializer,
     TeamMemberDetailSerializer,
+    TeamMemberListResponseSerializer,
     TeamMemberSerializer,
+    TeamMemberUpdateResponseSerializer,
     UpdateTeamMemberSerializer,
 )
 
@@ -63,8 +75,13 @@ def send_team_invitation_email(invitation, message=None):
 
 @extend_schema(
     tags=["Team Management"],
+    operation_id="recruiter_team_list",
     summary="List Team Members",
     description="Get all team members for the authenticated user's company",
+    responses={
+        200: TeamMemberListResponseSerializer,
+        400: ErrorResponseSerializer,
+    },
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -102,8 +119,14 @@ def list_team_members(request):
 
 @extend_schema(
     tags=["Team Management"],
+    operation_id="recruiter_team_retrieve",
     summary="Get Team Member Details",
     description="Get detailed information about a specific team member",
+    responses={
+        200: TeamMemberDetailSerializer,
+        400: ErrorResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -135,6 +158,11 @@ def get_team_member(request, user_id):
     summary="Invite Team Member",
     description="Send invitation to join the company team (Admin only)",
     request=SendInvitationSerializer,
+    responses={
+        201: TeamInvitationMutationResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+        403: ErrorResponseSerializer,
+    },
 )
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -180,6 +208,10 @@ def invite_team_member(request):
     tags=["Team Management"],
     summary="List Pending Invitations",
     description="View all pending team invitations (Admin only)",
+    responses={
+        200: TeamInvitationListResponseSerializer,
+        403: ErrorResponseSerializer,
+    },
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -214,6 +246,12 @@ def list_invitations(request):
     tags=["Team Management"],
     summary="Resend Invitation",
     description="Resend invitation email and extend expiry (Admin only)",
+    request=None,
+    responses={
+        200: TeamInvitationMutationResponseSerializer,
+        403: ErrorResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -259,6 +297,11 @@ def resend_invitation(request, invitation_id):
     tags=["Team Management"],
     summary="Cancel Invitation",
     description="Cancel a pending invitation (Admin only)",
+    responses={
+        200: SuccessMessageResponseSerializer,
+        403: ErrorResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
@@ -292,6 +335,12 @@ def cancel_invitation(request, invitation_id):
     summary="Update Team Member",
     description="Update team member details or promote to admin (Admin only)",
     request=UpdateTeamMemberSerializer,
+    responses={
+        200: TeamMemberUpdateResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+        403: ErrorResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
@@ -353,6 +402,12 @@ def update_team_member(request, user_id):
     tags=["Team Management"],
     summary="Remove Team Member",
     description="Remove team member from company (Admin only)",
+    responses={
+        200: SuccessMessageResponseSerializer,
+        400: ErrorResponseSerializer,
+        403: ErrorResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
@@ -420,6 +475,10 @@ def remove_team_member(request, user_id):
     tags=["Company Profile"],
     summary="Get Company Profile",
     description="Get detailed company profile for the authenticated recruiter",
+    responses={
+        200: CompanyDetailSerializer,
+        400: ErrorResponseSerializer,
+    },
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -449,6 +508,12 @@ def get_company_profile(request):
     tags=["Company Profile"],
     summary="Update Company Profile",
     description="Update company profile (Admin only)",
+    request=CompanyUpdateSerializer,
+    responses={
+        200: CompanyProfileUpdateResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+        403: ErrorResponseSerializer,
+    },
 )
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])

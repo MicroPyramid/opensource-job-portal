@@ -5,7 +5,7 @@ Authentication Views for Recruiter/Employer
 import requests
 from django.conf import settings
 from django.utils.crypto import get_random_string
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -14,6 +14,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from peeldb.models import Company, Google, User
 
+from ..common.responses import (
+    VALIDATION_ERROR_RESPONSE,
+    ErrorResponseSerializer,
+    SuccessMessageResponseSerializer,
+)
 from .auth_serializers import (
     ChangePasswordSerializer,
     ForgotPasswordSerializer,
@@ -21,6 +26,15 @@ from .auth_serializers import (
     GoogleCallbackSerializer,
     GoogleCompleteSerializer,
     LoginSerializer,
+    RecruiterAuthTokenResponseSerializer,
+    RecruiterGoogleAdditionalInfoSerializer,
+    RecruiterGoogleAuthenticatedSerializer,
+    RecruiterGoogleAuthUrlResponseSerializer,
+    RecruiterGoogleCompleteResponseSerializer,
+    RecruiterLoginResponseSerializer,
+    RecruiterProfilePictureUploadSerializer,
+    RecruiterProfileUpdateResponseSerializer,
+    RecruiterRegisterResponseSerializer,
     RegisterSerializer,
     ResendVerificationSerializer,
     ResetPasswordSerializer,
@@ -130,6 +144,10 @@ def send_password_reset_email(user, request):
     summary="Register New Recruiter/Company",
     description="Create new recruiter or company account",
     request=RegisterSerializer,
+    responses={
+        201: RecruiterRegisterResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -178,6 +196,10 @@ def register(request):
     summary="Login",
     description="Authenticate recruiter/company user",
     request=LoginSerializer,
+    responses={
+        200: RecruiterLoginResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -216,6 +238,10 @@ def login(request):
     tags=["Recruiter Auth"],
     summary="Logout",
     description="Logout and clear tokens",
+    # No body is read; the view unconditionally returns success. Cookie
+    # clearing is SvelteKit's job, not Django's.
+    request=None,
+    responses={200: SuccessMessageResponseSerializer},
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -234,6 +260,10 @@ def logout(request):
     summary="Verify Email",
     description="Verify email address with token",
     request=VerifyEmailSerializer,
+    responses={
+        200: RecruiterAuthTokenResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -277,6 +307,12 @@ def verify_email(request):
     summary="Resend Verification Email",
     description="Resend email verification link",
     request=ResendVerificationSerializer,
+    responses={
+        # Success is returned whether or not the account exists, to avoid
+        # leaking which addresses are registered.
+        200: SuccessMessageResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -306,6 +342,10 @@ def resend_verification(request):
     summary="Forgot Password",
     description="Request password reset link",
     request=ForgotPasswordSerializer,
+    responses={
+        200: SuccessMessageResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -339,6 +379,10 @@ def forgot_password(request):
     summary="Reset Password",
     description="Reset password with token",
     request=ResetPasswordSerializer,
+    responses={
+        200: SuccessMessageResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -365,6 +409,10 @@ def reset_password(request):
     summary="Change Password",
     description="Change password for authenticated user",
     request=ChangePasswordSerializer,
+    responses={
+        200: SuccessMessageResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -388,6 +436,7 @@ def change_password(request):
     tags=["Recruiter Auth"],
     summary="Get Current User",
     description="Get authenticated user info",
+    responses={200: UserSerializer},
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -402,6 +451,10 @@ def me(request):
     summary="Accept Team Invitation",
     description="Accept team invitation during signup",
     request=AcceptInvitationSerializer,
+    responses={
+        201: RecruiterAuthTokenResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -444,6 +497,11 @@ def accept_invitation(request):
     tags=["Recruiter Auth - OAuth"],
     summary="Get Google OAuth URL",
     description="Generate Google OAuth authorization URL",
+    parameters=[GoogleAuthUrlSerializer],
+    responses={
+        200: RecruiterGoogleAuthUrlResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -478,6 +536,21 @@ def google_auth_url(request):
     summary="Google OAuth Callback",
     description="Handle Google OAuth callback",
     request=GoogleCallbackSerializer,
+    responses={
+        # Two distinct 200 bodies, discriminated by `status`: an already-linked
+        # Google account logs straight in, an unknown one asks the client to
+        # finish signing up.
+        200: PolymorphicProxySerializer(
+            component_name="RecruiterGoogleCallbackResponse",
+            serializers={
+                "authenticated": RecruiterGoogleAuthenticatedSerializer,
+                "additional_info_required": RecruiterGoogleAdditionalInfoSerializer,
+            },
+            resource_type_field_name="status",
+        ),
+        400: ErrorResponseSerializer,
+        500: ErrorResponseSerializer,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -591,6 +664,10 @@ def google_callback(request):
     summary="Complete Google OAuth Registration",
     description="Complete registration with additional info",
     request=GoogleCompleteSerializer,
+    responses={
+        201: RecruiterGoogleCompleteResponseSerializer,
+        400: ErrorResponseSerializer,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -708,6 +785,10 @@ def google_complete(request):
     summary="Update Profile",
     description="Update recruiter profile information",
     request=UpdateProfileSerializer,
+    responses={
+        200: RecruiterProfileUpdateResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
@@ -740,6 +821,12 @@ def update_profile(request):
     tags=["Recruiter Profile"],
     summary="Upload Profile Picture",
     description="Upload or update profile picture",
+    request=RecruiterProfilePictureUploadSerializer,
+    responses={
+        200: RecruiterProfileUpdateResponseSerializer,
+        # Missing file, wrong content type, or over 2MB — all single-key errors.
+        400: ErrorResponseSerializer,
+    },
 )
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])

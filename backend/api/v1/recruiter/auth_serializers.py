@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.crypto import get_random_string
+from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 
 from peeldb.models import Company, User
@@ -13,6 +14,7 @@ from peeldb.models import Company, User
 from .serializers import CompanyBasicSerializer
 
 
+@extend_schema_serializer(component_name="RecruiterRegister")
 class RegisterSerializer(serializers.Serializer):
     """
     Registration serializer for new recruiter/company accounts
@@ -181,6 +183,7 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 
+@extend_schema_serializer(component_name="RecruiterVerifyEmail")
 class VerifyEmailSerializer(serializers.Serializer):
     """Email verification serializer"""
 
@@ -198,6 +201,7 @@ class VerifyEmailSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid or expired verification link")
 
 
+@extend_schema_serializer(component_name="RecruiterResendVerification")
 class ResendVerificationSerializer(serializers.Serializer):
     """Resend verification email"""
 
@@ -216,6 +220,7 @@ class ResendVerificationSerializer(serializers.Serializer):
             return value.lower()
 
 
+@extend_schema_serializer(component_name="RecruiterForgotPassword")
 class ForgotPasswordSerializer(serializers.Serializer):
     """Request password reset"""
 
@@ -231,6 +236,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
         return value.lower()
 
 
+@extend_schema_serializer(component_name="RecruiterResetPassword")
 class ResetPasswordSerializer(serializers.Serializer):
     """Reset password with token"""
 
@@ -264,6 +270,7 @@ class ResetPasswordSerializer(serializers.Serializer):
         return data
 
 
+@extend_schema_serializer(component_name="RecruiterChangePassword")
 class ChangePasswordSerializer(serializers.Serializer):
     """Change password for authenticated user"""
 
@@ -346,6 +353,18 @@ class GoogleCompleteSerializer(serializers.Serializer):
         return data
 
 
+class RecruiterPermissionsSerializer(serializers.Serializer):
+    """The permission flags computed by ``UserSerializer.get_permissions``."""
+
+    can_post_jobs = serializers.BooleanField()
+    can_manage_team = serializers.BooleanField()
+    can_edit_company = serializers.BooleanField()
+    is_company_admin = serializers.BooleanField()
+    is_company_member = serializers.BooleanField()
+    is_independent_recruiter = serializers.BooleanField()
+
+
+@extend_schema_serializer(component_name="RecruiterUser")
 class UserSerializer(serializers.ModelSerializer):
     """User profile serializer"""
 
@@ -373,6 +392,7 @@ class UserSerializer(serializers.ModelSerializer):
             "permissions",
         ]
 
+    @extend_schema_field(RecruiterPermissionsSerializer)
     def get_permissions(self, obj):
         """Get user permissions"""
         return {
@@ -408,3 +428,125 @@ class UpdateProfileSerializer(serializers.Serializer):
             setattr(instance, field, value)
         instance.save()
         return instance
+
+
+# --- Response serializers ---------------------------------------------------
+#
+# Class names are prefixed "Recruiter" where a same-shaped serializer already
+# exists under api/v1/auth/. drf-spectacular derives OpenAPI component names
+# from the class name, so two classes called e.g. RegisterResponseSerializer in
+# different modules would silently collide into one component.
+#
+# Documentation only: nothing here is applied to an outgoing response at
+# runtime, so drift is possible without a contract test.
+
+
+class RecruiterCompanyBriefSerializer(serializers.Serializer):
+    """The three-key company stub embedded in registration responses."""
+
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    slug = serializers.SlugField()
+
+
+class RecruiterRegisteredUserSerializer(serializers.Serializer):
+    """The four-key user stub returned by ``register`` (not the full profile)."""
+
+    id = serializers.IntegerField()
+    email = serializers.EmailField()
+    user_type = serializers.CharField()
+    is_active = serializers.BooleanField(help_text="False until the email is verified")
+
+
+class RecruiterRegisterResponseSerializer(serializers.Serializer):
+    """201 response from ``register``."""
+
+    success = serializers.BooleanField()
+    user = RecruiterRegisteredUserSerializer()
+    company = RecruiterCompanyBriefSerializer(
+        allow_null=True, help_text="Null when registering as an individual recruiter"
+    )
+    message = serializers.CharField()
+
+
+class RecruiterLoginResponseSerializer(serializers.Serializer):
+    """200 response from ``login``. Tokens are returned in the body, not cookies."""
+
+    access = serializers.CharField(help_text="JWT access token")
+    refresh = serializers.CharField(help_text="JWT refresh token")
+    user = UserSerializer()
+
+
+class RecruiterAuthTokenResponseSerializer(serializers.Serializer):
+    """Shared shape for ``verify_email`` and ``accept_invitation``: log in on success."""
+
+    success = serializers.BooleanField()
+    access = serializers.CharField(help_text="JWT access token")
+    refresh = serializers.CharField(help_text="JWT refresh token")
+    user = UserSerializer()
+    message = serializers.CharField()
+
+
+class RecruiterGoogleAuthUrlResponseSerializer(serializers.Serializer):
+    """200 response from ``google_auth_url``."""
+
+    auth_url = serializers.URLField(help_text="Google OAuth authorization URL")
+    account_type = serializers.CharField(help_text="'company' or 'recruiter'")
+
+
+class RecruiterGoogleProfileSerializer(serializers.Serializer):
+    """Google profile fields echoed back when registration must be completed."""
+
+    email = serializers.EmailField()
+    first_name = serializers.CharField(allow_blank=True)
+    last_name = serializers.CharField(allow_blank=True)
+    picture = serializers.CharField(allow_blank=True)
+
+
+class RecruiterGoogleAuthenticatedSerializer(serializers.Serializer):
+    """``google_callback`` result when the Google account is already linked."""
+
+    status = serializers.ChoiceField(choices=["authenticated"])
+    access = serializers.CharField(help_text="JWT access token")
+    refresh = serializers.CharField(help_text="JWT refresh token")
+    user = UserSerializer()
+
+
+class RecruiterGoogleAdditionalInfoSerializer(serializers.Serializer):
+    """``google_callback`` result when the user must still finish signing up."""
+
+    status = serializers.ChoiceField(choices=["additional_info_required"])
+    google_data = RecruiterGoogleProfileSerializer()
+    session_token = serializers.CharField(
+        help_text="Opaque token to pass to the OAuth completion endpoint"
+    )
+
+
+class RecruiterGoogleCompleteResponseSerializer(serializers.Serializer):
+    """201 response from ``google_complete``. Carries no message key."""
+
+    success = serializers.BooleanField()
+    access = serializers.CharField(help_text="JWT access token")
+    refresh = serializers.CharField(help_text="JWT refresh token")
+    user = UserSerializer()
+    company = RecruiterCompanyBriefSerializer(
+        allow_null=True, help_text="Null when registering as an individual recruiter"
+    )
+
+
+class RecruiterProfileUpdateResponseSerializer(serializers.Serializer):
+    """Shared shape for ``update_profile`` and ``upload_profile_picture``."""
+
+    success = serializers.BooleanField()
+    user = UserSerializer()
+    message = serializers.CharField()
+
+
+class RecruiterProfilePictureUploadSerializer(serializers.Serializer):
+    """multipart/form-data body for ``upload_profile_picture``.
+
+    The view reads ``request.FILES`` directly rather than binding a serializer,
+    so this exists purely to describe the upload in the schema.
+    """
+
+    profile_pic = serializers.ImageField(help_text="JPEG or PNG image, maximum 2MB")

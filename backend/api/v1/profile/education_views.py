@@ -25,6 +25,8 @@ class EducationViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAuthenticated]
     serializer_class = EducationDetailsSerializer
+    # Schema-introspection only; get_queryset() below is what serves requests.
+    queryset = EducationDetails.objects.none()
 
     def get_queryset(self):
         """Get education details for authenticated user only"""

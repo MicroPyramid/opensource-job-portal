@@ -129,6 +129,7 @@
     </div>
     <div class="p-6">
       <form id="ticketform" name="ticketform" method="post">
+        {% csrf_token %}
         <div class="mb-4">
           <label class="block text-sm font-medium text-neutral-700 mb-2">Comment</label>
           <textarea class="form-control" name="comment" id="comment" rows="4" placeholder="Enter your comment..."></textarea>
@@ -151,6 +152,7 @@
       {% for comment in ticket.get_ticket_comments %}
       <div id="{{ comment.id }}" class="editcomment hidden mt-4 p-4 border border-neutral-200 rounded-lg">
         <form id="ticketeditform" name="ticketeditform" method="post">
+          {% csrf_token %}
           <div class="mb-4">
             <label class="block text-sm font-medium text-neutral-700 mb-2">Edit Comment</label>
             <textarea class="form-control" name="comment" rows="4">{{ comment.comment }}</textarea>

@@ -40,6 +40,7 @@
               <div class="card-header text-center text-uppercase">EDIT Project details</div>
               <div class="card-body">
                 <form name="projectform" id="projectform" method="post">
+                  {% csrf_token %}
                   <div class="row">
                     <label for="colFormLabelSm" class="col-sm-3 control-label">Project Title<span class="important">*</span></label>
                     <div class="col-sm-9">

@@ -7,13 +7,48 @@ from datetime import date, datetime, timedelta
 
 from django.db.models import Count
 from django.utils import timezone
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from peeldb.models import AppliedJobs, JobPost
 
+from ..common.responses import ErrorResponseSerializer
+from .analytics_serializers import (
+    ApplicationAnalyticsResponseSerializer,
+    JobApplicationAnalyticsResponseSerializer,
+)
 
+
+@extend_schema(
+    tags=["Recruiter - Analytics"],
+    summary="Application Analytics",
+    description="Application volume, pipeline and per-job performance across all of the recruiter's jobs.",
+    parameters=[
+        OpenApiParameter(
+            "period",
+            OpenApiTypes.STR,
+            description="7d, 30d, 90d or custom (default: 30d)",
+            enum=["7d", "30d", "90d", "custom"],
+        ),
+        OpenApiParameter(
+            "start_date",
+            OpenApiTypes.DATE,
+            description="Window start as YYYY-MM-DD. Required when period=custom.",
+        ),
+        OpenApiParameter(
+            "end_date",
+            OpenApiTypes.DATE,
+            description="Window end as YYYY-MM-DD. Required when period=custom.",
+        ),
+    ],
+    responses={
+        200: ApplicationAnalyticsResponseSerializer,
+        400: ErrorResponseSerializer,
+    },
+)
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_application_analytics(request):
@@ -210,6 +245,24 @@ def get_application_analytics(request):
     )
 
 
+@extend_schema(
+    tags=["Recruiter - Analytics"],
+    summary="Job Application Analytics",
+    description="Application volume and pipeline for a single job owned by the recruiter.",
+    parameters=[
+        OpenApiParameter(
+            "period",
+            OpenApiTypes.STR,
+            description="7d, 30d or 90d (default: 30d). Unlike the account-wide "
+            "endpoint, this one has no custom range.",
+            enum=["7d", "30d", "90d"],
+        ),
+    ],
+    responses={
+        200: JobApplicationAnalyticsResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
+)
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_job_application_analytics(request, job_id):

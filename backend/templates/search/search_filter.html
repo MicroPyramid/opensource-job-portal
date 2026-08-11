@@ -4,6 +4,7 @@
   <div class="container">
     <div class="row">
       <form autocomplete="off" name="job-search-form" class="autocomplete-me search-form" id="elastic-search" method="POST">
+        {% csrf_token %}
         <div class="search_div_form">
           <div class="form_element">
             <select class="form-select" name="job_type" id="job_type">{{ request.session.formdata }}

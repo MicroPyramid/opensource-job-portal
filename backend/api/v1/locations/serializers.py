@@ -44,7 +44,7 @@ class CitySerializer(serializers.ModelSerializer):
         fields = ["id", "name", "slug", "status", "state", "state_id", "country_name"]
         read_only_fields = ["id", "name", "slug", "status", "state", "country_name"]
 
-    def get_country_name(self, obj):
+    def get_country_name(self, obj) -> str | None:
         """Get country name from state"""
         if obj.state and obj.state.country:
             return obj.state.country.name

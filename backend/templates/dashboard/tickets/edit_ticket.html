@@ -26,6 +26,7 @@
     </div>
     <div class="p-6">
       <form name="ticketform" id="ticketform" method="post" class="space-y-4">
+        {% csrf_token %}
         <div>
           <label class="block text-sm font-medium text-neutral-700 mb-2">Ticket Title</label>
           <input type="text" class="form-control" placeholder="Enter ticket title" name="title" id="title" value="{{ ticket.title }}">

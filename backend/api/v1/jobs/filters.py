@@ -5,6 +5,8 @@ Provides advanced filtering capabilities for job listings
 
 from django.db.models import Q
 from django_filters import rest_framework as filters
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 
 from peeldb.models import City, Industry, JobPost, Qualification, Skill
 
@@ -19,35 +21,43 @@ class JobFilter(filters.FilterSet):
     search = filters.CharFilter(method="filter_search", label="Search")
 
     # Location filters (multiple cities by slug or ID)
-    location = filters.ModelMultipleChoiceFilter(
-        field_name="location__slug",
-        to_field_name="slug",
-        queryset=City.objects.all(),
-        label="Locations",
+    location = extend_schema_field(OpenApiTypes.STR)(
+        filters.ModelMultipleChoiceFilter(
+            field_name="location__slug",
+            to_field_name="slug",
+            queryset=City.objects.all(),
+            label="Locations",
+        )
     )
 
     # Skills filter (multiple skills by slug or ID)
-    skills = filters.ModelMultipleChoiceFilter(
-        field_name="skills__slug",
-        to_field_name="slug",
-        queryset=Skill.objects.all(),
-        label="Skills",
+    skills = extend_schema_field(OpenApiTypes.STR)(
+        filters.ModelMultipleChoiceFilter(
+            field_name="skills__slug",
+            to_field_name="slug",
+            queryset=Skill.objects.all(),
+            label="Skills",
+        )
     )
 
     # Industry filter (multiple industries by slug or ID)
-    industry = filters.ModelMultipleChoiceFilter(
-        field_name="industry__slug",
-        to_field_name="slug",
-        queryset=Industry.objects.all(),
-        label="Industries",
+    industry = extend_schema_field(OpenApiTypes.STR)(
+        filters.ModelMultipleChoiceFilter(
+            field_name="industry__slug",
+            to_field_name="slug",
+            queryset=Industry.objects.all(),
+            label="Industries",
+        )
     )
 
     # Education/Qualification filter
-    education = filters.ModelMultipleChoiceFilter(
-        field_name="edu_qualification__slug",
-        to_field_name="slug",
-        queryset=Qualification.objects.all(),
-        label="Education",
+    education = extend_schema_field(OpenApiTypes.STR)(
+        filters.ModelMultipleChoiceFilter(
+            field_name="edu_qualification__slug",
+            to_field_name="slug",
+            queryset=Qualification.objects.all(),
+            label="Education",
+        )
     )
 
     # Job type filter (full-time, internship, walk-in, government, Fresher)

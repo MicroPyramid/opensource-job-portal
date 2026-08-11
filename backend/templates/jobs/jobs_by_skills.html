@@ -132,6 +132,7 @@
         <div class="browse_results skills_container">
           <div class="browse_heading">Browse jobs by skills</div>
           <form name="skillform" id="skillform" method="post">
+            {% csrf_token %}
             <input type="hidden" name="alphabet_value" id="alphabet_value" value="{{request.POST.alphabet_value}}">
             <button type="submit" style="display:none;"></button>
           </form>

@@ -4,6 +4,7 @@
       <div class="plainmodal-close"><i class='fa fa-close'></i></div>
       <span class="text-center"><strong>Advanced Search</strong></span>
       <form autocomplete="off" id="search_form" name="adv-search-form" class="adv-autocomplete-me search-form" id="elastic-adv-search" method = "POST">
+        {% csrf_token %}
       <div class="form_div">
       <!-- input -->
       <div class="form_input_div">

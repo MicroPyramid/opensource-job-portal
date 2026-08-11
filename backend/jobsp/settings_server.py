@@ -23,6 +23,33 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 
+# --- Transport security -----------------------------------------------------
+#
+# DEPLOYMENT PREREQUISITE: nginx terminates TLS and proxies to gunicorn over
+# HTTP, so Django cannot see the original scheme by itself. SECURE_SSL_REDIRECT
+# below relies on SECURE_PROXY_SSL_HEADER, which in turn requires nginx to send:
+#
+#     proxy_set_header X-Forwarded-Proto $scheme;
+#
+# The nginx config is not in this repo. If that header is missing, Django sees
+# every request as plain HTTP and will redirect forever. Add the header before
+# deploying this change.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = True
+
+# HSTS: one year, applied to subdomains (recruiter.peeljobs.com etc., which
+# already share cookies via the .peeljobs.com domain above). Reversible by
+# lowering max-age and waiting it out.
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# SECURE_HSTS_PRELOAD is deliberately left off. Turning it on is an invitation
+# to submit peeljobs.com to the browsers' built-in preload lists, which is
+# effectively irreversible and would make every subdomain HTTPS-only for users
+# who have never visited the site. That is a decision for the domain owner, not
+# a lint fix, so `check --deploy` will keep reporting security.W022 until
+# someone makes it deliberately.
+
 
 # sentry_sdk.init(
 #     dsn=os.getenv("SENTRY_DSN"),

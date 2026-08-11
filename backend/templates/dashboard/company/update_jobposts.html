@@ -24,6 +24,7 @@
     </div>
     <div class="p-6">
       <form name="companyform" id="companyform" method="post" class="space-y-6">
+        {% csrf_token %}
         <div>
           <label class="block text-sm font-medium text-neutral-700 mb-2">Company - Jobposts - Recruiters</label>
           <select class="form-control company-select2" name="company" id="company">

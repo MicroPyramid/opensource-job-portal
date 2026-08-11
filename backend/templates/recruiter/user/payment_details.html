@@ -14,6 +14,7 @@
                 <h3><i class="fa fa-building"></i> <span>Payment </span> Details</h3>
                 <!-- row one -->
                 <form name="paymentdetailsform" id="paymentdetailsform" method="post">
+                  {% csrf_token %}
                     <div class="row_one company_profile">
                         <!-- ticket -->
                         <div class="pp_div company_new_form">

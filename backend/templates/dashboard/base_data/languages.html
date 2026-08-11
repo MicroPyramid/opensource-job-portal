@@ -15,6 +15,7 @@
     <!-- Add Form -->
     <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-4">
       <form id="addform" method="post" action="." class="flex gap-2">
+        {% csrf_token %}
         <input type="text" class="form-control flex-1" id="language_name" placeholder="Enter language name">
         <button type="submit" class="btn btn-primary whitespace-nowrap">
           <i class="fa fa-plus mr-2"></i>Add New
@@ -58,6 +59,7 @@
         <!-- Edit Panel (hidden by default) -->
         <div class="edit_panel hidden mt-4 pt-4 border-t border-neutral-200">
           <form id="editform{{ language.id }}" method="post" action="." class="space-y-3">
+            {% csrf_token %}
             <input type="hidden" name="id" value="{{ language.id }}">
             <input type="hidden" name="mode" value="edit_language">
             <input type="hidden" name="page" value="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}">

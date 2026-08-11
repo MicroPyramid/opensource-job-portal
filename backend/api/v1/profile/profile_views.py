@@ -10,7 +10,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import ProfileSerializer, ProfileUpdateSerializer
+from ..common.responses import ErrorResponseSerializer, MessageResponseSerializer
+from .serializers import (
+    ProfileSerializer,
+    ProfileUpdateSerializer,
+    ProfileUploadResponseSerializer,
+)
 
 
 class ProfileView(APIView):
@@ -216,9 +221,19 @@ class ProfileUploadView(APIView):
             }
         },
         responses={
-            200: OpenApiResponse(description="Profile picture uploaded successfully"),
-            400: OpenApiResponse(description="Invalid file or file too large"),
+            200: OpenApiResponse(
+                response=ProfileUploadResponseSerializer,
+                description="File uploaded successfully",
+            ),
+            400: OpenApiResponse(
+                response=ErrorResponseSerializer,
+                description="Invalid file or file too large",
+            ),
             401: OpenApiResponse(description="Authentication required"),
+            403: OpenApiResponse(
+                response=ErrorResponseSerializer,
+                description="Only job seekers can access",
+            ),
         },
         tags=["Profile"],
     )
@@ -328,10 +343,18 @@ class ResumeDeleteView(APIView):
         summary="Delete resume",
         description="Delete the authenticated user's resume file",
         responses={
-            200: OpenApiResponse(description="Resume deleted successfully"),
+            200: OpenApiResponse(
+                response=MessageResponseSerializer,
+                description="Resume deleted successfully",
+            ),
             401: OpenApiResponse(description="Authentication required"),
-            403: OpenApiResponse(description="Only job seekers can access"),
-            404: OpenApiResponse(description="No resume found"),
+            403: OpenApiResponse(
+                response=ErrorResponseSerializer,
+                description="Only job seekers can access",
+            ),
+            404: OpenApiResponse(
+                response=ErrorResponseSerializer, description="No resume found"
+            ),
         },
         tags=["Profile"],
     )

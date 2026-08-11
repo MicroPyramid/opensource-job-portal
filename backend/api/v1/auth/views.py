@@ -17,16 +17,27 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from peeldb.models import Google
 
+from ..common.responses import (
+    VALIDATION_ERROR_RESPONSE,
+    ErrorResponseSerializer,
+    MessageResponseSerializer,
+    SuccessMessageResponseSerializer,
+)
 from .serializers import (
+    ChangePasswordErrorSerializer,
     ChangePasswordSerializer,
     ForgotPasswordSerializer,
     GoogleAuthSerializer,
     GoogleUrlRequestSerializer,
+    LogoutResponseSerializer,
+    RefreshTokenSerializer,
+    RegisterResponseSerializer,
     RegisterSerializer,
     ResendVerificationSerializer,
     ResetPasswordSerializer,
     TokenResponseSerializer,
     UserSerializer,
+    VerifyEmailResponseSerializer,
     VerifyEmailSerializer,
 )
 from .utils import create_or_update_google_user, get_tokens_for_user
@@ -99,6 +110,10 @@ def send_password_reset_email(user, request):
     summary="Register New Job Seeker",
     description="Create new job seeker account with email and password",
     request=RegisterSerializer,
+    responses={
+        201: RegisterResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -143,6 +158,10 @@ def register(request):
     summary="Verify Email",
     description="Verify job seeker email with token from verification email",
     request=VerifyEmailSerializer,
+    responses={
+        200: VerifyEmailResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -183,6 +202,13 @@ def verify_email(request):
     summary="Resend Verification Email",
     description="Resend verification email to unverified job seeker",
     request=ResendVerificationSerializer,
+    responses={
+        200: SuccessMessageResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+        # The view catches a send failure and returns the same envelope with
+        # success=False rather than an error shape.
+        500: SuccessMessageResponseSerializer,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -226,6 +252,12 @@ def resend_verification(request):
     summary="Forgot Password",
     description="Request password reset email for job seeker",
     request=ForgotPasswordSerializer,
+    responses={
+        # Always 200 on a valid request, whether or not the account exists —
+        # the view does this deliberately to prevent email enumeration.
+        200: SuccessMessageResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -269,6 +301,10 @@ def forgot_password(request):
     summary="Reset Password",
     description="Reset password using token from email",
     request=ResetPasswordSerializer,
+    responses={
+        200: SuccessMessageResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -531,15 +567,12 @@ def google_auth_callback(request):
     tags=["Authentication"],
     summary="Disconnect Google Account",
     description="Remove Google OAuth connection from Job Seeker profile.",
+    # POST with no body. Without this, drf-spectacular tries to guess a request
+    # serializer, fails, and drops the operation from the schema.
+    request=None,
     responses={
-        200: {
-            "type": "object",
-            "properties": {"message": {"type": "string"}},
-        },
-        404: {
-            "type": "object",
-            "properties": {"error": {"type": "string"}},
-        },
+        200: MessageResponseSerializer,
+        404: ErrorResponseSerializer,
     },
 )
 @api_view(["POST"])
@@ -622,24 +655,11 @@ def current_user(request):
     tags=["Authentication"],
     summary="Logout",
     description="Logout user by blacklisting refresh token. Access token will remain valid until expiry.",
-    request={
-        "type": "object",
-        "properties": {"refresh": {"type": "string", "description": "Refresh token"}},
-        "required": ["refresh"],
-    },
-    responses={
-        200: {
-            "type": "object",
-            "properties": {"message": {"type": "string"}},
-        },
-        400: {
-            "type": "object",
-            "properties": {
-                "error": {"type": "string"},
-                "detail": {"type": "string"},
-            },
-        },
-    },
+    request=RefreshTokenSerializer,
+    # The view never returns 4xx: it clears cookies and returns 200 even when
+    # blacklisting raises, so the failure case is the optional `detail` key on
+    # the 200 body rather than a separate status.
+    responses={200: LogoutResponseSerializer},
 )
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -730,14 +750,8 @@ def logout(request):
     description="Change password for authenticated Job Seeker. Requires current password verification.",
     request=ChangePasswordSerializer,
     responses={
-        200: {
-            "type": "object",
-            "properties": {"message": {"type": "string"}},
-        },
-        400: {
-            "type": "object",
-            "properties": {"error": {"type": "object"}},
-        },
+        200: MessageResponseSerializer,
+        400: ChangePasswordErrorSerializer,
     },
 )
 @api_view(["POST"])

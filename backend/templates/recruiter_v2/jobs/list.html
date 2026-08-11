@@ -85,6 +85,7 @@
 
           <!-- Job Type Filters -->
           <form name="jobtypeform" id="jobtypeform" method="post" class="flex flex-wrap gap-2">
+            {% csrf_token %}
             <input type="hidden" name="page" id="page" value="{{ current_page }}"/>
             
             <label class="inline-flex items-center">

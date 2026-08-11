@@ -17,6 +17,7 @@
   <!-- Form Card -->
   <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
     <form name="emailtemplateform" id="emailtemplateform" method="post">
+      {% csrf_token %}
       <div class="p-6 space-y-6">
         <!-- Title -->
         <div>

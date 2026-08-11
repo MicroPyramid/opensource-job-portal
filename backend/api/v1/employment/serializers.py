@@ -23,7 +23,7 @@ class EmploymentHistorySerializer(serializers.ModelSerializer):
             "duration",
         ]
 
-    def get_duration(self, obj):
+    def get_duration(self, obj) -> str | None:
         """Calculate duration in months"""
         if not obj.from_date:
             return None

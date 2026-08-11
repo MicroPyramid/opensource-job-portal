@@ -91,6 +91,7 @@
         </div>
 
         <form id="jobform" name="jobform" method="post" enctype="multipart/form-data" class="space-y-6">
+          {% csrf_token %}
           
           {% if request.user.is_agency_recruiter or request.user.is_agency_admin %}
           <!-- Agency Options -->

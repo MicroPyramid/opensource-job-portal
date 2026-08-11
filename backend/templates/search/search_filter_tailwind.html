@@ -4,6 +4,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="w-full">
       <form autocomplete="off" name="job-search-form" class="w-full" id="elastic-search" method="POST">
+        {% csrf_token %}
         <div class="p-6">
           <div class="flex flex-wrap lg:flex-nowrap gap-4 items-center">
             <div class="min-w-0 flex-1 relative">

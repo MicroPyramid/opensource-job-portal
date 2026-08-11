@@ -23,12 +23,24 @@ from peeldb.models import (
     State,
 )
 
+from ..common.responses import (
+    VALIDATION_ERROR_RESPONSE,
+    ErrorResponseSerializer,
+    SuccessMessageResponseSerializer,
+)
 from .job_serializers import (
     ApplicantDetailSerializer,
     JobApplicationSerializer,
+    RecruiterApplicantStatusRequestSerializer,
+    RecruiterApplicantStatusResponseSerializer,
+    RecruiterDashboardResponseSerializer,
+    RecruiterJobApplicantsResponseSerializer,
     RecruiterJobCreateSerializer,
+    RecruiterJobDeleteConflictSerializer,
     RecruiterJobDetailSerializer,
+    RecruiterJobFormMetadataSerializer,
     RecruiterJobListSerializer,
+    RecruiterJobMutationResponseSerializer,
     RecruiterJobUpdateSerializer,
 )
 
@@ -64,6 +76,9 @@ class JobPostPagination(PageNumberPagination):
             "page_size", OpenApiTypes.INT, description="Items per page (max 100)"
         ),
     ],
+    # Paginated when a page is requested, otherwise a bare list; documented as
+    # the list form, which is what the SvelteKit client reads.
+    responses={200: RecruiterJobListSerializer(many=True)},
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -128,6 +143,10 @@ def list_jobs(request):
     tags=["Recruiter - Jobs"],
     summary="Get Job Details",
     description="Get detailed information about a specific job",
+    responses={
+        200: RecruiterJobDetailSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -153,6 +172,10 @@ def get_job(request, job_id):
     summary="Create New Job",
     description="Create a new job posting",
     request=RecruiterJobCreateSerializer,
+    responses={
+        201: RecruiterJobMutationResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
 )
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -206,6 +229,11 @@ def create_job(request):
     summary="Update Job",
     description="Update an existing job posting",
     request=RecruiterJobUpdateSerializer,
+    responses={
+        200: RecruiterJobMutationResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["PATCH", "PUT"])
 @permission_classes([IsAuthenticated])
@@ -255,6 +283,14 @@ def update_job(request, job_id):
     tags=["Recruiter - Jobs"],
     summary="Delete Job",
     description="Delete a job posting",
+    request=None,
+    responses={
+        200: SuccessMessageResponseSerializer,
+        # Two different 400 bodies: refusing to delete a published job (plain
+        # error) and refusing one that has applicants (error + count).
+        400: RecruiterJobDeleteConflictSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
@@ -299,6 +335,12 @@ def delete_job(request, job_id):
     tags=["Recruiter - Jobs"],
     summary="Publish Job",
     description="Publish a draft job to make it live",
+    request=None,
+    responses={
+        200: RecruiterJobMutationResponseSerializer,
+        400: ErrorResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -347,6 +389,12 @@ def publish_job(request, job_id):
     tags=["Recruiter - Jobs"],
     summary="Close Job",
     description="Close an active job posting",
+    request=None,
+    responses={
+        200: RecruiterJobMutationResponseSerializer,
+        400: ErrorResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -375,6 +423,7 @@ def close_job(request, job_id):
 
 @extend_schema(
     tags=["Recruiter - Jobs"],
+    operation_id="recruiter_jobs_applicants_list",
     summary="Get Job Applicants",
     description="Get all applicants for a specific job",
     parameters=[
@@ -389,6 +438,10 @@ def close_job(request, job_id):
             description="Order by field (applied_on, -applied_on)",
         ),
     ],
+    responses={
+        200: RecruiterJobApplicantsResponseSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -443,6 +496,7 @@ def get_job_applicants(request, job_id):
             description="Time period for trend calculation: 7d, 30d, 90d (default: 30d)",
         ),
     ],
+    responses={200: RecruiterDashboardResponseSerializer},
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -563,6 +617,7 @@ def get_dashboard_stats(request):
             "search", OpenApiTypes.STR, description="Search term for filtering"
         ),
     ],
+    responses={200: RecruiterJobFormMetadataSerializer},
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -689,8 +744,13 @@ def get_job_form_metadata(request):
 
 @extend_schema(
     tags=["Recruiter - Applicants"],
+    operation_id="recruiter_jobs_applicants_retrieve",
     summary="Get Applicant Detail",
     description="Get detailed profile of a specific applicant for a job",
+    responses={
+        200: ApplicantDetailSerializer,
+        404: ErrorResponseSerializer,
+    },
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -732,21 +792,11 @@ def get_applicant_detail(request, job_id, applicant_id):
     tags=["Recruiter - Applicants"],
     summary="Update Applicant Status",
     description="Update applicant status (Pending, Shortlisted, Hired, Rejected) and add remarks",
-    request={
-        "application/json": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "enum": ["Pending", "Shortlisted", "Hired", "Rejected"],
-                    "description": "New status for the application",
-                },
-                "remarks": {
-                    "type": "string",
-                    "description": "Recruiter notes/remarks about the applicant",
-                },
-            },
-        }
+    request=RecruiterApplicantStatusRequestSerializer,
+    responses={
+        200: RecruiterApplicantStatusResponseSerializer,
+        400: ErrorResponseSerializer,
+        404: ErrorResponseSerializer,
     },
 )
 @api_view(["PATCH"])

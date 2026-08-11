@@ -40,6 +40,7 @@
                   <div class="card-header text-center text-uppercase">EDIT Eduacation details</div>
                   <div class="card-body">
                   <form name="educationform" id="educationform" method="post">
+                    {% csrf_token %}
                       <div class="row">
                         <label for="colFormLabelSm" class="col-sm-3 control-label">Current Education</label>
                         <div class="col-sm-9">

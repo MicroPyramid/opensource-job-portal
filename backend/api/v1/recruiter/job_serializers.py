@@ -6,6 +6,7 @@ import datetime
 
 from django.utils import timezone
 from django.utils.text import slugify
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from peeldb.models import (
@@ -17,6 +18,126 @@ from peeldb.models import (
     Skill,
     User,
 )
+
+# --- SerializerMethodField shapes -------------------------------------------
+#
+# The method fields on the serializers above build plain dicts, which
+# drf-spectacular cannot introspect — it defaulted every one of them to
+# "string". These classes describe those dicts so the schema reports the real
+# structure. They are referenced via @extend_schema_field, not instantiated.
+
+
+class JobLocationSerializer(serializers.Serializer):
+    """One entry of ``RecruiterJobDetailSerializer.get_locations``."""
+
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    slug = serializers.SlugField()
+    state = serializers.CharField(allow_null=True)
+    state_slug = serializers.SlugField(allow_null=True)
+
+
+class JobTaxonomySerializer(serializers.Serializer):
+    """The id/name/slug triple used for skills, industries and qualifications."""
+
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    slug = serializers.SlugField()
+
+
+class ApplicantSummarySerializer(serializers.Serializer):
+    """``JobApplicationSerializer.get_applicant``: the applicant seen in a list row."""
+
+    id = serializers.IntegerField()
+    name = serializers.CharField(help_text="Full name, falling back to the email")
+    email = serializers.EmailField()
+    mobile = serializers.CharField(allow_null=True)
+    profile_pic = serializers.CharField(allow_null=True)
+    experience = serializers.CharField(help_text="e.g. '3y 2m', or 'Fresher'")
+    current_location = serializers.CharField(allow_null=True)
+    resume_url = serializers.CharField(allow_null=True)
+
+
+class ApplicationSummarySerializer(serializers.Serializer):
+    """``ApplicantDetailSerializer.get_application``: this applicant's row for one job."""
+
+    id = serializers.IntegerField()
+    status = serializers.CharField()
+    applied_on = serializers.DateTimeField()
+    remarks = serializers.CharField(allow_null=True)
+
+
+class ApplicantExperienceSerializer(serializers.Serializer):
+    """``ApplicantDetailSerializer.get_experience``: parsed from free-text fields."""
+
+    years = serializers.IntegerField()
+    months = serializers.IntegerField()
+    total_months = serializers.IntegerField()
+    display = serializers.CharField(help_text="e.g. '3y 2m', or 'Fresher'")
+
+
+class ApplicantLocationSerializer(serializers.Serializer):
+    """
+    ``ApplicantDetailSerializer.get_location``.
+
+    ``city`` and ``state`` are only present when the user has a separate ``city``
+    set, so both are optional rather than nullable.
+    """
+
+    current_city = serializers.CharField(allow_null=True)
+    current_state = serializers.CharField(allow_null=True)
+    preferred_cities = serializers.ListField(
+        child=serializers.CharField(), help_text="At most 5"
+    )
+    relocation = serializers.BooleanField()
+    city = serializers.CharField(required=False)
+    state = serializers.CharField(required=False, allow_null=True)
+
+
+class ApplicantSkillSerializer(serializers.Serializer):
+    """One entry of ``ApplicantDetailSerializer.get_skills``."""
+
+    name = serializers.CharField()
+    years = serializers.CharField(allow_null=True)
+    months = serializers.CharField(allow_null=True)
+    proficiency = serializers.CharField(allow_null=True)
+    last_used = serializers.CharField(allow_null=True)
+    is_major = serializers.BooleanField()
+
+
+class ApplicantEmploymentSerializer(serializers.Serializer):
+    """One entry of ``ApplicantDetailSerializer.get_employment_history``."""
+
+    company = serializers.CharField(allow_null=True)
+    designation = serializers.CharField(allow_null=True)
+    from_date = serializers.DateField(allow_null=True)
+    to_date = serializers.DateField(allow_null=True)
+    current_job = serializers.BooleanField()
+    job_profile = serializers.CharField(allow_null=True)
+
+
+class ApplicantEducationSerializer(serializers.Serializer):
+    """One entry of ``ApplicantDetailSerializer.get_education``."""
+
+    institute = serializers.CharField(allow_null=True)
+    degree = serializers.CharField(allow_null=True)
+    specialization = serializers.CharField(allow_null=True)
+    from_date = serializers.DateField(allow_null=True)
+    to_date = serializers.DateField(allow_null=True)
+    score = serializers.CharField(allow_null=True)
+    current_education = serializers.BooleanField()
+
+
+class ApplicantCertificationSerializer(serializers.Serializer):
+    """One entry of ``ApplicantDetailSerializer.get_certifications``."""
+
+    name = serializers.CharField()
+    organization = serializers.CharField(allow_null=True)
+    credential_id = serializers.CharField(allow_null=True)
+    credential_url = serializers.CharField(allow_null=True)
+    issued_date = serializers.DateField(allow_null=True)
+    expiry_date = serializers.DateField(allow_null=True)
+    does_not_expire = serializers.BooleanField()
 
 
 class RecruiterJobListSerializer(serializers.ModelSerializer):
@@ -52,7 +173,7 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
             "accepts_applications",
         ]
 
-    def get_location_display(self, obj):
+    def get_location_display(self, obj) -> str:
         """Get primary location for display"""
         locations = obj.location.all()
         if locations:
@@ -62,16 +183,16 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
             return ", ".join(location_names)
         return "Not specified"
 
-    def get_applicants_count(self, obj):
+    def get_applicants_count(self, obj) -> int:
         """Get number of applicants"""
         return obj.appliedjobs_set.count()
 
-    def get_views_count(self, obj):
+    def get_views_count(self, obj) -> int:
         """Get total views across all platforms"""
         # Social media view fields have been removed
         return 0  # TODO: Implement proper analytics tracking
 
-    def get_time_ago(self, obj):
+    def get_time_ago(self, obj) -> str:
         """Calculate time since job was created"""
         if not obj.created_on:
             return "Recently created"
@@ -118,7 +239,7 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
             months = diff.days // 30
             return f"{months}mo ago"
 
-    def get_days_until_expiry(self, obj):
+    def get_days_until_expiry(self, obj) -> int | None:
         """Calculate days until job expires (30-day rule from published_on)"""
         if not obj.published_on:
             return None
@@ -131,14 +252,14 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
 
         return max(days_remaining, 0)
 
-    def get_is_expiring_soon(self, obj):
+    def get_is_expiring_soon(self, obj) -> bool:
         """Check if job is expiring within 7 days"""
         days = self.get_days_until_expiry(obj)
         if days is None:
             return False
         return 0 < days <= 7
 
-    def get_accepts_applications(self, obj):
+    def get_accepts_applications(self, obj) -> bool:
         """Check if this job post can still accept applications (30-day rule)"""
         return obj.can_accept_applications()
 
@@ -202,6 +323,7 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
             "age_relaxation",
         ]
 
+    @extend_schema_field(JobLocationSerializer(many=True))
     def get_locations(self, obj):
         """Get all locations with state info"""
         return [
@@ -215,6 +337,7 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
             for loc in obj.location.all()
         ]
 
+    @extend_schema_field(JobTaxonomySerializer(many=True))
     def get_skills(self, obj):
         """Get all required skills"""
         return [
@@ -226,6 +349,7 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
             for skill in obj.skills.all()
         ]
 
+    @extend_schema_field(JobTaxonomySerializer(many=True))
     def get_industries(self, obj):
         """Get all industries"""
         return [
@@ -237,6 +361,7 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
             for ind in obj.industry.all()
         ]
 
+    @extend_schema_field(JobTaxonomySerializer(many=True))
     def get_qualifications(self, obj):
         """Get all qualifications"""
         return [
@@ -507,6 +632,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             "remarks",
         ]
 
+    @extend_schema_field(ApplicantSummarySerializer(allow_null=True))
     def get_applicant(self, obj):
         """Get applicant basic info"""
         user = obj.user
@@ -536,7 +662,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             "resume_url": user.resume.url if user.resume else None,
         }
 
-    def get_applied_time_ago(self, obj):
+    def get_applied_time_ago(self, obj) -> str:
         """Calculate time since application"""
         now = timezone.now()
         diff = now - obj.applied_on
@@ -591,6 +717,7 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
             "application",
         ]
 
+    @extend_schema_field(ApplicationSummarySerializer(allow_null=True))
     def get_application(self, obj):
         """Get application details for this job"""
         self.context.get("request")
@@ -610,6 +737,7 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
 
         return None
 
+    @extend_schema_field(ApplicantExperienceSerializer)
     def get_experience(self, obj):
         """Get formatted experience"""
         years = int(obj.year) if obj.year and obj.year.isdigit() else 0
@@ -624,6 +752,7 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
             else (f"{months}m" if months > 0 else "Fresher"),
         }
 
+    @extend_schema_field(ApplicantLocationSerializer)
     def get_location(self, obj):
         """Get location details"""
         location_data = {
@@ -641,6 +770,7 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
 
         return location_data
 
+    @extend_schema_field(ApplicantSkillSerializer(many=True))
     def get_skills(self, obj):
         """Get technical skills"""
         skills = []
@@ -657,6 +787,7 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
 
         return skills
 
+    @extend_schema_field(ApplicantEmploymentSerializer(many=True))
     def get_employment_history(self, obj):
         """Get employment history"""
         history = []
@@ -674,6 +805,7 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
 
         return history
 
+    @extend_schema_field(ApplicantEducationSerializer(many=True))
     def get_education(self, obj):
         """Get education details"""
         education = []
@@ -694,6 +826,7 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
 
         return education
 
+    @extend_schema_field(ApplicantCertificationSerializer(many=True))
     def get_certifications(self, obj):
         """Get certifications"""
         certifications = []
@@ -711,3 +844,190 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
             )
 
         return certifications
+
+
+# --- Response serializers ---------------------------------------------------
+#
+# Envelopes returned by api/v1/recruiter/job_views.py. Several endpoints build
+# their payload from dict literals rather than a serializer, so these mirror
+# those literals field for field. Documentation only — not applied at runtime.
+
+
+class RecruiterJobMutationResponseSerializer(serializers.Serializer):
+    """Shared shape for create/update/publish/close: the job plus a message."""
+
+    success = serializers.BooleanField()
+    job = RecruiterJobDetailSerializer()
+    message = serializers.CharField()
+
+
+class RecruiterJobDeleteConflictSerializer(serializers.Serializer):
+    """
+    400 from ``delete_job`` when the job still has applicants.
+
+    Distinct from the plain error envelope because it also reports how many
+    applicants would be affected, so the client can prompt before retrying
+    with ``?force=true``.
+    """
+
+    error = serializers.CharField()
+    applicants_count = serializers.IntegerField(
+        help_text="Number of applications that would be deleted"
+    )
+
+
+class RecruiterApplicantJobBriefSerializer(serializers.Serializer):
+    """The job stub embedded in the applicants listing."""
+
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    status = serializers.CharField()
+
+
+class RecruiterApplicantStatsSerializer(serializers.Serializer):
+    """Per-status applicant counts for a single job."""
+
+    pending = serializers.IntegerField()
+    shortlisted = serializers.IntegerField()
+    selected = serializers.IntegerField()
+    rejected = serializers.IntegerField()
+
+
+class RecruiterJobApplicantsResponseSerializer(serializers.Serializer):
+    """200 response from ``get_job_applicants``."""
+
+    job = RecruiterApplicantJobBriefSerializer()
+    applications = JobApplicationSerializer(many=True)
+    total_applicants = serializers.IntegerField()
+    stats = RecruiterApplicantStatsSerializer()
+
+
+class RecruiterApplicantStatusResponseSerializer(serializers.Serializer):
+    """200 response from ``update_applicant_status``."""
+
+    success = serializers.BooleanField()
+    message = serializers.CharField()
+    application = JobApplicationSerializer()
+
+
+class RecruiterApplicantStatusRequestSerializer(serializers.Serializer):
+    """
+    PATCH body for ``update_applicant_status``.
+
+    Both fields are optional: the view applies whichever keys are present and
+    leaves the rest untouched.
+    """
+
+    status = serializers.ChoiceField(
+        choices=["Pending", "Shortlisted", "Hired", "Rejected"],
+        required=False,
+        help_text="New status for the application",
+    )
+    remarks = serializers.CharField(
+        required=False, help_text="Recruiter notes about the applicant"
+    )
+
+
+class RecruiterDashboardStatsSerializer(serializers.Serializer):
+    """The ``stats`` block of the dashboard response."""
+
+    total_jobs = serializers.IntegerField()
+    live_jobs = serializers.IntegerField()
+    draft_jobs = serializers.IntegerField()
+    closed_jobs = serializers.IntegerField()
+    expired_jobs = serializers.IntegerField()
+    total_applicants = serializers.IntegerField()
+    new_applicants = serializers.IntegerField(
+        help_text="Applications received within the requested period"
+    )
+    applicants_trend = serializers.CharField(
+        help_text="Percentage change vs the previous period, or 'N/A' when there is no baseline"
+    )
+    avg_applications_per_job = serializers.FloatField()
+
+
+class RecruiterDashboardPipelineSerializer(serializers.Serializer):
+    """The ``pipeline`` block: applicant counts by stage, plus conversion."""
+
+    pending = serializers.IntegerField()
+    shortlisted = serializers.IntegerField()
+    hired = serializers.IntegerField()
+    rejected = serializers.IntegerField()
+    conversion_rate = serializers.FloatField(
+        help_text="Hired as a percentage of total applicants; 0 when there are none"
+    )
+
+
+class RecruiterDashboardJobSerializer(RecruiterJobListSerializer):
+    """
+    A recent job as returned by the dashboard.
+
+    The view serializes with ``RecruiterJobListSerializer`` and then injects two
+    extra keys into the resulting dict, so the dashboard payload is a superset
+    of the normal job list entry.
+    """
+
+    new_applicants = serializers.IntegerField(
+        help_text="Applications received in the last 7 days"
+    )
+    pending_review = serializers.IntegerField(
+        help_text="Applications still in Pending status"
+    )
+
+    class Meta(RecruiterJobListSerializer.Meta):
+        fields = [
+            *RecruiterJobListSerializer.Meta.fields,
+            "new_applicants",
+            "pending_review",
+        ]
+
+
+class RecruiterDashboardResponseSerializer(serializers.Serializer):
+    """200 response from ``get_dashboard_stats``."""
+
+    stats = RecruiterDashboardStatsSerializer()
+    pipeline = RecruiterDashboardPipelineSerializer()
+    recent_jobs = RecruiterDashboardJobSerializer(many=True)
+
+
+class RecruiterMetadataItemSerializer(serializers.Serializer):
+    """The id/name/slug triple used for skills, industries and qualifications."""
+
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    slug = serializers.SlugField()
+
+
+class RecruiterMetadataStateSerializer(RecruiterMetadataItemSerializer):
+    """A state, which also carries its parent country."""
+
+    country_id = serializers.IntegerField()
+
+
+class RecruiterMetadataCityStateSerializer(serializers.Serializer):
+    """The state stub nested inside each city entry."""
+
+    id = serializers.IntegerField(allow_null=True)
+    name = serializers.CharField(allow_null=True)
+
+
+class RecruiterMetadataCitySerializer(RecruiterMetadataItemSerializer):
+    """A city, which nests a state stub rather than a bare state id."""
+
+    state = RecruiterMetadataCityStateSerializer(allow_null=True)
+
+
+class RecruiterJobFormMetadataSerializer(serializers.Serializer):
+    """
+    200 response from ``get_job_form_metadata``.
+
+    Note the view caps states, cities, skills, industries and qualifications at
+    100 rows each; only countries are returned in full.
+    """
+
+    countries = RecruiterMetadataItemSerializer(many=True)
+    states = RecruiterMetadataStateSerializer(many=True)
+    cities = RecruiterMetadataCitySerializer(many=True)
+    skills = RecruiterMetadataItemSerializer(many=True)
+    industries = RecruiterMetadataItemSerializer(many=True)
+    qualifications = RecruiterMetadataItemSerializer(many=True)

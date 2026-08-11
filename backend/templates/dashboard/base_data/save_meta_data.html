@@ -23,6 +23,7 @@
     </div>
     <div class="p-6">
       <form class="addform space-y-4" id="addform" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
         <div>
           <label class="block text-sm font-medium text-neutral-700 mb-1">Meta Name</label>
           <textarea class="form-control" name="name" id="name" placeholder="Enter meta name" rows="2"></textarea>
@@ -71,6 +72,7 @@
         <!-- Edit Panel (hidden by default) -->
         <div class="edit_panel hidden mt-4 pt-4 border-t border-neutral-200">
           <form class="editform space-y-3" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-1">Meta Name</label>
               <textarea class="form-control" name="name" rows="2">{{ meta.name }}</textarea>

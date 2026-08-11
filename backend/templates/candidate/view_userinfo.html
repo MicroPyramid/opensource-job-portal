@@ -91,6 +91,7 @@
                     <div class="head">Update your personal info</div>
                     <div class="fields_block">
                       <form name="profileform" id="profileform" method="POST" class="profileform" data-href="{% url "my:edit_personalinfo" %}">
+                        {% csrf_token %}
                       <div class="form-group" style="width: 98%;">
                         <input type='text' class='form-control' id="profile_resume_title" name="resume_title" placeholder="Resume Title" value='{% if request.user.resume_title %}{{ request.user.resume_title }}{% endif %}'>
                       </div>
@@ -125,6 +126,7 @@
                     <div class="head">Upload Your resume</div>
                     <div class="fields_block">
                       <form name="resumeform" id="resumeform" method="POST" class="profileform" data-href="{% url "my:upload_resume" %}" enctype="multipart/form-data">
+                        {% csrf_token %}
                       <div class="form-group update_location">
                         <input type="file" name="resume" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt">
                         <p class="help_text">doc, docx, pdf, odt - 300kb max</p>
@@ -142,6 +144,7 @@
                     <!--<div class="hint">Helps in professional networking for jobs.</div>-->
                     <div class="fields_block">
                       <form name="techskillform" id="techskillform" method="POST" class="profileform" data-href="{% url "my:edit_professionalinfo" %}">
+                        {% csrf_token %}
                       <div class="form-group">
                         <select class="form-control" name="prefered_industry" id="profile_prefered_industry">
                           <option value="">Select A Industry</option>
@@ -182,6 +185,7 @@
                     <!--<div class="hint">Helps in professional networking for jobs.</div>-->
                     <div class="fields_block">
                       <form name="techskillform" id="techskillform" method="POST" class="profileform" data-href="{% url "my:add_technicalskill" %}">
+                        {% csrf_token %}
                       <div class="form-group">
                         <select class="form-control" name="skill" id="profile_skill" multiple>
                           <option value="">Select A Skill</option>
@@ -299,6 +303,7 @@
                 <div class="row content child2" style="display:none">
                     
                       <form name="personalform" id="personalform" class="personalform row content child2" method="post">
+                        {% csrf_token %}
                         <div class="col-sm-4 col-lg-4 item_col">
                          <div class="item_block ">
                            <span class="title">First Name<span class="error">*</span></span>
@@ -464,6 +469,7 @@
                     </div>
                     <div class="child2" style="display:none">
                       <form name="profiledescrptionform" id="profiledescrptionform" method="post" >
+                        {% csrf_token %}
                         <div class="form-group">
                           <textarea class="form-control" style="height:100px" name="profile_description"
                           id="profile_description" rows="4" cols="50">{{ request.user.profile_description }}</textarea>
@@ -489,6 +495,7 @@
                         <span class="title">Upload Your Resume :</span>
                         <span class="ans upload">
                           <form name="resumeupload" id="resumeupload" method="post" action="{% url 'my:upload_resume' %}">
+                            {% csrf_token %}
                             <input type="file" name="resume" id="resume" onchange="javascript:submitform()" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, application/rtf, application/x-rtf, text/richtext, application/msword, application/vnd.oasis.opendocument.text, application/x-vnd.oasis.opendocument.text, .docx, .odt">
                         </span>
                         <p class="help_text">doc, docx, pdf, odt - 300kb max</p>
@@ -579,6 +586,7 @@
           </div>
           <div class="content row child2" style="display:none">
               <form name="professionalform" id="professionalform" class="personalform content row child2" method="post">
+                {% csrf_token %}
                 <div class="item_col col-md-6">
                   <div class="item_block ">
                     <div class="title">Total Experience <span class="error">*</span></div>
@@ -867,6 +875,7 @@
           </div> 
           <div class="content row mar_lr_0 child2 edit_lang" style="display:none">
             <form name="languageform" id="languageform" method="post">
+              {% csrf_token %}
               <div class="form-group">
                 <label for="inputEmail3" class="col-sm-3 control-label">Language Name</label>
                 <div class="col-sm-9">

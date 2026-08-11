@@ -2,6 +2,7 @@
 Profile Serializers for Job Seekers
 """
 
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from peeldb.models import (
@@ -21,6 +22,7 @@ from peeldb.models import (
 )
 
 
+@extend_schema_serializer(component_name="ProfileCity")
 class CitySerializer(serializers.ModelSerializer):
     """City serializer with state and country info"""
 
@@ -33,6 +35,7 @@ class CitySerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+@extend_schema_serializer(component_name="ProfileState")
 class StateSerializer(serializers.ModelSerializer):
     """State serializer"""
 
@@ -44,6 +47,7 @@ class StateSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+@extend_schema_serializer(component_name="ProfileCountry")
 class CountrySerializer(serializers.ModelSerializer):
     """Country serializer"""
 
@@ -53,6 +57,7 @@ class CountrySerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+@extend_schema_serializer(component_name="ProfileSkill")
 class SkillSerializer(serializers.ModelSerializer):
     """Skill serializer"""
 
@@ -62,6 +67,7 @@ class SkillSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+@extend_schema_serializer(component_name="ProfileTechnicalSkill")
 class TechnicalSkillSerializer(serializers.ModelSerializer):
     """Technical skill with proficiency serializer"""
 
@@ -85,6 +91,7 @@ class TechnicalSkillSerializer(serializers.ModelSerializer):
         ]
 
 
+@extend_schema_serializer(component_name="ProfileEmploymentHistory")
 class EmploymentHistorySerializer(serializers.ModelSerializer):
     """Employment history serializer"""
 
@@ -101,6 +108,7 @@ class EmploymentHistorySerializer(serializers.ModelSerializer):
         ]
 
 
+@extend_schema_serializer(component_name="ProfileQualification")
 class QualificationSerializer(serializers.ModelSerializer):
     """Qualification (degree type) serializer"""
 
@@ -446,7 +454,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "is_active",
         ]
 
-    def get_profile_pic_url(self, obj):
+    def get_profile_pic_url(self, obj) -> str | None:
         """Get absolute URL for profile picture"""
         if obj.profile_pic:
             request = self.context.get("request")
@@ -455,7 +463,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             return obj.profile_pic.url
         return obj.photo if obj.photo else None
 
-    def get_resume_url(self, obj):
+    def get_resume_url(self, obj) -> str | None:
         """Get absolute URL for resume"""
         if obj.resume:
             request = self.context.get("request")
@@ -573,3 +581,21 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             "email_notifications",
             "show_email",
         ]
+
+
+class ProfileUploadResponseSerializer(serializers.Serializer):
+    """
+    200 response from ``ProfileUploadView.post``.
+
+    The endpoint handles both uploads and returns whichever URL applies, so
+    exactly one of ``profile_pic_url`` / ``resume_url`` is present depending on
+    the ``file_type`` field in the request.
+    """
+
+    message = serializers.CharField()
+    profile_pic_url = serializers.CharField(
+        required=False, help_text="Present when file_type=profile_pic"
+    )
+    resume_url = serializers.CharField(
+        required=False, help_text="Present when file_type=resume"
+    )
