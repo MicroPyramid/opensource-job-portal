@@ -9,56 +9,67 @@ authors = [{ name = "Micropyramid", email = "hello@micropyramid.com" }]
 
 dependencies = [
     # Core Framework
-    "django==5.2.10",
-    "python-dotenv==1.2.1",
+    # Django is held on the 5.2 LTS series (supported to April 2028). Latest is
+    # 6.1, but django-celery-beat caps Django at <6.1, and django-haystack,
+    # django-storages and django-schema-viewer publish no 6.x classifier.
+    "django==5.2.17",
+    "python-dotenv==1.2.2",
     # Database
-    "psycopg[binary]==3.3.2",
+    "psycopg[binary]==3.3.4",
     "pymemcache==4.0.0",
     # Task Queue & Background Jobs
-    "celery==5.6.2",
-    "django-celery-beat==2.8.1",
-    "redis==7.1.0",
+    "celery==5.6.3",
+    "django-celery-beat==2.9.0",
+    # NOTE: kombu declares redis<6.5 for its redis extra. This project depends on
+    # redis directly rather than via celery[redis], so that cap is not enforced
+    # during resolution. Kept deliberately ahead of it, as it already was at 7.1.0.
+    "redis==8.1.0",
     # Search
-    "django-haystack==3.3.0",
-    "elasticsearch==7.17.12",
+    "django-haystack==3.4.0",
+    # CAPPED: django-haystack requires elasticsearch<8, and the deployment runs an
+    # Elasticsearch 7.17.x server (see SETUP.md), so the client major must stay 7.
+    # Latest on PyPI is 9.5.0 and is NOT usable here.
+    "elasticsearch==7.17.13",
     # REST API
-    "djangorestframework==3.16.1",
+    "djangorestframework==3.18.0",
     "djangorestframework-simplejwt==5.5.1",
-    "dj-rest-auth==7.0.2",
-    "drf-spectacular==0.29.0",
-    "django-filter==25.2",
+    "dj-rest-auth==7.2.0",
+    "drf-spectacular==0.30.0",
+    "django-filter==26.1",
     # Storage & Media
-    "boto3==1.42.39",
+    "boto3==1.43.68",
     "django-storages==1.14.6",
     "sorl-thumbnail==13.0.0",
-    "pillow==12.1.0",
+    "pillow==12.3.0",
     # Email
-    "django-ses==4.6.0",
+    "django-ses==4.7.2",
     # Frontend & Assets
     "django-compressor==4.6.0",
     "django-cors-headers==4.9.0",
     # Utilities
     "arrow==1.4.0",
-    "lxml==6.0.2",
-    "requests==2.32.5",
-    "pytz==2025.2",
+    "lxml==6.1.1",
+    "requests==2.34.2",
+    "pytz==2026.3.post1",
     # Monitoring & Error Tracking
-    "sentry-sdk[django]==2.51.0",
+    "sentry-sdk[django]==2.67.1",
     # Production Server
-    "gunicorn==25.0.0",
+    "gunicorn==26.0.0",
 ]
 
 [dependency-groups]
 dev = [
     # Code Quality & Linting
-    "black==25.1.0",
-    "prospector==1.17.1",
+    # `ruff format` supersedes black (it is a Black-compatible formatter), so
+    # black is intentionally not declared here. Ruff's defaults match black's
+    # 88-column style, which is why no [tool.ruff] config is needed yet.
     "ruff==0.16.2",
+    "prospector==1.19.1",
     # Testing
-    "behave-django==1.5.0",
-    "coverage==7.8.2",
+    "behave-django==2.0.0",
+    "coverage==7.15.4",
     # Development Tools
-    "bpython==0.25",
+    "bpython==0.26",
     "django-schema-viewer==0.5.3",
     # Debug Tools (uncomment in settings_local.py to use)
     "django-debug-toolbar-template-profiler==2.1.0",
