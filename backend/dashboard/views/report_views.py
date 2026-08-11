@@ -69,7 +69,6 @@ def reports(request):
             inactive_recruiters.append(int(users.filter(is_active=False).count()))
         jobs = JobPost.objects.filter(location__in=[city], status="Live")
         if request.method == "POST" and request.POST.get("timestamp"):
-
             date = request.POST.get("timestamp").split(" - ")
             start_date = datetime.strptime(date[0], "%b %d, %Y %H:%M")
             end_date = datetime.strptime(date[1], "%b %d, %Y %H:%M")
@@ -87,12 +86,9 @@ def reports(request):
         skill = Skill.objects.filter(name__iexact=skill)
         jobs_skills = JobPost.objects.filter(skills__in=skill, status="Live")
         if request.method == "POST" and request.POST.get("timestamp"):
-
             date = request.POST.get("timestamp").split(" - ")
             start_date = datetime.strptime(date[0], "%b %d, %Y %H:%M")
             end_date = datetime.strptime(date[1], "%b %d, %Y %H:%M")
-
-           
 
             jobs_skills = jobs_skills.filter(published_on__range=(start_date, end_date))
         if jobs_skills:
@@ -116,7 +112,6 @@ def reports(request):
             "jobs_location": json.dumps(jobs_location),
         },
     )
-
 
 
 @permission_required("activity_view", "activity_edit")
@@ -165,8 +160,6 @@ def view_search_log(request, search_log_id):
     return render(request, "dashboard/404.html", status=404)
 
 
-
-
 @permission_required("activity_view", "activity_edit")
 def subscribers(request):
     subscribers = Subscriber.objects.values_list("skill_id", flat=True).distinct()
@@ -183,8 +176,6 @@ def view_subscribers(request, skill_id):
     return render(
         request, "dashboard/subscribers/view.html", {"subscribers": subscribers}
     )
-
-
 
 
 @permission_required("activity_edit", "activity_view")
@@ -266,4 +257,3 @@ def search_summary(request, search_type):
             "search_type": search_type,
         },
     )
-

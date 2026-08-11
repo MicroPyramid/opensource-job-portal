@@ -16,8 +16,15 @@ GENDERS = ["M", "F"]
 
 # Job types
 JOB_TYPES = [
-    "full-time", "permanent", "contract", "internship",
-    "part-time", "freelance", "walk-in", "government", "fresher"
+    "full-time",
+    "permanent",
+    "contract",
+    "internship",
+    "part-time",
+    "freelance",
+    "walk-in",
+    "government",
+    "fresher",
 ]
 
 # Most common job types (weighted for realistic distribution)
@@ -27,7 +34,16 @@ COMMON_JOB_TYPES = ["full-time", "permanent", "contract", "internship"]
 WORK_MODES = ["in-office", "remote", "hybrid"]
 
 # Job post statuses
-JOB_POST_STATUSES = ["Draft", "Exprired", "Live", "Disabled", "Pending", "Published", "Hired", "Process"]
+JOB_POST_STATUSES = [
+    "Draft",
+    "Exprired",
+    "Live",
+    "Disabled",
+    "Pending",
+    "Published",
+    "Hired",
+    "Process",
+]
 
 # Common job statuses for test data
 COMMON_JOB_STATUSES = ["Live", "Draft", "Disabled", "Exprired"]
@@ -55,19 +71,26 @@ DEGREE_TYPES = ["Permanent", "PartTime"]
 
 # Common qualifications (match with fixtures)
 COMMON_QUALIFICATIONS = [
-    "BE/B.Tech", "ME/M.Tech", "MCA", "BCA", "MBA", "BSc", "MSc", "Diploma"
+    "BE/B.Tech",
+    "ME/M.Tech",
+    "MCA",
+    "BCA",
+    "MBA",
+    "BSc",
+    "MSc",
+    "Diploma",
 ]
 
 # Salary ranges by experience (in INR per annum)
 SALARY_RANGES = {
-    0: (200000, 400000),    # Fresher
-    1: (300000, 600000),    # 1 year
-    2: (400000, 800000),    # 2 years
-    3: (500000, 1000000),   # 3 years
-    5: (800000, 1500000),   # 5 years
+    0: (200000, 400000),  # Fresher
+    1: (300000, 600000),  # 1 year
+    2: (400000, 800000),  # 2 years
+    3: (500000, 1000000),  # 3 years
+    5: (800000, 1500000),  # 5 years
     7: (1000000, 2000000),  # 7 years
-    10: (1500000, 3000000), # 10 years
-    15: (2000000, 5000000), # 15+ years
+    10: (1500000, 3000000),  # 10 years
+    15: (2000000, 5000000),  # 15+ years
 }
 
 # Experience levels (years)

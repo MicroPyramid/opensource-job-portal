@@ -5,15 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('peeldb', '0068_remove_functional_area'),
+        ("peeldb", "0068_remove_functional_area"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='educationinstitue',
-            name='city',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='peeldb.city'),
+            model_name="educationinstitue",
+            name="city",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="peeldb.city",
+            ),
         ),
     ]

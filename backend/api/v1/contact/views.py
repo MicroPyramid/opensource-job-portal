@@ -2,6 +2,7 @@
 Contact API Views
 Handles contact form submissions from frontend
 """
+
 from django.conf import settings
 from django.template import loader
 from rest_framework import status
@@ -102,7 +103,7 @@ def submit_contact_form(request):
     if not serializer.is_valid():
         return Response(
             {"error": "Validation failed", "details": serializer.errors},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     # Save the contact inquiry
@@ -121,8 +122,12 @@ def submit_contact_form(request):
 
     # Send email notification to support team
     try:
-        subject = f"New Contact Inquiry: {contact.get_enquery_type_display()} | PeelJobs"
-        support_emails = getattr(settings, 'SUPPORT_EMAILS', ['peeljobs@micropyramid.com'])
+        subject = (
+            f"New Contact Inquiry: {contact.get_enquery_type_display()} | PeelJobs"
+        )
+        support_emails = getattr(
+            settings, "SUPPORT_EMAILS", ["peeljobs@micropyramid.com"]
+        )
 
         # Email to support team with Reply-To set to user's email
         template = loader.get_template("email/contactus_email.html")
@@ -141,7 +146,7 @@ def submit_contact_form(request):
 
     response_data = {
         "id": contact.id,
-        "message": "Thank you for contacting us! We'll get back to you within 24 hours."
+        "message": "Thank you for contacting us! We'll get back to you within 24 hours.",
     }
 
     return Response(response_data, status=status.HTTP_201_CREATED)

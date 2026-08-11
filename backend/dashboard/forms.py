@@ -245,7 +245,6 @@ class FunctionalAreaForm(ModelForm):
 
 
 class MailTemplateForm(ModelForm):
-
     recruiters = forms.CharField(max_length=1000, required=False)
     applicant_status = forms.CharField(max_length=1000, required=False)
 

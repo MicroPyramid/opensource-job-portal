@@ -19,6 +19,7 @@ from peeldb.models import (
 
 # Functions to move here from main views.py:
 
+
 @permission_required("activity_view", "activity_edit")
 def recruiters_list(request, status):
     if str(status) == "inactive":
@@ -122,9 +123,6 @@ def view_recruiter(request, user_id):
     )
 
 
-
-
-
 @permission_required("activity_edit")
 def recruiter_status_change(request, user_id):
     recruiter = User.objects.get(id=user_id)
@@ -137,8 +135,6 @@ def recruiter_status_change(request, user_id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
-
-
 @permission_required("activity_edit")
 def recruiter_paid_status_change(request, user_id):
     recruiter = User.objects.get(id=user_id)
@@ -149,8 +145,6 @@ def recruiter_paid_status_change(request, user_id):
         recruiter.is_paid = True
         recruiter.save()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
-
 
 
 @permission_required("activity_edit")

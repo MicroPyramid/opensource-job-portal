@@ -111,7 +111,7 @@ def sitemap_xml(request):
     return HttpResponse(
         "Sitemap temporarily unavailable. Implementing new sitemap system.",
         content_type="text/plain",
-        status=503
+        status=503,
     )
 
 

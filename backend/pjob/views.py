@@ -540,7 +540,7 @@ def job_locations(request, location, **kwargs):
             searched_industry,
             searched_edu,
         ) = refined_search(request.POST)
-        
+
     elif state:
         final_location = [state[0].name]
         search_dict = QueryDict("", mutable=True)
@@ -730,7 +730,6 @@ def job_skills(request, skill, **kwargs):
         )
 
     if job_list.count() > 0:
-
         if request.GET.get("job_type"):
             job_list = job_list.filter_and(job_type__in=[request.GET.get("job_type")])
         no_of_jobs = job_list.count()
@@ -981,23 +980,24 @@ def job_apply(request, job_id):
                         "job_post": job_post,
                     }
                     rendered = t.render(c)
-                    
+
                     # Prepare email content
                     subject = "Resume Alert - " + job_post.title
                     from_email = settings.DEFAULT_FROM_EMAIL
                     to_email = job_post.user.email
-                    
+
                     # Handle resume attachment if exists
                     if request.user.resume:
                         try:
                             import urllib.request
+
                             resume_filename = str(request.user.email) + ".docx"
                             urllib.request.urlretrieve(
                                 "https://peeljobs.s3.amazonaws.com/"
                                 + str(
-                                    request.user.resume.encode("ascii", "ignore").decode(
-                                        "ascii"
-                                    )
+                                    request.user.resume.encode(
+                                        "ascii", "ignore"
+                                    ).decode("ascii")
                                 ),
                                 resume_filename,
                             )
@@ -1008,33 +1008,39 @@ def job_apply(request, job_id):
                         except Exception:
                             # Log error but continue without attachment
                             pass
-                    
+
                     # Use SES to send email
                     try:
                         ses_client = boto3.client(
-                            'ses',
-                            region_name=getattr(settings, 'AWS_SES_REGION_NAME', 'eu-west-1'),
-                            aws_access_key_id=getattr(settings, 'AWS_ACCESS_KEY_ID', settings.AM_ACCESS_KEY),
-                            aws_secret_access_key=getattr(settings, 'AWS_SECRET_ACCESS_KEY', settings.AM_PASS_KEY),
+                            "ses",
+                            region_name=getattr(
+                                settings, "AWS_SES_REGION_NAME", "eu-west-1"
+                            ),
+                            aws_access_key_id=getattr(
+                                settings, "AWS_ACCESS_KEY_ID", settings.AM_ACCESS_KEY
+                            ),
+                            aws_secret_access_key=getattr(
+                                settings, "AWS_SECRET_ACCESS_KEY", settings.AM_PASS_KEY
+                            ),
                         )
-                        
+
                         # Create email message
                         email_data = {
-                            'Source': from_email,
-                            'Destination': {'ToAddresses': [to_email]},
-                            'Message': {
-                                'Subject': {'Data': subject},
-                                'Body': {'Html': {'Data': rendered}}
-                            }
+                            "Source": from_email,
+                            "Destination": {"ToAddresses": [to_email]},
+                            "Message": {
+                                "Subject": {"Data": subject},
+                                "Body": {"Html": {"Data": rendered}},
+                            },
                         }
-                        
+
                         # Send email (attachment handling would need additional implementation)
                         ses_client.send_email(**email_data)
-                        
+
                     except Exception:
                         # Log error but don't fail the application process
                         pass
-                    
+
                     data = {
                         "error": False,
                         "response": message,
@@ -1115,7 +1121,7 @@ def jobposts_by_date(request, year, month, date, **kwargs):
         status="Live",
         published_on__year=int(year),
         published_on__month=int(month),
-        published_on__day=int(date)
+        published_on__day=int(date),
     ).order_by("-published_on")
     # Google Calendar integration removed
     events = JobPost.objects.none()
@@ -1896,7 +1902,7 @@ def location_fresher_jobs(request, city_name, **kwargs):
             searched_industry,
             searched_edu,
         ) = refined_search(request.POST)
-        
+
     elif state:
         final_locations = [state[0].name]
         search_dict = QueryDict("", mutable=True)
@@ -2033,7 +2039,7 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
             searched_industry,
             searched_edu,
         ) = refined_search(request.POST)
-        
+
     elif state:
         searched_locations = state
         final_locations = [state[0].name]
@@ -2316,7 +2322,6 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
 
 def add_other_location_to_user(user, request):
     pass
-    
 
 
 def save_codes_and_send_mail(user, request, passwd):
@@ -2403,9 +2408,13 @@ def register_using_email(request):
                 save_codes_and_send_mail(user, request, password)
                 if "resume" in request.FILES:
                     s3_client = boto3.client(
-                        's3',
-                        aws_access_key_id=getattr(settings, 'AWS_ACCESS_KEY_ID', settings.AM_ACCESS_KEY),
-                        aws_secret_access_key=getattr(settings, 'AWS_SECRET_ACCESS_KEY', settings.AM_PASS_KEY)
+                        "s3",
+                        aws_access_key_id=getattr(
+                            settings, "AWS_ACCESS_KEY_ID", settings.AM_ACCESS_KEY
+                        ),
+                        aws_secret_access_key=getattr(
+                            settings, "AWS_SECRET_ACCESS_KEY", settings.AM_PASS_KEY
+                        ),
                     )
                     random_string = "".join(
                         random.choice("0123456789ABCDEF") for i in range(3)
@@ -2424,7 +2433,7 @@ def register_using_email(request):
                         Bucket=settings.AWS_STORAGE_BUCKET_NAME,
                         Key=path,
                         Body=request.FILES["resume"].read(),
-                        ACL='public-read'
+                        ACL="public-read",
                     )
                     user.resume = path
                     user.profile_updated = timezone.now()
@@ -2566,9 +2575,13 @@ def user_reg_success(request):
                     user.skills.add(tech_skill)
             if "resume" in request.FILES:
                 s3_client = boto3.client(
-                    's3',
-                    aws_access_key_id=getattr(settings, 'AWS_ACCESS_KEY_ID', settings.AM_ACCESS_KEY),
-                    aws_secret_access_key=getattr(settings, 'AWS_SECRET_ACCESS_KEY', settings.AM_PASS_KEY)
+                    "s3",
+                    aws_access_key_id=getattr(
+                        settings, "AWS_ACCESS_KEY_ID", settings.AM_ACCESS_KEY
+                    ),
+                    aws_secret_access_key=getattr(
+                        settings, "AWS_SECRET_ACCESS_KEY", settings.AM_PASS_KEY
+                    ),
                 )
                 random_string = "".join(
                     random.choice("0123456789ABCDEF") for i in range(3)
@@ -2587,7 +2600,7 @@ def user_reg_success(request):
                     Bucket=settings.AWS_STORAGE_BUCKET_NAME,
                     Key=path,
                     Body=request.FILES["resume"].read(),
-                    ACL='public-read'
+                    ACL="public-read",
                 )
                 user.resume = path
             user.profile_updated = timezone.now()

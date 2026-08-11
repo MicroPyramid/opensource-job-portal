@@ -23,8 +23,10 @@ from django.conf import settings
 
 def permission_required(*perms):
     return user_passes_test(
-        lambda u: u.is_superuser or u.is_staff or any(u.has_perm(perm) for perm in perms),
-        login_url="/dashboard/login/"
+        lambda u: (
+            u.is_superuser or u.is_staff or any(u.has_perm(perm) for perm in perms)
+        ),
+        login_url="/dashboard/login/",
     )
 
 
@@ -122,20 +124,16 @@ nsprefixes = {
     "mv": "urn:schemas-microsoft-com:mac:vml",
     "pic": "http://schemas.openxmlformats.org/drawingml/2006/picture",
     "v": "urn:schemas-microsoft-com:vml",
-    "wp": ("http://schemas.openxmlformats.org/drawingml/2006/wordprocessing" "Drawing"),
+    "wp": ("http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"),
     # Properties (core and extended)
-    "cp": (
-        "http://schemas.openxmlformats.org/package/2006/metadata/core-pr" "operties"
-    ),
+    "cp": ("http://schemas.openxmlformats.org/package/2006/metadata/core-properties"),
     "dc": "http://purl.org/dc/elements/1.1/",
-    "ep": (
-        "http://schemas.openxmlformats.org/officeDocument/2006/extended-" "properties"
-    ),
+    "ep": ("http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"),
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     # Content Types
     "ct": "http://schemas.openxmlformats.org/package/2006/content-types",
     # Package Relationships
-    "r": ("http://schemas.openxmlformats.org/officeDocument/2006/relationsh" "ips"),
+    "r": ("http://schemas.openxmlformats.org/officeDocument/2006/relationships"),
     "pr": "http://schemas.openxmlformats.org/package/2006/relationships",
     # Dublin Core document properties
     "dcmitype": "http://purl.org/dc/dcmitype/",

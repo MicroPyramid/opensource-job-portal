@@ -208,7 +208,6 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             self.fields["salary_type"].required = True
             self.fields["min_salary"].required = True
         if "max_salary" in kwargs["data"].keys() and kwargs["data"]["max_salary"]:
-
             self.fields["max_salary"].required = True
             self.fields["salary_type"].required = True
 
@@ -260,7 +259,6 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             self.fields["edu_qualification"].required = False
 
         if str(kwargs["data"]["job_type"]) == "government":
-
             self.fields["min_year"].required = False
             self.fields["max_year"].required = False
             self.fields["min_month"].required = False
@@ -398,7 +396,6 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
                 or re.match(r"^https://", self.data["company_website"])
                 or re.match(r"^www.", self.data["company_website"])
             ):
-
                 company = ""
                 if "company_id" in self.data.keys() and self.data["company_id"]:
                     company = Company.objects.filter(id=self.data["company_id"])

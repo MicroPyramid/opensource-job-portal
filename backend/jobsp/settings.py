@@ -21,7 +21,7 @@ RECRUITER_FRONTEND_URL = os.getenv("RECRUITER_FRONTEND_URL", "http://localhost:5
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
-CELERY_IMPORTS = ("dashboard.tasks")
+CELERY_IMPORTS = "dashboard.tasks"
 
 
 # Enable debug logging
@@ -379,7 +379,6 @@ THUMBNAIL_DEBUG = True
 THUMBNAIL_FORCE_OVERWRITE = True
 
 
-
 # AWS_ENABLED = os.getenv("AWSENABLED")
 # DISQUS_SHORTNAME = ""
 
@@ -450,16 +449,12 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
-
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
-
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
-
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
 }
@@ -484,7 +479,10 @@ SPECTACULAR_SETTINGS = {
         {"url": "https://peeljobs.com", "description": "Production server"},
     ],
     "TAGS": [
-        {"name": "Authentication", "description": "Google OAuth 2.0 and JWT token management"},
+        {
+            "name": "Authentication",
+            "description": "Google OAuth 2.0 and JWT token management",
+        },
         {"name": "User Profile", "description": "Job Seeker profile management"},
         {"name": "Jobs", "description": "Job search and applications (coming soon)"},
     ],
@@ -520,6 +518,7 @@ TAILWIND_CSS_FILE = "css/tailwind-output.css"
 # Try to load local settings for development
 try:
     from .settings_local import *
+
     print("Local development settings loaded")
 except ImportError:
     pass  # settings_local.py doesn't exist or has import errors

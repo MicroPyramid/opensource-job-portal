@@ -364,7 +364,6 @@ def view_resumes(request, job_post_id):
 
     if request.POST.get("apply_job"):
         if request.POST.get("jobposts_type"):
-
             for each in request.POST.getlist("apply_job"):
                 agency_applicant = AgencyApplicants.objects.get(
                     id=each, job_post=job_post
@@ -446,7 +445,6 @@ def job_status_change(request, job_post_id):
 def jobs_billing_process(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     if request.user.is_agency_admin:
-
         agreed_percantage = job_post.agency_category.percantage
         total_amount = job_post.agency_amount
 

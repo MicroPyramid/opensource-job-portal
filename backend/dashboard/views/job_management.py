@@ -103,7 +103,6 @@ def post_list(request, job_type):
     )
 
 
-
 @permission_required("activity_view", "activity_edit")
 def post_detail(request, post_id):
     post = get_object_or_404(JobPost, id=post_id)
@@ -127,7 +126,6 @@ def post_detail(request, post_id):
     )
 
 
-
 def status_change(request, post_id):
     post = JobPost.objects.get(id=post_id)
     if post.status == "Live":
@@ -145,12 +143,11 @@ def status_change(request, post_id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
-
 @permission_required("activity_edit")
 def deactivate_job(request, job_post_id):
 
     job_post = get_object_or_404(JobPost, id=job_post_id)
-   
+
     job_post.previous_status = job_post.status
     job_post.status = "Disabled"
     job_post.save()
@@ -164,7 +161,7 @@ def deactivate_job(request, job_post_id):
 def delete_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     job_type = job_post.job_type
-        
+
     job_post.delete()
 
     data = {
@@ -181,13 +178,13 @@ def publish_job(request, job_post_id):
     if job_post.status == "Pending":
         job_post.status = "Published"
         job_post.save()
-        
+
     else:
         job_post.status = "Pending"
         job_post.save()
-     
+
     job_post.save()
-    
+
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
@@ -198,11 +195,10 @@ def enable_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     job_post.status = job_post.previous_status
     job_post.save()
-        
+
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
-
 
 
 @permission_required("activity_edit")
@@ -242,7 +238,6 @@ def new_govt_job(request, job_type):
     no_of_locations = int(json.loads(request.POST["no_of_interview_location"])) + 1
 
     for key, value in request.POST.items():
-
         if "final_industry" in request.POST.keys():
             for industry in json.loads(request.POST["final_industry"]):
                 for key, value in industry.items():
@@ -375,7 +370,6 @@ def new_govt_job(request, job_type):
             )
 
         if request.POST.get("status") == "Pending":
-
             if request.POST.get("fb_post") == "on":
                 validate_post.post_on_fb = True
                 validate_post.fb_groups = request.POST.getlist("fb_groups")
@@ -429,7 +423,6 @@ def new_govt_job(request, job_type):
         return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_edit")
 def edit_govt_job(request, post_id):
     job_posts = JobPost.objects.filter(id=post_id, user=request.user)
@@ -451,7 +444,7 @@ def edit_govt_job(request, post_id):
                 FunctionalArea.objects.filter(status="Active").order_by("name")
             )
             functional_area.extend(job_post.functional_area.filter(status="InActive"))
-            
+
             companies = Company.objects.filter(
                 company_type="Company", is_active=True
             ).order_by("name")
@@ -484,7 +477,6 @@ def edit_govt_job(request, post_id):
     errors = validate_post.errors
 
     for key, value in request.POST.items():
-
         if "final_industry" in request.POST.keys():
             for industry in json.loads(request.POST["final_industry"]):
                 for key, value in industry.items():
@@ -612,7 +604,6 @@ def edit_govt_job(request, post_id):
         post.keywords.clear()
 
         if "final_skills" in request.POST.keys():
-
             add_other_skills(
                 post, json.loads(request.POST["final_skills"]), request.user
             )
@@ -691,8 +682,6 @@ def edit_govt_job(request, post_id):
         return HttpResponse(json.dumps(data))
 
 
-
-
 @permission_required("activity_edit")
 def preview_job(request, post_id):
     job_post = JobPost.objects.filter(id=post_id, user=request.user)
@@ -703,8 +692,6 @@ def preview_job(request, post_id):
             )
     message = "No Job Preview Available"
     return render(request, "dashboard/404.html", {"message": message}, status=404)
-
-
 
 
 def edit_job_title(request, post_id):
@@ -801,8 +788,6 @@ def edit_job_title(request, post_id):
     )
 
 
-
-
 @permission_required("activity_edit")
 def mail_to_recruiter(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
@@ -817,5 +802,3 @@ def mail_to_recruiter(request, job_post_id):
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
-
-

@@ -13,13 +13,11 @@ from ..forms import UserForm
 # Functions to move here from main views.py:
 
 
-
 @permission_required("activity_view", "activity_edit")
 def admin_user_list(request):
     users_list = User.objects.filter(is_staff=True)
 
     return render(request, "dashboard/users/list.html", {"users_list": users_list})
-
 
 
 @permission_required("")
@@ -74,14 +72,12 @@ def new_admin_user(request):
     )
 
 
-
 @permission_required("")
 def view_user(request, user_id):
     user = User.objects.filter(id=user_id).first()
     if not user:
         return render(request, "dashboard/404.html", status=404)
     return render(request, "dashboard/users/view.html", {"user": user})
-
 
 
 @permission_required("")

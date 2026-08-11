@@ -6,25 +6,46 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('peeldb', '0061_alter_user_resume'),
+        ("peeldb", "0061_alter_user_resume"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SavedJobs',
+            name="SavedJobs",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('saved_on', models.DateTimeField(auto_now_add=True)),
-                ('job_post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='saved_by', to='peeldb.jobpost')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='saved_jobs', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("saved_on", models.DateTimeField(auto_now_add=True)),
+                (
+                    "job_post",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="saved_by",
+                        to="peeldb.jobpost",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="saved_jobs",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Saved Job',
-                'verbose_name_plural': 'Saved Jobs',
-                'ordering': ['-saved_on'],
-                'unique_together': {('job_post', 'user')},
+                "verbose_name": "Saved Job",
+                "verbose_name_plural": "Saved Jobs",
+                "ordering": ["-saved_on"],
+                "unique_together": {("job_post", "user")},
             },
         ),
     ]

@@ -2,6 +2,7 @@
 Main API URL routing
 Versioned API structure for future compatibility
 """
+
 from django.urls import path, include
 
 app_name = "api"

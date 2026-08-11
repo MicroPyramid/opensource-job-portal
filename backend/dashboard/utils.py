@@ -1,7 +1,6 @@
 # Dashboard Utils - Common functions used across dashboard views
 
 
-
 def get_paginated_results(request, queryset, per_page=10):
     """
     Common pagination utility for dashboard views

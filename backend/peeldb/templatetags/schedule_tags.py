@@ -85,7 +85,7 @@ def get_per_day_jobposts(context, year, month, date):
             jobs_list = context["jobs_list"].filter(
                 published_on__year=int(year),
                 published_on__month=int(month),
-                published_on__day=int(date)
+                published_on__day=int(date),
             )
         else:
             jobs_list = []

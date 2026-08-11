@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('peeldb', '0071_remove_assessment_models'),
+        ("peeldb", "0071_remove_assessment_models"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='github',
-            name='user',
+            model_name="github",
+            name="user",
         ),
         migrations.DeleteModel(
-            name='Facebook',
+            name="Facebook",
         ),
         migrations.DeleteModel(
-            name='GitHub',
+            name="GitHub",
         ),
     ]

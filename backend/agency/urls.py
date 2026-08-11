@@ -6,6 +6,7 @@ The agency app is deprecated and should be migrated or removed.
 
 For now, this file contains minimal URLs to prevent import errors.
 """
+
 from django.urls import re_path as url
 from django.views.generic import RedirectView
 
@@ -36,10 +37,13 @@ app_name = "agency"
 
 urlpatterns = [
     # Redirect to recruiter SvelteKit dashboard
-    url(r"^$", RedirectView.as_view(url="http://localhost:5174/dashboard", permanent=False), name="index"),
+    url(
+        r"^$",
+        RedirectView.as_view(url="http://localhost:5174/dashboard", permanent=False),
+        name="index",
+    ),
     url(r"^dashboard/$", dashboard, name="dashboard"),
     url(r"^how-it-works/$", how_it_works, name="how_it_works"),
-
     # Agency-specific features (client management, billing)
     url(r"^work-log/$", user_work_log, name="user_work_log"),
     url(

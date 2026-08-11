@@ -33,9 +33,9 @@ def str_to_list(value):
     """Convert string representation of list to actual list"""
     if isinstance(value, str):
         # Remove brackets and quotes, then split by comma
-        value = value.strip('[]').replace("'", "").replace('"', '')
+        value = value.strip("[]").replace("'", "").replace('"', "")
         if value:
-            return [item.strip() for item in value.split(',') if item.strip()]
+            return [item.strip() for item in value.split(",") if item.strip()]
         return []
     return value if isinstance(value, list) else []
 
@@ -90,7 +90,7 @@ def get_resume_name(value):
     if not value:
         return ""
     # Convert FieldFile to string using .name attribute
-    file_path = value.name if hasattr(value, 'name') else str(value)
+    file_path = value.name if hasattr(value, "name") else str(value)
     resume_name = file_path.split("/")[-1]
     return resume_name
 
@@ -99,23 +99,26 @@ def get_resume_name(value):
 def get_s3_url(key):
     # Handle empty, None, or invalid keys
     if not key or not str(key).strip():
-        return '#'
-    
+        return "#"
+
     try:
         s3_client = boto3.client(
-            's3',
+            "s3",
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
         )
         stored_url = s3_client.generate_presigned_url(
-            'get_object',
-            Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': str(key).strip()},
-            ExpiresIn=600
+            "get_object",
+            Params={
+                "Bucket": settings.AWS_STORAGE_BUCKET_NAME,
+                "Key": str(key).strip(),
+            },
+            ExpiresIn=600,
         )
         return stored_url
     except Exception:
         # Return a placeholder URL if S3 operation fails
-        return '#'
+        return "#"
 
 
 @register.filter
@@ -706,9 +709,10 @@ def get_related_skills(search_skills):
 def is_events_created(request, job):
     """Google Calendar integration removed - check job expiry using 30-day rule"""
     from datetime import timedelta
+
     if not job.published_on:
         return True
-    max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+    max_age_days = getattr(settings, "JOB_APPLICATION_MAX_AGE_DAYS", 30)
     expiry_date = job.published_on.date() + timedelta(days=max_age_days)
     return date.today() >= expiry_date
 
@@ -746,26 +750,29 @@ def is_recent_job(published_date, days=7):
     """
     if not published_date:
         return False
-    
+
     try:
         # Calculate the difference between now and the published date
         now = datetime.datetime.now()
-        if hasattr(published_date, 'date'):
+        if hasattr(published_date, "date"):
             # If it's a datetime object
             published_datetime = published_date
         else:
             # If it's a date object, convert to datetime
-            published_datetime = datetime.datetime.combine(published_date, datetime.datetime.min.time())
-        
+            published_datetime = datetime.datetime.combine(
+                published_date, datetime.datetime.min.time()
+            )
+
         # Make both timezone-aware or timezone-naive
-        if hasattr(published_datetime, 'tzinfo') and published_datetime.tzinfo:
+        if hasattr(published_datetime, "tzinfo") and published_datetime.tzinfo:
             # If published_datetime is timezone-aware, make now timezone-aware too
             from django.utils import timezone
+
             now = timezone.now()
-        elif hasattr(now, 'tzinfo') and now.tzinfo:
+        elif hasattr(now, "tzinfo") and now.tzinfo:
             # If now is timezone-aware but published_datetime is not, make now naive
             now = now.replace(tzinfo=None)
-        
+
         difference = now - published_datetime
         return difference.days <= days
     except (AttributeError, TypeError, ValueError):

@@ -1,6 +1,7 @@
 """
 Serializers for Recruiter/Employer API endpoints
 """
+
 from rest_framework import serializers
 from peeldb.models import User, Company, TeamInvitation
 from django.utils.crypto import get_random_string
@@ -10,13 +11,23 @@ from datetime import timedelta
 
 class CompanyBasicSerializer(serializers.ModelSerializer):
     """Basic company information"""
+
     class Meta:
         model = Company
-        fields = ['id', 'name', 'slug', 'profile_pic', 'website', 'company_type', 'size']
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "profile_pic",
+            "website",
+            "company_type",
+            "size",
+        ]
 
 
 class TeamMemberStatsSerializer(serializers.Serializer):
     """Statistics for team member"""
+
     jobs_posted = serializers.IntegerField()
     active_jobs = serializers.IntegerField()
     total_applicants = serializers.IntegerField()
@@ -24,13 +35,22 @@ class TeamMemberStatsSerializer(serializers.Serializer):
 
 class TeamMemberSerializer(serializers.ModelSerializer):
     """Team member details"""
+
     stats = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
-            'id', 'email', 'first_name', 'last_name', 'job_title',
-            'is_admin', 'date_joined', 'last_login', 'profile_pic', 'stats'
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "job_title",
+            "is_admin",
+            "date_joined",
+            "last_login",
+            "profile_pic",
+            "stats",
         ]
 
     def get_stats(self, obj):
@@ -38,7 +58,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         from peeldb.models import JobPost
 
         jobs = JobPost.objects.filter(user=obj)
-        active_jobs = jobs.filter(status='Live')
+        active_jobs = jobs.filter(status="Live")
 
         total_applicants = 0
         for job in jobs:
@@ -46,45 +66,56 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             total_applicants += job.appliedjobs_set.count()
 
         return {
-            'jobs_posted': jobs.count(),
-            'active_jobs': active_jobs.count(),
-            'total_applicants': total_applicants
+            "jobs_posted": jobs.count(),
+            "active_jobs": active_jobs.count(),
+            "total_applicants": total_applicants,
         }
 
 
 class TeamMemberDetailSerializer(TeamMemberSerializer):
     """Detailed team member information with recent jobs"""
+
     recent_jobs = serializers.SerializerMethodField()
 
     class Meta(TeamMemberSerializer.Meta):
-        fields = TeamMemberSerializer.Meta.fields + ['recent_jobs']
+        fields = TeamMemberSerializer.Meta.fields + ["recent_jobs"]
 
     def get_recent_jobs(self, obj):
         """Get recent jobs posted by this member"""
         from peeldb.models import JobPost
 
-        jobs = JobPost.objects.filter(user=obj).order_by('-created_on')[:5]
-        return [{
-            'id': job.id,
-            'title': job.title,
-            'status': job.status,
-            'posted_date': job.created_on,
-            'applicants_count': job.appliedjobs_set.count()
-        } for job in jobs]
+        jobs = JobPost.objects.filter(user=obj).order_by("-created_on")[:5]
+        return [
+            {
+                "id": job.id,
+                "title": job.title,
+                "status": job.status,
+                "posted_date": job.created_on,
+                "applicants_count": job.appliedjobs_set.count(),
+            }
+            for job in jobs
+        ]
 
 
 class TeamInvitationSerializer(serializers.ModelSerializer):
     """Team invitation details"""
+
     invited_by_name = serializers.SerializerMethodField()
-    invited_by_email = serializers.CharField(source='invited_by.email', read_only=True)
+    invited_by_email = serializers.CharField(source="invited_by.email", read_only=True)
     days_remaining = serializers.SerializerMethodField()
 
     class Meta:
         model = TeamInvitation
         fields = [
-            'id', 'email', 'role_title', 'status',
-            'invited_by_name', 'invited_by_email',
-            'created_at', 'expires_at', 'days_remaining'
+            "id",
+            "email",
+            "role_title",
+            "status",
+            "invited_by_name",
+            "invited_by_email",
+            "created_at",
+            "expires_at",
+            "days_remaining",
         ]
 
     def get_invited_by_name(self, obj):
@@ -92,7 +123,7 @@ class TeamInvitationSerializer(serializers.ModelSerializer):
 
     def get_days_remaining(self, obj):
         """Calculate days until expiration"""
-        if obj.status != 'pending':
+        if obj.status != "pending":
             return 0
         delta = obj.expires_at - timezone.now()
         return max(0, delta.days)
@@ -100,6 +131,7 @@ class TeamInvitationSerializer(serializers.ModelSerializer):
 
 class SendInvitationSerializer(serializers.Serializer):
     """Serializer for sending team invitation"""
+
     email = serializers.EmailField()
     job_title = serializers.CharField(max_length=200, required=False, allow_blank=True)
     message = serializers.CharField(max_length=1000, required=False, allow_blank=True)
@@ -111,22 +143,22 @@ class SendInvitationSerializer(serializers.Serializer):
             raise serializers.ValidationError("A user with this email already exists")
 
         # Check if pending invitation exists
-        company = self.context.get('company')
+        company = self.context.get("company")
         if company:
             existing = TeamInvitation.objects.filter(
-                company=company,
-                email=value,
-                status='pending'
+                company=company, email=value, status="pending"
             ).first()
             if existing and not existing.is_expired():
-                raise serializers.ValidationError("An invitation has already been sent to this email")
+                raise serializers.ValidationError(
+                    "An invitation has already been sent to this email"
+                )
 
         return value
 
     def create(self, validated_data):
         """Create team invitation"""
-        company = self.context['company']
-        invited_by = self.context['user']
+        company = self.context["company"]
+        invited_by = self.context["user"]
 
         # Generate unique token
         token = get_random_string(64)
@@ -135,10 +167,10 @@ class SendInvitationSerializer(serializers.Serializer):
         invitation = TeamInvitation.objects.create(
             company=company,
             invited_by=invited_by,
-            email=validated_data['email'],
+            email=validated_data["email"],
             token=token,
-            role_title=validated_data.get('job_title', ''),
-            expires_at=timezone.now() + timedelta(days=7)
+            role_title=validated_data.get("job_title", ""),
+            expires_at=timezone.now() + timedelta(days=7),
         )
 
         # TODO: Send invitation email
@@ -148,21 +180,20 @@ class SendInvitationSerializer(serializers.Serializer):
 
 class UpdateTeamMemberSerializer(serializers.Serializer):
     """Serializer for updating team member"""
+
     job_title = serializers.CharField(max_length=200, required=False, allow_blank=True)
     is_admin = serializers.BooleanField(required=False)
 
     def validate_is_admin(self, value):
         """Prevent demoting last admin"""
         if value is False:
-            user = self.context.get('user_to_update')
-            company = self.context.get('company')
+            user = self.context.get("user_to_update")
+            company = self.context.get("company")
 
             if user and company and user.is_admin:
                 # Check if this is the last admin
                 admin_count = User.objects.filter(
-                    company=company,
-                    is_admin=True,
-                    user_type='EM'
+                    company=company, is_admin=True, user_type="EM"
                 ).count()
 
                 if admin_count <= 1:
@@ -175,6 +206,7 @@ class UpdateTeamMemberSerializer(serializers.Serializer):
 
 class AcceptInvitationSerializer(serializers.Serializer):
     """Serializer for accepting team invitation during signup"""
+
     token = serializers.CharField(max_length=100)
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
@@ -184,37 +216,39 @@ class AcceptInvitationSerializer(serializers.Serializer):
     def validate_token(self, value):
         """Validate invitation token"""
         try:
-            invitation = TeamInvitation.objects.get(token=value, status='pending')
+            invitation = TeamInvitation.objects.get(token=value, status="pending")
             if invitation.is_expired():
                 raise serializers.ValidationError("This invitation has expired")
-            self.context['invitation'] = invitation
+            self.context["invitation"] = invitation
             return value
         except TeamInvitation.DoesNotExist:
             raise serializers.ValidationError("Invalid invitation token")
 
     def validate(self, data):
         """Validate passwords match"""
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
+        if data["password"] != data["confirm_password"]:
+            raise serializers.ValidationError(
+                {"confirm_password": "Passwords do not match"}
+            )
         return data
 
     def create(self, validated_data):
         """Create user from invitation"""
-        invitation = self.context['invitation']
+        invitation = self.context["invitation"]
 
         # Create user
         user = User.objects.create_user(
             username=invitation.email,
             email=invitation.email,
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            password=validated_data['password'],
-            user_type='EM',
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+            password=validated_data["password"],
+            user_type="EM",
             company=invitation.company,
             is_admin=False,
             job_title=invitation.role_title,
             email_verified=True,  # Pre-verified since invited by admin
-            is_active=True
+            is_active=True,
         )
 
         # Accept invitation
@@ -225,27 +259,38 @@ class AcceptInvitationSerializer(serializers.Serializer):
 
 class CompanyDetailSerializer(serializers.ModelSerializer):
     """Detailed company information for recruiters"""
+
     logo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Company
         fields = [
-            'id', 'name', 'slug', 'website', 'address', 'profile',
-            'phone_number', 'email', 'size', 'company_type',
-            'profile_pic', 'logo_url', 'registered_date'
+            "id",
+            "name",
+            "slug",
+            "website",
+            "address",
+            "profile",
+            "phone_number",
+            "email",
+            "size",
+            "company_type",
+            "profile_pic",
+            "logo_url",
+            "registered_date",
         ]
-        read_only_fields = ['id', 'slug', 'registered_date']
+        read_only_fields = ["id", "slug", "registered_date"]
 
     def get_logo_url(self, obj):
         """Get company logo URL"""
         if obj.profile_pic:
-            request = self.context.get('request')
+            request = self.context.get("request")
             if request:
                 try:
                     return request.build_absolute_uri(obj.profile_pic.url)
                 except Exception:
                     pass
-        return 'https://cdn.peeljobs.com/static/company_logo.png'
+        return "https://cdn.peeljobs.com/static/company_logo.png"
 
 
 class CompanyUpdateSerializer(serializers.ModelSerializer):
@@ -254,22 +299,30 @@ class CompanyUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = [
-            'name', 'website', 'address', 'profile',
-            'phone_number', 'email', 'size', 'profile_pic'
+            "name",
+            "website",
+            "address",
+            "profile",
+            "phone_number",
+            "email",
+            "size",
+            "profile_pic",
         ]
 
     def validate_name(self, value):
         """Validate company name"""
         if not value or len(value.strip()) < 2:
-            raise serializers.ValidationError("Company name must be at least 2 characters")
+            raise serializers.ValidationError(
+                "Company name must be at least 2 characters"
+            )
         return value.strip()
 
     def validate_website(self, value):
         """Validate website URL"""
         if value:
             value = value.strip()
-            if not value.startswith(('http://', 'https://')):
-                value = 'https://' + value
+            if not value.startswith(("http://", "https://")):
+                value = "https://" + value
         return value
 
     def validate_email(self, value):

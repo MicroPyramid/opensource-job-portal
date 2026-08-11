@@ -298,7 +298,6 @@ valid_time_formats = ["%H:%M", "%I:%M%p", "%I:%M %p"]
 
 
 class JobPostForm(ModelForm):
-
     min_salary = forms.IntegerField(required=False)
     max_salary = forms.IntegerField(required=False)
     published_date = forms.DateTimeField(
@@ -425,7 +424,6 @@ class JobPostForm(ModelForm):
             self.fields["salary_type"].required = True
             self.fields["min_salary"].required = True
         if "max_salary" in self.data.keys() and self.data["max_salary"]:
-
             self.fields["max_salary"].required = True
             self.fields["salary_type"].required = True
 
@@ -471,7 +469,6 @@ class JobPostForm(ModelForm):
             self.fields["edu_qualification"].required = False
 
         if str(self.data["job_type"]) == "government":
-
             self.fields["min_year"].required = False
             self.fields["max_year"].required = False
             self.fields["min_month"].required = False
@@ -616,7 +613,6 @@ class JobPostForm(ModelForm):
                 or re.match(r"^https://", self.data["company_website"])
                 or re.match(r"^www.", self.data["company_website"])
             ):
-
                 company = ""
                 if "company_id" in self.data.keys() and self.data["company_id"]:
                     company = Company.objects.filter(id=self.data["company_id"])
@@ -656,7 +652,6 @@ class JobPostForm(ModelForm):
 
 
 class MailTemplateForm(ModelForm):
-
     recruiters = forms.CharField(max_length=1000, required=False)
 
     class Meta:

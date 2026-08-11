@@ -77,7 +77,6 @@ def messages(request):
         data = get_messages(request)
         return HttpResponse(json.dumps(data))
     if request.POST.get("post_message"):
-
         msg = UserMessage.objects.create(
             message=request.POST.get("message"),
             message_from=request.user,

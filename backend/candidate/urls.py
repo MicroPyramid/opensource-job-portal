@@ -70,9 +70,7 @@ urlpatterns = [
     # url(r'^home/$','home'),
     url(r"^$", index, name="index"),
     url(r"^profile/$", profile, name="profile"),
-
     url(r"^my/home/$", my_home, name="my_home"),
-
     url(r"personalinfo/edit/$", edit_personalinfo, name="edit_personalinfo"),
     url(
         r"profile_description/edit/$",
@@ -254,7 +252,6 @@ urlpatterns = [
     ),
     url(r"user/password/change/", user_password_change, name="user_password_change"),
     url(r"^messages/$", messages, name="messages"),
-    
     # skills modal urls
     url(
         r"skill/add-modal/$",
@@ -271,17 +268,14 @@ urlpatterns = [
         delete_skill_modal,
         name="delete_skill_modal",
     ),
-    
     # test url (temporary)
     url(r"test/experience/$", test_experience_view, name="test_experience_view"),
-    
     # account settings
     url(
         r"account-settings/edit/$",
         edit_account_settings,
         name="edit_account_settings",
     ),
-    
     # certification modal urls
     url(
         r"certification/add-modal/$",
@@ -298,7 +292,6 @@ urlpatterns = [
         delete_certification_modal,
         name="delete_certification_modal",
     ),
-    
     # resume modal urls
     url(
         r"resume/upload-modal/$",

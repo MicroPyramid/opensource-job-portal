@@ -1,6 +1,7 @@
 """
 Authentication Utilities for Job Seekers
 """
+
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from peeldb.models import User, UserEmail, Google

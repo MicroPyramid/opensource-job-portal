@@ -1,6 +1,7 @@
 """
 Authentication Serializers for Job Seekers
 """
+
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -12,6 +13,7 @@ class RegisterSerializer(serializers.Serializer):
     """
     Registration serializer for new Job Seeker accounts
     """
+
     # Personal Info
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100, required=False, allow_blank=True)
@@ -30,12 +32,14 @@ class RegisterSerializer(serializers.Serializer):
     def validate(self, data):
         """Cross-field validation"""
         # Check passwords match
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
+        if data["password"] != data["confirm_password"]:
+            raise serializers.ValidationError(
+                {"confirm_password": "Passwords do not match"}
+            )
 
         # Validate password strength
         try:
-            validate_password(data['password'])
+            validate_password(data["password"])
         except DjangoValidationError as e:
             raise serializers.ValidationError({"password": list(e.messages)})
 
@@ -43,14 +47,14 @@ class RegisterSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         """Create job seeker user"""
-        email = validated_data['email']
+        email = validated_data["email"]
 
         # Parse full name into first/last name
-        first_name = validated_data.get('first_name', '')
-        last_name = validated_data.get('last_name', '')
+        first_name = validated_data.get("first_name", "")
+        last_name = validated_data.get("last_name", "")
 
         # Generate username from email
-        username = email.split('@')[0] + '_' + get_random_string(6)
+        username = email.split("@")[0] + "_" + get_random_string(6)
 
         # Generate activation code for email verification
         activation_code = get_random_string(32)
@@ -61,21 +65,19 @@ class RegisterSerializer(serializers.Serializer):
             email=email,
             first_name=first_name,
             last_name=last_name,
-            password=validated_data['password'],
-            user_type='JS',  # Job Seeker
+            password=validated_data["password"],
+            user_type="JS",  # Job Seeker
             is_active=False,  # Requires email verification
             email_verified=False,
-            activation_code=activation_code
+            activation_code=activation_code,
         )
 
-        return {
-            'user': user,
-            'activation_code': activation_code
-        }
+        return {"user": user, "activation_code": activation_code}
 
 
 class VerifyEmailSerializer(serializers.Serializer):
     """Serializer for email verification"""
+
     token = serializers.CharField(required=True)
 
     def validate_token(self, value):
@@ -90,28 +92,32 @@ class VerifyEmailSerializer(serializers.Serializer):
 
 class ResendVerificationSerializer(serializers.Serializer):
     """Serializer for resending verification email"""
+
     email = serializers.EmailField()
 
     def validate_email(self, value):
         """Check if user exists and is not verified"""
         email = value.lower()
         try:
-            user = User.objects.get(email=email, is_active=False, user_type='JS')
+            user = User.objects.get(email=email, is_active=False, user_type="JS")
             self.user = user
             return email
         except User.DoesNotExist:
-            raise serializers.ValidationError("No unverified account found with this email")
+            raise serializers.ValidationError(
+                "No unverified account found with this email"
+            )
 
 
 class ForgotPasswordSerializer(serializers.Serializer):
     """Serializer for forgot password request"""
+
     email = serializers.EmailField()
 
     def validate_email(self, value):
         """Check if user exists"""
         email = value.lower()
         try:
-            user = User.objects.get(email=email, user_type='JS')
+            user = User.objects.get(email=email, user_type="JS")
             self.user = user
             return email
         except User.DoesNotExist:
@@ -121,6 +127,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
 class ResetPasswordSerializer(serializers.Serializer):
     """Serializer for password reset"""
+
     token = serializers.CharField(required=True)
     password = serializers.CharField(min_length=8, write_only=True)
     confirm_password = serializers.CharField(min_length=8, write_only=True)
@@ -128,7 +135,7 @@ class ResetPasswordSerializer(serializers.Serializer):
     def validate_token(self, value):
         """Validate reset token"""
         try:
-            user = User.objects.get(activation_code=value, user_type='JS')
+            user = User.objects.get(activation_code=value, user_type="JS")
             self.user = user
             return value
         except User.DoesNotExist:
@@ -136,11 +143,13 @@ class ResetPasswordSerializer(serializers.Serializer):
 
     def validate(self, data):
         """Cross-field validation"""
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
+        if data["password"] != data["confirm_password"]:
+            raise serializers.ValidationError(
+                {"confirm_password": "Passwords do not match"}
+            )
 
         try:
-            validate_password(data['password'])
+            validate_password(data["password"])
         except DjangoValidationError as e:
             raise serializers.ValidationError({"password": list(e.messages)})
 
@@ -234,40 +243,36 @@ class ChangePasswordSerializer(serializers.Serializer):
     """Serializer for password change"""
 
     old_password = serializers.CharField(
-        required=True,
-        write_only=True,
-        help_text="Current password"
+        required=True, write_only=True, help_text="Current password"
     )
     new_password = serializers.CharField(
         required=True,
         write_only=True,
         min_length=8,
-        help_text="New password (minimum 8 characters)"
+        help_text="New password (minimum 8 characters)",
     )
     confirm_password = serializers.CharField(
-        required=True,
-        write_only=True,
-        help_text="Confirm new password"
+        required=True, write_only=True, help_text="Confirm new password"
     )
 
     def validate_old_password(self, value):
         """Validate that the old password is correct"""
-        user = self.context['request'].user
+        user = self.context["request"].user
         if not user.check_password(value):
             raise serializers.ValidationError("Current password is incorrect")
         return value
 
     def validate(self, data):
         """Validate that new passwords match"""
-        if data['new_password'] != data['confirm_password']:
-            raise serializers.ValidationError({
-                'confirm_password': "New passwords do not match"
-            })
+        if data["new_password"] != data["confirm_password"]:
+            raise serializers.ValidationError(
+                {"confirm_password": "New passwords do not match"}
+            )
 
         # Check that new password is different from old
-        if data['old_password'] == data['new_password']:
-            raise serializers.ValidationError({
-                'new_password': "New password must be different from current password"
-            })
+        if data["old_password"] == data["new_password"]:
+            raise serializers.ValidationError(
+                {"new_password": "New password must be different from current password"}
+            )
 
         return data

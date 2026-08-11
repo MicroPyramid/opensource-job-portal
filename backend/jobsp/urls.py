@@ -71,10 +71,14 @@ from .views import user_login, user_register, forgot_password, set_password
 
 
 urlpatterns = [
-    path("login/", user_login, name="login"), # convert to tailwind
+    path("login/", user_login, name="login"),  # convert to tailwind
     path("register/", user_register, name="register"),
     path("forgot-password/", forgot_password, name="forgot_password"),
-    path("set-password/<int:user_id>/<str:passwd_reset_token>/", set_password, name="set_password"),
+    path(
+        "set-password/<int:user_id>/<str:passwd_reset_token>/",
+        set_password,
+        name="set_password",
+    ),
     url(
         r"^jobs/(?P<job_title_slug>[a-z0-9-.,*?]+)-(?P<job_id>([0-9])+)/$",
         job_detail,
@@ -325,7 +329,10 @@ urlpatterns += [
 ]
 
 # Add Django Sitemap URLs (Modern replacement for old sitemap generation)
-from django.contrib.sitemaps.views import sitemap as sitemap_view, index as sitemap_index
+from django.contrib.sitemaps.views import (
+    sitemap as sitemap_view,
+    index as sitemap_index,
+)
 from psite.sitemaps import (
     JobPostSitemap,
     SkillLocationSitemap,
@@ -337,21 +344,31 @@ from psite.sitemaps import (
 )
 
 sitemaps = {
-    'jobs': JobPostSitemap,
-    'skill-locations': SkillLocationSitemap,
-    'fresher-skill-locations': FresherSkillLocationSitemap,
-    'skills': SkillSitemap,
-    'locations': LocationSitemap,
-    'companies': CompanySitemap,
-    'static': StaticPagesSitemap,
+    "jobs": JobPostSitemap,
+    "skill-locations": SkillLocationSitemap,
+    "fresher-skill-locations": FresherSkillLocationSitemap,
+    "skills": SkillSitemap,
+    "locations": LocationSitemap,
+    "companies": CompanySitemap,
+    "static": StaticPagesSitemap,
 }
 
 urlpatterns += [
     # Sitemap index - automatically splits into multiple files if needed
     # Domain (peeljobs.com) configured via Django Site framework (SITE_ID=1)
-    path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.index'),
+    path(
+        "sitemap.xml",
+        sitemap_index,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.index",
+    ),
     # Individual sitemap sections
-    path('sitemap-<section>.xml', sitemap_view, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path(
+        "sitemap-<section>.xml",
+        sitemap_view,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
 ]
 
 handler404 = custom_404
@@ -360,6 +377,7 @@ handler500 = custom_500
 # Include local development URLs if available
 try:
     from .urls_local import local_urlpatterns
+
     urlpatterns += local_urlpatterns
     print("Local development URLs loaded")
 except ImportError:
@@ -368,5 +386,6 @@ except ImportError:
 # Serve media files in development
 if settings.DEBUG:
     from django.conf.urls.static import static
+
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

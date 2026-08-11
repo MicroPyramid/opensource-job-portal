@@ -28,6 +28,7 @@ from ..forms import MetaForm
 
 # Functions to move here from main views.py:
 
+
 @login_required
 def aws_push_to_s3(request):
     if request.method == "POST":
@@ -91,11 +92,9 @@ def aws_del_from_s3(request):
     )
 
 
-
 def updating_meta_data():
     skills = Skill.objects.filter(status="Active", slug="java")
     for skill in skills:
-
         meta_title = (
             skill.meta["meta_title"] if "meta_title" in skill.meta.keys() else ""
         )
@@ -118,8 +117,6 @@ def updating_meta_data():
         meta["walkin_meta_description"] = walkin_meta_description
         skill.meta = meta
         skill.save()
-
-
 
 
 @permission_required("activity_edit")

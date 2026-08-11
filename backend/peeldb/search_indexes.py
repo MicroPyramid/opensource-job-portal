@@ -111,9 +111,7 @@ class jobIndex(indexes.SearchIndex, indexes.Indexable):
             self.get_model()
             .objects.filter(status="Live")
             .select_related("company", "user")
-            .prefetch_related(
-                "location", "edu_qualification", "industry", "skills"
-            )
+            .prefetch_related("location", "edu_qualification", "industry", "skills")
         )
 
 

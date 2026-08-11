@@ -4,47 +4,46 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('peeldb', '0070_remove_last_date_field'),
+        ("peeldb", "0070_remove_last_date_field"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='question',
+            name="question",
             unique_together=None,
         ),
         migrations.RemoveField(
-            model_name='question',
-            name='attachments',
+            model_name="question",
+            name="attachments",
         ),
         migrations.RemoveField(
-            model_name='question',
-            name='created_by',
+            model_name="question",
+            name="created_by",
         ),
         migrations.RemoveField(
-            model_name='question',
-            name='skills',
+            model_name="question",
+            name="skills",
         ),
         migrations.RemoveField(
-            model_name='question',
-            name='solutions',
+            model_name="question",
+            name="solutions",
         ),
         migrations.RemoveField(
-            model_name='solution',
-            name='attachments',
+            model_name="solution",
+            name="attachments",
         ),
         migrations.RemoveField(
-            model_name='solution',
-            name='given_by',
+            model_name="solution",
+            name="given_by",
         ),
         migrations.DeleteModel(
-            name='AssessmentData',
+            name="AssessmentData",
         ),
         migrations.DeleteModel(
-            name='Question',
+            name="Question",
         ),
         migrations.DeleteModel(
-            name='Solution',
+            name="Solution",
         ),
     ]

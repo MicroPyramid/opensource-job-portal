@@ -1,6 +1,7 @@
 """
 Portfolio Views for Job Seekers - Projects and Certifications Management
 """
+
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -20,32 +21,37 @@ class ProjectViewSet(viewsets.ModelViewSet):
     - Update existing project
     - Delete project
     """
+
     permission_classes = [IsAuthenticated]
     serializer_class = ProjectSerializer
 
     def get_queryset(self):
         """Get projects for authenticated user only"""
-        return self.request.user.project.all().prefetch_related('skills').select_related('location').order_by('-from_date')
+        return (
+            self.request.user.project.all()
+            .prefetch_related("skills")
+            .select_related("location")
+            .order_by("-from_date")
+        )
 
     @extend_schema(
         summary="List projects",
         description="Get all projects for the authenticated job seeker, sorted by most recent first",
         responses={
             200: OpenApiResponse(
-                response=ProjectSerializer(many=True),
-                description="List of projects"
+                response=ProjectSerializer(many=True), description="List of projects"
             ),
             401: OpenApiResponse(description="Authentication required"),
-            403: OpenApiResponse(description="Only job seekers can access")
+            403: OpenApiResponse(description="Only job seekers can access"),
         },
-        tags=["Projects"]
+        tags=["Projects"],
     )
     def list(self, request):
         """List all projects for user"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         queryset = self.get_queryset()
@@ -58,12 +64,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         request=ProjectSerializer,
         responses={
             201: OpenApiResponse(
-                response=ProjectSerializer,
-                description="Project created successfully"
+                response=ProjectSerializer, description="Project created successfully"
             ),
             400: OpenApiResponse(description="Validation error"),
             401: OpenApiResponse(description="Authentication required"),
-            403: OpenApiResponse(description="Only job seekers can access")
+            403: OpenApiResponse(description="Only job seekers can access"),
         },
         tags=["Projects"],
         examples=[
@@ -77,18 +82,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
                     "description": "Developed a full-stack e-commerce platform using React and Django",
                     "location_id": 1,
                     "role": "Full Stack Developer",
-                    "size": 4
+                    "size": 4,
                 },
-                request_only=True
+                request_only=True,
             )
-        ]
+        ],
     )
     def create(self, request):
         """Create new project"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         serializer = self.get_serializer(data=request.data)
@@ -105,20 +110,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
         description="Get details of a specific project",
         responses={
             200: OpenApiResponse(
-                response=ProjectSerializer,
-                description="Project details"
+                response=ProjectSerializer, description="Project details"
             ),
             403: OpenApiResponse(description="Not authorized to access this project"),
-            404: OpenApiResponse(description="Project not found")
+            404: OpenApiResponse(description="Project not found"),
         },
-        tags=["Projects"]
+        tags=["Projects"],
     )
     def retrieve(self, request, pk=None):
         """Get specific project"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
@@ -127,8 +131,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Project.DoesNotExist:
             return Response(
-                {'error': 'Project not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
@@ -137,21 +140,20 @@ class ProjectViewSet(viewsets.ModelViewSet):
         request=ProjectSerializer,
         responses={
             200: OpenApiResponse(
-                response=ProjectSerializer,
-                description="Project updated successfully"
+                response=ProjectSerializer, description="Project updated successfully"
             ),
             400: OpenApiResponse(description="Validation error"),
             403: OpenApiResponse(description="Not authorized"),
-            404: OpenApiResponse(description="Project not found")
+            404: OpenApiResponse(description="Project not found"),
         },
-        tags=["Projects"]
+        tags=["Projects"],
     )
     def update(self, request, pk=None):
         """Full update of project"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
@@ -163,8 +165,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Project.DoesNotExist:
             return Response(
-                {'error': 'Project not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
@@ -173,21 +174,20 @@ class ProjectViewSet(viewsets.ModelViewSet):
         request=ProjectSerializer,
         responses={
             200: OpenApiResponse(
-                response=ProjectSerializer,
-                description="Project updated successfully"
+                response=ProjectSerializer, description="Project updated successfully"
             ),
             400: OpenApiResponse(description="Validation error"),
             403: OpenApiResponse(description="Not authorized"),
-            404: OpenApiResponse(description="Project not found")
+            404: OpenApiResponse(description="Project not found"),
         },
-        tags=["Projects"]
+        tags=["Projects"],
     )
     def partial_update(self, request, pk=None):
         """Partial update of project"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
@@ -199,8 +199,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Project.DoesNotExist:
             return Response(
-                {'error': 'Project not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
@@ -209,16 +208,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
         responses={
             204: OpenApiResponse(description="Project deleted successfully"),
             403: OpenApiResponse(description="Not authorized"),
-            404: OpenApiResponse(description="Project not found")
+            404: OpenApiResponse(description="Project not found"),
         },
-        tags=["Projects"]
+        tags=["Projects"],
     )
     def destroy(self, request, pk=None):
         """Delete project"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
@@ -230,8 +229,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Project.DoesNotExist:
             return Response(
-                {'error': 'Project not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
 
@@ -245,12 +243,15 @@ class CertificationViewSet(viewsets.ModelViewSet):
     - Update existing certification
     - Delete certification
     """
+
     permission_classes = [IsAuthenticated]
     serializer_class = CertificationSerializer
 
     def get_queryset(self):
         """Get certifications for authenticated user only"""
-        return self.request.user.user_certifications.all().order_by('-issued_date', '-created_at')
+        return self.request.user.user_certifications.all().order_by(
+            "-issued_date", "-created_at"
+        )
 
     @extend_schema(
         summary="List certifications",
@@ -258,19 +259,19 @@ class CertificationViewSet(viewsets.ModelViewSet):
         responses={
             200: OpenApiResponse(
                 response=CertificationSerializer(many=True),
-                description="List of certifications"
+                description="List of certifications",
             ),
             401: OpenApiResponse(description="Authentication required"),
-            403: OpenApiResponse(description="Only job seekers can access")
+            403: OpenApiResponse(description="Only job seekers can access"),
         },
-        tags=["Certifications"]
+        tags=["Certifications"],
     )
     def list(self, request):
         """List all certifications for user"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         queryset = self.get_queryset()
@@ -284,11 +285,11 @@ class CertificationViewSet(viewsets.ModelViewSet):
         responses={
             201: OpenApiResponse(
                 response=CertificationSerializer,
-                description="Certification created successfully"
+                description="Certification created successfully",
             ),
             400: OpenApiResponse(description="Validation error"),
             401: OpenApiResponse(description="Authentication required"),
-            403: OpenApiResponse(description="Only job seekers can access")
+            403: OpenApiResponse(description="Only job seekers can access"),
         },
         tags=["Certifications"],
         examples=[
@@ -302,18 +303,18 @@ class CertificationViewSet(viewsets.ModelViewSet):
                     "issued_date": "2023-06-15",
                     "expiry_date": "2026-06-15",
                     "does_not_expire": False,
-                    "description": "Professional certification for AWS cloud architecture"
+                    "description": "Professional certification for AWS cloud architecture",
                 },
-                request_only=True
+                request_only=True,
             )
-        ]
+        ],
     )
     def create(self, request):
         """Create new certification"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         serializer = self.get_serializer(data=request.data)
@@ -329,20 +330,21 @@ class CertificationViewSet(viewsets.ModelViewSet):
         description="Get details of a specific certification",
         responses={
             200: OpenApiResponse(
-                response=CertificationSerializer,
-                description="Certification details"
+                response=CertificationSerializer, description="Certification details"
             ),
-            403: OpenApiResponse(description="Not authorized to access this certification"),
-            404: OpenApiResponse(description="Certification not found")
+            403: OpenApiResponse(
+                description="Not authorized to access this certification"
+            ),
+            404: OpenApiResponse(description="Certification not found"),
         },
-        tags=["Certifications"]
+        tags=["Certifications"],
     )
     def retrieve(self, request, pk=None):
         """Get specific certification"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
@@ -351,8 +353,7 @@ class CertificationViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Certification.DoesNotExist:
             return Response(
-                {'error': 'Certification not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Certification not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
@@ -362,33 +363,34 @@ class CertificationViewSet(viewsets.ModelViewSet):
         responses={
             200: OpenApiResponse(
                 response=CertificationSerializer,
-                description="Certification updated successfully"
+                description="Certification updated successfully",
             ),
             400: OpenApiResponse(description="Validation error"),
             403: OpenApiResponse(description="Not authorized"),
-            404: OpenApiResponse(description="Certification not found")
+            404: OpenApiResponse(description="Certification not found"),
         },
-        tags=["Certifications"]
+        tags=["Certifications"],
     )
     def update(self, request, pk=None):
         """Full update of certification"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
             certification = self.get_queryset().get(pk=pk)
-            serializer = self.get_serializer(certification, data=request.data, partial=False)
+            serializer = self.get_serializer(
+                certification, data=request.data, partial=False
+            )
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Certification.DoesNotExist:
             return Response(
-                {'error': 'Certification not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Certification not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
@@ -398,33 +400,34 @@ class CertificationViewSet(viewsets.ModelViewSet):
         responses={
             200: OpenApiResponse(
                 response=CertificationSerializer,
-                description="Certification updated successfully"
+                description="Certification updated successfully",
             ),
             400: OpenApiResponse(description="Validation error"),
             403: OpenApiResponse(description="Not authorized"),
-            404: OpenApiResponse(description="Certification not found")
+            404: OpenApiResponse(description="Certification not found"),
         },
-        tags=["Certifications"]
+        tags=["Certifications"],
     )
     def partial_update(self, request, pk=None):
         """Partial update of certification"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
             certification = self.get_queryset().get(pk=pk)
-            serializer = self.get_serializer(certification, data=request.data, partial=True)
+            serializer = self.get_serializer(
+                certification, data=request.data, partial=True
+            )
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Certification.DoesNotExist:
             return Response(
-                {'error': 'Certification not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Certification not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
@@ -433,16 +436,16 @@ class CertificationViewSet(viewsets.ModelViewSet):
         responses={
             204: OpenApiResponse(description="Certification deleted successfully"),
             403: OpenApiResponse(description="Not authorized"),
-            404: OpenApiResponse(description="Certification not found")
+            404: OpenApiResponse(description="Certification not found"),
         },
-        tags=["Certifications"]
+        tags=["Certifications"],
     )
     def destroy(self, request, pk=None):
         """Delete certification"""
-        if request.user.user_type != 'JS':
+        if request.user.user_type != "JS":
             return Response(
-                {'error': 'Only job seekers can access this endpoint'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Only job seekers can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
@@ -451,6 +454,5 @@ class CertificationViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Certification.DoesNotExist:
             return Response(
-                {'error': 'Certification not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Certification not found"}, status=status.HTTP_404_NOT_FOUND
             )

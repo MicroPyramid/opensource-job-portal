@@ -29,6 +29,7 @@ from ..forms import (
 
 # Functions to move here from main views.py:
 
+
 @permission_required("activity_edit", "activity_view")
 def companies(request, company_type):
     status = ""
@@ -110,7 +111,6 @@ def companies(request, company_type):
             "admin": request.GET.get("admin") if request.GET.get("admin") else "",
         },
     )
-
 
 
 @permission_required("activity_edit", "activity_view")
@@ -199,12 +199,10 @@ def edit_company(request, company_id):
     return render(request, "dashboard/company/new_company.html", {"company": company})
 
 
-
 @permission_required("activity_edit", "activity_view")
 def view_company(request, company_id):
     company = get_object_or_404(Company, id=company_id)
     return render(request, "dashboard/company/view.html", {"company": company})
-
 
 
 @permission_required("activity_edit")
@@ -298,8 +296,6 @@ def enable_paid_company(request, company_id):
     return HttpResponseRedirect(
         reverse("dashboard:companies", kwargs={"company_type": company.company_type})
     )
-
-
 
 
 @permission_required("activity_edit", "activity_view")
@@ -411,8 +407,6 @@ def company_tickets(request, company_id):
     )
 
 
-
-
 @permission_required("activity_edit")
 def edit_menu(request, menu_id, company_id):
     company = get_object_or_404(Company, id=company_id)
@@ -430,7 +424,6 @@ def edit_menu(request, menu_id, company_id):
         return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_edit")
 def delete_menu(request, menu_id, company_id):
     company = get_object_or_404(Company, id=company_id)
@@ -442,8 +435,6 @@ def delete_menu(request, menu_id, company_id):
     else:
         data = {"error": True, "response": "Some Problem Occurs"}
     return HttpResponse(json.dumps(data))
-
-
 
 
 @permission_required("activity_edit")
@@ -458,7 +449,6 @@ def menu_status(request, menu_id, company_id):
             menu.status = True
         menu.save()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
 
 
 @permission_required("activity_edit")
@@ -484,8 +474,6 @@ def menu_order(request, company_id):
     menu.lvl = current
     menu.save()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
-
 
 
 @permission_required("activity_edit")

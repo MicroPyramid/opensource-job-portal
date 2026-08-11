@@ -6,7 +6,6 @@ from peeldb.models import City, User, Company
 from mpcomp.views import recruiter_login_required
 
 
-
 @recruiter_login_required
 def dashboard(request):
     # Redirect to new SvelteKit dashboard
@@ -78,4 +77,3 @@ def get_autocomplete(request):
             return data
     data = {"response": companies_names}
     return data
-

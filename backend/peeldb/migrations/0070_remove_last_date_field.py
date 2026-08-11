@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('peeldb', '0069_make_educationinstitue_city_nullable'),
+        ("peeldb", "0069_make_educationinstitue_city_nullable"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='jobpost',
-            name='last_date',
+            model_name="jobpost",
+            name="last_date",
         ),
     ]

@@ -333,7 +333,6 @@ def set_other_fields(post, data, user):
         date_format = "%Y-%m-%d %H:%M:%S"
         post.published_date = datetime.strptime(start_date, date_format)
     if data.get("status") == "Pending":
-
         if data.get("fb_post") == "on":
             post.post_on_fb = True
             post.fb_groups = data.getlist("fb_groups")
@@ -790,10 +789,8 @@ def edit_profile(request):
         user.email_notifications = request.data.get("email_notifications") == "on"
 
         user_login = False
-        int(
-            (datetime.now() - user.last_mobile_code_verified_on).seconds
-        )
-      
+        int((datetime.now() - user.last_mobile_code_verified_on).seconds)
+
         user.marital_status = request.data.get("marital_status", "")
         user.first_name = request.data.get("first_name")
         user.last_name = request.data.get("last_name", "")
@@ -807,7 +804,7 @@ def edit_profile(request):
         user.functional_area.add(*request.data.getlist("functional_area"))
         user.profile_completeness = user.profile_completion_percentage
         user.save()
-        data = {"error": False, "response": '', "is_login": user_login}
+        data = {"error": False, "response": "", "is_login": user_login}
         return JsonResponse(data, status=status.HTTP_200_OK)
     else:
         data = {"error": True, "response": validate_user.errors}

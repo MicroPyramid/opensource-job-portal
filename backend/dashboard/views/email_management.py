@@ -18,6 +18,7 @@ from ..tasks import sending_mail, send_email
 
 # Functions to move here from main views.py:
 
+
 @permission_required("activity_view", "activity_edit")
 def emailtemplates(request):
     mailtemplates = MailTemplate.objects.filter()
@@ -49,9 +50,7 @@ def new_template(request):
             data = {"error": True, "message": validate_mailtemplate.errors}
         return HttpResponse(json.dumps(data))
     else:
-        return render(
-            request, "dashboard/mail/new_mailtemplate.html", {}
-        )
+        return render(request, "dashboard/mail/new_mailtemplate.html", {})
 
 
 @permission_required("activity_edit")
