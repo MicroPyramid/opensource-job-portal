@@ -238,7 +238,7 @@
     clearTimeout(navigationTimeout);
     navigationTimeout = setTimeout(() => {
       // Only navigate if we're on the exact jobs listing page (not job detail pages)
-      if ($page.url.pathname !== '/jobs' && $page.url.pathname !== '/jobs/') {
+      if ($page.url.pathname !== '/jobs/') {
         return;
       }
 

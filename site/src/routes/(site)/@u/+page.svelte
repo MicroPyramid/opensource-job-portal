@@ -12,7 +12,6 @@
 		X
 	} from '@lucide/svelte';
 	import { Linkedin, Twitter } from '@lucide/svelte';
-	import type { PageData } from './$types';
 
 	interface SocialLinks {
 		github?: string;
@@ -52,9 +51,6 @@
 		experience: ExperienceItem[];
 		education: EducationItem[];
 	}
-
-	const _: { data: PageData } = $props();
-	void _;
 
 	// Mock data - replace with actual data from your backend
 	const profile: Profile = {

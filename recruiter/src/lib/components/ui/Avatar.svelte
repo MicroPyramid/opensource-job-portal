@@ -4,6 +4,8 @@
 
 	interface Props {
 		src?: string | null;
+		/** Person's name, used to derive the initials and as the image alt fallback. */
+		name?: string;
 		alt?: string;
 		size?: Size;
 		shape?: Shape;
@@ -13,12 +15,15 @@
 
 	let {
 		src = null,
+		name = '',
 		alt = '',
 		size = 'md',
 		shape = 'circle',
 		fallback = '',
 		class: className = ''
 	}: Props = $props();
+
+	const label = $derived(alt || name);
 
 	const sizeClasses: Record<Size, string> = {
 		xs: 'w-6 h-6 text-xs',
@@ -34,8 +39,9 @@
 
 	const initials = $derived(
 		fallback ||
-			alt
+			label
 				.split(' ')
+				.filter(Boolean)
 				.map((word) => word[0])
 				.join('')
 				.toUpperCase()
@@ -48,7 +54,7 @@
 </script>
 
 {#if src}
-	<img {src} {alt} class="{classes} object-cover" />
+	<img {src} alt={label} class="{classes} object-cover" />
 {:else}
 	<div
 		class="{classes} flex items-center justify-center bg-primary/10 text-primary font-medium"

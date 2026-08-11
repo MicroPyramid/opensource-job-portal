@@ -1,14 +1,23 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import type { HTMLAnchorAttributes, HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
 	type Variant = 'primary' | 'secondary' | 'ghost';
 	type Size = 'sm' | 'md' | 'lg';
 
-	interface Props extends HTMLButtonAttributes {
+	// Renders as <a> when `href` is set, otherwise <button>. The base is the
+	// element-agnostic HTMLAttributes so the rest props spread onto either tag;
+	// the tag-specific attributes we actually support are listed explicitly.
+	interface Props extends HTMLAttributes<HTMLElement> {
 		variant?: Variant;
 		size?: Size;
 		loading?: boolean;
+		disabled?: boolean;
+		type?: HTMLButtonAttributes['type'];
+		href?: HTMLAnchorAttributes['href'];
+		target?: HTMLAnchorAttributes['target'];
+		rel?: HTMLAnchorAttributes['rel'];
+		download?: HTMLAnchorAttributes['download'];
 		children: Snippet;
 		class?: string;
 	}
@@ -19,6 +28,7 @@
 		loading = false,
 		disabled = false,
 		type = 'button',
+		href,
 		children,
 		class: className = '',
 		...restProps
@@ -44,7 +54,7 @@
 	);
 </script>
 
-<button class={classes} disabled={disabled || loading} {type} {...restProps}>
+{#snippet content()}
 	{#if loading}
 		<svg
 			class="h-4 w-4 animate-spin"
@@ -63,4 +73,19 @@
 		</svg>
 	{/if}
 	{@render children()}
-</button>
+{/snippet}
+
+{#if href}
+	<a
+		{href}
+		class={classes}
+		aria-disabled={disabled || loading ? 'true' : undefined}
+		{...restProps}
+	>
+		{@render content()}
+	</a>
+{:else}
+	<button class={classes} disabled={disabled || loading} {type} {...restProps}>
+		{@render content()}
+	</button>
+{/if}

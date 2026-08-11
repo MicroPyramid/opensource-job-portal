@@ -155,7 +155,7 @@
 							disabled={loading}
 							placeholder="Re-enter your password"
 							size="lg"
-							error={formData.confirmPassword && formData.password !== formData.confirmPassword}
+							error={!!formData.confirmPassword && formData.password !== formData.confirmPassword}
 							class="pr-12"
 						>
 							{#snippet iconLeft()}
