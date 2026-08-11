@@ -1,8 +1,9 @@
-from django import template
 import calendar
-from django.template import loader, Context
-from django.utils.dates import WEEKDAYS, WEEKDAYS_ABBR
+
+from django import template
+from django.template import Context, loader
 from django.template.loader import render_to_string
+from django.utils.dates import WEEKDAYS, WEEKDAYS_ABBR
 
 weekday_names = []
 weekday_abbrs = []
@@ -85,7 +86,7 @@ def get_per_day_jobposts(context, year, month, date):
             jobs_list = context["jobs_list"].filter(
                 published_on__year=int(year),
                 published_on__month=int(month),
-                published_on__day=int(date)
+                published_on__day=int(date),
             )
         else:
             jobs_list = []

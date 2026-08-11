@@ -29,6 +29,7 @@
           <div class="card-header text-center text-uppercase">EDIT PROFILE</div>
           <div class="card-body">
             <form name="languageform" id="languageform" method="post">
+              {% csrf_token %}
               <div class="row">
                 <label for="colFormLabelSm" class="col-sm-3 control-label">Language Name</label>
                 <div class="col-sm-9">

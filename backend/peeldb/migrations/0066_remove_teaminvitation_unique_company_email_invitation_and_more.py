@@ -4,43 +4,69 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('peeldb', '0065_finalize_employer_type_and_add_team_invitation'),
+        ("peeldb", "0065_finalize_employer_type_and_add_team_invitation"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='teaminvitation',
-            name='unique_company_email_invitation',
+            model_name="teaminvitation",
+            name="unique_company_email_invitation",
         ),
         migrations.RenameIndex(
-            model_name='teaminvitation',
-            new_name='peeldb_team_token_43c469_idx',
-            old_name='teaminv_token_idx',
+            model_name="teaminvitation",
+            new_name="peeldb_team_token_43c469_idx",
+            old_name="teaminv_token_idx",
         ),
         migrations.RenameIndex(
-            model_name='teaminvitation',
-            new_name='peeldb_team_email_13002f_idx',
-            old_name='teaminv_email_status_idx',
+            model_name="teaminvitation",
+            new_name="peeldb_team_email_13002f_idx",
+            old_name="teaminv_email_status_idx",
         ),
         migrations.AddField(
-            model_name='jobpost',
-            name='work_mode',
-            field=models.CharField(choices=[('in-office', 'In-Office'), ('remote', 'Remote'), ('hybrid', 'Hybrid')], default='in-office', max_length=50),
+            model_name="jobpost",
+            name="work_mode",
+            field=models.CharField(
+                choices=[
+                    ("in-office", "In-Office"),
+                    ("remote", "Remote"),
+                    ("hybrid", "Hybrid"),
+                ],
+                default="in-office",
+                max_length=50,
+            ),
         ),
         migrations.AlterField(
-            model_name='simplecontact',
-            name='enquery_type',
-            field=models.CharField(choices=[('general', 'General Inquiry'), ('support', 'Technical Support'), ('job_seeker', 'Job Seeker Help'), ('employer', 'Employer/Recruiter'), ('partnership', 'Partnership Opportunities'), ('feedback', 'Feedback & Suggestions'), ('Suggestion', 'Suggestion'), ('Technical Issue', 'Technical Issue'), ('Complaint', 'Complaint'), ('others', 'Others')], max_length=100),
+            model_name="simplecontact",
+            name="enquery_type",
+            field=models.CharField(
+                choices=[
+                    ("general", "General Inquiry"),
+                    ("support", "Technical Support"),
+                    ("job_seeker", "Job Seeker Help"),
+                    ("employer", "Employer/Recruiter"),
+                    ("partnership", "Partnership Opportunities"),
+                    ("feedback", "Feedback & Suggestions"),
+                    ("Suggestion", "Suggestion"),
+                    ("Technical Issue", "Technical Issue"),
+                    ("Complaint", "Complaint"),
+                    ("others", "Others"),
+                ],
+                max_length=100,
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='job_title',
-            field=models.CharField(blank=True, default='', help_text="Job title/role for employers (e.g., 'Senior Recruiter', 'HR Manager')", max_length=200),
+            model_name="user",
+            name="job_title",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Job title/role for employers (e.g., 'Senior Recruiter', 'HR Manager')",
+                max_length=200,
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='teaminvitation',
-            unique_together={('company', 'email')},
+            name="teaminvitation",
+            unique_together={("company", "email")},
         ),
     ]

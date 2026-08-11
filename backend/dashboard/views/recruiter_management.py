@@ -2,10 +2,10 @@ import math
 import re
 from datetime import datetime
 
-from django.urls import reverse
 from django.db.models import Count, Q
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
 from mpcomp.views import (
     get_prev_after_pages_count,
@@ -16,8 +16,8 @@ from peeldb.models import (
     User,
 )
 
-
 # Functions to move here from main views.py:
+
 
 @permission_required("activity_view", "activity_edit")
 def recruiters_list(request, status):
@@ -43,7 +43,7 @@ def recruiters_list(request, status):
         end_date = datetime.strptime(date[1], "%b %d, %Y %H:%M")
         recruiters = recruiters.filter(date_joined__range=(start_date, end_date))
     items_per_page = 10
-    no_pages = int(math.ceil(float(recruiters.count()) / items_per_page))
+    no_pages = math.ceil(float(recruiters.count()) / items_per_page)
     page = request.POST.get("page") or request.GET.get("page")
     try:
         page = 1 if int(page) > (no_pages + 1) else int(page)
@@ -92,7 +92,7 @@ def view_recruiter(request, user_id):
             responses=Count("appliedjobs")
         )
     items_per_page = 10
-    no_pages = int(math.ceil(float(jobposts.count()) / items_per_page))
+    no_pages = math.ceil(float(jobposts.count()) / items_per_page)
     page = request.GET.get("page")
     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
         if int(page) > (no_pages + 2):
@@ -122,9 +122,6 @@ def view_recruiter(request, user_id):
     )
 
 
-
-
-
 @permission_required("activity_edit")
 def recruiter_status_change(request, user_id):
     recruiter = User.objects.get(id=user_id)
@@ -137,8 +134,6 @@ def recruiter_status_change(request, user_id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
-
-
 @permission_required("activity_edit")
 def recruiter_paid_status_change(request, user_id):
     recruiter = User.objects.get(id=user_id)
@@ -149,8 +144,6 @@ def recruiter_paid_status_change(request, user_id):
         recruiter.is_paid = True
         recruiter.save()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
-
 
 
 @permission_required("activity_edit")

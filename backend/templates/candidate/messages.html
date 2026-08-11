@@ -53,6 +53,7 @@
 </div>
   <div class="panel-footer">
     <form name='messageform' class='messageform' id='messageform' action="" method="POST">
+      {% csrf_token %}
       <textarea class="form-control custom-control" rows="2" style="resize:none" placeholder="Type your message here" name='message' id='message_org' class="message_text"></textarea>
       <button class="btn btn-warning btn-sm" id="btn-chat">Send</button>
     <input type="hidden" class='form-control' name='post_message' value="True" />

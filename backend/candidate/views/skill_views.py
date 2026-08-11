@@ -1,21 +1,22 @@
 import datetime
 import json
-from django.shortcuts import render
-from django.http.response import HttpResponse
+
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.utils import timezone
 
 from candidate.forms import (
-    TechnicalSkillForm,
-    YEARS,
     MONTHS,
+    YEARS,
+    TechnicalSkillForm,
 )
 from peeldb.models import (
     Language,
-    UserLanguage,
     Skill,
     TechnicalSkill,
     TechnicalSkill_STATUS,
+    UserLanguage,
 )
 
 
@@ -162,7 +163,7 @@ def add_technicalskill(request):
         skill.proficiency = request.POST.get("proficiency")
         user = request.user
         user.profile_updated = timezone.now()
-        skill.is_major = True if request.POST.get("is_major") else False
+        skill.is_major = bool(request.POST.get("is_major"))
         skill.save()
         user.save()
         user.skills.add(skill)
@@ -218,7 +219,7 @@ def edit_technicalskill(request, technical_skill_id):
             user = request.user
             user.profile_updated = timezone.now()
             user.save()
-            technical_skill.is_major = True if request.POST.get("is_major") else False
+            technical_skill.is_major = bool(request.POST.get("is_major"))
             technical_skill.save()
             data = {"error": False, "response": "skillinfo updated successfully"}
         else:

@@ -19,6 +19,7 @@
                     <div class="panel_wrap">
                         <div class="col-md-12 form_div">
                             <form id="mobileverifyfrom" name="mobileverifyfrom" method="post">
+                              {% csrf_token %}
                                 <div class="form-group">
                                     <label>Otp</label>
                                     <input type="password" class="form-control" placeholder="Please enter Your OTP"

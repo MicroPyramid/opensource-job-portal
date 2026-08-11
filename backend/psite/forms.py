@@ -1,6 +1,8 @@
 import re
+
 from django import forms
-from peeldb.models import simplecontact, Subscriber, User
+
+from peeldb.models import Subscriber, User, simplecontact
 
 
 class SimpleContactForm(forms.ModelForm):
@@ -22,8 +24,8 @@ class SubscribeForm(forms.ModelForm):
         fields = ["email", "skill"]
 
     def __init__(self, *args, **kwargs):
-        super(SubscribeForm, self).__init__(*args, **kwargs)
-        if "subscribe_from" in self.data.keys():
+        super().__init__(*args, **kwargs)
+        if "subscribe_from" in self.data:
             self.fields["skill"].required = False
 
 
@@ -61,10 +63,10 @@ class UserEmailRegisterForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
-        super(UserEmailRegisterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Remove the required field checks for technical_skills and current_city
         # since we're now only using email, password, and mobile
-        if "social" in self.data.keys():
+        if "social" in self.data:
             self.fields.pop("password")
             self.fields["email"].required = False
 
@@ -83,7 +85,7 @@ class UserEmailRegisterForm(forms.ModelForm):
         password = self.cleaned_data.get("password")
         if password and len(password) < 8:  # Changed from 7 to 8 for consistency
             raise forms.ValidationError(
-                "The password must be at least %d characters long." % 8
+                "The password must be at least 8 characters long."
             )
         return password
 
@@ -161,7 +163,7 @@ class UserPassChangeForm(forms.Form):
         password = self.cleaned_data.get("new_password")
         if password and len(password) < 8:  # Changed from 7 to 8 for consistency
             raise forms.ValidationError(
-                "The password must be at least %d characters long." % 8
+                "The password must be at least 8 characters long."
             )
         return password
 

@@ -2,16 +2,19 @@
 Script to load education lookup data directly into the database
 Bypasses Haystack signal processor to avoid Elasticsearch dependency
 """
+
 import os
 import sys
+
 import django
 
 # Setup Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'jobsp.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jobsp.settings")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 django.setup()
 
-from peeldb.models import Qualification, Degree, EducationInstitue, City
+from peeldb.models import City, Degree, EducationInstitue, Qualification
+
 
 def load_qualifications():
     """Load qualification data"""
@@ -41,13 +44,13 @@ def load_qualifications():
 
     created_count = 0
     for qual_data in qualifications:
-        qual, created = Qualification.objects.update_or_create(
+        _qual, created = Qualification.objects.update_or_create(
             id=qual_data["id"],
             defaults={
                 "name": qual_data["name"],
                 "status": qual_data["status"],
-                "slug": qual_data["slug"]
-            }
+                "slug": qual_data["slug"],
+            },
         )
         if created:
             created_count += 1
@@ -75,122 +78,161 @@ def load_degrees():
     # B.Tech degrees
     if btech:
         btech_specs = [
-            "Computer Science", "Information Technology", "Electronics",
-            "Electrical", "Mechanical", "Civil", "Chemical", "Biotechnology"
+            "Computer Science",
+            "Information Technology",
+            "Electronics",
+            "Electrical",
+            "Mechanical",
+            "Civil",
+            "Chemical",
+            "Biotechnology",
         ]
         for spec in btech_specs:
-            degrees_data.append({
-                "qualification": btech,
-                "specialization": spec,
-                "degree_type": "Permanent"
-            })
+            degrees_data.append(
+                {
+                    "qualification": btech,
+                    "specialization": spec,
+                    "degree_type": "Permanent",
+                }
+            )
 
     # M.Tech degrees
     if mtech:
         mtech_specs = [
-            "Computer Science", "Information Technology", "Software Engineering",
-            "Data Science", "Artificial Intelligence", "Machine Learning"
+            "Computer Science",
+            "Information Technology",
+            "Software Engineering",
+            "Data Science",
+            "Artificial Intelligence",
+            "Machine Learning",
         ]
         for spec in mtech_specs:
-            degrees_data.append({
-                "qualification": mtech,
-                "specialization": spec,
-                "degree_type": "Permanent"
-            })
+            degrees_data.append(
+                {
+                    "qualification": mtech,
+                    "specialization": spec,
+                    "degree_type": "Permanent",
+                }
+            )
 
     # MBA degrees
     if mba:
         mba_specs = [
-            "Finance", "Marketing", "Human Resources", "Operations",
-            "Information Technology", "General Management"
+            "Finance",
+            "Marketing",
+            "Human Resources",
+            "Operations",
+            "Information Technology",
+            "General Management",
         ]
         for spec in mba_specs:
-            degrees_data.append({
-                "qualification": mba,
-                "specialization": spec,
-                "degree_type": "Permanent"
-            })
+            degrees_data.append(
+                {
+                    "qualification": mba,
+                    "specialization": spec,
+                    "degree_type": "Permanent",
+                }
+            )
 
     # B.Sc degrees
     if bsc:
         bsc_specs = [
-            "Computer Science", "Information Technology", "Mathematics",
-            "Physics", "Chemistry", "Biology"
+            "Computer Science",
+            "Information Technology",
+            "Mathematics",
+            "Physics",
+            "Chemistry",
+            "Biology",
         ]
         for spec in bsc_specs:
-            degrees_data.append({
-                "qualification": bsc,
-                "specialization": spec,
-                "degree_type": "Permanent"
-            })
+            degrees_data.append(
+                {
+                    "qualification": bsc,
+                    "specialization": spec,
+                    "degree_type": "Permanent",
+                }
+            )
 
     # M.Sc degrees
     if msc:
         msc_specs = [
-            "Computer Science", "Information Technology", "Data Science",
-            "Mathematics", "Physics"
+            "Computer Science",
+            "Information Technology",
+            "Data Science",
+            "Mathematics",
+            "Physics",
         ]
         for spec in msc_specs:
-            degrees_data.append({
-                "qualification": msc,
-                "specialization": spec,
-                "degree_type": "Permanent"
-            })
+            degrees_data.append(
+                {
+                    "qualification": msc,
+                    "specialization": spec,
+                    "degree_type": "Permanent",
+                }
+            )
 
     # BCA degrees
     if bca:
-        degrees_data.append({
-            "qualification": bca,
-            "specialization": "Computer Applications",
-            "degree_type": "Permanent"
-        })
+        degrees_data.append(
+            {
+                "qualification": bca,
+                "specialization": "Computer Applications",
+                "degree_type": "Permanent",
+            }
+        )
 
     # MCA degrees
     if mca:
-        degrees_data.append({
-            "qualification": mca,
-            "specialization": "Computer Applications",
-            "degree_type": "Permanent"
-        })
+        degrees_data.append(
+            {
+                "qualification": mca,
+                "specialization": "Computer Applications",
+                "degree_type": "Permanent",
+            }
+        )
 
     # B.Com degrees
     if bcom:
         bcom_specs = ["General", "Computers", "Accounting", "Finance"]
         for spec in bcom_specs:
-            degrees_data.append({
-                "qualification": bcom,
-                "specialization": spec,
-                "degree_type": "Permanent"
-            })
+            degrees_data.append(
+                {
+                    "qualification": bcom,
+                    "specialization": spec,
+                    "degree_type": "Permanent",
+                }
+            )
 
     # B.A degrees
     if ba:
         ba_specs = ["English", "Economics", "Psychology", "Political Science"]
         for spec in ba_specs:
-            degrees_data.append({
-                "qualification": ba,
-                "specialization": spec,
-                "degree_type": "Permanent"
-            })
+            degrees_data.append(
+                {
+                    "qualification": ba,
+                    "specialization": spec,
+                    "degree_type": "Permanent",
+                }
+            )
 
     # Diploma degrees
     if diploma:
-        diploma_specs = [
-            "Computer Science", "Mechanical", "Electrical", "Civil"
-        ]
+        diploma_specs = ["Computer Science", "Mechanical", "Electrical", "Civil"]
         for spec in diploma_specs:
-            degrees_data.append({
-                "qualification": diploma,
-                "specialization": spec,
-                "degree_type": "Permanent"
-            })
+            degrees_data.append(
+                {
+                    "qualification": diploma,
+                    "specialization": spec,
+                    "degree_type": "Permanent",
+                }
+            )
 
     created_count = 0
     for degree_data in degrees_data:
-        degree, created = Degree.objects.get_or_create(
+        _degree, created = Degree.objects.get_or_create(
             degree_name=degree_data["qualification"],
             specialization=degree_data["specialization"],
-            defaults={"degree_type": degree_data["degree_type"]}
+            defaults={"degree_type": degree_data["degree_type"]},
         )
         if created:
             created_count += 1
@@ -201,23 +243,59 @@ def load_degrees():
 def load_institutes():
     """Load education institute data"""
     institutes = [
-        {"name": "Indian Institute of Technology Delhi", "address": "Hauz Khas", "city": "New Delhi"},
-        {"name": "Indian Institute of Technology Bombay", "address": "Powai", "city": "Mumbai"},
-        {"name": "Indian Institute of Technology Madras", "address": "Guindy", "city": "Chennai"},
-        {"name": "Indian Institute of Technology Kanpur", "address": "Kalyanpur", "city": "Kanpur"},
-        {"name": "Indian Institute of Technology Kharagpur", "address": "Kharagpur", "city": "Kharagpur"},
-        {"name": "Indian Institute of Technology Hyderabad", "address": "Kandi", "city": "Hyderabad"},
-        {"name": "Indian Institute of Technology Roorkee", "address": "Roorkee", "city": "Roorkee"},
+        {
+            "name": "Indian Institute of Technology Delhi",
+            "address": "Hauz Khas",
+            "city": "New Delhi",
+        },
+        {
+            "name": "Indian Institute of Technology Bombay",
+            "address": "Powai",
+            "city": "Mumbai",
+        },
+        {
+            "name": "Indian Institute of Technology Madras",
+            "address": "Guindy",
+            "city": "Chennai",
+        },
+        {
+            "name": "Indian Institute of Technology Kanpur",
+            "address": "Kalyanpur",
+            "city": "Kanpur",
+        },
+        {
+            "name": "Indian Institute of Technology Kharagpur",
+            "address": "Kharagpur",
+            "city": "Kharagpur",
+        },
+        {
+            "name": "Indian Institute of Technology Hyderabad",
+            "address": "Kandi",
+            "city": "Hyderabad",
+        },
+        {
+            "name": "Indian Institute of Technology Roorkee",
+            "address": "Roorkee",
+            "city": "Roorkee",
+        },
         {"name": "BITS Pilani", "address": "Pilani Campus", "city": "Pilani"},
         {"name": "NIT Trichy", "address": "Tiruchirappalli", "city": "Tiruchirappalli"},
         {"name": "NIT Warangal", "address": "Warangal", "city": "Warangal"},
         {"name": "IIIT Hyderabad", "address": "Gachibowli", "city": "Hyderabad"},
         {"name": "Delhi University", "address": "North Campus", "city": "New Delhi"},
-        {"name": "Jawaharlal Nehru University", "address": "New Mehrauli Road", "city": "New Delhi"},
+        {
+            "name": "Jawaharlal Nehru University",
+            "address": "New Mehrauli Road",
+            "city": "New Delhi",
+        },
         {"name": "Anna University", "address": "Guindy", "city": "Chennai"},
         {"name": "Osmania University", "address": "Amberpet", "city": "Hyderabad"},
         {"name": "University of Mumbai", "address": "Fort", "city": "Mumbai"},
-        {"name": "Bangalore University", "address": "Jnana Bharathi", "city": "Bangalore"},
+        {
+            "name": "Bangalore University",
+            "address": "Jnana Bharathi",
+            "city": "Bangalore",
+        },
         {"name": "Pune University", "address": "Ganeshkhind", "city": "Pune"},
         {"name": "Jadavpur University", "address": "Jadavpur", "city": "Kolkata"},
         {"name": "Calcutta University", "address": "College Street", "city": "Kolkata"},
@@ -227,14 +305,13 @@ def load_institutes():
     for inst_data in institutes:
         # Try to find the city by name (case-insensitive)
         city_name = inst_data.get("city", "")
-        city_obj = City.objects.filter(name__iexact=city_name).first() if city_name else None
+        city_obj = (
+            City.objects.filter(name__iexact=city_name).first() if city_name else None
+        )
 
-        inst, created = EducationInstitue.objects.get_or_create(
+        _inst, created = EducationInstitue.objects.get_or_create(
             name=inst_data["name"],
-            defaults={
-                "address": inst_data["address"],
-                "city": city_obj
-            }
+            defaults={"address": inst_data["address"], "city": city_obj},
         )
         if created:
             created_count += 1
@@ -253,12 +330,10 @@ if __name__ == "__main__":
     try:
         # Haystack uses post_save and post_delete signals
         django_signals.post_save.receivers = [
-            r for r in django_signals.post_save.receivers
-            if 'haystack' not in str(r)
+            r for r in django_signals.post_save.receivers if "haystack" not in str(r)
         ]
         django_signals.post_delete.receivers = [
-            r for r in django_signals.post_delete.receivers
-            if 'haystack' not in str(r)
+            r for r in django_signals.post_delete.receivers if "haystack" not in str(r)
         ]
         print("Temporarily disabled Haystack signals")
     except Exception as e:
@@ -270,4 +345,3 @@ if __name__ == "__main__":
 
     print("-" * 50)
     print("Done! Education lookup data loaded successfully.")
-

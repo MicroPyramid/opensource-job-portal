@@ -59,6 +59,7 @@
             <div class="accordion" id="accordion">
               <h4 class="refine_head">Refine Filters</h4>
               <form name="refine-search" id="refine-search" method="POST" class='refine-autocomplete-me' action=".">
+                {% csrf_token %}
                 <div class="accordion-item">
                   
                     <h4 class="accordion-header" id="headingOne">

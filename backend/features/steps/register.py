@@ -1,5 +1,7 @@
 import time
 
+from behave import given, then
+
 
 @then('I entered "{field}" with "{value}"')
 def fill_in_the_field(context, field, value):
@@ -12,7 +14,7 @@ def click_on_link(context, name):
 
 
 @then('I click on a div with id "{name}"')
-def click_on_link(context, name):
+def click_on_div(context, name):
     context.browser.find_by_xpath('//div[@id="' + name + '"]')[0].click()
 
 
@@ -24,7 +26,7 @@ def selecting_values(context, field, value):
 
 
 @then('I choose option "{field}" with "{value}"')
-def selecting_values(context, field, value):
+def choosing_option(context, field, value):
     context.browser.execute_script(
         "document.getElementById('" + field + "').value='" + value + "'"
     )

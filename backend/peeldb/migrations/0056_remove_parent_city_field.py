@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("peeldb", "0055_remove_facebookgroup_user_remove_facebookpage_user_and_more"),
     ]

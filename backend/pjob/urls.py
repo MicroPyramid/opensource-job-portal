@@ -1,11 +1,11 @@
 from django.urls import re_path as url
 
 from pjob.views import (
+    get_skills,
     index,
     job_apply,
-    user_applied_job,
     jobs_applied,
-    get_skills,
+    user_applied_job,
 )
 
 app_name = "pjob"

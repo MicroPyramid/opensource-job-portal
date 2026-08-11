@@ -1,12 +1,15 @@
 """
 Tests for Job Seeker Google Authentication API
 """
+
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
 from django.urls import reverse
-from unittest.mock import patch, MagicMock
-from rest_framework.test import APIClient
 from rest_framework import status
-from peeldb.models import User, UserEmail, Google
+from rest_framework.test import APIClient
+
+from peeldb.models import Google, User, UserEmail
 
 
 class GoogleAuthAPITests(TestCase):
@@ -24,7 +27,8 @@ class GoogleAuthAPITests(TestCase):
     def test_google_auth_url_generation(self):
         """Test Google OAuth URL generation with valid redirect_uri"""
         response = self.client.get(
-            self.google_auth_url, {"redirect_uri": "http://localhost:3000/auth/callback"}
+            self.google_auth_url,
+            {"redirect_uri": "http://localhost:3000/auth/callback"},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

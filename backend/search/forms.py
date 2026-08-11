@@ -1,11 +1,10 @@
 import datetime
 from datetime import date
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from django import forms
 from haystack.forms import SearchForm
-from haystack.query import SearchQuerySet, SQ
-
+from haystack.query import SQ, SearchQuerySet
 
 VALID_TIME_FORMATS = ["%Y-%m-%d 00:00:00"]
 
@@ -49,8 +48,7 @@ class JobSearchForm(SearchForm):
             loc = location_field.replace("[", "").replace("]", "").replace("'", "")
             locations = [t.strip() for t in loc.split(",") if t.strip()]
             sqs = sqs.filter_and(
-                SQ(location__in=locations)
-                | SQ(location__startswith=location_field)
+                SQ(location__in=locations) | SQ(location__startswith=location_field)
             )
 
             if self.cleaned_data.get("job_type"):
@@ -63,9 +61,7 @@ class JobSearchForm(SearchForm):
 
             if self.cleaned_data.get("functional_area"):
                 fa_value = self.cleaned_data["functional_area"]
-                functional_areas = [
-                    t.strip() for t in fa_value.split(",") if t.strip()
-                ]
+                functional_areas = [t.strip() for t in fa_value.split(",") if t.strip()]
                 sqs = sqs.filter_or(functional_area__in=functional_areas)
 
             if self.cleaned_data.get("experience") is not None:
@@ -78,15 +74,18 @@ class JobSearchForm(SearchForm):
             if self.cleaned_data.get("salary") is not None:
                 salary_val = self.cleaned_data["salary"]
                 sqs = sqs.filter_or(
-                    SQ(max_salary__gte=salary_val)
-                    & SQ(min_salary__lte=salary_val)
+                    SQ(max_salary__gte=salary_val) & SQ(min_salary__lte=salary_val)
                 )
 
             walkin_type = self.cleaned_data.get("walkin_type")
             if walkin_type:
                 if walkin_type == "this_week":
                     today = date.today()
-                    start_week = today - datetime.timedelta(today.weekday()) - datetime.timedelta(1)
+                    start_week = (
+                        today
+                        - datetime.timedelta(today.weekday())
+                        - datetime.timedelta(1)
+                    )
                     end_week = start_week + datetime.timedelta(6)
                     start_str = start_week.strftime("%Y-%m-%d")
                     end_str = end_week.strftime("%Y-%m-%d")
@@ -96,7 +95,11 @@ class JobSearchForm(SearchForm):
                     )
                 elif walkin_type == "next_week":
                     today = date.today()
-                    start_week = today - datetime.timedelta(today.isoweekday()) + datetime.timedelta(7)
+                    start_week = (
+                        today
+                        - datetime.timedelta(today.isoweekday())
+                        + datetime.timedelta(7)
+                    )
                     end_week = start_week + datetime.timedelta(6)
                     start_str = start_week.strftime("%Y-%m-%d")
                     end_str = end_week.strftime("%Y-%m-%d")

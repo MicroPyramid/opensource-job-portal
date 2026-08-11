@@ -66,6 +66,7 @@
                 <div class="card-header text-center text-uppercase">Tell us what kind of jobs you want</div>
                 <div class="card-body">
                   <form name="jobalertform" id="jobalertform" method="post" class="form-horizontal">
+                    {% csrf_token %}
                     <input type="hidden" class="form-control" placeholder="Email" name="user_authenticated" id="user_authenticated"
                       value="{% if not request.user.is_authenticated %}False{% else %}True{% endif %}">
                     <div class="row">

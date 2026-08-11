@@ -32,6 +32,7 @@
     <!-- Search & Filter -->
     <div class="p-4 border-b border-neutral-200">
       <form name="recruiterform" id="recruiterform" method="POST" class="flex flex-wrap items-center gap-4">
+        {% csrf_token %}
         <div class="flex-1 min-w-[200px] max-w-sm">
           <div class="relative">
             <input type="text"

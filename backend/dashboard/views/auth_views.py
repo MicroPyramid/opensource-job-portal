@@ -1,11 +1,11 @@
 from datetime import datetime
 
 import requests
+from django.conf import settings
 from django.contrib.auth import login, logout
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.conf import settings
 
 from mpcomp.views import permission_required
 from peeldb.models import (
@@ -27,13 +27,19 @@ def dashboard_login(request):
     Dashboard login page with Google OAuth option.
     """
     if request.user.is_authenticated:
-        if request.user.is_superuser or request.user.is_staff or request.user.has_perm("activity_edit"):
+        if (
+            request.user.is_superuser
+            or request.user.is_staff
+            or request.user.has_perm("activity_edit")
+        ):
             return HttpResponseRedirect(reverse("dashboard:index"))
         else:
             # User is logged in but doesn't have permission
-            return render(request, "dashboard/login.html", {
-                "error": "You don't have permission to access the dashboard."
-            })
+            return render(
+                request,
+                "dashboard/login.html",
+                {"error": "You don't have permission to access the dashboard."},
+            )
 
     return render(request, "dashboard/login.html")
 
@@ -47,7 +53,8 @@ def dashboard_google_login(request):
         params = {
             "grant_type": "authorization_code",
             "code": request.GET.get("code"),
-            "redirect_uri": settings.GOOGLE_LOGIN_HOST + reverse("dashboard:google_login"),
+            "redirect_uri": settings.GOOGLE_LOGIN_HOST
+            + reverse("dashboard:google_login"),
             "client_id": settings.GOOGLE_CLIENT_ID,
             "client_secret": settings.GOOGLE_CLIENT_SECRET,
         }
@@ -86,11 +93,17 @@ def dashboard_google_login(request):
             return render(
                 request,
                 "dashboard/login.html",
-                {"error": "No account found with this email. Please contact an administrator."},
+                {
+                    "error": "No account found with this email. Please contact an administrator."
+                },
             )
 
         # Check if user has dashboard permission (superusers always have access)
-        if not user.is_superuser and not user.is_staff and not user.has_perm("activity_edit"):
+        if (
+            not user.is_superuser
+            and not user.is_staff
+            and not user.has_perm("activity_edit")
+        ):
             return render(
                 request,
                 "dashboard/login.html",
@@ -99,20 +112,22 @@ def dashboard_google_login(request):
 
         # Update or create Google record
         picture = user_document.get("picture", "")
-        link = user_document.get("link", f"https://plus.google.com/{user_document.get('id', '')}")
+        link = user_document.get(
+            "link", f"https://plus.google.com/{user_document.get('id', '')}"
+        )
 
         google, created = Google.objects.get_or_create(
             user=user,
             defaults={
-                'google_url': link,
-                'verified_email': user_document.get("verified_email", ""),
-                'google_id': user_document.get("id", ""),
-                'family_name': user_document.get("family_name", ""),
-                'name': user_document.get("name", ""),
-                'given_name': user_document.get("given_name", ""),
-                'email': email,
-                'picture': picture,
-            }
+                "google_url": link,
+                "verified_email": user_document.get("verified_email", ""),
+                "google_id": user_document.get("id", ""),
+                "family_name": user_document.get("family_name", ""),
+                "name": user_document.get("name", ""),
+                "given_name": user_document.get("given_name", ""),
+                "email": email,
+                "picture": picture,
+            },
         )
 
         if not created:
@@ -184,13 +199,9 @@ def index(request):
             today_jobs_count = JobPost.objects.filter(
                 published_on__range=(start_date, end_date)
             ).exclude(user__is_superuser=True)
-            today_full_time_jobs_count = today_jobs_count.filter(
-                job_type="full-time"
-            )
+            today_full_time_jobs_count = today_jobs_count.filter(job_type="full-time")
             today_govt_jobs_count = today_jobs_count.filter(job_type="government")
-            today_internship_jobs_count = today_jobs_count.filter(
-                job_type="internship"
-            )
+            today_internship_jobs_count = today_jobs_count.filter(job_type="internship")
             today_walkin_jobs_count = today_jobs_count.filter(job_type="walk-in")
             today_skills = Skill.objects.filter(
                 id__in=JobPost.objects.filter(
@@ -347,9 +358,7 @@ def index(request):
         total_fulltime_published_jobs = total_full_time_jobs.filter(
             status="Published"
         ).count()
-        total_fulltime_live_jobs = total_full_time_jobs.filter(
-            status="Live"
-        ).count()
+        total_fulltime_live_jobs = total_full_time_jobs.filter(status="Live").count()
         total_fulltime_disabled_jobs = total_full_time_jobs.filter(
             status="Disabled"
         ).count()
@@ -361,30 +370,22 @@ def index(request):
         total_internship_published_jobs = total_internship_jobs.filter(
             status="Published"
         ).count()
-        total_internship_live_jobs = total_internship_jobs.filter(
-            status="Live"
-        ).count()
+        total_internship_live_jobs = total_internship_jobs.filter(status="Live").count()
         total_internship_disabled_jobs = total_internship_jobs.filter(
             status="Disabled"
         ).count()
 
         total_walkin_jobs = JobPost.objects.filter(job_type="walk-in")
-        total_walkin_pending_jobs = total_walkin_jobs.filter(
-            status="Pending"
-        ).count()
+        total_walkin_pending_jobs = total_walkin_jobs.filter(status="Pending").count()
         total_walkin_published_jobs = total_walkin_jobs.filter(
             status="Published"
         ).count()
         total_walkin_live_jobs = total_walkin_jobs.filter(status="Live").count()
-        total_walkin_disabled_jobs = total_walkin_jobs.filter(
-            status="Disabled"
-        ).count()
+        total_walkin_disabled_jobs = total_walkin_jobs.filter(status="Disabled").count()
 
         total_govt_jobs = JobPost.objects.filter(job_type="government")
         total_govt_pending_jobs = total_govt_jobs.filter(status="Pending").count()
-        total_govt_published_jobs = total_govt_jobs.filter(
-            status="Published"
-        ).count()
+        total_govt_published_jobs = total_govt_jobs.filter(status="Published").count()
         total_govt_live_jobs = total_govt_jobs.filter(status="Live").count()
         total_govt_disabled_jobs = total_govt_jobs.filter(status="Disabled").count()
         total_job_applications = AppliedJobs.objects.filter()
@@ -395,9 +396,7 @@ def index(request):
         social_login_once_applicants = total_social_applicants.filter(
             is_login=False
         ).count()
-        social_resume_applicants = total_social_applicants.exclude(
-            resume=""
-        ).count()
+        social_resume_applicants = total_social_applicants.exclude(resume="").count()
         social_applied_applicants = total_social_applicants.filter(
             id__in=total_job_applications.values_list("user", flat=True)
         ).count()
@@ -450,9 +449,7 @@ def index(request):
         resume_applicants = User.objects.filter(
             user_type="JS", registered_from="Resume"
         )
-        resume_login_once_applicants = resume_applicants.filter(
-            is_login=False
-        ).count()
+        resume_login_once_applicants = resume_applicants.filter(is_login=False).count()
         resume_applied_applicants = resume_applicants.filter(
             id__in=total_job_applications.values_list("user", flat=True)
         ).count()
@@ -483,18 +480,18 @@ def index(request):
             status="Disabled"
         ).count()
 
-        today_admin_internship_pending_jobs = (
-            today_admin_internship_jobs_count.filter(status="Pending").count()
-        )
+        today_admin_internship_pending_jobs = today_admin_internship_jobs_count.filter(
+            status="Pending"
+        ).count()
         today_admin_internship_published_jobs = (
             today_admin_internship_jobs_count.filter(status="Published").count()
         )
         today_admin_internship_live_jobs = today_admin_internship_jobs_count.filter(
             status="Live"
         ).count()
-        today_admin_internship_disabled_jobs = (
-            today_admin_internship_jobs_count.filter(status="Disabled").count()
-        )
+        today_admin_internship_disabled_jobs = today_admin_internship_jobs_count.filter(
+            status="Disabled"
+        ).count()
 
         today_walkin_pending_jobs = today_walkin_jobs_count.filter(
             status="Pending"
@@ -502,16 +499,12 @@ def index(request):
         today_walkin_published_jobs = today_walkin_jobs_count.filter(
             status="Published"
         ).count()
-        today_walkin_live_jobs = today_walkin_jobs_count.filter(
-            status="Live"
-        ).count()
+        today_walkin_live_jobs = today_walkin_jobs_count.filter(status="Live").count()
         today_walkin_disabled_jobs = today_walkin_jobs_count.filter(
             status="Disabled"
         ).count()
 
-        today_govt_pending_jobs = today_govt_jobs_count.filter(
-            status="Pending"
-        ).count()
+        today_govt_pending_jobs = today_govt_jobs_count.filter(status="Pending").count()
         today_govt_published_jobs = today_govt_jobs_count.filter(
             status="Published"
         ).count()
@@ -549,18 +542,18 @@ def index(request):
             status="Disabled"
         ).count()
 
-        today_admin_full_time_pending_jobs = (
-            today_admin_full_time_jobs_count.filter(status="Pending").count()
-        )
-        today_admin_full_time_published_jobs = (
-            today_admin_full_time_jobs_count.filter(status="Published").count()
-        )
+        today_admin_full_time_pending_jobs = today_admin_full_time_jobs_count.filter(
+            status="Pending"
+        ).count()
+        today_admin_full_time_published_jobs = today_admin_full_time_jobs_count.filter(
+            status="Published"
+        ).count()
         today_admin_full_time_live_jobs = today_admin_full_time_jobs_count.filter(
             status="Live"
         ).count()
-        today_admin_full_time_disabled_jobs = (
-            today_admin_full_time_jobs_count.filter(status="Disabled").count()
-        )
+        today_admin_full_time_disabled_jobs = today_admin_full_time_jobs_count.filter(
+            status="Disabled"
+        ).count()
 
         total_skills = Skill.objects.filter()
         total_active_skills = total_skills.filter(status="Active").count()
@@ -744,9 +737,7 @@ def index(request):
             "total_govt_disabled_jobs": total_govt_disabled_jobs,
             "today_active_skills": today_skills.filter(status="Active").count(),
             "today_inactive_skills": today_skills.filter(status="InActive").count(),
-            "today_active_locations": today_locations.filter(
-                status="Enabled"
-            ).count(),
+            "today_active_locations": today_locations.filter(status="Enabled").count(),
             "today_inactive_locations": today_locations.filter(
                 status="Disabled"
             ).count(),
@@ -779,4 +770,3 @@ def index(request):
         )
     else:
         return HttpResponseRedirect("/")
-

@@ -1,7 +1,13 @@
 """
 Company Serializers for API v1
 """
+
+import contextlib
+
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+
+from api.v1.jobs.serializers import JobListSerializer
 from peeldb.models import Company, JobPost
 
 
@@ -9,6 +15,7 @@ class CompanyListSerializer(serializers.ModelSerializer):
     """
     Serializer for company listings with job counts
     """
+
     logo = serializers.SerializerMethodField()
     job_count = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -18,57 +25,50 @@ class CompanyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = [
-            'id',
-            'name',
-            'slug',
-            'logo',
-            'company_type',
-            'size',
-            'industry_name',
-            'location',
-            'job_count',
-            'nature_of_business',
+            "id",
+            "name",
+            "slug",
+            "logo",
+            "company_type",
+            "size",
+            "industry_name",
+            "location",
+            "job_count",
+            "nature_of_business",
         ]
 
-    def get_logo(self, obj):
+    def get_logo(self, obj) -> str:
         """Return company logo URL"""
         if obj.profile_pic:
-            request = self.context.get('request')
+            request = self.context.get("request")
             if request:
-                try:
+                with contextlib.suppress(Exception):
                     return request.build_absolute_uri(obj.profile_pic.url)
-                except Exception:
-                    pass
         # Return default logo
-        return 'https://cdn.peeljobs.com/static/company_logo.png'
+        return "https://cdn.peeljobs.com/static/company_logo.png"
 
-    def get_job_count(self, obj):
+    def get_job_count(self, obj) -> int:
         """Return count of live job posts for this company"""
-        return JobPost.objects.filter(
-            company=obj,
-            status='Live'
-        ).count()
+        return JobPost.objects.filter(company=obj, status="Live").count()
 
-    def get_location(self, obj):
+    def get_location(self, obj) -> str:
         """Return company location from address or job locations"""
         if obj.address:
             # Extract city from address (simple approach)
-            return obj.address.split(',')[0] if ',' in obj.address else obj.address[:50]
+            return obj.address.split(",")[0] if "," in obj.address else obj.address[:50]
 
         # Fallback: Get location from job posts
-        job = JobPost.objects.filter(company=obj, status='Live').first()
+        job = JobPost.objects.filter(company=obj, status="Live").first()
         if job and job.location.exists():
             city = job.location.first()
             return f"{city.name}, {city.state.name}"
 
         return "Multiple Locations"
 
-    def get_industry_name(self, obj):
+    def get_industry_name(self, obj) -> str:
         """Return industry name from job posts"""
         job = JobPost.objects.filter(
-            company=obj,
-            status='Live',
-            industry__isnull=False
+            company=obj, status="Live", industry__isnull=False
         ).first()
 
         if job and job.industry.exists():
@@ -76,20 +76,20 @@ class CompanyListSerializer(serializers.ModelSerializer):
 
         return "Technology"
 
-    def get_nature_of_business(self, obj):
+    def get_nature_of_business(self, obj) -> list[str]:
         """Return nature of business tags"""
         # Simple heuristic based on company type and industry
         tags = []
 
-        if obj.company_type == 'Company':
-            tags.append('B2B')
-        elif obj.company_type == 'Consultant':
-            tags.append('B2B')
-            tags.append('Services')
+        if obj.company_type == "Company":
+            tags.append("B2B")
+        elif obj.company_type == "Consultant":
+            tags.append("B2B")
+            tags.append("Services")
 
         # Add based on size
-        if obj.size in ['200+', '50-200']:
-            tags.append('Enterprise')
+        if obj.size in ["200+", "50-200"]:
+            tags.append("Enterprise")
 
         return tags[:3]  # Max 3 tags
 
@@ -98,6 +98,7 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
     """
     Detailed company serializer for company profile page
     """
+
     logo = serializers.SerializerMethodField()
     job_count = serializers.SerializerMethodField()
     active_jobs = serializers.SerializerMethodField()
@@ -105,48 +106,40 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = [
-            'id',
-            'name',
-            'slug',
-            'logo',
-            'company_type',
-            'size',
-            'profile',
-            'website',
-            'address',
-            'phone_number',
-            'email',
-            'registered_date',
-            'job_count',
-            'active_jobs',
+            "id",
+            "name",
+            "slug",
+            "logo",
+            "company_type",
+            "size",
+            "profile",
+            "website",
+            "address",
+            "phone_number",
+            "email",
+            "registered_date",
+            "job_count",
+            "active_jobs",
         ]
 
-    def get_logo(self, obj):
+    def get_logo(self, obj) -> str:
         """Return company logo URL"""
         if obj.profile_pic:
-            request = self.context.get('request')
+            request = self.context.get("request")
             if request:
-                try:
+                with contextlib.suppress(Exception):
                     return request.build_absolute_uri(obj.profile_pic.url)
-                except Exception:
-                    pass
-        return 'https://cdn.peeljobs.com/static/company_logo.png'
+        return "https://cdn.peeljobs.com/static/company_logo.png"
 
-    def get_job_count(self, obj):
+    def get_job_count(self, obj) -> int:
         """Return count of live job posts"""
-        return JobPost.objects.filter(company=obj, status='Live').count()
+        return JobPost.objects.filter(company=obj, status="Live").count()
 
+    @extend_schema_field(JobListSerializer(many=True))
     def get_active_jobs(self, obj):
         """Return list of active jobs (limited)"""
-        from api.v1.jobs.serializers import JobListSerializer
+        jobs = JobPost.objects.filter(company=obj, status="Live").order_by(
+            "-created_on"
+        )[:10]
 
-        jobs = JobPost.objects.filter(
-            company=obj,
-            status='Live'
-        ).order_by('-created_on')[:10]
-
-        return JobListSerializer(
-            jobs,
-            many=True,
-            context=self.context
-        ).data
+        return JobListSerializer(jobs, many=True, context=self.context).data

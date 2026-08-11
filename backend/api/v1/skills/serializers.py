@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from peeldb.models import Skill, TechnicalSkill
 
 
@@ -7,24 +8,30 @@ class SkillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Skill
-        fields = ['id', 'name', 'slug', 'skill_type', 'status']
+        fields = ["id", "name", "slug", "skill_type", "status"]
         read_only_fields = fields
 
 
 class TechnicalSkillSerializer(serializers.ModelSerializer):
     """Serializer for user's technical skills with proficiency"""
+
     skill = SkillSerializer(read_only=True)
     skill_id = serializers.PrimaryKeyRelatedField(
-        queryset=Skill.objects.filter(status='Active'),
-        source='skill',
-        write_only=True
+        queryset=Skill.objects.filter(status="Active"), source="skill", write_only=True
     )
 
     class Meta:
         model = TechnicalSkill
         fields = [
-            'id', 'skill', 'skill_id', 'year', 'month',
-            'last_used', 'version', 'proficiency', 'is_major'
+            "id",
+            "skill",
+            "skill_id",
+            "year",
+            "month",
+            "last_used",
+            "version",
+            "proficiency",
+            "is_major",
         ]
 
 
@@ -34,8 +41,13 @@ class TechnicalSkillCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechnicalSkill
         fields = [
-            'skill', 'year', 'month', 'last_used',
-            'version', 'proficiency', 'is_major'
+            "skill",
+            "year",
+            "month",
+            "last_used",
+            "version",
+            "proficiency",
+            "is_major",
         ]
 
     def validate_year(self, value):

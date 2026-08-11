@@ -1,24 +1,25 @@
 import re
-from datetime import datetime, date
+from datetime import date, datetime
+
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
+
+from mpcomp.views import get_asia_time
 from peeldb.models import (
-    JobPost,
+    AgencyCompany,
+    City,
     Company,
     Country,
-    Skill,
     FunctionalArea,
     Industry,
-    Qualification,
-    City,
-    User,
-    AgencyCompany,
-    State,
+    JobPost,
     Menu,
+    Qualification,
+    Skill,
+    State,
+    User,
 )
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth import authenticate
-from mpcomp.views import get_asia_time
-
 
 valid_time_formats = ["%H:%M", "%I:%M%p", "%I:%M %p"]
 
@@ -46,7 +47,7 @@ class LoginSerializer(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request", None)
-        super(LoginSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def validate(self, data):
         email = data.get("email")
@@ -174,7 +175,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        super(CreateJobPostSerailizer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.user.is_superuser:
             self.fields["company"].required = True
@@ -192,51 +193,52 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
         # if "vacancies" in self.data.keys() and self.data["vacancies"]:
         #     self.fields["vacancies"].required = True
 
-        if "salary_type" in kwargs["data"].keys() and kwargs["data"]["salary_type"]:
+        if "salary_type" in kwargs["data"] and kwargs["data"]["salary_type"]:
             self.fields["max_salary"].required = True
             self.fields["min_salary"].required = True
 
         if (
-            "min_salary" in kwargs["data"].keys()
+            "min_salary" in kwargs["data"]
             and kwargs["data"]["min_salary"]
-            or "max_salary" in kwargs["data"].keys()
+            or "max_salary" in kwargs["data"]
             and kwargs["data"]["max_salary"]
         ):
             self.fields["salary_type"].required = True
 
-        if "min_salary" in kwargs["data"].keys() and kwargs["data"]["min_salary"]:
+        if "min_salary" in kwargs["data"] and kwargs["data"]["min_salary"]:
             self.fields["salary_type"].required = True
             self.fields["min_salary"].required = True
-        if "max_salary" in kwargs["data"].keys() and kwargs["data"]["max_salary"]:
-
+        if "max_salary" in kwargs["data"] and kwargs["data"]["max_salary"]:
             self.fields["max_salary"].required = True
             self.fields["salary_type"].required = True
 
-        if "final_industry" in kwargs["data"].keys():
+        if "final_industry" in kwargs["data"]:
             if len(kwargs["data"]["final_industry"]) > 2:
                 self.fields["industry"].required = False
             else:
                 self.fields["industry"].required = True
-        if "final_skills" in kwargs["data"].keys():
+        if "final_skills" in kwargs["data"]:
             if len(kwargs["data"]["final_skills"]) > 2:
                 self.fields["skills"].required = False
             else:
                 self.fields["skills"].required = True
-        if "final_edu_qualification" in kwargs["data"].keys():
+        if "final_edu_qualification" in kwargs["data"]:
             if len(kwargs["data"]["final_edu_qualification"]) > 2:
                 self.fields["edu_qualification"].required = False
             else:
                 self.fields["edu_qualification"].required = True
-        if "final_functional_area" in kwargs["data"].keys():
+        if "final_functional_area" in kwargs["data"]:
             if len(kwargs["data"]["final_functional_area"]) > 2:
                 self.fields["functional_area"].required = False
             else:
                 self.fields["functional_area"].required = True
-        if "other_location" in kwargs["data"].keys():
-            if len(kwargs["data"]["other_location"]) != 0:
-                self.fields["location"].required = False
+        if (
+            "other_location" in kwargs["data"]
+            and len(kwargs["data"]["other_location"]) != 0
+        ):
+            self.fields["location"].required = False
 
-        if "visa_required" in kwargs["data"].keys() and kwargs["data"]["visa_required"]:
+        if "visa_required" in kwargs["data"] and kwargs["data"]["visa_required"]:
             self.fields["visa_country"].required = True
             self.fields["visa_type"].required = True
         else:
@@ -260,7 +262,6 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
             self.fields["edu_qualification"].required = False
 
         if str(kwargs["data"]["job_type"]) == "government":
-
             self.fields["min_year"].required = False
             self.fields["max_year"].required = False
             self.fields["min_month"].required = False
@@ -297,7 +298,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
         return title.replace("/", "-")
 
     def validate_vacancies(self, vacancies):
-        if "vacancies" in self.data.keys() and self.data["vacancies"]:
+        if self.data.get("vacancies"):
             if int(vacancies) <= 0:
                 raise serializers.ValidationError("Vacancies must be greater than zero")
             else:
@@ -305,7 +306,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
         return self.cleaned_data.get("vacancies")
 
     def validate_govt_exam_date(self):
-        if ("govt_exam_date", "govt_from_date", "govt_to_date") in self.data.keys():
+        if ("govt_exam_date", "govt_from_date", "govt_to_date") in self.data:
             date = self.cleaned_data["govt_exam_date"]
             from_date = self.data["govt_from_date"]
             to_date = self.data["govt_to_date"]
@@ -326,14 +327,14 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
                 return date
 
     def validate_govt_from_date(self):
-        if "govt_from_date" in self.data.keys():
+        if "govt_from_date" in self.data:
             date = self.cleaned_data["govt_from_date"]
             if str(date) < str(datetime.now().date()):
                 raise serializers.ValidationError("The date cannot be in the past!")
             return date
 
     def validate_govt_to_date(self):
-        if "govt_to_date" in self.data.keys():
+        if "govt_to_date" in self.data:
             date = self.cleaned_data["govt_to_date"]
             if str(date) < str(datetime.now().date()):
                 raise serializers.ValidationError("The date cannot be in the past!")
@@ -355,7 +356,7 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
                 raise serializers.ValidationError("The date cannot be in the past!")
             if str(self.data["job_type"]) == "walk-in":
                 if (
-                    "walkin_to_date" in self.cleaned_data.keys()
+                    "walkin_to_date" in self.cleaned_data
                     and self.cleaned_data["walkin_to_date"] > date_time.date()
                 ):
                     return date_time
@@ -392,15 +393,14 @@ class CreateJobPostSerailizer(serializers.ModelSerializer):
         return self.data["company_name"]
 
     def validate_company_website(self):
-        if "company_website" in self.data and self.data["company_website"]:
+        if self.data.get("company_website"):
             if (
                 re.match(r"^http://", self.data["company_website"])
                 or re.match(r"^https://", self.data["company_website"])
                 or re.match(r"^www.", self.data["company_website"])
             ):
-
                 company = ""
-                if "company_id" in self.data.keys() and self.data["company_id"]:
+                if self.data.get("company_id"):
                     company = Company.objects.filter(id=self.data["company_id"])
                 if company:
                     companies = Company.objects.filter(
@@ -469,8 +469,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         ]
 
     def __init__(self, *args, **kwargs):
-        super(UserUpdateSerializer, self).__init__(*args, **kwargs)
-        if "dob" in self.initial_data.keys() and self.initial_data["dob"]:
+        super().__init__(*args, **kwargs)
+        if self.initial_data.get("dob"):
             self.fields["dob"].required = True
 
     def clean_mobile(self):
@@ -518,7 +518,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        super(ChangePasswordSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def validate_oldpassword(self, oldpassword):
         if not check_password(oldpassword, self.user.password):

@@ -1,10 +1,9 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
-from django.core.exceptions import ObjectDoesNotExist
 
-from peeldb.models import City, User, Company
 from mpcomp.views import recruiter_login_required
-
+from peeldb.models import City, Company, User
 
 
 @recruiter_login_required
@@ -78,4 +77,3 @@ def get_autocomplete(request):
             return data
     data = {"response": companies_names}
     return data
-

@@ -1,7 +1,5 @@
 from django.conf import settings
-
-# from administration.models import Company, Profile
-from rest_framework.authtoken.models import Token
+from django.http import HttpResponseRedirect
 
 # from recruiter import status
 from django.http.response import JsonResponse
@@ -9,8 +7,10 @@ from django.http.response import JsonResponse
 # from microtrack.authentication import TokenAuthentication
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
 
+# from administration.models import Company, Profile
+from rest_framework.authtoken.models import Token
+
 from recruiter import exceptions, status
-from django.http import HttpResponseRedirect
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -82,7 +82,7 @@ class TokenAuthentication(BaseAuthentication):
         return self.keyword
 
 
-class TokenAuthMiddleware(object):
+class TokenAuthMiddleware:
     """adding profile and company to request object"""
 
     def __init__(self, get_response):

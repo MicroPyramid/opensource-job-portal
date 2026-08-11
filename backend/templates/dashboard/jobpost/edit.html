@@ -28,6 +28,7 @@
   </div>
 
   <form id="jobform" name="jobform" method="post" class="space-y-6">
+    {% csrf_token %}
     <!-- Job Details Section -->
     <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-neutral-200 bg-neutral-50">

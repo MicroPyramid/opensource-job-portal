@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from peeldb.models import Country, State, City
+
+from peeldb.models import City, Country, State
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -7,44 +8,43 @@ class CountrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Country
-        fields = ['id', 'name', 'slug', 'status']
+        fields = ["id", "name", "slug", "status"]
 
 
 class StateSerializer(serializers.ModelSerializer):
     """Serializer for State model"""
+
     country = CountrySerializer(read_only=True)
     country_id = serializers.PrimaryKeyRelatedField(
-        queryset=Country.objects.filter(status='Enabled'),
-        source='country',
+        queryset=Country.objects.filter(status="Enabled"),
+        source="country",
         write_only=True,
-        required=False
+        required=False,
     )
 
     class Meta:
         model = State
-        fields = ['id', 'name', 'slug', 'status', 'country', 'country_id']
+        fields = ["id", "name", "slug", "status", "country", "country_id"]
 
 
 class CitySerializer(serializers.ModelSerializer):
     """Serializer for City model"""
+
     state = StateSerializer(read_only=True)
     state_id = serializers.PrimaryKeyRelatedField(
-        queryset=State.objects.filter(status='Enabled'),
-        source='state',
+        queryset=State.objects.filter(status="Enabled"),
+        source="state",
         write_only=True,
-        required=False
+        required=False,
     )
     country_name = serializers.SerializerMethodField()
 
     class Meta:
         model = City
-        fields = [
-            'id', 'name', 'slug', 'status',
-            'state', 'state_id', 'country_name'
-        ]
-        read_only_fields = ['id', 'name', 'slug', 'status', 'state', 'country_name']
+        fields = ["id", "name", "slug", "status", "state", "state_id", "country_name"]
+        read_only_fields = ["id", "name", "slug", "status", "state", "country_name"]
 
-    def get_country_name(self, obj):
+    def get_country_name(self, obj) -> str | None:
         """Get country name from state"""
         if obj.state and obj.state.country:
             return obj.state.country.name
@@ -56,18 +56,21 @@ class CitySerializer(serializers.ModelSerializer):
         Added as part of location cleanup initiative (LOCATION_CLEANUP_PLAN.md Phase 1)
         """
         if self.instance is None:  # Creating new city
-            raise serializers.ValidationError({
-                'detail': 'Creating new cities via API is not allowed. '
-                         'Please select from existing cities or contact admin to add new locations.'
-            })
+            raise serializers.ValidationError(
+                {
+                    "detail": "Creating new cities via API is not allowed. "
+                    "Please select from existing cities or contact admin to add new locations."
+                }
+            )
         return attrs
 
 
 class CityListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for city listings"""
-    state_name = serializers.CharField(source='state.name', read_only=True)
-    country_name = serializers.CharField(source='state.country.name', read_only=True)
+
+    state_name = serializers.CharField(source="state.name", read_only=True)
+    country_name = serializers.CharField(source="state.country.name", read_only=True)
 
     class Meta:
         model = City
-        fields = ['id', 'name', 'state_name', 'country_name']
+        fields = ["id", "name", "state_name", "country_name"]

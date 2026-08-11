@@ -25,6 +25,7 @@
       <!-- Add Country Form -->
       <div class="p-4 border-b border-neutral-100 active_ticket_form" id="add_conform">
         <form id="newcountryform" method="post" class="flex gap-2">
+          {% csrf_token %}
           <input type="text" class="form-control flex-1 text-sm" name="country" id="country" placeholder="Country name">
           <button type="submit" class="btn btn-primary btn-sm whitespace-nowrap">
             <i class="fa fa-plus mr-1"></i>Add
@@ -35,6 +36,7 @@
       <!-- Edit Country Form (hidden by default) -->
       <div class="p-4 border-b border-neutral-100 hidden" id="edit_conform">
         <form id="editcountryform" method="post" class="space-y-2">
+          {% csrf_token %}
           <input type="text" class="form-control text-sm" id="country_name" placeholder="Name" name="country">
           <input type="hidden" id="country_id">
           <input type="text" class="form-control text-sm" placeholder="Slug" id="country_slug" name="slug">
@@ -85,6 +87,7 @@
       <!-- Add State Form -->
       <div class="p-4 border-b border-neutral-100 active_ticket_form" id="add_stform">
         <form id="newstateform" method="post" class="flex gap-2">
+          {% csrf_token %}
           <input type="text" class="form-control flex-1 text-sm" name="state" id="state" placeholder="State name">
           <button type="submit" class="btn btn-primary btn-sm whitespace-nowrap">
             <i class="fa fa-plus mr-1"></i>Add
@@ -95,6 +98,7 @@
       <!-- Edit State Form (hidden by default) -->
       <div class="p-4 border-b border-neutral-100 hidden" id="edit_stform">
         <form id="editstateform" method="post" class="space-y-2">
+          {% csrf_token %}
           <input type="text" class="form-control text-sm" placeholder="State Name" id="state_name" name="state">
           <input type="hidden" id="state_id">
           <select id="state_country" class="form-control text-sm" name="country">
@@ -131,6 +135,7 @@
       <!-- Add City Form -->
       <div class="p-4 border-b border-neutral-100 active_ticket_form" id="add_ctform">
         <form id="newcityform" method="post" action="{% url 'dashboard:country' %}" class="flex gap-2">
+          {% csrf_token %}
           <input type="text" class="form-control flex-1 text-sm" name="city" id="city" placeholder="City name">
           <button type="submit" class="btn btn-primary btn-sm whitespace-nowrap">
             <i class="fa fa-plus mr-1"></i>Add
@@ -141,6 +146,7 @@
       <!-- Edit City Form (hidden by default) -->
       <div class="p-4 border-b border-neutral-100 hidden" id="edit_ctform">
         <form id="editcityform" method="post" action="{% url 'dashboard:country' %}" class="space-y-2">
+          {% csrf_token %}
           <input type="text" class="form-control text-sm" id="editcity" name="city" placeholder="City name">
           <select id="city_country" class="form-control text-sm" name="country">
             {% for country in countries %}
@@ -178,6 +184,7 @@
       <!-- Add Other City Form -->
       <div class="p-4 border-t border-neutral-100 hidden" id="add_other_id">
         <form id="othercityform" method="post" action="{% url 'dashboard:country' %}" class="flex gap-2">
+          {% csrf_token %}
           <input type="text" class="form-control flex-1 text-sm" name="name" id="city" placeholder="City name">
           <input type="hidden" name="state" id="state">
           <input type="hidden" name="mode" value="add_other_city">

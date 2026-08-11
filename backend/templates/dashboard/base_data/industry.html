@@ -20,6 +20,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <!-- Add Form -->
       <form id="addform" method="post" action="." class="flex gap-2 items-end">
+        {% csrf_token %}
         <div class="flex-1">
           <label class="block text-xs font-medium text-neutral-500 mb-1">Industry Name</label>
           <input type="text" class="form-control" id="industry_name" placeholder="Enter industry name" required>
@@ -64,6 +65,7 @@
                 <!-- Edit Panel -->
                 <div class="edit_panel hidden mt-4 pt-4 border-t border-neutral-200">
                   <form id="editform{{ industry.id }}" method="post" action=".">
+                    {% csrf_token %}
                     <input type="hidden" name="id" value="{{ industry.id }}">
                     <input type="hidden" name="mode" value="edit_industry">
                     <input type="hidden" name="page" value="{% if request.GET.page %}{{ request.GET.page }}{% else %}1{% endif %}">

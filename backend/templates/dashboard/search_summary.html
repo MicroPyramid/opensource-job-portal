@@ -35,6 +35,7 @@
     </div>
     <div class="p-6">
       <form id="search_form" name="adv-search-form" method="POST" action=".">
+        {% csrf_token %}
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
           <div class="md:col-span-5">
             <label class="block text-sm font-medium text-neutral-700 mb-2">Search Values</label>

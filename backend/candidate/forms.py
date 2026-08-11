@@ -1,17 +1,19 @@
 import re
+
 from django import forms
+
 from peeldb.models import (
-    User,
-    EmploymentHistory,
-    EducationDetails,
-    Degree,
-    EducationInstitue,
-    Project,
-    TechnicalSkill,
-    JobAlert,
-    City,
-    Qualification,
     Certification,
+    City,
+    Degree,
+    EducationDetails,
+    EducationInstitue,
+    EmploymentHistory,
+    JobAlert,
+    Project,
+    Qualification,
+    TechnicalSkill,
+    User,
 )
 
 SAL_TYPES = (
@@ -105,12 +107,12 @@ class PersonalInfoForm(forms.ModelForm):
         fields = ["first_name", "mobile"]
 
     def __init__(self, *args, **kwargs):
-        super(PersonalInfoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["current_city"].required = True
         self.fields["current_city"].error_messages = {
             "required": "Current Location cannot be empty"
         }
-        if "other_loc" in self.data.keys():
+        if "other_loc" in self.data:
             self.fields["current_city"].required = False
             self.fields["other_location"].required = True
 
@@ -173,8 +175,8 @@ class WorkExperienceForm(forms.ModelForm):
         fields = ["company", "from_date", "designation", "current_job"]
 
     def __init__(self, *args, **kwargs):
-        super(WorkExperienceForm, self).__init__(*args, **kwargs)
-        if "current_job" in self.data.keys():
+        super().__init__(*args, **kwargs)
+        if "current_job" in self.data:
             self.fields["to_date"].required = False
 
     def clean_to_date(self):
@@ -195,7 +197,7 @@ class EducationForm(forms.ModelForm):
         fields = ["from_date", "current_education"]
 
     def __init__(self, *args, **kwargs):
-        super(EducationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.data.get("current_education"):
             self.fields["to_date"].required = False
@@ -369,13 +371,13 @@ class TechnicalSkillForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("requested_user", "")
-        super(TechnicalSkillForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        if "is_major" in self.data.keys():
+        if "is_major" in self.data:
             self.fields["is_major"].required = True
 
     def clean_is_major(self):
-        if "is_major" in self.data.keys():
+        if "is_major" in self.data:
             if (
                 int(
                     self.user.skills.filter(is_major=True)
@@ -401,7 +403,7 @@ class JobAlertForm(forms.ModelForm):
         fields = ["name", "skill", "role"]
 
     def __init__(self, *args, **kwargs):
-        super(JobAlertForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if str(self.data.get("user_authenticated")) == "True":
             self.fields["email"].required = False
 

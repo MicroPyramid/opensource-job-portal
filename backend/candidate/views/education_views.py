@@ -1,20 +1,21 @@
 import datetime
 import json
-from django.shortcuts import render
-from django.http.response import HttpResponse
+
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.utils import timezone
 
 from candidate.forms import (
-    EducationForm,
-    DegreeForm,
-    EducationInstitueForm,
     DEGREE_TYPES,
+    DegreeForm,
+    EducationForm,
+    EducationInstitueForm,
 )
 from peeldb.models import (
     City,
-    EducationDetails,
     Degree,
+    EducationDetails,
     EducationInstitue,
     Qualification,
 )

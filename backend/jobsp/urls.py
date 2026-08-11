@@ -1,80 +1,84 @@
 from django.conf import settings
 from django.conf.urls import include
-from django.urls import re_path as url
+from django.contrib import admin
 from django.urls import path
+from django.urls import re_path as url
+
+from candidate.views import (
+    alert_subscribe_verification,
+    applicant_email_unsubscribing,
+    applicant_unsubscribing,
+    bounces,
+)
 from pjob.views import (
-    skill_location_wise_fresher_jobs,
-    skill_fresher_jobs,
-    skill_location_walkin_jobs,
-    register_using_email,
-    login_user_email,
-    # forgot_password,
-    user_activation,
-    user_reg_success,
-    recruiter_profile,
-    jobs_by_location,
-    jobs_by_skill,
-    jobs_by_degree,
-    jobs_by_industry,
-    full_time_jobs,
-    walkin_jobs,
     city_internship_jobs,
-    internship_jobs,
-    government_jobs,
-    each_company_jobs,
-    job_industries,
     companies,
-    jobposts_by_date,
+    each_company_jobs,
+    fresher_jobs_by_skills,
+    full_time_jobs,
+    government_jobs,
+    internship_jobs,
+    job_detail,
+    job_industries,
     # week_calendar,
     job_locations,
     # set_password,
     job_skills,
-    job_detail,
+    jobposts_by_date,
+    jobs_by_degree,
+    jobs_by_industry,
+    jobs_by_location,
+    jobs_by_skill,
+    location_fresher_jobs,
+    login_user_email,
+    process_email,
+    recruiter_profile,
     # year_calendar,
     # calendar_add_event,
     # calendar_event_list,
     # month_calendar,
     recruiters,
-    user_subscribe,
+    register_using_email,
+    skill_fresher_jobs,
+    skill_location_walkin_jobs,
+    skill_location_wise_fresher_jobs,
     unsubscribe,
-    fresher_jobs_by_skills,
-    process_email,
-    location_fresher_jobs,
-)
-from search.views import (
-    skill_auto_search,
-    city_auto_search,
-    custome_search,
-    custom_walkins,
-    search_slugs,
-)
-from candidate.views import (
-    bounces,
-    applicant_unsubscribing,
-    applicant_email_unsubscribing,
-    alert_subscribe_verification,
-)
-from recruiter.views import post_job
-from psite.views import (
-    contact,
-    sitemap,
-    get_out,
-    pages,
-    custom_500,
-    custom_404,
-    auth_return,
+    # forgot_password,
+    user_activation,
+    user_reg_success,
+    user_subscribe,
+    walkin_jobs,
 )
 from pjob.views import index as job_list
+from psite.views import (
+    auth_return,
+    contact,
+    custom_404,
+    custom_500,
+    get_out,
+    pages,
+    sitemap,
+)
+from recruiter.views import post_job
+from search.views import (
+    city_auto_search,
+    custom_walkins,
+    custome_search,
+    search_slugs,
+    skill_auto_search,
+)
 
-from django.contrib import admin
-from .views import user_login, user_register, forgot_password, set_password
-
+from .views import forgot_password, set_password, user_login, user_register
 
 urlpatterns = [
-    path("login/", user_login, name="login"), # convert to tailwind
+    path("login/", user_login, name="login"),  # convert to tailwind
     path("register/", user_register, name="register"),
     path("forgot-password/", forgot_password, name="forgot_password"),
-    path("set-password/<int:user_id>/<str:passwd_reset_token>/", set_password, name="set_password"),
+    path(
+        "set-password/<int:user_id>/<str:passwd_reset_token>/",
+        set_password,
+        name="set_password",
+    ),
     url(
         r"^jobs/(?P<job_title_slug>[a-z0-9-.,*?]+)-(?P<job_id>([0-9])+)/$",
         job_detail,
@@ -303,8 +307,8 @@ urlpatterns = [
 # Add API documentation URLs (drf-spectacular)
 from drf_spectacular.views import (
     SpectacularAPIView,
-    SpectacularSwaggerView,
     SpectacularRedocView,
+    SpectacularSwaggerView,
 )
 
 urlpatterns += [
@@ -325,48 +329,73 @@ urlpatterns += [
 ]
 
 # Add Django Sitemap URLs (Modern replacement for old sitemap generation)
-from django.contrib.sitemaps.views import sitemap as sitemap_view, index as sitemap_index
+from django.contrib.sitemaps.views import (
+    index as sitemap_index,
+)
+from django.contrib.sitemaps.views import (
+    sitemap as sitemap_view,
+)
+
 from psite.sitemaps import (
-    JobPostSitemap,
-    SkillLocationSitemap,
-    FresherSkillLocationSitemap,
-    SkillSitemap,
-    LocationSitemap,
     CompanySitemap,
+    FresherSkillLocationSitemap,
+    JobPostSitemap,
+    LocationSitemap,
+    SkillLocationSitemap,
+    SkillSitemap,
     StaticPagesSitemap,
 )
 
 sitemaps = {
-    'jobs': JobPostSitemap,
-    'skill-locations': SkillLocationSitemap,
-    'fresher-skill-locations': FresherSkillLocationSitemap,
-    'skills': SkillSitemap,
-    'locations': LocationSitemap,
-    'companies': CompanySitemap,
-    'static': StaticPagesSitemap,
+    "jobs": JobPostSitemap,
+    "skill-locations": SkillLocationSitemap,
+    "fresher-skill-locations": FresherSkillLocationSitemap,
+    "skills": SkillSitemap,
+    "locations": LocationSitemap,
+    "companies": CompanySitemap,
+    "static": StaticPagesSitemap,
 }
 
 urlpatterns += [
     # Sitemap index - automatically splits into multiple files if needed
     # Domain (peeljobs.com) configured via Django Site framework (SITE_ID=1)
-    path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.index'),
+    path(
+        "sitemap.xml",
+        sitemap_index,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.index",
+    ),
     # Individual sitemap sections
-    path('sitemap-<section>.xml', sitemap_view, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path(
+        "sitemap-<section>.xml",
+        sitemap_view,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
 ]
 
 handler404 = custom_404
 handler500 = custom_500
 
-# Include local development URLs if available
-try:
+# Include local development URLs -- only when DEBUG is on.
+#
+# This used to be an unguarded `try: from .urls_local import ...` with an
+# `except ImportError: pass`. urls_local is tracked in git, so it ships to
+# production, and it unconditionally routes "schema-viewer/" -- a browsable dump
+# of the entire database schema. Production was protected only incidentally,
+# because django-schema-viewer is a dev-only dependency and the failed import
+# was swallowed. That protection disappears the moment dev dependencies are
+# installed in production, which the pre-uv deploy did (`pipenv install -d`).
+# Gate on DEBUG so the guarantee comes from configuration, not from a missing
+# package.
+if settings.DEBUG:
     from .urls_local import local_urlpatterns
+
     urlpatterns += local_urlpatterns
-    print("Local development URLs loaded")
-except ImportError:
-    pass  # urls_local.py doesn't exist or has import errors
 
 # Serve media files in development
 if settings.DEBUG:
     from django.conf.urls.static import static
+
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

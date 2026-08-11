@@ -6,6 +6,7 @@
 <!-- content -->
 <div class="content_wrap">
 <form name="ticketform" id="ticketform" method="post">
+  {% csrf_token %}
   <div class="raise_ticket">
     <h3><i class='fa fa-ticket'></i><span>Raise a</span>ticket</h3>
     <div class="category">

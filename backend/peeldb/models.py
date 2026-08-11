@@ -1,18 +1,18 @@
 import hashlib
 import json
-import uuid
 import os
-from datetime import datetime
 import re
+import uuid
+from datetime import datetime
+
 import arrow
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 
 # from oauth2client.contrib.django_util.models import CredentialsField
-
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import Q, Count, F, JSONField
+from django.db.models import Count, F, JSONField, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -94,9 +94,7 @@ def img_url(self, filename):
         # parsed_target_url = urlparse(self.website)
         # domain = str(parsed_target_url.netloc).split('.')[0]
         filename = self.slug + "." + str(filename.split(".")[-1])
-    else:
-        filename = filename
-    return "%s%s/%s" % (self.file_prepend, file_hash, filename)
+    return f"{self.file_prepend}{file_hash}/{filename}"
 
 
 class Qualification(models.Model):
@@ -241,31 +239,39 @@ class City(models.Model):
             return
 
         # Normalize whitespace
-        self.name = ' '.join(self.name.split())
+        self.name = " ".join(self.name.split())
 
         # Check for multiple cities (commas)
-        if ',' in self.name:
-            raise ValidationError({
-                'name': 'City name cannot contain multiple locations. Please create separate entries for each city.'
-            })
+        if "," in self.name:
+            raise ValidationError(
+                {
+                    "name": "City name cannot contain multiple locations. Please create separate entries for each city."
+                }
+            )
 
         # Check for special characters (except spaces, hyphens, apostrophes, periods)
-        if re.search(r'[^a-zA-Z\s\-\'\.]', self.name):
-            raise ValidationError({
-                'name': 'City name cannot contain numbers or special characters. Only letters, spaces, hyphens, apostrophes, and periods are allowed.'
-            })
+        if re.search(r"[^a-zA-Z\s\-\'\.]", self.name):
+            raise ValidationError(
+                {
+                    "name": "City name cannot contain numbers or special characters. Only letters, spaces, hyphens, apostrophes, and periods are allowed."
+                }
+            )
 
         # Check for excessive length (likely an address)
         if len(self.name) > 100:
-            raise ValidationError({
-                'name': 'City name is too long (max 100 characters). This appears to be an address rather than a city name.'
-            })
+            raise ValidationError(
+                {
+                    "name": "City name is too long (max 100 characters). This appears to be an address rather than a city name."
+                }
+            )
 
         # Check for patterns that indicate addresses (multiple numbers)
-        if re.search(r'\d+.*\d+', self.name):
-            raise ValidationError({
-                'name': 'City name cannot contain multiple numbers. This appears to be an address rather than a city name.'
-            })
+        if re.search(r"\d+.*\d+", self.name):
+            raise ValidationError(
+                {
+                    "name": "City name cannot contain multiple numbers. This appears to be an address rather than a city name."
+                }
+            )
 
     def save(self, *args, **kwargs):
         """Override save to run validation"""
@@ -313,14 +319,10 @@ class Company(models.Model):
     created_from = models.CharField(max_length=200, default="")
 
     def is_company(self):
-        if str(self.company_type) == "Company":
-            return True
-        return False
+        return str(self.company_type) == "Company"
 
     def is_agency(self):
-        if str(self.company_type) == "Consultant":
-            return True
-        return False
+        return str(self.company_type) == "Consultant"
 
     def get_company_admin(self):
         return User.objects.filter(is_admin=True, company=self).first()
@@ -352,10 +354,8 @@ class Company(models.Model):
     def get_unique_recruiters(self):
         job_posts = list(
             set(
-                list(
-                    JobPost.objects.filter(company=self, status="Live").values_list(
-                        "user", flat=True
-                    )
+                JobPost.objects.filter(company=self, status="Live").values_list(
+                    "user", flat=True
                 )
             )
         )
@@ -394,11 +394,6 @@ class Company(models.Model):
         if site is not None and "//" in site:
             site = site.split("//")[1]
         return site
-
-    def get_logo_url(self):
-        if self.profile_pic:
-            return str(self.profile_pic)
-        return "https://cdn.peeljobs.com/static/company_logo.png"
 
 
 class EducationInstitue(models.Model):
@@ -463,7 +458,9 @@ class TechnicalSkill(models.Model):
 
 
 class Certification(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_certifications')
+    user = models.ForeignKey(
+        "User", on_delete=models.CASCADE, related_name="user_certifications"
+    )
     name = models.CharField(max_length=500)
     organization = models.CharField(max_length=500)
     credential_id = models.CharField(max_length=200, null=True, blank=True)
@@ -479,7 +476,7 @@ class Certification(models.Model):
         return f"{self.name} - {self.organization}"
 
     class Meta:
-        ordering = ['-issued_date', '-created_at']
+        ordering = ["-issued_date", "-created_at"]
 
 
 MARTIAL_STATUS = (
@@ -503,22 +500,24 @@ def resume_upload_path(instance, filename):
     """
     # Get file extension
     os.path.splitext(filename)[1].lower()
-    
+
     # Generate UUID for uniqueness
     unique_id = uuid.uuid4().hex
-    
+
     # Get current date for organization
     now = datetime.now()
-    year = now.strftime('%Y')
-    month = now.strftime('%m')
-    
+    year = now.strftime("%Y")
+    month = now.strftime("%m")
+
     # Clean the original filename (remove spaces, special chars)
-    clean_filename = re.sub(r'[^\w\-_\.]', '_', filename)
-    clean_filename = re.sub(r'_+', '_', clean_filename)  # Replace multiple underscores with single
-    
+    clean_filename = re.sub(r"[^\w\-_\.]", "_", filename)
+    clean_filename = re.sub(
+        r"_+", "_", clean_filename
+    )  # Replace multiple underscores with single
+
     # Create new filename with UUID prefix
     new_filename = f"{unique_id}_{clean_filename}"
-    
+
     # Return the full path
     return f"resume/user_{instance.id}/{year}/{month}/{new_filename}"
 
@@ -550,11 +549,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     email_verified = models.BooleanField(default=False)
     city = models.ForeignKey(
-        City, null=True, blank=True, related_name="user_city", on_delete=models.SET_NULL)
+        City, null=True, blank=True, related_name="user_city", on_delete=models.SET_NULL
+    )
 
     state = models.ForeignKey(State, null=True, blank=True, on_delete=models.SET_NULL)
     country = models.ForeignKey(
-        Country, null=True, blank=True, on_delete=models.SET_NULL)
+        Country, null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     pincode = models.IntegerField(null=True, blank=True)
     last_password_reset_on = models.DateTimeField(auto_now_add=True)
@@ -564,10 +565,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     employment_history = models.ManyToManyField(EmploymentHistory)
     current_city = models.ForeignKey(
-        'City', 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True
+        "City", on_delete=models.SET_NULL, null=True, blank=True
     )
     preferred_city = models.ManyToManyField(City, related_name="preferred_city")
     job_role = models.CharField(max_length=500, default="")
@@ -575,7 +573,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=200,
         blank=True,
         default="",
-        help_text="Job title/role for employers (e.g., 'Senior Recruiter', 'HR Manager')"
+        help_text="Job title/role for employers (e.g., 'Senior Recruiter', 'HR Manager')",
     )
     education = models.ManyToManyField(EducationDetails)
     project = models.ManyToManyField(Project)
@@ -584,8 +582,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     current_salary = models.CharField(max_length=50, blank=True, null=True)
     expected_salary = models.CharField(max_length=500, blank=True, null=True)
     prefered_industry = models.ForeignKey(
-        Industry, blank=True, null=True, on_delete=models.SET_NULL)
-    
+        Industry, blank=True, null=True, on_delete=models.SET_NULL
+    )
+
     industry = models.ManyToManyField(Industry, related_name="recruiter_industries")
     technical_skills = models.ManyToManyField(Skill, related_name="recruiter_skill")
     dob = models.DateField(blank=True, null=True)
@@ -596,7 +595,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=2000,
         null=True,
         blank=True,
-        help_text='Upload your resume in PDF, DOC, DOCX, RTF, or ODT format (max 1MB)'
+        help_text="Upload your resume in PDF, DOC, DOCX, RTF, or ODT format (max 1MB)",
     )
     relocation = models.BooleanField(default=False)
     notice_period = models.CharField(max_length=50, blank=True, null=True)
@@ -646,10 +645,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 user_perm = self.user_permissions.get(codename=perm)
             except ObjectDoesNotExist:
                 user_perm = False
-            if user_perm:
-                return True
-            else:
-                return False
+            return bool(user_perm)
 
     class Meta:
         permissions = (
@@ -666,7 +662,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_full_name(self):
-        full_name = "%s %s" % (
+        full_name = "{} {}".format(
             self.first_name,
             self.last_name if self.last_name else "",
         )
@@ -685,49 +681,34 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_gp_connected(self):
-        if self.google_user.all():
-            return True
-        else:
-            return False
+        return bool(self.google_user.all())
 
     @property
     def is_recruiter(self):
         """Check if user is an employer (recruiter/company user)"""
         return str(self.user_type) == "EM"
 
-
     @property
     def is_connect_social_networks(self):
         # Only Google OAuth is supported now
-        if self.google_user.all():
-            return True
-        else:
-            return False
+        return bool(self.google_user.all())
 
     @property
     def is_recruiter_active(self):
-        if self.is_connect_social_networks and self.is_active and self.mobile_verified:
-            return True
-        else:
-            return False
+        return bool(
+            self.is_connect_social_networks and self.is_active and self.mobile_verified
+        )
 
     def is_company_recruiter(self):
-        if self.is_recruiter:
-            return True
-        else:
-            return False
+        return bool(self.is_recruiter)
 
     @property
     def is_agency_recruiter(self):
-        if self.company and str(self.company.company_type) == "Consultant":
-            return True
-        return False
+        return bool(self.company and str(self.company.company_type) == "Consultant")
 
     @property
     def is_agency_admin(self):
-        if self.company and self.agency_admin:
-            return True
-        return False
+        return bool(self.company and self.agency_admin)
 
     @property
     def is_jobseeker(self):
@@ -1193,7 +1174,9 @@ class AgencyCompany(models.Model):
     company = models.ForeignKey(
         Company, null=True, blank=True, on_delete=models.RESTRICT
     )
-    created_by = models.ForeignKey(User, on_delete=models.RESTRICT, null=True, blank=True)
+    created_by = models.ForeignKey(
+        User, on_delete=models.RESTRICT, null=True, blank=True
+    )
     company_categories = models.ManyToManyField(
         AgencyCompanyCatogery, related_name="categories"
     )
@@ -1204,7 +1187,7 @@ class AgencyCompany(models.Model):
 
 class JobPostManager(models.Manager):
     def get_queryset(self):
-        return super(JobPostManager, self).get_queryset().order_by("-created_on")
+        return super().get_queryset().order_by("-created_on")
 
 
 class JobPost(models.Model):
@@ -1232,7 +1215,8 @@ class JobPost(models.Model):
     industry = models.ManyToManyField(Industry)
     job_interview_location = models.ManyToManyField(InterviewLocation)
     country = models.ForeignKey(
-        Country, null=True, related_name="job_country", on_delete=models.SET_NULL)
+        Country, null=True, related_name="job_country", on_delete=models.SET_NULL
+    )
 
     keywords = models.ManyToManyField(Keyword)
     description = models.TextField()
@@ -1275,17 +1259,19 @@ class JobPost(models.Model):
     agency_amount = models.CharField(max_length=1000, default="")
     agency_recruiters = models.ManyToManyField(User, related_name="recruiters")
     agency_client = models.ForeignKey(
-        AgencyCompany, null=True, on_delete=models.SET_NULL)
+        AgencyCompany, null=True, on_delete=models.SET_NULL
+    )
 
     send_email_notifications = models.BooleanField(default=False)
     agency_category = models.ForeignKey(
-        AgencyCompanyCatogery, null=True, on_delete=models.SET_NULL)
-    
+        AgencyCompanyCatogery, null=True, on_delete=models.SET_NULL
+    )
 
     visa_required = models.BooleanField(default=False)
     visa_country = models.ForeignKey(
-        Country, null=True, related_name="visa_country", on_delete=models.SET_NULL)
-    
+        Country, null=True, related_name="visa_country", on_delete=models.SET_NULL
+    )
+
     visa_type = models.CharField(max_length=50, default="")
     skills = models.ManyToManyField(Skill)
     salary_type = models.CharField(
@@ -1313,8 +1299,9 @@ class JobPost(models.Model):
         null=True,
         blank=True,
         related_name="major_skill",
-        on_delete=models.SET_NULL)
-    
+        on_delete=models.SET_NULL,
+    )
+
     closed_date = models.DateTimeField(null=True, blank=True)
 
     # New fields for enhanced job posting form
@@ -1325,7 +1312,7 @@ class JobPost(models.Model):
         max_length=20,
         blank=True,
         null=True,
-        help_text="Role level (Intern, Junior, Mid, Senior, Lead, Manager)"
+        help_text="Role level (Intern, Junior, Mid, Senior, Lead, Manager)",
     )
 
     # Application Method & URL
@@ -1333,18 +1320,17 @@ class JobPost(models.Model):
         choices=APPLICATION_METHOD,
         max_length=20,
         default="portal",
-        help_text="How candidates should apply for this job"
+        help_text="How candidates should apply for this job",
     )
     application_url = models.URLField(
         blank=True,
         null=True,
-        help_text="External URL for job applications (if application_method is 'external')"
+        help_text="External URL for job applications (if application_method is 'external')",
     )
 
     # Salary Visibility
     show_salary = models.BooleanField(
-        default=True,
-        help_text="Show salary range to job seekers"
+        default=True, help_text="Show salary range to job seekers"
     )
 
     # Benefits & Perks (stored as JSON array)
@@ -1352,35 +1338,30 @@ class JobPost(models.Model):
         models.CharField(max_length=100),
         blank=True,
         null=True,
-        help_text="List of benefits: PF, ESI, Health Insurance, Annual Bonus, etc."
+        help_text="List of benefits: PF, ESI, Health Insurance, Annual Bonus, etc.",
     )
 
     # Language Requirements (stored as JSON: [{"language": "English", "proficiency": "fluent"}])
     language_requirements = models.JSONField(
-        blank=True,
-        null=True,
-        help_text="Required languages with proficiency levels"
+        blank=True, null=True, help_text="Required languages with proficiency levels"
     )
 
     # Certifications
     required_certifications = models.TextField(
-        blank=True,
-        help_text="Required certifications (comma-separated or free text)"
+        blank=True, help_text="Required certifications (comma-separated or free text)"
     )
     preferred_certifications = models.TextField(
-        blank=True,
-        help_text="Preferred/nice-to-have certifications"
+        blank=True, help_text="Preferred/nice-to-have certifications"
     )
 
     # Relocation & Travel
     relocation_required = models.BooleanField(
-        default=False,
-        help_text="Is candidate willing to relocate required?"
+        default=False, help_text="Is candidate willing to relocate required?"
     )
     travel_percentage = models.CharField(
         max_length=20,
         blank=True,
-        help_text="Expected travel percentage (e.g., '0-10%', '10-25%', '25-50%')"
+        help_text="Expected travel percentage (e.g., '0-10%', '10-25%', '25-50%')",
     )
 
     # Hiring Timeline & Priority
@@ -1388,13 +1369,13 @@ class JobPost(models.Model):
         choices=HIRING_TIMELINE,
         max_length=20,
         blank=True,
-        help_text="Target time to fill this position"
+        help_text="Target time to fill this position",
     )
     hiring_priority = models.CharField(
         choices=PRIORITY_TYPES,
         max_length=20,
         default="Normal",
-        help_text="Urgency level for filling this position"
+        help_text="Urgency level for filling this position",
     )
 
     # objects = JobPostManager()
@@ -1509,7 +1490,7 @@ class JobPost(models.Model):
         from django.conf import settings
 
         # Only Live jobs can accept applications
-        if self.status != 'Live':
+        if self.status != "Live":
             return False
 
         # Must have a published_on date
@@ -1517,7 +1498,7 @@ class JobPost(models.Model):
             return False
 
         # Check if within application acceptance period (default 30 days)
-        max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+        max_age_days = getattr(settings, "JOB_APPLICATION_MAX_AGE_DAYS", 30)
         age = timezone.now() - self.published_on
 
         return age.days < max_age_days
@@ -1614,9 +1595,7 @@ class JobPost(models.Model):
 
     def is_work_from_home(self):
         title = self.title.lower().replace(" ", "")
-        if "workfromhome" in title or "parttime" in title:
-            return True
-        return False
+        return bool("workfromhome" in title or "parttime" in title)
 
 
 POST = (
@@ -1638,7 +1617,6 @@ POST = (
 )
 
 
-
 POST_STATUS = (
     ("Pending", "Pending"),
     ("Shortlisted", "Shortlisted"),
@@ -1654,7 +1632,9 @@ class AgencyResume(models.Model):
     mobile = models.CharField(max_length=100, blank=True, null=True)
     experience = models.IntegerField(blank=True, null=True)
     skill = models.ManyToManyField(Skill)
-    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    uploaded_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True
+    )
     status = models.CharField(max_length=20, choices=POST, default="Pending")
     user = models.ForeignKey(
         User, blank=True, null=True, related_name="Applicant", on_delete=models.SET_NULL
@@ -1793,15 +1773,18 @@ class VisitedJobs(models.Model):
 
 class SavedJobs(models.Model):
     """Model to track saved/bookmarked jobs by users"""
-    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name='saved_by')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_jobs')
+
+    job_post = models.ForeignKey(
+        JobPost, on_delete=models.CASCADE, related_name="saved_by"
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="saved_jobs")
     saved_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('job_post', 'user')
-        verbose_name = 'Saved Job'
-        verbose_name_plural = 'Saved Jobs'
-        ordering = ['-saved_on']
+        unique_together = ("job_post", "user")
+        verbose_name = "Saved Job"
+        verbose_name_plural = "Saved Jobs"
+        ordering = ["-saved_on"]
 
     def __str__(self):
         return f"{self.user.email} - {self.job_post.title}"
@@ -1907,51 +1890,42 @@ class TeamInvitation(models.Model):
     Track team member invitations before they sign up.
     Allows company admins to invite colleagues to join their company.
     """
+
     company = models.ForeignKey(
-        Company,
-        on_delete=models.CASCADE,
-        related_name='team_invitations'
+        Company, on_delete=models.CASCADE, related_name="team_invitations"
     )
     invited_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='sent_invitations'
+        User, on_delete=models.CASCADE, related_name="sent_invitations"
     )
-    email = models.EmailField(
-        help_text="Email address of person to invite"
-    )
+    email = models.EmailField(help_text="Email address of person to invite")
     token = models.CharField(
-        max_length=100,
-        unique=True,
-        help_text="Unique token for invitation link"
+        max_length=100, unique=True, help_text="Unique token for invitation link"
     )
     role_title = models.CharField(
         max_length=100,
         blank=True,
-        help_text="Job title/role of invitee (e.g., 'Senior Recruiter', 'HR Manager')"
+        help_text="Job title/role of invitee (e.g., 'Senior Recruiter', 'HR Manager')",
     )
     status = models.CharField(
         max_length=20,
         choices=[
-            ('pending', 'Pending'),
-            ('accepted', 'Accepted'),
-            ('expired', 'Expired'),
-            ('cancelled', 'Cancelled'),
+            ("pending", "Pending"),
+            ("accepted", "Accepted"),
+            ("expired", "Expired"),
+            ("cancelled", "Cancelled"),
         ],
-        default='pending'
+        default="pending",
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField(
-        help_text="Invitation expires after 7 days"
-    )
+    expires_at = models.DateTimeField(help_text="Invitation expires after 7 days")
     accepted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('company', 'email')
-        ordering = ['-created_at']
+        unique_together = ("company", "email")
+        ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=['token']),
-            models.Index(fields=['email', 'status']),
+            models.Index(fields=["token"]),
+            models.Index(fields=["email", "status"]),
         ]
 
     def __str__(self):
@@ -1959,11 +1933,11 @@ class TeamInvitation(models.Model):
 
     def is_expired(self):
         """Check if invitation has expired"""
-        return timezone.now() > self.expires_at and self.status == 'pending'
+        return timezone.now() > self.expires_at and self.status == "pending"
 
     def accept(self, user):
         """Mark invitation as accepted and link user to company"""
-        self.status = 'accepted'
+        self.status = "accepted"
         self.accepted_at = timezone.now()
         self.save()
 
@@ -1972,4 +1946,3 @@ class TeamInvitation(models.Model):
         if self.role_title:
             user.job_title = self.role_title
         user.save()
-

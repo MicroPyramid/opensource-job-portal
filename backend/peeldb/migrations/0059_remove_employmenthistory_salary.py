@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("peeldb", "0058_user_is_looking_for_job_user_is_open_to_offers_and_more"),
     ]

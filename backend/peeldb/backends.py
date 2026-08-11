@@ -1,13 +1,15 @@
-from haystack.backends.elasticsearch_backend import ElasticsearchSearchEngine
-from haystack.backends.elasticsearch_backend import ElasticsearchSearchQuery
+import six
+from haystack.backends.elasticsearch_backend import (
+    ElasticsearchSearchEngine,
+    ElasticsearchSearchQuery,
+)
 from haystack.constants import DEFAULT_ALIAS
 from haystack.inputs import Clean, Exact, PythonData, Raw
-import six
 
 
 class CustomElasticsearchSearchQuery(ElasticsearchSearchQuery):
     def __init__(self, using=DEFAULT_ALIAS):
-        super(CustomElasticsearchSearchQuery, self).__init__(using=DEFAULT_ALIAS)
+        super().__init__(using=DEFAULT_ALIAS)
 
     def build_query_fragment(self, field, filter_type, value):
         from haystack import connections
@@ -37,9 +39,7 @@ class CustomElasticsearchSearchQuery(ElasticsearchSearchQuery):
         if field == "content":
             index_fieldname = ""
         else:
-            index_fieldname = "%s:" % connections[
-                self._using
-            ].get_unified_index().get_index_fieldname(field)
+            index_fieldname = f"{connections[self._using].get_unified_index().get_index_fieldname(field)}:"
 
         filter_types = {
             "content": "*%s*",
@@ -79,20 +79,18 @@ class CustomElasticsearchSearchQuery(ElasticsearchSearchQuery):
                     if len(terms) == 1:
                         query_frag = terms[0]
                     else:
-                        query_frag = "(%s)" % " AND ".join(terms)
+                        query_frag = "({})".format(" AND ".join(terms))
             elif filter_type == "in":
                 in_options = []
 
                 for possible_value in prepared_value:
-                    in_options.append(
-                        '"%s"' % self.backend._from_python(possible_value)
-                    )
+                    in_options.append(f'"{self.backend._from_python(possible_value)}"')
 
-                query_frag = "(%s)" % " OR ".join(in_options)
+                query_frag = "({})".format(" OR ".join(in_options))
             elif filter_type == "range":
                 start = self.backend._from_python(prepared_value[0])
                 end = self.backend._from_python(prepared_value[1])
-                query_frag = '["%s" TO "%s"]' % (start, end)
+                query_frag = f'["{start}" TO "{end}"]'
             elif filter_type == "exact":
                 if value.input_type_name == "exact":
                     query_frag = prepared_value
@@ -104,10 +102,14 @@ class CustomElasticsearchSearchQuery(ElasticsearchSearchQuery):
                     prepared_value = Exact(prepared_value).prepare(self)
                 query_frag = filter_types[filter_type] % prepared_value
 
-        if len(query_frag) and not isinstance(value, Raw):
-            if not query_frag.startswith("(") and not query_frag.endswith(")"):
-                query_frag = "(%s)" % query_frag
-        return "%s%s" % (index_fieldname, query_frag)
+        if (
+            len(query_frag)
+            and not isinstance(value, Raw)
+            and not query_frag.startswith("(")
+            and not query_frag.endswith(")")
+        ):
+            query_frag = f"({query_frag})"
+        return f"{index_fieldname}{query_frag}"
 
 
 class ConfigurableElasticSearchEngine(ElasticsearchSearchEngine):

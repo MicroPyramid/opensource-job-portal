@@ -1,18 +1,18 @@
 from django.urls import re_path as url
 
 from tickets.views import (
-    edit_ticket,
-    index,
-    view_ticket,
+    admin_ticket_view,
+    admin_tickets_list,
     delete_attachment,
     delete_comment,
     delete_ticket,
-    ticket_status,
     edit_comment,
-    ticket_comment,
-    admin_tickets_list,
-    admin_ticket_view,
+    edit_ticket,
+    index,
     new_ticket,
+    ticket_comment,
+    ticket_status,
+    view_ticket,
 )
 
 app_name = "tickets"

@@ -13,6 +13,7 @@
     <!-- content job post -->
     <div class="content_job_post recruiter_list_panel">
       <form name="searchform" id="searchform" method='post'>
+        {% csrf_token %}
         <div class="search_row row">
           <div class="col-md-3 col-sm-12 pad_lr_5">
             <input type="text" class="form-control" name="search_text"

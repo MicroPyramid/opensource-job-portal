@@ -1,41 +1,42 @@
 import json
 import math
-from django.utils import timezone
 from datetime import datetime
-from django.http.response import JsonResponse
-from django.db.models import Q, Count
-from django.template.defaultfilters import slugify
-from django.shortcuts import get_object_or_404
-from django.conf import settings
-from django.template import loader
 
+from django.conf import settings
+from django.db.models import Count, Q
+from django.http.response import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.template import loader
+from django.template.defaultfilters import slugify
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
+
+from dashboard.tasks import send_email
+from mpcomp.views import (
+    get_absolute_url,
+    get_aws_file_path,
+    get_prev_after_pages_count,
+)
 from peeldb.models import (
-    AgencyApplicants,
-    InterviewLocation,
-    Keyword,
-    User,
-    JobPost,
-    Company,
-    JOB_TYPE,
-    Country,
-    City,
     AGENCY_INVOICE_TYPE,
     AGENCY_JOB_TYPE,
-    AgencyResume,
-    AgencyRecruiterJobposts,
+    JOB_TYPE,
     MARTIAL_STATUS,
+    AgencyApplicants,
+    AgencyRecruiterJobposts,
+    AgencyResume,
+    City,
+    Company,
+    Country,
+    InterviewLocation,
+    JobPost,
+    Keyword,
+    User,
 )
-from recruiter.permissions import RecruiterRequiredPermission
 from recruiter import status
-from mpcomp.views import (
-    get_prev_after_pages_count,
-    get_aws_file_path,
-)
-from dashboard.tasks import send_email
-from mpcomp.views import get_absolute_url
-from recruiter.forms import JobPostForm, YEARS, MONTHS
+from recruiter.forms import MONTHS, YEARS, JobPostForm
+from recruiter.permissions import RecruiterRequiredPermission
 from recruiter.serializers import *
 
 
@@ -111,7 +112,7 @@ def jobs_list(request):
     else:
         page = 1
 
-    no_pages = int(math.ceil(float(active_jobs_list.count()) / items_per_page))
+    no_pages = math.ceil(float(active_jobs_list.count()) / items_per_page)
     active_jobs_list = active_jobs_list[
         (page - 1) * items_per_page : page * items_per_page
     ]
@@ -126,9 +127,7 @@ def jobs_list(request):
         "previous_page": previous_page,
         "current_page": page,
         "last_page": no_pages,
-        "search_value": (
-            request.POST["search_value"] if "search_value" in request.POST else "All"
-        ),
+        "search_value": (request.POST.get("search_value", "All")),
     }
     return JsonResponse(response_data, status=status.HTTP_200_OK)
 
@@ -155,7 +154,7 @@ def inactive_jobs(request):
     else:
         page = 1
 
-    no_pages = int(math.ceil(float(inactive_jobs_list.count()) / items_per_page))
+    no_pages = math.ceil(float(inactive_jobs_list.count()) / items_per_page)
     inactive_jobs_list = inactive_jobs_list[
         (page - 1) * items_per_page : page * items_per_page
     ]
@@ -172,11 +171,7 @@ def inactive_jobs(request):
             "previous_page": previous_page,
             "current_page": page,
             "last_page": no_pages,
-            "search_value": (
-                request.POST["search_value"]
-                if "search_value" in request.POST.keys()
-                else "All"
-            ),
+            "search_value": (request.POST.get("search_value", "All")),
         },
     )
 
@@ -279,7 +274,7 @@ def add_interview_location(data, job_post, no_of_locations):
         interview_venue_details = ""
         latitude = ""
         longitude = ""
-        for key in data.keys():
+        for key in data:
             if str(current_interview_city) == str(key):
                 interview_city = list(json.loads(data[key]))
                 latitude = interview_city[0]
@@ -306,7 +301,7 @@ def add_interview_location(data, job_post, no_of_locations):
 def adding_keywords(keywords, post):
     for kw in keywords:
         key = Keyword.objects.filter(name__iexact=kw)
-        if not kw == "":
+        if kw != "":
             if not key:
                 keyword = Keyword.objects.create(name=kw)
                 post.keywords.add(keyword)
@@ -333,7 +328,6 @@ def set_other_fields(post, data, user):
         date_format = "%Y-%m-%d %H:%M:%S"
         post.published_date = datetime.strptime(start_date, date_format)
     if data.get("status") == "Pending":
-
         if data.get("fb_post") == "on":
             post.post_on_fb = True
             post.fb_groups = data.getlist("fb_groups")
@@ -382,13 +376,13 @@ def set_other_fields(post, data, user):
 
 
 def adding_other_fields_data(data, post, user):
-    if "final_skills" in data.keys():
+    if "final_skills" in data:
         add_other_skills(post, json.loads(data["final_skills"]), user)
-    if "final_edu_qualification" in data.keys():
+    if "final_edu_qualification" in data:
         add_other_qualifications(
             post, json.loads(data["final_edu_qualification"]), user
         )
-    if "final_functional_area" in data.keys():
+    if "final_functional_area" in data:
         add_other_functional_area(post, json.loads(data["final_functional_area"]), user)
 
     no_of_locations = int(json.loads(data["no_of_interview_location"])) + 1
@@ -475,16 +469,16 @@ def checking_error_value(errors, key_item):
 
 def retreving_form_errors(request, post):
     errors = post.errors
-    if "final_industry" in request.POST.keys():
+    if "final_industry" in request.POST:
         errors = checking_error_value(errors, request.POST["final_industry"])
 
-    if "final_functional_area" in request.POST.keys():
+    if "final_functional_area" in request.POST:
         errors = checking_error_value(errors, request.POST["final_functional_area"])
 
-    if "final_edu_qualification" in request.POST.keys():
+    if "final_edu_qualification" in request.POST:
         errors = checking_error_value(errors, request.POST["final_edu_qualification"])
 
-    if "final_skills" in request.POST.keys():
+    if "final_skills" in request.POST:
         errors = checking_error_value(errors, request.POST["final_skills"])
 
     return errors
@@ -544,8 +538,8 @@ def new_job(request, job_type):
             show_clients = True
             show_recruiters = True
             if request.user.is_agency_recruiter:
-                show_clients = False if not clients else True
-                show_recruiters = False if not recruiters else True
+                show_clients = bool(clients)
+                show_recruiters = bool(recruiters)
             return JsonResponse(
                 {
                     "job_types": JOB_TYPE,
@@ -790,10 +784,8 @@ def edit_profile(request):
         user.email_notifications = request.data.get("email_notifications") == "on"
 
         user_login = False
-        int(
-            (datetime.now() - user.last_mobile_code_verified_on).seconds
-        )
-      
+        int((datetime.now() - user.last_mobile_code_verified_on).seconds)
+
         user.marital_status = request.data.get("marital_status", "")
         user.first_name = request.data.get("first_name")
         user.last_name = request.data.get("last_name", "")
@@ -807,7 +799,7 @@ def edit_profile(request):
         user.functional_area.add(*request.data.getlist("functional_area"))
         user.profile_completeness = user.profile_completion_percentage
         user.save()
-        data = {"error": False, "response": '', "is_login": user_login}
+        data = {"error": False, "response": "", "is_login": user_login}
         return JsonResponse(data, status=status.HTTP_200_OK)
     else:
         data = {"error": True, "response": validate_user.errors}

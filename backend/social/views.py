@@ -2,15 +2,15 @@
 Social Authentication Views
 Only Google OAuth is supported.
 """
+
 import requests
-
-from django.shortcuts import render
-from django.http.response import HttpResponseRedirect
-from django.contrib.auth import login
-from django.urls import reverse
 from django.conf import settings
+from django.contrib.auth import login
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 
-from peeldb.models import User, Google, UserEmail
+from peeldb.models import Google, User, UserEmail
 
 
 def google_login(request):
@@ -59,7 +59,9 @@ def google_login(request):
                 status=404,
             )
 
-        link = user_document.get("link", f"https://plus.google.com/{user_document.get('id', '')}")
+        link = user_document.get(
+            "link", f"https://plus.google.com/{user_document.get('id', '')}"
+        )
         picture = user_document.get("picture", "")
         dob = user_document.get("birthday", "")
         gender = user_document.get("gender", "")
@@ -88,24 +90,22 @@ def google_login(request):
         Google.objects.get_or_create(
             user=user,
             defaults={
-                'google_url': link,
-                'verified_email': user_document.get("verified_email", ""),
-                'google_id': user_document.get("id", ""),
-                'family_name': user_document.get("family_name", ""),
-                'name': user_document.get("name", ""),
-                'given_name': user_document.get("given_name", ""),
-                'dob': dob,
-                'email': email,
-                'gender': gender,
-                'picture': picture,
-            }
+                "google_url": link,
+                "verified_email": user_document.get("verified_email", ""),
+                "google_id": user_document.get("id", ""),
+                "family_name": user_document.get("family_name", ""),
+                "name": user_document.get("name", ""),
+                "given_name": user_document.get("given_name", ""),
+                "dob": dob,
+                "email": email,
+                "gender": gender,
+                "picture": picture,
+            },
         )
 
         # Ensure UserEmail exists
         UserEmail.objects.get_or_create(
-            user=user,
-            email=email,
-            defaults={'is_primary': True}
+            user=user, email=email, defaults={"is_primary": True}
         )
 
         user.is_active = True
@@ -117,7 +117,9 @@ def google_login(request):
             return HttpResponseRedirect("/dashboard/")
 
         if user.is_recruiter or user.is_agency_recruiter:
-            recruiter_url = getattr(settings, 'RECRUITER_FRONTEND_URL', 'http://localhost:5174')
+            recruiter_url = getattr(
+                settings, "RECRUITER_FRONTEND_URL", "http://localhost:5174"
+            )
             return HttpResponseRedirect(f"{recruiter_url}/dashboard")
 
         # Job seekers should use the frontend API, not this endpoint

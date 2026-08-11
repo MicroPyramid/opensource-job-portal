@@ -6,37 +6,40 @@ Usage:
     python manage.py create_test_users --clear
     python manage.py create_test_users --config /path/to/custom-users.json
 """
+
 import json
 import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from django.core.management.base import BaseCommand, CommandError
 from django.apps import apps
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.text import slugify
 
 from peeldb.models import (
+    City,
     Company,
     Country,
-    User,
-    City,
-    Skill,
-    Industry,
-    Qualification,
-    Language,
-    TechnicalSkill,
-    EmploymentHistory,
+    Degree,
     EducationDetails,
     EducationInstitue,
-    Degree,
-    UserLanguage,
+    EmploymentHistory,
+    Industry,
     JobPost,
+    Language,
+    Qualification,
+    Skill,
+    TechnicalSkill,
+    User,
+    UserLanguage,
 )
 
 # Default config file path
-DEFAULT_CONFIG_PATH = Path(__file__).resolve().parent.parent.parent / "fixtures" / "test-users.json"
+DEFAULT_CONFIG_PATH = (
+    Path(__file__).resolve().parent.parent.parent / "fixtures" / "test-users.json"
+)
 
 
 class Command(BaseCommand):
@@ -199,7 +202,9 @@ class Command(BaseCommand):
                 last_name=data.get("last_name", "User"),
             )
 
-            self.stdout.write(self.style.SUCCESS(f"\n  Superuser created: {data['email']}"))
+            self.stdout.write(
+                self.style.SUCCESS(f"\n  Superuser created: {data['email']}")
+            )
             self.stdout.write(self.style.WARNING(f"  Password: {password}"))
             self.stdout.write("  (Save this password - it won't be shown again!)\n")
 
@@ -211,7 +216,9 @@ class Command(BaseCommand):
         created = False
 
         company_data = data.get("company", {})
-        company_slug = company_data.get("slug", data.get("username", "test") + "-company")
+        company_slug = company_data.get(
+            "slug", data.get("username", "test") + "-company"
+        )
 
         # Get or create company
         company, _ = Company.objects.get_or_create(
@@ -270,7 +277,9 @@ class Command(BaseCommand):
 
         action = "created" if created else "updated"
         self.stdout.write(
-            self.style.SUCCESS(f"  Company Admin {action}: {data['email']} / {data.get('password', 'testpass123')}")
+            self.style.SUCCESS(
+                f"  Company Admin {action}: {data['email']} / {data.get('password', 'testpass123')}"
+            )
         )
         if job_posts:
             self.stdout.write(f"    Created {len(job_posts)} job posts")
@@ -289,7 +298,9 @@ class Command(BaseCommand):
             company = Company.objects.filter(slug=company_slug).first()
             if not company:
                 self.stdout.write(
-                    self.style.WARNING(f"  Warning: Company with slug '{company_slug}' not found. Recruiter will have no company.")
+                    self.style.WARNING(
+                        f"  Warning: Company with slug '{company_slug}' not found. Recruiter will have no company."
+                    )
                 )
 
         if not user:
@@ -307,7 +318,9 @@ class Command(BaseCommand):
         user.user_type = "EM"
         user.company = company
         user.is_active = True
-        user.is_admin = data.get("is_admin", False)  # Non-admin by default for recruiter
+        user.is_admin = data.get(
+            "is_admin", False
+        )  # Non-admin by default for recruiter
         user.mobile_verified = True
         user.email_verified = True
         user.city = city
@@ -333,7 +346,9 @@ class Command(BaseCommand):
 
         action = "created" if created else "updated"
         self.stdout.write(
-            self.style.SUCCESS(f"  Recruiter {action}: {data['email']} / {data.get('password', 'testpass123')}")
+            self.style.SUCCESS(
+                f"  Recruiter {action}: {data['email']} / {data.get('password', 'testpass123')}"
+            )
         )
         if job_posts:
             self.stdout.write(f"    Created {len(job_posts)} job posts")
@@ -386,7 +401,9 @@ class Command(BaseCommand):
 
         action = "created" if created else "updated"
         self.stdout.write(
-            self.style.SUCCESS(f"  Individual {action}: {data['email']} / {data.get('password', 'testpass123')}")
+            self.style.SUCCESS(
+                f"  Individual {action}: {data['email']} / {data.get('password', 'testpass123')}"
+            )
         )
         if job_posts:
             self.stdout.write(f"    Created {len(job_posts)} job posts")
@@ -446,7 +463,9 @@ class Command(BaseCommand):
                 job.skills.set(skills)
 
             # Add industries
-            industries = self._get_industries_by_name(job_data.get("industries", ["IT"]))
+            industries = self._get_industries_by_name(
+                job_data.get("industries", ["IT"])
+            )
             if industries:
                 job.industry.set(industries)
 
@@ -492,7 +511,9 @@ class Command(BaseCommand):
         user.dob = dob
         user.gender = data.get("gender", "M")
         user.profile_description = data.get("profile_description", "")
-        user.resume_title = data.get("resume_title", f"{user.first_name} {user.last_name} - Resume")
+        user.resume_title = data.get(
+            "resume_title", f"{user.first_name} {user.last_name} - Resume"
+        )
         user.is_looking_for_job = data.get("is_looking_for_job", True)
         user.is_open_to_offers = data.get("is_open_to_offers", True)
         user.relocation = data.get("relocation", True)
@@ -524,7 +545,9 @@ class Command(BaseCommand):
 
         action = "created" if created else "updated"
         self.stdout.write(
-            self.style.SUCCESS(f"  Jobseeker {action}: {data['email']} / {data.get('password', 'testpass123')}")
+            self.style.SUCCESS(
+                f"  Jobseeker {action}: {data['email']} / {data.get('password', 'testpass123')}"
+            )
         )
 
     def _create_jobseeker_skills(self, user, skills_data):
@@ -534,7 +557,9 @@ class Command(BaseCommand):
 
         tech_skills = []
         for skill_info in skills_data:
-            skill_name = skill_info if isinstance(skill_info, str) else skill_info.get("name")
+            skill_name = (
+                skill_info if isinstance(skill_info, str) else skill_info.get("name")
+            )
             skill = Skill.objects.filter(
                 name__iexact=skill_name, status="Active"
             ).first()
@@ -543,9 +568,19 @@ class Command(BaseCommand):
                     name__icontains=skill_name, status="Active"
                 ).first()
             if skill:
-                years = skill_info.get("years", 1) if isinstance(skill_info, dict) else 1
-                proficiency = skill_info.get("proficiency", "Good") if isinstance(skill_info, dict) else "Good"
-                is_major = skill_info.get("is_major", False) if isinstance(skill_info, dict) else False
+                years = (
+                    skill_info.get("years", 1) if isinstance(skill_info, dict) else 1
+                )
+                proficiency = (
+                    skill_info.get("proficiency", "Good")
+                    if isinstance(skill_info, dict)
+                    else "Good"
+                )
+                is_major = (
+                    skill_info.get("is_major", False)
+                    if isinstance(skill_info, dict)
+                    else False
+                )
 
                 tech_skill = TechnicalSkill.objects.create(
                     skill=skill,
@@ -573,7 +608,15 @@ class Command(BaseCommand):
             is_current = emp_info.get("current_job", False)
 
             from_date = now - timedelta(days=int(years_ago_start * 365))
-            to_date = None if is_current else (now - timedelta(days=int(years_ago_end * 365)) if years_ago_end else None)
+            to_date = (
+                None
+                if is_current
+                else (
+                    now - timedelta(days=int(years_ago_end * 365))
+                    if years_ago_end
+                    else None
+                )
+            )
 
             emp = EmploymentHistory.objects.create(
                 company=emp_info.get("company", "Unknown Company"),
@@ -603,9 +646,7 @@ class Command(BaseCommand):
 
         # Get qualification
         qual_name = education_data.get("qualification", "B.Tech")
-        qualification = Qualification.objects.filter(
-            name__icontains=qual_name
-        ).first()
+        qualification = Qualification.objects.filter(name__icontains=qual_name).first()
         if not qualification:
             qualification = self.qualifications[0] if self.qualifications else None
 
@@ -640,12 +681,24 @@ class Command(BaseCommand):
 
         lang_skills = []
         for lang_info in languages_data:
-            lang_name = lang_info if isinstance(lang_info, str) else lang_info.get("name")
+            lang_name = (
+                lang_info if isinstance(lang_info, str) else lang_info.get("name")
+            )
             language = Language.objects.filter(name__iexact=lang_name).first()
             if language:
-                read = lang_info.get("read", True) if isinstance(lang_info, dict) else True
-                write = lang_info.get("write", True) if isinstance(lang_info, dict) else True
-                speak = lang_info.get("speak", True) if isinstance(lang_info, dict) else True
+                read = (
+                    lang_info.get("read", True) if isinstance(lang_info, dict) else True
+                )
+                write = (
+                    lang_info.get("write", True)
+                    if isinstance(lang_info, dict)
+                    else True
+                )
+                speak = (
+                    lang_info.get("speak", True)
+                    if isinstance(lang_info, dict)
+                    else True
+                )
 
                 user_lang = UserLanguage.objects.create(
                     language=language,

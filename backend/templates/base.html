@@ -317,6 +317,7 @@
                 <div class="col-md-3 col-sm-12 col-xs-12 subscribe_social_copy">
                 {% if not request.user.is_authenticated %}
                   <form name="BaseSubscribeform" id="BaseSubscribeform" method="POST">
+                    {% csrf_token %}
                     <div class="subscribe">
                       <div class="input-group">
                         <input type="text" class="form-control text-capitalize" placeholder="Subscribe to get updates" name='email' id="subscribe_email" value="{{request.user.email}}">

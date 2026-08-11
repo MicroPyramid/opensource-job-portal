@@ -98,7 +98,7 @@ PeelJobs implements a comprehensive role-based access control system with distin
 - **Responsive Design**: Mobile-first approach with PWA capabilities
 
 ### Development & Operations
-- **Code Quality**: Black formatter, Prospector linting, Coverage reporting
+- **Code Quality**: Ruff formatter and linter, Prospector linting, Coverage reporting
 - **Testing**: Django Test Suite, BDD with Behave Django
 - **CI/CD**: Travis CI integration with automated testing
 - **Containerization**: Docker support for easy deployment
@@ -112,25 +112,24 @@ PeelJobs implements a comprehensive role-based access control system with distin
 
 ### Prerequisites
 - Python 3.12+, PostgreSQL, Node.js, Redis
+- [uv](https://docs.astral.sh/uv/) for Python dependency management
 
 ### Basic Setup
 ```bash
 # Clone repository
 git clone https://github.com/MicroPyramid/opensource-job-portal.git
-cd opensource-job-portal
+cd opensource-job-portal/backend
 
-# Setup environment
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+# Install dependencies (uv creates and manages .venv for you)
+uv sync
 
 # Configure database
 createdb peeljobs_dev
-python manage.py migrate
-python manage.py createsuperuser
+uv run manage.py migrate
+uv run manage.py createsuperuser
 
 # Start development server
-python manage.py runserver
+uv run manage.py runserver
 ```
 
 **Access Points:**
@@ -183,7 +182,7 @@ We welcome contributions from the community! Here's how to get started:
 1. **Fork** the repository on GitHub
 2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
 3. **Make** your changes with proper tests
-4. **Format** code with `black .` and check dependencies with `pipdeptree`
+4. **Format** code with `uv run ruff format .` and lint with `uv run ruff check .`
 5. **Commit** changes (`git commit -m "Add amazing feature"`)
 6. **Push** to your fork (`git push origin feature/amazing-feature`)
 7. **Submit** a Pull Request with detailed description

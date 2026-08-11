@@ -3,10 +3,10 @@ import math
 import re
 from datetime import datetime
 
-from django.urls import reverse
 from django.db.models import Count, Q
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
 from mpcomp.views import (
     get_prev_after_pages_count,
@@ -69,7 +69,6 @@ def reports(request):
             inactive_recruiters.append(int(users.filter(is_active=False).count()))
         jobs = JobPost.objects.filter(location__in=[city], status="Live")
         if request.method == "POST" and request.POST.get("timestamp"):
-
             date = request.POST.get("timestamp").split(" - ")
             start_date = datetime.strptime(date[0], "%b %d, %Y %H:%M")
             end_date = datetime.strptime(date[1], "%b %d, %Y %H:%M")
@@ -87,12 +86,9 @@ def reports(request):
         skill = Skill.objects.filter(name__iexact=skill)
         jobs_skills = JobPost.objects.filter(skills__in=skill, status="Live")
         if request.method == "POST" and request.POST.get("timestamp"):
-
             date = request.POST.get("timestamp").split(" - ")
             start_date = datetime.strptime(date[0], "%b %d, %Y %H:%M")
             end_date = datetime.strptime(date[1], "%b %d, %Y %H:%M")
-
-           
 
             jobs_skills = jobs_skills.filter(published_on__range=(start_date, end_date))
         if jobs_skills:
@@ -118,12 +114,11 @@ def reports(request):
     )
 
 
-
 @permission_required("activity_view", "activity_edit")
 def search_log(request):
     search_logs = SearchResult.objects.all().order_by("-search_on")
     items_per_page = 500
-    no_pages = int(math.ceil(float(len(search_logs)) / items_per_page))
+    no_pages = math.ceil(float(len(search_logs)) / items_per_page)
 
     if (
         "page" in request.GET
@@ -165,8 +160,6 @@ def view_search_log(request, search_log_id):
     return render(request, "dashboard/404.html", status=404)
 
 
-
-
 @permission_required("activity_view", "activity_edit")
 def subscribers(request):
     subscribers = Subscriber.objects.values_list("skill_id", flat=True).distinct()
@@ -183,8 +176,6 @@ def view_subscribers(request, skill_id):
     return render(
         request, "dashboard/subscribers/view.html", {"subscribers": subscribers}
     )
-
-
 
 
 @permission_required("activity_edit", "activity_view")
@@ -266,4 +257,3 @@ def search_summary(request, search_type):
             "search_type": search_type,
         },
     )
-

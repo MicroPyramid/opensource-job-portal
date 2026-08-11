@@ -67,6 +67,7 @@
     {% for comment in ticket.get_ticket_comments %}
       <div id="{{ comment.id }}"  class="editcomment edit_comments">
         <form id="ticketeditform" name="ticketeditform" method="post">
+          {% csrf_token %}
           <div class="comment_form_div">
             <div class="input_element area_element">
               <label>Comment</label>
@@ -89,6 +90,7 @@
     {% endfor %}
     <!-- comments form-->
     <form id="ticketform" name="ticketform" method="post">
+      {% csrf_token %}
     <div class="comment_form_div">
       <div class="input_element area_element">
         <label>Comment</label>

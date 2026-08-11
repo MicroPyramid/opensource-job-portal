@@ -12,6 +12,7 @@
 
   <!-- Hidden Form -->
   <form id="search_form" name="adv-search-form" method="POST" action="." class="hidden">
+    {% csrf_token %}
     <input type="hidden" name="page" id="page" value="{{ page }}"/>
   </form>
 

@@ -1,7 +1,7 @@
 {
     "github.copilot.chat.codeGeneration.instructions": [
         {
-            "file": "requirements.txt"
+            "file": "backend/pyproject.toml"
         }
     ],
     "git.autorefresh": true,

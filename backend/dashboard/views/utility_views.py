@@ -1,5 +1,5 @@
 import json
-from django.contrib.auth.decorators import login_required
+
 from django.db.models import Count
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -25,85 +25,14 @@ from peeldb.models import (
 
 from ..forms import MetaForm
 
-
 # Functions to move here from main views.py:
-
-@login_required
-def aws_push_to_s3(request):
-    if request.method == "POST":
-        if request.FILES.get("upload_file"):
-            blog_post = Post.objects.filter(id=request.POST.get("post_id"))
-            if blog_post:
-                attachment = BlogAttachment.objects.create(
-                    post=blog_post[0],
-                    uploaded_by=request.user,
-                    attached_file=request.FILES.get("upload_file"),
-                )
-                return HttpResponse(
-                    json.dumps(
-                        {
-                            "error": False,
-                            "response": "Please Upload An Image",
-                            "url": str(settings.STATIC_URL)
-                            + str(attachment.attached_file.name),
-                            "name": attachment.attached_file.name,
-                            "id": attachment.id,
-                        }
-                    )
-                )
-            return HttpResponse(
-                json.dumps(
-                    {
-                        "error": True,
-                        "response": "Blog post is not exist, please try again",
-                    }
-                )
-            )
-        return HttpResponse(
-            json.dumps({"error": True, "response": "Please Upload An Image"})
-        )
-
-
-@login_required
-def aws_del_from_s3(request):
-    if request.method == "POST":
-        if request.POST.get("attachment_id"):
-            blog_attachment = BlogAttachment.objects.filter(
-                id=request.POST.get("attachment_id")
-            )
-            if blog_attachment:
-                blog_attachment.delete()
-                return HttpResponse(
-                    json.dumps(
-                        {"error": False, "response": "Attachment Deleted Successfully"}
-                    )
-                )
-            return HttpResponse(
-                json.dumps(
-                    {
-                        "error": True,
-                        "response": "Blog post is not exist, please try again",
-                    }
-                )
-            )
-    return HttpResponse(
-        json.dumps({"error": True, "response": "Please Upload An Image"})
-    )
-
 
 
 def updating_meta_data():
     skills = Skill.objects.filter(status="Active", slug="java")
     for skill in skills:
-
-        meta_title = (
-            skill.meta["meta_title"] if "meta_title" in skill.meta.keys() else ""
-        )
-        meta_description = (
-            skill.meta["meta_description"]
-            if "meta_description" in skill.meta.keys()
-            else ""
-        )
+        meta_title = skill.meta.get("meta_title", "")
+        meta_description = skill.meta.get("meta_description", "")
         walkin_meta_title = meta_title.replace(" Jobs", " Walkins").replace(
             "Openings", "Vacancies"
         )
@@ -118,8 +47,6 @@ def updating_meta_data():
         meta["walkin_meta_description"] = walkin_meta_description
         skill.meta = meta
         skill.save()
-
-
 
 
 @permission_required("activity_edit")

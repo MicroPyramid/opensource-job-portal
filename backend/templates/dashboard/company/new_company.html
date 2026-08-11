@@ -18,6 +18,7 @@
   <!-- Form Card -->
   <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
     <form name="companyform" id="companyform" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
       <div class="p-6 space-y-6">
         <!-- Branding Section -->
         <div class="border-b border-neutral-200 pb-6">

@@ -3,10 +3,10 @@ import math
 from datetime import datetime
 from math import ceil
 
-from django.urls import reverse
 from django.db.models import Q
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
 from mpcomp.views import (
     float_round,
@@ -52,7 +52,7 @@ def client_list(request):
         page = 1
     items_per_page = 10
     cities = City.objects.filter(status="Enabled")
-    no_pages = int(math.ceil(float(clients.count()) / items_per_page))
+    no_pages = math.ceil(float(clients.count()) / items_per_page)
     clients = clients[(page - 1) * items_per_page : page * items_per_page]
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
         page, no_pages
@@ -68,16 +68,14 @@ def client_list(request):
             "previous_page": previous_page,
             "current_page": page,
             "last_page": no_pages,
-            "search_value": (
-                request.GET["search"] if "search" in request.GET.keys() else ""
-            ),
+            "search_value": (request.GET.get("search", "")),
             "cities": cities,
         },
     )
 
 
 def client_errors(errors, data):
-    for key in data.keys():
+    for key in data:
         if "location_" in key and len(data[key]) == 0:
             errors[key] = "This field is required"
         if "address_" in key and len(data[key]) == 0:
@@ -289,7 +287,7 @@ def dashboard(request):
         agency_resumes = AgencyResume.objects.filter(uploaded_by=request.user)
     no_of_jobs = len(job_posts)
     items_per_page = 10
-    no_pages = int(math.ceil(float(len(job_posts)) / items_per_page))
+    no_pages = math.ceil(float(len(job_posts)) / items_per_page)
 
     try:
         if int(request.GET.get("page")) > (no_pages + 2):
@@ -362,33 +360,25 @@ def view_resumes(request, job_post_id):
         agency_resumes = agency_resumes.filter(applicant__skill__in=skills)
         selected_skills = request.POST.getlist("skills")
 
-    if request.POST.get("apply_job"):
-        if request.POST.get("jobposts_type"):
+    if request.POST.get("apply_job") and request.POST.get("jobposts_type"):
+        for each in request.POST.getlist("apply_job"):
+            agency_applicant = AgencyApplicants.objects.get(id=each, job_post=job_post)
+            agency_applicant.status = request.POST.get("jobposts_type")
+            agency_applicant.save()
 
-            for each in request.POST.getlist("apply_job"):
-                agency_applicant = AgencyApplicants.objects.get(
-                    id=each, job_post=job_post
-                )
-                agency_applicant.status = request.POST.get("jobposts_type")
-                agency_applicant.save()
+            agency_applicant.applicant.status = "Pending"
+            agency_applicant.applicant.save()
 
-                agency_applicant.applicant.status = "Pending"
-                agency_applicant.applicant.save()
-
-            if str(request.POST.get("jobposts_type")) == "Hired":
-                applicants = AgencyApplicants.objects.filter(
-                    id__in=request.POST.getlist("apply_job")
-                ).values_list("applicant", flat=True)
-                applicant_agency_resumes = AgencyResume.objects.filter(
-                    id__in=applicants
-                )
-                applicant_agency_resumes.update(
-                    status=request.POST.get("jobposts_type")
-                )
+        if str(request.POST.get("jobposts_type")) == "Hired":
+            applicants = AgencyApplicants.objects.filter(
+                id__in=request.POST.getlist("apply_job")
+            ).values_list("applicant", flat=True)
+            applicant_agency_resumes = AgencyResume.objects.filter(id__in=applicants)
+            applicant_agency_resumes.update(status=request.POST.get("jobposts_type"))
 
     no_of_jobs = len(agency_resumes)
     items_per_page = 10
-    no_pages = int(math.ceil(float(len(agency_resumes)) / items_per_page))
+    no_pages = math.ceil(float(len(agency_resumes)) / items_per_page)
 
     try:
         if int(request.GET.get("page")) > (no_pages + 2):
@@ -446,7 +436,6 @@ def job_status_change(request, job_post_id):
 def jobs_billing_process(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     if request.user.is_agency_admin:
-
         agreed_percantage = job_post.agency_category.percantage
         total_amount = job_post.agency_amount
 
@@ -500,7 +489,7 @@ def hired_candidates(request, job_post_id):
     agency_resumes = job_post.get_hired_applicants()
     no_of_jobs = len(agency_resumes)
     items_per_page = 10
-    no_pages = int(math.ceil(float(len(agency_resumes)) / items_per_page))
+    no_pages = math.ceil(float(len(agency_resumes)) / items_per_page)
 
     try:
         if int(request.GET.get("page")) > (no_pages + 2):

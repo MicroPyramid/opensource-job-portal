@@ -6,39 +6,75 @@ Usage:
     python manage.py create_test_data --clear
     python manage.py create_test_data --companies=100 --jobs=2000
 """
+
 import random
 from datetime import datetime, timedelta
-from django.core.management.base import BaseCommand, CommandError
+
 from django.apps import apps
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.text import slugify
 
 from peeldb.models import (
-    Company, User, JobPost, AppliedJobs, City, Country,
-    Skill, Industry, Qualification, Language,
-    TechnicalSkill, EmploymentHistory, EducationDetails,
-    EducationInstitue, Degree, UserLanguage,
+    AppliedJobs,
+    City,
+    Company,
+    Country,
+    Degree,
+    EducationDetails,
+    EducationInstitue,
+    EmploymentHistory,
+    Industry,
+    JobPost,
+    Language,
+    Qualification,
+    Skill,
+    TechnicalSkill,
+    User,
+    UserLanguage,
 )
 
-from .test_data.indian_names import (
-    INDIAN_FIRST_NAMES, INDIAN_FIRST_NAMES_MALE, INDIAN_FIRST_NAMES_FEMALE,
-    INDIAN_LAST_NAMES, INDIAN_UNIVERSITIES, INDIAN_COLLEGES,
-)
 from .test_data.company_names import (
-    COMPANY_PREFIXES, COMPANY_SUFFIXES, COMPANY_TYPE_SUFFIXES,
-    BUSINESS_PARKS, COMPANY_PROFILES,
-)
-from .test_data.job_titles import (
-    JOB_TITLES_BY_SKILL, DEFAULT_JOB_TITLES, JOB_DESCRIPTION_TEMPLATES,
-    RECRUITER_TITLES,
+    BUSINESS_PARKS,
+    COMPANY_PREFIXES,
+    COMPANY_PROFILES,
+    COMPANY_SUFFIXES,
+    COMPANY_TYPE_SUFFIXES,
 )
 from .test_data.constants import (
-    COMPANY_SIZES, COMPANY_TYPES, USER_TYPE_JOBSEEKER, USER_TYPE_EMPLOYER,
-    GENDERS, COMMON_JOB_TYPES, WORK_MODES, COMMON_JOB_STATUSES, JOB_STATUS_WEIGHTS, APPLICATION_STATUSES,
-    APPLICATION_STATUS_WEIGHTS, SENIORITY_LEVELS, SKILL_PROFICIENCIES,
-    SKILL_PROFICIENCY_WEIGHTS, NOTICE_PERIODS, SALARY_RANGES,
-    TEST_DATA_MARKER, TEST_PASSWORD,
+    APPLICATION_STATUS_WEIGHTS,
+    APPLICATION_STATUSES,
+    COMMON_JOB_STATUSES,
+    COMMON_JOB_TYPES,
+    COMPANY_SIZES,
+    COMPANY_TYPES,
+    GENDERS,
+    JOB_STATUS_WEIGHTS,
+    NOTICE_PERIODS,
+    SALARY_RANGES,
+    SENIORITY_LEVELS,
+    SKILL_PROFICIENCIES,
+    SKILL_PROFICIENCY_WEIGHTS,
+    TEST_DATA_MARKER,
+    TEST_PASSWORD,
+    USER_TYPE_EMPLOYER,
+    USER_TYPE_JOBSEEKER,
+    WORK_MODES,
+)
+from .test_data.indian_names import (
+    INDIAN_COLLEGES,
+    INDIAN_FIRST_NAMES,
+    INDIAN_FIRST_NAMES_FEMALE,
+    INDIAN_FIRST_NAMES_MALE,
+    INDIAN_LAST_NAMES,
+    INDIAN_UNIVERSITIES,
+)
+from .test_data.job_titles import (
+    DEFAULT_JOB_TITLES,
+    JOB_DESCRIPTION_TEMPLATES,
+    JOB_TITLES_BY_SKILL,
+    RECRUITER_TITLES,
 )
 
 
@@ -53,39 +89,39 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--clear',
-            action='store_true',
-            help='Clear existing test data before creating new data',
+            "--clear",
+            action="store_true",
+            help="Clear existing test data before creating new data",
         )
         parser.add_argument(
-            '--companies',
+            "--companies",
             type=int,
             default=50,
-            help='Number of companies to create (default: 50)',
+            help="Number of companies to create (default: 50)",
         )
         parser.add_argument(
-            '--recruiters',
+            "--recruiters",
             type=int,
             default=100,
-            help='Number of recruiters to create (default: 100)',
+            help="Number of recruiters to create (default: 100)",
         )
         parser.add_argument(
-            '--jobseekers',
+            "--jobseekers",
             type=int,
             default=500,
-            help='Number of job seekers to create (default: 500)',
+            help="Number of job seekers to create (default: 500)",
         )
         parser.add_argument(
-            '--jobs',
+            "--jobs",
             type=int,
             default=1000,
-            help='Number of jobs to create (default: 1000)',
+            help="Number of jobs to create (default: 1000)",
         )
         parser.add_argument(
-            '--applications',
+            "--applications",
             type=int,
             default=3000,
-            help='Number of job applications to create (default: 3000)',
+            help="Number of job applications to create (default: 3000)",
         )
 
     def handle(self, *args, **options):
@@ -94,7 +130,7 @@ class Command(BaseCommand):
         signal_processor.teardown()
 
         try:
-            if options['clear']:
+            if options["clear"]:
                 self._clear_test_data()
 
             self._validate_fixtures_loaded()
@@ -112,20 +148,22 @@ class Command(BaseCommand):
                 self._create_education_infrastructure()
 
                 # Create main entities
-                companies = self._create_companies(options['companies'])
-                recruiters = self._create_recruiters(options['recruiters'], companies)
-                job_seekers = self._create_job_seekers(options['jobseekers'])
-                jobs = self._create_jobs(options['jobs'], recruiters, companies)
-                self._create_applications(options['applications'], jobs, job_seekers)
+                companies = self._create_companies(options["companies"])
+                recruiters = self._create_recruiters(options["recruiters"], companies)
+                job_seekers = self._create_job_seekers(options["jobseekers"])
+                jobs = self._create_jobs(options["jobs"], recruiters, companies)
+                self._create_applications(options["applications"], jobs, job_seekers)
 
-            self.stdout.write(self.style.SUCCESS(
-                f"\nSuccessfully created test data:\n"
-                f"  - {len(companies)} companies\n"
-                f"  - {len(recruiters)} recruiters\n"
-                f"  - {len(job_seekers)} job seekers\n"
-                f"  - {len(jobs)} jobs\n"
-                f"  - {options['applications']} applications"
-            ))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"\nSuccessfully created test data:\n"
+                    f"  - {len(companies)} companies\n"
+                    f"  - {len(recruiters)} recruiters\n"
+                    f"  - {len(job_seekers)} job seekers\n"
+                    f"  - {len(jobs)} jobs\n"
+                    f"  - {options['applications']} applications"
+                )
+            )
         finally:
             signal_processor.setup()
 
@@ -172,7 +210,7 @@ class Command(BaseCommand):
                         EducationInstitue.objects.create(
                             name=name,
                             address=f"{city.name}, {city.state.name}",
-                            city=city
+                            city=city,
                         )
                 for template in INDIAN_COLLEGES[:3]:
                     name = f"{template} {city.name}"
@@ -180,7 +218,7 @@ class Command(BaseCommand):
                         EducationInstitue.objects.create(
                             name=name,
                             address=f"{city.name}, {city.state.name}",
-                            city=city
+                            city=city,
                         )
 
         self.institutes = list(EducationInstitue.objects.all())
@@ -194,7 +232,11 @@ class Command(BaseCommand):
             email = f"{base}{suffix}@{domain_hint.replace(' ', '').lower()}.test"
             username = email.split("@")[0]
             # Check both in-memory set and database
-            if email not in self._used_emails and not User.objects.filter(username=username).exists() and not User.objects.filter(email=email).exists():
+            if (
+                email not in self._used_emails
+                and not User.objects.filter(username=username).exists()
+                and not User.objects.filter(email=email).exists()
+            ):
                 self._used_emails.add(email)
                 return email
             counter += 1
@@ -213,15 +255,26 @@ class Command(BaseCommand):
     def _generate_company_name(self):
         """Generate a unique realistic company name."""
         patterns = [
-            lambda: f"{random.choice(COMPANY_PREFIXES)}{random.choice(COMPANY_SUFFIXES)}",
-            lambda: f"{random.choice(INDIAN_LAST_NAMES)} {random.choice(COMPANY_SUFFIXES)}",
-            lambda: f"{random.choice(COMPANY_PREFIXES)} {random.choice(COMPANY_SUFFIXES)} {random.choice(COMPANY_TYPE_SUFFIXES)}",
-            lambda: f"{random.choice(COMPANY_PREFIXES)}{random.choice(COMPANY_SUFFIXES)} India",
+            lambda: (
+                f"{random.choice(COMPANY_PREFIXES)}{random.choice(COMPANY_SUFFIXES)}"
+            ),
+            lambda: (
+                f"{random.choice(INDIAN_LAST_NAMES)} {random.choice(COMPANY_SUFFIXES)}"
+            ),
+            lambda: (
+                f"{random.choice(COMPANY_PREFIXES)} {random.choice(COMPANY_SUFFIXES)} {random.choice(COMPANY_TYPE_SUFFIXES)}"
+            ),
+            lambda: (
+                f"{random.choice(COMPANY_PREFIXES)}{random.choice(COMPANY_SUFFIXES)} India"
+            ),
         ]
 
         while True:
             name = random.choice(patterns)()
-            if name not in self._used_company_names and not Company.objects.filter(name=name).exists():
+            if (
+                name not in self._used_company_names
+                and not Company.objects.filter(name=name).exists()
+            ):
                 self._used_company_names.add(name)
                 return name
 
@@ -299,12 +352,18 @@ class Command(BaseCommand):
             user.save()
 
             # Add industries and skills
-            user.industry.set(random.sample(self.industries, min(3, len(self.industries))))
-            user.technical_skills.set(random.sample(self.skills, min(5, len(self.skills))))
+            user.industry.set(
+                random.sample(self.industries, min(3, len(self.industries)))
+            )
+            user.technical_skills.set(
+                random.sample(self.skills, min(5, len(self.skills)))
+            )
 
             recruiters.append(user)
 
-        self.stdout.write(self.style.SUCCESS(f"  Created {len(recruiters)} recruiters."))
+        self.stdout.write(
+            self.style.SUCCESS(f"  Created {len(recruiters)} recruiters.")
+        )
         return recruiters
 
     def _create_job_seekers(self, count):
@@ -319,7 +378,9 @@ class Command(BaseCommand):
 
             city = random.choice(self.cities)
             gender = random.choice(GENDERS)
-            first_names = INDIAN_FIRST_NAMES_MALE if gender == "M" else INDIAN_FIRST_NAMES_FEMALE
+            first_names = (
+                INDIAN_FIRST_NAMES_MALE if gender == "M" else INDIAN_FIRST_NAMES_FEMALE
+            )
             first_name = random.choice(first_names)
             last_name = random.choice(INDIAN_LAST_NAMES)
             email = self._generate_unique_email(first_name, last_name, "jobseeker")
@@ -328,14 +389,16 @@ class Command(BaseCommand):
             months_exp = random.randint(0, 11)
 
             # Calculate salary based on experience
-            salary_key = max(k for k in SALARY_RANGES.keys() if k <= years_exp)
+            salary_key = max(k for k in SALARY_RANGES if k <= years_exp)
             min_sal, max_sal = SALARY_RANGES[salary_key]
             current_salary = random.randint(min_sal, max_sal)
             expected_salary = int(current_salary * random.uniform(1.1, 1.4))
 
             # Generate DOB based on experience
             age = 22 + years_exp + random.randint(0, 5)
-            dob = (datetime.now() - timedelta(days=age * 365 + random.randint(0, 364))).date()
+            dob = (
+                datetime.now() - timedelta(days=age * 365 + random.randint(0, 364))
+            ).date()
 
             user = User.objects.create(
                 username=email.split("@")[0],
@@ -368,7 +431,9 @@ class Command(BaseCommand):
             user.save()
 
             # Add preferred cities
-            user.preferred_city.set(random.sample(self.cities, min(3, len(self.cities))))
+            user.preferred_city.set(
+                random.sample(self.cities, min(3, len(self.cities)))
+            )
 
             # Create technical skills
             self._create_user_skills(user, years_exp)
@@ -384,7 +449,9 @@ class Command(BaseCommand):
 
             job_seekers.append(user)
 
-        self.stdout.write(self.style.SUCCESS(f"  Created {len(job_seekers)} job seekers."))
+        self.stdout.write(
+            self.style.SUCCESS(f"  Created {len(job_seekers)} job seekers.")
+        )
         return job_seekers
 
     def _create_user_skills(self, user, years_exp):
@@ -395,13 +462,14 @@ class Command(BaseCommand):
         tech_skills = []
         for i, skill in enumerate(selected_skills):
             proficiency = random.choices(
-                SKILL_PROFICIENCIES,
-                weights=SKILL_PROFICIENCY_WEIGHTS
+                SKILL_PROFICIENCIES, weights=SKILL_PROFICIENCY_WEIGHTS
             )[0]
 
             tech_skill = TechnicalSkill.objects.create(
                 skill=skill,
-                year=min(years_exp, random.randint(1, years_exp + 1)) if years_exp > 0 else 0,
+                year=min(years_exp, random.randint(1, years_exp + 1))
+                if years_exp > 0
+                else 0,
                 month=random.randint(0, 11),
                 proficiency=proficiency,
                 is_major=(i == 0),  # First skill is major
@@ -420,19 +488,29 @@ class Command(BaseCommand):
 
         current_date = datetime.now().date()
         for j in range(num_jobs):
-            is_current = (j == 0)
+            is_current = j == 0
             job_duration = random.randint(12, 36)  # months
 
-            to_date = current_date if is_current else (current_date - timedelta(days=random.randint(30, 180)))
+            to_date = (
+                current_date
+                if is_current
+                else (current_date - timedelta(days=random.randint(30, 180)))
+            )
             from_date = to_date - timedelta(days=job_duration * 30)
             current_date = from_date - timedelta(days=random.randint(30, 90))
 
             emp = EmploymentHistory.objects.create(
                 company=self._generate_company_name(),
-                designation=random.choice([
-                    "Software Engineer", "Senior Developer", "Team Lead",
-                    "Technical Architect", "Project Manager", "Associate",
-                ]),
+                designation=random.choice(
+                    [
+                        "Software Engineer",
+                        "Senior Developer",
+                        "Team Lead",
+                        "Technical Architect",
+                        "Project Manager",
+                        "Associate",
+                    ]
+                ),
                 from_date=from_date,
                 to_date=None if is_current else to_date,
                 current_job=is_current,
@@ -459,11 +537,16 @@ class Command(BaseCommand):
                 degree_name=qualification,
                 defaults={
                     "degree_type": "Permanent",
-                    "specialization": random.choice([
-                        "Computer Science", "Information Technology",
-                        "Electronics", "Mechanical", "Civil",
-                    ]),
-                }
+                    "specialization": random.choice(
+                        [
+                            "Computer Science",
+                            "Information Technology",
+                            "Electronics",
+                            "Mechanical",
+                            "Civil",
+                        ]
+                    ),
+                },
             )
 
             to_date = datetime.now().date() - timedelta(days=random.randint(365, 3650))
@@ -487,7 +570,9 @@ class Command(BaseCommand):
             return
 
         num_languages = random.randint(1, 3)
-        selected_languages = random.sample(self.languages, min(num_languages, len(self.languages)))
+        selected_languages = random.sample(
+            self.languages, min(num_languages, len(self.languages))
+        )
 
         lang_skills = []
         for lang in selected_languages:
@@ -521,14 +606,16 @@ class Command(BaseCommand):
             if titles:
                 title = random.choice(titles)
             else:
-                title = random.choice(DEFAULT_JOB_TITLES).format(skill=primary_skill.name)
+                title = random.choice(DEFAULT_JOB_TITLES).format(
+                    skill=primary_skill.name
+                )
 
             # Experience range
             min_year = random.choice([0, 1, 2, 3, 5, 7])
             max_year = min_year + random.randint(2, 5)
 
             # Salary based on experience
-            salary_key = max(k for k in SALARY_RANGES.keys() if k <= min_year)
+            salary_key = max(k for k in SALARY_RANGES if k <= min_year)
             min_sal, max_sal = SALARY_RANGES[salary_key]
             min_salary = random.randint(min_sal, (min_sal + max_sal) // 2)
             max_salary = random.randint((min_sal + max_sal) // 2, max_sal)
@@ -579,11 +666,27 @@ class Command(BaseCommand):
             )
 
             # Add M2M relations
-            job.location.set(random.sample(self.cities, min(random.randint(1, 3), len(self.cities))))
-            job.skills.set([primary_skill] + random.sample(self.skills, min(random.randint(1, 4), len(self.skills))))
-            job.industry.set(random.sample(self.industries, min(random.randint(1, 2), len(self.industries))))
+            job.location.set(
+                random.sample(self.cities, min(random.randint(1, 3), len(self.cities)))
+            )
+            job.skills.set(
+                [primary_skill]
+                + random.sample(
+                    self.skills, min(random.randint(1, 4), len(self.skills))
+                )
+            )
+            job.industry.set(
+                random.sample(
+                    self.industries, min(random.randint(1, 2), len(self.industries))
+                )
+            )
             if self.qualifications:
-                job.edu_qualification.set(random.sample(self.qualifications, min(random.randint(1, 2), len(self.qualifications))))
+                job.edu_qualification.set(
+                    random.sample(
+                        self.qualifications,
+                        min(random.randint(1, 2), len(self.qualifications)),
+                    )
+                )
 
             jobs.append(job)
 
@@ -597,7 +700,7 @@ class Command(BaseCommand):
         # Filter only live jobs for applications
         live_jobs = [j for j in jobs if j.status == "Live"]
         if not live_jobs:
-            live_jobs = jobs[:len(jobs)//2]  # Use half if no live jobs
+            live_jobs = jobs[: len(jobs) // 2]  # Use half if no live jobs
 
         applications_created = 0
         existing_applications = set()
@@ -616,8 +719,7 @@ class Command(BaseCommand):
             existing_applications.add(key)
 
             status = random.choices(
-                APPLICATION_STATUSES,
-                weights=APPLICATION_STATUS_WEIGHTS
+                APPLICATION_STATUSES, weights=APPLICATION_STATUS_WEIGHTS
             )[0]
 
             AppliedJobs.objects.create(
@@ -629,4 +731,6 @@ class Command(BaseCommand):
             )
             applications_created += 1
 
-        self.stdout.write(self.style.SUCCESS(f"  Created {applications_created} applications."))
+        self.stdout.write(
+            self.style.SUCCESS(f"  Created {applications_created} applications.")
+        )

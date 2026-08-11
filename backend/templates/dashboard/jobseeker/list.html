@@ -77,6 +77,7 @@
     <!-- Search & Filter -->
     <div class="p-4 border-b border-neutral-200">
       <form id="search_form" name="adv-search-form" method="POST" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+        {% csrf_token %}
         <div class="relative">
           <input type="text"
                  name="search"

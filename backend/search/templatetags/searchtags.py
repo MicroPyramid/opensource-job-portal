@@ -1,7 +1,7 @@
 from django import template
+
+from peeldb.models import JOB_TYPE, WALKIN_TYPE
 from search.forms import JobSearchForm
-from peeldb.models import JOB_TYPE
-from peeldb.models import WALKIN_TYPE
 
 register = template.Library()
 
@@ -23,7 +23,6 @@ def show_search_filter(context):
     }
 
 
-
 @register.inclusion_tag("search/search_filter_tailwind.html", takes_context=True)
 def show_search_filter_tailwind(context):
     search_form = JobSearchForm()
@@ -39,7 +38,6 @@ def show_search_filter_tailwind(context):
         "searched_job_type": context.get("searched_job_type"),
         "searched_text": context.get("searched_text"),
     }
-
 
 
 @register.inclusion_tag("search/adv_search_filter.html", takes_context=True)

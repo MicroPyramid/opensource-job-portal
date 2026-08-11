@@ -1,8 +1,9 @@
 import json
 import random
-from django.http.response import HttpResponse
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse
 from django.utils import timezone
 
 from mpcomp.s3_utils import S3Connection

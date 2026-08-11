@@ -44,6 +44,7 @@
       <div id="tab-statistics" class="tab-panel">
         <!-- Date Filter -->
         <form id="search_form" name="adv-search-form" method="POST" action="." class="mb-6">
+          {% csrf_token %}
           <div class="flex flex-wrap items-center gap-4 justify-end">
             <input type="hidden" name="job_type" id="job_type" value="{{ job_type }}"/>
             <input type="hidden" name="page" id="page" value="{{ page }}"/>
@@ -449,6 +450,7 @@
       <div id="tab-graphs" class="tab-panel hidden">
         <!-- Graph Filter -->
         <form id="graph_search_form" name="graph_search_form" method="POST" action="." class="mb-6">
+          {% csrf_token %}
           <div class="flex flex-wrap items-center gap-4 justify-end">
             <select name="year" id="year" class="form-select w-32">
               <option value="2017" selected>2017</option>

@@ -4,22 +4,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('peeldb', '0067_remove_screening_questions'),
+        ("peeldb", "0067_remove_screening_questions"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='jobpost',
-            name='functional_area',
+            model_name="jobpost",
+            name="functional_area",
         ),
         migrations.RemoveField(
-            model_name='searchresult',
-            name='functional_area',
+            model_name="searchresult",
+            name="functional_area",
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='functional_area',
+            model_name="user",
+            name="functional_area",
         ),
     ]

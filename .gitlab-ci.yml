@@ -7,11 +7,14 @@ deploy_live:
     name: live
   script:
     - sudo /bin/rm -rf /home/peeljobs/peeljobs/; cp -r . /home/peeljobs/peeljobs
-    - source /home/peeljobs/env/bin/activate
     - cd /home/peeljobs/peeljobs/backend
-    - pip install pipenv
-    - pipenv install -d
-    - python manage_server.py migrate --noinput
+    # uv manages backend/.venv itself, so no venv activation is needed.
+    - command -v uv || curl -LsSf https://astral.sh/uv/install.sh | sh
+    # --locked (not --frozen) so a stale uv.lock fails the pipeline rather
+    # than silently deploying dependencies that no longer match pyproject.toml.
+    # --no-dev keeps ruff/prospector/bpython/debug-toolbar off production.
+    - uv sync --locked --no-dev
+    - uv run manage_server.py migrate --noinput
     - sudo /usr/bin/supervisorctl restart all
   tags:
     - peeljobs-live

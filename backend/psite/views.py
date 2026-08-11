@@ -1,21 +1,21 @@
 import json
-import requests
 import math
-
-from django.shortcuts import render
-from django.contrib.auth import logout
-from django.http.response import HttpResponseRedirect, HttpResponse
-from django.conf import settings
 from itertools import chain
+
+import requests
+from django.conf import settings
+from django.contrib.auth import logout
+from django.db.models import Count, F
+from django.http.response import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.template import loader
 from django.template.exceptions import TemplateDoesNotExist
 
-
-from peeldb.models import JobPost, ENQUERY_TYPES, Skill, City, Qualification, State
-from .forms import SimpleContactForm
-from mpcomp.views import get_prev_after_pages_count
-from django.db.models import Count, F
 from dashboard.tasks import send_email
+from mpcomp.views import get_prev_after_pages_count
+from peeldb.models import ENQUERY_TYPES, City, JobPost, Qualification, Skill, State
+
+from .forms import SimpleContactForm
 
 
 def pages(request, page_name):
@@ -111,7 +111,7 @@ def sitemap_xml(request):
     return HttpResponse(
         "Sitemap temporarily unavailable. Implementing new sitemap system.",
         content_type="text/plain",
-        status=503
+        status=503,
     )
 
 
@@ -181,7 +181,7 @@ def sitemap(request, **kwargs):
     government_jobs = JobPost.objects.filter(status="Live", job_type="government")
     states = State.objects.filter(status="Enabled").exclude(state__name__in=[F("name")])
     jobposts = list(chain(full_jobposts, internships, walk_ins, government_jobs))
-    no_pages = int(math.ceil(float(len(jobposts)) / 100))
+    no_pages = math.ceil(float(len(jobposts)) / 100)
     page = 1
     if kwargs:
         page = int(kwargs["page_num"])

@@ -2,20 +2,21 @@ import json
 import math
 import re
 
-from django.urls import reverse
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template.defaultfilters import slugify
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.urls import reverse
 
+from mpcomp.aws import AWS
 from mpcomp.views import (
     get_aws_file_path,
     get_prev_after_pages_count,
     permission_required,
 )
-from mpcomp.aws import AWS
 from peeldb.models import (
+    SKILL_TYPE,
     City,
     Country,
     FunctionalArea,
@@ -25,9 +26,7 @@ from peeldb.models import (
     Qualification,
     Skill,
     State,
-    SKILL_TYPE,
 )
-from dashboard.forms import CityForm
 
 from ..forms import (
     CityForm,
@@ -40,17 +39,15 @@ from ..forms import (
     StateForm,
 )
 
-
 # Functions to move here from main views.py:
+
 
 @permission_required("activity_view", "activity_edit")
 def country(request):
     if request.method == "GET":
         countries = Country.objects.all().order_by("name")
         states = State.objects.all().order_by("name")
-        cities = City.objects.filter(status="Enabled").order_by(
-            "name"
-        )
+        cities = City.objects.filter(status="Enabled").order_by("name")
         return render(
             request,
             "dashboard/base_data/country.html",
@@ -412,11 +409,13 @@ def country(request):
                 if cities:
                     cities.update(status="Disabled")
 
-                if not State.objects.filter(country=state.country, status="Enabled"):
-                    if state.country.status != "Disabled":
-                        state.country.status = "Disabled"
-                        country_status = True
-                        state.country.save()
+                if (
+                    not State.objects.filter(country=state.country, status="Enabled")
+                    and state.country.status != "Disabled"
+                ):
+                    state.country.status = "Disabled"
+                    country_status = True
+                    state.country.save()
 
                 data = {
                     "error": False,
@@ -462,13 +461,15 @@ def country(request):
                         state_status = True
                         city.state.save()
 
-                    if not State.objects.filter(
-                        country=city.state.country, status="Enabled"
+                    if (
+                        not State.objects.filter(
+                            country=city.state.country, status="Enabled"
+                        )
+                        and city.state.country.status != "Disabled"
                     ):
-                        if city.state.country.status != "Disabled":
-                            city.state.country.status = "Disabled"
-                            country_status = True
-                            city.state.country.save()
+                        city.state.country.status = "Disabled"
+                        country_status = True
+                        city.state.country.save()
 
                 data = {
                     "error": False,
@@ -501,7 +502,6 @@ def country(request):
             return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_view", "activity_edit")
 def locations(request, status):
     # Get base queryset based on status
@@ -517,11 +517,11 @@ def locations(request, status):
             .annotate(num_posts=Count("locations"))
             .prefetch_related("state", "state__country")
         )
-    
+
     # Handle search from both GET and POST
     search_term = ""
     sort_by = request.GET.get("sort", "name")  # Default sort by name
-    
+
     if request.method == "POST":
         if request.POST.get("mode") == "remove_city":
             if request.user.is_staff or request.user.has_perm("activity_edit"):
@@ -531,18 +531,20 @@ def locations(request, status):
                     if city:
                         # Check for active job posts using this city
                         active_job_count = JobPost.objects.filter(
-                            location=city, 
-                            status__in=["Live", "Published"]
+                            location=city, status__in=["Live", "Published"]
                         ).count()
-                        
+
                         if active_job_count > 0:
                             data = {
-                                "error": True, 
-                                "message": f"Cannot delete city. {active_job_count} active job post(s) are using this location. Please reassign or deactivate these jobs first."
+                                "error": True,
+                                "message": f"Cannot delete city. {active_job_count} active job post(s) are using this location. Please reassign or deactivate these jobs first.",
                             }
                         else:
                             city.delete()
-                            data = {"error": False, "message": "City Removed Successfully"}
+                            data = {
+                                "error": False,
+                                "message": "City Removed Successfully",
+                            }
                     else:
                         data = {"error": True, "message": "City Not Found"}
                 else:
@@ -550,50 +552,58 @@ def locations(request, status):
             else:
                 data = {"error": True, "message": "Permission denied"}
             return HttpResponse(json.dumps(data))
-            
+
         elif request.POST.get("mode") == "edit":
             if request.user.is_staff or request.user.has_perm("activity_edit"):
                 city_id = request.POST.get("id")
                 if not city_id:
                     data = {"error": True, "message": "City ID is required"}
                     return HttpResponse(json.dumps(data))
-                
+
                 city = City.objects.filter(id=int(city_id)).first()
                 if not city:
                     data = {"error": True, "message": "City Not Found"}
                     return HttpResponse(json.dumps(data))
-                
+
                 form = CityForm(request.POST, instance=city)
                 is_valid = True
-                
+
                 # Validate JSON meta field if provided
                 if request.POST.get("meta"):
                     try:
                         json.loads(request.POST.get("meta"))
                     except (json.JSONDecodeError, ValueError) as e:
-                        form.add_error("meta", f"Enter Valid JSON Format - {str(e)}")
+                        form.add_error("meta", f"Enter Valid JSON Format - {e!s}")
                         is_valid = False
-                
+
                 if form.is_valid() and is_valid:
                     # Check if state change is valid
                     if request.POST.get("state"):
                         try:
-                            new_state = State.objects.get(id=request.POST.get("state"), status="Enabled")
+                            new_state = State.objects.get(
+                                id=request.POST.get("state"), status="Enabled"
+                            )
                             city.state = new_state
                         except State.DoesNotExist:
-                            data = {"error": True, "message": "Invalid state selected", "id": city_id}
+                            data = {
+                                "error": True,
+                                "message": "Invalid state selected",
+                                "id": city_id,
+                            }
                             return HttpResponse(json.dumps(data))
-                    
+
                     form.save()
-                    
+
                     # Update additional fields
                     if request.POST.get("page_content"):
                         city.page_content = request.POST.get("page_content")
                     if request.POST.get("internship_page_content"):
-                        city.internship_page_content = request.POST.get("internship_page_content")
+                        city.internship_page_content = request.POST.get(
+                            "internship_page_content"
+                        )
                     if request.POST.get("meta"):
                         city.meta = json.loads(request.POST.get("meta"))
-                    
+
                     city.save()
                     data = {"error": False, "message": "City Updated Successfully"}
                 else:
@@ -605,7 +615,7 @@ def locations(request, status):
             else:
                 data = {"error": True, "message": "Permission denied"}
             return HttpResponse(json.dumps(data))
-        
+
         elif request.POST.get("mode") == "move_jobs":
             if request.user.is_staff or request.user.has_perm("activity_edit"):
                 from_city_id = request.POST.get("from_city_id")
@@ -638,24 +648,24 @@ def locations(request, status):
                 except Exception as e:
                     data = {
                         "error": True,
-                        "message": f"Error moving jobs: {str(e)}",
+                        "message": f"Error moving jobs: {e!s}",
                     }
             else:
                 data = {"error": True, "message": "Permission denied"}
             return HttpResponse(json.dumps(data))
-        
+
         # Handle search via POST
         elif request.POST.get("search"):
             search_term = request.POST.get("search").strip()
-    
+
     # Handle search via GET (for pagination links)
     if not search_term:
         search_term = request.GET.get("search", "").strip()
-    
+
     # Apply search filter
     if search_term:
         locations_qs = locations_qs.filter(name__icontains=search_term)
-    
+
     # Apply sorting
     if sort_by == "name":
         locations_qs = locations_qs.order_by("name")
@@ -665,28 +675,36 @@ def locations(request, status):
         locations_qs = locations_qs.order_by("-num_posts", "name")
     else:
         locations_qs = locations_qs.order_by("name")
-    
+
     # Pagination
     items_per_page = 100
     paginator = Paginator(locations_qs, items_per_page)
     page_number = request.GET.get("page", 1)
-    
+
     try:
         page_obj = paginator.get_page(page_number)
     except (EmptyPage, PageNotAnInteger):
         page_obj = paginator.get_page(1)
-    
+
     # Get pagination context
     prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
         page_obj.number, paginator.num_pages
     )
-    
+
     # Get enabled cities for dropdown
-    cities = City.objects.filter(status="Enabled").prefetch_related("state", "state__country").order_by("name")
-    
+    cities = (
+        City.objects.filter(status="Enabled")
+        .prefetch_related("state", "state__country")
+        .order_by("name")
+    )
+
     # Get all states for the state dropdown in edit form
-    states = State.objects.filter(status="Enabled").prefetch_related("country").order_by("country__name", "name")
-    
+    states = (
+        State.objects.filter(status="Enabled")
+        .prefetch_related("country")
+        .order_by("country__name", "name")
+    )
+
     context = {
         "locations": page_obj,
         "cities": cities,
@@ -702,9 +720,8 @@ def locations(request, status):
         "search_value": search_term,  # For backward compatibility
         "sort_by": sort_by,
     }
-    
-    return render(request, "dashboard/locations.html", context)
 
+    return render(request, "dashboard/locations.html", context)
 
 
 @permission_required("activity_view", "activity_edit")
@@ -724,7 +741,7 @@ def tech_skills(request):
                 skills = skills.filter(skill_type=status)
 
         items_per_page = 20
-        no_pages = int(math.ceil(float(skills.count()) / items_per_page))
+        no_pages = math.ceil(float(skills.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -814,7 +831,6 @@ def tech_skills(request):
             return HttpResponse(json.dumps(data))
 
 
-
 def edit_tech_skills(skill, request):
     if request.FILES.get("icon"):
         if skill.icon:
@@ -838,7 +854,6 @@ def edit_tech_skills(skill, request):
     skill.save()
 
 
-
 @permission_required("activity_edit")
 def delete_skill(request, skill_id):
     skill = Skill.objects.filter(id=skill_id)
@@ -854,7 +869,6 @@ def delete_skill(request, skill_id):
     return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_edit")
 def skill_status(request, skill_id):
     skill = Skill.objects.filter(id=skill_id).first()
@@ -867,8 +881,6 @@ def skill_status(request, skill_id):
     return HttpResponse(json.dumps(data))
 
 
-
-
 @permission_required("activity_view", "activity_edit")
 def languages(request):
     if request.method == "GET":
@@ -876,7 +888,7 @@ def languages(request):
         if request.GET.get("search"):
             languages = languages.filter(name__icontains=request.GET.get("search"))
         items_per_page = 10
-        no_pages = int(math.ceil(float(languages.count()) / items_per_page))
+        no_pages = math.ceil(float(languages.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -911,7 +923,6 @@ def languages(request):
         )
 
     if request.user.user_type == "Admin" or request.user.has_perm("activity_edit"):
-
         if request.POST.get("mode") == "add_language":
             new_language = LanguageForm(request.POST)
             if new_language.is_valid():
@@ -947,12 +958,10 @@ def languages(request):
         return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_edit")
 def delete_language(request, language_id):
     Language.objects.get(id=language_id).delete()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
 
 
 @permission_required("activity_view", "activity_edit")
@@ -969,7 +978,7 @@ def qualifications(request):
             qualifications = qualifications.filter(status="InActive")
 
         items_per_page = 10
-        no_pages = int(math.ceil(float(qualifications.count()) / items_per_page))
+        no_pages = math.ceil(float(qualifications.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -1041,12 +1050,10 @@ def qualifications(request):
         return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_edit")
 def delete_qualification(request, qualification_id):
     Qualification.objects.get(id=qualification_id).delete()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
 
 
 @permission_required("activity_edit")
@@ -1071,7 +1078,6 @@ def qualification_status(request, qualification_id):
     return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_view", "activity_edit")
 def industries(request):
     if request.method == "GET":
@@ -1084,7 +1090,7 @@ def industries(request):
             industries = industries.filter(status="InActive")
 
         items_per_page = 15
-        no_pages = int(math.ceil(float(industries.count()) / items_per_page))
+        no_pages = math.ceil(float(industries.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -1105,7 +1111,9 @@ def industries(request):
         search = request.GET.get("search") if request.GET.get("search") else None
 
         # Get all active industries for the transfer dropdown
-        all_active_industries = Industry.objects.filter(status="Active").order_by("name")
+        all_active_industries = Industry.objects.filter(status="Active").order_by(
+            "name"
+        )
 
         return render(
             request,
@@ -1191,7 +1199,7 @@ def industries(request):
             except Exception as e:
                 data = {
                     "error": True,
-                    "message": f"Error moving jobs: {str(e)}",
+                    "message": f"Error moving jobs: {e!s}",
                     "page": request.POST.get("page") if request.POST.get("page") else 1,
                 }
             return HttpResponse(json.dumps(data))
@@ -1204,13 +1212,10 @@ def industries(request):
         return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_edit")
 def delete_industry(request, industry_id):
     Industry.objects.get(id=industry_id).delete()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
-
 
 
 @permission_required("activity_edit")
@@ -1233,7 +1238,6 @@ def industry_status(request, industry_id):
     return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_view", "activity_edit")
 def functional_area(request):
     if request.method == "GET":
@@ -1248,7 +1252,7 @@ def functional_area(request):
             functional_areas = functional_areas.filter(status="InActive")
 
         items_per_page = 10
-        no_pages = int(math.ceil(float(functional_areas.count()) / items_per_page))
+        no_pages = math.ceil(float(functional_areas.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -1322,12 +1326,10 @@ def functional_area(request):
     return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_edit")
 def delete_functional_area(request, functional_area_id):
     FunctionalArea.objects.get(id=functional_area_id).delete()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
 
 
 @permission_required("activity_edit")

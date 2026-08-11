@@ -1,9 +1,11 @@
 """
 Authentication Utilities for Job Seekers
 """
+
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
-from peeldb.models import User, UserEmail, Google
+
+from peeldb.models import Google, User, UserEmail
 
 
 def get_tokens_for_user(user):
@@ -120,7 +122,7 @@ def create_or_update_google_user(user_document):
     # Create or update Google record
     google_link = user_document.get("link", f"https://plus.google.com/{google_id}")
 
-    google, _ = Google.objects.update_or_create(
+    _google, _ = Google.objects.update_or_create(
         user=user,
         defaults={
             "google_url": google_link,

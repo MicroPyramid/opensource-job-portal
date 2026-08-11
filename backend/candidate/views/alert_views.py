@@ -1,26 +1,27 @@
 import json
 import math
 import re
-from django.shortcuts import render
-from django.http.response import HttpResponse, HttpResponseRedirect
+
 from django.db.models import Q
+from django.http.response import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.template import Context, Template, loader
 from django.urls import reverse
-from django.template import loader, Template, Context
 from django.utils.crypto import get_random_string
 
+from candidate.forms import YEARS, JobAlertForm
+from dashboard.tasks import send_email
 from mpcomp.views import get_prev_after_pages_count
-from candidate.forms import JobAlertForm, YEARS
 from peeldb.models import (
-    MetaData,
-    User,
     City,
     Industry,
-    Skill,
-    JobPost,
     JobAlert,
+    JobPost,
+    MetaData,
+    Skill,
     Subscriber,
+    User,
 )
-from dashboard.tasks import send_email
 
 
 def job_alert(request):
@@ -144,11 +145,12 @@ def job_alert_results(request, job_alert_id):
     else:
         job_alerts = JobAlert.objects.filter(id=job_alert_id)
 
-    if request.user.is_authenticated:
-        if request.user.is_staff or request.user.user_type == "RR":
-            message = "Sorry, No Job Alerts Availableble"
-            template = "404.html"
-            return render(request, template, {"message": message}, status=404)
+    if request.user.is_authenticated and (
+        request.user.is_staff or request.user.user_type == "RR"
+    ):
+        message = "Sorry, No Job Alerts Availableble"
+        template = "404.html"
+        return render(request, template, {"message": message}, status=404)
 
     if job_alerts:
         job_alert = job_alerts[0]
@@ -169,7 +171,7 @@ def job_alert_results(request, job_alert_id):
                 status="Live", skills__in=job_alert.skill.all()
             )
         items_per_page = 10
-        no_pages = int(math.ceil(float(jobs_list.count()) / items_per_page))
+        no_pages = math.ceil(float(jobs_list.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -267,7 +269,7 @@ def alerts_list(request, **kwargs):
         job_alerts = JobAlert.objects.filter(email=request.user.email)
 
         items_per_page = 5
-        no_pages = int(math.ceil(float(job_alerts.count()) / items_per_page))
+        no_pages = math.ceil(float(job_alerts.count()) / items_per_page)
 
         if (
             "page" in request.GET

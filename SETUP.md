@@ -48,12 +48,12 @@ docker run -d --name elasticsearch \
 ```bash
 # Clone and setup
 git clone <your-repo-url>
-cd <repo>
+cd <repo>/backend
 
-# Python environment
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+# Python environment — uv creates and manages .venv from pyproject.toml
+# and pins the interpreter from .python-version. Dev tooling is included
+# by default; use `uv sync --no-dev` to omit it.
+uv sync
 ```
 
 ### 2. Environment Configuration
@@ -78,12 +78,12 @@ sudo -u postgres createdb peeljobs
 sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'password';"
 
 # Run migrations
-python manage.py migrate
-python manage.py load_initial_data
-python manage.py createsuperuser
+uv run manage.py migrate
+uv run manage.py load_initial_data
+uv run manage.py createsuperuser
 
 # (Optional) Create test data for development
-python manage.py create_test_data
+uv run manage.py create_test_data
 ```
 
 ### 4. Test Users (Optional)
@@ -92,13 +92,13 @@ Create test users with known credentials for development:
 
 ```bash
 # Create test users (loads from backend/peeldb/fixtures/test-users.json)
-python manage.py create_test_users
+uv run manage.py create_test_users
 
 # Recreate test users (delete and create fresh)
-python manage.py create_test_users --clear
+uv run manage.py create_test_users --clear
 
 # Use custom config file
-python manage.py create_test_users --config /path/to/custom-users.json
+uv run manage.py create_test_users --config /path/to/custom-users.json
 ```
 
 **Default test user credentials** (defined in `backend/peeldb/fixtures/test-users.json`):
@@ -119,13 +119,13 @@ For development, populate the database with bulk test data:
 
 ```bash
 # Create default test data (50 companies, 100 recruiters, 500 job seekers, 1000 jobs)
-python manage.py create_test_data
+uv run manage.py create_test_data
 
 # Create custom amounts
-python manage.py create_test_data --companies=20 --recruiters=50 --jobseekers=200 --jobs=500
+uv run manage.py create_test_data --companies=20 --recruiters=50 --jobseekers=200 --jobs=500
 
 # Clear existing test data and create fresh
-python manage.py create_test_data --clear
+uv run manage.py create_test_data --clear
 ```
 
 Bulk test users are created with password: `testpass123`
@@ -145,13 +145,13 @@ Start services in separate terminals:
 
 ```bash
 # Django server
-python manage.py runserver
+uv run manage.py runserver
 
 # Celery worker
-celery -A jobsp worker --loglevel=info
+DJANGO_SETTINGS_MODULE=jobsp.settings_local uv run celery -A jobsp worker --loglevel=info
 
 # Celery beat
-celery -A jobsp beat --loglevel=info
+DJANGO_SETTINGS_MODULE=jobsp.settings_local uv run celery -A jobsp beat --loglevel=info
 ```
 
 **Access Points:**
@@ -164,8 +164,8 @@ celery -A jobsp beat --loglevel=info
 
 | Environment | Command                   | Settings             |
 | ----------- | ------------------------- | -------------------- |
-| Development | `python manage.py`        | `settings_local.py`  |
-| Production  | `python manage_server.py` | `settings_server.py` |
+| Development | `uv run manage.py`        | `settings_local.py`  |
+| Production  | `uv run manage_server.py` | `settings_server.py` |
 
 ## Production Deployment
 
@@ -191,9 +191,10 @@ After=network.target
 
 [Service]
 User=www-data
-WorkingDirectory=/var/www/peeljobs
-Environment="PATH=/var/www/peeljobs/venv/bin"
-ExecStart=/var/www/peeljobs/venv/bin/gunicorn --workers 3 --bind unix:/run/peeljobs/peeljobs.sock jobsp.wsgi:application
+WorkingDirectory=/var/www/peeljobs/backend
+Environment="PATH=/var/www/peeljobs/backend/.venv/bin"
+Environment="DJANGO_SETTINGS_MODULE=jobsp.settings_server"
+ExecStart=/var/www/peeljobs/backend/.venv/bin/gunicorn --workers 3 --bind unix:/run/peeljobs/peeljobs.sock jobsp.wsgi:application
 Restart=on-failure
 
 [Install]
@@ -209,9 +210,10 @@ After=network.target
 
 [Service]
 User=www-data
-WorkingDirectory=/var/www/peeljobs
-Environment="PATH=/var/www/peeljobs/venv/bin"
-ExecStart=/var/www/peeljobs/venv/bin/celery -A jobsp worker --loglevel=info
+WorkingDirectory=/var/www/peeljobs/backend
+Environment="PATH=/var/www/peeljobs/backend/.venv/bin"
+Environment="DJANGO_SETTINGS_MODULE=jobsp.settings_server"
+ExecStart=/var/www/peeljobs/backend/.venv/bin/celery -A jobsp worker --loglevel=info
 Restart=on-failure
 
 [Install]
@@ -238,6 +240,10 @@ server {
     location / {
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # REQUIRED: settings_server.py sets SECURE_SSL_REDIRECT together with
+        # SECURE_PROXY_SSL_HEADER. Without this header Django cannot tell that
+        # the original request was HTTPS and will redirect in a loop.
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_pass http://unix:/run/peeljobs/peeljobs.sock;
     }
 }
@@ -247,17 +253,17 @@ server {
 
 ```bash
 # Database
-python manage.py migrate
-python manage.py makemigrations
+uv run manage.py migrate
+uv run manage.py makemigrations
 
 # Testing
-python manage.py test
+uv run manage.py test
 
 # Static files
-python manage.py collectstatic
+uv run manage.py collectstatic
 
 # Search index
-python manage.py update_index
+uv run manage.py update_index
 ```
 
 ## Troubleshooting
@@ -279,10 +285,10 @@ redis-cli ping
 
 ```bash
 # Reset migrations (dev only)
-python manage.py migrate --fake-initial
+uv run manage.py migrate --fake-initial
 
-# Reinstall requirements
-pip install -r requirements.txt
+# Reinstall dependencies from the lockfile
+uv sync --reinstall
 
 # Fix permissions
 sudo chown -R $USER:$USER .

@@ -8,7 +8,21 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-DEBUG = os.getenv("DEBUG", True)
+
+def env_bool(name, default):
+    """Read a boolean from the environment.
+
+    os.getenv returns strings, so `os.getenv("DEBUG", True)` yields the string
+    "False" when DEBUG=False is set -- which is truthy. This parses the value
+    instead of relying on its truthiness.
+    """
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in ("1", "true", "yes", "on")
+
+
+DEBUG = env_bool("DEBUG", True)
 TEMPLATE_DEBUG = DEBUG
 
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "peeljobs@micropyramid.com")
@@ -21,7 +35,7 @@ RECRUITER_FRONTEND_URL = os.getenv("RECRUITER_FRONTEND_URL", "http://localhost:5
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
-CELERY_IMPORTS = ("dashboard.tasks")
+CELERY_IMPORTS = "dashboard.tasks"
 
 
 # Enable debug logging
@@ -112,7 +126,7 @@ STATICFILES_FINDERS = (
     "compressor.finders.CompressorFinder",
 )
 
-HTML_MINIFY = os.getenv("HTML_MINIFY", False)
+HTML_MINIFY = env_bool("HTML_MINIFY", False)
 
 ROOT_URLCONF = "jobsp.urls"
 
@@ -149,18 +163,30 @@ INSTALLED_APPS = (
     "api",  # New API app for job seekers
 )
 
+# Ordering follows Django's documented recommendation. SecurityMiddleware,
+# CsrfViewMiddleware and XFrameOptionsMiddleware were all absent, which
+# `check --deploy` reported as security.W001/W002/W003. CorsMiddleware stays
+# near the top, as django-cors-headers requires, ahead of CommonMiddleware.
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     # "hmin.middleware.MinMiddleware",
     # "hmin.middleware.MarkMiddleware",
     # "jobsp.middlewares.DetectMobileBrowser",
     "jobsp.middlewares.LowerCased",
 ]
+
+# DENY: no page in this project is embedded in a frame. Every <iframe> in the
+# templates embeds third-party content (Facebook page plugins) *into* our pages,
+# which X-Frame-Options does not affect.
+X_FRAME_OPTIONS = "DENY"
 
 
 CORS_ALLOWED_ORIGINS = [
@@ -379,7 +405,6 @@ THUMBNAIL_DEBUG = True
 THUMBNAIL_FORCE_OVERWRITE = True
 
 
-
 # AWS_ENABLED = os.getenv("AWSENABLED")
 # DISQUS_SHORTNAME = ""
 
@@ -450,16 +475,12 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
-
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
-
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
-
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
 }
@@ -484,12 +505,27 @@ SPECTACULAR_SETTINGS = {
         {"url": "https://peeljobs.com", "description": "Production server"},
     ],
     "TAGS": [
-        {"name": "Authentication", "description": "Google OAuth 2.0 and JWT token management"},
+        {
+            "name": "Authentication",
+            "description": "Google OAuth 2.0 and JWT token management",
+        },
         {"name": "User Profile", "description": "Job Seeker profile management"},
         {"name": "Jobs", "description": "Job search and applications (coming soon)"},
     ],
     "COMPONENT_SPLIT_REQUEST": True,
     "SCHEMA_PATH_PREFIX": "/api/v[0-9]",
+    # Without these, three different "status" choice sets all wanted the name
+    # StatusEnum and drf-spectacular fell back to hash suffixes (Status370Enum,
+    # Status4a7Enum, Status75bEnum) that change whenever the choices change —
+    # which would churn every generated client. COMPANY_SIZE is listed because
+    # the same choice set is reached under two field names (Company.size and the
+    # recruiter registration serializer's company_size).
+    "ENUM_NAME_OVERRIDES": {
+        "JobPostStatusEnum": "peeldb.models.JobPost.POST_STATUS",
+        "ApplicationStatusEnum": "peeldb.models.POST_STATUS",
+        "LocationStatusEnum": "peeldb.models.STATUS_TYPES",
+        "CompanySizeEnum": "peeldb.models.COMPANY_SIZE",
+    },
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
         "persistAuthorization": True,
@@ -517,9 +553,19 @@ CELERY_MONITOR_URL = os.getenv("CELERY_MONITOR_URL")
 # Tailwind CSS Configuration
 TAILWIND_CSS_FILE = "css/tailwind-output.css"
 
-# Try to load local settings for development
-try:
-    from .settings_local import *
-    print("Local development settings loaded")
-except ImportError:
-    pass  # settings_local.py doesn't exist or has import errors
+# NOTE: this module must NOT import settings_local.
+#
+# It used to end with `from .settings_local import *`. Because settings_local is
+# tracked in git it ships to production, and settings_server does
+# `from .settings import *` -- so every development override leaked into
+# production. Most seriously it replaced EMAIL_BACKEND (set to
+# django_ses.SESBackend ten lines above) with the console backend, meaning
+# production printed mail to stdout instead of sending it. It also forced
+# TEMPLATE_DEBUG = True and COMPRESS_ENABLED = False in production, and created a
+# circular import (settings_local starts with `from .settings import *`), which
+# is why "Local development settings loaded" printed twice.
+#
+# Settings modules are now selected only via DJANGO_SETTINGS_MODULE:
+#   jobsp.settings         -- shared base, production-safe on its own
+#   jobsp.settings_local   -- development (manage.py)
+#   jobsp.settings_server  -- production (manage_server.py, wsgi.py)

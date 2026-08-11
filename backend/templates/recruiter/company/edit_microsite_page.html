@@ -9,6 +9,7 @@
     <h3><i class="fa fa-building"></i> <span>Company</span> Profile</h3>
     <!-- row one -->
     <form name="companyform" id="companyform" method="post">
+      {% csrf_token %}
       <div class="row_one company_profile">
         <!-- ticket -->
         <div class="pp_div company_new_form">

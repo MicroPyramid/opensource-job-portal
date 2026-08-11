@@ -32,6 +32,7 @@
                     <div class="card-header text-center text-uppercase">EDIT PROFILE DESCRIPTION</div>
                     <div class="card-body">
                                 <form name="profiledescrptionform" id="profiledescrptionform" method="post">
+                                  {% csrf_token %}
                                             <div class="row">
                                               <label for="colFormLabelSm" class="col-sm-3 control-label">Profile
                                                 Description<span class="important">*</span></label>

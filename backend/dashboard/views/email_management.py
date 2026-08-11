@@ -13,10 +13,10 @@ from peeldb.models import (
 )
 
 from ..forms import MailTemplateForm
-from ..tasks import sending_mail, send_email
-
+from ..tasks import send_email, sending_mail
 
 # Functions to move here from main views.py:
+
 
 @permission_required("activity_view", "activity_edit")
 def emailtemplates(request):
@@ -49,9 +49,7 @@ def new_template(request):
             data = {"error": True, "message": validate_mailtemplate.errors}
         return HttpResponse(json.dumps(data))
     else:
-        return render(
-            request, "dashboard/mail/new_mailtemplate.html", {}
-        )
+        return render(request, "dashboard/mail/new_mailtemplate.html", {})
 
 
 @permission_required("activity_edit")
@@ -67,7 +65,7 @@ def edit_template(request, template_id):
                 mailtemplate = validate_mailtemplate.save(commit=False)
                 mailtemplate.modified_on = datetime.utcnow()
                 if (
-                    "show_recruiter" in request.POST.keys()
+                    "show_recruiter" in request.POST
                     and str(request.POST.get("show_recruiter")) == "True"
                 ):
                     mailtemplate.show_recruiter = True

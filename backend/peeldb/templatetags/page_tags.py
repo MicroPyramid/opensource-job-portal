@@ -1,29 +1,31 @@
+import contextlib
 import datetime
-from datetime import date
-import arrow
-import re
 import locale
+import re
 from collections import Counter
+from datetime import date
 
+import arrow
+import boto3
 from django import template
 from django.conf import settings
-from django.db.models import Count, Q, Prefetch
 from django.core.cache import cache
-import boto3
+from django.db.models import Count, Prefetch, Q
+
+from candidate.forms import MONTHS, YEARS
 from peeldb.models import (
+    DEGREE_TYPES,
     AppliedJobs,
-    JobPost,
-    User,
     City,
+    Company,
+    Industry,
+    JobPost,
+    Qualification,
     Skill,
     State,
-    Industry,
-    Company,
-    Qualification,
-    DEGREE_TYPES,
+    User,
     UserMessage,
 )
-from candidate.forms import YEARS, MONTHS
 from recruiter.forms import UserStatus
 
 register = template.Library()
@@ -33,19 +35,16 @@ def str_to_list(value):
     """Convert string representation of list to actual list"""
     if isinstance(value, str):
         # Remove brackets and quotes, then split by comma
-        value = value.strip('[]').replace("'", "").replace('"', '')
+        value = value.strip("[]").replace("'", "").replace('"', "")
         if value:
-            return [item.strip() for item in value.split(',') if item.strip()]
+            return [item.strip() for item in value.split(",") if item.strip()]
         return []
     return value if isinstance(value, list) else []
 
 
 @register.filter
 def is_applied_for_job(user, job_post_id):
-    if AppliedJobs.objects.filter(user_id=user, job_post_id=job_post_id):
-        return True
-    else:
-        return False
+    return bool(AppliedJobs.objects.filter(user_id=user, job_post_id=job_post_id))
 
 
 @register.filter
@@ -75,9 +74,7 @@ def get_formatted_salary(value):
 @register.filter
 def get_social_connections_count(user):
     # Only Google OAuth is supported now
-    if user.google_user.all():
-        return True
-    return False
+    return bool(user.google_user.all())
 
 
 @register.filter
@@ -90,7 +87,7 @@ def get_resume_name(value):
     if not value:
         return ""
     # Convert FieldFile to string using .name attribute
-    file_path = value.name if hasattr(value, 'name') else str(value)
+    file_path = value.name if hasattr(value, "name") else str(value)
     resume_name = file_path.split("/")[-1]
     return resume_name
 
@@ -99,31 +96,31 @@ def get_resume_name(value):
 def get_s3_url(key):
     # Handle empty, None, or invalid keys
     if not key or not str(key).strip():
-        return '#'
-    
+        return "#"
+
     try:
         s3_client = boto3.client(
-            's3',
+            "s3",
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
         )
         stored_url = s3_client.generate_presigned_url(
-            'get_object',
-            Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': str(key).strip()},
-            ExpiresIn=600
+            "get_object",
+            Params={
+                "Bucket": settings.AWS_STORAGE_BUCKET_NAME,
+                "Key": str(key).strip(),
+            },
+            ExpiresIn=600,
         )
         return stored_url
     except Exception:
         # Return a placeholder URL if S3 operation fails
-        return '#'
+        return "#"
 
 
 @register.filter
 def check_perm(user):
-    if user.has_perm("support_view") or user.has_perm("support_edit"):
-        return True
-    else:
-        return False
+    return bool(user.has_perm("support_view") or user.has_perm("support_edit"))
 
 
 @register.simple_tag
@@ -186,8 +183,7 @@ def get_page(context, page, no_pages):
     else:
         end_page = start_page + 6
 
-    if end_page > no_pages:
-        end_page = no_pages
+    end_page = min(end_page, no_pages)
 
     pages = range(start_page, end_page + 1)
     return pages
@@ -282,11 +278,9 @@ def get_refine_skills(skills):
     if skills:
         each_skill = skills.annotate(num_posts=Count("jobpost")).order_by("num_posts")
         for each in each_skill.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_skills.remove(each)
                 all_refine_skills.insert(0, each)
-            except Exception:
-                pass
     return all_refine_skills
 
 
@@ -305,11 +299,9 @@ def get_refine_locations(locations):
             "num_posts"
         )
         for each in each_location.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_locations.remove(each)
                 all_refine_locations.insert(0, each)
-            except Exception:
-                pass
     return all_refine_locations
 
 
@@ -328,11 +320,9 @@ def get_refine_states(states):
             "num_posts"
         )
         for each in each_location.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_states.remove(each)
                 all_refine_states.insert(0, each)
-            except Exception:
-                pass
     return all_refine_states[:8]
 
 
@@ -351,11 +341,9 @@ def get_refine_industries(industry):
             "num_posts"
         )
         for each in each_industry.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_industries.remove(each)
                 all_refine_industries.insert(0, each)
-            except Exception:
-                pass
     return all_refine_industries
 
 
@@ -372,11 +360,9 @@ def get_refine_educations(education):
     if education:
         each_edu = education.annotate(num_posts=Count("jobpost")).order_by("num_posts")
         for each in each_edu.iterator():
-            try:
+            with contextlib.suppress(ValueError):
                 all_refine_educations.remove(each)
                 all_refine_educations.insert(0, each)
-            except Exception:
-                pass
     return all_refine_educations
 
 
@@ -475,10 +461,7 @@ def is_connected(value):
 
 @register.filter
 def check_recruiter_perm(user, permission):
-    if user.has_perm(permission):
-        return True
-    else:
-        return False
+    return bool(user.has_perm(permission))
 
 
 @register.simple_tag
@@ -550,18 +533,12 @@ def get_user_status(user):
 
 @register.filter
 def is_job_applied(job, resume):
-    if AppliedJobs.objects.filter(job_post=job, resume_applicant=resume):
-        return True
-    else:
-        return False
+    return bool(AppliedJobs.objects.filter(job_post=job, resume_applicant=resume))
 
 
 @register.filter
 def get_value_type(value):
-    if type(value) == list:
-        return True
-    else:
-        return False
+    return type(value) == list
 
 
 @register.filter
@@ -706,9 +683,10 @@ def get_related_skills(search_skills):
 def is_events_created(request, job):
     """Google Calendar integration removed - check job expiry using 30-day rule"""
     from datetime import timedelta
+
     if not job.published_on:
         return True
-    max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+    max_age_days = getattr(settings, "JOB_APPLICATION_MAX_AGE_DAYS", 30)
     expiry_date = job.published_on.date() + timedelta(days=max_age_days)
     return date.today() >= expiry_date
 
@@ -746,26 +724,29 @@ def is_recent_job(published_date, days=7):
     """
     if not published_date:
         return False
-    
+
     try:
         # Calculate the difference between now and the published date
         now = datetime.datetime.now()
-        if hasattr(published_date, 'date'):
+        if hasattr(published_date, "date"):
             # If it's a datetime object
             published_datetime = published_date
         else:
             # If it's a date object, convert to datetime
-            published_datetime = datetime.datetime.combine(published_date, datetime.datetime.min.time())
-        
+            published_datetime = datetime.datetime.combine(
+                published_date, datetime.datetime.min.time()
+            )
+
         # Make both timezone-aware or timezone-naive
-        if hasattr(published_datetime, 'tzinfo') and published_datetime.tzinfo:
+        if hasattr(published_datetime, "tzinfo") and published_datetime.tzinfo:
             # If published_datetime is timezone-aware, make now timezone-aware too
             from django.utils import timezone
+
             now = timezone.now()
-        elif hasattr(now, 'tzinfo') and now.tzinfo:
+        elif hasattr(now, "tzinfo") and now.tzinfo:
             # If now is timezone-aware but published_datetime is not, make now naive
             now = now.replace(tzinfo=None)
-        
+
         difference = now - published_datetime
         return difference.days <= days
     except (AttributeError, TypeError, ValueError):

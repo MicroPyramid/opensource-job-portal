@@ -6,8 +6,6 @@ And RFC 6585 - http://tools.ietf.org/html/rfc6585
 And RFC 4918 - https://tools.ietf.org/html/rfc4918
 """
 
-from __future__ import unicode_literals
-
 
 def is_informational(code):
     return 100 <= code <= 199

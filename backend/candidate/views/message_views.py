@@ -1,12 +1,13 @@
 import datetime
 import json
-from django.shortcuts import render
+
+from django.db.models import Case, Q, When
 from django.http.response import HttpResponse, HttpResponseRedirect
-from django.db.models import Q, Case, When
+from django.shortcuts import render
 from django.template.loader import render_to_string
 
 from mpcomp.views import jobseeker_login_required
-from peeldb.models import User, JobPost, UserMessage
+from peeldb.models import JobPost, User, UserMessage
 
 
 def get_messages(request):
@@ -77,7 +78,6 @@ def messages(request):
         data = get_messages(request)
         return HttpResponse(json.dumps(data))
     if request.POST.get("post_message"):
-
         msg = UserMessage.objects.create(
             message=request.POST.get("message"),
             message_from=request.user,

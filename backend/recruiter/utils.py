@@ -1,12 +1,12 @@
 """Helper functions for API"""
 
-from __future__ import unicode_literals
-from collections import Iterable, OrderedDict
 import json
+from collections import OrderedDict
+from collections.abc import Iterable
 
 from django.core.serializers.base import Serializer as BaseSerializer
-from django.core.serializers.python import Serializer as PythonSerializer
 from django.core.serializers.json import Serializer as JsonSerializer
+from django.core.serializers.python import Serializer as PythonSerializer
 from django.db.models.query import QuerySet
 
 
@@ -19,7 +19,7 @@ class ReturnDict(OrderedDict):
 
     def __init__(self, *args, **kwargs):
         self.serializer = kwargs.pop("serializer")
-        super(ReturnDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def copy(self):
         return ReturnDict(self, serializer=self.serializer)
@@ -42,7 +42,7 @@ class ReturnList(list):
 
     def __init__(self, *args, **kwargs):
         self.serializer = kwargs.pop("serializer")
-        super(ReturnList, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __repr__(self):
         return list.__repr__(self)
@@ -69,7 +69,7 @@ class ExtBaseSerializer(BaseSerializer):
     def end_object(self, obj):
         self.serialize_property(obj)
 
-        super(ExtBaseSerializer, self).end_object(obj)
+        super().end_object(obj)
 
 
 class ExtPythonSerializer(ExtBaseSerializer, PythonSerializer):
@@ -77,7 +77,11 @@ class ExtPythonSerializer(ExtBaseSerializer, PythonSerializer):
 
 
 class Skinner(ExtPythonSerializer, JsonSerializer):
-    def parse(self, queryset=[], fields=[], query=None):
+    def parse(self, queryset=None, fields=None, query=None):
+        if fields is None:
+            fields = []
+        if queryset is None:
+            queryset = []
         if isinstance(queryset, Iterable):
             serialized_data = json.loads(self.serialize(queryset, fields=fields))
         elif queryset:

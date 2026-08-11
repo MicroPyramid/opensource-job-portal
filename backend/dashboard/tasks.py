@@ -1,3 +1,4 @@
+import contextlib
 import math
 from datetime import datetime, timedelta
 from itertools import chain
@@ -30,6 +31,17 @@ from peeldb.models import (
 )
 
 
+def _write_sitemap(path, mode, content):
+    """Write a sitemap file, closing the handle.
+
+    sitemap_generation() previously did `f = open(path, "w"); f.write(...)` for
+    every sitemap and never closed any of them, leaking a file handle per file
+    per scheduled run.
+    """
+    with open(path, mode) as sitemap_file:
+        sitemap_file.write(content)
+
+
 @app.task
 def send_email(mto, msubject, mbody, reply_to=None):
     import logging
@@ -46,10 +58,11 @@ def send_email(mto, msubject, mbody, reply_to=None):
     logger.info(f"Email backend: {settings.EMAIL_BACKEND}")
 
     # Check if we're in development mode and should log to console
-    if (settings.DEBUG or
-        settings.EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend" or
-        getattr(settings, 'ENV_TYPE', None) == 'DEV'):
-
+    if (
+        settings.DEBUG
+        or settings.EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend"
+        or getattr(settings, "ENV_TYPE", None) == "DEV"
+    ):
         # Print email to console for development
         print("=" * 80)
         print("EMAIL SENT VIA CELERY")
@@ -57,7 +70,9 @@ def send_email(mto, msubject, mbody, reply_to=None):
         print(f"To: {', '.join(mto)}")
         print(f"From: {settings.DEFAULT_FROM_EMAIL}")
         if reply_to:
-            print(f"Reply-To: {reply_to if isinstance(reply_to, str) else ', '.join(reply_to)}")
+            print(
+                f"Reply-To: {reply_to if isinstance(reply_to, str) else ', '.join(reply_to)}"
+            )
         print(f"Subject: {msubject}")
         print("-" * 80)
         print("Body:")
@@ -79,7 +94,7 @@ def send_email(mto, msubject, mbody, reply_to=None):
         logger.info(f"Email sent successfully. Result: {result}")
         return result
     except Exception as e:
-        logger.error(f"Failed to send email: {str(e)}")
+        logger.error(f"Failed to send email: {e!s}")
         raise
 
 
@@ -212,22 +227,18 @@ def jobpost_published():
     return
     jobposts = JobPost.objects.filter(status="Published")
     for job in jobposts:
-
         job.status = "Live"
         job.published_on = datetime.now()
         job_url = get_absolute_url(job)
         job.slug = job_url
         job.save()
-       
+
         c = {"job_post": job, "user": job.user}
         t = loader.get_template("email/jobpost.html")
         subject = "PeelJobs JobPost Status"
         mto = [settings.DEFAULT_FROM_EMAIL, job.user.email]
         rendered = t.render(c)
         send_email.delay(mto, subject, rendered)
-
-
-
 
 
 @app.task()
@@ -260,14 +271,12 @@ def get_conditions(user):
     if user.year:
         conditions.append(Q(min_year=user.year))
         conditions.append(Q(max_year=user.year))
-    if user.current_salary:
-        if isinstance(user.current_salary, float):
-            conditions.append(Q(min_salary=float(user.current_salary)))
-            conditions.append(Q(max_salary=float(user.current_salary)))
-    if user.expected_salary:
-        if isinstance(user.expected_salary, float):
-            conditions.append(Q(min_salary=float(user.expected_salary)))
-            conditions.append(Q(max_salary=float(user.expected_salary)))
+    if user.current_salary and isinstance(user.current_salary, float):
+        conditions.append(Q(min_salary=float(user.current_salary)))
+        conditions.append(Q(max_salary=float(user.current_salary)))
+    if user.expected_salary and isinstance(user.expected_salary, float):
+        conditions.append(Q(min_salary=float(user.expected_salary)))
+        conditions.append(Q(max_salary=float(user.expected_salary)))
     if user.employment_history.all():
         conditions.append(Q(job_role__icontains=user.job_role))
     if user.education.all():
@@ -866,10 +875,8 @@ def sitemap_generation():
     print("Sitemap Generation started")
     import os
 
-    try:
+    with contextlib.suppress(Exception):
         os.system("rm sitemap/*")
-    except Exception:
-        pass
     xml_cont = """<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
 
@@ -891,12 +898,12 @@ def sitemap_generation():
 
     jobs_xml_cont = jobs_xml_cont + "</urlset>"
 
-    try:
-        open("sitemap/")
-    except Exception:
-        os.makedirs("sitemap", exist_ok=True)
-    jobs_xml_file = open("sitemap/sitemap-jobs.xml", "w")
-    jobs_xml_file.write(jobs_xml_cont.encode("ascii", "ignore").decode("ascii"))
+    os.makedirs("sitemap", exist_ok=True)
+    _write_sitemap(
+        "sitemap/sitemap-jobs.xml",
+        "w",
+        jobs_xml_cont.encode("ascii", "ignore").decode("ascii"),
+    )
 
     # skills
     skills_xml_cont = xml_cont
@@ -921,12 +928,12 @@ def sitemap_generation():
             )
     skills_xml_cont = skills_xml_cont + "</urlset>"
 
-    skills_xml_file = open("sitemap/sitemap-skills.xml", "w")
-    skills_xml_file.write(skills_xml_cont)
+    _write_sitemap("sitemap/sitemap-skills.xml", "w", skills_xml_cont)
     if no_job_skills_xml_cont != xml_cont:
         no_job_skills_xml_cont = no_job_skills_xml_cont + "</urlset>"
-        no_job_skills_xml_file = open("sitemap/sitemap-skills-without-jobs.xml", "w")
-        no_job_skills_xml_file.write(no_job_skills_xml_cont)
+        _write_sitemap(
+            "sitemap/sitemap-skills-without-jobs.xml", "w", no_job_skills_xml_cont
+        )
 
     # locations
     locations_xml_cont = xml_cont
@@ -951,14 +958,12 @@ def sitemap_generation():
             )
     locations_xml_cont = locations_xml_cont + "</urlset>"
 
-    locations_xml_file = open("sitemap/sitemap-locations.xml", "w")
-    locations_xml_file.write(locations_xml_cont)
+    _write_sitemap("sitemap/sitemap-locations.xml", "w", locations_xml_cont)
     if no_job_locations_xml_cont != xml_cont:
         no_job_locations_xml_cont = no_job_locations_xml_cont + "</urlset>"
-        no_job_locations_xml_file = open(
-            "sitemap/sitemap-locations-without-jobs.xml", "w"
+        _write_sitemap(
+            "sitemap/sitemap-locations-without-jobs.xml", "w", no_job_locations_xml_cont
         )
-        no_job_locations_xml_file.write(no_job_locations_xml_cont)
 
     # industries
     industries = Industry.objects.filter(status="Active")
@@ -973,8 +978,7 @@ def sitemap_generation():
         )
     industries_xml_cont = industries_xml_cont + "</urlset>"
 
-    indsutries_xml_file = open("sitemap/sitemap-industries.xml", "w")
-    indsutries_xml_file.write(industries_xml_cont)
+    _write_sitemap("sitemap/sitemap-industries.xml", "w", industries_xml_cont)
 
     # internship locations
     internship_xml_cont = xml_cont
@@ -996,8 +1000,7 @@ def sitemap_generation():
         )
     internship_xml_cont = internship_xml_cont + "</urlset>"
 
-    internship_xml_file = open("sitemap/sitemap-internships.xml", "w")
-    internship_xml_file.write(internship_xml_cont)
+    _write_sitemap("sitemap/sitemap-internships.xml", "w", internship_xml_cont)
 
     # skill walkins
     skills_walkin_xml_cont = xml_cont
@@ -1026,16 +1029,15 @@ def sitemap_generation():
     skills_walkin_xml_cont = skills_walkin_xml_cont + "</urlset>"
     no_job_skills_walkin_xml_cont = no_job_skills_walkin_xml_cont + "</urlset>"
 
-    skills_walkin_xml_file = open("sitemap/sitemap-skill-walkins.xml", "w")
-    skills_walkin_xml_file.write(skills_walkin_xml_cont)
-    no_job_skills_walkin_xml_file = open(
-        "sitemap/sitemap-skill-without-walkins.xml", "w"
+    _write_sitemap("sitemap/sitemap-skill-walkins.xml", "w", skills_walkin_xml_cont)
+    _write_sitemap(
+        "sitemap/sitemap-skill-without-walkins.xml", "w", no_job_skills_walkin_xml_cont
     )
-    no_job_skills_walkin_xml_file.write(no_job_skills_walkin_xml_cont)
 
     # skill locations
     def lol(lst, sz):
         return [locations[i : i + sz] for i in range(0, len(locations), sz)]
+
     locations = lol(locations, 40)
     for index, each in enumerate(locations):
         skills_locations_xml_cont = xml_cont
@@ -1095,15 +1097,16 @@ def sitemap_generation():
             no_job_skills_locations_xml_cont + "</urlset>"
         )
 
-        skills_location_xml_file = open(
-            "sitemap/sitemap-skill-locations-" + str(index) + ".xml", "w"
+        _write_sitemap(
+            "sitemap/sitemap-skill-locations-" + str(index) + ".xml",
+            "w",
+            skills_locations_xml_cont,
         )
-        skills_location_xml_file.write(skills_locations_xml_cont)
-        no_job_skills_location_xml_file = open(
+        _write_sitemap(
             "sitemap/sitemap-skill-locations-without-jobs-" + str(index) + ".xml",
             "w",
+            no_job_skills_locations_xml_cont,
         )
-        no_job_skills_location_xml_file.write(no_job_skills_locations_xml_cont)
 
         skills_locations_walkins_xml_cont = (
             skills_locations_walkins_xml_cont + "</urlset>"
@@ -1112,16 +1115,15 @@ def sitemap_generation():
             no_job_skills_locations_walkins_xml_cont + "</urlset>"
         )
 
-        skills_location_walkins_xml_file = open(
-            "sitemap/sitemap-skill-location-walkins-" + str(index) + ".xml", "w"
+        _write_sitemap(
+            "sitemap/sitemap-skill-location-walkins-" + str(index) + ".xml",
+            "w",
+            skills_locations_walkins_xml_cont,
         )
-        skills_location_walkins_xml_file.write(skills_locations_walkins_xml_cont)
-        no_job_skills_location_walkins_xml_file = open(
+        _write_sitemap(
             "sitemap/sitemap-skill-location-without-walkins-" + str(index) + ".xml",
             "w",
-        )
-        no_job_skills_location_walkins_xml_file.write(
-            no_job_skills_locations_walkins_xml_cont
+            no_job_skills_locations_walkins_xml_cont,
         )
 
     for index, each in enumerate(locations):
@@ -1159,19 +1161,18 @@ def sitemap_generation():
             no_job_skills_location_fresher_xml_cont + "</urlset>"
         )
 
-        skills_location_fresher_xml_file = open(
-            "sitemap/sitemap-skill-location-fresher-jobs-" + str(index) + ".xml", "w"
+        _write_sitemap(
+            "sitemap/sitemap-skill-location-fresher-jobs-" + str(index) + ".xml",
+            "w",
+            skills_location_fresher_xml_cont,
         )
-        skills_location_fresher_xml_file.write(skills_location_fresher_xml_cont)
 
-        no_job_skills_location_fresher_xml_file = open(
+        _write_sitemap(
             "sitemap/sitemap-skill-location-without-fresher-jobs-"
             + str(index)
             + ".xml",
             "w",
-        )
-        no_job_skills_location_fresher_xml_file.write(
-            no_job_skills_location_fresher_xml_cont
+            no_job_skills_location_fresher_xml_cont,
         )
 
     locations_walkin_xml_cont = xml_cont
@@ -1223,27 +1224,31 @@ def sitemap_generation():
                 + end_url
             )
     locations_walkin_xml_cont = locations_walkin_xml_cont + "</urlset>"
-    locations_walkin_xml_file = open("sitemap/sitemap-location-walkins.xml", "w")
-    locations_walkin_xml_file.write(locations_walkin_xml_cont)
+    _write_sitemap(
+        "sitemap/sitemap-location-walkins.xml", "w", locations_walkin_xml_cont
+    )
 
     no_job_locations_walkin_xml_cont = no_job_locations_walkin_xml_cont + "</urlset>"
-    no_job_locations_walkin_xml_file = open(
-        "sitemap/sitemap-location-without-walkins.xml", "w"
+    _write_sitemap(
+        "sitemap/sitemap-location-without-walkins.xml",
+        "w",
+        no_job_locations_walkin_xml_cont,
     )
-    no_job_locations_walkin_xml_file.write(no_job_locations_walkin_xml_cont)
 
     locations_fresher_jobs_xml_cont = locations_fresher_jobs_xml_cont + "</urlset>"
-    locations_fresher_jobs_xml_file = open(
-        "sitemap/sitemap-location-fresher-jobs.xml", "w"
+    _write_sitemap(
+        "sitemap/sitemap-location-fresher-jobs.xml",
+        "w",
+        locations_fresher_jobs_xml_cont,
     )
-    locations_fresher_jobs_xml_file.write(locations_fresher_jobs_xml_cont)
     no_job_locations_fresher_jobs_xml_cont = (
         no_job_locations_fresher_jobs_xml_cont + "</urlset>"
     )
-    no_job_locations_fresher_jobs_xml_file = open(
-        "sitemap/sitemap-location-without-fresher-jobs.xml", "w"
+    _write_sitemap(
+        "sitemap/sitemap-location-without-fresher-jobs.xml",
+        "w",
+        no_job_locations_fresher_jobs_xml_cont,
     )
-    no_job_locations_fresher_jobs_xml_file.write(no_job_locations_fresher_jobs_xml_cont)
 
     states = State.objects.filter(status="Enabled")
     states_jobs_xml_count = xml_cont
@@ -1275,14 +1280,13 @@ def sitemap_generation():
             + end_url
         )
     states_jobs_xml_count = states_jobs_xml_count + "</urlset>"
-    states_jobs_xml_file = open("sitemap/sitemap-state-jobs.xml", "w")
-    states_jobs_xml_file.write(states_jobs_xml_count)
+    _write_sitemap("sitemap/sitemap-state-jobs.xml", "w", states_jobs_xml_count)
     states_walkins_xml_count = states_walkins_xml_count + "</urlset>"
-    states_walkins_xml_file = open("sitemap/sitemap-state-walkins.xml", "w")
-    states_walkins_xml_file.write(states_walkins_xml_count)
+    _write_sitemap("sitemap/sitemap-state-walkins.xml", "w", states_walkins_xml_count)
     states_fresher_jobs_xml_count = states_fresher_jobs_xml_count + "</urlset>"
-    states_fresher_jobs_xml_file = open("sitemap/sitemap-state-fresher-jobs.xml", "w")
-    states_fresher_jobs_xml_file.write(states_fresher_jobs_xml_count)
+    _write_sitemap(
+        "sitemap/sitemap-state-fresher-jobs.xml", "w", states_fresher_jobs_xml_count
+    )
 
     # skill fresher jobs
     skills_fresher_xml_cont = xml_cont
@@ -1309,12 +1313,14 @@ def sitemap_generation():
     skills_fresher_xml_cont = skills_fresher_xml_cont + "</urlset>"
     no_job_skills_fresher_xml_cont = no_job_skills_fresher_xml_cont + "</urlset>"
 
-    skills_fresher_xml_file = open("sitemap/sitemap-skill-fresher-jobs.xml", "w")
-    skills_fresher_xml_file.write(skills_fresher_xml_cont)
-    no_job_skills_fresher_xml_file = open(
-        "sitemap/sitemap-skill-without-fresher-jobs.xml", "w"
+    _write_sitemap(
+        "sitemap/sitemap-skill-fresher-jobs.xml", "w", skills_fresher_xml_cont
     )
-    no_job_skills_fresher_xml_file.write(no_job_skills_fresher_xml_cont)
+    _write_sitemap(
+        "sitemap/sitemap-skill-without-fresher-jobs.xml",
+        "w",
+        no_job_skills_fresher_xml_cont,
+    )
 
     # Educations jobs
     educations = Qualification.objects.filter(status="Active")
@@ -1330,8 +1336,7 @@ def sitemap_generation():
         )
     educations_xml_cont = educations_xml_cont + "</urlset>"
 
-    educations_xml_file = open("sitemap/sitemap-education-jobs.xml", "w")
-    educations_xml_file.write(educations_xml_cont)
+    _write_sitemap("sitemap/sitemap-education-jobs.xml", "w", educations_xml_cont)
 
     # recruiters
     recruiters_xml_cont = xml_cont
@@ -1350,9 +1355,10 @@ def sitemap_generation():
 
     recruiters_xml_cont = recruiters_xml_cont + "</urlset>"
 
-    recruiter_xml_file = open("sitemap/sitemap-recruiters.xml", "w")
-    recruiter_xml_file.write(
-        recruiters_xml_cont.encode("ascii", "ignore").decode("ascii")
+    _write_sitemap(
+        "sitemap/sitemap-recruiters.xml",
+        "w",
+        recruiters_xml_cont.encode("ascii", "ignore").decode("ascii"),
     )
 
     # companies
@@ -1369,8 +1375,7 @@ def sitemap_generation():
         )
     companies_xml_cont = companies_xml_cont + "</urlset>"
 
-    companies_xml_file = open("sitemap/sitemap-companies.xml", "w")
-    companies_xml_file.write(companies_xml_cont)
+    _write_sitemap("sitemap/sitemap-companies.xml", "w", companies_xml_cont)
 
     # pages
     pages_xml_cont = xml_cont
@@ -1380,7 +1385,7 @@ def sitemap_generation():
     government_jobs = JobPost.objects.filter(status="Live", job_type="government")
     jobposts = list(chain(full_jobposts, internships, walk_ins, government_jobs))
     items_per_page = 100
-    no_pages = int(math.ceil(float(len(jobposts)) / items_per_page))
+    no_pages = math.ceil(float(len(jobposts)) / items_per_page)
 
     pages_xml_cont = (
         pages_xml_cont + "<url><loc>https://peeljobs.com/sitemap/" + end_url
@@ -1494,8 +1499,7 @@ def sitemap_generation():
 
     pages_xml_cont = pages_xml_cont + "</urlset>"
 
-    pages_xml_file = open("sitemap/sitemap-pages.xml", "w")
-    pages_xml_file.write(pages_xml_cont)
+    _write_sitemap("sitemap/sitemap-pages.xml", "w", pages_xml_cont)
 
     directory = settings.BASE_DIR + "/sitemap/"
 
@@ -1516,8 +1520,7 @@ def sitemap_generation():
             )
 
     xml_cont = xml_cont + "</urlset>"
-    sitemap_xml_file = open("sitemap/sitemap.xml", "w")
-    sitemap_xml_file.write(xml_cont)
+    _write_sitemap("sitemap/sitemap.xml", "w", xml_cont)
     print("Sitemap Generation ended")
 
 
@@ -1564,7 +1567,7 @@ def check_expiring_jobs():
     """
     from django.utils import timezone
 
-    max_age_days = getattr(settings, 'JOB_APPLICATION_MAX_AGE_DAYS', 30)
+    max_age_days = getattr(settings, "JOB_APPLICATION_MAX_AGE_DAYS", 30)
     warning_days = 7  # Send warning when 7 days remaining
 
     today = timezone.now().date()
@@ -1575,15 +1578,13 @@ def check_expiring_jobs():
 
     # Find jobs expiring in 7 days (published exactly 23 days ago)
     jobs_expiring_soon = JobPost.objects.filter(
-        status='Live',
-        published_on__date=expiring_soon_date
-    ).select_related('user')
+        status="Live", published_on__date=expiring_soon_date
+    ).select_related("user")
 
     # Find jobs that expired today (published exactly 30 days ago)
     jobs_expired_today = JobPost.objects.filter(
-        status='Live',
-        published_on__date=expired_today_date
-    ).select_related('user')
+        status="Live", published_on__date=expired_today_date
+    ).select_related("user")
 
     # Send expiring soon warnings
     for job in jobs_expiring_soon:
@@ -1597,17 +1598,17 @@ def check_expiring_jobs():
 
             # Render email template
             context = {
-                'user': job.user,
-                'job': job,
-                'days_remaining': days_remaining,
-                'expiry_date': expiry_date,
-                'applicants_count': applicants_count,
+                "user": job.user,
+                "job": job,
+                "days_remaining": days_remaining,
+                "expiry_date": expiry_date,
+                "applicants_count": applicants_count,
             }
-            template = loader.get_template('email/job_expiring_soon.html')
+            template = loader.get_template("email/job_expiring_soon.html")
             rendered = template.render(context)
 
             # Send email
-            subject = f'Job Posting Expires in {days_remaining} Days - {job.title}'
+            subject = f"Job Posting Expires in {days_remaining} Days - {job.title}"
             send_email.delay([job.user.email], subject, rendered)
 
     # Send expired notifications
@@ -1621,27 +1622,28 @@ def check_expiring_jobs():
 
             # Render email template
             context = {
-                'user': job.user,
-                'job': job,
-                'expiry_date': expiry_date,
-                'applicants_count': applicants_count,
+                "user": job.user,
+                "job": job,
+                "expiry_date": expiry_date,
+                "applicants_count": applicants_count,
             }
-            template = loader.get_template('email/job_expired.html')
+            template = loader.get_template("email/job_expired.html")
             rendered = template.render(context)
 
             # Send email
-            subject = f'Job Posting No Longer Accepting Applications - {job.title}'
+            subject = f"Job Posting No Longer Accepting Applications - {job.title}"
             send_email.delay([job.user.email], subject, rendered)
 
     # Log results
     import logging
+
     logger = logging.getLogger(__name__)
     logger.info(
-        f'Job expiry check completed: {jobs_expiring_soon.count()} warnings sent, '
-        f'{jobs_expired_today.count()} expiry notifications sent'
+        f"Job expiry check completed: {jobs_expiring_soon.count()} warnings sent, "
+        f"{jobs_expired_today.count()} expiry notifications sent"
     )
 
     return {
-        'warnings_sent': jobs_expiring_soon.count(),
-        'expiry_notifications_sent': jobs_expired_today.count(),
+        "warnings_sent": jobs_expiring_soon.count(),
+        "expiry_notifications_sent": jobs_expired_today.count(),
     }

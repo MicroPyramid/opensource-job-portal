@@ -4,11 +4,11 @@ import re
 from datetime import datetime
 
 from django.conf import settings
-from django.urls import reverse
 from django.db.models import Q
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
+from django.urls import reverse
 
 from mpcomp.views import (
     get_absolute_url,
@@ -45,7 +45,6 @@ from ..tasks import (
     send_email,
 )
 
-
 # Functions to move here from main views.py:
 
 
@@ -68,7 +67,7 @@ def post_list(request, job_type):
         )
 
     items_per_page = 100
-    no_pages = int(math.ceil(float(posts.count()) / items_per_page))
+    no_pages = math.ceil(float(posts.count()) / items_per_page)
 
     if (
         "page" in request.POST
@@ -103,7 +102,6 @@ def post_list(request, job_type):
     )
 
 
-
 @permission_required("activity_view", "activity_edit")
 def post_detail(request, post_id):
     post = get_object_or_404(JobPost, id=post_id)
@@ -127,7 +125,6 @@ def post_detail(request, post_id):
     )
 
 
-
 def status_change(request, post_id):
     post = JobPost.objects.get(id=post_id)
     if post.status == "Live":
@@ -145,12 +142,11 @@ def status_change(request, post_id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
-
 @permission_required("activity_edit")
 def deactivate_job(request, job_post_id):
 
     job_post = get_object_or_404(JobPost, id=job_post_id)
-   
+
     job_post.previous_status = job_post.status
     job_post.status = "Disabled"
     job_post.save()
@@ -164,7 +160,7 @@ def deactivate_job(request, job_post_id):
 def delete_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     job_type = job_post.job_type
-        
+
     job_post.delete()
 
     data = {
@@ -181,13 +177,13 @@ def publish_job(request, job_post_id):
     if job_post.status == "Pending":
         job_post.status = "Published"
         job_post.save()
-        
+
     else:
         job_post.status = "Pending"
         job_post.save()
-     
+
     job_post.save()
-    
+
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
@@ -198,11 +194,10 @@ def enable_job(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
     job_post.status = job_post.previous_status
     job_post.save()
-        
+
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
-
 
 
 @permission_required("activity_edit")
@@ -242,25 +237,24 @@ def new_govt_job(request, job_type):
     no_of_locations = int(json.loads(request.POST["no_of_interview_location"])) + 1
 
     for key, value in request.POST.items():
-
-        if "final_industry" in request.POST.keys():
+        if "final_industry" in request.POST:
             for industry in json.loads(request.POST["final_industry"]):
                 for key, value in industry.items():
                     if not value:
                         errors[key] = "This field is required"
-        if "final_functional_area" in request.POST.keys():
+        if "final_functional_area" in request.POST:
             for functional_area in json.loads(request.POST["final_functional_area"]):
                 for key, value in functional_area.items():
                     if not value:
                         errors[key] = "This field is required"
 
-        if "final_edu_qualification" in request.POST.keys():
+        if "final_edu_qualification" in request.POST:
             for qualification in json.loads(request.POST["final_edu_qualification"]):
                 for key, value in qualification.items():
                     if not value:
                         errors[key] = "This field is required"
 
-        if "final_skills" in request.POST.keys():
+        if "final_skills" in request.POST:
             for skill in json.loads(request.POST["final_skills"]):
                 for key, value in skill.items():
                     if not value:
@@ -357,17 +351,17 @@ def new_govt_job(request, job_type):
             if request.POST.get("walkin_time"):
                 validate_post.walkin_time = request.POST.get("walkin_time")
 
-        if "final_skills" in request.POST.keys():
+        if "final_skills" in request.POST:
             add_other_skills(
                 validate_post, json.loads(request.POST["final_skills"]), request.user
             )
-        if "final_edu_qualification" in request.POST.keys():
+        if "final_edu_qualification" in request.POST:
             add_other_qualifications(
                 validate_post,
                 json.loads(request.POST["final_edu_qualification"]),
                 request.user,
             )
-        if "final_functional_area" in request.POST.keys():
+        if "final_functional_area" in request.POST:
             add_other_functional_area(
                 validate_post,
                 json.loads(request.POST["final_functional_area"]),
@@ -375,7 +369,6 @@ def new_govt_job(request, job_type):
             )
 
         if request.POST.get("status") == "Pending":
-
             if request.POST.get("fb_post") == "on":
                 validate_post.post_on_fb = True
                 validate_post.fb_groups = request.POST.getlist("fb_groups")
@@ -384,7 +377,7 @@ def new_govt_job(request, job_type):
         validate_post.save()
 
         for kw in request.POST.getlist("keywords"):
-            if not kw == "":
+            if kw != "":
                 key = Keyword.objects.filter(name=kw)
                 if not key:
                     keyword = Keyword.objects.create(name=kw)
@@ -429,7 +422,6 @@ def new_govt_job(request, job_type):
         return HttpResponse(json.dumps(data))
 
 
-
 @permission_required("activity_edit")
 def edit_govt_job(request, post_id):
     job_posts = JobPost.objects.filter(id=post_id, user=request.user)
@@ -451,7 +443,7 @@ def edit_govt_job(request, post_id):
                 FunctionalArea.objects.filter(status="Active").order_by("name")
             )
             functional_area.extend(job_post.functional_area.filter(status="InActive"))
-            
+
             companies = Company.objects.filter(
                 company_type="Company", is_active=True
             ).order_by("name")
@@ -484,25 +476,24 @@ def edit_govt_job(request, post_id):
     errors = validate_post.errors
 
     for key, value in request.POST.items():
-
-        if "final_industry" in request.POST.keys():
+        if "final_industry" in request.POST:
             for industry in json.loads(request.POST["final_industry"]):
                 for key, value in industry.items():
                     if not value:
                         errors[key] = "This field is required"
-        if "final_functional_area" in request.POST.keys():
+        if "final_functional_area" in request.POST:
             for functional_area in json.loads(request.POST["final_functional_area"]):
                 for key, value in functional_area.items():
                     if not value:
                         errors[key] = "This field is required"
 
-        if "final_edu_qualification" in request.POST.keys():
+        if "final_edu_qualification" in request.POST:
             for qualification in json.loads(request.POST["final_edu_qualification"]):
                 for key, value in qualification.items():
                     if not value:
                         errors[key] = "This field is required"
 
-        if "final_skills" in request.POST.keys():
+        if "final_skills" in request.POST:
             for skill in json.loads(request.POST["final_skills"]):
                 for key, value in skill.items():
                     if not value:
@@ -611,21 +602,20 @@ def edit_govt_job(request, post_id):
         post.edu_qualification.clear()
         post.keywords.clear()
 
-        if "final_skills" in request.POST.keys():
-
+        if "final_skills" in request.POST:
             add_other_skills(
                 post, json.loads(request.POST["final_skills"]), request.user
             )
-        if "final_edu_qualification" in request.POST.keys():
+        if "final_edu_qualification" in request.POST:
             add_other_qualifications(
                 post, json.loads(request.POST["final_edu_qualification"]), request.user
             )
-        if "final_functional_area" in request.POST.keys():
+        if "final_functional_area" in request.POST:
             add_other_functional_area(
                 post, json.loads(request.POST["final_functional_area"]), request.user
             )
 
-        if "other_location" in request.POST.keys():
+        if "other_location" in request.POST:
             temp = loader.get_template("recruiter/email/add_other_fields.html")
             subject = "PeelJobs New JobPost"
             mto = [settings.DEFAULT_FROM_EMAIL]
@@ -652,7 +642,7 @@ def edit_govt_job(request, post_id):
 
         for kw in request.POST.getlist("keywords"):
             key = Keyword.objects.filter(name=kw)
-            if not kw == "":
+            if kw != "":
                 if not key:
                     keyword = Keyword.objects.create(name=kw)
                     post.keywords.add(keyword)
@@ -691,20 +681,13 @@ def edit_govt_job(request, post_id):
         return HttpResponse(json.dumps(data))
 
 
-
-
 @permission_required("activity_edit")
 def preview_job(request, post_id):
     job_post = JobPost.objects.filter(id=post_id, user=request.user)
-    if job_post:
-        if job_post[0].status == "Draft":
-            return render(
-                request, "dashboard/jobpost/preview.html", {"job": job_post[0]}
-            )
+    if job_post and job_post[0].status == "Draft":
+        return render(request, "dashboard/jobpost/preview.html", {"job": job_post[0]})
     message = "No Job Preview Available"
     return render(request, "dashboard/404.html", {"message": message}, status=404)
-
-
 
 
 def edit_job_title(request, post_id):
@@ -801,8 +784,6 @@ def edit_job_title(request, post_id):
     )
 
 
-
-
 @permission_required("activity_edit")
 def mail_to_recruiter(request, job_post_id):
     job_post = get_object_or_404(JobPost, id=job_post_id)
@@ -817,5 +798,3 @@ def mail_to_recruiter(request, job_post_id):
     return HttpResponseRedirect(
         reverse("dashboard:job_posts", args=(job_post.job_type,))
     )
-
-
