@@ -2,19 +2,20 @@
 Job Serializers for API v1
 """
 
-from rest_framework import serializers
-from peeldb.models import (
-    JobPost,
-    City,
-    Skill,
-    Industry,
-    Qualification,
-    Company,
-    AppliedJobs,
-    SavedJobs,
-    FunctionalArea,
-)
 from django.utils import timezone
+from rest_framework import serializers
+
+from peeldb.models import (
+    AppliedJobs,
+    City,
+    Company,
+    FunctionalArea,
+    Industry,
+    JobPost,
+    Qualification,
+    SavedJobs,
+    Skill,
+)
 
 
 class LocationSerializer(serializers.ModelSerializer):

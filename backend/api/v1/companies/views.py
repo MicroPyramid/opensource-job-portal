@@ -2,16 +2,17 @@
 Company Views for API v1
 """
 
-from rest_framework import generics, filters
-from rest_framework.response import Response
+from django.db.models import Count, Q
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
+from rest_framework import filters, generics
 from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
-from django.db.models import Count, Q
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
-from drf_spectacular.types import OpenApiTypes
+from rest_framework.response import Response
 
-from peeldb.models import Company, JobPost, Industry, City
-from .serializers import CompanyListSerializer, CompanyDetailSerializer
+from peeldb.models import City, Company, Industry, JobPost
+
+from .serializers import CompanyDetailSerializer, CompanyListSerializer
 
 
 class CompanyPagination(PageNumberPagination):

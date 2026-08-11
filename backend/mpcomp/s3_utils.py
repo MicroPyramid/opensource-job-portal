@@ -1,5 +1,6 @@
-import boto3
 import mimetypes
+
+import boto3
 
 
 class S3Connection:

@@ -1,12 +1,13 @@
 import datetime
 import json
-from django.shortcuts import render
+
+from django.db.models import Case, Q, When
 from django.http.response import HttpResponse, HttpResponseRedirect
-from django.db.models import Q, Case, When
+from django.shortcuts import render
 from django.template.loader import render_to_string
 
 from mpcomp.views import jobseeker_login_required
-from peeldb.models import User, JobPost, UserMessage
+from peeldb.models import JobPost, User, UserMessage
 
 
 def get_messages(request):

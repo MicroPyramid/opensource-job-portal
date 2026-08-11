@@ -3,9 +3,10 @@ Job Filters for API v1
 Provides advanced filtering capabilities for job listings
 """
 
-from django_filters import rest_framework as filters
 from django.db.models import Q
-from peeldb.models import JobPost, City, Skill, Industry, Qualification
+from django_filters import rest_framework as filters
+
+from peeldb.models import City, Industry, JobPost, Qualification, Skill
 
 
 class JobFilter(filters.FilterSet):

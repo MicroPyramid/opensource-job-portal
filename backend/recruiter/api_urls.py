@@ -1,6 +1,6 @@
 from django.urls import path, re_path
-from recruiter import api_views
 
+from recruiter import api_views
 
 app_name = "api_recruiter"
 

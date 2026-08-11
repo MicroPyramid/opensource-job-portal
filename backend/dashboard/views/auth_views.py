@@ -1,11 +1,11 @@
 from datetime import datetime
 
 import requests
+from django.conf import settings
 from django.contrib.auth import login, logout
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.conf import settings
 
 from mpcomp.views import permission_required
 from peeldb.models import (

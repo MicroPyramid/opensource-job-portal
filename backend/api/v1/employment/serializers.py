@@ -1,6 +1,8 @@
-from rest_framework import serializers
-from peeldb.models import EmploymentHistory
 from datetime import date
+
+from rest_framework import serializers
+
+from peeldb.models import EmploymentHistory
 
 
 class EmploymentHistorySerializer(serializers.ModelSerializer):

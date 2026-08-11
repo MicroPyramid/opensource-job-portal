@@ -1,20 +1,22 @@
 import re
+
 from django import forms
 from django.forms import ModelForm
+
 from peeldb.models import (
-    Country,
-    MetaData,
-    State,
     City,
-    Skill,
-    Language,
-    Qualification,
-    Industry,
-    FunctionalArea,
-    User,
-    MailTemplate,
     Company,
+    Country,
+    FunctionalArea,
+    Industry,
     JobPost,
+    Language,
+    MailTemplate,
+    MetaData,
+    Qualification,
+    Skill,
+    State,
+    User,
 )
 
 
@@ -253,10 +255,10 @@ class MailTemplateForm(ModelForm):
         fields = ["subject", "message", "title", "show_recruiter"]
 
     def __init__(self, *args, **kwargs):
-        super(MailTemplateForm, self).__init__(*args, **kwargs)
-        if "mode" in self.data.keys() and self.data["mode"] == "send_mail":
+        super().__init__(*args, **kwargs)
+        if "mode" in self.data and self.data["mode"] == "send_mail":
             self.fields["recruiters"].required = True
-        if "show_recruiter" in self.data.keys() and self.data["show_recruiter"] == "on":
+        if "show_recruiter" in self.data and self.data["show_recruiter"] == "on":
             self.fields["applicant_status"].required = True
 
     def clean_subject(self):
@@ -276,10 +278,7 @@ class MailTemplateForm(ModelForm):
             return self.data["message"]
 
     def clean_show_recruiter(self):
-        if (
-            "show_recruiter" in self.data.keys()
-            and str(self.data["show_recruiter"]) == "True"
-        ):
+        if "show_recruiter" in self.data and str(self.data["show_recruiter"]) == "True":
             if MailTemplate.objects.filter(
                 applicant_status=self.data["applicant_status"], show_recruiter=True
             ).exclude(id=self.instance.id):
@@ -351,9 +350,9 @@ class CompanyForm(ModelForm):
         return self.cleaned_data["website"]
 
     def save(self, commit=True):
-        instance = super(CompanyForm, self).save(commit=False)
+        instance = super().save(commit=False)
         instance.name = self.cleaned_data["name"]
-        if "website" in self.cleaned_data.keys():
+        if "website" in self.cleaned_data:
             instance.website = self.cleaned_data["website"]
         else:
             instance.website = None

@@ -1,20 +1,21 @@
-from django.test import TestCase
-from django.test import Client
-from django.urls import reverse
 from datetime import datetime
-from peeldb.models import (
-    User,
-    Country,
-    State,
-    City,
-    Skill,
-    Qualification,
-    Industry,
-    FunctionalArea,
-    JobPost,
-    InterviewLocation,
-)
+
 from django.core import management
+from django.test import Client, TestCase
+from django.urls import reverse
+
+from peeldb.models import (
+    City,
+    Country,
+    FunctionalArea,
+    Industry,
+    InterviewLocation,
+    JobPost,
+    Qualification,
+    Skill,
+    State,
+    User,
+)
 
 
 class BaseTest(TestCase):
@@ -59,7 +60,7 @@ class BaseTest(TestCase):
         self.admin_user.is_staff = True
         self.admin_user.save()
 
-        for each in range(0, 15):
+        for each in range(15):
             self.jobpost = JobPost.objects.create(
                 user=self.user,
                 country=self.country,
@@ -83,7 +84,7 @@ class BaseTest(TestCase):
             self.jobpost.functional_area.add(self.functional_area)
             self.jobpost.location.add(self.city)
 
-        for each in range(0, 15):
+        for each in range(15):
             self.jobpost = JobPost.objects.create(
                 user=self.user,
                 country=self.country,
@@ -107,7 +108,7 @@ class BaseTest(TestCase):
             self.jobpost.functional_area.add(self.functional_area)
             self.jobpost.location.add(self.city)
 
-        for each in range(0, 15):
+        for each in range(15):
             self.jobpost = JobPost.objects.create(
                 user=self.user,
                 country=self.country,
@@ -133,7 +134,7 @@ class BaseTest(TestCase):
             self.jobpost.functional_area.add(self.functional_area)
             self.jobpost.location.add(self.city)
 
-        for each in range(0, 15):
+        for each in range(15):
             self.jobpost = JobPost.objects.create(
                 user=self.user,
                 country=self.country,

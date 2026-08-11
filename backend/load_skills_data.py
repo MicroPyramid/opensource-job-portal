@@ -4,6 +4,7 @@ Script to load skills data directly into the database
 
 import os
 import sys
+
 import django
 
 # Setup Django

@@ -1,8 +1,9 @@
 from django.urls import path
+
 from .views import (
-    UserEmploymentHistoryListView,
     UserEmploymentHistoryCreateView,
     UserEmploymentHistoryDetailView,
+    UserEmploymentHistoryListView,
 )
 
 app_name = "employment"

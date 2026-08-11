@@ -5,8 +5,6 @@ In addition Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
 
-from __future__ import unicode_literals
-
 import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
@@ -62,7 +60,7 @@ class ErrorDetail(six.text_type):
     code = None
 
     def __new__(cls, string, code=None):
-        self = super(ErrorDetail, cls).__new__(cls, string)
+        self = super().__new__(cls, string)
         self.code = code
         return self
 

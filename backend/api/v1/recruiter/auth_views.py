@@ -3,30 +3,30 @@ Authentication Views for Recruiter/Employer
 """
 
 import requests
+from django.conf import settings
+from django.utils.crypto import get_random_string
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from drf_spectacular.utils import extend_schema
 
-from django.conf import settings
-from django.utils.crypto import get_random_string
-from peeldb.models import User, Google, Company
+from peeldb.models import Company, Google, User
 
 from .auth_serializers import (
-    RegisterSerializer,
-    LoginSerializer,
-    VerifyEmailSerializer,
-    ResendVerificationSerializer,
-    ForgotPasswordSerializer,
-    ResetPasswordSerializer,
     ChangePasswordSerializer,
+    ForgotPasswordSerializer,
     GoogleAuthUrlSerializer,
     GoogleCallbackSerializer,
     GoogleCompleteSerializer,
-    UserSerializer,
+    LoginSerializer,
+    RegisterSerializer,
+    ResendVerificationSerializer,
+    ResetPasswordSerializer,
     UpdateProfileSerializer,
+    UserSerializer,
+    VerifyEmailSerializer,
 )
 from .serializers import AcceptInvitationSerializer
 
@@ -43,7 +43,9 @@ def get_tokens_for_user(user):
 def send_verification_email(user, request, company=None):
     """Send email verification link"""
     from datetime import datetime
+
     from django.template import loader
+
     from dashboard.tasks import send_email
 
     # Use recruiter UI URL for verification
@@ -84,7 +86,9 @@ def send_verification_email(user, request, company=None):
 def send_password_reset_email(user, request):
     """Send password reset link"""
     from datetime import datetime
+
     from django.template import loader
+
     from dashboard.tasks import send_email
 
     # Use recruiter UI URL for password reset
@@ -575,7 +579,7 @@ def google_callback(request):
 
         except Exception as e:
             return Response(
-                {"error": f"OAuth error: {str(e)}"},
+                {"error": f"OAuth error: {e!s}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -650,7 +654,7 @@ def google_complete(request):
             last_name=google_session_data["last_name"],
             user_type="EM",
             company=company,
-            is_admin=True if account_type == "company" else False,
+            is_admin=account_type == "company",
             job_title=serializer.validated_data.get("job_title", ""),
             mobile=serializer.validated_data.get("phone", ""),
             is_active=True,  # Pre-verified via Google

@@ -1,10 +1,11 @@
-from sorl.thumbnail.base import ThumbnailBackend, EXTENSIONS
-from sorl.thumbnail.conf import settings
-from sorl.thumbnail.helpers import tokey, serialize
-import os.path
 import logging
 import os
+import os.path
+
 from sorl.thumbnail import default
+from sorl.thumbnail.base import EXTENSIONS, ThumbnailBackend
+from sorl.thumbnail.conf import settings
+from sorl.thumbnail.helpers import serialize, tokey
 from sorl.thumbnail.parsers import parse_geometry
 
 logger = logging.getLogger(__name__)
@@ -18,8 +19,8 @@ class SEOThumbnailBackend(ThumbnailBackend):
         key = tokey(source.key, geometry_string, serialize(options))
         filename, _ext = os.path.splitext(os.path.basename(source.name))
 
-        path = "%s/%s" % (key, filename)
-        return "%s%s.%s" % (
+        path = f"{key}/{filename}"
+        return "{}{}.{}".format(
             settings.THUMBNAIL_PREFIX,
             path,
             EXTENSIONS[options["format"]],

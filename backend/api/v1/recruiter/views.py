@@ -3,23 +3,25 @@ Team Management API Views
 """
 
 from datetime import datetime
+
 from django.conf import settings
 from django.template import loader
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema
-from dashboard.tasks import send_email
 
-from peeldb.models import User, TeamInvitation
+from dashboard.tasks import send_email
+from peeldb.models import TeamInvitation, User
+
 from .serializers import (
-    TeamMemberSerializer,
-    TeamMemberDetailSerializer,
-    TeamInvitationSerializer,
-    SendInvitationSerializer,
-    UpdateTeamMemberSerializer,
     CompanyBasicSerializer,
+    SendInvitationSerializer,
+    TeamInvitationSerializer,
+    TeamMemberDetailSerializer,
+    TeamMemberSerializer,
+    UpdateTeamMemberSerializer,
 )
 
 
@@ -233,8 +235,9 @@ def resend_invitation(request, invitation_id):
         )
 
     # Extend expiry
-    from django.utils import timezone
     from datetime import timedelta
+
+    from django.utils import timezone
 
     invitation.expires_at = timezone.now() + timedelta(days=7)
     invitation.status = "pending"
@@ -464,7 +467,7 @@ def update_company_profile(request):
             status=status.HTTP_403_FORBIDDEN,
         )
 
-    from .serializers import CompanyUpdateSerializer, CompanyDetailSerializer
+    from .serializers import CompanyDetailSerializer, CompanyUpdateSerializer
 
     serializer = CompanyUpdateSerializer(
         user.company, data=request.data, partial=True, context={"request": request}

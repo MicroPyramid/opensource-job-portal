@@ -1,27 +1,28 @@
 import datetime
 import json
-from django.shortcuts import render
-from django.http.response import HttpResponse, HttpResponseRedirect
+
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.utils import timezone
 
-from mpcomp.views import jobseeker_login_required
 from candidate.forms import (
-    PersonalInfoForm,
-    ProfileDescriptionForm,
-    ProfessinalInfoForm,
-    YEARS,
-    MONTHS,
     MAR_TYPES,
+    MONTHS,
+    YEARS,
+    PersonalInfoForm,
+    ProfessinalInfoForm,
+    ProfileDescriptionForm,
 )
+from mpcomp.views import jobseeker_login_required
 from peeldb.models import (
     City,
     Country,
-    UserEmail,
+    FunctionalArea,
     Industry,
     Language,
-    FunctionalArea,
     Skill,
+    UserEmail,
     UserMessage,
 )
 from pjob.views import add_other_location_to_user
@@ -253,7 +254,7 @@ def edit_email(request):
 def edit_emailnotifications(request):
     if request.method == "POST":
         user = request.user
-        user.email_notifications = False if user.email_notifications else True
+        user.email_notifications = not user.email_notifications
         user.save()
         data = {
             "status": user.email_notifications,

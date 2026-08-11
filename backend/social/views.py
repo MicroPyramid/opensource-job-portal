@@ -4,14 +4,13 @@ Only Google OAuth is supported.
 """
 
 import requests
-
-from django.shortcuts import render
-from django.http.response import HttpResponseRedirect
-from django.contrib.auth import login
-from django.urls import reverse
 from django.conf import settings
+from django.contrib.auth import login
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 
-from peeldb.models import User, Google, UserEmail
+from peeldb.models import Google, User, UserEmail
 
 
 def google_login(request):

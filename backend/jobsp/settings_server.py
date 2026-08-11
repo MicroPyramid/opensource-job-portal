@@ -1,5 +1,7 @@
-from .settings import *
 import sentry_sdk
+
+from .settings import *
+
 # from sentry_sdk.integrations.django import DjangoIntegration
 # from sentry_sdk.integrations.celery import CeleryIntegration
 
@@ -83,7 +85,7 @@ AWS_STORAGE_BUCKET_NAME = AWS_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_DEFAULT_ACL = "public-read"
 S3_DOMAIN = AWS_S3_CUSTOM_DOMAIN = str(AWS_BUCKET_NAME) + ".s3.amazonaws.com"
 
-LOGO = "https://%s/logo.png" % (S3_DOMAIN)
+LOGO = f"https://{S3_DOMAIN}/logo.png"
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 DEFAULT_S3_PATH = "media"
@@ -101,8 +103,8 @@ AWS_IS_GZIPPED = True
 AWS_ENABLED = True
 AWS_S3_SECURE_URLS = True
 
-MEDIA_ROOT = "/%s/" % DEFAULT_S3_PATH
-MEDIA_URL = "//%s/%s/" % (S3_DOMAIN, DEFAULT_S3_PATH)
-STATIC_ROOT = "/%s/" % STATIC_S3_PATH
-STATIC_URL = "https://%s/" % (S3_DOMAIN)
+MEDIA_ROOT = f"/{DEFAULT_S3_PATH}/"
+MEDIA_URL = f"//{S3_DOMAIN}/{DEFAULT_S3_PATH}/"
+STATIC_ROOT = f"/{STATIC_S3_PATH}/"
+STATIC_URL = f"https://{S3_DOMAIN}/"
 COMPRESS_URL = STATIC_URL

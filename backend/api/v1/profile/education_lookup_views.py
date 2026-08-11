@@ -2,16 +2,17 @@
 Education Lookup Views for Job Seekers - Read-only Education Reference Data
 """
 
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import status, viewsets
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParameter
+from rest_framework.response import Response
 
-from peeldb.models import Qualification, Degree, EducationInstitue
+from peeldb.models import Degree, EducationInstitue, Qualification
+
 from .serializers import (
-    QualificationSerializer,
     DegreeSerializer,
     EducationInstituteSerializer,
+    QualificationSerializer,
 )
 
 

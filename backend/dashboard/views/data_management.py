@@ -2,20 +2,21 @@ import json
 import math
 import re
 
-from django.urls import reverse
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template.defaultfilters import slugify
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.urls import reverse
 
+from mpcomp.aws import AWS
 from mpcomp.views import (
     get_aws_file_path,
     get_prev_after_pages_count,
     permission_required,
 )
-from mpcomp.aws import AWS
 from peeldb.models import (
+    SKILL_TYPE,
     City,
     Country,
     FunctionalArea,
@@ -25,9 +26,7 @@ from peeldb.models import (
     Qualification,
     Skill,
     State,
-    SKILL_TYPE,
 )
-from dashboard.forms import CityForm
 
 from ..forms import (
     CityForm,
@@ -39,7 +38,6 @@ from ..forms import (
     SkillForm,
     StateForm,
 )
-
 
 # Functions to move here from main views.py:
 
@@ -461,13 +459,15 @@ def country(request):
                         state_status = True
                         city.state.save()
 
-                    if not State.objects.filter(
-                        country=city.state.country, status="Enabled"
+                    if (
+                        not State.objects.filter(
+                            country=city.state.country, status="Enabled"
+                        )
+                        and city.state.country.status != "Disabled"
                     ):
-                        if city.state.country.status != "Disabled":
-                            city.state.country.status = "Disabled"
-                            country_status = True
-                            city.state.country.save()
+                        city.state.country.status = "Disabled"
+                        country_status = True
+                        city.state.country.save()
 
                 data = {
                     "error": False,
@@ -571,7 +571,7 @@ def locations(request, status):
                     try:
                         json.loads(request.POST.get("meta"))
                     except (json.JSONDecodeError, ValueError) as e:
-                        form.add_error("meta", f"Enter Valid JSON Format - {str(e)}")
+                        form.add_error("meta", f"Enter Valid JSON Format - {e!s}")
                         is_valid = False
 
                 if form.is_valid() and is_valid:
@@ -646,7 +646,7 @@ def locations(request, status):
                 except Exception as e:
                     data = {
                         "error": True,
-                        "message": f"Error moving jobs: {str(e)}",
+                        "message": f"Error moving jobs: {e!s}",
                     }
             else:
                 data = {"error": True, "message": "Permission denied"}
@@ -739,7 +739,7 @@ def tech_skills(request):
                 skills = skills.filter(skill_type=status)
 
         items_per_page = 20
-        no_pages = int(math.ceil(float(skills.count()) / items_per_page))
+        no_pages = math.ceil(float(skills.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -886,7 +886,7 @@ def languages(request):
         if request.GET.get("search"):
             languages = languages.filter(name__icontains=request.GET.get("search"))
         items_per_page = 10
-        no_pages = int(math.ceil(float(languages.count()) / items_per_page))
+        no_pages = math.ceil(float(languages.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -976,7 +976,7 @@ def qualifications(request):
             qualifications = qualifications.filter(status="InActive")
 
         items_per_page = 10
-        no_pages = int(math.ceil(float(qualifications.count()) / items_per_page))
+        no_pages = math.ceil(float(qualifications.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -1088,7 +1088,7 @@ def industries(request):
             industries = industries.filter(status="InActive")
 
         items_per_page = 15
-        no_pages = int(math.ceil(float(industries.count()) / items_per_page))
+        no_pages = math.ceil(float(industries.count()) / items_per_page)
 
         if (
             "page" in request.GET
@@ -1197,7 +1197,7 @@ def industries(request):
             except Exception as e:
                 data = {
                     "error": True,
-                    "message": f"Error moving jobs: {str(e)}",
+                    "message": f"Error moving jobs: {e!s}",
                     "page": request.POST.get("page") if request.POST.get("page") else 1,
                 }
             return HttpResponse(json.dumps(data))
@@ -1250,7 +1250,7 @@ def functional_area(request):
             functional_areas = functional_areas.filter(status="InActive")
 
         items_per_page = 10
-        no_pages = int(math.ceil(float(functional_areas.count()) / items_per_page))
+        no_pages = math.ceil(float(functional_areas.count()) / items_per_page)
 
         if (
             "page" in request.GET

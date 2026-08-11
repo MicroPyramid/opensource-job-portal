@@ -1,23 +1,26 @@
+import logging
+import random
+
+import boto3
+from django.conf import settings
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as auth_login
+from django.shortcuts import redirect, render
+from django.template import loader
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.crypto import get_random_string
+
 from dashboard.tasks import send_email
+from peeldb.models import User, UserEmail
+from pjob.views import add_other_location_to_user, save_codes_and_send_mail
 from psite.forms import (
     AuthenticationForm,
     ForgotPassForm,
     UserEmailRegisterForm,
     UserPassChangeForm,
 )
-from django.urls import reverse
-from django.conf import settings
-import logging
-import boto3
-import random
-from peeldb.models import User, UserEmail
-from django.template import loader
-from pjob.views import save_codes_and_send_mail, add_other_location_to_user
-from django.utils.crypto import get_random_string
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -100,7 +103,7 @@ def user_login(request):
             return JsonResponse(data)
 
         except Exception as e:
-            logger.error(f"Exception during login: {str(e)}", exc_info=True)
+            logger.error(f"Exception during login: {e!s}", exc_info=True)
             data = {
                 "error": True,
                 "message": "An error occurred during login. Please try again.",
@@ -207,9 +210,7 @@ def user_register(request):
                             user.profile_updated = timezone.now()
                             user.save()
                         except Exception as e:
-                            logger.error(
-                                f"Resume upload failed: {str(e)}", exc_info=True
-                            )
+                            logger.error(f"Resume upload failed: {e!s}", exc_info=True)
 
                     # Authenticate and login user
                     registered_user = authenticate(username=user.username)
@@ -251,7 +252,7 @@ def user_register(request):
                 return JsonResponse(data)
 
         except Exception as e:
-            logger.error(f"Exception during registration: {str(e)}", exc_info=True)
+            logger.error(f"Exception during registration: {e!s}", exc_info=True)
             data = {
                 "error": True,
                 "message": "An error occurred during registration. Please try again.",
@@ -318,7 +319,7 @@ def forgot_password(request):
                         )
                     except Exception as e:
                         logger.error(
-                            f"Failed to queue email task: {str(e)}", exc_info=True
+                            f"Failed to queue email task: {e!s}", exc_info=True
                         )
                         # Fallback: send email directly if Celery is not available
                         from django.core.mail import EmailMessage
@@ -346,7 +347,7 @@ def forgot_password(request):
                 return JsonResponse(data)
 
         except Exception as e:
-            logger.error(f"Exception during password reset: {str(e)}", exc_info=True)
+            logger.error(f"Exception during password reset: {e!s}", exc_info=True)
             data = {
                 "error": True,
                 "message": "An error occurred while processing your request. Please try again.",
@@ -457,7 +458,7 @@ def set_password(request, user_id, passwd_reset_token):
                 return JsonResponse(data)
 
         except Exception as e:
-            logger.error(f"Exception during password reset: {str(e)}", exc_info=True)
+            logger.error(f"Exception during password reset: {e!s}", exc_info=True)
             data = {
                 "error": True,
                 "message": "An error occurred while setting password. Please try again.",

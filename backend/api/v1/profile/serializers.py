@@ -3,20 +3,21 @@ Profile Serializers for Job Seekers
 """
 
 from rest_framework import serializers
+
 from peeldb.models import (
-    User,
-    City,
-    State,
-    Country,
-    Skill,
-    TechnicalSkill,
-    EmploymentHistory,
-    EducationDetails,
-    Degree,
-    Qualification,
-    EducationInstitue,
-    Project,
     Certification,
+    City,
+    Country,
+    Degree,
+    EducationDetails,
+    EducationInstitue,
+    EmploymentHistory,
+    Project,
+    Qualification,
+    Skill,
+    State,
+    TechnicalSkill,
+    User,
 )
 
 
@@ -200,7 +201,7 @@ class EducationDetailsSerializer(serializers.ModelSerializer):
 
         # If custom institute name provided, create or get the institute
         if custom_institute_name and not institute:
-            institute, created = EducationInstitue.objects.get_or_create(
+            institute, _created = EducationInstitue.objects.get_or_create(
                 name__iexact=custom_institute_name,
                 defaults={"name": custom_institute_name, "address": ""},
             )

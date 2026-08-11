@@ -3,13 +3,15 @@ Application-focused analytics endpoints for recruiters
 Focus on actionable metrics: applications, pipeline, hiring success
 """
 
+from datetime import date, datetime, timedelta
+
+from django.db.models import Count
+from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.db.models import Count
-from django.utils import timezone
-from datetime import timedelta, datetime, date
-from peeldb.models import JobPost, AppliedJobs
+
+from peeldb.models import AppliedJobs, JobPost
 
 
 @api_view(["GET"])

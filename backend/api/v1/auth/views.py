@@ -6,35 +6,38 @@ Google OAuth 2.0 integration for modern frontend clients
 import requests
 from django.conf import settings
 from django.utils.crypto import get_random_string
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.views import TokenRefreshView
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
-from drf_spectacular.types import OpenApiTypes
 
 from peeldb.models import Google
+
 from .serializers import (
+    ChangePasswordSerializer,
+    ForgotPasswordSerializer,
     GoogleAuthSerializer,
+    GoogleUrlRequestSerializer,
+    RegisterSerializer,
+    ResendVerificationSerializer,
+    ResetPasswordSerializer,
     TokenResponseSerializer,
     UserSerializer,
-    GoogleUrlRequestSerializer,
-    ChangePasswordSerializer,
-    RegisterSerializer,
     VerifyEmailSerializer,
-    ResendVerificationSerializer,
-    ForgotPasswordSerializer,
-    ResetPasswordSerializer,
 )
 from .utils import create_or_update_google_user, get_tokens_for_user
-from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 
 def send_verification_email(user, request):
     """Send email verification link for job seeker"""
     from datetime import datetime
+
     from django.template import loader
+
     from dashboard.tasks import send_email
 
     # Use site UI URL for verification
@@ -63,7 +66,9 @@ def send_verification_email(user, request):
 def send_password_reset_email(user, request):
     """Send password reset link for job seeker"""
     from datetime import datetime
+
     from django.template import loader
+
     from dashboard.tasks import send_email
 
     # Use site UI URL for password reset

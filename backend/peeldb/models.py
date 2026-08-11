@@ -1,18 +1,18 @@
 import hashlib
 import json
-import uuid
 import os
-from datetime import datetime
 import re
+import uuid
+from datetime import datetime
+
 import arrow
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 
 # from oauth2client.contrib.django_util.models import CredentialsField
-
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import Q, Count, F, JSONField
+from django.db.models import Count, F, JSONField, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -96,7 +96,7 @@ def img_url(self, filename):
         filename = self.slug + "." + str(filename.split(".")[-1])
     else:
         filename = filename
-    return "%s%s/%s" % (self.file_prepend, file_hash, filename)
+    return f"{self.file_prepend}{file_hash}/{filename}"
 
 
 class Qualification(models.Model):
@@ -321,14 +321,10 @@ class Company(models.Model):
     created_from = models.CharField(max_length=200, default="")
 
     def is_company(self):
-        if str(self.company_type) == "Company":
-            return True
-        return False
+        return str(self.company_type) == "Company"
 
     def is_agency(self):
-        if str(self.company_type) == "Consultant":
-            return True
-        return False
+        return str(self.company_type) == "Consultant"
 
     def get_company_admin(self):
         return User.objects.filter(is_admin=True, company=self).first()
@@ -360,10 +356,8 @@ class Company(models.Model):
     def get_unique_recruiters(self):
         job_posts = list(
             set(
-                list(
-                    JobPost.objects.filter(company=self, status="Live").values_list(
-                        "user", flat=True
-                    )
+                JobPost.objects.filter(company=self, status="Live").values_list(
+                    "user", flat=True
                 )
             )
         )
@@ -402,11 +396,6 @@ class Company(models.Model):
         if site is not None and "//" in site:
             site = site.split("//")[1]
         return site
-
-    def get_logo_url(self):
-        if self.profile_pic:
-            return str(self.profile_pic)
-        return "https://cdn.peeljobs.com/static/company_logo.png"
 
 
 class EducationInstitue(models.Model):
@@ -658,10 +647,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 user_perm = self.user_permissions.get(codename=perm)
             except ObjectDoesNotExist:
                 user_perm = False
-            if user_perm:
-                return True
-            else:
-                return False
+            return bool(user_perm)
 
     class Meta:
         permissions = (
@@ -678,7 +664,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_full_name(self):
-        full_name = "%s %s" % (
+        full_name = "{} {}".format(
             self.first_name,
             self.last_name if self.last_name else "",
         )
@@ -697,10 +683,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_gp_connected(self):
-        if self.google_user.all():
-            return True
-        else:
-            return False
+        return bool(self.google_user.all())
 
     @property
     def is_recruiter(self):
@@ -710,35 +693,24 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_connect_social_networks(self):
         # Only Google OAuth is supported now
-        if self.google_user.all():
-            return True
-        else:
-            return False
+        return bool(self.google_user.all())
 
     @property
     def is_recruiter_active(self):
-        if self.is_connect_social_networks and self.is_active and self.mobile_verified:
-            return True
-        else:
-            return False
+        return bool(
+            self.is_connect_social_networks and self.is_active and self.mobile_verified
+        )
 
     def is_company_recruiter(self):
-        if self.is_recruiter:
-            return True
-        else:
-            return False
+        return bool(self.is_recruiter)
 
     @property
     def is_agency_recruiter(self):
-        if self.company and str(self.company.company_type) == "Consultant":
-            return True
-        return False
+        return bool(self.company and str(self.company.company_type) == "Consultant")
 
     @property
     def is_agency_admin(self):
-        if self.company and self.agency_admin:
-            return True
-        return False
+        return bool(self.company and self.agency_admin)
 
     @property
     def is_jobseeker(self):
@@ -1217,7 +1189,7 @@ class AgencyCompany(models.Model):
 
 class JobPostManager(models.Manager):
     def get_queryset(self):
-        return super(JobPostManager, self).get_queryset().order_by("-created_on")
+        return super().get_queryset().order_by("-created_on")
 
 
 class JobPost(models.Model):
@@ -1625,9 +1597,7 @@ class JobPost(models.Model):
 
     def is_work_from_home(self):
         title = self.title.lower().replace(" ", "")
-        if "workfromhome" in title or "parttime" in title:
-            return True
-        return False
+        return bool("workfromhome" in title or "parttime" in title)
 
 
 POST = (

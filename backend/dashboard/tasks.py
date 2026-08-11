@@ -30,6 +30,17 @@ from peeldb.models import (
 )
 
 
+def _write_sitemap(path, mode, content):
+    """Write a sitemap file, closing the handle.
+
+    sitemap_generation() previously did `f = open(path, "w"); f.write(...)` for
+    every sitemap and never closed any of them, leaking a file handle per file
+    per scheduled run.
+    """
+    with open(path, mode) as sitemap_file:
+        sitemap_file.write(content)
+
+
 @app.task
 def send_email(mto, msubject, mbody, reply_to=None):
     import logging
@@ -82,7 +93,7 @@ def send_email(mto, msubject, mbody, reply_to=None):
         logger.info(f"Email sent successfully. Result: {result}")
         return result
     except Exception as e:
-        logger.error(f"Failed to send email: {str(e)}")
+        logger.error(f"Failed to send email: {e!s}")
         raise
 
 
@@ -259,14 +270,12 @@ def get_conditions(user):
     if user.year:
         conditions.append(Q(min_year=user.year))
         conditions.append(Q(max_year=user.year))
-    if user.current_salary:
-        if isinstance(user.current_salary, float):
-            conditions.append(Q(min_salary=float(user.current_salary)))
-            conditions.append(Q(max_salary=float(user.current_salary)))
-    if user.expected_salary:
-        if isinstance(user.expected_salary, float):
-            conditions.append(Q(min_salary=float(user.expected_salary)))
-            conditions.append(Q(max_salary=float(user.expected_salary)))
+    if user.current_salary and isinstance(user.current_salary, float):
+        conditions.append(Q(min_salary=float(user.current_salary)))
+        conditions.append(Q(max_salary=float(user.current_salary)))
+    if user.expected_salary and isinstance(user.expected_salary, float):
+        conditions.append(Q(min_salary=float(user.expected_salary)))
+        conditions.append(Q(max_salary=float(user.expected_salary)))
     if user.employment_history.all():
         conditions.append(Q(job_role__icontains=user.job_role))
     if user.education.all():
@@ -890,12 +899,12 @@ def sitemap_generation():
 
     jobs_xml_cont = jobs_xml_cont + "</urlset>"
 
-    try:
-        open("sitemap/")
-    except Exception:
-        os.makedirs("sitemap", exist_ok=True)
-    jobs_xml_file = open("sitemap/sitemap-jobs.xml", "w")
-    jobs_xml_file.write(jobs_xml_cont.encode("ascii", "ignore").decode("ascii"))
+    os.makedirs("sitemap", exist_ok=True)
+    _write_sitemap(
+        "sitemap/sitemap-jobs.xml",
+        "w",
+        jobs_xml_cont.encode("ascii", "ignore").decode("ascii"),
+    )
 
     # skills
     skills_xml_cont = xml_cont
@@ -920,12 +929,12 @@ def sitemap_generation():
             )
     skills_xml_cont = skills_xml_cont + "</urlset>"
 
-    skills_xml_file = open("sitemap/sitemap-skills.xml", "w")
-    skills_xml_file.write(skills_xml_cont)
+    _write_sitemap("sitemap/sitemap-skills.xml", "w", skills_xml_cont)
     if no_job_skills_xml_cont != xml_cont:
         no_job_skills_xml_cont = no_job_skills_xml_cont + "</urlset>"
-        no_job_skills_xml_file = open("sitemap/sitemap-skills-without-jobs.xml", "w")
-        no_job_skills_xml_file.write(no_job_skills_xml_cont)
+        _write_sitemap(
+            "sitemap/sitemap-skills-without-jobs.xml", "w", no_job_skills_xml_cont
+        )
 
     # locations
     locations_xml_cont = xml_cont
@@ -950,14 +959,12 @@ def sitemap_generation():
             )
     locations_xml_cont = locations_xml_cont + "</urlset>"
 
-    locations_xml_file = open("sitemap/sitemap-locations.xml", "w")
-    locations_xml_file.write(locations_xml_cont)
+    _write_sitemap("sitemap/sitemap-locations.xml", "w", locations_xml_cont)
     if no_job_locations_xml_cont != xml_cont:
         no_job_locations_xml_cont = no_job_locations_xml_cont + "</urlset>"
-        no_job_locations_xml_file = open(
-            "sitemap/sitemap-locations-without-jobs.xml", "w"
+        _write_sitemap(
+            "sitemap/sitemap-locations-without-jobs.xml", "w", no_job_locations_xml_cont
         )
-        no_job_locations_xml_file.write(no_job_locations_xml_cont)
 
     # industries
     industries = Industry.objects.filter(status="Active")
@@ -972,8 +979,7 @@ def sitemap_generation():
         )
     industries_xml_cont = industries_xml_cont + "</urlset>"
 
-    indsutries_xml_file = open("sitemap/sitemap-industries.xml", "w")
-    indsutries_xml_file.write(industries_xml_cont)
+    _write_sitemap("sitemap/sitemap-industries.xml", "w", industries_xml_cont)
 
     # internship locations
     internship_xml_cont = xml_cont
@@ -995,8 +1001,7 @@ def sitemap_generation():
         )
     internship_xml_cont = internship_xml_cont + "</urlset>"
 
-    internship_xml_file = open("sitemap/sitemap-internships.xml", "w")
-    internship_xml_file.write(internship_xml_cont)
+    _write_sitemap("sitemap/sitemap-internships.xml", "w", internship_xml_cont)
 
     # skill walkins
     skills_walkin_xml_cont = xml_cont
@@ -1025,12 +1030,10 @@ def sitemap_generation():
     skills_walkin_xml_cont = skills_walkin_xml_cont + "</urlset>"
     no_job_skills_walkin_xml_cont = no_job_skills_walkin_xml_cont + "</urlset>"
 
-    skills_walkin_xml_file = open("sitemap/sitemap-skill-walkins.xml", "w")
-    skills_walkin_xml_file.write(skills_walkin_xml_cont)
-    no_job_skills_walkin_xml_file = open(
-        "sitemap/sitemap-skill-without-walkins.xml", "w"
+    _write_sitemap("sitemap/sitemap-skill-walkins.xml", "w", skills_walkin_xml_cont)
+    _write_sitemap(
+        "sitemap/sitemap-skill-without-walkins.xml", "w", no_job_skills_walkin_xml_cont
     )
-    no_job_skills_walkin_xml_file.write(no_job_skills_walkin_xml_cont)
 
     # skill locations
     def lol(lst, sz):
@@ -1095,15 +1098,16 @@ def sitemap_generation():
             no_job_skills_locations_xml_cont + "</urlset>"
         )
 
-        skills_location_xml_file = open(
-            "sitemap/sitemap-skill-locations-" + str(index) + ".xml", "w"
+        _write_sitemap(
+            "sitemap/sitemap-skill-locations-" + str(index) + ".xml",
+            "w",
+            skills_locations_xml_cont,
         )
-        skills_location_xml_file.write(skills_locations_xml_cont)
-        no_job_skills_location_xml_file = open(
+        _write_sitemap(
             "sitemap/sitemap-skill-locations-without-jobs-" + str(index) + ".xml",
             "w",
+            no_job_skills_locations_xml_cont,
         )
-        no_job_skills_location_xml_file.write(no_job_skills_locations_xml_cont)
 
         skills_locations_walkins_xml_cont = (
             skills_locations_walkins_xml_cont + "</urlset>"
@@ -1112,16 +1116,15 @@ def sitemap_generation():
             no_job_skills_locations_walkins_xml_cont + "</urlset>"
         )
 
-        skills_location_walkins_xml_file = open(
-            "sitemap/sitemap-skill-location-walkins-" + str(index) + ".xml", "w"
+        _write_sitemap(
+            "sitemap/sitemap-skill-location-walkins-" + str(index) + ".xml",
+            "w",
+            skills_locations_walkins_xml_cont,
         )
-        skills_location_walkins_xml_file.write(skills_locations_walkins_xml_cont)
-        no_job_skills_location_walkins_xml_file = open(
+        _write_sitemap(
             "sitemap/sitemap-skill-location-without-walkins-" + str(index) + ".xml",
             "w",
-        )
-        no_job_skills_location_walkins_xml_file.write(
-            no_job_skills_locations_walkins_xml_cont
+            no_job_skills_locations_walkins_xml_cont,
         )
 
     for index, each in enumerate(locations):
@@ -1159,19 +1162,18 @@ def sitemap_generation():
             no_job_skills_location_fresher_xml_cont + "</urlset>"
         )
 
-        skills_location_fresher_xml_file = open(
-            "sitemap/sitemap-skill-location-fresher-jobs-" + str(index) + ".xml", "w"
+        _write_sitemap(
+            "sitemap/sitemap-skill-location-fresher-jobs-" + str(index) + ".xml",
+            "w",
+            skills_location_fresher_xml_cont,
         )
-        skills_location_fresher_xml_file.write(skills_location_fresher_xml_cont)
 
-        no_job_skills_location_fresher_xml_file = open(
+        _write_sitemap(
             "sitemap/sitemap-skill-location-without-fresher-jobs-"
             + str(index)
             + ".xml",
             "w",
-        )
-        no_job_skills_location_fresher_xml_file.write(
-            no_job_skills_location_fresher_xml_cont
+            no_job_skills_location_fresher_xml_cont,
         )
 
     locations_walkin_xml_cont = xml_cont
@@ -1223,27 +1225,31 @@ def sitemap_generation():
                 + end_url
             )
     locations_walkin_xml_cont = locations_walkin_xml_cont + "</urlset>"
-    locations_walkin_xml_file = open("sitemap/sitemap-location-walkins.xml", "w")
-    locations_walkin_xml_file.write(locations_walkin_xml_cont)
+    _write_sitemap(
+        "sitemap/sitemap-location-walkins.xml", "w", locations_walkin_xml_cont
+    )
 
     no_job_locations_walkin_xml_cont = no_job_locations_walkin_xml_cont + "</urlset>"
-    no_job_locations_walkin_xml_file = open(
-        "sitemap/sitemap-location-without-walkins.xml", "w"
+    _write_sitemap(
+        "sitemap/sitemap-location-without-walkins.xml",
+        "w",
+        no_job_locations_walkin_xml_cont,
     )
-    no_job_locations_walkin_xml_file.write(no_job_locations_walkin_xml_cont)
 
     locations_fresher_jobs_xml_cont = locations_fresher_jobs_xml_cont + "</urlset>"
-    locations_fresher_jobs_xml_file = open(
-        "sitemap/sitemap-location-fresher-jobs.xml", "w"
+    _write_sitemap(
+        "sitemap/sitemap-location-fresher-jobs.xml",
+        "w",
+        locations_fresher_jobs_xml_cont,
     )
-    locations_fresher_jobs_xml_file.write(locations_fresher_jobs_xml_cont)
     no_job_locations_fresher_jobs_xml_cont = (
         no_job_locations_fresher_jobs_xml_cont + "</urlset>"
     )
-    no_job_locations_fresher_jobs_xml_file = open(
-        "sitemap/sitemap-location-without-fresher-jobs.xml", "w"
+    _write_sitemap(
+        "sitemap/sitemap-location-without-fresher-jobs.xml",
+        "w",
+        no_job_locations_fresher_jobs_xml_cont,
     )
-    no_job_locations_fresher_jobs_xml_file.write(no_job_locations_fresher_jobs_xml_cont)
 
     states = State.objects.filter(status="Enabled")
     states_jobs_xml_count = xml_cont
@@ -1275,14 +1281,13 @@ def sitemap_generation():
             + end_url
         )
     states_jobs_xml_count = states_jobs_xml_count + "</urlset>"
-    states_jobs_xml_file = open("sitemap/sitemap-state-jobs.xml", "w")
-    states_jobs_xml_file.write(states_jobs_xml_count)
+    _write_sitemap("sitemap/sitemap-state-jobs.xml", "w", states_jobs_xml_count)
     states_walkins_xml_count = states_walkins_xml_count + "</urlset>"
-    states_walkins_xml_file = open("sitemap/sitemap-state-walkins.xml", "w")
-    states_walkins_xml_file.write(states_walkins_xml_count)
+    _write_sitemap("sitemap/sitemap-state-walkins.xml", "w", states_walkins_xml_count)
     states_fresher_jobs_xml_count = states_fresher_jobs_xml_count + "</urlset>"
-    states_fresher_jobs_xml_file = open("sitemap/sitemap-state-fresher-jobs.xml", "w")
-    states_fresher_jobs_xml_file.write(states_fresher_jobs_xml_count)
+    _write_sitemap(
+        "sitemap/sitemap-state-fresher-jobs.xml", "w", states_fresher_jobs_xml_count
+    )
 
     # skill fresher jobs
     skills_fresher_xml_cont = xml_cont
@@ -1309,12 +1314,14 @@ def sitemap_generation():
     skills_fresher_xml_cont = skills_fresher_xml_cont + "</urlset>"
     no_job_skills_fresher_xml_cont = no_job_skills_fresher_xml_cont + "</urlset>"
 
-    skills_fresher_xml_file = open("sitemap/sitemap-skill-fresher-jobs.xml", "w")
-    skills_fresher_xml_file.write(skills_fresher_xml_cont)
-    no_job_skills_fresher_xml_file = open(
-        "sitemap/sitemap-skill-without-fresher-jobs.xml", "w"
+    _write_sitemap(
+        "sitemap/sitemap-skill-fresher-jobs.xml", "w", skills_fresher_xml_cont
     )
-    no_job_skills_fresher_xml_file.write(no_job_skills_fresher_xml_cont)
+    _write_sitemap(
+        "sitemap/sitemap-skill-without-fresher-jobs.xml",
+        "w",
+        no_job_skills_fresher_xml_cont,
+    )
 
     # Educations jobs
     educations = Qualification.objects.filter(status="Active")
@@ -1330,8 +1337,7 @@ def sitemap_generation():
         )
     educations_xml_cont = educations_xml_cont + "</urlset>"
 
-    educations_xml_file = open("sitemap/sitemap-education-jobs.xml", "w")
-    educations_xml_file.write(educations_xml_cont)
+    _write_sitemap("sitemap/sitemap-education-jobs.xml", "w", educations_xml_cont)
 
     # recruiters
     recruiters_xml_cont = xml_cont
@@ -1350,9 +1356,10 @@ def sitemap_generation():
 
     recruiters_xml_cont = recruiters_xml_cont + "</urlset>"
 
-    recruiter_xml_file = open("sitemap/sitemap-recruiters.xml", "w")
-    recruiter_xml_file.write(
-        recruiters_xml_cont.encode("ascii", "ignore").decode("ascii")
+    _write_sitemap(
+        "sitemap/sitemap-recruiters.xml",
+        "w",
+        recruiters_xml_cont.encode("ascii", "ignore").decode("ascii"),
     )
 
     # companies
@@ -1369,8 +1376,7 @@ def sitemap_generation():
         )
     companies_xml_cont = companies_xml_cont + "</urlset>"
 
-    companies_xml_file = open("sitemap/sitemap-companies.xml", "w")
-    companies_xml_file.write(companies_xml_cont)
+    _write_sitemap("sitemap/sitemap-companies.xml", "w", companies_xml_cont)
 
     # pages
     pages_xml_cont = xml_cont
@@ -1380,7 +1386,7 @@ def sitemap_generation():
     government_jobs = JobPost.objects.filter(status="Live", job_type="government")
     jobposts = list(chain(full_jobposts, internships, walk_ins, government_jobs))
     items_per_page = 100
-    no_pages = int(math.ceil(float(len(jobposts)) / items_per_page))
+    no_pages = math.ceil(float(len(jobposts)) / items_per_page)
 
     pages_xml_cont = (
         pages_xml_cont + "<url><loc>https://peeljobs.com/sitemap/" + end_url
@@ -1494,8 +1500,7 @@ def sitemap_generation():
 
     pages_xml_cont = pages_xml_cont + "</urlset>"
 
-    pages_xml_file = open("sitemap/sitemap-pages.xml", "w")
-    pages_xml_file.write(pages_xml_cont)
+    _write_sitemap("sitemap/sitemap-pages.xml", "w", pages_xml_cont)
 
     directory = settings.BASE_DIR + "/sitemap/"
 
@@ -1516,8 +1521,7 @@ def sitemap_generation():
             )
 
     xml_cont = xml_cont + "</urlset>"
-    sitemap_xml_file = open("sitemap/sitemap.xml", "w")
-    sitemap_xml_file.write(xml_cont)
+    _write_sitemap("sitemap/sitemap.xml", "w", xml_cont)
     print("Sitemap Generation ended")
 
 

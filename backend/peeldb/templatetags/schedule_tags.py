@@ -1,8 +1,9 @@
-from django import template
 import calendar
-from django.template import loader, Context
-from django.utils.dates import WEEKDAYS, WEEKDAYS_ABBR
+
+from django import template
+from django.template import Context, loader
 from django.template.loader import render_to_string
+from django.utils.dates import WEEKDAYS, WEEKDAYS_ABBR
 
 weekday_names = []
 weekday_abbrs = []

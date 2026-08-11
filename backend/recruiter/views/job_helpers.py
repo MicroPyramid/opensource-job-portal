@@ -4,35 +4,32 @@ Helper functions and utilities for job posting operations
 """
 
 import json
-
-from django.shortcuts import get_object_or_404
-from django.conf import settings
-from django.template import loader
 from datetime import datetime
+
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.template import loader
 from django.template.defaultfilters import slugify
 
-
 from dashboard.tasks import send_email
-from mpcomp.views import get_absolute_url
-from peeldb.models import (
-    Country,
-    Skill,
-    Qualification,
-    User,
-    FunctionalArea,
-    Keyword,
-    Company,
-    InterviewLocation,
-    AgencyCompany,
-    AgencyRecruiterJobposts,
-    AgencyApplicants,
-    AgencyResume,
-)
-
 from mpcomp.views import (
+    get_absolute_url,
     get_aws_file_path,
 )
-
+from peeldb.models import (
+    AgencyApplicants,
+    AgencyCompany,
+    AgencyRecruiterJobposts,
+    AgencyResume,
+    Company,
+    Country,
+    FunctionalArea,
+    InterviewLocation,
+    Keyword,
+    Qualification,
+    Skill,
+    User,
+)
 
 # Job Helper Functions will be moved here
 # TODO: Move the following functions from the main views.py:
@@ -139,7 +136,7 @@ def add_other_functional_area(job_post, data, user):
 def adding_keywords(keywords, post):
     for kw in keywords:
         key = Keyword.objects.filter(name__iexact=kw)
-        if not kw == "":
+        if kw != "":
             if not key:
                 keyword = Keyword.objects.create(name=kw)
                 post.keywords.add(keyword)
@@ -156,7 +153,7 @@ def add_interview_location(data, job_post, no_of_locations):
         interview_venue_details = ""
         latitude = ""
         longitude = ""
-        for key in data.keys():
+        for key in data:
             if str(current_interview_city) == str(key):
                 interview_city = list(json.loads(data[key]))
                 latitude = interview_city[0]
@@ -247,13 +244,13 @@ def set_other_fields(post, data, user):
 
 
 def adding_other_fields_data(data, post, user):
-    if "final_skills" in data.keys():
+    if "final_skills" in data:
         add_other_skills(post, json.loads(data["final_skills"]), user)
-    if "final_edu_qualification" in data.keys():
+    if "final_edu_qualification" in data:
         add_other_qualifications(
             post, json.loads(data["final_edu_qualification"]), user
         )
-    if "final_functional_area" in data.keys():
+    if "final_functional_area" in data:
         add_other_functional_area(post, json.loads(data["final_functional_area"]), user)
 
     no_of_locations = int(json.loads(data["no_of_interview_location"])) + 1
@@ -352,16 +349,16 @@ def retreving_form_errors(request, post):
     #             if not request.POST[final_location]:
     #                 errors[final_location] = 'This field is required.'
 
-    if "final_industry" in request.POST.keys():
+    if "final_industry" in request.POST:
         errors = checking_error_value(errors, request.POST["final_industry"])
 
-    if "final_functional_area" in request.POST.keys():
+    if "final_functional_area" in request.POST:
         errors = checking_error_value(errors, request.POST["final_functional_area"])
 
-    if "final_edu_qualification" in request.POST.keys():
+    if "final_edu_qualification" in request.POST:
         errors = checking_error_value(errors, request.POST["final_edu_qualification"])
 
-    if "final_skills" in request.POST.keys():
+    if "final_skills" in request.POST:
         errors = checking_error_value(errors, request.POST["final_skills"])
 
     return errors

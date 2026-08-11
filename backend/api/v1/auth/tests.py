@@ -2,12 +2,14 @@
 Tests for Job Seeker Google Authentication API
 """
 
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
 from django.urls import reverse
-from unittest.mock import patch, MagicMock
-from rest_framework.test import APIClient
 from rest_framework import status
-from peeldb.models import User, UserEmail, Google
+from rest_framework.test import APIClient
+
+from peeldb.models import Google, User, UserEmail
 
 
 class GoogleAuthAPITests(TestCase):

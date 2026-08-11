@@ -5,6 +5,7 @@ Bypasses Haystack signal processor to avoid Elasticsearch dependency
 
 import os
 import sys
+
 import django
 
 # Setup Django
@@ -12,7 +13,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jobsp.settings")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 django.setup()
 
-from peeldb.models import Qualification, Degree, EducationInstitue, City
+from peeldb.models import City, Degree, EducationInstitue, Qualification
 
 
 def load_qualifications():
@@ -43,7 +44,7 @@ def load_qualifications():
 
     created_count = 0
     for qual_data in qualifications:
-        qual, created = Qualification.objects.update_or_create(
+        _qual, created = Qualification.objects.update_or_create(
             id=qual_data["id"],
             defaults={
                 "name": qual_data["name"],
@@ -228,7 +229,7 @@ def load_degrees():
 
     created_count = 0
     for degree_data in degrees_data:
-        degree, created = Degree.objects.get_or_create(
+        _degree, created = Degree.objects.get_or_create(
             degree_name=degree_data["qualification"],
             specialization=degree_data["specialization"],
             defaults={"degree_type": degree_data["degree_type"]},
@@ -308,7 +309,7 @@ def load_institutes():
             City.objects.filter(name__iexact=city_name).first() if city_name else None
         )
 
-        inst, created = EducationInstitue.objects.get_or_create(
+        _inst, created = EducationInstitue.objects.get_or_create(
             name=inst_data["name"],
             defaults={"address": inst_data["address"], "city": city_obj},
         )

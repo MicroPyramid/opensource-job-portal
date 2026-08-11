@@ -2,33 +2,34 @@
 Recruiter Job Management API Views
 """
 
+from django.db.models import Count, Q
+from django.utils import timezone
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from drf_spectacular.types import OpenApiTypes
-from django.db.models import Q, Count
-from django.utils import timezone
 
 from peeldb.models import (
-    JobPost,
     AppliedJobs,
     City,
-    Skill,
-    Industry,
-    Qualification,
     Country,
+    Industry,
+    JobPost,
+    Qualification,
+    Skill,
     State,
 )
+
 from .job_serializers import (
-    RecruiterJobListSerializer,
-    RecruiterJobDetailSerializer,
-    RecruiterJobCreateSerializer,
-    RecruiterJobUpdateSerializer,
-    JobApplicationSerializer,
     ApplicantDetailSerializer,
+    JobApplicationSerializer,
+    RecruiterJobCreateSerializer,
+    RecruiterJobDetailSerializer,
+    RecruiterJobListSerializer,
+    RecruiterJobUpdateSerializer,
 )
 
 

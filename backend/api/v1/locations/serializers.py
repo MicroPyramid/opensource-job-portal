@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from peeldb.models import Country, State, City
+
+from peeldb.models import City, Country, State
 
 
 class CountrySerializer(serializers.ModelSerializer):

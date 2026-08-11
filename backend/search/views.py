@@ -2,22 +2,23 @@ import json
 import math
 import re
 
-from django.urls import reverse
+from django.db.models import F, Q
+from django.http import QueryDict
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.template.defaultfilters import slugify
-from django.db.models import Q, F
+from django.urls import reverse
 from haystack.query import SQ, SearchQuerySet
-from django.http import QueryDict
+
+from dashboard.tasks import save_search_results
 
 # from haystack.views import SearchView
-
 from mpcomp.views import (
+    get_404_meta,
+    get_meta_data,
     get_prev_after_pages_count,
     get_valid_locations_list,
     get_valid_skills_list,
-    get_meta_data,
-    get_404_meta,
 )
 from peeldb.models import (
     City,
@@ -31,8 +32,6 @@ from peeldb.models import (
 from pjob.refine_search import refined_search
 from pjob.views import get_page_number
 from search.forms import JobSearchForm
-from dashboard.tasks import save_search_results
-
 
 # class search_job(SearchView):
 
@@ -126,7 +125,7 @@ def custom_search(data, request):
 
     no_of_jobs = jobs_list.count()
     items_per_page = 20
-    no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+    no_pages = math.ceil(float(no_of_jobs) / items_per_page)
     page = request.POST.get("page") or data.get("page")
     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
         if int(page) > (no_pages + 2):
@@ -233,7 +232,7 @@ def custome_search(request, skill_name, city_name, **kwargs):
     if job_list:
         no_of_jobs = job_list.count()
         items_per_page = 20
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -357,7 +356,7 @@ def custom_walkins(request, skill_name, city_name, **kwargs):
     if job_list:
         no_of_jobs = job_list.count()
         items_per_page = 20
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -439,7 +438,7 @@ def skill_auto_search(request):
         for result in sqs
     ]
     suggestions = sorted(suggestions, key=lambda k: len(k["name"]), reverse=False)
-    if not request.GET.get("search") == "filter":
+    if request.GET.get("search") != "filter":
         deg = (
             SearchQuerySet()
             .models(Qualification)
@@ -469,7 +468,7 @@ def city_auto_search(request):
         if result.no_of_jobposts and int(result.no_of_jobposts or 0) > 0
     ]
     suggestions = sorted(suggestions, key=lambda k: len(k["name"]), reverse=False)
-    if not request.GET.get("search") == "filter":
+    if request.GET.get("search") != "filter":
         state = (
             SearchQuerySet()
             .models(State)

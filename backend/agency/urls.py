@@ -15,22 +15,22 @@ from recruiter.views import (
 )
 
 from .views import (
-    dashboard,
-    hired_candidates,
-    jobs_billing_process,
-    client_list,
-    add_client,
-    edit_client,
-    delete_client,
-    client_profile,
     add_branch,
+    add_client,
     add_contract_deatils,
     applicant_status_change,
-    user_work_log,
+    client_list,
+    client_profile,
+    dashboard,
     delete_applicant_status,
+    delete_client,
     delete_resume,
-    view_resumes,
+    edit_client,
+    hired_candidates,
     job_status_change,
+    jobs_billing_process,
+    user_work_log,
+    view_resumes,
 )
 
 app_name = "agency"

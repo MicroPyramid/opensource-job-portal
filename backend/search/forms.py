@@ -1,11 +1,10 @@
 import datetime
 from datetime import date
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from django import forms
 from haystack.forms import SearchForm
-from haystack.query import SearchQuerySet, SQ
-
+from haystack.query import SQ, SearchQuerySet
 
 VALID_TIME_FORMATS = ["%Y-%m-%d 00:00:00"]
 

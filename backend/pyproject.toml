@@ -80,3 +80,34 @@ dev = [
 # declared, so uv installs the dependencies without building or installing the
 # project itself. Stated explicitly rather than left to inference.
 package = false
+
+[tool.ruff.lint]
+# These are suppressions, not fixes. Each is suppressed because applying the
+# rule to this codebase would be wrong, not because the work was skipped.
+ignore = [
+    # RUF012: "mutable default for class attribute -> annotate with ClassVar".
+    # Fires ~284 times, almost entirely on Django/DRF framework idioms:
+    # `class Meta: fields = [...]`, `read_only_fields`, `filterset_fields`,
+    # ModelForm `Meta.fields`. These are the frameworks' prescribed API, read as
+    # class-level configuration. Annotating them ClassVar is runtime-harmless but
+    # adds ~284 annotations and a typing import to ~30 files for no benefit.
+    "RUF012",
+
+    # DTZ*: "naive datetime". This project runs with USE_TZ = False
+    # (jobsp/settings.py), so Django itself stores and returns naive datetimes
+    # throughout. Making these calls timezone-aware would produce aware datetimes
+    # that conflict with every DateTimeField in the project -- an actual bug, not
+    # a fix. Revisit only as part of a deliberate USE_TZ = True migration.
+    "DTZ002",
+    "DTZ003",
+    "DTZ005",
+    "DTZ007",
+    "DTZ011",
+
+    # BLE001: "do not catch blind Exception". Commit 66513e7 deliberately
+    # converted bare `except:` into `except Exception:` to satisfy E722; BLE001
+    # then objects to the result. Narrowing all 68 sites requires knowing what
+    # each can actually raise -- real work, not a mechanical fix. Suppressed so
+    # the lint is actionable; tracked as tech debt rather than guessed at.
+    "BLE001",
+]

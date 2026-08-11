@@ -2,13 +2,14 @@
 Portfolio Views for Job Seekers - Projects and Certifications Management
 """
 
+from drf_spectacular.utils import OpenApiExample, OpenApiResponse, extend_schema
 from rest_framework import status, viewsets
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
+from rest_framework.response import Response
 
-from peeldb.models import Project, Certification
-from .serializers import ProjectSerializer, CertificationSerializer
+from peeldb.models import Certification, Project
+
+from .serializers import CertificationSerializer, ProjectSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

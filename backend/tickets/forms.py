@@ -1,5 +1,6 @@
 from django import forms
-from peeldb.models import Ticket, Comment
+
+from peeldb.models import Comment, Ticket
 
 
 class TicketForm(forms.ModelForm):

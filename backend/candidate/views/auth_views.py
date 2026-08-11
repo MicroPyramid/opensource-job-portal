@@ -1,9 +1,10 @@
 import json
-from django.shortcuts import render
+
 from django.http.response import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from peeldb.models import User, JobAlert, Subscriber
+from peeldb.models import JobAlert, Subscriber, User
 
 
 def applicant_unsubscribing(request, message_id):
@@ -52,10 +53,7 @@ def bounces(request):
     if js["Type"] == "Notification":
         arg_info = js["Message"]
         arg_info = json.loads(arg_info.replace("\n", ""))
-        if (
-            "notificationType" in arg_info.keys()
-            and arg_info["notificationType"] == "Bounce"
-        ):
+        if "notificationType" in arg_info and arg_info["notificationType"] == "Bounce":
             bounce_email_address = arg_info["bounce"]["bouncedRecipients"]
             for each in bounce_email_address:
                 user = User.objects.filter(email=each["emailAddress"])

@@ -9,71 +9,72 @@ Usage:
 
 import random
 from datetime import datetime, timedelta
-from django.core.management.base import BaseCommand, CommandError
+
 from django.apps import apps
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.text import slugify
 
 from peeldb.models import (
-    Company,
-    User,
-    JobPost,
     AppliedJobs,
     City,
+    Company,
     Country,
-    Skill,
-    Industry,
-    Qualification,
-    Language,
-    TechnicalSkill,
-    EmploymentHistory,
+    Degree,
     EducationDetails,
     EducationInstitue,
-    Degree,
+    EmploymentHistory,
+    Industry,
+    JobPost,
+    Language,
+    Qualification,
+    Skill,
+    TechnicalSkill,
+    User,
     UserLanguage,
 )
 
-from .test_data.indian_names import (
-    INDIAN_FIRST_NAMES,
-    INDIAN_FIRST_NAMES_MALE,
-    INDIAN_FIRST_NAMES_FEMALE,
-    INDIAN_LAST_NAMES,
-    INDIAN_UNIVERSITIES,
-    INDIAN_COLLEGES,
-)
 from .test_data.company_names import (
+    BUSINESS_PARKS,
     COMPANY_PREFIXES,
+    COMPANY_PROFILES,
     COMPANY_SUFFIXES,
     COMPANY_TYPE_SUFFIXES,
-    BUSINESS_PARKS,
-    COMPANY_PROFILES,
-)
-from .test_data.job_titles import (
-    JOB_TITLES_BY_SKILL,
-    DEFAULT_JOB_TITLES,
-    JOB_DESCRIPTION_TEMPLATES,
-    RECRUITER_TITLES,
 )
 from .test_data.constants import (
+    APPLICATION_STATUS_WEIGHTS,
+    APPLICATION_STATUSES,
+    COMMON_JOB_STATUSES,
+    COMMON_JOB_TYPES,
     COMPANY_SIZES,
     COMPANY_TYPES,
-    USER_TYPE_JOBSEEKER,
-    USER_TYPE_EMPLOYER,
     GENDERS,
-    COMMON_JOB_TYPES,
-    WORK_MODES,
-    COMMON_JOB_STATUSES,
     JOB_STATUS_WEIGHTS,
-    APPLICATION_STATUSES,
-    APPLICATION_STATUS_WEIGHTS,
+    NOTICE_PERIODS,
+    SALARY_RANGES,
     SENIORITY_LEVELS,
     SKILL_PROFICIENCIES,
     SKILL_PROFICIENCY_WEIGHTS,
-    NOTICE_PERIODS,
-    SALARY_RANGES,
     TEST_DATA_MARKER,
     TEST_PASSWORD,
+    USER_TYPE_EMPLOYER,
+    USER_TYPE_JOBSEEKER,
+    WORK_MODES,
+)
+from .test_data.indian_names import (
+    INDIAN_COLLEGES,
+    INDIAN_FIRST_NAMES,
+    INDIAN_FIRST_NAMES_FEMALE,
+    INDIAN_FIRST_NAMES_MALE,
+    INDIAN_LAST_NAMES,
+    INDIAN_UNIVERSITIES,
+)
+from .test_data.job_titles import (
+    DEFAULT_JOB_TITLES,
+    JOB_DESCRIPTION_TEMPLATES,
+    JOB_TITLES_BY_SKILL,
+    RECRUITER_TITLES,
 )
 
 
@@ -388,7 +389,7 @@ class Command(BaseCommand):
             months_exp = random.randint(0, 11)
 
             # Calculate salary based on experience
-            salary_key = max(k for k in SALARY_RANGES.keys() if k <= years_exp)
+            salary_key = max(k for k in SALARY_RANGES if k <= years_exp)
             min_sal, max_sal = SALARY_RANGES[salary_key]
             current_salary = random.randint(min_sal, max_sal)
             expected_salary = int(current_salary * random.uniform(1.1, 1.4))
@@ -614,7 +615,7 @@ class Command(BaseCommand):
             max_year = min_year + random.randint(2, 5)
 
             # Salary based on experience
-            salary_key = max(k for k in SALARY_RANGES.keys() if k <= min_year)
+            salary_key = max(k for k in SALARY_RANGES if k <= min_year)
             min_sal, max_sal = SALARY_RANGES[salary_key]
             min_salary = random.randint(min_sal, (min_sal + max_sal) // 2)
             max_salary = random.randint((min_sal + max_sal) // 2, max_sal)

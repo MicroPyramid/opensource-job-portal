@@ -1,11 +1,10 @@
-from django_behave.runner import *
-
 from django.conf import settings
+from django_behave.runner import *
 
 
 class PJBehaveTestCase(DjangoBehaveTestCase):
     def __init__(self, **kwargs):
-        super(PJBehaveTestCase, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if not settings.DEBUG:
             settings.DEBUG = True
 

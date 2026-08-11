@@ -4,21 +4,23 @@ email to recruiter when admin gives suggestions
 """
 
 import json
-from django.shortcuts import render
-from django.http.response import HttpResponse
+
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.template import loader
 
+from dashboard.tasks import send_email
 from peeldb.models import (
-    Ticket,
+    PRIORITY_TYPES,
     STATUS,
     TICKET_TYPES,
-    PRIORITY_TYPES,
     Attachment,
     Comment,
+    Ticket,
 )
-from dashboard.tasks import send_email
-from .forms import TicketForm, CommentForm
+
+from .forms import CommentForm, TicketForm
 
 
 @login_required
@@ -74,7 +76,7 @@ def index(request):
         data = {"error": False, "response": "New Ticket Created Successfully"}
     else:
         errors = validate_ticket.errors
-        for key in request.POST.keys():
+        for key in request.POST:
             if "attachment_" in key:
                 errors[key] = "This field is required"
         data = {"error": True, "response": errors}
@@ -105,7 +107,7 @@ def new_ticket(request):
         ticket.user = request.user
         ticket.status = "Open"
         ticket.save()
-        for key, value in request.FILES.items():
+        for value in request.FILES.values():
             attachment = Attachment.objects.create(
                 attached_file=value, uploaded_by=request.user
             )
@@ -174,7 +176,7 @@ def edit_ticket(request, ticket_id):
         data = {"error": False, "response": "Ticket Updated Successfully"}
     else:
         errors = validate_ticket.errors
-        for key in request.POST.keys():
+        for key in request.POST:
             if "attachment_" in key:
                 errors[key] = "This field is required"
         data = {"error": True, "response": errors}
@@ -265,23 +267,22 @@ def view_ticket(request, ticket_id):
 
     """
 
-    if not request.user.user_type == "JS":
+    if request.user.user_type != "JS":
         tickets = Ticket.objects.filter(id=ticket_id, user=request.user)
-        if request.method == "GET":
-            if tickets:
-                ticket = tickets[0]
-                if request.user.is_staff or request.user == ticket.user:
-                    template_name = "recruiter/tickets/view_ticket.html"
-                    return render(
-                        request,
-                        template_name,
-                        {
-                            "priorities": PRIORITY_TYPES,
-                            "ticket_types": TICKET_TYPES,
-                            "ticket": tickets[0],
-                            "status": STATUS,
-                        },
-                    )
+        if request.method == "GET" and tickets:
+            ticket = tickets[0]
+            if request.user.is_staff or request.user == ticket.user:
+                template_name = "recruiter/tickets/view_ticket.html"
+                return render(
+                    request,
+                    template_name,
+                    {
+                        "priorities": PRIORITY_TYPES,
+                        "ticket_types": TICKET_TYPES,
+                        "ticket": tickets[0],
+                        "status": STATUS,
+                    },
+                )
 
     message = "Sorry, No Ticket Found"
     reason = "The URL may be misspelled or the ticket you're looking for is no longer available."
@@ -341,36 +342,33 @@ def ticket_comment(request, ticket_id):
 
     """
     ticket = Ticket.objects.filter(id=ticket_id).first()
-    if ticket:
-        if request.user.is_staff or request.user == ticket.user:
-            validate_comment = CommentForm(request.POST, request.FILES)
-            if validate_comment.is_valid():
-                comment = Comment.objects.create(
-                    comment=request.POST.get("comment"),
-                    ticket=ticket,
-                    commented_by=request.user,
-                )
-                if request.FILES:
-                    for key, value in request.FILES.items():
-                        attachment = Attachment.objects.create(
-                            attached_file=value, uploaded_by=request.user
-                        )
-                        comment.attachments.add(attachment)
-                if request.user.is_superuser:
-                    temp = loader.get_template("email/new_ticket.html")
-                    subject = "Acknowledgement For Your Request | Peeljobs"
-                    rendered = temp.render({"ticket": ticket, "comment": comment})
-                    mto = ticket.user.email
-                    send_email.delay(mto, subject, rendered)
-                return HttpResponse(
-                    json.dumps(
-                        {"error": False, "response": "Comment added Successfully"}
+    if ticket and (request.user.is_staff or request.user == ticket.user):
+        validate_comment = CommentForm(request.POST, request.FILES)
+        if validate_comment.is_valid():
+            comment = Comment.objects.create(
+                comment=request.POST.get("comment"),
+                ticket=ticket,
+                commented_by=request.user,
+            )
+            if request.FILES:
+                for value in request.FILES.values():
+                    attachment = Attachment.objects.create(
+                        attached_file=value, uploaded_by=request.user
                     )
-                )
-            else:
-                return HttpResponse(
-                    json.dumps({"error": True, "response": validate_comment.errors})
-                )
+                    comment.attachments.add(attachment)
+            if request.user.is_superuser:
+                temp = loader.get_template("email/new_ticket.html")
+                subject = "Acknowledgement For Your Request | Peeljobs"
+                rendered = temp.render({"ticket": ticket, "comment": comment})
+                mto = ticket.user.email
+                send_email.delay(mto, subject, rendered)
+            return HttpResponse(
+                json.dumps({"error": False, "response": "Comment added Successfully"})
+            )
+        else:
+            return HttpResponse(
+                json.dumps({"error": True, "response": validate_comment.errors})
+            )
     reason = "The URL may be misspelled or the ticket you're looking for is no longer available."
     return render(
         request,
@@ -409,7 +407,7 @@ def edit_comment(request):
             data = {"error": False, "response": "Comment Updated Successfully"}
         else:
             errors = validate_comment.errors
-            for key in request.POST.keys():
+            for key in request.POST:
                 if "attachment_" in key:
                     errors[key] = "This field is required"
             data = {"error": True, "response": errors}

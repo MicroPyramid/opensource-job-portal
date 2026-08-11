@@ -12,28 +12,28 @@ import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from django.core.management.base import BaseCommand, CommandError
 from django.apps import apps
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.text import slugify
 
 from peeldb.models import (
+    City,
     Company,
     Country,
-    User,
-    City,
-    Skill,
-    Industry,
-    Qualification,
-    Language,
-    TechnicalSkill,
-    EmploymentHistory,
+    Degree,
     EducationDetails,
     EducationInstitue,
-    Degree,
-    UserLanguage,
+    EmploymentHistory,
+    Industry,
     JobPost,
+    Language,
+    Qualification,
+    Skill,
+    TechnicalSkill,
+    User,
+    UserLanguage,
 )
 
 # Default config file path

@@ -2,12 +2,14 @@
 Authentication Serializers for Recruiter/Employer
 """
 
-from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
-from peeldb.models import User, Company
 from django.utils.crypto import get_random_string
+from rest_framework import serializers
+
+from peeldb.models import Company, User
+
 from .serializers import CompanyBasicSerializer
 
 
@@ -131,7 +133,7 @@ class RegisterSerializer(serializers.Serializer):
             password=validated_data["password"],
             user_type="EM",
             company=company,
-            is_admin=True if account_type == "company" else False,
+            is_admin=account_type == "company",
             job_title=validated_data.get("job_title", ""),
             mobile=validated_data.get("phone", ""),
             is_active=False,  # Requires email verification

@@ -1,5 +1,5 @@
-from django.http.response import HttpResponse
 from django.conf import settings
+from django.http.response import HttpResponse
 
 from jobsp.celery import app
 

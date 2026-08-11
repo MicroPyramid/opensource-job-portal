@@ -3,18 +3,20 @@ Serializers for Recruiter Job Management API
 """
 
 import datetime
-from rest_framework import serializers
-from peeldb.models import (
-    JobPost,
-    City,
-    Skill,
-    Industry,
-    Qualification,
-    AppliedJobs,
-    User,
-)
+
 from django.utils import timezone
 from django.utils.text import slugify
+from rest_framework import serializers
+
+from peeldb.models import (
+    AppliedJobs,
+    City,
+    Industry,
+    JobPost,
+    Qualification,
+    Skill,
+    User,
+)
 
 
 class RecruiterJobListSerializer(serializers.ModelSerializer):
@@ -127,7 +129,7 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
         age = timezone.now() - obj.published_on
         days_remaining = max_age_days - age.days
 
-        return days_remaining if days_remaining >= 0 else 0
+        return max(days_remaining, 0)
 
     def get_is_expiring_soon(self, obj):
         """Check if job is expiring within 7 days"""

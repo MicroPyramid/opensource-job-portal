@@ -1,4 +1,4 @@
-from peeldb.models import Skill, City, State, Country
+from peeldb.models import City, Country, Skill, State
 
 
 def initiate_test_data():

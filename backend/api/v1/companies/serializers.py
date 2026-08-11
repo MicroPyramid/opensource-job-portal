@@ -3,6 +3,7 @@ Company Serializers for API v1
 """
 
 from rest_framework import serializers
+
 from peeldb.models import Company, JobPost
 
 

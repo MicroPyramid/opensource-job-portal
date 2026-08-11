@@ -1,12 +1,13 @@
 from django.urls import re_path as url
+
 from search.views import (
-    skill_auto_search,
     city_auto_search,
-    industry_auto_search,
-    state_auto_search,
-    functional_area_auto_search,
     custome_search,
     education_auto_search,
+    functional_area_auto_search,
+    industry_auto_search,
+    skill_auto_search,
+    state_auto_search,
 )
 
 app_name = "search"

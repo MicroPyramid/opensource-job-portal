@@ -3,29 +3,30 @@ Job Views for API v1
 Provides job listing, detail, and filter options endpoints
 """
 
-from rest_framework import viewsets, status
+from django.db.models import Count, Q
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import filters as drf_filters
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.pagination import PageNumberPagination
-from rest_framework import filters as drf_filters
-from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count, Q
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from drf_spectacular.types import OpenApiTypes
 
 from peeldb.models import (
-    JobPost,
+    AppliedJobs,
     City,
-    Skill,
     Industry,
+    JobPost,
     Qualification,
     SavedJobs,
-    AppliedJobs,
+    Skill,
 )
-from .serializers import JobListSerializer, JobDetailSerializer
+
 from .filters import JobFilter
+from .serializers import JobDetailSerializer, JobListSerializer
 
 
 class JobPagination(PageNumberPagination):

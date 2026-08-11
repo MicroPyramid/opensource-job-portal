@@ -2,13 +2,13 @@
 Profile Views for Job Seekers - Core Profile Management
 """
 
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from django.utils import timezone
+from drf_spectacular.utils import OpenApiExample, OpenApiResponse, extend_schema
+from rest_framework import status
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .serializers import ProfileSerializer, ProfileUpdateSerializer
 

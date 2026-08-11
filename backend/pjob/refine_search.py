@@ -1,6 +1,6 @@
-from peeldb.models import JobPost, City, Skill, Qualification, Industry, Country
 from haystack.query import SQ, SearchQuerySet
 
+from peeldb.models import City, Country, Industry, JobPost, Qualification, Skill
 
 valid_time_formats = ["%Y-%m-%d 00:00:00"]
 
@@ -33,7 +33,7 @@ def refined_search(data):
 
     if data.get("job_type"):
         if data["job_type"] == "Fresher":
-            sqs = sqs.filter_and(min_year__lte=int(0))
+            sqs = sqs.filter_and(min_year__lte=0)
         else:
             sqs = sqs.filter_and(job_type__in=[data["job_type"]])
 

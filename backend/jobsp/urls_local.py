@@ -2,8 +2,8 @@
 # This file contains URL patterns that should only be used in local development
 # and not on production servers.
 
-from django.urls import path, include
 from django.conf import settings
+from django.urls import include, path
 
 # Local development URL patterns
 local_urlpatterns = []

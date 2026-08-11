@@ -3,10 +3,11 @@ Script to load test job data for development
 """
 
 import os
-import sys
-import django
-from datetime import datetime, timedelta
 import random
+import sys
+from datetime import datetime, timedelta
+
+import django
 
 # Setup Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jobsp.settings")
@@ -14,7 +15,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 django.setup()
 
 from django.contrib.auth import get_user_model
-from peeldb.models import JobPost, Company, City, Skill, Industry, Qualification
+
+from peeldb.models import City, Company, Industry, JobPost, Qualification, Skill
 
 User = get_user_model()
 

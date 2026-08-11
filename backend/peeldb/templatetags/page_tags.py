@@ -1,29 +1,30 @@
 import datetime
-from datetime import date
-import arrow
-import re
 import locale
+import re
 from collections import Counter
+from datetime import date
 
+import arrow
+import boto3
 from django import template
 from django.conf import settings
-from django.db.models import Count, Q, Prefetch
 from django.core.cache import cache
-import boto3
+from django.db.models import Count, Prefetch, Q
+
+from candidate.forms import MONTHS, YEARS
 from peeldb.models import (
+    DEGREE_TYPES,
     AppliedJobs,
-    JobPost,
-    User,
     City,
+    Company,
+    Industry,
+    JobPost,
+    Qualification,
     Skill,
     State,
-    Industry,
-    Company,
-    Qualification,
-    DEGREE_TYPES,
+    User,
     UserMessage,
 )
-from candidate.forms import YEARS, MONTHS
 from recruiter.forms import UserStatus
 
 register = template.Library()
@@ -42,10 +43,7 @@ def str_to_list(value):
 
 @register.filter
 def is_applied_for_job(user, job_post_id):
-    if AppliedJobs.objects.filter(user_id=user, job_post_id=job_post_id):
-        return True
-    else:
-        return False
+    return bool(AppliedJobs.objects.filter(user_id=user, job_post_id=job_post_id))
 
 
 @register.filter
@@ -75,9 +73,7 @@ def get_formatted_salary(value):
 @register.filter
 def get_social_connections_count(user):
     # Only Google OAuth is supported now
-    if user.google_user.all():
-        return True
-    return False
+    return bool(user.google_user.all())
 
 
 @register.filter
@@ -123,10 +119,7 @@ def get_s3_url(key):
 
 @register.filter
 def check_perm(user):
-    if user.has_perm("support_view") or user.has_perm("support_edit"):
-        return True
-    else:
-        return False
+    return bool(user.has_perm("support_view") or user.has_perm("support_edit"))
 
 
 @register.simple_tag
@@ -189,8 +182,7 @@ def get_page(context, page, no_pages):
     else:
         end_page = start_page + 6
 
-    if end_page > no_pages:
-        end_page = no_pages
+    end_page = min(end_page, no_pages)
 
     pages = range(start_page, end_page + 1)
     return pages
@@ -478,10 +470,7 @@ def is_connected(value):
 
 @register.filter
 def check_recruiter_perm(user, permission):
-    if user.has_perm(permission):
-        return True
-    else:
-        return False
+    return bool(user.has_perm(permission))
 
 
 @register.simple_tag
@@ -553,18 +542,12 @@ def get_user_status(user):
 
 @register.filter
 def is_job_applied(job, resume):
-    if AppliedJobs.objects.filter(job_post=job, resume_applicant=resume):
-        return True
-    else:
-        return False
+    return bool(AppliedJobs.objects.filter(job_post=job, resume_applicant=resume))
 
 
 @register.filter
 def get_value_type(value):
-    if type(value) == list:
-        return True
-    else:
-        return False
+    return type(value) == list
 
 
 @register.filter

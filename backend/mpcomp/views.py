@@ -1,24 +1,26 @@
-import string
-import random
-from math import floor
-import arrow
 import datetime
 import operator
-from dateutil.relativedelta import relativedelta
-from pytz import timezone
-import re
-from PIL import Image
 import os
-from .aws import AWS
+import random
+import re
+import string
 import zipfile
-from lxml import etree
-from subprocess import Popen, PIPE
+from math import floor
+from subprocess import PIPE, Popen
 
-from django.contrib.auth.decorators import user_passes_test, login_required
-from django.template import Template, Context
-from peeldb.models import MetaData, Skill, City, Qualification
-from django.core.mail import EmailMessage
+import arrow
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.mail import EmailMessage
+from django.template import Context, Template
+from lxml import etree
+from PIL import Image
+from pytz import timezone
+
+from peeldb.models import City, MetaData, Qualification, Skill
+
+from .aws import AWS
 
 
 def permission_required(*perms):
@@ -35,7 +37,7 @@ def rand_string(size=6, chars=string.ascii_uppercase + string.digits):
 
 
 job_seeker_login_required = user_passes_test(
-    lambda u: False if u.is_staff or u.is_recruiter else True, login_url="/"
+    lambda u: not (u.is_staff or u.is_recruiter), login_url="/"
 )
 
 
@@ -47,7 +49,7 @@ def jobseeker_login_required(view_func):
 
 
 rec_login_required = user_passes_test(
-    lambda u: True if u.is_recruiter or u.is_agency_recruiter else False, login_url="/"
+    lambda u: bool(u.is_recruiter or u.is_agency_recruiter), login_url="/"
 )
 
 
@@ -58,9 +60,7 @@ def recruiter_login_required(view_func):
     return decorated_view_func
 
 
-age_login_required = user_passes_test(
-    lambda u: True if u.is_agency_admin else False, login_url="/"
-)
+age_login_required = user_passes_test(lambda u: bool(u.is_agency_admin), login_url="/")
 
 
 def agency_admin_login_required(view_func):
@@ -178,7 +178,7 @@ def document_to_text(filename, file_path):
     elif filename[-4:] == ".odt":
         cmd = ["odt2txt", file_path]
         p = Popen(cmd, stdout=PIPE)
-        stdout, stderr = p.communicate()
+        stdout, _stderr = p.communicate()
         return stdout.decode("ascii", "ignore")
 
 
@@ -192,8 +192,7 @@ def handle_uploaded_file(file, filename):
         os.mkdir("resume/")
 
     with open("resume/" + filename, "wb+") as destination:
-        for chunk in file.chunks():
-            destination.write(chunk)
+        destination.writelines(file.chunks())
 
 
 def get_email_resume(text):
@@ -214,15 +213,13 @@ def get_resume_data(file):
     if file_format == "pdf":
         try:
             os.system(
-                "pdftotext '%s' '%s'"
-                % (
+                "pdftotext '{}' '{}'".format(
                     settings.BASE_DIR + "/resume/" + file_name,
                     settings.BASE_DIR + "/resume/" + f_name + ".txt",
                 )
             )
-            each = open(
-                settings.BASE_DIR + "/resume/" + f_name + ".txt", "r"
-            ).readlines()
+            with open(settings.BASE_DIR + "/resume/" + f_name + ".txt") as resume_txt:
+                each = resume_txt.readlines()
             text = []
             for pdf_content in each:
                 text.append(pdf_content)
@@ -234,10 +231,7 @@ def get_resume_data(file):
             text = "\n\n".join(text)
         except Exception:
             text = ""
-    elif file_format == "doc":
-        text = document_to_text(file_name, settings.BASE_DIR + "/resume/" + file_name)
-        email, mobile = get_email_resume(text)
-    elif file_format == "odt":
+    elif file_format == "doc" or file_format == "odt":
         text = document_to_text(file_name, settings.BASE_DIR + "/resume/" + file_name)
         email, mobile = get_email_resume(text)
     elif file_format == "docx":
@@ -259,7 +253,7 @@ def get_resume_data(file):
 
 
 def float_round(num, places=0, direction=floor):
-    num = float("%.10f" % num)
+    num = float(f"{num:.10f}")
     no_of_digits = str(num)[::-1].find(".")
     if int(no_of_digits) <= 2:
         return num
@@ -425,7 +419,7 @@ def str_to_list(value):
 
 def get_social_referer(request):
     social = {"fb": "facebook.com", "ln": "linkedin.com", "tw": "twitter.com"}
-    if "HTTP_REFERER" in request.META.keys():
+    if "HTTP_REFERER" in request.META:
         refer = request.META["HTTP_REFERER"]
     else:
         refer = False
@@ -446,10 +440,8 @@ def get_aws_file_path(input_file, folder_path, company_name):
     file_name = re.sub(r"[^a-zA-Z0-9 \n\.]", "", file_name).replace(" ", "-")
     path = settings.BASE_DIR + "/static/"
     image_path = os.path.join(path, file_name)
-    destination = open(image_path, "wb+")
-    for chunk in input_file.chunks():
-        destination.write(chunk)
-    destination.close()
+    with open(image_path, "wb+") as destination:
+        destination.writelines(input_file.chunks())
     # new_image = image_size(input_file, image_path)
     size = (200, 200)
     im = Image.open(image_path)
@@ -475,12 +467,13 @@ def get_aws_file_path(input_file, folder_path, company_name):
 
     # thumb_file = File(thumb_data)
     # ext = input_file.name.split(".")[-1]
-    s3_url = AWS().push_to_s3(
-        file_obj=open(os.path.join(path, file_name), "rb"),
-        bucket_name=settings.AWS_STORAGE_BUCKET_NAME,
-        folder=folder_path,
-        new_name=company_name + "." + img_format,
-    )
+    with open(os.path.join(path, file_name), "rb") as upload_obj:
+        s3_url = AWS().push_to_s3(
+            file_obj=upload_obj,
+            bucket_name=settings.AWS_STORAGE_BUCKET_NAME,
+            folder=folder_path,
+            new_name=company_name + "." + img_format,
+        )
     file_path = (
         "http://" + settings.AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com/" + s3_url[0]
     )

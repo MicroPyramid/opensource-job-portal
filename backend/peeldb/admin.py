@@ -1,16 +1,17 @@
 from django.contrib import admin
+
 from peeldb.models import (
-    User,
-    Google,
-    Country,
-    State,
     City,
-    Skill,
+    Country,
+    FunctionalArea,
+    Google,
     Industry,
-    UserEmail,
     Language,
     Qualification,
-    FunctionalArea,
+    Skill,
+    State,
+    User,
+    UserEmail,
     simplecontact,
 )
 

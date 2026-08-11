@@ -5,9 +5,10 @@ Only includes URLs for pages with actual content (jobs, skills, locations, etc.)
 """
 
 from django.contrib.sitemaps import Sitemap
-from django.urls import reverse
 from django.db.models import Count, Q
-from peeldb.models import JobPost, Skill, City, Company
+from django.urls import reverse
+
+from peeldb.models import City, Company, JobPost, Skill
 
 
 class PeelJobsSitemap(Sitemap):

@@ -3,7 +3,8 @@ Serializers for Contact API
 """
 
 from rest_framework import serializers
-from peeldb.models import simplecontact, ENQUERY_TYPES
+
+from peeldb.models import ENQUERY_TYPES, simplecontact
 
 
 class ContactSerializer(serializers.ModelSerializer):

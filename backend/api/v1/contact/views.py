@@ -5,14 +5,15 @@ Handles contact form submissions from frontend
 
 from django.conf import settings
 from django.template import loader
+from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema, OpenApiExample
 
 from dashboard.tasks import send_email
-from .serializers import ContactSerializer, ContactResponseSerializer
+
+from .serializers import ContactResponseSerializer, ContactSerializer
 
 
 @extend_schema(

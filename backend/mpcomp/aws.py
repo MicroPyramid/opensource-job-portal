@@ -1,6 +1,7 @@
+import mimetypes
+
 import boto3
 from django.conf import settings
-import mimetypes
 
 
 class AWS:

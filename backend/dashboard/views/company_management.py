@@ -2,18 +2,18 @@ import json
 import math
 import re
 
-from django.urls import reverse
 from django.db.models import Q
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 
+from mpcomp.aws import AWS
 from mpcomp.views import (
     get_aws_file_path,
     get_prev_after_pages_count,
     permission_required,
 )
-from mpcomp.aws import AWS
 from peeldb.models import (
     Company,
     JobPost,
@@ -25,7 +25,6 @@ from recruiter.forms import MenuForm
 from ..forms import (
     CompanyForm,
 )
-
 
 # Functions to move here from main views.py:
 
@@ -77,7 +76,7 @@ def companies(request, company_type):
         )
 
     items_per_page = 50
-    no_pages = int(math.ceil(float(companies.count()) / items_per_page))
+    no_pages = math.ceil(float(companies.count()) / items_per_page)
     companies = companies.order_by("-registered_date")
     page = request.POST.get("page") or request.GET.get("page")
     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
@@ -307,7 +306,7 @@ def company_recruiters(request, company_id, status):
     else:
         recruiters = recruiters.filter(is_active=False)
     items_per_page = 100
-    no_pages = int(math.ceil(float(recruiters.count()) / items_per_page))
+    no_pages = math.ceil(float(recruiters.count()) / items_per_page)
     page = request.GET.get("page")
     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
         if int(page) > (no_pages + 2):
@@ -342,7 +341,7 @@ def company_jobposts(request, company_id):
     company = get_object_or_404(Company, id=company_id)
     job_posts = company.get_jobposts()
     items_per_page = 100
-    no_pages = int(math.ceil(float(job_posts.count()) / items_per_page))
+    no_pages = math.ceil(float(job_posts.count()) / items_per_page)
     page = request.GET.get("page")
     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
         if int(page) > (no_pages + 2):
@@ -377,7 +376,7 @@ def company_tickets(request, company_id):
     company = get_object_or_404(Company, id=company_id)
     items_per_page = 100
     tickets = company.get_company_tickets()
-    no_pages = int(math.ceil(float(tickets.count()) / items_per_page))
+    no_pages = math.ceil(float(tickets.count()) / items_per_page)
     page = request.GET.get("page")
     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
         if int(page) > (no_pages + 2):

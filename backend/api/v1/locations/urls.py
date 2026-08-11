@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import CountryListView, StateListView, CityListView, CityDetailView
+
+from .views import CityDetailView, CityListView, CountryListView, StateListView
 
 app_name = "locations"
 

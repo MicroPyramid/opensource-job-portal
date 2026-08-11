@@ -1,9 +1,10 @@
 """Log in to Django without providing a password."""
 
 from django.contrib.auth.backends import ModelBackend
-from peeldb.models import User
 from django.contrib.auth.hashers import check_password
 from django.db.models import Q
+
+from peeldb.models import User
 
 
 class PasswordlessAuthBackend(ModelBackend):

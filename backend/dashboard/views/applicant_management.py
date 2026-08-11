@@ -4,9 +4,9 @@ import re
 from datetime import datetime
 
 from django.db.models import Q
-from django.urls import reverse
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
 from mpcomp.views import (
     get_prev_after_pages_count,
@@ -18,7 +18,6 @@ from peeldb.models import (
     Subscriber,
     User,
 )
-
 
 # Functions to move here from main views.py:
 
@@ -73,7 +72,7 @@ def applicants(request, status="all"):
         applicant = applicant.filter(date_joined__range=(start_date, end_date))
     applicant = applicant.order_by("-date_joined")
     items_per_page = 50
-    no_pages = int(math.ceil(float(applicant.count()) / items_per_page))
+    no_pages = math.ceil(float(applicant.count()) / items_per_page)
     if (
         "page" in request.POST
         and bool(re.search(r"[0-9]", request.POST.get("page")))

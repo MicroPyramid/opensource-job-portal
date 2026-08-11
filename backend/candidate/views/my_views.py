@@ -1,38 +1,37 @@
 import json
 import os
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from django.db import transaction
-from django.utils import timezone
 from datetime import datetime
 
-from mpcomp.views import jobseeker_login_required
-from mpcomp.views import get_resume_data, handle_uploaded_file
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods
+
+from candidate.forms import (
+    MAR_TYPES,
+    MONTHS,
+    YEARS,
+    ProjectForm,
+)
+from mpcomp.views import get_resume_data, handle_uploaded_file, jobseeker_login_required
 from peeldb.models import (
+    Certification,
     City,
     Country,
+    Degree,
+    EducationDetails,
+    EducationInstitue,
+    EmploymentHistory,
     FunctionalArea,
     Industry,
     Language,
-    Skill,
-    UserMessage,
     Project,
-    UserLanguage,
-    EmploymentHistory,
-    EducationDetails,
-    EducationInstitue,
-    Degree,
     Qualification,
+    Skill,
     TechnicalSkill,
-    Certification,
-)
-
-from candidate.forms import (
-    YEARS,
-    MONTHS,
-    MAR_TYPES,
-    ProjectForm,
+    UserLanguage,
+    UserMessage,
 )
 
 
@@ -987,7 +986,7 @@ def edit_education_modal(request, education_id):
                     or education.degree.degree_type != degree_type
                     or education.degree.specialization != specialization
                 ):
-                    degree, created = Degree.objects.get_or_create(
+                    degree, _created = Degree.objects.get_or_create(
                         degree_name=degree_name,
                         degree_type=degree_type,
                         specialization=specialization,
@@ -1093,7 +1092,7 @@ def add_education_modal(request):
                     {"success": False, "error": "Invalid degree selected"}
                 )
 
-            degree, created = Degree.objects.get_or_create(
+            degree, _created = Degree.objects.get_or_create(
                 degree_name=degree_name,
                 degree_type=degree_type,
                 specialization=specialization,
@@ -1959,7 +1958,7 @@ def upload_resume_modal(request):
             # Extract resume data (optional - keep existing functionality)
             try:
                 handle_uploaded_file(resume_file, resume_file.name)
-                email, mobile, text = get_resume_data(resume_file)
+                _email, mobile, text = get_resume_data(resume_file)
                 request.user.resume_text = text
 
                 # Update mobile if not set
@@ -1993,7 +1992,7 @@ def upload_resume_modal(request):
             return JsonResponse(
                 {
                     "success": False,
-                    "error": f"Failed to upload resume: {str(upload_error)}",
+                    "error": f"Failed to upload resume: {upload_error!s}",
                 }
             )
 
@@ -2001,7 +2000,7 @@ def upload_resume_modal(request):
         return JsonResponse(
             {
                 "success": False,
-                "error": f"An error occurred while uploading your resume: {str(e)}",
+                "error": f"An error occurred while uploading your resume: {e!s}",
             }
         )
 
@@ -2039,7 +2038,7 @@ def delete_resume_modal(request):
         return JsonResponse(
             {
                 "success": False,
-                "error": f"An error occurred while deleting your resume: {str(e)}",
+                "error": f"An error occurred while deleting your resume: {e!s}",
             }
         )
 
@@ -2068,7 +2067,7 @@ def get_resume_info(request):
             return JsonResponse(
                 {
                     "success": False,
-                    "error": f"Resume file not accessible. This may be due to storage configuration. Error: {str(file_error)}",
+                    "error": f"Resume file not accessible. This may be due to storage configuration. Error: {file_error!s}",
                 }
             )
 
@@ -2091,7 +2090,7 @@ def get_resume_info(request):
         return JsonResponse(
             {
                 "success": False,
-                "error": f"An error occurred while getting resume information: {str(e)}",
+                "error": f"An error occurred while getting resume information: {e!s}",
             }
         )
 
@@ -2149,7 +2148,7 @@ def update_resume_modal(request):
             # Extract resume data
             try:
                 handle_uploaded_file(resume_file, resume_file.name)
-                email, mobile, text = get_resume_data(resume_file)
+                _email, mobile, text = get_resume_data(resume_file)
                 request.user.resume_text = text
 
                 # Update mobile if not set
@@ -2183,7 +2182,7 @@ def update_resume_modal(request):
             return JsonResponse(
                 {
                     "success": False,
-                    "error": f"Failed to update resume: {str(upload_error)}",
+                    "error": f"Failed to update resume: {upload_error!s}",
                 }
             )
 
@@ -2191,7 +2190,7 @@ def update_resume_modal(request):
         return JsonResponse(
             {
                 "success": False,
-                "error": f"An error occurred while updating your resume: {str(e)}",
+                "error": f"An error occurred while updating your resume: {e!s}",
             }
         )
 
@@ -2262,6 +2261,6 @@ def edit_basic_profile(request):
         return JsonResponse(
             {
                 "success": False,
-                "error": f"An error occurred while updating your profile: {str(e)}",
+                "error": f"An error occurred while updating your profile: {e!s}",
             }
         )

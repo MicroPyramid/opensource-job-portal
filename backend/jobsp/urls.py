@@ -1,74 +1,74 @@
 from django.conf import settings
 from django.conf.urls import include
-from django.urls import re_path as url
+from django.contrib import admin
 from django.urls import path
+from django.urls import re_path as url
+
+from candidate.views import (
+    alert_subscribe_verification,
+    applicant_email_unsubscribing,
+    applicant_unsubscribing,
+    bounces,
+)
 from pjob.views import (
-    skill_location_wise_fresher_jobs,
-    skill_fresher_jobs,
-    skill_location_walkin_jobs,
-    register_using_email,
-    login_user_email,
-    # forgot_password,
-    user_activation,
-    user_reg_success,
-    recruiter_profile,
-    jobs_by_location,
-    jobs_by_skill,
-    jobs_by_degree,
-    jobs_by_industry,
-    full_time_jobs,
-    walkin_jobs,
     city_internship_jobs,
-    internship_jobs,
-    government_jobs,
-    each_company_jobs,
-    job_industries,
     companies,
-    jobposts_by_date,
+    each_company_jobs,
+    fresher_jobs_by_skills,
+    full_time_jobs,
+    government_jobs,
+    internship_jobs,
+    job_detail,
+    job_industries,
     # week_calendar,
     job_locations,
     # set_password,
     job_skills,
-    job_detail,
+    jobposts_by_date,
+    jobs_by_degree,
+    jobs_by_industry,
+    jobs_by_location,
+    jobs_by_skill,
+    location_fresher_jobs,
+    login_user_email,
+    process_email,
+    recruiter_profile,
     # year_calendar,
     # calendar_add_event,
     # calendar_event_list,
     # month_calendar,
     recruiters,
-    user_subscribe,
+    register_using_email,
+    skill_fresher_jobs,
+    skill_location_walkin_jobs,
+    skill_location_wise_fresher_jobs,
     unsubscribe,
-    fresher_jobs_by_skills,
-    process_email,
-    location_fresher_jobs,
-)
-from search.views import (
-    skill_auto_search,
-    city_auto_search,
-    custome_search,
-    custom_walkins,
-    search_slugs,
-)
-from candidate.views import (
-    bounces,
-    applicant_unsubscribing,
-    applicant_email_unsubscribing,
-    alert_subscribe_verification,
-)
-from recruiter.views import post_job
-from psite.views import (
-    contact,
-    sitemap,
-    get_out,
-    pages,
-    custom_500,
-    custom_404,
-    auth_return,
+    # forgot_password,
+    user_activation,
+    user_reg_success,
+    user_subscribe,
+    walkin_jobs,
 )
 from pjob.views import index as job_list
+from psite.views import (
+    auth_return,
+    contact,
+    custom_404,
+    custom_500,
+    get_out,
+    pages,
+    sitemap,
+)
+from recruiter.views import post_job
+from search.views import (
+    city_auto_search,
+    custom_walkins,
+    custome_search,
+    search_slugs,
+    skill_auto_search,
+)
 
-from django.contrib import admin
-from .views import user_login, user_register, forgot_password, set_password
-
+from .views import forgot_password, set_password, user_login, user_register
 
 urlpatterns = [
     path("login/", user_login, name="login"),  # convert to tailwind
@@ -307,8 +307,8 @@ urlpatterns = [
 # Add API documentation URLs (drf-spectacular)
 from drf_spectacular.views import (
     SpectacularAPIView,
-    SpectacularSwaggerView,
     SpectacularRedocView,
+    SpectacularSwaggerView,
 )
 
 urlpatterns += [
@@ -330,16 +330,19 @@ urlpatterns += [
 
 # Add Django Sitemap URLs (Modern replacement for old sitemap generation)
 from django.contrib.sitemaps.views import (
-    sitemap as sitemap_view,
     index as sitemap_index,
 )
+from django.contrib.sitemaps.views import (
+    sitemap as sitemap_view,
+)
+
 from psite.sitemaps import (
-    JobPostSitemap,
-    SkillLocationSitemap,
-    FresherSkillLocationSitemap,
-    SkillSitemap,
-    LocationSitemap,
     CompanySitemap,
+    FresherSkillLocationSitemap,
+    JobPostSitemap,
+    LocationSitemap,
+    SkillLocationSitemap,
+    SkillSitemap,
     StaticPagesSitemap,
 )
 

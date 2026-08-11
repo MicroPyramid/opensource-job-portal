@@ -3,10 +3,10 @@ import math
 import re
 from datetime import datetime
 
-from django.urls import reverse
 from django.db.models import Count, Q
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
 from mpcomp.views import (
     get_prev_after_pages_count,
@@ -118,7 +118,7 @@ def reports(request):
 def search_log(request):
     search_logs = SearchResult.objects.all().order_by("-search_on")
     items_per_page = 500
-    no_pages = int(math.ceil(float(len(search_logs)) / items_per_page))
+    no_pages = math.ceil(float(len(search_logs)) / items_per_page)
 
     if (
         "page" in request.GET

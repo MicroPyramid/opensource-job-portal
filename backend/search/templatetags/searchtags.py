@@ -1,7 +1,7 @@
 from django import template
+
+from peeldb.models import JOB_TYPE, WALKIN_TYPE
 from search.forms import JobSearchForm
-from peeldb.models import JOB_TYPE
-from peeldb.models import WALKIN_TYPE
 
 register = template.Library()
 

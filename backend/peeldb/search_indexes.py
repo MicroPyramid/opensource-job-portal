@@ -1,15 +1,17 @@
+from datetime import datetime
+
+from django.core import serializers
 from haystack import indexes
+
+from mpcomp.views import get_absolute_url
 from peeldb.models import (
-    JobPost,
-    Skill,
     City,
     Industry,
+    JobPost,
     Qualification,
+    Skill,
     State,
 )
-from datetime import datetime
-from django.core import serializers
-from mpcomp.views import get_absolute_url
 
 
 class jobIndex(indexes.SearchIndex, indexes.Indexable):

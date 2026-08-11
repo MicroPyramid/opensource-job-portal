@@ -7,8 +7,9 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 
-from .forms import *
 from peeldb.models import *
+
+from .forms import *
 
 
 class personalinfo_form_test(TestCase):

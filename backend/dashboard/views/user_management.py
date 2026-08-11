@@ -9,7 +9,6 @@ from peeldb.models import User, UserEmail
 
 from ..forms import UserForm
 
-
 # Functions to move here from main views.py:
 
 
@@ -47,7 +46,7 @@ def new_admin_user(request):
 
             if request.POST["mobile"]:
                 user.mobile = request.POST["mobile"]
-            if "gender" in request.POST and request.POST["gender"]:
+            if request.POST.get("gender"):
                 user.gender = request.POST["gender"]
             if "profile_pic" in request.FILES:
                 user.profile_pic = request.FILES["profile_pic"]

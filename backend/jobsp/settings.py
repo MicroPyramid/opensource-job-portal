@@ -8,7 +8,21 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-DEBUG = os.getenv("DEBUG", True)
+
+def env_bool(name, default):
+    """Read a boolean from the environment.
+
+    os.getenv returns strings, so `os.getenv("DEBUG", True)` yields the string
+    "False" when DEBUG=False is set -- which is truthy. This parses the value
+    instead of relying on its truthiness.
+    """
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in ("1", "true", "yes", "on")
+
+
+DEBUG = env_bool("DEBUG", True)
 TEMPLATE_DEBUG = DEBUG
 
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "peeljobs@micropyramid.com")
@@ -112,7 +126,7 @@ STATICFILES_FINDERS = (
     "compressor.finders.CompressorFinder",
 )
 
-HTML_MINIFY = os.getenv("HTML_MINIFY", False)
+HTML_MINIFY = env_bool("HTML_MINIFY", False)
 
 ROOT_URLCONF = "jobsp.urls"
 

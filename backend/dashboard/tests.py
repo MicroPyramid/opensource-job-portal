@@ -5,23 +5,24 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
-from django.test import TestCase
-
 # from django.test import Client
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase
+
+from peeldb.models import Country, State
+
 from .forms import (
     ChangePasswordForm,
-    CountryForm,
     CityForm,
-    StateForm,
-    SkillForm,
+    CountryForm,
+    FunctionalAreaForm,
+    IndustryForm,
     LanguageForm,
     QualificationForm,
-    IndustryForm,
-    FunctionalAreaForm,
+    SkillForm,
+    StateForm,
     UserForm,
 )
-from peeldb.models import Country, State
 
 
 class ChangePasswordForm_form_test(TestCase):
@@ -131,10 +132,10 @@ class FunctionalAreaForm_form_test(TestCase):
 
 class user_form_test(TestCase):
     def test_user_form_for_valid(self):
-        upload_file = open("static/img/report.png", "rb")
-        file_dict = {
-            "profile_pic": SimpleUploadedFile(upload_file.name, upload_file.read())
-        }
+        with open("static/img/report.png", "rb") as upload_file:
+            file_dict = {
+                "profile_pic": SimpleUploadedFile(upload_file.name, upload_file.read())
+            }
         data = {
             "email": "mp@mp.com",
             "first_name": "hello",

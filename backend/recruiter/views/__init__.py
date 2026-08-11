@@ -3,5 +3,5 @@
 
 # Note: Most recruiter views have been migrated to SvelteKit + REST API
 # These remaining modules contain helper functions or legacy functionality
-from .job_helpers import *
 from .dashboard import *
+from .job_helpers import *

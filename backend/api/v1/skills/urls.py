@@ -1,9 +1,10 @@
 from django.urls import path
+
 from .views import (
     SkillListView,
-    UserTechnicalSkillListView,
     UserTechnicalSkillCreateView,
     UserTechnicalSkillDetailView,
+    UserTechnicalSkillListView,
 )
 
 app_name = "skills"

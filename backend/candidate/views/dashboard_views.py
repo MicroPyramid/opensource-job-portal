@@ -1,8 +1,8 @@
-from django.shortcuts import render
 from django.core.cache import cache
+from django.shortcuts import render
 
-from mpcomp.views import get_social_referer, get_meta
-from peeldb.models import JobPost, State, JOB_TYPE
+from mpcomp.views import get_meta, get_social_referer
+from peeldb.models import JOB_TYPE, JobPost, State
 
 
 def index(request):
@@ -24,7 +24,7 @@ def index(request):
     )
 
     field = get_social_referer(request)
-    show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+    show_pop = bool(field == "fb" or field == "tw" or field == "ln")
     meta_title, meta_description, h1_tag = get_meta("home_page", {"page": 1})
     states = State.objects.filter(status="Enabled")
     data = {

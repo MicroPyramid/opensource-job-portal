@@ -1,23 +1,23 @@
 import re
+from datetime import date, datetime
 
 from django import forms
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 from django.forms.models import ModelForm
-from datetime import datetime, date
 
+from mpcomp.views import custom_password_check, get_asia_time
 from peeldb.models import (
+    AgencyApplicants,
+    AgencyCompany,
+    AgencyResume,
+    AgencyWorkLog,
     Company,
-    User,
     JobPost,
     MailTemplate,
     Menu,
-    AgencyCompany,
-    AgencyResume,
-    AgencyApplicants,
-    AgencyWorkLog,
+    User,
 )
-from django.contrib.auth.hashers import check_password
-from mpcomp.views import get_asia_time, custom_password_check
-from django.contrib.auth import authenticate
 
 
 class Company_Form(forms.ModelForm):
@@ -31,7 +31,7 @@ class Company_Form(forms.ModelForm):
         fields = ["name", "website"]
 
     def __init__(self, *args, **kwargs):
-        super(Company_Form, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_name(self):
         companies = Company.objects.filter(name__iexact=self.data["name"]).exclude(
@@ -73,7 +73,7 @@ class Company_Form(forms.ModelForm):
         return self.data["website"]
 
     def save(self, commit=True):
-        instance = super(Company_Form, self).save(commit=False)
+        instance = super().save(commit=False)
         instance.name = self.cleaned_data["name"]
         instance.website = self.cleaned_data["website"]
         instance.company_type = self.cleaned_data["company_type"]
@@ -181,7 +181,7 @@ class ChangePasswordForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_oldpassword(self):
         if not check_password(self.data["oldpassword"], self.user.password):
@@ -225,8 +225,8 @@ class PersonalInfoForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
-        super(PersonalInfoForm, self).__init__(*args, **kwargs)
-        if "dob" in self.data.keys() and self.data["dob"]:
+        super().__init__(*args, **kwargs)
+        if self.data.get("dob"):
             self.fields["dob"].required = True
 
     def clean_mobile(self):
@@ -389,7 +389,7 @@ class JobPostForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        super(JobPostForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.user.is_superuser:
             self.fields["company"].required = True
@@ -405,48 +405,43 @@ class JobPostForm(ModelForm):
         else:
             self.fields["agency_recruiters"].required = False
 
-        if "vacancies" in self.data.keys() and self.data["vacancies"]:
+        if self.data.get("vacancies"):
             self.fields["vacancies"].required = True
 
-        if "salary_type" in self.data.keys() and self.data["salary_type"]:
+        if self.data.get("salary_type"):
             self.fields["max_salary"].required = True
             self.fields["min_salary"].required = True
 
-        if (
-            "min_salary" in self.data.keys()
-            and self.data["min_salary"]
-            or "max_salary" in self.data.keys()
-            and self.data["max_salary"]
-        ):
+        if self.data.get("min_salary") or self.data.get("max_salary"):
             self.fields["salary_type"].required = True
 
-        if "min_salary" in self.data.keys() and self.data["min_salary"]:
+        if self.data.get("min_salary"):
             self.fields["salary_type"].required = True
             self.fields["min_salary"].required = True
-        if "max_salary" in self.data.keys() and self.data["max_salary"]:
+        if self.data.get("max_salary"):
             self.fields["max_salary"].required = True
             self.fields["salary_type"].required = True
 
-        if "final_industry" in self.data.keys():
+        if "final_industry" in self.data:
             if len(self.data["final_industry"]) > 2:
                 self.fields["industry"].required = False
             else:
                 self.fields["industry"].required = True
-        if "final_skills" in self.data.keys():
+        if "final_skills" in self.data:
             if len(self.data["final_skills"]) > 2:
                 self.fields["skills"].required = False
             else:
                 self.fields["skills"].required = True
-        if "final_edu_qualification" in self.data.keys():
+        if "final_edu_qualification" in self.data:
             if len(self.data["final_edu_qualification"]) > 2:
                 self.fields["edu_qualification"].required = False
             else:
                 self.fields["edu_qualification"].required = True
-        if "other_location" in self.data.keys():
+        if "other_location" in self.data:
             if len(self.data["other_location"]) != 0:
                 self.fields["location"].required = False
 
-        if "visa_required" in self.data.keys() and self.data["visa_required"]:
+        if self.data.get("visa_required"):
             self.fields["visa_country"].required = True
             self.fields["visa_type"].required = True
         else:
@@ -509,7 +504,7 @@ class JobPostForm(ModelForm):
         return title.replace("/", "-")
 
     def clean_vacancies(self):
-        if "vacancies" in self.data.keys() and self.data["vacancies"]:
+        if self.data.get("vacancies"):
             if int(self.data["vacancies"]) <= 0:
                 raise forms.ValidationError("Vacancies must be greater than zero")
             else:
@@ -517,7 +512,7 @@ class JobPostForm(ModelForm):
         return self.cleaned_data.get("vacancies")
 
     def clean_govt_exam_date(self):
-        if ("govt_exam_date", "govt_from_date", "govt_to_date") in self.data.keys():
+        if ("govt_exam_date", "govt_from_date", "govt_to_date") in self.data:
             date = self.cleaned_data["govt_exam_date"]
             from_date = self.data["govt_from_date"]
             to_date = self.data["govt_to_date"]
@@ -538,14 +533,14 @@ class JobPostForm(ModelForm):
                 return date
 
     def clean_govt_from_date(self):
-        if "govt_from_date" in self.data.keys():
+        if "govt_from_date" in self.data:
             date = self.cleaned_data["govt_from_date"]
             if str(date) < str(datetime.now().date()):
                 raise forms.ValidationError("The date cannot be in the past!")
             return date
 
     def clean_govt_to_date(self):
-        if "govt_to_date" in self.data.keys():
+        if "govt_to_date" in self.data:
             date = self.cleaned_data["govt_to_date"]
             if str(date) < str(datetime.now().date()):
                 raise forms.ValidationError("The date cannot be in the past!")
@@ -565,7 +560,7 @@ class JobPostForm(ModelForm):
                 raise forms.ValidationError("The date cannot be in the past!")
             if str(self.data["job_type"]) == "walk-in":
                 if (
-                    "walkin_to_date" in self.cleaned_data.keys()
+                    "walkin_to_date" in self.cleaned_data
                     and self.cleaned_data["walkin_to_date"] > date_time.date()
                 ):
                     return date_time
@@ -607,14 +602,14 @@ class JobPostForm(ModelForm):
         return self.data["company_name"]
 
     def clean_company_website(self):
-        if "company_website" in self.data and self.data["company_website"]:
+        if self.data.get("company_website"):
             if (
                 re.match(r"^http://", self.data["company_website"])
                 or re.match(r"^https://", self.data["company_website"])
                 or re.match(r"^www.", self.data["company_website"])
             ):
                 company = ""
-                if "company_id" in self.data.keys() and self.data["company_id"]:
+                if self.data.get("company_id"):
                     company = Company.objects.filter(id=self.data["company_id"])
                 if company:
                     companies = Company.objects.filter(
@@ -659,8 +654,8 @@ class MailTemplateForm(ModelForm):
         fields = ["subject", "message", "title"]
 
     def __init__(self, *args, **kwargs):
-        super(MailTemplateForm, self).__init__(*args, **kwargs)
-        if "mode" in self.data.keys() and self.data["mode"] == "send_mail":
+        super().__init__(*args, **kwargs)
+        if "mode" in self.data and self.data["mode"] == "send_mail":
             self.fields["recruiters"].required = True
 
     def clean_subject(self):
@@ -688,7 +683,7 @@ class EditCompanyForm(forms.ModelForm):
         fields = ["name", "website", "profile", "address", "level"]
 
     def __init__(self, *args, **kwargs):
-        super(EditCompanyForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_profile_pic(self):
         profile_pic = self.cleaned_data.get("profile_pic")
@@ -791,7 +786,7 @@ class ClientForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        super(ClientForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = AgencyCompany
@@ -822,10 +817,10 @@ class ResumeUploadForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        super(ResumeUploadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if "instance" in kwargs:
             self.fields["resume"].required = False
-        if "job_post" in self.data.keys() and self.data["job_post"]:
+        if self.data.get("job_post"):
             self.fields["job_post"].required = True
             self.fields["status"].required = True
 
@@ -897,7 +892,7 @@ class UserStatus(forms.Form):
             user_id = user.user.id
         else:
             user_id = user.resume_applicant.id
-        super(UserStatus, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["status"].initial = user.status
         self.fields["status"].widget.attrs.update(
             {"id": "user_status_" + str(user_id), "class": "user_status"}
@@ -910,7 +905,7 @@ class LoginForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request", None)
-        super(LoginForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self):
         email = self.cleaned_data.get("email")

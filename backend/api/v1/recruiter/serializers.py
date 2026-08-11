@@ -2,11 +2,13 @@
 Serializers for Recruiter/Employer API endpoints
 """
 
-from rest_framework import serializers
-from peeldb.models import User, Company, TeamInvitation
-from django.utils.crypto import get_random_string
-from django.utils import timezone
 from datetime import timedelta
+
+from django.utils import timezone
+from django.utils.crypto import get_random_string
+from rest_framework import serializers
+
+from peeldb.models import Company, TeamInvitation, User
 
 
 class CompanyBasicSerializer(serializers.ModelSerializer):

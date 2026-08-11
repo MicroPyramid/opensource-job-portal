@@ -3,7 +3,8 @@ URL routing for Recruiter API (Auth + Team Management + Jobs + Analytics)
 """
 
 from django.urls import path
-from . import views, auth_views, job_views, analytics_views
+
+from . import analytics_views, auth_views, job_views, views
 
 app_name = "recruiter"
 

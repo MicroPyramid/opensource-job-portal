@@ -1,6 +1,8 @@
-import django
 import os
+
+import django
 from splinter.browser import Browser
+
 from peeldb.models import User
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jobsp.settings_server")

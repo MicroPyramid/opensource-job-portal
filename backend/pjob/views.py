@@ -1,67 +1,64 @@
 import json
 import math
-import re
 import os
-import boto3
 import random
-
-from django.shortcuts import render, redirect
-from django.http.response import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.utils import timezone
+import re
 from datetime import date
-from django.db.models import Q, F, Case, When, Value
-from django.urls import reverse
-from django.template import loader, Template, Context
-from django.db.models import Count
-from django.core import serializers
-from django.contrib.auth import authenticate, login
-from django.utils.crypto import get_random_string
-from django.http import QueryDict
-from django.contrib.auth import load_backend
 
+import boto3
+from django.conf import settings
+from django.contrib.auth import authenticate, load_backend, login
+from django.contrib.auth.decorators import login_required
+from django.core import serializers
+from django.core.cache import cache
+from django.db.models import Case, Count, F, Prefetch, Q, Value, When
+from django.http import QueryDict
+from django.http.response import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.template import Context, Template, loader
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.crypto import get_random_string
+
+from dashboard.tasks import save_search_results, send_email
 from mpcomp.views import (
-    jobseeker_login_required,
-    get_prev_after_pages_count,
-    get_valid_skills_list,
-    get_meta_data,
-    get_valid_locations_list,
-    get_social_referer,
-    get_resume_data,
-    handle_uploaded_file,
-    get_valid_qualifications,
-    get_meta,
-    get_ordered_skill_degrees,
     get_404_meta,
+    get_meta,
+    get_meta_data,
+    get_ordered_skill_degrees,
+    get_prev_after_pages_count,
+    get_resume_data,
+    get_social_referer,
+    get_valid_locations_list,
+    get_valid_qualifications,
+    get_valid_skills_list,
+    handle_uploaded_file,
+    jobseeker_login_required,
     rand_string,
 )
 from peeldb.models import (
-    JobPost,
     AppliedJobs,
-    MetaData,
-    User,
     City,
-    Industry,
-    Skill,
-    Subscriber,
-    VisitedJobs,
-    State,
-    TechnicalSkill,
     Company,
-    UserEmail,
+    Industry,
+    JobPost,
+    MetaData,
     Qualification,
+    Skill,
+    State,
+    Subscriber,
+    TechnicalSkill,
+    User,
+    UserEmail,
+    VisitedJobs,
 )
 from psite.forms import (
+    AuthenticationForm,
     SubscribeForm,
     UserEmailRegisterForm,
-    AuthenticationForm,
 )
-from .refine_search import refined_search
-from django.db.models import Prefetch
-from django.core.cache import cache
-from dashboard.tasks import save_search_results, send_email
 
+from .refine_search import refined_search
 
 months = [
     {"Name": "Jan", "id": 1},
@@ -184,7 +181,7 @@ def jobs_applied(request):
         items_per_page = 15
         no_of_jobs = applied_jobs.count()
 
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         if (
             "page" in request.GET
             and bool(re.search(r"[0-9]", request.GET.get("page")))
@@ -283,7 +280,7 @@ def job_detail(request, job_title_slug, job_id):
                 },
                 status=404,
             )
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         meta_title = meta_description = ""
         meta = MetaData.objects.filter(name="job_detail_page")
         if meta:
@@ -347,7 +344,7 @@ def recruiter_profile(request, recruiter_name, **kwargs):
     )
     if user:
         items_per_page = 10
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -422,7 +419,7 @@ def recruiters(request, **kwargs):
             username__istartswith=request.POST.get("alphabet_value")
         )
     items_per_page = 45
-    no_pages = int(math.ceil(float(len(recruiters_list)) / items_per_page))
+    no_pages = math.ceil(float(len(recruiters_list)) / items_per_page)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect("/recruiters/")
@@ -484,7 +481,7 @@ def index(request, **kwargs):
     no_of_jobs = jobs_list.count()
 
     items_per_page = 20
-    no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+    no_pages = math.ceil(float(no_of_jobs) / items_per_page)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect(reverse("jobs:index"))
@@ -493,7 +490,7 @@ def index(request, **kwargs):
         page, no_pages
     )
     field = get_social_referer(request)
-    show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+    show_pop = bool(field == "fb" or field == "tw" or field == "ln")
     meta_title, meta_description, h1_tag = get_meta("jobs_list_page", {"page": page})
     data = {
         "job_list": jobs_list,
@@ -581,7 +578,7 @@ def job_locations(request, location, **kwargs):
         if request.GET.get("job_type"):
             job_list = job_list.filter_and(job_type__in=[request.GET.get("job_type")])
         no_of_jobs = job_list.count()
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -590,7 +587,7 @@ def job_locations(request, location, **kwargs):
             page, no_pages
         )
         field = get_social_referer(request)
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         meta_title, meta_description, h1_tag = get_meta_data(
             "location_jobs",
             {
@@ -733,7 +730,7 @@ def job_skills(request, skill, **kwargs):
         if request.GET.get("job_type"):
             job_list = job_list.filter_and(job_type__in=[request.GET.get("job_type")])
         no_of_jobs = job_list.count()
-        no_pages = int(math.ceil(float(no_of_jobs) / 20))
+        no_pages = math.ceil(float(no_of_jobs) / 20)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -744,7 +741,7 @@ def job_skills(request, skill, **kwargs):
         )
 
         field = get_social_referer(request)
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         meta_title = meta_description = h1_tag = ""
         final_edu = ", ".join(final_edu)
         if searched_edu and not searched_skills:
@@ -868,7 +865,7 @@ def job_industries(request, industry, **kwargs):
     if job_list:
         no_of_jobs = job_list.count()
         items_per_page = 20
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -879,7 +876,7 @@ def job_industries(request, industry, **kwargs):
         )
 
         field = get_social_referer(request)
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         meta_title = meta_description = h1_tag = ""
         meta = MetaData.objects.filter(name="industry_jobs")
         if meta:
@@ -935,7 +932,7 @@ def job_industries(request, industry, **kwargs):
                 "meta_description": meta_description,
                 "job_search": True,
                 "reason": reason,
-                "data_empty": False if searched_industry else True,
+                "data_empty": not searched_industry,
             },
             status=200 if searched_industry else 404,
         )
@@ -1138,7 +1135,7 @@ def jobposts_by_date(request, year, month, date, **kwargs):
             },
             status=404,
         )
-    no_pages = int(math.ceil(float(len(results)) / 20))
+    no_pages = math.ceil(float(len(results)) / 20)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect(current_url)
@@ -1365,7 +1362,7 @@ def full_time_jobs(request, **kwargs):
 
     no_of_jobs = jobs_list.count()
     items_per_page = 20
-    no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+    no_pages = math.ceil(float(no_of_jobs) / items_per_page)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect(reverse("full_time_jobs"))
@@ -1375,7 +1372,7 @@ def full_time_jobs(request, **kwargs):
         page, no_pages
     )
     field = get_social_referer(request)
-    show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+    show_pop = bool(field == "fb" or field == "tw" or field == "ln")
     meta_title, meta_description, h1_tag = get_meta("full_time_jobs", {"page": page})
     data = {
         "job_list": jobs_list,
@@ -1411,18 +1408,18 @@ def internship_jobs(request, **kwargs):
         .prefetch_related("location", "skills")[:9]
     )
     no_of_jobs = jobs_list.count()
-    no_pages = int(math.ceil(float(no_of_jobs) / 20))
+    no_pages = math.ceil(float(no_of_jobs) / 20)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect(reverse("internship_jobs"))
 
     jobs_list = jobs_list[(page - 1) * 20 : page * 20]
-    prev_page, previous_page, aft_page, after_page = get_prev_after_pages_count(
+    _prev_page, _previous_page, _aft_page, _after_page = get_prev_after_pages_count(
         page, no_pages
     )
     field = get_social_referer(request)
-    show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
-    meta_title, meta_description, h1_tag = get_meta("internship_jobs", {"page": page})
+    show_pop = bool(field == "fb" or field == "tw" or field == "ln")
+    meta_title, meta_description, _h1_tag = get_meta("internship_jobs", {"page": page})
     return render(
         request,
         "internship.html",
@@ -1469,7 +1466,7 @@ def city_internship_jobs(request, location, **kwargs):
 
     no_of_jobs = jobs_list.count()
     items_per_page = 20
-    no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+    no_pages = math.ceil(float(no_of_jobs) / items_per_page)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect(current_url)
@@ -1479,7 +1476,7 @@ def city_internship_jobs(request, location, **kwargs):
         page, no_pages
     )
     field = get_social_referer(request)
-    show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+    show_pop = bool(field == "fb" or field == "tw" or field == "ln")
     meta_title, meta_description, h1_tag = get_meta_data(
         "location_internship_jobs",
         {
@@ -1540,7 +1537,7 @@ def walkin_jobs(request, **kwargs):
 
     no_of_jobs = jobs_list.count()
     items_per_page = 20
-    no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+    no_pages = math.ceil(float(no_of_jobs) / items_per_page)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect(reverse("walkin_jobs"))
@@ -1551,7 +1548,7 @@ def walkin_jobs(request, **kwargs):
     )
     current_date = timezone.now()
     field = get_social_referer(request)
-    show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+    show_pop = bool(field == "fb" or field == "tw" or field == "ln")
     meta_title, meta_description, h1_tag = get_meta("walkin_jobs", {"page": page})
     data = {
         "job_list": jobs_list,
@@ -1595,7 +1592,7 @@ def government_jobs(request, **kwargs):
 
     no_of_jobs = jobs_list.count()
     items_per_page = 20
-    no_pages = int(math.ceil(float(len(jobs_list)) / items_per_page))
+    no_pages = math.ceil(float(len(jobs_list)) / items_per_page)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect(reverse("government_jobs"))
@@ -1604,7 +1601,7 @@ def government_jobs(request, **kwargs):
         page, no_pages
     )
     field = get_social_referer(request)
-    show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+    show_pop = bool(field == "fb" or field == "tw" or field == "ln")
     meta_title, meta_description, h1_tag = get_meta("government_jobs", {"page": page})
     data = {
         "job_list": jobs_list,
@@ -1662,7 +1659,7 @@ def each_company_jobs(request, company_name, **kwargs):
             .order_by("-published_on")
         )
         no_of_jobs = job_list.count()
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -1674,7 +1671,7 @@ def each_company_jobs(request, company_name, **kwargs):
 
         jobs_list = job_list[(page - 1) * items_per_page : page * items_per_page]
         field = get_social_referer(request)
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         meta_title = meta_description = h1_tag = ""
         meta = MetaData.objects.filter(name="company_jobs")
         if meta:
@@ -1724,7 +1721,7 @@ def companies(request, **kwargs):
         companies = companies.filter(name__istartswith=alphabet_value)
     no_of_jobs = companies.count()
     items_per_page = 48
-    no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+    no_pages = math.ceil(float(no_of_jobs) / items_per_page)
     page = get_page_number(request, kwargs, no_pages)
     if not page:
         return HttpResponseRedirect(reverse("companies"))
@@ -1808,7 +1805,7 @@ def skill_fresher_jobs(request, skill_name, **kwargs):
     if jobs_list:
         no_of_jobs = jobs_list.count()
         items_per_page = 20
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -1817,7 +1814,7 @@ def skill_fresher_jobs(request, skill_name, **kwargs):
         )
         jobs_list = jobs_list[(page - 1) * items_per_page : page * items_per_page]
         field = get_social_referer(request)
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         meta_title, meta_description, h1_tag = get_meta_data(
             "skill_fresher_jobs",
             {
@@ -1939,7 +1936,7 @@ def location_fresher_jobs(request, city_name, **kwargs):
     if jobs_list:
         no_of_jobs = jobs_list.count()
         items_per_page = 20
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -1948,7 +1945,7 @@ def location_fresher_jobs(request, city_name, **kwargs):
         )
         jobs_list = jobs_list[(page - 1) * items_per_page : page * items_per_page]
         field = get_social_referer(request)
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         meta_title, meta_description, h1_tag = get_meta_data(
             "location_fresher_jobs",
             {
@@ -2082,7 +2079,7 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
     if jobs_list:
         no_of_jobs = jobs_list.count()
         items_per_page = 20
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -2091,7 +2088,7 @@ def skill_location_walkin_jobs(request, skill_name, **kwargs):
         )
         jobs_list = jobs_list[(page - 1) * items_per_page : page * items_per_page]
         field = get_social_referer(request)
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         if final_locations:
             meta_title, meta_description, h1_tag = get_meta_data(
                 "location_walkin_jobs",
@@ -2236,7 +2233,7 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
     if jobs_list:
         no_of_jobs = jobs_list.count()
         items_per_page = 20
-        no_pages = int(math.ceil(float(no_of_jobs) / items_per_page))
+        no_pages = math.ceil(float(no_of_jobs) / items_per_page)
         page = get_page_number(request, kwargs, no_pages)
         if not page:
             return HttpResponseRedirect(current_url)
@@ -2245,7 +2242,7 @@ def skill_location_wise_fresher_jobs(request, skill_name, city_name, **kwargs):
         )
         jobs_list = jobs_list[(page - 1) * items_per_page : page * items_per_page]
         field = get_social_referer(request)
-        show_pop = True if field == "fb" or field == "tw" or field == "ln" else False
+        show_pop = bool(field == "fb" or field == "tw" or field == "ln")
         meta_title, meta_description, h1_tag = get_meta_data(
             "skill_location_fresher_jobs",
             {
@@ -2622,7 +2619,7 @@ def user_subscribe(request):
         validate_subscribe = SubscribeForm(request.POST)
         email = request.POST.get("email")
         user = User.objects.filter(email__iexact=email).first()
-        if user and not user.user_type == "JS":
+        if user and user.user_type != "JS":
             data = {
                 "error": True,
                 "response_message": (
@@ -2656,9 +2653,7 @@ def user_subscribe(request):
                 all_subscribers = all_subscribers.filter(
                     skill__in=request.POST.getlist("skill")
                 )
-                if int(all_subscribers.count()) != int(
-                    len(request.POST.getlist("skill"))
-                ):
+                if int(all_subscribers.count()) != len(request.POST.getlist("skill")):
                     for skill in request.POST.getlist("skill"):
                         skill = Skill.objects.get(id=skill)
                         sub_code = subscribers_creation_with_skills(
