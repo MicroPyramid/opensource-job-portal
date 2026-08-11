@@ -1,26 +1,47 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Design System Theme — see /DESIGN_SYSTEM.md
+   Carried over verbatim from recruiter/src/app.css. Both apps run Tailwind 4,
+   so the token block is identical; do not restyle these values here. */
+@theme {
+  /* Primary Colors */
+  --color-primary: #0a66c2;
+  --color-primary-hover: #004182;
+
+  /* Neutral Colors */
+  --color-muted: #666666;
+  --color-border: #e5e5e5;
+  --color-surface: #f5f5f5;
+
+  /* Semantic Colors */
+  --color-success: #057642;
+  --color-success-light: #dff2e7;
+  --color-warning: #915907;
+  --color-warning-light: #fcf0dc;
+  --color-error: #cc1016;
+  --color-error-light: #fbeaeb;
+
+  /* Font Family - System Fonts */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Focus visible styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
