@@ -13,5 +13,6 @@ export interface PaginatedResponse<T> {
 }
 
 // Re-export all types from individual files
+export * from './auth';
 export * from './jobs';
 export * from './search';

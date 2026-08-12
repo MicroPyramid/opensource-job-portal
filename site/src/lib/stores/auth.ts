@@ -11,7 +11,7 @@
 
 import { derived } from 'svelte/store';
 import { page } from '$app/stores';
-import type { User } from '$lib/api/auth';
+import type { User } from '$lib/types/auth';
 
 export interface AuthState {
 	user: User | null;

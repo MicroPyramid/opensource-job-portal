@@ -1,6 +1,6 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
-import type { User } from '$lib/api/auth';
+import type { User } from '$lib/types/auth';
 
 declare global {
 	namespace App {
