@@ -15,6 +15,8 @@ from mpcomp.views import (
     get_prev_after_pages_count,
     permission_required,
 )
+from peeldb.choices import EXPERIENCE_MONTHS as MONTHS
+from peeldb.choices import JOB_EXPERIENCE_YEARS as YEARS
 from peeldb.models import (
     GOV_JOB_TYPE,
     JOB_TYPE,
@@ -30,19 +32,19 @@ from peeldb.models import (
     Skill,
     User,
 )
-from recruiter.forms import MONTHS, YEARS, JobPostForm
-from recruiter.views import (
-    add_interview_location,
-    add_other_functional_area,
-    add_other_qualifications,
-    add_other_skills,
-)
 
 from ..forms import (
+    JobPostForm,
     JobPostTitleForm,
 )
 from ..tasks import (
     send_email,
+)
+from .job_helpers import (
+    add_interview_location,
+    add_other_functional_area,
+    add_other_qualifications,
+    add_other_skills,
 )
 
 # Functions to move here from main views.py:

@@ -20,10 +20,10 @@ from peeldb.models import (
     Menu,
     User,
 )
-from recruiter.forms import MenuForm
 
 from ..forms import (
     CompanyForm,
+    MenuForm,
 )
 
 # Functions to move here from main views.py:

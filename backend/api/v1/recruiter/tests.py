@@ -568,3 +568,99 @@ class GoogleSignupTokenTests(NoSearchIndexMixin, TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordStrengthTests(NoSearchIndexMixin, TestCase):
+    """
+    AUTH_PASSWORD_VALIDATORS was absent from settings. Django treats a missing
+    setting as an empty list, so every validate_password() call ran zero checks
+    and "password123" sailed through registration, reset and change-password.
+
+    These pin the four validators. If the setting is dropped again, or a
+    serializer stops passing the user, one of these fails.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.recruiter = make_recruiter("strength@acme.test")
+        self.recruiter.set_password("OriginalPass123")
+        self.recruiter.save()
+        self.client.force_authenticate(user=self.recruiter)
+        self.url = reverse("api:v1:recruiter:change-password")
+
+    def change_to(self, new_password):
+        return self.client.post(
+            self.url,
+            {
+                "old_password": "OriginalPass123",
+                "new_password": new_password,
+                "confirm_password": new_password,
+            },
+            format="json",
+        )
+
+    def assert_unchanged(self, response):
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.recruiter.refresh_from_db()
+        self.assertTrue(self.recruiter.check_password("OriginalPass123"))
+
+    def test_rejects_a_common_password(self):
+        """CommonPasswordValidator — the case that exposed the missing setting."""
+        self.assert_unchanged(self.change_to("password123"))
+
+    def test_rejects_an_all_numeric_password(self):
+        """NumericPasswordValidator."""
+        self.assert_unchanged(self.change_to("859213476"))
+
+    def test_rejects_a_password_resembling_the_email(self):
+        """
+        UserAttributeSimilarityValidator, which only runs when
+        validate_password() is handed the user — so this also pins that the
+        serializer passes `self.context["request"].user`.
+        """
+        self.assert_unchanged(self.change_to("strength@acme.test"))
+
+    def test_accepts_a_strong_password(self):
+        response = self.change_to("Tr0ubad0ur-Vex9")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.recruiter.refresh_from_db()
+        self.assertTrue(self.recruiter.check_password("Tr0ubad0ur-Vex9"))
+
+    def test_registration_rejects_a_common_password(self):
+        """The same validators must apply on the way in, not just on change."""
+        response = self.client.post(
+            reverse("api:v1:recruiter:register"),
+            {
+                "account_type": "recruiter",
+                "first_name": "Weak",
+                "last_name": "Signup",
+                "email": "weak-signup@acme.test",
+                "password": "password123",
+                "confirm_password": "password123",
+                "agree_to_terms": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(User.objects.filter(email="weak-signup@acme.test").exists())
+
+    def test_registration_rejects_a_password_matching_the_email(self):
+        """Pins the unsaved-User instance passed from RegisterSerializer."""
+        response = self.client.post(
+            reverse("api:v1:recruiter:register"),
+            {
+                "account_type": "recruiter",
+                "first_name": "Same",
+                "last_name": "Asemail",
+                "email": "sameasemail@acme.test",
+                "password": "sameasemail@acme.test",
+                "confirm_password": "sameasemail@acme.test",
+                "agree_to_terms": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(User.objects.filter(email="sameasemail@acme.test").exists())

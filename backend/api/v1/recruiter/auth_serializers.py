@@ -62,9 +62,19 @@ class RegisterSerializer(serializers.Serializer):
                 {"confirm_password": "Passwords do not match"}
             )
 
-        # Validate password strength
+        # Validate password strength. The user does not exist yet, so pass an
+        # unsaved instance — UserAttributeSimilarityValidator only reads
+        # attributes off it, and without one it silently does nothing.
         try:
-            validate_password(data["password"])
+            validate_password(
+                data["password"],
+                User(
+                    email=data.get("email", ""),
+                    username=data.get("email", ""),
+                    first_name=data.get("first_name", ""),
+                    last_name=data.get("last_name", ""),
+                ),
+            )
         except DjangoValidationError as e:
             raise serializers.ValidationError({"password": list(e.messages)})
 
@@ -262,8 +272,10 @@ class ResetPasswordSerializer(serializers.Serializer):
                 {"confirm_password": "Passwords do not match"}
             )
 
+        # validate_token stashed the user; pass it so the new password cannot
+        # just be the account's own email or name.
         try:
-            validate_password(data["password"])
+            validate_password(data["password"], self.context.get("user"))
         except DjangoValidationError as e:
             raise serializers.ValidationError({"password": list(e.messages)})
 
@@ -293,7 +305,7 @@ class ChangePasswordSerializer(serializers.Serializer):
             )
 
         try:
-            validate_password(data["new_password"])
+            validate_password(data["new_password"], self.context["request"].user)
         except DjangoValidationError as e:
             raise serializers.ValidationError({"new_password": list(e.messages)})
 

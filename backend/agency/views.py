@@ -13,6 +13,7 @@ from mpcomp.views import (
     get_prev_after_pages_count,
     recruiter_login_required,
 )
+from peeldb.choices import JOB_EXPERIENCE_YEARS as YEARS
 from peeldb.models import (
     MONTHS,
     POST,
@@ -28,7 +29,8 @@ from peeldb.models import (
     Skill,
     User,
 )
-from recruiter.forms import YEARS, AgencyWorkLogForm, ClientForm
+
+from .forms import AgencyWorkLogForm, ClientForm
 
 
 # Create your views here.

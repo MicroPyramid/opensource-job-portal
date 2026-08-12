@@ -3,6 +3,7 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 from django.urls import re_path as url
+from django.views.generic import RedirectView
 
 from candidate.views import (
     alert_subscribe_verification,
@@ -59,7 +60,6 @@ from psite.views import (
     pages,
     sitemap,
 )
-from recruiter.views import post_job
 from search.views import (
     city_auto_search,
     custom_walkins,
@@ -177,7 +177,17 @@ urlpatterns = [
     url(r"^dashboard/", include("dashboard.urls", namespace="dashboard")),
     url(r"^recruiter/", include("recruiter.urls", namespace="recruiter")),
     url(r"^agency/", include("agency.urls", namespace="agency")),
-    url(r"^post-job/$", post_job, name="post_job"),
+    # Migrated to the SvelteKit recruiter app. Kept as a redirect rather than
+    # deleted because base.html, auth_base.html, base_with_tailwind_megamenu.html
+    # and sitemap.html still reverse the name — it goes when they do.
+    url(
+        r"^post-job/$",
+        RedirectView.as_view(
+            url=f"{settings.RECRUITER_FRONTEND_URL.rstrip('/')}/signup/",
+            permanent=False,
+        ),
+        name="post_job",
+    ),
     url(r"^bounces/$", bounces),
     url(r"registration/using_email/$", register_using_email, name="register_email"),
     url(r"applicant/login/$", login_user_email, name="login_user"),

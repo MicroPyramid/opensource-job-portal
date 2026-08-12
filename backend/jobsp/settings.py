@@ -214,6 +214,34 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
 
+# This setting was absent, and Django treats a missing AUTH_PASSWORD_VALIDATORS
+# as an empty list — so every validate_password() call in the API ran zero
+# checks and accepted "password123". Registration, password reset and change
+# password were all affected.
+#
+# Only new and changed passwords are validated; existing hashes are untouched.
+AUTH_PASSWORD_VALIDATORS = [
+    # Rejects a password that looks like the user's own email or name. Only
+    # runs when validate_password() is given the user, which is why the
+    # serializers pass one.
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "OPTIONS": {
+            "user_attributes": ("username", "first_name", "last_name", "email")
+        },
+    },
+    # Matches the min_length already declared on the password serializer
+    # fields, so the two cannot drift apart.
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
+    },
+    # The one that catches "password123" — Django ships a list of the 20,000
+    # most common passwords.
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

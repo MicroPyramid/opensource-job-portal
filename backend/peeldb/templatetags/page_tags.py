@@ -12,7 +12,9 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Count, Prefetch, Q
 
-from candidate.forms import MONTHS, YEARS
+from peeldb.choices import EXPERIENCE_MONTHS as MONTHS
+from peeldb.choices import PROFILE_EXPERIENCE_YEARS as YEARS
+from peeldb.forms import UserStatus
 from peeldb.models import (
     DEGREE_TYPES,
     AppliedJobs,
@@ -26,7 +28,6 @@ from peeldb.models import (
     User,
     UserMessage,
 )
-from recruiter.forms import UserStatus
 
 register = template.Library()
 

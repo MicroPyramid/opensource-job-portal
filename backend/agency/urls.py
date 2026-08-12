@@ -10,10 +10,6 @@ For now, this file contains minimal URLs to prevent import errors.
 from django.urls import re_path as url
 from django.views.generic import RedirectView
 
-from recruiter.views import (
-    how_it_works,
-)
-
 from .views import (
     add_branch,
     add_client,
@@ -43,7 +39,6 @@ urlpatterns = [
         name="index",
     ),
     url(r"^dashboard/$", dashboard, name="dashboard"),
-    url(r"^how-it-works/$", how_it_works, name="how_it_works"),
     # Agency-specific features (client management, billing)
     url(r"^work-log/$", user_work_log, name="user_work_log"),
     url(

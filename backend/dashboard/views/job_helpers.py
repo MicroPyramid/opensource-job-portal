@@ -1,6 +1,9 @@
 """
-Job Helper Functions
-Helper functions and utilities for job posting operations
+Helpers for job posting operations.
+
+Moved out of recruiter/views/ 2026-08-12: dashboard/views/job_management.py was
+the only caller, and the file already imported dashboard.tasks, so it was
+pointing back at its own consumer.
 """
 
 import json
@@ -16,19 +19,6 @@ from peeldb.models import (
     Qualification,
     Skill,
 )
-
-# Job Helper Functions will be moved here
-# TODO: Move the following functions from the main views.py:
-# - add_other_skills()
-# - add_other_qualifications()
-# - add_other_functional_area()
-# - adding_keywords()
-# - add_interview_location()
-# - set_other_fields()
-# - adding_other_fields_data()
-# - save_job_post()
-# - checking_error_value()
-# - retreving_form_errors()
 
 
 def add_other_skills(job_post, data, user):
