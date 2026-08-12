@@ -8,6 +8,8 @@
 import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { JobUpdateData, JobFormMetadata, JobDetail } from '$lib/types';
+import { API_BASE_URL } from '$lib/config/env';
+import { clearAuthCookies } from '$lib/server/auth';
 
 /**
  * Load function - runs on server before page renders
@@ -27,15 +29,14 @@ export const load: PageServerLoad = async ({ params, cookies, fetch, url }) => {
 	try {
 		// Fetch job details and form metadata in parallel
 		const [jobResponse, metadataResponse] = await Promise.all([
-			fetch(`http://localhost:8000/api/v1/recruiter/jobs/${jobId}/`),
-			fetch('http://localhost:8000/api/v1/recruiter/jobs/metadata/')
+			fetch(`${API_BASE_URL}/recruiter/jobs/${jobId}/`),
+			fetch(`${API_BASE_URL}/recruiter/jobs/metadata/`)
 		]);
 
 		// Handle job fetch errors
 		if (!jobResponse.ok) {
 			if (jobResponse.status === 401) {
-				cookies.delete('access_token', { path: '/' });
-				cookies.delete('refresh_token', { path: '/' });
+				clearAuthCookies(cookies);
 				throw redirect(302, '/login?redirect=' + encodeURIComponent(url.pathname));
 			}
 			if (jobResponse.status === 404) {
@@ -47,8 +48,7 @@ export const load: PageServerLoad = async ({ params, cookies, fetch, url }) => {
 		// Handle metadata fetch errors
 		if (!metadataResponse.ok) {
 			if (metadataResponse.status === 401) {
-				cookies.delete('access_token', { path: '/' });
-				cookies.delete('refresh_token', { path: '/' });
+				clearAuthCookies(cookies);
 				throw redirect(302, '/login?redirect=' + encodeURIComponent(url.pathname));
 			}
 			throw error(metadataResponse.status, `Failed to load form metadata: ${metadataResponse.statusText}`);
@@ -95,7 +95,7 @@ export const actions: Actions = {
 			console.log('Updating job data:', JSON.stringify(jobData, null, 2));
 
 			// Update job
-			const response = await fetch(`http://localhost:8000/api/v1/recruiter/jobs/${jobId}/update/`, {
+			const response = await fetch(`${API_BASE_URL}/recruiter/jobs/${jobId}/update/`, {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json'
@@ -157,7 +157,7 @@ export const actions: Actions = {
 			const jobData = extractJobDataFromForm(formData);
 
 			// Step 1: Update job
-			const updateResponse = await fetch(`http://localhost:8000/api/v1/recruiter/jobs/${jobId}/update/`, {
+			const updateResponse = await fetch(`${API_BASE_URL}/recruiter/jobs/${jobId}/update/`, {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json'
@@ -178,7 +178,7 @@ export const actions: Actions = {
 			// Step 2: Publish the job if it's not already published
 			if (updateResult.job.status !== 'Live') {
 				const publishResponse = await fetch(
-					`http://localhost:8000/api/v1/recruiter/jobs/${jobId}/publish/`,
+					`${API_BASE_URL}/recruiter/jobs/${jobId}/publish/`,
 					{
 						method: 'POST',
 						headers: {

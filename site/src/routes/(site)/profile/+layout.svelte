@@ -86,7 +86,7 @@
 		<nav class="mb-5" aria-label="Breadcrumb">
 			<ol class="flex items-center gap-2 text-sm text-gray-400">
 				<li>
-					<a href="/jobseeker-dashboard/" class="hover:text-white transition-colors">Dashboard</a>
+					<a href="/profile/" class="hover:text-white transition-colors">Dashboard</a>
 				</li>
 				<li class="flex items-center gap-2">
 					<ChevronRight size={14} />

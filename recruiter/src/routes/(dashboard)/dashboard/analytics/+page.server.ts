@@ -1,5 +1,6 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { API_BASE_URL } from '$lib/config/env';
 
 export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
 	try {
@@ -7,7 +8,7 @@ export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
 
 		// Fetch application analytics from API
 		const response = await fetch(
-			`http://localhost:8000/api/v1/recruiter/analytics/applications/?period=${period}`
+			`${API_BASE_URL}/recruiter/analytics/applications/?period=${period}`
 		);
 
 		if (!response.ok) {

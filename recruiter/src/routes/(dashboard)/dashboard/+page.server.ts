@@ -1,10 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { API_BASE_URL } from '$lib/config/env';
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
 	try {
 		// Fetch dashboard stats with 30-day period for trends
-		const statsResponse = await fetch('http://localhost:8000/api/v1/recruiter/dashboard/stats/?period=30d');
+		const statsResponse = await fetch(`${API_BASE_URL}/recruiter/dashboard/stats/?period=30d`);
 
 		if (!statsResponse.ok) {
 			if (statsResponse.status === 401) {

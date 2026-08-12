@@ -16,118 +16,70 @@
 		AlertCircle
 	} from '@lucide/svelte';
 
-	type ApplicationStatus = 'Under Review' | 'Interview' | 'Rejected' | 'Pending';
+	import type { AppliedJob, ApplicationStatus } from '$lib/types/jobs';
 
-	interface Application {
-		id: number;
-		jobTitle: string;
-		company: string;
-		companyLogo: string | null;
-		location: string;
-		type: string;
-		status: ApplicationStatus;
-		applied: string;
-	}
-
-	// Mock applications data
-	let applications = $state<Application[]>([
-		{
-			id: 1,
-			jobTitle: 'Frontend Developer',
-			company: 'TechCorp',
-			companyLogo: null,
-			location: 'Bangalore',
-			type: 'Full-time',
-			status: 'Under Review',
-			applied: '2025-04-15'
-		},
-		{
-			id: 2,
-			jobTitle: 'Backend Engineer',
-			company: 'DataSoft',
-			companyLogo: null,
-			location: 'Remote',
-			type: 'Full-time',
-			status: 'Interview',
-			applied: '2025-04-10'
-		},
-		{
-			id: 3,
-			jobTitle: 'Full Stack Developer',
-			company: 'WebSolutions',
-			companyLogo: null,
-			location: 'Mumbai',
-			type: 'Contract',
-			status: 'Pending',
-			applied: '2025-04-08'
-		},
-		{
-			id: 4,
-			jobTitle: 'DevOps Engineer',
-			company: 'CloudTech',
-			companyLogo: null,
-			location: 'Hyderabad',
-			type: 'Full-time',
-			status: 'Rejected',
-			applied: '2025-04-05'
-		}
-	]);
+	let { data } = $props<{ data: { applications: AppliedJob[]; loadError?: string } }>();
 
 	let filterStatus = $state<ApplicationStatus | 'All'>('All');
 	let searchQuery = $state('');
 
+	const applications = $derived(data.applications ?? []);
+	const errorMessage = $derived(data.loadError ?? '');
+
+	// Keys match POST_STATUS in peeldb.models — the recruiter sets these from
+	// their applicants screen, so they are the only values that can arrive.
 	const statusConfig: Record<
 		ApplicationStatus,
-		{ icon: typeof AlertCircle; color: string; bgColor: string }
+		{ icon: typeof AlertCircle; color: string; bgColor: string; label: string }
 	> = {
-		'Under Review': {
+		Pending: {
+			icon: Clock,
+			color: 'text-warning',
+			bgColor: 'bg-warning-light',
+			label: 'Pending'
+		},
+		Shortlisted: {
 			icon: Eye,
 			color: 'text-primary',
-			bgColor: 'bg-primary/10'
+			bgColor: 'bg-primary/10',
+			label: 'Shortlisted'
 		},
-		Interview: {
+		Hired: {
 			icon: CheckCircle,
 			color: 'text-success',
-			bgColor: 'bg-success-light'
+			bgColor: 'bg-success-light',
+			label: 'Hired'
 		},
 		Rejected: {
 			icon: XCircle,
 			color: 'text-error',
-			bgColor: 'bg-error-light'
-		},
-		Pending: {
-			icon: Clock,
-			color: 'text-warning',
-			bgColor: 'bg-warning-light'
+			bgColor: 'bg-error-light',
+			label: 'Not selected'
 		}
 	};
 
 	const filteredApplications = $derived(
-		applications.filter((app) => {
+		applications.filter((app: AppliedJob) => {
 			const matchesStatus = filterStatus === 'All' || app.status === filterStatus;
-			const matchesSearch =
-				searchQuery === '' ||
-				app.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				app.company.toLowerCase().includes(searchQuery.toLowerCase());
-			return matchesStatus && matchesSearch;
+			if (!matchesStatus) return false;
+			if (searchQuery === '') return true;
+			const q = searchQuery.toLowerCase();
+			return (
+				app.job.title.toLowerCase().includes(q) ||
+				app.job.company_name?.toLowerCase().includes(q)
+			);
 		})
 	);
 
 	const stats = $derived({
 		total: applications.length,
-		underReview: applications.filter((a) => a.status === 'Under Review').length,
-		interview: applications.filter((a) => a.status === 'Interview').length,
-		pending: applications.filter((a) => a.status === 'Pending').length
+		shortlisted: applications.filter((a: AppliedJob) => a.status === 'Shortlisted').length,
+		hired: applications.filter((a: AppliedJob) => a.status === 'Hired').length,
+		pending: applications.filter((a: AppliedJob) => a.status === 'Pending').length
 	});
 
-	function handleWithdraw(appId: number) {
-		if (confirm('Are you sure you want to withdraw this application?')) {
-			applications = applications.filter((app) => app.id !== appId);
-		}
-	}
-
 	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString('en-US', {
+		return new Date(dateString).toLocaleDateString('en-IN', {
 			month: 'short',
 			day: 'numeric',
 			year: 'numeric'
@@ -153,7 +105,7 @@
 		<nav class="mb-6" aria-label="Breadcrumb">
 			<ol class="flex items-center gap-2 text-sm text-muted">
 				<li>
-					<a href="/jobseeker-dashboard/" class="hover:text-white transition-colors">Dashboard</a>
+					<a href="/profile/" class="hover:text-white transition-colors">Dashboard</a>
 				</li>
 				<li class="flex items-center gap-2">
 					<ChevronRight size={14} />
@@ -195,10 +147,16 @@
 					<span class="text-sm text-gray-300">Total:</span>
 					<span class="text-lg font-semibold ml-1">{stats.total}</span>
 				</div>
-				<div class="bg-success-light rounded-full px-4 py-2">
-					<span class="text-sm text-success">Interviews:</span>
-					<span class="text-lg font-semibold ml-1">{stats.interview}</span>
+				<div class="bg-primary/20 rounded-full px-4 py-2">
+					<span class="text-sm text-gray-300">Shortlisted:</span>
+					<span class="text-lg font-semibold ml-1">{stats.shortlisted}</span>
 				</div>
+				{#if stats.hired > 0}
+					<div class="bg-success-light rounded-full px-4 py-2">
+						<span class="text-sm text-success">Hired:</span>
+						<span class="text-lg font-semibold ml-1">{stats.hired}</span>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -228,45 +186,32 @@
 
 				<!-- Filter Tabs -->
 				<div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0">
-					<button
-						onclick={() => (filterStatus = 'All')}
-						class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all {filterStatus ===
-						'All'
-							? 'bg-primary text-white shadow-sm'
-							: 'bg-gray-100 text-muted hover:bg-gray-200'}"
-					>
-						All
-					</button>
-					<button
-						onclick={() => (filterStatus = 'Under Review')}
-						class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all {filterStatus ===
-						'Under Review'
-							? 'bg-primary text-white shadow-sm'
-							: 'bg-gray-100 text-muted hover:bg-gray-200'}"
-					>
-						Under Review
-					</button>
-					<button
-						onclick={() => (filterStatus = 'Interview')}
-						class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all {filterStatus ===
-						'Interview'
-							? 'bg-primary text-white shadow-sm'
-							: 'bg-gray-100 text-muted hover:bg-gray-200'}"
-					>
-						Interview
-					</button>
-					<button
-						onclick={() => (filterStatus = 'Pending')}
-						class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all {filterStatus ===
-						'Pending'
-							? 'bg-primary text-white shadow-sm'
-							: 'bg-gray-100 text-muted hover:bg-gray-200'}"
-					>
-						Pending
-					</button>
+					{#each ['All', 'Pending', 'Shortlisted', 'Hired', 'Rejected'] as const as tab (tab)}
+						<button
+							onclick={() => (filterStatus = tab)}
+							class="px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all {filterStatus ===
+							tab
+								? 'bg-primary text-white shadow-sm'
+								: 'bg-gray-100 text-muted hover:bg-gray-200'}"
+						>
+							{tab === 'All' ? 'All' : statusConfig[tab].label}
+						</button>
+					{/each}
 				</div>
 			</div>
 		</div>
+
+		{#if errorMessage}
+			<div
+				class="bg-error-light border border-error/20 text-error rounded-lg p-4 mb-6 flex items-start gap-3"
+				role="alert"
+			>
+				<AlertCircle size={18} class="flex-shrink-0 mt-0.5" />
+				<div class="flex-1">
+					<p class="font-medium">{errorMessage}</p>
+				</div>
+			</div>
+		{/if}
 
 		<!-- Applications List -->
 		{#if filteredApplications.length === 0}
@@ -297,8 +242,8 @@
 			</div>
 		{:else}
 			<div class="space-y-4">
-				{#each filteredApplications as app, i}
-					{@const config = statusConfig[app.status]}
+				{#each filteredApplications as app, i (app.id)}
+					{@const config = statusConfig[app.status as ApplicationStatus]}
 					{@const StatusIcon = config.icon}
 					<div
 						class="group bg-white rounded-lg p-5 lg:p-6 shadow-sm hover:shadow-lg border border-border transition-all"
@@ -308,28 +253,36 @@
 							<!-- Company Logo & Info -->
 							<div class="flex items-start gap-4 flex-1 min-w-0">
 								<div
-									class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-semibold text-primary flex-shrink-0"
+									class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-semibold text-primary flex-shrink-0 overflow-hidden"
 								>
-									{app.company.charAt(0)}
+									{#if app.job.company_logo}
+										<img
+											src={app.job.company_logo}
+											alt="{app.job.company_name} logo"
+											class="w-full h-full object-cover"
+										/>
+									{:else}
+										{app.job.company_name?.charAt(0) ?? '?'}
+									{/if}
 								</div>
 
 								<div class="flex-1 min-w-0">
 									<h3
 										class="text-lg font-semibold text-black mb-1 group-hover:text-primary transition-colors"
 									>
-										{app.jobTitle}
+										{app.job.title}
 									</h3>
 									<div class="flex items-center gap-2 text-sm text-muted mb-2">
 										<Building2 size={14} class="text-muted flex-shrink-0" />
-										<span class="truncate">{app.company}</span>
+										<span class="truncate">{app.job.company_name}</span>
 									</div>
 									<div class="flex flex-wrap items-center gap-3 text-sm text-muted">
 										<span class="flex items-center gap-1.5">
 											<MapPin size={14} class="text-muted" />
-											{app.location}
+											{app.job.location_display}
 										</span>
 										<span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-										<span>{app.type}</span>
+										<span>{app.job.job_type}</span>
 									</div>
 								</div>
 							</div>
@@ -341,33 +294,24 @@
 									class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium {config.bgColor} {config.color} w-fit"
 								>
 									<StatusIcon size={14} />
-									{app.status}
+									{config.label}
 								</span>
 
 								<!-- Applied Date -->
 								<div class="flex items-center gap-1.5 text-sm text-muted">
 									<Calendar size={14} class="text-muted" />
-									<span>Applied {formatDate(app.applied)}</span>
+									<span>Applied {formatDate(app.applied_on)}</span>
 								</div>
 
 								<!-- Action Buttons -->
 								<div class="flex items-center gap-2">
 									<a
-										href="/jobs/{app.id}/"
+										href="/jobs/{app.job.id}/"
 										class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-primary border border-primary rounded-full hover:bg-primary/10 transition-colors"
 									>
 										<ExternalLink size={14} />
 										<span>View Job</span>
 									</a>
-									{#if app.status !== 'Rejected'}
-										<button
-											onclick={() => handleWithdraw(app.id)}
-											class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-error border border-error rounded-full hover:bg-error-light transition-colors"
-										>
-											<XCircle size={14} />
-											<span>Withdraw</span>
-										</button>
-									{/if}
 								</div>
 							</div>
 						</div>
@@ -392,10 +336,11 @@
 						<h3 class="font-semibold text-black mb-1">Application Summary</h3>
 						<p class="text-sm text-muted">
 							You have {stats.total} application{stats.total !== 1 ? 's' : ''} in total.
-							{#if stats.interview > 0}
-								Congratulations on {stats.interview} interview{stats.interview !== 1
-									? 's'
-									: ''} scheduled!
+							{#if stats.hired > 0}
+								Congratulations — you have been hired for {stats.hired} of them!
+							{:else if stats.shortlisted > 0}
+								{stats.shortlisted} of them {stats.shortlisted === 1 ? 'has' : 'have'} been
+								shortlisted.
 							{/if}
 							Keep your profile updated to increase your chances of getting hired.
 						</p>

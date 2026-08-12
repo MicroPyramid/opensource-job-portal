@@ -43,7 +43,9 @@
 		{ value: 'Rejected', label: 'Rejected', count: data.stats.rejected }
 	]);
 
-	function updateFilters() {
+	// Shared by the filter navigation and the CSV export link so the export
+	// always carries exactly the filters currently on screen.
+	const filterParams = $derived.by(() => {
 		const params = new URLSearchParams();
 
 		if (selectedFilter !== 'all') {
@@ -54,7 +56,15 @@
 			params.set('search', searchQuery.trim());
 		}
 
-		goto(`?${params.toString()}`, { keepFocus: true, noScroll: true });
+		return params;
+	});
+
+	const exportUrl = $derived(
+		`/dashboard/jobs/${data.job.id}/applicants/download/?${filterParams.toString()}`
+	);
+
+	function updateFilters() {
+		goto(`?${filterParams.toString()}`, { keepFocus: true, noScroll: true });
 	}
 
 	function getStatusBadgeClass(status: string): string {
@@ -246,7 +256,7 @@
 
 			<!-- Download CSV Button -->
 			<a
-				href="/dashboard/jobs/{data.job.id}/applicants/download?status={selectedFilter !== 'all' ? selectedFilter : ''}&search={searchQuery}"
+				href={exportUrl}
 				class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-success transition-colors text-sm font-medium whitespace-nowrap"
 				title="Download applicants as CSV"
 			>

@@ -1,61 +1,29 @@
 <script>
   import '../../app.css';
 
-  import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { untrack } from 'svelte';
   import { AlertCircle, Loader2, Briefcase, Shield, Zap } from '@lucide/svelte';
 
-  let isLoading = false;
-  let loadingProvider = '';
-  let error = '';
+  /** @type {{ data: { googleAuthUrl: string | null, error: string | null } }} */
+  let { data } = $props();
 
-  onMount(() => {
-    const urlError = $page.url.searchParams.get('error');
-    if (urlError) {
-      error = getErrorMessage(urlError);
+  // The auth URL is resolved server-side, so signing in is a plain link —
+  // no token handling, and nothing to hydrate before the button works.
+  let isLoading = $state(false);
+  let loadingProvider = $state('');
+  let error = $state(untrack(() => data.error ?? ''));
+
+  function startGoogleLogin() {
+    if (!data.googleAuthUrl) {
+      error = 'Google sign-in is unavailable right now. Please try again shortly.';
+      return;
     }
-  });
-
-  /**
-   * @param {string} errorCode
-   */
-  function getErrorMessage(errorCode) {
-    /** @type {Record<string, string>} */
-    const errorMessages = {
-      'access_denied': 'Login was cancelled. Please try again.',
-      'invalid_request': 'Something went wrong. Please try again.',
-      'server_error': 'Server error occurred. Please try again later.',
-      'temporarily_unavailable': 'Service temporarily unavailable. Please try again later.'
-    };
-    return errorMessages[errorCode] || 'An error occurred during login. Please try again.';
+    isLoading = true;
+    loadingProvider = 'google';
   }
 
-  /**
-   * @param {string} provider
-   */
-  async function handleSocialLogin(provider) {
-    if (isLoading) return;
-
-    isLoading = true;
-    loadingProvider = provider;
-    error = '';
-
-    try {
-      if (provider === 'google') {
-        const { getGoogleAuthUrl } = await import('$lib/api/auth');
-        const redirectUri = window.location.origin + '/auth/google/callback';
-        const response = await getGoogleAuthUrl(redirectUri);
-        window.location.href = response.auth_url;
-      } else if (provider === 'facebook') {
-        error = 'Facebook login coming soon!';
-        isLoading = false;
-        loadingProvider = '';
-      }
-    } catch (err) {
-      error = err instanceof Error ? err.message : 'Failed to initiate login. Please try again.';
-      isLoading = false;
-      loadingProvider = '';
-    }
+  function showFacebookNotice() {
+    error = 'Facebook login coming soon!';
   }
 
   function clearError() {
@@ -159,10 +127,14 @@
         <!-- Social Login Buttons -->
         <div class="space-y-3">
           <!-- Google Login -->
-          <button
-            onclick={() => handleSocialLogin('google')}
-            disabled={isLoading}
-            class="w-full flex items-center justify-center gap-3 h-12 px-5 border border-border rounded-full bg-white text-black font-semibold hover:bg-surface hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          <a
+            href={data.googleAuthUrl ?? '/login/'}
+            onclick={startGoogleLogin}
+            aria-disabled={!data.googleAuthUrl || isLoading}
+            class="w-full flex items-center justify-center gap-3 h-12 px-5 border border-border rounded-full bg-white text-black font-semibold hover:bg-surface hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 transition-all {!data.googleAuthUrl ||
+            isLoading
+              ? 'opacity-50 cursor-not-allowed pointer-events-none'
+              : ''}"
           >
             {#if loadingProvider === 'google'}
               <Loader2 size={20} class="animate-spin" />
@@ -175,11 +147,11 @@
               </svg>
             {/if}
             <span>Sign in with Google</span>
-          </button>
+          </a>
 
           <!-- Facebook Login -->
           <button
-            onclick={() => handleSocialLogin('facebook')}
+            onclick={showFacebookNotice}
             disabled={isLoading}
             class="w-full flex items-center justify-center gap-3 h-12 px-5 bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >

@@ -283,3 +283,24 @@ class JobDetailSerializer(JobListSerializer):
             "govt_exam_date",
             "age_relaxation",
         ]
+
+
+class AppliedJobSerializer(serializers.ModelSerializer):
+    """
+    One row of "my applications" — the job, plus this user's application to it.
+
+    The job is nested with JobListSerializer so the applications page renders
+    the same card as every other job listing.
+    """
+
+    job = JobListSerializer(source="job_post", read_only=True)
+
+    class Meta:
+        model = AppliedJobs
+        fields = [
+            "id",
+            "job",
+            "status",
+            "applied_on",
+        ]
+        read_only_fields = fields

@@ -7,6 +7,7 @@
 import type { LayoutServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { getApiBaseUrl } from '$lib/config/env';
+import { clearAuthCookies } from '$lib/server/auth';
 
 export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 	// Check if user has auth cookies
@@ -37,8 +38,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 		console.error('Failed to load user:', error);
 
 		// If API call fails (e.g., invalid/expired token), clear cookies and redirect to login
-		cookies.delete('access_token', { path: '/' });
-		cookies.delete('refresh_token', { path: '/' });
+		clearAuthCookies(cookies);
 
 		throw redirect(302, '/login/');
 	}

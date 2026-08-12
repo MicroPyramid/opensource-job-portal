@@ -8,6 +8,8 @@
 import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { JobCreateData, JobFormMetadata } from '$lib/types';
+import { API_BASE_URL } from '$lib/config/env';
+import { clearAuthCookies } from '$lib/server/auth';
 
 /**
  * Load function - runs on server before page renders
@@ -26,14 +28,13 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 	try {
 		// Fetch form metadata (countries, states, cities, skills, etc.)
 		// The fetch function here is enhanced by hooks.server.ts to add Authorization header
-		const apiUrl = 'http://localhost:8000/api/v1/recruiter/jobs/metadata/';
+		const apiUrl = `${API_BASE_URL}/recruiter/jobs/metadata/`;
 		const response = await fetch(apiUrl);
 
 		if (!response.ok) {
 			if (response.status === 401) {
 				// Clear invalid tokens and redirect to login
-				cookies.delete('access_token', { path: '/' });
-				cookies.delete('refresh_token', { path: '/' });
+				clearAuthCookies(cookies);
 				throw redirect(302, '/login?redirect=' + encodeURIComponent(url.pathname));
 			}
 			throw error(response.status, `Failed to load form metadata: ${response.statusText}`);
@@ -47,7 +48,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 
 		if (copyFromJobId) {
 			try {
-				const jobResponse = await fetch(`http://localhost:8000/api/v1/recruiter/jobs/${copyFromJobId}/`);
+				const jobResponse = await fetch(`${API_BASE_URL}/recruiter/jobs/${copyFromJobId}/`);
 
 				if (jobResponse.ok) {
 					jobToCopy = await jobResponse.json();
@@ -103,7 +104,7 @@ export const actions: Actions = {
 			console.log('Sending job data:', JSON.stringify(jobData, null, 2));
 
 			// Create job with status 'Draft' (default in API)
-			const response = await fetch('http://localhost:8000/api/v1/recruiter/jobs/create/', {
+			const response = await fetch(`${API_BASE_URL}/recruiter/jobs/create/`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -165,7 +166,7 @@ export const actions: Actions = {
 			const jobData = extractJobDataFromForm(formData);
 
 			// Step 1: Create job (will be created as Draft by default)
-			const createResponse = await fetch('http://localhost:8000/api/v1/recruiter/jobs/create/', {
+			const createResponse = await fetch(`${API_BASE_URL}/recruiter/jobs/create/`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -186,7 +187,7 @@ export const actions: Actions = {
 
 			// Step 2: Publish the job
 			const publishResponse = await fetch(
-				`http://localhost:8000/api/v1/recruiter/jobs/${jobId}/publish/`,
+				`${API_BASE_URL}/recruiter/jobs/${jobId}/publish/`,
 				{
 					method: 'POST',
 					headers: {

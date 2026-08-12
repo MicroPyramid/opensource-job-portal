@@ -70,15 +70,6 @@ export async function getCurrentUser(): Promise<User> {
 }
 
 /**
- * Logout - blacklist refresh token
- */
-export async function logout(): Promise<void> {
-	const { getRefreshToken } = await import('$lib/utils/token-storage');
-	const refreshToken = getRefreshToken();
-	await ApiClient.post('/auth/logout/', { refresh: refreshToken });
-}
-
-/**
  * Disconnect Google account
  */
 export async function disconnectGoogle(): Promise<void> {

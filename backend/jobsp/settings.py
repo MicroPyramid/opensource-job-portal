@@ -30,8 +30,10 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "peeljobs@micropyramid.com"
 
 PEEL_URL = os.getenv("PEEL_URL", "http://peeljobs.com/")
 
-# Recruiter Frontend URL for team invitation emails
-RECRUITER_FRONTEND_URL = os.getenv("RECRUITER_FRONTEND_URL", "http://localhost:5173")
+# Recruiter Frontend URL for team invitation emails and the legacy
+# /recruiter/ redirects. The recruiter UI runs on 5174; 5173 is the job-seeker
+# site.
+RECRUITER_FRONTEND_URL = os.getenv("RECRUITER_FRONTEND_URL", "http://localhost:5174")
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")

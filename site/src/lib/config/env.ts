@@ -37,16 +37,15 @@ export const isDevelopment = import.meta.env.DEV;
 export const isProduction = import.meta.env.PROD;
 
 /**
- * Get the API base path (path only, without host)
- * This is used for client-side API calls that go through Vite proxy
+ * Base path for browser API calls.
+ *
+ * The browser never talks to Django directly any more — it calls this app's
+ * own `/api/...` routes (src/routes/api), which read the HttpOnly cookie and
+ * forward with a Bearer header. Same origin, so the cookie is first-party and
+ * Django needs no CORS.
  */
 export function getApiBasePath(): string {
-  // In client-side code during development, use proxy path
-  if (typeof window !== 'undefined' && isDevelopment) {
-    return '/api/v1';
-  }
-  // In server-side code or production, use full URL
-  return API_BASE_URL;
+  return '/api';
 }
 
 /**

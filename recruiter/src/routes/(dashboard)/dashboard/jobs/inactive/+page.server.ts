@@ -5,6 +5,8 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import type { JobsListResponse } from '$lib/types';
+import { API_BASE_URL } from '$lib/config/env';
+import { clearAuthCookies } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ fetch, url, cookies }) => {
 	// Check authentication
@@ -41,14 +43,13 @@ export const load: PageServerLoad = async ({ fetch, url, cookies }) => {
 		}
 
 		// Make API request - fetch will use hooks.server.ts to add Authorization header
-		const apiUrl = `http://localhost:8000/api/v1/recruiter/jobs/?${params.toString()}`;
+		const apiUrl = `${API_BASE_URL}/recruiter/jobs/?${params.toString()}`;
 		const response = await fetch(apiUrl);
 
 		if (!response.ok) {
 			if (response.status === 401) {
 				// Clear invalid tokens and redirect to login
-				cookies.delete('access_token', { path: '/' });
-				cookies.delete('refresh_token', { path: '/' });
+				clearAuthCookies(cookies);
 				throw redirect(302, '/login?redirect=' + encodeURIComponent(url.pathname));
 			}
 			throw error(response.status, `Failed to load inactive jobs: ${response.statusText}`);
@@ -110,7 +111,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const response = await fetch(`http://localhost:8000/api/v1/recruiter/jobs/${jobId}/update/`, {
+			const response = await fetch(`${API_BASE_URL}/recruiter/jobs/${jobId}/update/`, {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json'
@@ -147,7 +148,7 @@ export const actions: Actions = {
 
 		try {
 			const response = await fetch(
-				`http://localhost:8000/api/v1/recruiter/jobs/${jobId}/delete/?force=true`,
+				`${API_BASE_URL}/recruiter/jobs/${jobId}/delete/?force=true`,
 				{
 					method: 'DELETE'
 				}

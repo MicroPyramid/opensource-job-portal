@@ -12,7 +12,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from peeldb.models import Company, JobPost, User
+from peeldb.models import AppliedJobs, Company, JobPost, User
 
 
 class NoSearchIndexMixin:
@@ -252,3 +252,113 @@ class JobViewCountTests(NoSearchIndexMixin, TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["results"][0]["views_count"], 1)
+
+
+def make_seeker(email, first_name, last_name="Seeker"):
+    return User.objects.create(
+        username=email.split("@")[0],
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        user_type="JS",
+    )
+
+
+class JobApplicantsListTests(NoSearchIndexMixin, TestCase):
+    """
+    The applicants endpoint backs both the on-screen list and the CSV export.
+
+    Three defects lived here: `search` was accepted by the callers but never
+    read, the tab counts were computed after the status filter (so choosing
+    one tab zeroed the rest), and the "Hired" count queried a status value
+    that does not exist in POST_STATUS.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.company = Company.objects.create(name="Acme", slug="acme")
+        self.recruiter = make_recruiter("owner@acme.test", self.company, is_admin=True)
+        self.job = JobPost.objects.create(
+            user=self.recruiter,
+            title="Backend Engineer",
+            slug="/backend-engineer/",
+            status="Live",
+            vacancies=1,
+        )
+
+        self.alice = make_seeker("alice@example.test", "Alice")
+        self.bob = make_seeker("bob@example.test", "Bob")
+        self.carol = make_seeker("carol@example.test", "Carol")
+        self.dave = make_seeker("dave@example.test", "Dave")
+
+        AppliedJobs.objects.create(job_post=self.job, user=self.alice, status="Pending")
+        AppliedJobs.objects.create(
+            job_post=self.job, user=self.bob, status="Shortlisted"
+        )
+        AppliedJobs.objects.create(job_post=self.job, user=self.carol, status="Hired")
+        AppliedJobs.objects.create(job_post=self.job, user=self.dave, status="Rejected")
+
+        self.url = reverse("api:v1:recruiter:jobs-applicants", args=[self.job.id])
+        self.client.force_authenticate(user=self.recruiter)
+
+    def _names(self, response):
+        return " ".join(a["applicant"]["name"] for a in response.data["applications"])
+
+    def test_returns_every_applicant_without_filters(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["total_applicants"], 4)
+        self.assertEqual(len(response.data["applications"]), 4)
+
+    def test_search_matches_first_name(self):
+        response = self.client.get(self.url, {"search": "alice"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["applications"]), 1)
+        self.assertIn("Alice", self._names(response))
+
+    def test_search_matches_email(self):
+        response = self.client.get(self.url, {"search": "carol@example"})
+
+        self.assertEqual(len(response.data["applications"]), 1)
+        self.assertIn("Carol", self._names(response))
+
+    def test_search_that_matches_nothing_returns_nothing(self):
+        """The old code ignored `search` entirely and returned all four."""
+        response = self.client.get(self.url, {"search": "zzz-no-such-person"})
+
+        self.assertEqual(len(response.data["applications"]), 0)
+        self.assertEqual(response.data["total_applicants"], 0)
+
+    def test_stats_do_not_collapse_when_a_status_filter_is_applied(self):
+        """
+        Picking one tab must not zero the other tabs' counts — they are
+        counted before the status filter.
+        """
+        response = self.client.get(self.url, {"status": "Pending"})
+
+        self.assertEqual(len(response.data["applications"]), 1)
+        self.assertEqual(response.data["stats"]["pending"], 1)
+        self.assertEqual(response.data["stats"]["shortlisted"], 1)
+        self.assertEqual(response.data["stats"]["selected"], 1)
+        self.assertEqual(response.data["stats"]["rejected"], 1)
+        self.assertEqual(response.data["total_applicants"], 4)
+
+    def test_hired_applicants_are_counted(self):
+        """`selected` is the wire name; the stored status is "Hired"."""
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.data["stats"]["selected"], 1)
+
+    def test_stats_narrow_with_the_search(self):
+        response = self.client.get(self.url, {"search": "carol"})
+
+        self.assertEqual(response.data["total_applicants"], 1)
+        self.assertEqual(response.data["stats"]["selected"], 1)
+        self.assertEqual(response.data["stats"]["pending"], 0)
+
+    def test_search_and_status_combine(self):
+        response = self.client.get(self.url, {"search": "alice", "status": "Rejected"})
+
+        self.assertEqual(len(response.data["applications"]), 0)

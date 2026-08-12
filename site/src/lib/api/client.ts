@@ -1,15 +1,16 @@
 /**
- * Base API Client for PeelJobs
- * Handles all HTTP requests to Django backend
+ * Browser API client for PUBLIC Django endpoints only.
  *
- * Authentication uses JWT tokens stored in localStorage
- * Tokens are sent via Authorization header for cross-platform compatibility (web + mobile)
+ * Authenticated requests no longer belong here: the JWT lives in an HttpOnly
+ * cookie that JavaScript cannot read, so anything needing a token must go
+ * through a `+page.server.ts` load or form action and `$lib/server/api.ts`.
+ *
+ * Calling a protected endpoint through this client will 401.
  */
 
 import { getApiBasePath, getApiBaseUrl } from '$lib/config/env';
 import { browser } from '$app/environment';
 import { formatApiError } from '$lib/utils/error-formatter';
-import { getAccessToken, getRefreshToken, setTokens, clearTokens } from '$lib/utils/token-storage';
 
 // Use full URL for server-side, proxy path for client-side
 const getApiBase = () => browser ? getApiBasePath() : getApiBaseUrl();
@@ -19,22 +20,8 @@ export interface ApiError {
 	detail?: string;
 }
 
-let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
-
-function subscribeTokenRefresh(callback: (token: string) => void) {
-	refreshSubscribers.push(callback);
-}
-
-function onTokenRefreshed(token: string) {
-	refreshSubscribers.forEach(callback => callback(token));
-	refreshSubscribers = [];
-}
-
 export class ApiClient {
-	/**
-	 * Make authenticated request with JWT token from localStorage
-	 */
+	/** Make an unauthenticated request to a public endpoint. */
 	private static async request<T>(
 		endpoint: string,
 		options: RequestInit = {},
@@ -51,78 +38,10 @@ export class ApiClient {
 			headers.set('Content-Type', 'application/json');
 		}
 
-		// Add Authorization header if we have a token and auth is not skipped
-		if (!skipAuth) {
-			const accessToken = getAccessToken();
-			if (accessToken) {
-				headers.set('Authorization', `Bearer ${accessToken}`);
-			}
-		}
-
 		const response = await fetch(url, {
 			...options,
 			headers
 		});
-
-		// Handle 401 Unauthorized - try to refresh token
-		if (response.status === 401 && !skipAuth && retryCount === 0) {
-			try {
-				if (!isRefreshing) {
-					isRefreshing = true;
-
-					const refreshToken = getRefreshToken();
-					if (!refreshToken) {
-						throw new Error('No refresh token available');
-					}
-
-					// Try to refresh the token
-					const refreshResponse = await fetch(`${getApiBase()}/auth/token/refresh/`, {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ refresh: refreshToken })
-					});
-
-					if (refreshResponse.ok) {
-						const data = await refreshResponse.json();
-						// Store new tokens
-						setTokens(data.access, data.refresh || refreshToken);
-						isRefreshing = false;
-						onTokenRefreshed(data.access);
-
-						// Retry the original request with new token
-						return this.request<T>(endpoint, options, skipAuth, isFormData, 1);
-					} else {
-						// Refresh failed, clear auth and redirect to login
-						isRefreshing = false;
-						clearTokens();
-						if (typeof window !== 'undefined') {
-							localStorage.removeItem('user');
-							window.location.href = '/login';
-						}
-						throw new Error('Session expired. Please login again.');
-					}
-				} else {
-					// Wait for the ongoing refresh to complete
-					return new Promise((resolve, reject) => {
-						subscribeTokenRefresh(() => {
-							// Retry request with new token
-							this.request<T>(endpoint, options, skipAuth, isFormData, 1)
-								.then(resolve)
-								.catch(reject);
-						});
-					});
-				}
-			} catch (error) {
-				isRefreshing = false;
-				// Clear user data and redirect to login
-				clearTokens();
-				if (typeof window !== 'undefined') {
-					localStorage.removeItem('user');
-					window.location.href = '/login';
-				}
-				throw error;
-			}
-		}
 
 		// Handle other errors
 		if (!response.ok) {

@@ -5,6 +5,8 @@
 
 import { apiClient } from './client';
 import type {
+  AppliedJob,
+  ApplicationStatus,
   Job,
   JobDetail,
   JobListResponse,
@@ -133,6 +135,17 @@ export const jobsApi = {
    */
   async getSaved(): Promise<Job[]> {
     const response = await apiClient.get<Job[]>('/jobs/saved/');
+    return response;
+  },
+
+  /**
+   * Get the user's job applications, newest first (requires authentication)
+   * @param status - Optional application status filter
+   * @returns List of applications, each wrapping the job it was made against
+   */
+  async getApplied(status?: ApplicationStatus): Promise<AppliedJob[]> {
+    const url = status ? `/jobs/applied/?status=${encodeURIComponent(status)}` : '/jobs/applied/';
+    const response = await apiClient.get<AppliedJob[]>(url);
     return response;
   },
 

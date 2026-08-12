@@ -1,6 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getApiBaseUrl } from '$lib/config/env';
+import { setAuthCookies } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ url }) => {
 	// Check for invitation token in URL
@@ -179,23 +180,11 @@ export const actions: Actions = {
 
 			// Set HttpOnly cookies for JWT tokens
 			if (data.access) {
-				cookies.set('access_token', data.access, {
-					httpOnly: true,
-					secure: false,
-					sameSite: 'lax',
-					path: '/',
-					maxAge: 60 * 15
-				});
+				setAuthCookies(cookies, data.access);
 			}
 
 			if (data.refresh) {
-				cookies.set('refresh_token', data.refresh, {
-					httpOnly: true,
-					secure: false,
-					sameSite: 'lax',
-					path: '/',
-					maxAge: 60 * 60 * 24 * 7
-				});
+				setAuthCookies(cookies, undefined, data.refresh);
 			}
 
 			// Redirect to dashboard

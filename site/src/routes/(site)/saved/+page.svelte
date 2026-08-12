@@ -1,95 +1,42 @@
 <script lang="ts">
 	import {
 		Bookmark,
-		Calendar,
 		Building2,
 		ExternalLink,
 		Trash2,
 		ChevronRight,
 		MapPin,
-		DollarSign,
+		IndianRupee,
 		Clock,
 		Search,
-		Heart
+		Heart,
+		AlertCircle
 	} from '@lucide/svelte';
+	import { enhance } from '$app/forms';
+	import type { Job } from '$lib/types/jobs';
 
-	interface SavedJob {
-		id: number;
-		title: string;
-		company: string;
-		companyLogo: string | null;
-		location: string;
-		type: string;
-		salary: string;
-		posted: string;
-		deadline: string | null;
-	}
+	let { data, form } = $props<{
+		data: { savedJobs: Job[]; loadError?: string };
+		form?: { error?: string };
+	}>();
 
-	// Mock saved jobs data
-	let savedJobs = $state<SavedJob[]>([
-		{
-			id: 1,
-			title: 'Frontend Developer',
-			company: 'TechCorp',
-			companyLogo: null,
-			location: 'Remote',
-			type: 'Full-time',
-			salary: '$80k - $120k',
-			posted: '2 days ago',
-			deadline: '2025-05-15'
-		},
-		{
-			id: 2,
-			title: 'Senior React Engineer',
-			company: 'StartupXYZ',
-			companyLogo: null,
-			location: 'San Francisco',
-			type: 'Full-time',
-			salary: '$120k - $160k',
-			posted: '3 days ago',
-			deadline: null
-		},
-		{
-			id: 3,
-			title: 'UI/UX Designer',
-			company: 'Designify',
-			companyLogo: null,
-			location: 'Mumbai',
-			type: 'Contract',
-			salary: '$60k - $80k',
-			posted: '5 days ago',
-			deadline: '2025-04-30'
-		},
-		{
-			id: 4,
-			title: 'Full Stack Developer',
-			company: 'WebSolutions',
-			companyLogo: null,
-			location: 'Bangalore',
-			type: 'Full-time',
-			salary: '$90k - $130k',
-			posted: '1 week ago',
-			deadline: null
-		}
-	]);
-
+	let removingId = $state<number | null>(null);
 	let searchQuery = $state('');
 
-	const filteredJobs = $derived(
-		savedJobs.filter(
-			(job) =>
-				searchQuery === '' ||
-				job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				job.location.toLowerCase().includes(searchQuery.toLowerCase())
-		)
-	);
+	const savedJobs = $derived(data.savedJobs ?? []);
+	const errorMessage = $derived(form?.error ?? data.loadError ?? '');
 
-	function handleRemove(jobId: number) {
-		if (confirm('Are you sure you want to remove this job from your saved list?')) {
-			savedJobs = savedJobs.filter((job) => job.id !== jobId);
-		}
-	}
+	const filteredJobs = $derived(
+		savedJobs.filter((job: Job) => {
+			if (searchQuery === '') return true;
+			const q = searchQuery.toLowerCase();
+			return (
+				job.title.toLowerCase().includes(q) ||
+				job.company_name?.toLowerCase().includes(q) ||
+				job.location_display?.toLowerCase().includes(q)
+			);
+		})
+	);
 </script>
 
 <svelte:head>
@@ -110,7 +57,7 @@
 		<nav class="mb-6" aria-label="Breadcrumb">
 			<ol class="flex items-center gap-2 text-sm text-muted">
 				<li>
-					<a href="/jobseeker-dashboard/" class="hover:text-white transition-colors">Dashboard</a>
+					<a href="/profile/" class="hover:text-white transition-colors">Dashboard</a>
 				</li>
 				<li class="flex items-center gap-2">
 					<ChevronRight size={14} />
@@ -178,6 +125,16 @@
 			</div>
 		</div>
 
+		{#if errorMessage}
+			<div
+				class="bg-error-light border border-error/20 text-error rounded-lg p-4 mb-6 flex items-start gap-3"
+				role="alert"
+			>
+				<AlertCircle size={18} class="flex-shrink-0 mt-0.5" />
+				<p class="font-medium flex-1">{errorMessage}</p>
+			</div>
+		{/if}
+
 		<!-- Jobs Grid -->
 		{#if filteredJobs.length === 0}
 			<div
@@ -215,9 +172,17 @@
 						<div class="flex items-start gap-4">
 							<!-- Company Logo -->
 							<div
-								class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-semibold text-primary flex-shrink-0"
+								class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-semibold text-primary flex-shrink-0 overflow-hidden"
 							>
-								{job.company.charAt(0)}
+								{#if job.company_logo}
+									<img
+										src={job.company_logo}
+										alt="{job.company_name} logo"
+										class="w-full h-full object-cover"
+									/>
+								{:else}
+									{job.company_name?.charAt(0) ?? '?'}
+								{/if}
 							</div>
 
 							<!-- Job Info -->
@@ -228,28 +193,42 @@
 									>
 										{job.title}
 									</h3>
-									<button
-										onclick={() => handleRemove(job.id)}
-										class="p-1.5 text-muted hover:text-error hover:bg-error-light rounded-lg transition-colors flex-shrink-0"
-										title="Remove from saved"
+									<form
+										method="POST"
+										action="?/unsave"
+										use:enhance={() => {
+											removingId = job.id;
+											return async ({ update }) => {
+												await update();
+												removingId = null;
+											};
+										}}
 									>
-										<Trash2 size={16} />
-									</button>
+										<input type="hidden" name="jobId" value={job.id} />
+										<button
+											type="submit"
+											disabled={removingId === job.id}
+											class="p-1.5 text-muted hover:text-error hover:bg-error-light rounded-lg transition-colors flex-shrink-0 disabled:opacity-50"
+											title="Remove from saved"
+										>
+											<Trash2 size={16} />
+										</button>
+									</form>
 								</div>
 
 								<div class="flex items-center gap-2 text-sm text-muted mb-3">
 									<Building2 size={14} class="text-muted flex-shrink-0" />
-									<span class="truncate">{job.company}</span>
+									<span class="truncate">{job.company_name}</span>
 								</div>
 
 								<!-- Meta Info -->
 								<div class="flex flex-wrap items-center gap-3 text-sm text-muted mb-4">
 									<span class="flex items-center gap-1.5">
 										<MapPin size={14} class="text-muted" />
-										{job.location}
+										{job.location_display}
 									</span>
 									<span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-									<span>{job.type}</span>
+									<span>{job.job_type}</span>
 								</div>
 
 								<!-- Salary & Posted -->
@@ -257,25 +236,14 @@
 									<span
 										class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-success-light text-success text-sm font-medium rounded-full"
 									>
-										<DollarSign size={14} />
-										{job.salary}
+										<IndianRupee size={14} />
+										{job.salary_display}
 									</span>
 									<span class="text-xs text-muted flex items-center gap-1">
 										<Clock size={12} />
-										Posted {job.posted}
+										{job.time_ago}
 									</span>
 								</div>
-
-								{#if job.deadline}
-									<div class="text-xs text-warning bg-warning-light px-3 py-1.5 rounded-lg mb-4">
-										<Calendar size={12} class="inline mr-1" />
-										Deadline: {new Date(job.deadline).toLocaleDateString('en-US', {
-											month: 'short',
-											day: 'numeric',
-											year: 'numeric'
-										})}
-									</div>
-								{/if}
 
 								<!-- Actions -->
 								<div class="flex items-center gap-2">
@@ -286,11 +254,20 @@
 										<ExternalLink size={14} />
 										View Job
 									</a>
-									<button
-										class="px-4 py-2.5 text-sm font-medium text-primary border border-primary rounded-full hover:bg-primary/10 transition-colors"
-									>
-										Apply Now
-									</button>
+									{#if job.is_applied}
+										<span
+											class="px-4 py-2.5 text-sm font-medium text-success bg-success-light rounded-full"
+										>
+											Applied
+										</span>
+									{:else}
+										<a
+											href="/jobs/{job.id}/"
+											class="px-4 py-2.5 text-sm font-medium text-primary border border-primary rounded-full hover:bg-primary/10 transition-colors"
+										>
+											Apply Now
+										</a>
+									{/if}
 								</div>
 							</div>
 						</div>

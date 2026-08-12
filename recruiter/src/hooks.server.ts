@@ -5,6 +5,39 @@
 
 import type { Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
+import {
+	ACCESS_TOKEN,
+	REFRESH_TOKEN,
+	clearAuthCookies,
+	refreshAccessToken,
+	setAuthCookies
+} from '$lib/server/auth';
+
+/**
+ * Refresh the access token when it has expired but the refresh token has not.
+ *
+ * Without this the 1-hour access token simply dies and the dashboard layout
+ * bounces the recruiter to login — the 7-day refresh token was checked for
+ * presence but never actually used.
+ */
+const tokenRefresh: Handle = async ({ event, resolve }) => {
+	const { cookies } = event;
+	const accessToken = cookies.get(ACCESS_TOKEN);
+	const refreshToken = cookies.get(REFRESH_TOKEN);
+
+	if (!accessToken && refreshToken) {
+		const refreshed = await refreshAccessToken(refreshToken, event.fetch);
+
+		if (refreshed) {
+			// Store the rotated refresh token too, or the next refresh fails.
+			setAuthCookies(cookies, refreshed.access, refreshed.refresh);
+		} else {
+			clearAuthCookies(cookies);
+		}
+	}
+
+	return resolve(event);
+};
 
 /**
  * API request handler - adds JWT token to Django API requests
@@ -47,11 +80,9 @@ const apiHandler: Handle = async ({ event, resolve }) => {
 const authGuard: Handle = async ({ event, resolve }) => {
 	const { url, cookies } = event;
 
-	// Get tokens from HttpOnly cookies
-	// Check for refresh_token (7 days) as well as access_token (15 mins)
-	const accessToken = cookies.get('access_token');
-	const refreshToken = cookies.get('refresh_token');
-	const hasValidAuth = accessToken || refreshToken;
+	// tokenRefresh has already run, so a surviving access_token means the
+	// session is genuinely usable.
+	const hasValidAuth = Boolean(cookies.get(ACCESS_TOKEN));
 
 	// Public routes that don't require authentication
 	const publicRoutes = [
@@ -71,7 +102,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		return new Response(null, {
 			status: 302,
 			headers: {
-				location: '/login?redirect=' + encodeURIComponent(url.pathname)
+				location: '/login/?redirect=' + encodeURIComponent(url.pathname)
 			}
 		});
 	}
@@ -81,7 +112,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		return new Response(null, {
 			status: 302,
 			headers: {
-				location: '/dashboard'
+				location: '/dashboard/'
 			}
 		});
 	}
@@ -107,6 +138,7 @@ const corsHandler: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-// Combine hooks in sequence
-// apiHandler MUST come before authGuard so it can modify fetch before auth checks
-export const handle = sequence(corsHandler, apiHandler, authGuard);
+// Order matters: tokenRefresh must run before authGuard so a merely-expired
+// access token is renewed rather than treated as a logout, and apiHandler must
+// run before authGuard so it can wrap fetch first.
+export const handle = sequence(corsHandler, tokenRefresh, apiHandler, authGuard);

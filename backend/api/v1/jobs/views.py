@@ -26,7 +26,7 @@ from peeldb.models import (
 )
 
 from .filters import JobFilter
-from .serializers import JobDetailSerializer, JobListSerializer
+from .serializers import AppliedJobSerializer, JobDetailSerializer, JobListSerializer
 
 
 class JobPagination(PageNumberPagination):
@@ -284,6 +284,47 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
         },
         tags=["Jobs"],
     )
+    @extend_schema(
+        summary="List my job applications",
+        description=(
+            "Every job the authenticated user has applied to, newest first, "
+            "with the current status of each application."
+        ),
+        parameters=[
+            OpenApiParameter(
+                name="status",
+                type=OpenApiTypes.STR,
+                description="Filter by application status (Pending, Shortlisted, Hired, Rejected)",
+                required=False,
+            ),
+        ],
+        responses={200: AppliedJobSerializer(many=True)},
+        tags=["Jobs"],
+    )
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsAuthenticated],
+        url_path="applied",
+    )
+    def applied_jobs(self, request):
+        """Get every job the authenticated user has applied to."""
+        applications = (
+            AppliedJobs.objects.filter(user=request.user)
+            .select_related("job_post", "job_post__company")
+            .prefetch_related("job_post__location", "job_post__skills")
+            .order_by("-applied_on")
+        )
+
+        status_filter = request.GET.get("status")
+        if status_filter:
+            applications = applications.filter(status=status_filter)
+
+        serializer = AppliedJobSerializer(
+            applications, many=True, context={"request": request}
+        )
+        return Response(serializer.data)
+
     @action(
         detail=False,
         methods=["get", "post"],

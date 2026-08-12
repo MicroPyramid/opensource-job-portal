@@ -14,7 +14,6 @@
     FileText,
     Bookmark,
     FilePlus,
-    MessageSquare,
     Search,
     Briefcase,
     Building2,
@@ -23,11 +22,11 @@
     GraduationCap,
     Home,
   } from "@lucide/svelte";
-  import { authStore } from "$lib/stores/auth";
   import Toast from "$lib/components/Toast.svelte";
+  import { enhance } from "$app/forms";
 
-  // Receive children snippet
-  let { children }: { children: any } = $props();
+  // Receive children snippet and the server-resolved session
+  let { children, data }: { children: any; data: any } = $props();
 
   let mobileMenuOpen = $state(false);
   let latestJobsDropdownOpen = $state(false);
@@ -51,8 +50,7 @@
     userMenuDropdownOpen = !userMenuDropdownOpen;
   }
 
-  async function handleLogout() {
-    await authStore.logout();
+  function closeUserMenu() {
     userMenuDropdownOpen = false;
   }
 
@@ -77,9 +75,10 @@
     headerScrolled = window.scrollY > 10;
   }
 
-  // Auth state comes from client-side store (tokens stored in localStorage)
-  let isAuthenticated = $derived($authStore.isAuthenticated);
-  let user = $derived($authStore.user);
+  // Resolved server-side in (site)/+layout.server.ts from the HttpOnly cookie,
+  // so the first HTML response is already signed-in or signed-out correctly.
+  let isAuthenticated = $derived(data.isAuthenticated);
+  let user = $derived(data.user);
 
   // Navigation items for mega menu - full data
   const skills = [
@@ -490,24 +489,19 @@
                       <FilePlus size={18} />
                       <span class="text-sm font-medium">My Resumes</span>
                     </a>
-                    <a
-                      href="/messages/"
-                      class="flex items-center gap-3 px-4 py-2.5 text-muted hover:bg-surface hover:text-black transition-colors"
-                    >
-                      <MessageSquare size={18} />
-                      <span class="text-sm font-medium">Messages</span>
-                    </a>
                   </div>
 
                   <!-- Logout -->
                   <div class="border-t border-border py-2">
-                    <button
-                      onclick={handleLogout}
-                      class="flex items-center gap-3 px-4 py-2.5 text-error-600 hover:bg-error-light transition-colors w-full"
-                    >
-                      <LogOut size={18} />
-                      <span class="text-sm font-medium">Sign out</span>
-                    </button>
+                    <form method="POST" action="/logout/" use:enhance onsubmit={closeUserMenu}>
+                      <button
+                        type="submit"
+                        class="flex items-center gap-3 px-4 py-2.5 text-error-600 hover:bg-error-light transition-colors w-full"
+                      >
+                        <LogOut size={18} />
+                        <span class="text-sm font-medium">Sign out</span>
+                      </button>
+                    </form>
                   </div>
                 </div>
               {/if}
@@ -672,22 +666,17 @@
                   <FilePlus size={20} />
                   <span class="font-medium">My Resumes</span>
                 </a>
-                <a
-                  href="/messages/"
-                  class="flex items-center gap-3 px-4 py-3 text-muted rounded-lg hover:bg-surface hover:text-black transition-colors"
-                >
-                  <MessageSquare size={20} />
-                  <span class="font-medium">Messages</span>
-                </a>
               </div>
 
-              <button
-                onclick={handleLogout}
-                class="flex items-center gap-3 px-4 py-3 mt-2 text-error-600 rounded-lg hover:bg-error-light transition-colors w-full"
-              >
-                <LogOut size={20} />
-                <span class="font-medium">Sign out</span>
-              </button>
+              <form method="POST" action="/logout/" use:enhance onsubmit={closeUserMenu}>
+                <button
+                  type="submit"
+                  class="flex items-center gap-3 px-4 py-3 mt-2 text-error-600 rounded-lg hover:bg-error-light transition-colors w-full"
+                >
+                  <LogOut size={20} />
+                  <span class="font-medium">Sign out</span>
+                </button>
+              </form>
             </div>
           {:else}
             <div class="mt-6 pt-6 border-t border-border space-y-3">

@@ -845,9 +845,20 @@ class CookieTokenRefreshView(TokenRefreshView):
                 access_token = response.data.get("access")
                 new_refresh_token = response.data.get("refresh", refresh_token)
 
-                # Create new response without tokens in body
+                # Tokens go in the body *and* in cookies.
+                #
+                # The cookies below only work when the browser talks to Django
+                # on the same domain. The SvelteKit frontends are served from
+                # their own domains and own their own HttpOnly cookies, so
+                # their servers read the tokens from the body here and re-issue
+                # them first-party. Both audiences are served; adding the body
+                # fields is backward compatible with the cookie-based callers.
                 new_response = Response(
-                    {"message": "Token refreshed successfully"},
+                    {
+                        "message": "Token refreshed successfully",
+                        "access": access_token,
+                        "refresh": new_refresh_token,
+                    },
                     status=status.HTTP_200_OK,
                 )
 

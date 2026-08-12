@@ -23,10 +23,28 @@
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { Button, Card, Badge } from '$lib/components/ui';
+	import { SITE_URL } from '$lib/config/env';
 	import type { JobStatus } from '$lib/types';
 
 	let { data } = $props();
 	let togglingNotifications = $state(false);
+	let shareCopied = $state(false);
+
+	// The public listing lives on the job-seeker site, not on this dashboard's
+	// origin — a bare /jobs/<id>/ href would 404 here.
+	const publicJobUrl = $derived(`${SITE_URL}/jobs/${data.job.id}/`);
+
+	async function shareJob() {
+		try {
+			await navigator.clipboard.writeText(publicJobUrl);
+			shareCopied = true;
+			setTimeout(() => (shareCopied = false), 2000);
+		} catch {
+			// Clipboard is unavailable over plain HTTP and in some browsers;
+			// fall back to letting the recruiter copy it from the address bar.
+			window.open(publicJobUrl, '_blank');
+		}
+	}
 
 	function formatDate(dateString?: string): string {
 		if (!dateString) return 'N/A';
@@ -231,17 +249,19 @@
 			Copy Job
 		</a>
 
-		<button
-			class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors"
-		>
-			<Share2 class="w-4 h-4" />
-			Share Job
-		</button>
-
 		{#if data.job.status === 'Live' || data.job.status === 'Published'}
+			<button
+				onclick={shareJob}
+				class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors"
+			>
+				<Share2 class="w-4 h-4" />
+				{shareCopied ? 'Link copied' : 'Share Job'}
+			</button>
+
 			<a
-				href="/jobs/{data.job.id}/"
+				href={publicJobUrl}
 				target="_blank"
+				rel="noopener"
 				class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors"
 			>
 				<ExternalLink class="w-4 h-4" />

@@ -11,10 +11,8 @@
 		LogOut,
 		ChevronDown
 	} from '@lucide/svelte';
-	import { authStore } from '$lib/stores/auth';
-	import { goto } from '$app/navigation';
+	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import { Avatar } from '$lib/components/ui';
 	import type { LayoutData } from './$types';
 
@@ -22,8 +20,9 @@
 	let sidebarOpen = $state(false);
 	let userMenuOpen = $state(false);
 
-	// Get user info from server data (SSR-safe) or fallback to store
-	let user = $derived(data.user || $authStore.user);
+	// Resolved server-side in +layout.server.ts from the HttpOnly cookie —
+	// the only source of truth for who is signed in.
+	let user = $derived(data.user);
 
 	// Base navigation items available to all users
 	const baseNavItems = [
@@ -58,19 +57,9 @@
 		return currentPath.startsWith(href);
 	}
 
-	async function handleLogout() {
-		await authStore.logout();
-		goto('/login/');
+	function closeUserMenu() {
+		userMenuOpen = false;
 	}
-
-	// Sync server-loaded user data with auth store on mount
-	onMount(() => {
-		if (data.user) {
-			// Update store with server-loaded user data
-			// This keeps localStorage in sync with the actual authenticated state
-			authStore.updateUser(data.user);
-		}
-	});
 </script>
 
 <div class="min-h-screen bg-surface">
@@ -150,13 +139,15 @@
 								<User class="w-4 h-4" />
 								Account Settings
 							</a>
-							<button
-								onclick={handleLogout}
-								class="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-error-light transition-colors"
-							>
-								<LogOut class="w-4 h-4" />
-								Logout
-							</button>
+							<form method="POST" action="/logout/" use:enhance onsubmit={closeUserMenu}>
+								<button
+									type="submit"
+									class="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-error-light transition-colors"
+								>
+									<LogOut class="w-4 h-4" />
+									Logout
+								</button>
+							</form>
 						</div>
 					{/if}
 				</div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { authStore } from '$lib/stores/auth';
+	import { invalidateAll } from '$app/navigation';
 	import { toast } from '$lib/stores/toast';
 	import { getProfile, patchProfile, type UserProfile } from '$lib/api/profile';
 	import { Save, Loader, User, Sparkles } from '@lucide/svelte';
@@ -154,12 +154,9 @@
 
 			profile = await patchProfile(updatePayload);
 
-			authStore.updateUser({
-				...$authStore.user!,
-				first_name: profile.first_name,
-				last_name: profile.last_name,
-				profile_completion_percentage: profile.profile_completion_percentage
-			});
+			// The header reads the user from the server-loaded layout data, so
+			// re-run the loads rather than mutating a client-side copy.
+			await invalidateAll();
 
 			toast.success('Profile updated successfully!');
 		} catch (err) {

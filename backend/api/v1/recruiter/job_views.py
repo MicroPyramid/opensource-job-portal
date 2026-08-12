@@ -484,7 +484,12 @@ def set_job_notifications(request, job_id):
         OpenApiParameter(
             "status",
             OpenApiTypes.STR,
-            description="Filter by application status (Pending, Shortlisted, Selected, Rejected)",
+            description="Filter by application status (Pending, Shortlisted, Hired, Rejected)",
+        ),
+        OpenApiParameter(
+            "search",
+            OpenApiTypes.STR,
+            description="Filter by applicant name, username or email",
         ),
         OpenApiParameter(
             "ordering",
@@ -511,6 +516,29 @@ def get_job_applicants(request, job_id):
     # Get applications for this job
     applications = AppliedJobs.objects.filter(job_post=job).select_related("user")
 
+    # Free-text search on the applicant, matching the UI's
+    # "Search applicants by name or email" box.
+    search = request.GET.get("search")
+    if search:
+        applications = applications.filter(
+            Q(user__first_name__icontains=search)
+            | Q(user__last_name__icontains=search)
+            | Q(user__username__icontains=search)
+            | Q(user__email__icontains=search)
+        )
+
+    # The status tabs each show a count, so the stats have to be counted
+    # before the status filter is applied — otherwise picking one tab zeroes
+    # every other tab. They stay inside the search filter, so the counts do
+    # narrow along with the query.
+    counts = applications.aggregate(
+        total=Count("id"),
+        pending=Count("id", filter=Q(status="Pending")),
+        shortlisted=Count("id", filter=Q(status="Shortlisted")),
+        selected=Count("id", filter=Q(status="Hired")),
+        rejected=Count("id", filter=Q(status="Rejected")),
+    )
+
     # Filter by status
     status_filter = request.GET.get("status")
     if status_filter:
@@ -528,12 +556,14 @@ def get_job_applicants(request, job_id):
         {
             "job": {"id": job.id, "title": job.title, "status": job.status},
             "applications": serializer.data,
-            "total_applicants": applications.count(),
+            "total_applicants": counts["total"],
             "stats": {
-                "pending": applications.filter(status="Pending").count(),
-                "shortlisted": applications.filter(status="Shortlisted").count(),
-                "selected": applications.filter(status="Selected").count(),
-                "rejected": applications.filter(status="Rejected").count(),
+                "pending": counts["pending"],
+                "shortlisted": counts["shortlisted"],
+                # "selected" is the wire name the UI reads; the stored status
+                # is "Hired" (peeldb.models.POST_STATUS).
+                "selected": counts["selected"],
+                "rejected": counts["rejected"],
             },
         }
     )

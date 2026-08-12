@@ -193,3 +193,20 @@ export interface JobFilters {
   isRemote: boolean;
   fresher: boolean;
 }
+
+/**
+ * Status of a job application.
+ * Mirrors POST_STATUS in peeldb.models.
+ */
+export type ApplicationStatus = 'Pending' | 'Shortlisted' | 'Hired' | 'Rejected';
+
+/**
+ * One of the current user's applications, as returned by
+ * GET /api/v1/jobs/applied/
+ */
+export interface AppliedJob {
+  id: number;
+  job: Job;
+  status: ApplicationStatus;
+  applied_on: string;
+}

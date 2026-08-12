@@ -16,9 +16,11 @@ job-seeker Django templates reach for:
 The ``index`` and ``profile`` redirects were removed once nothing reversed
 them. These go the same way when the legacy templates do.
 
-FIXME: the redirect targets are hardcoded to localhost:5174.
+Redirect targets come from ``settings.RECRUITER_FRONTEND_URL`` so they follow
+the deployed recruiter UI instead of being pinned to a dev port.
 """
 
+from django.conf import settings
 from django.urls import re_path as url
 from django.views.generic import RedirectView
 
@@ -28,22 +30,22 @@ from recruiter.views import (
 
 app_name = "recruiter"
 
+_FRONTEND = settings.RECRUITER_FRONTEND_URL.rstrip("/")
+
 urlpatterns = [
     url(
         r"^dashboard/$",
-        RedirectView.as_view(url="http://localhost:5174/dashboard", permanent=False),
+        RedirectView.as_view(url=f"{_FRONTEND}/dashboard/", permanent=False),
         name="dashboard",
     ),
     url(
         r"^job/list/$",
-        RedirectView.as_view(
-            url="http://localhost:5174/dashboard/jobs", permanent=False
-        ),
+        RedirectView.as_view(url=f"{_FRONTEND}/dashboard/jobs/", permanent=False),
         name="list",
     ),
     url(
         r"^login/$",
-        RedirectView.as_view(url="http://localhost:5174/login", permanent=False),
+        RedirectView.as_view(url=f"{_FRONTEND}/login/", permanent=False),
         name="new_user",
     ),
     url(r"^how-it-works/$", how_it_works, name="how_it_works"),
