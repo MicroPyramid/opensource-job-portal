@@ -1,14 +1,50 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { getApiBaseUrl } from '$lib/config/env';
+import { getApiBaseUrl, SITE_URL } from '$lib/config/env';
 import { setAuthCookies } from '$lib/server/auth';
 
-export const load: PageServerLoad = async ({ url }) => {
+/** Anything the OAuth round trip can bounce back with. */
+const OAUTH_ERRORS: Record<string, string> = {
+	no_code: 'Google did not send an authorization code. Please try again.',
+	auth_failed: 'We could not sign you in with Google. Please try again.',
+	access_denied: 'Google sign-in was cancelled.',
+	job_seeker_account:
+		'That Google account belongs to a job seeker. Use the job seeker site, or sign in with a different account.',
+	signup_expired: 'That Google sign-up expired. Please start again.'
+};
+
+export const load: PageServerLoad = async ({ url, fetch }) => {
 	// Get redirect URL from query params (for post-login redirect)
 	const redirectTo = url.searchParams.get('redirect') || '/dashboard/';
 
+	// Must match the redirect_uri sent to the callback exchange, or Google
+	// rejects it. SITE_URL is this app's origin, not the job seeker site.
+	const redirectUri = `${SITE_URL}/auth/google/callback/`;
+
+	// Fetched server-side so the page ships with a real href — the button works
+	// before hydration, and no client code ever touches the API.
+	let googleAuthUrl: string | null = null;
+	try {
+		const response = await fetch(
+			`${getApiBaseUrl()}/recruiter/auth/google/url/?redirect_uri=${encodeURIComponent(
+				redirectUri
+			)}&account_type=company`
+		);
+
+		if (response.ok) {
+			const data = await response.json();
+			googleAuthUrl = data.auth_url ?? null;
+		}
+	} catch {
+		// Google sign-in is optional; the password form still works without it.
+	}
+
+	const errorCode = url.searchParams.get('error');
+
 	return {
-		redirectTo
+		redirectTo,
+		googleAuthUrl,
+		oauthError: errorCode ? (OAUTH_ERRORS[errorCode] ?? OAUTH_ERRORS.auth_failed) : null
 	};
 };
 

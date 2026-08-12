@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { User, Mail, Phone, Briefcase, Camera, Loader2 } from '@lucide/svelte';
+	import { User, Mail, Phone, Briefcase, Camera, Loader2, Lock } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
@@ -9,6 +9,8 @@
 	// Form state
 	let isEditing = $state(false);
 	let isUploadingPicture = $state(false);
+	let isChangingPassword = $state(false);
+	let passwordForm = $state<HTMLFormElement | null>(null);
 
 	// User data from server load (SSR-safe)
 	let user = $derived(data.user);
@@ -183,7 +185,7 @@
 		</div>
 
 		<!-- Right Column: Profile Information Form -->
-		<div class="lg:col-span-2">
+		<div class="lg:col-span-2 space-y-6">
 			<div class="bg-white rounded-lg shadow-sm border border-border p-6">
 				<h2 class="text-sm font-semibold text-black mb-6">Profile Information</h2>
 
@@ -322,6 +324,109 @@
 								</button>
 							</div>
 						{/if}
+					</div>
+				</form>
+			</div>
+
+			<!-- Security -->
+			<div class="bg-white rounded-lg shadow-sm border border-border p-6">
+				<div class="flex items-center gap-2 mb-1">
+					<Lock class="w-4 h-4 text-muted" />
+					<h2 class="text-sm font-semibold text-black">Password</h2>
+				</div>
+				<p class="text-sm text-muted mb-4">
+					Choose a strong password you do not use anywhere else.
+				</p>
+
+				{#if form?.passwordSuccess}
+					<div
+						class="mb-4 p-3 bg-success-light border border-success/30 text-success rounded-lg text-sm"
+					>
+						{form.passwordMessage}
+					</div>
+				{/if}
+
+				{#if form?.passwordError}
+					<div class="mb-4 p-3 bg-error-light border border-error/30 text-error rounded-lg text-sm">
+						{form.passwordError}
+					</div>
+				{/if}
+
+				<form
+					method="POST"
+					action="?/changePassword"
+					use:enhance={() => {
+						isChangingPassword = true;
+						return async ({ result, update }) => {
+							isChangingPassword = false;
+							// Reset only on success, so a rejected attempt keeps
+							// what was typed instead of clearing the form.
+							if (result.type === 'success') {
+								passwordForm?.reset();
+							}
+							await update({ reset: false });
+						};
+					}}
+					bind:this={passwordForm}
+					class="grid grid-cols-1 md:grid-cols-2 gap-4"
+				>
+					<div class="md:col-span-2">
+						<label for="old_password" class="block text-sm font-medium text-muted mb-2">
+							Current Password
+						</label>
+						<input
+							type="password"
+							id="old_password"
+							name="old_password"
+							required
+							autocomplete="current-password"
+							class="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+						/>
+					</div>
+
+					<div>
+						<label for="new_password" class="block text-sm font-medium text-muted mb-2">
+							New Password
+						</label>
+						<input
+							type="password"
+							id="new_password"
+							name="new_password"
+							required
+							minlength="8"
+							autocomplete="new-password"
+							class="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+						/>
+					</div>
+
+					<div>
+						<label for="confirm_password" class="block text-sm font-medium text-muted mb-2">
+							Confirm New Password
+						</label>
+						<input
+							type="password"
+							id="confirm_password"
+							name="confirm_password"
+							required
+							minlength="8"
+							autocomplete="new-password"
+							class="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+						/>
+					</div>
+
+					<div class="md:col-span-2 pt-2">
+						<button
+							type="submit"
+							disabled={isChangingPassword}
+							class="px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+						>
+							{#if isChangingPassword}
+								<Loader2 class="w-4 h-4 animate-spin" />
+								Updating…
+							{:else}
+								Update Password
+							{/if}
+						</button>
 					</div>
 				</form>
 			</div>

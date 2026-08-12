@@ -6,13 +6,18 @@ API: the job email-notification toggle, team member activate/deactivate, and
 job view counting.
 """
 
+from unittest import mock
+
 from django.apps import apps
+from django.core import signing
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from peeldb.models import AppliedJobs, Company, JobPost, User
+from peeldb.models import AppliedJobs, Company, Google, JobPost, User
+
+from .auth_views import GOOGLE_SIGNUP_SALT
 
 
 class NoSearchIndexMixin:
@@ -362,3 +367,204 @@ class JobApplicantsListTests(NoSearchIndexMixin, TestCase):
         response = self.client.get(self.url, {"search": "alice", "status": "Rejected"})
 
         self.assertEqual(len(response.data["applications"]), 0)
+
+
+class ChangePasswordTests(NoSearchIndexMixin, TestCase):
+    """
+    The endpoint existed but had no caller, so it had never been exercised.
+    Wiring the account page to it makes these the first checks it has.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.recruiter = make_recruiter("pwd@acme.test")
+        self.recruiter.set_password("OriginalPass123")
+        self.recruiter.save()
+        self.url = reverse("api:v1:recruiter:change-password")
+
+    def test_requires_authentication(self):
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": "OriginalPass123",
+                "new_password": "BrandNewPass456",
+                "confirm_password": "BrandNewPass456",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_changes_the_password(self):
+        self.client.force_authenticate(user=self.recruiter)
+
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": "OriginalPass123",
+                "new_password": "BrandNewPass456",
+                "confirm_password": "BrandNewPass456",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.recruiter.refresh_from_db()
+        self.assertTrue(self.recruiter.check_password("BrandNewPass456"))
+        self.assertFalse(self.recruiter.check_password("OriginalPass123"))
+
+    def test_rejects_a_wrong_current_password(self):
+        self.client.force_authenticate(user=self.recruiter)
+
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": "NotMyPassword",
+                "new_password": "BrandNewPass456",
+                "confirm_password": "BrandNewPass456",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.recruiter.refresh_from_db()
+        self.assertTrue(self.recruiter.check_password("OriginalPass123"))
+
+    def test_rejects_mismatched_confirmation(self):
+        self.client.force_authenticate(user=self.recruiter)
+
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": "OriginalPass123",
+                "new_password": "BrandNewPass456",
+                "confirm_password": "SomethingElse789",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.recruiter.refresh_from_db()
+        self.assertTrue(self.recruiter.check_password("OriginalPass123"))
+
+
+class GoogleSignupTokenTests(NoSearchIndexMixin, TestCase):
+    """
+    google_callback hands the pending signup to the client as a signed blob and
+    google_complete reads it back.
+
+    It used to go through ``request.session``, which could never work: the only
+    caller is the SvelteKit server, which holds no session cookie, so every
+    request built a fresh empty session and google_complete always answered
+    "Invalid or expired session token". These pin the stateless replacement.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("api:v1:recruiter:google-complete")
+        self.google_identity = {
+            "google_id": "109876543210",
+            "email": "newrecruiter@acme.test",
+            "first_name": "New",
+            "last_name": "Recruiter",
+            "picture": "",
+        }
+
+    def sign(self, **overrides):
+        return signing.dumps(
+            {**self.google_identity, **overrides}, salt=GOOGLE_SIGNUP_SALT
+        )
+
+    def test_creates_the_account_from_a_signed_token(self):
+        response = self.client.post(
+            self.url,
+            {
+                "session_token": self.sign(),
+                "account_type": "company",
+                "company_name": "Acme Hiring",
+                "company_website": "https://acme.test",
+                "agree_to_terms": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn("access", response.data)
+
+        user = User.objects.get(email="newrecruiter@acme.test")
+        self.assertEqual(user.user_type, "EM")
+        self.assertEqual(user.company.name, "Acme Hiring")
+        self.assertTrue(Google.objects.filter(user=user).exists())
+
+    def test_rejects_a_tampered_token(self):
+        """The whole point of signing: a forged email must not create an account."""
+        tampered = self.sign()[:-4] + "AAAA"
+
+        response = self.client.post(
+            self.url,
+            {
+                "session_token": tampered,
+                "account_type": "recruiter",
+                "agree_to_terms": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(User.objects.filter(email="newrecruiter@acme.test").exists())
+
+    def test_rejects_a_token_signed_with_another_salt(self):
+        """A signed blob from elsewhere in the project must not be replayable here."""
+        foreign = signing.dumps(self.google_identity, salt="some-other-flow")
+
+        response = self.client.post(
+            self.url,
+            {
+                "session_token": foreign,
+                "account_type": "recruiter",
+                "agree_to_terms": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(User.objects.filter(email="newrecruiter@acme.test").exists())
+
+    def test_rejects_an_expired_token(self):
+        with mock.patch("api.v1.recruiter.auth_views.GOOGLE_SIGNUP_MAX_AGE", -1):
+            response = self.client.post(
+                self.url,
+                {
+                    "session_token": self.sign(),
+                    "account_type": "recruiter",
+                    "agree_to_terms": True,
+                },
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(User.objects.filter(email="newrecruiter@acme.test").exists())
+
+    def test_rejects_a_token_longer_than_the_old_100_char_cap(self):
+        """
+        The serializer used to cap session_token at 100 characters, which a
+        signed payload always exceeds — the flow would have 400'd on length
+        before the signature was ever checked.
+        """
+        self.assertGreater(len(self.sign()), 100)
+
+    def test_refuses_an_email_that_already_exists(self):
+        make_recruiter("newrecruiter@acme.test")
+
+        response = self.client.post(
+            self.url,
+            {
+                "session_token": self.sign(),
+                "account_type": "recruiter",
+                "agree_to_terms": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

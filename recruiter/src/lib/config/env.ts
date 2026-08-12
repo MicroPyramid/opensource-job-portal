@@ -6,7 +6,7 @@
  * Variables must be prefixed with PUBLIC_ to be accessible in client-side code.
  */
 
-import { PUBLIC_API_BASE_URL, PUBLIC_SITE_URL } from '$env/static/public';
+import { PUBLIC_API_BASE_URL, PUBLIC_JOBSEEKER_URL, PUBLIC_SITE_URL } from '$env/static/public';
 
 /**
  * API Base URL for backend requests
@@ -14,9 +14,20 @@ import { PUBLIC_API_BASE_URL, PUBLIC_SITE_URL } from '$env/static/public';
 export const API_BASE_URL = PUBLIC_API_BASE_URL;
 
 /**
- * Site URL for frontend
+ * This app's own origin. Used to build the Google OAuth `redirect_uri`, which
+ * has to come back here — not to the job seeker site.
  */
 export const SITE_URL = PUBLIC_SITE_URL;
+
+/**
+ * The job seeker site.
+ *
+ * Distinct from SITE_URL: a job's public listing lives on the job seeker
+ * frontend, which is a different origin in production. Linking to
+ * `${SITE_URL}/jobs/<id>/` sends the recruiter to a 404 on their own
+ * dashboard, since this app has no public job route.
+ */
+export const JOBSEEKER_URL = PUBLIC_JOBSEEKER_URL || 'http://localhost:5173';
 
 /**
  * Check if we're running in development mode

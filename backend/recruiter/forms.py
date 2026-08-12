@@ -1,16 +1,13 @@
 import re
-from datetime import date, datetime
+from datetime import datetime
 
 from django import forms
-from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from django.forms.models import ModelForm
 
-from mpcomp.views import custom_password_check, get_asia_time
+from mpcomp.views import get_asia_time
 from peeldb.models import (
-    AgencyApplicants,
     AgencyCompany,
-    AgencyResume,
     AgencyWorkLog,
     Company,
     JobPost,
@@ -18,142 +15,6 @@ from peeldb.models import (
     Menu,
     User,
 )
-
-
-class Company_Form(forms.ModelForm):
-    name = forms.CharField(
-        max_length=100, error_messages={"required": "Company Name can not be blank"}
-    )
-    website = forms.CharField(max_length=100, required=False)
-
-    class Meta:
-        model = Company
-        fields = ["name", "website"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def clean_name(self):
-        companies = Company.objects.filter(name__iexact=self.data["name"]).exclude(
-            id=self.instance.id
-        )
-        if companies:
-            users = User.objects.filter(
-                company__in=companies.values_list("id", flat=True), is_admin=True
-            )
-            if users:
-                raise forms.ValidationError("Company with this name already exists")
-        return self.data["name"]
-
-    def clean_website(self):
-        if self.data["website"]:
-            if (
-                re.match(r"^http://", self.data["website"])
-                or re.match(r"^https://", self.data["website"])
-                or re.match(r"^www.", self.data["website"])
-            ):
-                if self.cleaned_data["website"]:
-                    companies = Company.objects.filter(
-                        website__iexact=self.data["website"]
-                    ).exclude(id=self.instance.id)
-                    if companies:
-                        users = User.objects.filter(
-                            company__in=companies.values_list("id", flat=True),
-                            is_admin=True,
-                        )
-                        if users:
-                            raise forms.ValidationError(
-                                "Company with this website already exists"
-                            )
-                return self.data["website"]
-            else:
-                raise forms.ValidationError(
-                    "Please include website with http:// or https:// or www."
-                )
-        return self.data["website"]
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        instance.name = self.cleaned_data["name"]
-        instance.website = self.cleaned_data["website"]
-        instance.company_type = self.cleaned_data["company_type"]
-        if commit:
-            instance.save()
-        return instance
-
-
-class User_Form(forms.ModelForm):
-    password = forms.CharField(
-        max_length=50, error_messages={"required": "Password can not be blank"}
-    )
-    email = forms.CharField(
-        max_length=50,
-        error_messages={
-            "required": "Email can not be blank",
-            "invalid": "Please enter a valid email",
-        },
-    )
-    mobile = forms.CharField(
-        error_messages={
-            "required": "Phone Number can not be blank",
-            "invalid": "Please enter a valid phone number",
-        }
-    )
-    client_type = forms.CharField(
-        max_length=50, error_messages={"required": "Please select your choice"}
-    )
-    username = forms.CharField(max_length=20, required=True)
-
-    class Meta:
-        model = User
-        fields = ["mobile", "email", "username"]
-
-    def clean_email(self):
-        user = User.objects.filter(email__iexact=self.data["email"]).exclude(
-            id=self.instance.id
-        )
-        if user.exists():
-            raise forms.ValidationError(
-                "User Already Exists as " + user[0].get_user_type_display()
-            )
-        return self.data["email"]
-
-    def clean_password(self):
-        if self.data["password"]:
-            msg = custom_password_check(self.data["password"])
-            if msg:
-                raise forms.ValidationError(msg)
-            else:
-                return self.data["password"]
-        raise forms.ValidationError("Password can not be blank")
-
-    def clean_mobile(self):
-        mobile = self.data["mobile"]
-        if mobile:
-            users = User.objects.filter(mobile=mobile)
-            if not users:
-                length = len(str(mobile)) < 10 or len(str(mobile)) > 12
-                symbols = bool(
-                    re.search(r"[~\.,!@#\$%\^&\*\(\)_\{}\":;'\[\]]", mobile)
-                ) or bool(re.search("[a-zA-Z]", mobile))
-                if length or symbols:
-                    raise forms.ValidationError("Please Enter Valid phone number")
-                else:
-                    return self.data["mobile"]
-            else:
-                raise forms.ValidationError(
-                    "User with this mobile number already exists"
-                )
-        else:
-            raise forms.ValidationError("Phone Number can not be blank")
-
-    def clean_username(self):
-        username = self.data.get("username", "")
-        if bool(re.search(r"[~\!@#\$%\^&\*\(\)\+{}\":;,=._'/ >?|<\\[\]]", username)):
-            raise forms.ValidationError(
-                "Username Should not contain spaces and any special characters"
-            )
-        return username
 
 
 class ChangePasswordForm(forms.Form):
@@ -245,12 +106,6 @@ class PersonalInfoForm(forms.ModelForm):
                 return mobile
         else:
             raise forms.ValidationError("User with this mobile number already exists")
-
-
-class MobileVerifyForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ["mobile_verification_code"]
 
 
 YEARS = (
@@ -674,106 +529,6 @@ class MailTemplateForm(ModelForm):
             return self.data["message"]
 
 
-class EditCompanyForm(forms.ModelForm):
-    profile_pic = forms.ImageField(required=False)
-
-    class Meta:
-        model = Company
-        fields = ["name", "website", "profile", "address", "level"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def clean_profile_pic(self):
-        profile_pic = self.cleaned_data.get("profile_pic")
-        if profile_pic:
-            sup_formates = ["image/jpeg", "image/png"]
-            ftype = profile_pic.content_type
-            if str(ftype) not in sup_formates:
-                raise forms.ValidationError(
-                    "Please upload Valid Image Format Ex: PNG, JPEG, JPG"
-                )
-            return self.cleaned_data["profile_pic"]
-        return profile_pic
-
-    def clean_website(self):
-        if self.cleaned_data["website"]:
-            if (
-                re.match(r"^http://", self.cleaned_data["website"])
-                or re.match(r"^https://", self.cleaned_data["website"])
-                or re.match(r"^www.", self.cleaned_data["website"])
-            ):
-                return self.cleaned_data["website"]
-            else:
-                raise forms.ValidationError(
-                    "Please include website with http:// or https:// or www."
-                )
-        return self.cleaned_data["website"]
-
-    def clean_name(self):
-        companies = Company.objects.filter(name__iexact=self.data["name"]).exclude(
-            id=self.instance.id
-        )
-        if companies:
-            users = User.objects.filter(
-                company__in=companies.values_list("id", flat=True), is_admin=True
-            )
-            if users:
-                raise forms.ValidationError("Company with this name already exists")
-        return self.data["name"]
-
-
-class RecruiterForm(forms.ModelForm):
-    password = forms.CharField(max_length=100)
-    profile_pic = forms.ImageField(required=False)
-    first_name = forms.CharField(max_length=50)
-
-    class Meta:
-        model = User
-        fields = ["mobile", "email", "job_role", "profile_pic", "first_name"]
-
-    def clean_password(self):
-        if self.data["password"]:
-            msg = custom_password_check(self.data["password"])
-            if msg:
-                raise forms.ValidationError(msg)
-            else:
-                return self.data["password"]
-        raise forms.ValidationError("Password can not be blank")
-
-    def clean_email(self):
-        users = User.objects.filter(email=self.data["email"]).exclude(
-            id=self.instance.id
-        )
-        if not users:
-            return self.data["email"]
-        else:
-            raise forms.ValidationError("User with this email already exists")
-
-    def clean_mobile(self):
-        mobile = str(self.data["mobile"])
-        if mobile:
-            users = User.objects.filter(mobile=mobile).exclude(id=self.instance.id)
-            if not users:
-                length = len(mobile) < 10 or len(mobile) > 12
-                symbols = bool(
-                    re.search(r"[~\.,!@#\$%\^&\*\(\)_\{}\":;'\[\]]", mobile)
-                ) or bool(re.search("[a-zA-Z]", mobile))
-                if length or symbols:
-                    raise forms.ValidationError("Please Enter Valid phone number")
-            else:
-                raise forms.ValidationError(
-                    "User with this mobile number already exists"
-                )
-            return mobile
-        else:
-            raise forms.ValidationError("This Field is required")
-
-    def clean_profile_pic(self):
-        if self.files or self.instance.profile_pic:
-            return self.cleaned_data["profile_pic"]
-
-
 class MenuForm(forms.ModelForm):
     class Meta:
         model = Menu
@@ -799,65 +554,6 @@ class ClientForm(forms.ModelForm):
             return self.data["name"]
         else:
             raise forms.ValidationError("Client with this name, website already exists")
-
-
-class ResumeUploadForm(forms.ModelForm):
-    resume = forms.FileField()
-    skill = forms.CharField(max_length=1000)
-    email = forms.EmailField()
-    mobile = forms.CharField(required=False)
-    experience = forms.IntegerField(required=False)
-    status = forms.CharField(required=False)
-    job_post = forms.CharField(required=False)
-
-    class Meta:
-        model = AgencyResume
-        fields = ["candidate_name", "mobile", "experience"]
-
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop("request")
-        super().__init__(*args, **kwargs)
-        if "instance" in kwargs:
-            self.fields["resume"].required = False
-        if self.data.get("job_post"):
-            self.fields["job_post"].required = True
-            self.fields["status"].required = True
-
-    def clean_mobile(self):
-        if self.data["mobile"]:
-            users = AgencyResume.objects.filter(
-                mobile=self.data["mobile"], uploaded_by=self.request.user
-            ).exclude(id=self.instance.id)
-            if not users:
-                if (
-                    len(str(self.data["mobile"])) < 10
-                    or len(str(self.data["mobile"])) > 12
-                ):
-                    raise forms.ValidationError("Please Enter Valid phone number")
-                else:
-                    return self.data["mobile"]
-            else:
-                raise forms.ValidationError(
-                    "User with this mobile number already exists"
-                )
-        return
-
-    def clean_email(self):
-        if self.request.user.email == self.data["email"]:
-            raise forms.ValidationError("User with this Email already exists")
-        users = AgencyResume.objects.filter(
-            email=self.data["email"], uploaded_by=self.request.user
-        ).exclude(id=self.instance.id)
-        if not users:
-            return self.data["email"]
-        else:
-            raise forms.ValidationError("User with this Email already exists")
-
-
-class ApplicantResumeForm(forms.ModelForm):
-    class Meta:
-        model = AgencyApplicants
-        fields = ["status", "job_post"]
 
 
 class AgencyWorkLogForm(forms.ModelForm):
@@ -896,37 +592,3 @@ class UserStatus(forms.Form):
         self.fields["status"].widget.attrs.update(
             {"id": "user_status_" + str(user_id), "class": "user_status"}
         )
-
-
-class LoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
-
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop("request", None)
-        super().__init__(*args, **kwargs)
-
-    def clean(self):
-        email = self.cleaned_data.get("email")
-        password = self.cleaned_data.get("password")
-        if email and password:
-            self.user = authenticate(email=email, password=password)
-            if self.user:
-                if not self.user.is_active:
-                    if not self.user.is_active:
-                        raise forms.ValidationError(
-                            "Your Account is inactive please contact admin."
-                        )
-                    else:
-                        today_date = date.today()
-                        user_created_date = self.user.created_on
-                        difference = today_date - user_created_date
-                        if difference.days > 7:
-                            raise forms.ValidationError(
-                                "Please activate your account by verifying your email."
-                            )
-                if not self.user.user_type == "RR":
-                    raise forms.ValidationError("You are not recuiter")
-            else:
-                raise forms.ValidationError("Invalid email and password")
-        return self.cleaned_data

@@ -318,7 +318,9 @@ class GoogleCallbackSerializer(serializers.Serializer):
 class GoogleCompleteSerializer(serializers.Serializer):
     """Complete Google OAuth registration"""
 
-    session_token = serializers.CharField(max_length=100)
+    # No max_length: this is the signed blob from google_callback, which
+    # carries the Google profile and runs well past any short cap.
+    session_token = serializers.CharField()
     account_type = serializers.ChoiceField(choices=["company", "recruiter"])
 
     # Company fields (required if account_type='company')

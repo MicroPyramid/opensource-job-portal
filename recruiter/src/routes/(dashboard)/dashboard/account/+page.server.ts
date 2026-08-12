@@ -6,6 +6,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { fail } from '@sveltejs/kit';
 import { getApiBaseUrl } from '$lib/config/env';
+import { formatApiError } from '$lib/utils/error-formatter';
 
 export const load: PageServerLoad = async ({ parent }) => {
 	// Get user data from parent layout
@@ -63,6 +64,59 @@ export const actions: Actions = {
 			return fail(500, {
 				error: error.message || 'Network error occurred',
 				values: updates
+			});
+		}
+	},
+
+	/**
+	 * Change password.
+	 *
+	 * Django validates the current password and runs the project's password
+	 * validators, so the only checks worth repeating here are the ones that
+	 * save a round trip.
+	 */
+	changePassword: async ({ request, fetch }) => {
+		const formData = await request.formData();
+
+		const oldPassword = formData.get('old_password')?.toString() ?? '';
+		const newPassword = formData.get('new_password')?.toString() ?? '';
+		const confirmPassword = formData.get('confirm_password')?.toString() ?? '';
+
+		if (!oldPassword || !newPassword || !confirmPassword) {
+			return fail(400, { passwordError: 'Please fill in all password fields' });
+		}
+
+		if (newPassword !== confirmPassword) {
+			return fail(400, { passwordError: 'New passwords do not match' });
+		}
+
+		try {
+			const response = await fetch(`${getApiBaseUrl()}/recruiter/auth/change-password/`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					old_password: oldPassword,
+					new_password: newPassword,
+					confirm_password: confirmPassword
+				})
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				// DRF answers with {field: [msg]}; formatApiError turns that into
+				// "Current password: …" rather than a raw object. Its field-name
+				// table already covers old_password/new_password/confirm_password.
+				return fail(response.status, { passwordError: formatApiError(result) });
+			}
+
+			return {
+				passwordSuccess: true,
+				passwordMessage: result.message || 'Password changed successfully'
+			};
+		} catch (error: any) {
+			return fail(500, {
+				passwordError: error.message || 'Network error occurred'
 			});
 		}
 	},

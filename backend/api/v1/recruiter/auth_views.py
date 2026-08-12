@@ -4,6 +4,7 @@ Authentication Views for Recruiter/Employer
 
 import requests
 from django.conf import settings
+from django.core import signing
 from django.utils.crypto import get_random_string
 from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework import status
@@ -43,6 +44,14 @@ from .auth_serializers import (
     VerifyEmailSerializer,
 )
 from .serializers import AcceptInvitationSerializer
+
+# Namespaces the signature so a blob from this flow cannot be replayed against
+# any other signed payload in the project.
+GOOGLE_SIGNUP_SALT = "api.v1.recruiter.google-signup"
+
+# How long a half-finished Google signup stays valid. Long enough to fill in
+# the company form, short enough that a leaked URL goes stale quickly.
+GOOGLE_SIGNUP_MAX_AGE = 30 * 60
 
 
 def get_tokens_for_user(user):
@@ -623,19 +632,32 @@ def google_callback(request):
                 )
 
             except Google.DoesNotExist:
-                # New user - return Google data for completion
-                session_token = get_random_string(64)
-
-                # Store Google data in session/cache for completion
-                # TODO: Use Redis or Django cache
-                request.session[f"google_oauth_{session_token}"] = {
-                    "google_id": google_data["id"],
-                    "email": google_data["email"],
-                    "first_name": google_data.get("given_name", ""),
-                    "last_name": google_data.get("family_name", ""),
-                    "picture": google_data.get("picture", ""),
-                    "access_token": token_data["access_token"],
-                }
+                # New user — hand the verified Google identity back to the
+                # client so it can be replayed to google_complete.
+                #
+                # This used to be stashed in ``request.session``. That could
+                # never work: the only caller is the SvelteKit server, which
+                # talks to us machine-to-machine and keeps no session cookie,
+                # so every request built a fresh empty session and
+                # google_complete always answered "Invalid or expired session
+                # token". A cache would work but adds a shared-state
+                # dependency (CACHES is unset, so it is per-process LocMem —
+                # wrong the moment there is more than one worker).
+                #
+                # Signing instead keeps it stateless: the blob is tamper-proof
+                # via SECRET_KEY, so google_complete can trust the identity it
+                # reads back without having stored anything. The client cannot
+                # forge an email or google_id.
+                session_token = signing.dumps(
+                    {
+                        "google_id": google_data["id"],
+                        "email": google_data["email"],
+                        "first_name": google_data.get("given_name", ""),
+                        "last_name": google_data.get("family_name", ""),
+                        "picture": google_data.get("picture", ""),
+                    },
+                    salt=GOOGLE_SIGNUP_SALT,
+                )
 
                 return Response(
                     {
@@ -678,9 +700,16 @@ def google_complete(request):
     if serializer.is_valid():
         session_token = serializer.validated_data["session_token"]
 
-        # Retrieve Google data from session
-        google_session_data = request.session.get(f"google_oauth_{session_token}")
-        if not google_session_data:
+        # Unseal the identity google_callback signed. A bad signature means
+        # the payload was edited; SignatureExpired means the user sat on the
+        # signup form past the window. Both are the same answer to the client.
+        try:
+            google_session_data = signing.loads(
+                session_token,
+                salt=GOOGLE_SIGNUP_SALT,
+                max_age=GOOGLE_SIGNUP_MAX_AGE,
+            )
+        except signing.BadSignature:
             return Response(
                 {"error": "Invalid or expired session token"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -750,8 +779,9 @@ def google_complete(request):
             picture=google_session_data.get("picture", ""),
         )
 
-        # Clear session
-        del request.session[f"google_oauth_{session_token}"]
+        # Nothing to clear — the token is stateless. It stays replayable until
+        # it expires, but the duplicate-email check above already makes a
+        # second use a no-op.
 
         # Auto-login
         tokens = get_tokens_for_user(user)

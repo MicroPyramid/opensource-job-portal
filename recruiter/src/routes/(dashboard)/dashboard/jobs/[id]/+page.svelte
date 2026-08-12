@@ -23,7 +23,7 @@
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { Button, Card, Badge } from '$lib/components/ui';
-	import { SITE_URL } from '$lib/config/env';
+	import { JOBSEEKER_URL } from '$lib/config/env';
 	import type { JobStatus } from '$lib/types';
 
 	let { data } = $props();
@@ -32,7 +32,9 @@
 
 	// The public listing lives on the job-seeker site, not on this dashboard's
 	// origin — a bare /jobs/<id>/ href would 404 here.
-	const publicJobUrl = $derived(`${SITE_URL}/jobs/${data.job.id}/`);
+	// The job seeker site, not this app — SITE_URL is our own origin and has no
+	// public job route.
+	const publicJobUrl = $derived(`${JOBSEEKER_URL}/jobs/${data.job.id}/`);
 
 	async function shareJob() {
 		try {

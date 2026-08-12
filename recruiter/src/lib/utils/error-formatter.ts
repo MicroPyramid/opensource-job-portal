@@ -71,9 +71,16 @@ export function formatApiError(errorData: any): string {
 			if (field === 'non_field_errors') {
 				errors.push(errorMessage);
 			} else {
-				// Format field name and combine with message
 				const fieldName = formatFieldName(field);
-				errors.push(`${fieldName}: ${errorMessage}`);
+
+				// Some DRF messages already name their own field ("Current
+				// password is incorrect"). Prefixing those reads as
+				// "Current password: Current password is incorrect".
+				if (errorMessage.toLowerCase().startsWith(fieldName.toLowerCase())) {
+					errors.push(errorMessage);
+				} else {
+					errors.push(`${fieldName}: ${errorMessage}`);
+				}
 			}
 		}
 

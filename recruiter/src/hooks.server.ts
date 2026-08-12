@@ -88,6 +88,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	const publicRoutes = [
 		'/login',
 		'/signup',
+		'/complete-signup',
 		'/forgot-password',
 		'/reset-password',
 		'/verify-email',
