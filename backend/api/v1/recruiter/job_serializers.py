@@ -145,7 +145,6 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
 
     location_display = serializers.SerializerMethodField()
     applicants_count = serializers.SerializerMethodField()
-    views_count = serializers.SerializerMethodField()
     time_ago = serializers.SerializerMethodField()
     days_until_expiry = serializers.SerializerMethodField()
     is_expiring_soon = serializers.SerializerMethodField()
@@ -186,11 +185,6 @@ class RecruiterJobListSerializer(serializers.ModelSerializer):
     def get_applicants_count(self, obj) -> int:
         """Get number of applicants"""
         return obj.appliedjobs_set.count()
-
-    def get_views_count(self, obj) -> int:
-        """Get total views across all platforms"""
-        # Social media view fields have been removed
-        return 0  # TODO: Implement proper analytics tracking
 
     def get_time_ago(self, obj) -> str:
         """Calculate time since job was created"""
@@ -292,6 +286,7 @@ class RecruiterJobDetailSerializer(RecruiterJobListSerializer):
             "company_address",
             "company_links",
             "company_emails",
+            "send_email_notifications",
             # New enhanced fields
             "seniority_level",
             "application_method",
@@ -457,6 +452,7 @@ class RecruiterJobCreateSerializer(serializers.ModelSerializer):
             "company_address",
             "company_links",
             "company_emails",
+            "send_email_notifications",
             # New enhanced fields
             "seniority_level",
             "application_method",
@@ -859,6 +855,12 @@ class RecruiterJobMutationResponseSerializer(serializers.Serializer):
     success = serializers.BooleanField()
     job = RecruiterJobDetailSerializer()
     message = serializers.CharField()
+
+
+class RecruiterJobNotificationsSerializer(serializers.Serializer):
+    """Body for the applicant email-notification toggle."""
+
+    send_email_notifications = serializers.BooleanField()
 
 
 class RecruiterJobDeleteConflictSerializer(serializers.Serializer):

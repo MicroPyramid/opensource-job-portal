@@ -298,7 +298,6 @@ urlpatterns = [
     ),
     url(r"^process-email/$", process_email, name="process_email"),
     # url(r'^dj-rest-auth/', include('dj_rest_auth.urls')),
-    url(r"^api-recruiter/", include("recruiter.api_urls", namespace="api_recruiter")),
     url(r"^celery-check/", include("mp_celery_monitor.urls", namespace="celery-check")),
     # Job Seeker API (DRF + JWT)
     path("api/", include("api.urls", namespace="api")),

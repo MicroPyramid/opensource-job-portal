@@ -66,17 +66,7 @@
 		}
 	});
 
-	function handleLogoUpload(event: Event) {
-		const target = event.target as HTMLInputElement;
-		const file = target.files?.[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				formData.logo = e.target?.result as string;
-			};
-			reader.readAsDataURL(file);
-		}
-	}
+	let isUploadingLogo = $state(false);
 
 	function calculateCompleteness(): number {
 		const fields = [
@@ -130,15 +120,6 @@
 				<p class="text-sm text-amber-600 mt-1">⚠️ Only company admins can edit the profile</p>
 			{/if}
 		</div>
-		{#if isAdmin}
-			<a
-				href="/dashboard/company/microsite/"
-				class="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface transition-colors text-sm font-medium"
-			>
-				<Globe class="w-4 h-4" />
-				Manage Microsite
-			</a>
-		{/if}
 	</div>
 
 	<!-- Profile Completeness -->
@@ -172,15 +153,45 @@
 				{/if}
 			</div>
 			<div class="flex-1">
-				<label
-					class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg text-sm font-medium text-muted hover:bg-surface transition-colors cursor-pointer"
+				<form
+					method="POST"
+					action="?/uploadLogo"
+					enctype="multipart/form-data"
+					use:enhance={() => {
+						isUploadingLogo = true;
+						return async ({ update }) => {
+							isUploadingLogo = false;
+							await update();
+						};
+					}}
 				>
-					<Upload class="w-4 h-4" />
-					Upload Logo
-					<input type="file" accept="image/*" onchange={handleLogoUpload} class="hidden" />
-				</label>
+					<label
+						for="company-logo"
+						class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg text-sm font-medium text-muted hover:bg-surface transition-colors cursor-pointer {isAdmin &&
+						!isUploadingLogo
+							? ''
+							: 'opacity-50 cursor-not-allowed'}"
+					>
+						<Upload class="w-4 h-4" />
+						{isUploadingLogo ? 'Uploading…' : 'Upload Logo'}
+					</label>
+					<input
+						id="company-logo"
+						name="profile_pic"
+						type="file"
+						accept="image/jpeg,image/jpg,image/png"
+						disabled={!isAdmin || isUploadingLogo}
+						onchange={(e) => {
+							const form = e.currentTarget.form;
+							if (form && e.currentTarget.files?.length) {
+								form.requestSubmit();
+							}
+						}}
+						class="hidden"
+					/>
+				</form>
 				<p class="text-sm text-muted mt-2">
-					Recommended: Square image, at least 200x200px. Max file size: 2MB.
+					Recommended: Square image, at least 200x200px. JPEG or PNG, max 2MB.
 				</p>
 			</div>
 		</div>

@@ -46,6 +46,11 @@ urlpatterns = [
     path("team/<int:user_id>/", views.get_team_member, name="team-detail"),
     path("team/<int:user_id>/update/", views.update_team_member, name="team-update"),
     path("team/<int:user_id>/remove/", views.remove_team_member, name="team-remove"),
+    path(
+        "team/<int:user_id>/toggle-status/",
+        views.toggle_team_member_status,
+        name="team-toggle-status",
+    ),
     # Team Invitations
     path("team/invite/", views.invite_team_member, name="team-invite"),
     path("team/invitations/", views.list_invitations, name="invitations-list"),
@@ -84,6 +89,11 @@ urlpatterns = [
     # Job Actions
     path("jobs/<int:job_id>/publish/", job_views.publish_job, name="jobs-publish"),
     path("jobs/<int:job_id>/close/", job_views.close_job, name="jobs-close"),
+    path(
+        "jobs/<int:job_id>/notifications/",
+        job_views.set_job_notifications,
+        name="jobs-notifications",
+    ),
     # Job Applicants
     path(
         "jobs/<int:job_id>/applicants/",

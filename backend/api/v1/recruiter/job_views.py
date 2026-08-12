@@ -41,6 +41,7 @@ from .job_serializers import (
     RecruiterJobFormMetadataSerializer,
     RecruiterJobListSerializer,
     RecruiterJobMutationResponseSerializer,
+    RecruiterJobNotificationsSerializer,
     RecruiterJobUpdateSerializer,
 )
 
@@ -418,6 +419,59 @@ def close_job(request, job_id):
     serializer = RecruiterJobDetailSerializer(job, context={"request": request})
     return Response(
         {"success": True, "job": serializer.data, "message": "Job closed successfully"}
+    )
+
+
+@extend_schema(
+    tags=["Recruiter - Jobs"],
+    summary="Set Job Email Notifications",
+    description=(
+        "Turn applicant email notifications on or off for a job. Allowed at any "
+        "job status, unlike the general update endpoint."
+    ),
+    request=RecruiterJobNotificationsSerializer,
+    responses={
+        200: RecruiterJobMutationResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+        404: ErrorResponseSerializer,
+    },
+)
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def set_job_notifications(request, job_id):
+    """
+    Turn applicant email notifications on or off.
+
+    Deliberately separate from update_job, which refuses to touch a published
+    job. This is the recruiter's own notification preference rather than public
+    job content, and it is only useful once a job is Live — so the
+    published-jobs-are-immutable rule must not apply to it.
+    """
+    user = request.user
+
+    try:
+        job = JobPost.objects.get(id=job_id, user=user)
+    except JobPost.DoesNotExist:
+        return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = RecruiterJobNotificationsSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    job.send_email_notifications = serializer.validated_data["send_email_notifications"]
+    job.save(update_fields=["send_email_notifications"])
+
+    detail = RecruiterJobDetailSerializer(job, context={"request": request})
+    return Response(
+        {
+            "success": True,
+            "job": detail.data,
+            "message": (
+                "Email notifications enabled"
+                if job.send_email_notifications
+                else "Email notifications disabled"
+            ),
+        }
     )
 
 

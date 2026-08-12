@@ -91,6 +91,7 @@
 
 	let newSkill = $state('');
 	let searchSkill = $state('');
+	let searchCity = $state('');
 
 	// Filtered skills for searchable select
 	let filteredSkills = $derived(
@@ -98,6 +99,21 @@
 			skill.name.toLowerCase().includes(searchSkill.toLowerCase())
 		).slice(0, 20)
 	);
+
+	// Filtered cities for the location picker
+	let filteredCities = $derived(
+		data.metadata.cities.filter(city =>
+			city.name.toLowerCase().includes(searchCity.toLowerCase())
+		).slice(0, 20)
+	);
+
+	function toggleLocation(cityId: number) {
+		if (formData.selectedLocationIds.includes(cityId)) {
+			formData.selectedLocationIds = formData.selectedLocationIds.filter(id => id !== cityId);
+		} else {
+			formData.selectedLocationIds = [...formData.selectedLocationIds, cityId];
+		}
+	}
 
 	const steps = [
 		{ number: 1, title: 'Job Basics', icon: Briefcase },
@@ -443,19 +459,69 @@
 				</div>
 
 				<div>
-					<label for="edit-current-locations" class="block text-sm font-medium text-muted mb-3">Current Locations</label>
-					{#if data.job.locations && data.job.locations.length > 0}
-						<div class="flex flex-wrap gap-2 mb-3">
-							{#each data.job.locations as location}
-								<span class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
-									{location.name}, {location.state}
-								</span>
-							{/each}
-						</div>
-					{:else}
-						<p class="text-sm text-muted mb-3">No locations set</p>
-					{/if}
-					<p class="text-xs text-muted">Note: Location editing coming soon. Please contact support to change locations.</p>
+					<label for="edit-job-locations-search" class="block text-sm font-medium text-muted mb-2">
+						Job Location(s) <span class="text-error">*</span> <span class="text-muted text-xs">(Max 3)</span>
+					</label>
+					<div class="space-y-3">
+						<input
+							id="edit-job-locations-search"
+							type="text"
+							bind:value={searchCity}
+							placeholder="Search city... (e.g., Bangalore, Mumbai)"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+							disabled={formData.selectedLocationIds.length >= 3}
+						/>
+
+						{#if formData.selectedLocationIds.length > 0}
+							<div class="flex flex-wrap gap-2">
+								{#each formData.selectedLocationIds as cityId}
+									{@const city = data.metadata.cities.find(c => c.id === cityId)}
+									{#if city}
+										<span class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
+											{city.name}, {city.state?.name}
+											<button
+												type="button"
+												onclick={() => toggleLocation(cityId)}
+												class="hover:text-primary-hover"
+											>
+												<X class="w-4 h-4" />
+											</button>
+										</span>
+									{/if}
+								{/each}
+							</div>
+						{:else}
+							<p class="text-sm text-muted">No locations set</p>
+						{/if}
+
+						{#if formData.selectedLocationIds.length >= 3}
+							<p class="text-sm text-warning">Maximum 3 locations reached. Remove a location to add another.</p>
+						{/if}
+
+						{#if searchCity.length > 0}
+							<div class="border border-border rounded-lg max-h-60 overflow-y-auto">
+								{#each filteredCities as city}
+									<button
+										type="button"
+										onclick={() => {
+											if (formData.selectedLocationIds.length < 3 || formData.selectedLocationIds.includes(city.id)) {
+												toggleLocation(city.id);
+												searchCity = '';
+											}
+										}}
+										disabled={formData.selectedLocationIds.length >= 3 && !formData.selectedLocationIds.includes(city.id)}
+										class="w-full text-left px-4 py-2 hover:bg-surface flex items-center justify-between {formData.selectedLocationIds.includes(city.id) ? 'bg-primary/10 text-primary' : ''} disabled:opacity-50 disabled:cursor-not-allowed"
+									>
+										<span class="text-sm">{city.name}, {city.state?.name || 'N/A'}</span>
+										{#if formData.selectedLocationIds.includes(city.id)}
+											<CheckCircle class="w-4 h-4 text-primary" />
+										{/if}
+									</button>
+								{/each}
+							</div>
+						{/if}
+					</div>
+					<p class="text-xs text-muted mt-1">Select up to 3 cities where the job is available</p>
 				</div>
 
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">

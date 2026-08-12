@@ -3,7 +3,7 @@ Job Views for API v1
 Provides job listing, detail, and filter options endpoints
 """
 
-from django.db.models import Count, Q
+from django.db.models import Count, F, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
@@ -134,8 +134,28 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
                 {"detail": "Job not found."}, status=status.HTTP_404_NOT_FOUND
             )
 
+        self._record_view(request, instance)
+
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+    @staticmethod
+    def _record_view(request, instance):
+        """
+        Count a public view of this job.
+
+        Every fetch counts — this is a raw view count, not unique visitors, so a
+        refresh counts again. The job's own recruiter is excluded so a recruiter
+        checking their listing does not inflate their own number.
+
+        Updated through the queryset with F() rather than instance.save() so
+        concurrent views cannot clobber each other.
+        """
+        user = request.user
+        if user.is_authenticated and user.id == instance.user_id:
+            return
+
+        JobPost.objects.filter(pk=instance.pk).update(views_count=F("views_count") + 1)
 
     @extend_schema(
         summary="List jobs",

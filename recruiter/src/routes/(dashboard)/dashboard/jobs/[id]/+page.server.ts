@@ -103,17 +103,21 @@ export const actions: Actions = {
 			// Toggle the notification setting
 			const newNotificationState = !job.send_email_notifications;
 
-			// Update the job
-			const updateResponse = await fetch(`${API_BASE_URL}/recruiter/jobs/${jobId}/update/`, {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${accessToken}`
-				},
-				body: JSON.stringify({
-					send_email_notifications: newNotificationState
-				})
-			});
+			// Dedicated endpoint rather than jobs/<id>/update/, which refuses to
+			// touch a job once it is Live — the only state where this matters.
+			const updateResponse = await fetch(
+				`${API_BASE_URL}/recruiter/jobs/${jobId}/notifications/`,
+				{
+					method: 'PATCH',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`
+					},
+					body: JSON.stringify({
+						send_email_notifications: newNotificationState
+					})
+				}
+			);
 
 			if (!updateResponse.ok) {
 				const errorData = await updateResponse.json();

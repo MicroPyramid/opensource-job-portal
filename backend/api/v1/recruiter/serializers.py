@@ -61,6 +61,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             "last_name",
             "job_title",
             "is_admin",
+            "is_active",
             "date_joined",
             "last_login",
             "profile_pic",

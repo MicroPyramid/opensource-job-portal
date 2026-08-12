@@ -1263,6 +1263,10 @@ class JobPost(models.Model):
     )
 
     send_email_notifications = models.BooleanField(default=False)
+    # Incremented on each public job-detail fetch, excluding the job's own
+    # recruiter. Replaces the removed fb_views/tw_views/ln_views/other_views
+    # fields, which only ever counted social referrals.
+    views_count = models.PositiveIntegerField(default=0)
     agency_category = models.ForeignKey(
         AgencyCompanyCatogery, null=True, on_delete=models.SET_NULL
     )

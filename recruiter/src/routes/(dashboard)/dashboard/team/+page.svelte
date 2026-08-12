@@ -16,7 +16,9 @@
 		XCircle,
 		Shield,
 		Clock,
-		Eye
+		Eye,
+		UserCheck,
+		UserX
 	} from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
@@ -276,6 +278,14 @@
 												You
 											</span>
 										{/if}
+										{#if !member.is_active}
+											<span
+												class="inline-flex items-center gap-1 px-2 py-1 bg-surface text-muted text-xs font-medium rounded"
+											>
+												<Clock class="w-3 h-3" />
+												Inactive
+											</span>
+										{/if}
 									</div>
 									<p class="text-sm text-muted mt-1">{member.email}</p>
 									{#if member.job_title}
@@ -303,6 +313,20 @@
 										>
 											<Edit class="w-4 h-4" />
 										</button>
+										<form method="POST" action="?/toggleStatus" use:enhance>
+											<input type="hidden" name="user_id" value={member.id} />
+											<button
+												type="submit"
+												class="p-2 text-muted hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+												title={member.is_active ? 'Deactivate member' : 'Activate member'}
+											>
+												{#if member.is_active}
+													<UserX class="w-4 h-4" />
+												{:else}
+													<UserCheck class="w-4 h-4" />
+												{/if}
+											</button>
+										</form>
 										<button
 											onclick={() => openRemoveDialog(member)}
 											class="p-2 text-muted hover:text-error hover:bg-error-light rounded-lg transition-colors"
