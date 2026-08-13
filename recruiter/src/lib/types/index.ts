@@ -291,6 +291,28 @@ export interface JobDetail extends JobListItem {
 	age_relaxation?: string;
 }
 
+/**
+ * The fields only walk-in and government posts use. Carried as its own shape so
+ * the create and edit forms can hold, render and submit them identically —
+ * see `$lib/constants/jobs` and `JobTypeFields.svelte`.
+ */
+export interface JobTypeSpecificFields {
+	walkin_contactinfo: string;
+	walkin_show_contact_info: boolean;
+	walkin_from_date: string;
+	walkin_to_date: string;
+	walkin_time: string;
+	govt_job_type: string;
+	application_fee: string;
+	selection_process: string;
+	how_to_apply: string;
+	important_dates: string;
+	govt_from_date: string;
+	govt_to_date: string;
+	govt_exam_date: string;
+	age_relaxation: string;
+}
+
 export interface JobCreateData {
 	title: string;
 	job_role: string;

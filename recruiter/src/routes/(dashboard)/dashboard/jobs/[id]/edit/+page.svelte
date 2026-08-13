@@ -19,6 +19,8 @@
 	import { goto } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
 	import type { WorkMode } from '$lib/types';
+	import JobTypeFields from '$lib/components/recruiter/JobTypeFields.svelte';
+	import { EMPLOYMENT_TYPES, hasTypeSpecificFields, jobTypeFieldsFrom } from '$lib/constants/jobs';
 
 	// Receive data from server-side load function (Svelte 5 runes mode)
 	let { data, form }: { data: PageData; form: ActionData | null | undefined } = $props();
@@ -62,13 +64,24 @@
 			// Step 4: Compensation
 			salaryMin: job.min_salary?.toString() || '',
 			salaryMax: job.max_salary?.toString() || '',
-			hideSalary: false,
-			benefits: '',
-			perks: '',
+			salaryType: job.salary_type || 'Year',
+			// Seeded from the job, not from a blank. These three used to start
+			// empty and submit anyway: `hideSalary` was never sent at all,
+			// `benefits` was posted under the `company_description` key — so
+			// every save wiped the company description and dropped the benefits
+			// — and `salary_type` was a hardcoded "Year" that rewrote monthly
+			// pay on save.
+			hideSalary: job.show_salary === false,
+			benefits: (job.benefits || []).join(', '),
 
 			// Step 5: Application Settings
-			assignedRecruiters: [] as string[],
-			autoReplyTemplate: ''
+			//
+			// Replaces `autoReplyTemplate` and `assignedRecruiters`, which were
+			// state with no field behind them: JobPost has neither, and neither
+			// was ever submitted. The auto-reply box discarded everything typed
+			// into it; `assignedRecruiters` had no UI at all.
+			applicationMethod: job.application_method || 'portal',
+			applicationUrl: job.application_url || ''
 		};
 	}));
 
@@ -124,7 +137,11 @@
 		{ number: 6, title: 'Preview', icon: Eye }
 	];
 
-	const employmentTypes = ['Full-time', 'Part-time', 'Contract', 'Internship'];
+	const employmentTypes = EMPLOYMENT_TYPES;
+
+	// Walk-in / government extras, seeded from what is stored so editing a
+	// walk-in post shows its dates instead of blanks.
+	let typeFields = $state(untrack(() => jobTypeFieldsFrom(data.job)));
 	const experienceLevels = [
 		'Fresher',
 		'1-3 years',
@@ -315,13 +332,21 @@
 		{#if formData.salaryMax}
 			<input type="hidden" name="max_salary" value={formData.salaryMax} />
 		{/if}
-		<input type="hidden" name="salary_type" value="Year" />
+		<input type="hidden" name="salary_type" bind:value={formData.salaryType} />
+		<input type="hidden" name="show_salary" value={!formData.hideSalary} />
+		<input type="hidden" name="benefits" bind:value={formData.benefits} />
 
 		<!-- Step 5: Application Settings -->
+		<input type="hidden" name="application_method" bind:value={formData.applicationMethod} />
+		{#if formData.applicationMethod === 'external'}
+			<input type="hidden" name="application_url" bind:value={formData.applicationUrl} />
+		{/if}
+
+		<!-- Walk-in / government extras; emits nothing for the other types -->
+		<JobTypeFields jobType={formData.employmentType} bind:values={typeFields} hidden />
 
 		<!-- Additional fields -->
 		<input type="hidden" name="company_address" bind:value={formData.officeAddress} />
-		<input type="hidden" name="company_description" bind:value={formData.benefits} />
 
 		<!-- Form Content -->
 		<div class="bg-white rounded-lg border border-border p-6 md:p-8">
@@ -391,7 +416,7 @@
 							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 						>
 							{#each employmentTypes as type}
-								<option value={type.toLowerCase()}>{type}</option>
+								<option value={type.value}>{type.label}</option>
 							{/each}
 						</select>
 					</div>
@@ -725,6 +750,18 @@
 				</div>
 
 				<div>
+					<label for="edit-salary-type" class="block text-sm font-medium text-muted mb-2">Salary Period</label>
+					<select
+						id="edit-salary-type"
+						bind:value={formData.salaryType}
+						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+					>
+						<option value="Year">Per Year</option>
+						<option value="Month">Per Month</option>
+					</select>
+				</div>
+
+				<div>
 					<label for="edit-hide-salary" class="flex items-center gap-2 cursor-pointer">
 						<input id="edit-hide-salary" type="checkbox" bind:checked={formData.hideSalary} class="w-4 h-4 text-primary rounded" />
 						<span class="text-sm text-muted">Hide salary range from public job posting</span>
@@ -742,16 +779,12 @@
 					></textarea>
 				</div>
 
-				<div>
-					<label for="edit-perks" class="block text-sm font-medium text-muted mb-2">Perks</label>
-					<textarea
-						id="edit-perks"
-						bind:value={formData.perks}
-						rows="4"
-						placeholder="List additional perks (e.g., Flexible hours, Remote work, etc.)"
-						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-					></textarea>
-				</div>
+				<!--
+					A "Perks" box used to sit here. There is no perks field on JobPost
+					and nothing ever submitted it, so everything typed into it was
+					discarded on save. Benefits above covers the same ground and does
+					persist.
+				-->
 			</div>
 		{:else if currentStep === 5}
 			<!-- Step 5: Application Settings -->
@@ -762,15 +795,44 @@
 				</h2>
 
 				<div>
-					<label for="edit-auto-reply" class="block text-sm font-medium text-muted mb-2">Auto-Reply Email Template</label>
-					<textarea
-						id="edit-auto-reply"
-						bind:value={formData.autoReplyTemplate}
-						rows="4"
-						placeholder="Thank you for applying! We have received your application and will review it shortly..."
+					<label for="edit-application-method" class="block text-sm font-medium text-muted mb-2">
+						Application Method
+					</label>
+					<select
+						id="edit-application-method"
+						bind:value={formData.applicationMethod}
 						class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-					></textarea>
+					>
+						<option value="portal">Apply on PeelJobs Portal</option>
+						<option value="external">External URL</option>
+						<option value="email">Email</option>
+					</select>
 				</div>
+
+				{#if formData.applicationMethod === 'external'}
+					<div>
+						<label for="edit-application-url" class="block text-sm font-medium text-muted mb-2">
+							Application URL <span class="text-error">*</span>
+						</label>
+						<input
+							id="edit-application-url"
+							type="url"
+							bind:value={formData.applicationUrl}
+							placeholder="https://example.com/apply"
+							class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+						/>
+					</div>
+				{/if}
+
+				{#if hasTypeSpecificFields(formData.employmentType)}
+					<div class="pt-2 border-t border-border">
+						<JobTypeFields
+							jobType={formData.employmentType}
+							bind:values={typeFields}
+							idPrefix="edit"
+						/>
+					</div>
+				{/if}
 			</div>
 		{:else if currentStep === 6}
 			<!-- Step 6: Preview -->

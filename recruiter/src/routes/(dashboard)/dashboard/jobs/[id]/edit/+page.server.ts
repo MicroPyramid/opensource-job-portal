@@ -240,9 +240,21 @@ function extractJobDataFromForm(formData: FormData): JobUpdateData {
 		return strValue === '' ? undefined : strValue;
 	};
 
-	// Helper to get boolean value
-	const getBoolean = (key: string): boolean => {
-		return formData.get(key) === 'true' || formData.get(key) === 'on';
+	// Helper to get boolean value.
+	//
+	// Absent means "this form does not carry the field", not "false". The update
+	// is a PATCH, so returning undefined leaves the stored value alone; the
+	// previous `=== 'true'` collapsed absence to false and wrote it back. That
+	// silently cleared show_salary — which defaults to *true* — on every save,
+	// along with fresher and relocation_required, none of which this form
+	// renders.
+	//
+	// A bare checkbox is also absent when unchecked, so any checkbox added here
+	// needs a hidden `value="false"` companion to be readable as off.
+	const getBoolean = (key: string): boolean | undefined => {
+		if (!formData.has(key)) return undefined;
+		const value = formData.get(key);
+		return value === 'true' || value === 'on';
 	};
 
 	// Helper to parse JSON field
@@ -309,7 +321,9 @@ function extractJobDataFromForm(formData: FormData): JobUpdateData {
 
 		// NEW ENHANCED FIELDS
 		seniority_level: getString('seniority_level') as any,
-		application_method: (getString('application_method') || 'portal') as any,
+		// No `|| 'portal'` fallback: this form does not render the field, so the
+		// default was overwriting an external application flow on every save.
+		application_method: getString('application_method') as any,
 		application_url: getString('application_url'),
 		benefits: getStringArray('benefits'),
 		language_requirements: getJSON('language_requirements'),
@@ -318,7 +332,8 @@ function extractJobDataFromForm(formData: FormData): JobUpdateData {
 		relocation_required: getBoolean('relocation_required'),
 		travel_percentage: getString('travel_percentage'),
 		hiring_timeline: getString('hiring_timeline') as any,
-		hiring_priority: (getString('hiring_priority') || 'Normal') as any,
+		// Likewise: unrendered here, so the fallback demoted every Urgent job
+		hiring_priority: getString('hiring_priority') as any,
 
 		// Walk-in fields
 		walkin_contactinfo: getString('walkin_contactinfo'),

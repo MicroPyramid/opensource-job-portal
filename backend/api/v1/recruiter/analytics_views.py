@@ -20,6 +20,7 @@ from .analytics_serializers import (
     ApplicationAnalyticsResponseSerializer,
     JobApplicationAnalyticsResponseSerializer,
 )
+from .scoping import recruiter_jobs
 
 
 @extend_schema(
@@ -85,8 +86,8 @@ def get_application_analytics(request):
 
     prev_start_date = start_date - timedelta(days=prev_days)
 
-    # Get recruiter's jobs
-    jobs = JobPost.objects.filter(user=request.user)
+    # The caller's jobs, or the whole company's for an admin
+    jobs = recruiter_jobs(request.user)
 
     # Applications in period
     applications = AppliedJobs.objects.filter(
@@ -271,7 +272,7 @@ def get_job_application_analytics(request, job_id):
     Query params: period (7d, 30d, 90d)
     """
     try:
-        job = JobPost.objects.get(id=job_id, user=request.user)
+        job = recruiter_jobs(request.user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=404)
 

@@ -19,6 +19,8 @@
 	import { goto } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
 	import type { LanguageRequirement, SeniorityLevel, ApplicationMethod, LanguageProficiency, HiringTimeline, HiringPriority } from '$lib/types';
+	import JobTypeFields from '$lib/components/recruiter/JobTypeFields.svelte';
+	import { EMPLOYMENT_TYPES, emptyJobTypeFields, hasTypeSpecificFields, jobTypeFieldsFrom } from '$lib/constants/jobs';
 
 	// Receive data from server-side load function (Svelte 5 runes mode)
 	let { data, form }: { data: PageData; form: ActionData | null | undefined } = $props();
@@ -83,6 +85,10 @@
 		fresher: false
 	});
 
+	// Walk-in / government extras, kept apart from the shared fields above
+	// because they are the only ones whose relevance depends on the job type.
+	let typeFields = $state(emptyJobTypeFields());
+
 	// Initialize form with copied job data if copying
 	$effect(() => {
 		if (data.jobToCopy && data.isCopying) {
@@ -134,6 +140,9 @@
 			formData.maxMonth = job.max_month || 0;
 			formData.fresher = job.fresher || false;
 
+			// Copying a walk-in or government post has to bring its own fields
+			typeFields = jobTypeFieldsFrom(job);
+
 			// Compute experience level string
 			if (job.fresher) {
 				formData.experienceLevel = 'Fresher';
@@ -159,14 +168,7 @@
 		{ number: 7, title: 'Preview', icon: Eye }
 	];
 
-	const employmentTypes = [
-		{ value: 'full-time', label: 'Full-time' },
-		{ value: 'permanent', label: 'Permanent' },
-		{ value: 'contract', label: 'Contract' },
-		{ value: 'part-time', label: 'Part-time' },
-		{ value: 'internship', label: 'Internship' },
-		{ value: 'freelance', label: 'Freelance' }
-	];
+	const employmentTypes = EMPLOYMENT_TYPES;
 
 	const seniorityLevels = [
 		{ value: 'intern', label: 'Intern' },
@@ -1025,6 +1027,16 @@
 								class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
 							/>
 						</div>
+
+						{#if hasTypeSpecificFields(formData.employmentType)}
+							<div class="pt-2 border-t border-border">
+								<JobTypeFields
+									jobType={formData.employmentType}
+									bind:values={typeFields}
+									idPrefix="new"
+								/>
+							</div>
+						{/if}
 					</div>
 				</div>
 
@@ -1255,6 +1267,9 @@
 		<!-- Step 5: Application -->
 		<input type="hidden" name="application_method" value={formData.applicationMethod} />
 		<input type="hidden" name="application_url" value={formData.applicationUrl} />
+
+		<!-- Walk-in / government extras; emits nothing for the other types -->
+		<JobTypeFields jobType={formData.employmentType} bind:values={typeFields} hidden />
 
 		<!-- Step 6: Settings -->
 		<input type="hidden" name="relocation_required" value={formData.relocationRequired} />

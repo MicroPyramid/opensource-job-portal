@@ -643,3 +643,320 @@ class PasswordStrengthTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertFalse(User.objects.filter(email="sameasemail@acme.test").exists())
+
+
+class CompanyScopedJobAccessTests(TestCase):
+    """
+    A company admin owns what their team posts.
+
+    The legacy dashboard scoped on ``user__company`` for admins
+    (``recruiter/views.py:748`` at ``ad39524``); every DRF view was rewritten
+    with a hardcoded ``user=request.user``. Team management shipped anyway, so
+    an admin could invite a recruiter and then see nothing they posted.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.company = Company.objects.create(name="Acme", slug="acme")
+        self.rival = Company.objects.create(name="Rival", slug="rival")
+
+        self.admin = make_recruiter("admin@acme.test", self.company, is_admin=True)
+        self.member = make_recruiter("member@acme.test", self.company)
+        self.outsider = make_recruiter("boss@rival.test", self.rival, is_admin=True)
+
+        self.member_job = JobPost.objects.create(
+            user=self.member,
+            title="Member's Job",
+            slug="/members-job/",
+            status="Draft",
+            vacancies=1,
+        )
+        self.admin_job = JobPost.objects.create(
+            user=self.admin,
+            title="Admin's Job",
+            slug="/admins-job/",
+            status="Live",
+            vacancies=1,
+        )
+
+    def _titles(self, response):
+        payload = response.data
+        results = payload["results"] if isinstance(payload, dict) else payload
+        return {job["title"] for job in results}
+
+    def test_admin_lists_the_whole_companys_jobs(self):
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.get(reverse("api:v1:recruiter:jobs-list"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self._titles(response), {"Member's Job", "Admin's Job"})
+
+    def test_member_lists_only_their_own_jobs(self):
+        self.client.force_authenticate(user=self.member)
+
+        response = self.client.get(reverse("api:v1:recruiter:jobs-list"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self._titles(response), {"Member's Job"})
+
+    def test_admin_opens_a_teammates_job(self):
+        self.client.force_authenticate(user=self.admin)
+        url = reverse("api:v1:recruiter:jobs-detail", args=[self.member_job.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], "Member's Job")
+
+    def test_admin_edits_a_teammates_draft(self):
+        self.client.force_authenticate(user=self.admin)
+        url = reverse("api:v1:recruiter:jobs-update", args=[self.member_job.id])
+
+        response = self.client.patch(url, {"title": "Retitled"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.member_job.refresh_from_db()
+        self.assertEqual(self.member_job.title, "Retitled")
+
+    def test_admin_sees_applicants_on_a_teammates_job(self):
+        applicant = User.objects.create(
+            username="seeker", email="seeker@example.test", user_type="JS"
+        )
+        AppliedJobs.objects.create(
+            user=applicant, job_post=self.member_job, status="Pending"
+        )
+        self.client.force_authenticate(user=self.admin)
+        url = reverse("api:v1:recruiter:jobs-applicants", args=[self.member_job.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["total_applicants"], 1)
+        self.assertEqual(len(response.data["applications"]), 1)
+
+    def test_member_cannot_open_a_teammates_job(self):
+        self.client.force_authenticate(user=self.member)
+        url = reverse("api:v1:recruiter:jobs-detail", args=[self.admin_job.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_another_companys_admin_is_still_shut_out(self):
+        """The widened scope must stop at the company boundary."""
+        self.client.force_authenticate(user=self.outsider)
+
+        detail = self.client.get(
+            reverse("api:v1:recruiter:jobs-detail", args=[self.member_job.id])
+        )
+        listing = self.client.get(reverse("api:v1:recruiter:jobs-list"))
+
+        self.assertEqual(detail.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(self._titles(listing), set())
+
+    def test_dashboard_stats_cover_the_company_for_an_admin(self):
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.get(reverse("api:v1:recruiter:dashboard-stats"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["stats"]["total_jobs"], 2)
+
+    def test_dashboard_stats_stay_personal_for_a_member(self):
+        self.client.force_authenticate(user=self.member)
+
+        response = self.client.get(reverse("api:v1:recruiter:dashboard-stats"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["stats"]["total_jobs"], 1)
+
+    def test_analytics_cover_the_company_for_an_admin(self):
+        self.client.force_authenticate(user=self.admin)
+        url = reverse("api:v1:recruiter:job-analytics", args=[self.member_job.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_an_admin_without_a_company_falls_back_to_their_own_jobs(self):
+        """``is_company_admin`` requires a company; the scope must not widen."""
+        stray = make_recruiter("stray@nowhere.test", None, is_admin=True)
+        JobPost.objects.create(
+            user=stray, title="Stray's Job", slug="/strays-job/", vacancies=1
+        )
+        self.client.force_authenticate(user=stray)
+
+        response = self.client.get(reverse("api:v1:recruiter:jobs-list"))
+
+        self.assertEqual(self._titles(response), {"Stray's Job"})
+
+
+class WalkinAndGovernmentJobTests(TestCase):
+    """
+    The two job types the dashboard could not post.
+
+    The serializer has always accepted these fields; no form rendered them, so
+    `walk-in` — 1,973 posts in the data, with its own landing pages on the job
+    seeker site — could only be created from the platform-admin dashboard.
+    These pin the payloads the rebuilt forms send.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.company = Company.objects.create(name="Acme", slug="acme")
+        self.recruiter = make_recruiter("poster@acme.test", self.company, is_admin=True)
+        self.client.force_authenticate(user=self.recruiter)
+
+    def test_a_walkin_job_keeps_its_walkin_fields(self):
+        response = self.client.post(
+            reverse("api:v1:recruiter:jobs-create"),
+            {
+                "title": "Walk-in: Support Engineer",
+                "job_type": "walk-in",
+                "walkin_contactinfo": "Ask for Priya, Gate 2",
+                "walkin_show_contact_info": True,
+                "walkin_from_date": "2026-09-01",
+                "walkin_to_date": "2026-09-05",
+                "walkin_time": "10:00:00",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        job = JobPost.objects.get(title="Walk-in: Support Engineer")
+        self.assertEqual(job.job_type, "walk-in")
+        self.assertEqual(job.walkin_contactinfo, "Ask for Priya, Gate 2")
+        self.assertTrue(job.walkin_show_contact_info)
+        self.assertEqual(str(job.walkin_from_date), "2026-09-01")
+        self.assertEqual(str(job.walkin_to_date), "2026-09-05")
+        self.assertEqual(str(job.walkin_time), "10:00:00")
+
+    def test_a_government_job_keeps_its_government_fields(self):
+        response = self.client.post(
+            reverse("api:v1:recruiter:jobs-create"),
+            {
+                "title": "Junior Assistant",
+                "job_type": "government",
+                "govt_job_type": "Central",
+                "application_fee": "500",
+                "selection_process": "Written exam, then interview",
+                "how_to_apply": "Apply on the official portal",
+                "important_dates": "Admit card: 2026-10-01",
+                "govt_from_date": "2026-09-01",
+                "govt_to_date": "2026-09-30",
+                "govt_exam_date": "2026-11-15",
+                "age_relaxation": "5 years for SC/ST",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        job = JobPost.objects.get(title="Junior Assistant")
+        self.assertEqual(job.job_type, "government")
+        self.assertEqual(job.govt_job_type, "Central")
+        self.assertEqual(job.application_fee, 500)
+        self.assertEqual(job.selection_process, "Written exam, then interview")
+        self.assertEqual(job.age_relaxation, "5 years for SC/ST")
+        self.assertEqual(str(job.govt_exam_date), "2026-11-15")
+
+    def test_editing_a_walkin_draft_can_change_its_dates(self):
+        job = JobPost.objects.create(
+            user=self.recruiter,
+            title="Walk-in Draft",
+            slug="/walkin-draft/",
+            status="Draft",
+            job_type="walk-in",
+            vacancies=1,
+            walkin_from_date="2026-09-01",
+        )
+
+        response = self.client.patch(
+            reverse("api:v1:recruiter:jobs-update", args=[job.id]),
+            {"walkin_from_date": "2026-09-08", "walkin_time": "09:30:00"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        job.refresh_from_db()
+        self.assertEqual(str(job.walkin_from_date), "2026-09-08")
+        self.assertEqual(str(job.walkin_time), "09:30:00")
+
+
+class PartialJobUpdatePreservesUnsentFieldsTests(TestCase):
+    """
+    A PATCH must leave out what it does not send.
+
+    The edit form used to emit `false` for every boolean it does not render —
+    PATCH is partial, but a key that is present is a key that gets written. So
+    editing a title cleared show_salary (which defaults to *true*), fresher and
+    relocation_required, demoted hiring_priority to Normal and reset
+    application_method to portal. These pin the contract the fixed form relies
+    on: omit the key, keep the value.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.company = Company.objects.create(name="Acme", slug="acme")
+        self.recruiter = make_recruiter("editor@acme.test", self.company, is_admin=True)
+        self.client.force_authenticate(user=self.recruiter)
+        self.job = JobPost.objects.create(
+            user=self.recruiter,
+            title="Original",
+            slug="/original/",
+            status="Draft",
+            vacancies=1,
+            show_salary=True,
+            relocation_required=True,
+            hiring_priority="High",
+            application_method="external",
+            application_url="https://acme.test/apply",
+            salary_type="Month",
+            company_description="Acme builds anvils.",
+        )
+
+    def test_a_title_only_patch_touches_nothing_else(self):
+        response = self.client.patch(
+            reverse("api:v1:recruiter:jobs-update", args=[self.job.id]),
+            {"title": "Renamed"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.job.refresh_from_db()
+        self.assertEqual(self.job.title, "Renamed")
+        self.assertTrue(self.job.show_salary)
+        self.assertTrue(self.job.relocation_required)
+        self.assertEqual(self.job.hiring_priority, "High")
+        self.assertEqual(self.job.application_method, "external")
+        self.assertEqual(self.job.salary_type, "Month")
+        self.assertEqual(self.job.company_description, "Acme builds anvils.")
+
+    def test_the_application_method_can_be_changed(self):
+        """
+        Newly reachable: the edit form had no application-method control, so
+        this field could only ever be reset by the `|| 'portal'` default it
+        used to send.
+        """
+        response = self.client.patch(
+            reverse("api:v1:recruiter:jobs-update", args=[self.job.id]),
+            {"application_method": "portal"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.job.refresh_from_db()
+        self.assertEqual(self.job.application_method, "portal")
+
+    def test_an_explicit_false_still_wins(self):
+        """Omission preserves; sending the field must still write it."""
+        response = self.client.patch(
+            reverse("api:v1:recruiter:jobs-update", args=[self.job.id]),
+            {"show_salary": False, "salary_type": "Year"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.job.refresh_from_db()
+        self.assertFalse(self.job.show_salary)
+        self.assertEqual(self.job.salary_type, "Year")

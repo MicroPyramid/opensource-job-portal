@@ -44,6 +44,7 @@ from .job_serializers import (
     RecruiterJobNotificationsSerializer,
     RecruiterJobUpdateSerializer,
 )
+from .scoping import recruiter_jobs
 
 
 class JobPostPagination(PageNumberPagination):
@@ -91,9 +92,9 @@ def list_jobs(request):
     """
     user = request.user
 
-    # Base queryset - jobs posted by this user
+    # Base queryset - the caller's jobs, or the whole company's for an admin
     queryset = (
-        JobPost.objects.filter(user=user)
+        recruiter_jobs(user)
         .select_related("company", "country")
         .prefetch_related("location", "skills", "industry", "edu_qualification")
     )
@@ -157,9 +158,10 @@ def get_job(request, job_id):
 
     try:
         job = (
-            JobPost.objects.select_related("company", "country")
+            recruiter_jobs(user)
+            .select_related("company", "country")
             .prefetch_related("location", "skills", "industry", "edu_qualification")
-            .get(id=job_id, user=user)
+            .get(id=job_id)
         )
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -243,7 +245,7 @@ def update_job(request, job_id):
     user = request.user
 
     try:
-        job = JobPost.objects.get(id=job_id, user=user)
+        job = recruiter_jobs(user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -300,7 +302,7 @@ def delete_job(request, job_id):
     user = request.user
 
     try:
-        job = JobPost.objects.get(id=job_id, user=user)
+        job = recruiter_jobs(user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -350,7 +352,7 @@ def publish_job(request, job_id):
     user = request.user
 
     try:
-        job = JobPost.objects.get(id=job_id, user=user)
+        job = recruiter_jobs(user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -404,7 +406,7 @@ def close_job(request, job_id):
     user = request.user
 
     try:
-        job = JobPost.objects.get(id=job_id, user=user)
+        job = recruiter_jobs(user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -450,7 +452,7 @@ def set_job_notifications(request, job_id):
     user = request.user
 
     try:
-        job = JobPost.objects.get(id=job_id, user=user)
+        job = recruiter_jobs(user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -509,7 +511,7 @@ def get_job_applicants(request, job_id):
     user = request.user
 
     try:
-        job = JobPost.objects.get(id=job_id, user=user)
+        job = recruiter_jobs(user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -602,7 +604,7 @@ def get_dashboard_stats(request):
     start_date = timezone.now() - timedelta(days=days)
     prev_start_date = start_date - timedelta(days=days)
 
-    jobs = JobPost.objects.filter(user=user)
+    jobs = recruiter_jobs(user)
 
     # Basic stats
     total_jobs = jobs.count()
@@ -612,7 +614,7 @@ def get_dashboard_stats(request):
     expired_jobs = jobs.filter(status="Expired").count()
 
     # Application stats
-    all_applicants = AppliedJobs.objects.filter(job_post__user=user)
+    all_applicants = AppliedJobs.objects.filter(job_post__in=jobs)
     total_applicants = all_applicants.count()
 
     # NEW: Applications in current period
@@ -844,7 +846,7 @@ def get_applicant_detail(request, job_id, applicant_id):
 
     # Verify job ownership
     try:
-        job = JobPost.objects.get(id=job_id, user=user)
+        job = recruiter_jobs(user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -891,7 +893,7 @@ def update_applicant_status(request, job_id, applicant_id):
 
     # Verify job ownership
     try:
-        job = JobPost.objects.get(id=job_id, user=user)
+        job = recruiter_jobs(user).get(id=job_id)
     except JobPost.DoesNotExist:
         return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
 

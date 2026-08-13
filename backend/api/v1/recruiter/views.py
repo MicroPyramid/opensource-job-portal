@@ -38,8 +38,12 @@ from .serializers import (
 
 
 def is_company_admin(user):
-    """Check if user is a company admin"""
-    return user.user_type == "EM" and user.is_admin and user.company is not None
+    """Whether ``user`` may act for their whole company.
+
+    Thin wrapper over ``User.is_company_admin`` so the rule has one definition.
+    ``api/v1/recruiter/scoping.py`` reads the property directly.
+    """
+    return user.is_company_admin
 
 
 def send_team_invitation_email(invitation, message=None):
