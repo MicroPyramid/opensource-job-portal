@@ -376,24 +376,15 @@ class Company(models.Model):
             return str(self.profile_pic)
         return "https://cdn.peeljobs.com/static/company_logo.png"
 
-    def get_description(self):
-        from bs4 import BeautifulSoup
-
-        html = self.profile
-        # create a new bs4 object from the html data loaded
-        soup = BeautifulSoup(html)
-        # remove all javascript and stylesheet code
-        for script in soup(["script", "style"]):
-            script.extract()
-        # get text
-        text = soup.get_text()
-        # break into lines and remove leading and trailing space on each
-        lines = (line.strip() for line in text.splitlines())
-        # break multi-headlines into a line each
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        # drop blank lines
-        text = "\n<br>".join(chunk for chunk in chunks if chunk)
-        return text
+    # `get_description()` — stripped HTML out of `profile` with BeautifulSoup —
+    # was deleted 2026-08-13 alongside `JobPost.get_job_description()`. Neither
+    # had a single caller in any tracked file, and `bs4` was never a declared
+    # dependency: it reached the app only as a transitive of `behave-django`,
+    # a *dev* dependency. So `uv sync --no-dev` would have made both methods
+    # raise ImportError, and the function-local import meant nothing failed
+    # until they were called. Deleting `features/` took behave-django with it
+    # and would have armed that. Bring bs4 in properly if HTML stripping is
+    # wanted again.
 
     def get_website(self):
         site = self.website
@@ -1581,32 +1572,9 @@ class JobPost(models.Model):
         else:
             return self.min_salary, self.max_salary
 
-    def get_job_description(self):
-        from bs4 import BeautifulSoup
-
-        soup = BeautifulSoup(self.description)
-        for s in soup(["script", "style"]):
-            s.extract()
-        return " ".join(soup.stripped_strings)
-
-    def get_description(self):
-        from bs4 import BeautifulSoup
-
-        html = self.description
-        # create a new bs4 object from the html data loaded
-        soup = BeautifulSoup(html)
-        # remove all javascript and stylesheet code
-        for script in soup(["script", "style"]):
-            script.extract()
-        # get text
-        text = soup.get_text()
-        # break into lines and remove leading and trailing space on each
-        lines = (line.strip() for line in text.splitlines())
-        # break multi-headlines into a line each
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        # drop blank lines
-        text = "\n".join(chunk for chunk in chunks if chunk)
-        return text
+    # `get_job_description()` and `get_description()` deleted 2026-08-13 — both
+    # BeautifulSoup HTML strippers with no caller anywhere. See the note on
+    # `Company.get_website` for why `bs4` had been available at all.
 
     def get_company_emails(self):
         return self.company_emails

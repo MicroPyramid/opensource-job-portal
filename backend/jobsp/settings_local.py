@@ -7,7 +7,6 @@ from .settings import *
 # Development-specific installed apps
 LOCAL_INSTALLED_APPS = [
     # "schema_viewer",  # Installed by: uv sync
-    # "behave_django",  # Installed by: uv sync
     # Uncomment the following for debug toolbar support
     # "debug_toolbar",
     # "template_profiler_panel",
@@ -31,11 +30,15 @@ TEMPLATE_DEBUG = DEBUG
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # No TEST_RUNNER override: this used to point at
-# "django_behave.runner.DjangoBehaveTestSuiteRunner", but django-behave is not a
-# dependency of this project and the module does not exist, so `manage.py test`
-# died on ModuleNotFoundError before collecting anything. The declared
-# dependency is behave-django, which exposes BDD tests through its own
-# management command (`manage.py behave`) rather than through TEST_RUNNER.
+# "django_behave.runner.DjangoBehaveTestSuiteRunner", but that module was never
+# a dependency of this project, so `manage.py test` died on ModuleNotFoundError
+# before collecting anything.
+#
+# There is no BDD suite left to point it at either: `features/` and the
+# behave-django dependency were deleted 2026-08-13. The scenarios drove `/`,
+# `/user/reg_success/` and `/logout/` — Django template routes that went with
+# candidate/ and pjob/. settings.py sets TEST_RUNNER to
+# jobsp.test_runner.NoSearchIndexingTestRunner, which is the one that matters.
 
 # Internal IPs for debug toolbar and other dev tools
 INTERNAL_IPS = ("127.0.0.1", "localhost")
