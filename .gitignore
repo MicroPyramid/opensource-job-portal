@@ -14,7 +14,9 @@ logs/
 celerybeat-schedule
 celerybeat.pid
 resume/
-docs/build
+# MkDocs output. `_site`, not the MkDocs default `site/` -- that name is taken
+# by the SvelteKit job-seeker app, and `mkdocs build --clean` would empty it.
+_site/
 dist/
 env
 env/

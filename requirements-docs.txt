@@ -1,0 +1,14 @@
+# Documentation build dependencies (Read the Docs + local `mkdocs serve`).
+#
+# Deliberately kept at the repository root rather than inside docs/, which is
+# the MkDocs docs_dir -- a requirements file in there would be copied into the
+# published site.
+#
+# These are the only Python dependencies the docs need; the docs do not import
+# the Django application, so backend/pyproject.toml is not installed for a
+# docs build.
+
+# mkdocs >=1.6 is required for the `exclude_docs` key used in mkdocs.yml.
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+pymdown-extensions==11.0.1

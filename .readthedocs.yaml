@@ -1,0 +1,23 @@
+# Read the Docs build configuration.
+#
+# This file did not exist before 2026-08-13. Read the Docs was building the
+# project through legacy auto-detection of docs/source/conf.py, which was
+# deleted on 2025-12-24 (2d8a02b). Read the Docs kept serving the last
+# successful build -- a Sphinx site from February 2020 -- so the published
+# documentation described a pip/virtualenv setup that no longer exists.
+#
+# Reference: https://docs.readthedocs.io/en/stable/config-file/v2.html
+
+version: 2
+
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "3.12"
+
+mkdocs:
+  configuration: mkdocs.yml
+
+python:
+  install:
+    - requirements: requirements-docs.txt
