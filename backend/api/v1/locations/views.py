@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.v1.common.search import fuzzy_name_filter
 from peeldb.models import City, Country, State
 
 from .serializers import (
@@ -118,9 +119,11 @@ class CityListView(APIView):
             cities = cities.filter(state__country_id=country_id)
 
         if search:
-            cities = cities.filter(name__icontains=search)
+            cities = fuzzy_name_filter(cities, search)
+        else:
+            cities = cities.order_by("name")
 
-        cities = cities.select_related("state", "state__country").order_by("name")[
+        cities = cities.select_related("state", "state__country")[
             :100
         ]  # Limit to 100 results
         serializer = CityListSerializer(cities, many=True)

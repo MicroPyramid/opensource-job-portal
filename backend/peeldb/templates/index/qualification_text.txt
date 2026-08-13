@@ -1,2 +1,0 @@
-{{ object.edu_name }}
-{{ object.edu_slug }}

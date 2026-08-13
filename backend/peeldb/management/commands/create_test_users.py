@@ -12,7 +12,6 @@ import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from django.apps import apps
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
@@ -69,44 +68,36 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Loading test users from: {config_path}")
 
-        # Disable Haystack signals during data creation
-        signal_processor = apps.get_app_config("haystack").signal_processor
-        signal_processor.teardown()
+        if options["clear"]:
+            self._clear_test_users()
 
-        try:
-            if options["clear"]:
-                self._clear_test_users()
+        self._validate_fixtures_loaded()
 
-            self._validate_fixtures_loaded()
+        # Load reference data
+        self.cities = list(City.objects.filter(status="Enabled"))
+        self.skills = list(Skill.objects.filter(status="Active"))
+        self.industries = list(Industry.objects.filter(status="Active"))
+        self.qualifications = list(Qualification.objects.all())
+        self.languages = list(Language.objects.all())
+        self.country = Country.objects.filter(status="Enabled").first()
 
-            # Load reference data
-            self.cities = list(City.objects.filter(status="Enabled"))
-            self.skills = list(Skill.objects.filter(status="Active"))
-            self.industries = list(Industry.objects.filter(status="Active"))
-            self.qualifications = list(Qualification.objects.all())
-            self.languages = list(Language.objects.all())
-            self.country = Country.objects.filter(status="Enabled").first()
+        with transaction.atomic():
+            if "superuser" in self.test_users:
+                self._create_superuser(self.test_users["superuser"])
+            # Create company_admin first (creates the company)
+            if "company_admin" in self.test_users:
+                self._create_company_admin(self.test_users["company_admin"])
+            # Then create recruiter (references existing company)
+            if "recruiter" in self.test_users:
+                self._create_recruiter(self.test_users["recruiter"])
+            if "individual" in self.test_users:
+                self._create_individual(self.test_users["individual"])
+            if "jobseeker" in self.test_users:
+                self._create_jobseeker(self.test_users["jobseeker"])
 
-            with transaction.atomic():
-                if "superuser" in self.test_users:
-                    self._create_superuser(self.test_users["superuser"])
-                # Create company_admin first (creates the company)
-                if "company_admin" in self.test_users:
-                    self._create_company_admin(self.test_users["company_admin"])
-                # Then create recruiter (references existing company)
-                if "recruiter" in self.test_users:
-                    self._create_recruiter(self.test_users["recruiter"])
-                if "individual" in self.test_users:
-                    self._create_individual(self.test_users["individual"])
-                if "jobseeker" in self.test_users:
-                    self._create_jobseeker(self.test_users["jobseeker"])
-
-            self.stdout.write(
-                self.style.SUCCESS("\nTest users created/updated successfully!")
-            )
-
-        finally:
-            signal_processor.setup()
+        self.stdout.write(
+            self.style.SUCCESS("\nTest users created/updated successfully!")
+        )
 
     def _validate_fixtures_loaded(self):
         """Ensure reference data from fixtures exists."""

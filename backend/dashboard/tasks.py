@@ -99,13 +99,6 @@ def send_email(mto, msubject, mbody, reply_to=None):
 
 
 @app.task
-def rebuilding_index():
-    from haystack.management.commands import rebuild_index
-
-    rebuild_index.Command().handle(interactive=False)
-
-
-@app.task
 def updating_jobposts():
     jobposts = JobPost.objects.filter(status="Live")
     for job in jobposts:

@@ -10,8 +10,9 @@ authors = [{ name = "Micropyramid", email = "hello@micropyramid.com" }]
 dependencies = [
     # Core Framework
     # Django is held on the 5.2 LTS series (supported to April 2028). Latest is
-    # 6.1, but django-celery-beat caps Django at <6.1, and django-haystack,
-    # django-storages and django-schema-viewer publish no 6.x classifier.
+    # 6.1, but django-celery-beat caps Django at <6.1, and django-storages and
+    # django-schema-viewer publish no 6.x classifier. (django-haystack was a
+    # fourth blocker until search moved to Postgres.)
     "django==5.2.17",
     "python-dotenv==1.2.2",
     # Database
@@ -24,12 +25,10 @@ dependencies = [
     # redis directly rather than via celery[redis], so that cap is not enforced
     # during resolution. Kept deliberately ahead of it, as it already was at 7.1.0.
     "redis==8.1.0",
-    # Search
-    "django-haystack==3.4.0",
-    # CAPPED: django-haystack requires elasticsearch<8, and the deployment runs an
-    # Elasticsearch 7.17.x server (see SETUP.md), so the client major must stay 7.
-    # Latest on PyPI is 9.5.0 and is NOT usable here.
-    "elasticsearch==7.17.13",
+    # Search needs no dependency: it is Postgres full-text search over a
+    # generated tsvector column plus pg_trgm, both built into the database.
+    # This block used to pin django-haystack + an elasticsearch client capped at
+    # 7.x; see peeldb/migrations/0079 and api/v1/jobs/filters.py.
     # REST API
     "djangorestframework==3.18.0",
     "djangorestframework-simplejwt==5.5.1",

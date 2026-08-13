@@ -73,7 +73,7 @@ PeelJobs implements a comprehensive role-based access control system with distin
 - **Favorites System**: Save and organize interesting job opportunities
 
 ### ⚡ Technical Excellence
-- **Lightning-Fast Search**: Elasticsearch-powered full-text search with instant results
+- **Lightning-Fast Search**: Ranked Postgres full-text search with typo tolerance — no separate search service to run
 - **Background Processing**: Redis + Celery for email notifications and heavy operations
 - **Smart Caching**: Memcached integration for optimized page load times
 - **RESTful APIs**: Comprehensive API endpoints for third-party integrations
@@ -87,7 +87,7 @@ PeelJobs implements a comprehensive role-based access control system with distin
 ### Backend Infrastructure
 - **Framework**: Django 4.2.22 (Python)
 - **Database**: PostgreSQL with optimized queries
-- **Search Engine**: Elasticsearch 7.17.6
+- **Search Engine**: PostgreSQL full-text search (`tsvector` + `pg_trgm`)
 - **Task Queue**: Celery 5.5.0 with Redis broker
 - **Caching**: Redis + Memcached for multi-layer caching
 

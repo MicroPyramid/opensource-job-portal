@@ -3,12 +3,37 @@ Job Filters for API v1
 Provides advanced filtering capabilities for job listings
 """
 
-from django.db.models import Q
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchRank,
+    TrigramWordSimilarity,
+)
+from django.db.models import F, Q
 from django_filters import rest_framework as filters
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
+from rest_framework import filters as drf_filters
 
 from peeldb.models import City, Industry, JobPost, Qualification, Skill
+
+# Word-similarity cutoff for the typo fallback, measured against production
+# data rather than picked:
+#
+#   banglore -> Bangalore  0.583      developper -> Developer   0.750
+#   hydrabad -> Hyderabad  0.583      javscript  -> JavaScript  0.615
+#   mangaer  -> Manager    0.375      accountnt  -> Accountant  0.700
+#   java     -> Jalandhar  0.400  (coincidence, not a typo)
+#
+# 0.3 was tried and is worse, not laxer-but-safer: "mangaer" goes from 12 job
+# matches to 916 by dragging in every "Management", and city lookup starts
+# offering "Manipur". 0.4 sits above the coincidental overlap.
+#
+# Known limit: transpositions in short words stay unmatched — "pyhton" scores
+# 0.286 against "Python" because reversing two characters destroys nearly every
+# shared trigram. No threshold fixes that without admitting real noise; it
+# needs a different algorithm (edit distance), which is not worth adding for a
+# fallback path.
+TRIGRAM_FALLBACK_THRESHOLD = 0.4
 
 
 class JobFilter(filters.FilterSet):
@@ -138,17 +163,47 @@ class JobFilter(filters.FilterSet):
         ]
 
     def filter_search(self, queryset, name, value):
+        """Full-text search over the stored ``search_vector``, ranked.
+
+        ``JobPost.search_vector`` is a Postgres generated column weighting
+        title A, job_role B, company_name C, description D, so a title hit
+        outranks a description hit. ``websearch`` query syntax lets a visitor
+        type ``"data scientist" -intern`` and have it mean something.
+
+        Both paths annotate ``search_rank``; ``RelevanceOrderingFilter`` sorts
+        on it. Callers that only count rows never touch the annotation.
         """
-        Search across title, company_name, and description
-        """
+        value = (value or "").strip()
         if not value:
             return queryset
 
-        return queryset.filter(
-            Q(title__icontains=value)
-            | Q(company_name__icontains=value)
-            | Q(description__icontains=value)
-            | Q(job_role__icontains=value)
+        query = SearchQuery(value, config="english", search_type="websearch")
+        matches = queryset.filter(search_vector=query).annotate(
+            search_rank=SearchRank(F("search_vector"), query)
+        )
+
+        # Exact-ish queries are the overwhelming majority, so the fuzzy pass is
+        # a fallback rather than a blend: mixing trigram hits into a query that
+        # already matched would pull "Mangalore" into a search for "manager".
+        # `.exists()` costs a bounded index probe on the common path.
+        if matches.exists():
+            return matches
+
+        # Nothing matched — assume a typo before showing a blank page.
+        # Word-level similarity, not whole-string: `similarity('pyhton', 'Senior
+        # Python Developer')` is ~0.1 because the strings differ in length,
+        # while `word_similarity` scores against the best-matching word.
+        #
+        # Unindexed by design. `word_similarity() > x` cannot use the trigram
+        # GIN index (that needs the `%>` operator, whose cutoff is a
+        # session GUC), but this only runs on the zero-result path and measures
+        # ~90 ms — the same as the icontains scan it replaced, on a path that
+        # used to return nothing at all.
+        similarity = TrigramWordSimilarity(value, "title")
+        return (
+            queryset.annotate(search_rank=similarity)
+            .filter(search_rank__gt=TRIGRAM_FALLBACK_THRESHOLD)
+            .order_by("-search_rank")
         )
 
     def filter_min_salary(self, queryset, name, value):
@@ -227,3 +282,26 @@ class JobFilter(filters.FilterSet):
             return queryset
 
         return queryset.filter(location__name__icontains="remote").distinct()
+
+
+class RelevanceOrderingFilter(drf_filters.OrderingFilter):
+    """Sort by search relevance when searching, by date otherwise.
+
+    ``JobViewSet.ordering`` is ``-published_on``, and DRF applies that default
+    unconditionally — which would discard the ranking ``filter_search`` just
+    computed and hand back newest-first results for every query. This restores
+    relevance as the default *only* while a search term is in play, and still
+    yields to an explicit ``?ordering=`` from the caller.
+    """
+
+    def get_ordering(self, request, queryset, view):
+        explicit = super().get_ordering(request, queryset, view)
+        if request.query_params.get(self.ordering_param):
+            return explicit
+
+        # Mirror filter_search's own guard: a blank `?search=` leaves the
+        # queryset unannotated, so ordering on search_rank would raise.
+        if request.query_params.get("search", "").strip():
+            return ("-search_rank", "-published_on")
+
+        return explicit

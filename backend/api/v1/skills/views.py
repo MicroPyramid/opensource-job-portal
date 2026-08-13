@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.v1.common.search import fuzzy_name_filter
 from peeldb.models import Skill, TechnicalSkill
 
 from .serializers import (
@@ -49,13 +50,17 @@ class SkillListView(APIView):
 
         skills = Skill.objects.filter(status="Active")
 
-        if search:
-            skills = skills.filter(name__icontains=search)
-
+        # skill_type first: the fuzzy fallback in fuzzy_name_filter triggers on
+        # an empty result set, so it has to see the fully-narrowed queryset.
         if skill_type:
             skills = skills.filter(skill_type=skill_type)
 
-        skills = skills.order_by("name")[:100]  # Limit to 100 results
+        if search:
+            skills = fuzzy_name_filter(skills, search)
+        else:
+            skills = skills.order_by("name")
+
+        skills = skills[:100]  # Limit to 100 results
         serializer = SkillSerializer(skills, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

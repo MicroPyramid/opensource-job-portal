@@ -10,6 +10,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 
 # from oauth2client.contrib.django_util.models import CredentialsField
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Count, F, JSONField, Q
@@ -481,12 +483,17 @@ MARTIAL_STATUS = (
     ("Married", "Married"),
 )
 
+# "Careers" was removed 2026-08-13 with the `/process-email/` webhook, its only
+# writer. That view regex-matched an email address out of an inbound message
+# body and, if unknown, created a Job Seeker account and mailed it a generated
+# password — unauthenticated, with none of the SNS envelope verification the
+# bounce handler does. Zero of the 34,775 users in the production snapshot were
+# ever created that way, so nothing is orphaned by dropping the choice.
 REGISTERED_FROM = (
     ("Email", "Email"),
     ("Social", "Social"),
     ("ResumePool", "ResumePool"),
     ("Resume", "Resume"),
-    ("Careers", "Careers"),
 )
 
 
@@ -1387,9 +1394,48 @@ class JobPost(models.Model):
         help_text="Urgency level for filling this position",
     )
 
+    # Full-text search vector, maintained by Postgres rather than by the
+    # application. A STORED generated column is recomputed inside whatever
+    # transaction writes the row, so it cannot drift from the data the way the
+    # Elasticsearch index it replaced could — there is nothing to reindex and no
+    # signal handler to keep connected.
+    #
+    # Weights rank a title hit above a description hit: A title, B job_role,
+    # C company_name, D description. All four are columns on this table, which
+    # is what makes a single generated column possible; skills and locations
+    # stay relational facets in JobFilter.
+    #
+    # This is deferred on read paths (see api/v1/jobs/views.py) — it is a fat
+    # column and no serializer exposes it.
+    search_vector = models.GeneratedField(
+        expression=(
+            SearchVector("title", weight="A", config="english")
+            + SearchVector("job_role", weight="B", config="english")
+            + SearchVector("company_name", weight="C", config="english")
+            + SearchVector("description", weight="D", config="english")
+        ),
+        output_field=SearchVectorField(),
+        db_persist=True,
+    )
+
     # objects = JobPostManager()
     class Meta:
         ordering = ["-created_on"]
+        indexes = [
+            GinIndex(fields=["search_vector"], name="jobpost_search_vector_gin"),
+            # Backs the trigram fallback in JobFilter.filter_search, which only
+            # runs when the full-text query matches nothing (a typo).
+            #
+            # `opclasses=`, not `OpClass(F("title"))`: the latter compiles to
+            # `USING gin (("title" gin_trgm_ops))`, and the extra parentheses
+            # make Postgres read it as an expression index, which is a syntax
+            # error. `opclasses=` emits `USING gin ("title" gin_trgm_ops)`.
+            GinIndex(
+                fields=["title"],
+                opclasses=["gin_trgm_ops"],
+                name="jobpost_title_trgm_gin",
+            ),
+        ]
 
     def __unicode__(self):
         return self.title

@@ -8,7 +8,7 @@ A dynamic job board platform built with Django 4.2.22, PostgreSQL, Redis, and mo
 - **Node.js**: 22.x
 - **Database**: PostgreSQL
 - **Cache/Queue**: Redis
-- **Search**: Elasticsearch 7.17.6
+- **Search**: none — Postgres full-text search (`tsvector` + `pg_trgm`)
 
 ### Install System Dependencies
 
@@ -21,23 +21,6 @@ sudo apt update && sudo apt install -y \
 # Node.js 22.x
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
-
-# Elasticsearch (Docker)
-docker run -d --name elasticsearch \
-  -p 127.0.0.1:9200:9200 \
-  -e "discovery.type=single-node" \
-  docker.elastic.co/elasticsearch/elasticsearch:7.17.12
-
-or
-
-docker run -d --name elasticsearch \
-  -p 127.0.0.1:9200:9200 \
-  -e "discovery.type=single-node" \
-  -e "ES_JAVA_OPTS=-Xms2g -Xmx2g" \
-  --memory=8g \
-  --memory-swap=8g \
-  docker.elastic.co/elasticsearch/elasticsearch:7.17.6
-
 
 ```
 
@@ -65,7 +48,6 @@ DEBUG=True
 SECRET_KEY="$(openssl rand -base64 50)"
 DATABASE_URL=postgresql://postgres:password@localhost/peeljobs
 REDIS_URL=redis://localhost:6379/0
-ELASTICSEARCH_URL=http://localhost:9200
 PEEL_URL=http://localhost:8000/
 DEFAULT_FROM_EMAIL=noreply@peeljobs.local
 ```
@@ -274,9 +256,6 @@ uv run manage.py update_index
 # Check services
 sudo systemctl status postgresql redis-server
 
-# Check Elasticsearch
-curl http://localhost:9200
-
 # Check Redis
 redis-cli ping
 ```
@@ -299,7 +278,7 @@ sudo chown -R $USER:$USER .
 - **Framework**: Django 5.x
 - **Database**: PostgreSQL
 - **Cache**: Redis + Celery 5.5.0
-- **Search**: Elasticsearch 7.17.6
+- **Search**: Postgres full-text search (`tsvector` + `pg_trgm`)
 - **Frontend**: Bootstrap → Tailwind CSS 4.1
 - **Icons**: FontAwesome → Lucide
 - **Monitoring**: Sentry

@@ -1,6 +1,6 @@
 """
 Script to load education lookup data directly into the database
-Bypasses Haystack signal processor to avoid Elasticsearch dependency
+Loads directly through the ORM; no external services involved.
 """
 
 import os
@@ -322,22 +322,6 @@ def load_institutes():
 if __name__ == "__main__":
     print("Loading education lookup data...")
     print("-" * 50)
-
-    # Disconnect Haystack signals temporarily
-    from django.db.models import signals as django_signals
-
-    # Try to disconnect the haystack signal processor
-    try:
-        # Haystack uses post_save and post_delete signals
-        django_signals.post_save.receivers = [
-            r for r in django_signals.post_save.receivers if "haystack" not in str(r)
-        ]
-        django_signals.post_delete.receivers = [
-            r for r in django_signals.post_delete.receivers if "haystack" not in str(r)
-        ]
-        print("Temporarily disabled Haystack signals")
-    except Exception as e:
-        print(f"Could not disable Haystack signals: {e}")
 
     load_qualifications()
     load_degrees()

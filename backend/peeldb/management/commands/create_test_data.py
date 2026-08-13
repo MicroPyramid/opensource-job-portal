@@ -10,7 +10,6 @@ Usage:
 import random
 from datetime import datetime, timedelta
 
-from django.apps import apps
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
@@ -125,47 +124,40 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        # Disable Haystack signals during data creation
-        signal_processor = apps.get_app_config("haystack").signal_processor
-        signal_processor.teardown()
+        if options["clear"]:
+            self._clear_test_data()
 
-        try:
-            if options["clear"]:
-                self._clear_test_data()
+        self._validate_fixtures_loaded()
 
-            self._validate_fixtures_loaded()
+        # Load reference data
+        self.cities = list(City.objects.filter(status="Enabled"))
+        self.skills = list(Skill.objects.filter(status="Active"))
+        self.industries = list(Industry.objects.filter(status="Active"))
+        self.qualifications = list(Qualification.objects.all())
+        self.languages = list(Language.objects.all())
+        self.country = Country.objects.filter(status="Enabled").first()
 
-            # Load reference data
-            self.cities = list(City.objects.filter(status="Enabled"))
-            self.skills = list(Skill.objects.filter(status="Active"))
-            self.industries = list(Industry.objects.filter(status="Active"))
-            self.qualifications = list(Qualification.objects.all())
-            self.languages = list(Language.objects.all())
-            self.country = Country.objects.filter(status="Enabled").first()
+        with transaction.atomic():
+            # Create education infrastructure first
+            self._create_education_infrastructure()
 
-            with transaction.atomic():
-                # Create education infrastructure first
-                self._create_education_infrastructure()
+            # Create main entities
+            companies = self._create_companies(options["companies"])
+            recruiters = self._create_recruiters(options["recruiters"], companies)
+            job_seekers = self._create_job_seekers(options["jobseekers"])
+            jobs = self._create_jobs(options["jobs"], recruiters, companies)
+            self._create_applications(options["applications"], jobs, job_seekers)
 
-                # Create main entities
-                companies = self._create_companies(options["companies"])
-                recruiters = self._create_recruiters(options["recruiters"], companies)
-                job_seekers = self._create_job_seekers(options["jobseekers"])
-                jobs = self._create_jobs(options["jobs"], recruiters, companies)
-                self._create_applications(options["applications"], jobs, job_seekers)
-
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"\nSuccessfully created test data:\n"
-                    f"  - {len(companies)} companies\n"
-                    f"  - {len(recruiters)} recruiters\n"
-                    f"  - {len(job_seekers)} job seekers\n"
-                    f"  - {len(jobs)} jobs\n"
-                    f"  - {options['applications']} applications"
-                )
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"\nSuccessfully created test data:\n"
+                f"  - {len(companies)} companies\n"
+                f"  - {len(recruiters)} recruiters\n"
+                f"  - {len(job_seekers)} job seekers\n"
+                f"  - {len(jobs)} jobs\n"
+                f"  - {options['applications']} applications"
             )
-        finally:
-            signal_processor.setup()
+        )
 
     def _validate_fixtures_loaded(self):
         """Ensure reference data from fixtures exists."""

@@ -7,7 +7,6 @@ from django.db.models import Count, F, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import filters as drf_filters
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -25,7 +24,7 @@ from peeldb.models import (
     Skill,
 )
 
-from .filters import JobFilter
+from .filters import JobFilter, RelevanceOrderingFilter
 from .serializers import AppliedJobSerializer, JobDetailSerializer, JobListSerializer
 
 
@@ -66,13 +65,16 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [AllowAny]
     pagination_class = JobPagination
+    # `drf_filters.SearchFilter` used to sit here alongside JobFilter, and both
+    # bind `?search=`. That double-filtered every query, ANDing an `icontains`
+    # scan over the FilterSet's own result. Harmless while both did the same
+    # `icontains`, but it would silently undo full-text and fuzzy matching, so
+    # the search backend is gone and JobFilter.filter_search owns the param.
     filter_backends = [
         DjangoFilterBackend,
-        drf_filters.SearchFilter,
-        drf_filters.OrderingFilter,
+        RelevanceOrderingFilter,
     ]
     filterset_class = JobFilter
-    search_fields = ["title", "company_name", "description", "job_role"]
     ordering_fields = [
         "published_on",
         "title",
@@ -92,6 +94,11 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
             JobPost.objects.filter(status="Live")
             .select_related("company", "country", "major_skill")
             .prefetch_related("location", "skills", "industry", "edu_qualification")
+            # search_vector is a generated column, so Django selects it like any
+            # other field — a tsvector of the full description, on every row of
+            # every page, that no serializer reads. Filtering and ranking still
+            # work deferred; only the transfer is skipped.
+            .defer("search_vector")
             .distinct()
         )
 

@@ -167,7 +167,6 @@ INSTALLED_APPS = (
     "storages",
     "peeldb",
     # 'django_simple_forum',
-    "haystack",
     "dashboard",
     # "simple_pagination",
     "django_celery_beat",
@@ -315,35 +314,17 @@ COMPRESS_OFFLINE_CONTEXT = {
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 
-# Haystack settings for Elasticsearch
-# HAYSTACK_CONNECTIONS = {
-#     "default": {
-#         "ENGINE": "peeldb.backends.ConfigurableElasticSearchEngine",
-#         "URL": "http://127.0.0.1:9200/",
-#         "INDEX_NAME": "job_haystack",
-#         "TIMEOUT": 60,
-#     },
-# }
-
-HAYSTACK_CONNECTIONS = {
-    "default": {
-        "ENGINE": "haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine",
-        "URL": "http://127.0.0.1:9200/",
-        "INDEX_NAME": "haystack",
-    },
-}
-
-
-HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
-
-# The realtime signal processor above indexes on every save, which means the
-# test suite cannot save a Skill, City, User or JobPost without an Elasticsearch
-# to talk to. This runner disconnects it for the duration of a test run; see
-# jobsp/test_runner.py for why it has to be done there rather than through
-# override_settings.
-TEST_RUNNER = "jobsp.test_runner.NoSearchIndexingTestRunner"
-HAYSTACK_DEFAULT_OPERATOR = "OR"
-HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1
+# Search is Postgres full-text search, configured on the model rather than
+# here: JobPost.search_vector is a generated tsvector column with a GIN index,
+# queried by api/v1/jobs/filters.py. There is no search service to point at, no
+# index to rebuild and no credentials to hold, so this section is empty by
+# design.
+#
+# It previously held HAYSTACK_CONNECTIONS + a RealtimeSignalProcessor against
+# Elasticsearch 7. Nothing queried that index by the time it was removed, and
+# the signal processor meant no test could save a Skill, City, User or JobPost
+# without a live Elasticsearch — which is why jobsp/test_runner.py existed.
+# Both are gone; TEST_RUNNER is back to the Django default.
 
 CELERY_TIMEZONE = "Asia/Calcutta"
 
@@ -426,12 +407,6 @@ CELERY_BEAT_SCHEDULE = {
     #     "task": "dashboard.tasks.recruiter_profile_update_notifications",
     #     "schedule": crontab(hour="09", minute="30", day_of_week="mon"),
     # },
-    "haystack-rebuilding-indexes": {
-        "task": "dashboard.tasks.rebuilding_index",
-        "schedule": crontab(
-            hour="00", minute="20", day_of_week="mon,tue,wed,thu,fri,sat,sun"
-        ),
-    },
     "check-expiring-jobs-and-send-notifications": {
         "task": "dashboard.tasks.check_expiring_jobs",
         "schedule": crontab(
