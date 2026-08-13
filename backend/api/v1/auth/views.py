@@ -29,6 +29,7 @@ from .serializers import (
     ForgotPasswordSerializer,
     GoogleAuthSerializer,
     GoogleUrlRequestSerializer,
+    LoginSerializer,
     LogoutResponseSerializer,
     RefreshTokenSerializer,
     RegisterResponseSerializer,
@@ -82,12 +83,9 @@ def send_password_reset_email(user, request):
 
     from dashboard.tasks import send_email
 
-    # Use site UI URL for password reset
-    frontend_url = (
-        settings.SITE_FRONTEND_URL
-        if hasattr(settings, "SITE_FRONTEND_URL")
-        else "http://localhost:5173"
-    )
+    # Defined in settings.py, so no hasattr fallback — a missing setting should
+    # fail loudly rather than mail everyone a localhost link.
+    frontend_url = settings.SITE_FRONTEND_URL.rstrip("/")
     reset_url = f"{frontend_url}/reset-password/?token={user.activation_code}"
 
     # Render email template
@@ -148,6 +146,47 @@ def register(request):
                 "message": "Registration successful. Please check your email to verify your account.",
             },
             status=status.HTTP_201_CREATED,
+        )
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Login",
+    description=(
+        "Authenticate a job seeker with email and password. Returns JWT "
+        "tokens in the response body only — SvelteKit puts them in HttpOnly "
+        "cookies, Django never sets one."
+    ),
+    request=LoginSerializer,
+    responses={
+        200: TokenResponseSerializer,
+        400: VALIDATION_ERROR_RESPONSE,
+    },
+)
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def login(request):
+    """
+    Log a job seeker in with email and password
+
+    Employer accounts are rejected here and sent to the recruiter login.
+    """
+    serializer = LoginSerializer(data=request.data)
+
+    if serializer.is_valid():
+        user = serializer.validated_data["user"]
+        tokens = get_tokens_for_user(user)
+
+        return Response(
+            {
+                "success": True,
+                "user": UserSerializer(user).data,
+                "access": tokens["access"],
+                "refresh": tokens["refresh"],
+            },
+            status=status.HTTP_200_OK,
         )
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

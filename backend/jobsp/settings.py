@@ -35,6 +35,12 @@ PEEL_URL = os.getenv("PEEL_URL", "http://peeljobs.com/")
 # site.
 RECRUITER_FRONTEND_URL = os.getenv("RECRUITER_FRONTEND_URL", "http://localhost:5174")
 
+# Job-seeker frontend URL, used to build the password-reset link in
+# api/v1/auth/views.py. That code read this via hasattr() with a hardcoded
+# localhost:5173 fallback, and the setting had never been defined — so every
+# reset email in production would have linked to localhost.
+SITE_FRONTEND_URL = os.getenv("SITE_FRONTEND_URL", "http://localhost:5173")
+
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 CELERY_IMPORTS = "dashboard.tasks"

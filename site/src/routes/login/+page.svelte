@@ -2,16 +2,39 @@
   import '../../app.css';
 
   import { untrack } from 'svelte';
+  import { enhance } from '$app/forms';
   import { AlertCircle, Loader2, Briefcase, Shield, Zap } from '@lucide/svelte';
 
-  /** @type {{ data: { googleAuthUrl: string | null, error: string | null } }} */
-  let { data } = $props();
+  /** @type {{ data: { googleAuthUrl: string | null, error: string | null }, form: { message?: string, email?: string } | null }} */
+  let { data, form } = $props();
 
   // The auth URL is resolved server-side, so signing in is a plain link —
   // no token handling, and nothing to hydrate before the button works.
   let isLoading = $state(false);
   let loadingProvider = $state('');
   let error = $state(untrack(() => data.error ?? ''));
+
+  // A failed POST re-renders with `form` set; surface that in the same banner
+  // the OAuth errors use.
+  $effect(() => {
+    if (form?.message) error = form.message;
+  });
+
+  /**
+   * Password sign-in. Reset the button whatever the outcome.
+   * @type {import('@sveltejs/kit').SubmitFunction}
+   */
+  function submitLogin() {
+    isLoading = true;
+    loadingProvider = 'password';
+    error = '';
+
+    return async ({ update }) => {
+      await update({ reset: false });
+      isLoading = false;
+      loadingProvider = '';
+    };
+  }
 
   function startGoogleLogin() {
     if (!data.googleAuthUrl) {
@@ -124,6 +147,67 @@
           </div>
         {/if}
 
+        <!-- Email / Password -->
+        <form method="POST" action="?/login" use:enhance={submitLogin} class="space-y-4 mb-6">
+          <div>
+            <label for="email" class="block text-sm font-medium text-black mb-1.5">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              value={form?.email ?? ''}
+              disabled={isLoading}
+              class="w-full h-12 px-4 border border-border rounded-lg text-black placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 transition-all disabled:opacity-50"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="password" class="block text-sm font-medium text-black">Password</label>
+              <a
+                href="/forgot-password/"
+                class="text-sm text-primary-600 hover:text-primary-700 font-semibold hover:underline"
+              >
+                Forgot password?
+              </a>
+            </div>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              disabled={isLoading}
+              class="w-full h-12 px-4 border border-border rounded-lg text-black placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 transition-all disabled:opacity-50"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            class="w-full flex items-center justify-center gap-2 h-12 px-5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {#if loadingProvider === 'password'}
+              <Loader2 size={20} class="animate-spin" />
+            {/if}
+            <span>Sign in</span>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="my-6 relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-border"></div>
+          </div>
+          <div class="relative flex justify-center">
+            <span class="px-4 bg-white text-sm text-muted">or continue with</span>
+          </div>
+        </div>
+
         <!-- Social Login Buttons -->
         <div class="space-y-3">
           <!-- Google Login -->
@@ -166,18 +250,8 @@
           </button>
         </div>
 
-        <!-- Divider -->
-        <div class="my-6 relative">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-border"></div>
-          </div>
-          <div class="relative flex justify-center">
-            <span class="px-4 bg-white text-sm text-muted">or</span>
-          </div>
-        </div>
-
         <!-- Security Note -->
-        <div class="flex items-center justify-center gap-2 text-sm text-muted">
+        <div class="mt-6 flex items-center justify-center gap-2 text-sm text-muted">
           <Shield size={16} class="text-success-500" />
           <span>Protected with enterprise-grade security</span>
         </div>

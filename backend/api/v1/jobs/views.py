@@ -510,9 +510,26 @@ class JobFilterOptionsView(APIView):
 
     permission_classes = [AllowAny]
 
+    #: Enough to populate a filter sidebar without shipping every skill in the
+    #: database to a page that only renders a dozen of them.
+    DEFAULT_FACET_LIMIT = 50
+
     @extend_schema(
         summary="Get filter options",
         description="Retrieve all available filter options (locations, skills, industries, education) with job counts",
+        parameters=[
+            OpenApiParameter(
+                name="limit",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description=(
+                    "Max locations and skills to return, ordered by job count. "
+                    "Defaults to 50; pass 0 for all of them. Industries and "
+                    "education are always returned in full."
+                ),
+                required=False,
+            )
+        ],
         responses={
             200: {
                 "type": "object",
@@ -552,6 +569,16 @@ class JobFilterOptionsView(APIView):
     def get(self, request):
         """Get all filter options with job counts"""
 
+        # `?limit=0` lifts the cap. The SEO directory pages
+        # (/jobs-by-skill/ and friends) exist to enumerate *every* facet — that
+        # is how crawlers reach the long-tail landing pages — so a top-50 slice
+        # is exactly wrong for them. Everything else wants the default.
+        try:
+            limit = int(request.query_params.get("limit", self.DEFAULT_FACET_LIMIT))
+        except (TypeError, ValueError):
+            limit = self.DEFAULT_FACET_LIMIT
+        facet_slice = slice(None) if limit <= 0 else slice(limit)
+
         # Base queryset for live jobs
         live_jobs = JobPost.objects.filter(status="Live")
 
@@ -560,7 +587,7 @@ class JobFilterOptionsView(APIView):
             City.objects.filter(locations__in=live_jobs)
             .annotate(count=Count("locations", filter=Q(locations__status="Live")))
             .order_by("-count", "name")
-            .values("id", "name", "slug", "count")[:50]
+            .values("id", "name", "slug", "count")[facet_slice]
         )
 
         # Get skills with job counts
@@ -568,7 +595,7 @@ class JobFilterOptionsView(APIView):
             Skill.objects.filter(jobpost__in=live_jobs)
             .annotate(count=Count("jobpost", filter=Q(jobpost__status="Live")))
             .order_by("-count", "name")
-            .values("id", "name", "slug", "count")[:50]
+            .values("id", "name", "slug", "count")[facet_slice]
         )
 
         # Get industries with job counts

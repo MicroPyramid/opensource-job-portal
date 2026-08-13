@@ -359,8 +359,15 @@
 
             {#if jobs.length >= 10}
               <div class="mt-6 text-center">
+                <!--
+                  Was /jobs/?company={slug}, which silently showed every job on
+                  the board: /jobs/ drops unknown params in parseSearchParams,
+                  and the API's `company` filter takes an id, not a slug. The
+                  landing page below is the real "all jobs at this company"
+                  view, and it is indexable.
+                -->
                 <a
-                  href="/jobs/?company={company.slug}"
+                  href="/{company.slug}-job-openings/"
                   class="inline-flex items-center gap-2 h-10 px-6 bg-primary/10 text-primary font-medium rounded-full hover:bg-primary/20 transition-colors"
                 >
                   View All Open Positions

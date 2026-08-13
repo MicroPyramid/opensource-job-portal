@@ -95,6 +95,18 @@ class JobFilter(filters.FilterSet):
         field_name="published_on", lookup_expr="lte", label="Posted Before"
     )
 
+    # Company filters.
+    #
+    # `company` was already being passed by site/'s company detail page
+    # (`?company=<id>`) but was not declared here, and django-filter ignores
+    # params it does not know about — so that page was showing every job on the
+    # board as if it belonged to the company. `company_slug` backs the
+    # /<company>-job-openings/ landing pages.
+    company = filters.NumberFilter(field_name="company_id", label="Company ID")
+    company_slug = filters.CharFilter(
+        field_name="company__slug", lookup_expr="iexact", label="Company Slug"
+    )
+
     class Meta:
         model = JobPost
         fields = [
@@ -112,6 +124,8 @@ class JobFilter(filters.FilterSet):
             "is_remote",
             "posted_after",
             "posted_before",
+            "company",
+            "company_slug",
         ]
 
     def filter_search(self, queryset, name, value):

@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { getApiBaseUrl } from '$lib/config/env';
-import { error } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 
 export interface CompanyDetail {
   id: number;
@@ -73,6 +73,12 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
       jobs,
     };
   } catch (err) {
+    // `error()` throws, and the 404 above is raised inside this try — without
+    // this re-throw the catch swallows it and turns every unknown company into
+    // a 500. That hit the ~2,200 companies that have live jobs but are
+    // `is_active=False`, which the companies API deliberately does not expose.
+    if (isHttpError(err)) throw err;
+
     console.error('Error loading company:', err);
     error(500, 'Failed to load company');
   }

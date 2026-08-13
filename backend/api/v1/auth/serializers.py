@@ -2,6 +2,7 @@
 Authentication Serializers for Job Seekers
 """
 
+from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.crypto import get_random_string
@@ -84,6 +85,52 @@ class RegisterSerializer(serializers.Serializer):
         )
 
         return {"user": user, "activation_code": activation_code}
+
+
+class LoginSerializer(serializers.Serializer):
+    """
+    Email + password login for job seekers.
+
+    The explicit empty-password guard below is not redundant.
+    ``social.auth_backend.PasswordlessAuthBackend`` is *first* in
+    ``AUTHENTICATION_BACKENDS`` and returns the user without checking anything
+    when handed a falsy password, so any ``authenticate()`` call reachable with
+    a blank password is an account takeover. DRF's ``CharField`` already
+    rejects ``""`` before ``validate()`` runs; the guard keeps that true if the
+    field declaration is ever loosened.
+    """
+
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, allow_blank=False)
+
+    def validate(self, data):
+        email = data.get("email", "").lower()
+        password = data.get("password") or ""
+
+        if not password:
+            raise serializers.ValidationError("Must provide email and password")
+
+        user = authenticate(username=email, password=password)
+
+        # Authenticate before inspecting the account, so an unauthenticated
+        # caller cannot probe which addresses exist or what type they are.
+        if not user:
+            raise serializers.ValidationError("Invalid email or password")
+
+        if user.user_type != "JS":
+            raise serializers.ValidationError(
+                "This email is registered as an employer. "
+                "Please use the recruiter login."
+            )
+
+        if not user.is_active:
+            raise serializers.ValidationError(
+                "Please verify your email address first. "
+                "Check your inbox for the verification link."
+            )
+
+        data["user"] = user
+        return data
 
 
 class VerifyEmailSerializer(serializers.Serializer):

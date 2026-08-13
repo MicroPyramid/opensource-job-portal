@@ -1,51 +1,31 @@
 <script>
+  import { enhance } from '$app/forms';
   import { Mail, ArrowLeft, CheckCircle, KeyRound } from '@lucide/svelte';
 
-  let email = '';
-  /** @type {Record<string, string>} */
-  let errors = {};
-  let isLoading = false;
-  let emailSent = false;
+  /** @type {{ form: { success?: boolean, message?: string, email?: string } | null }} */
+  let { form } = $props();
 
-  /**
-   * @param {string} email
-   */
-  function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  }
+  let isLoading = $state(false);
+  // Set once the request succeeds; cleared by "Try Another Email" so the user
+  // can start over without a round trip.
+  let dismissedSuccess = $state(false);
 
-  async function handleSubmit() {
-    errors = {};
+  let emailSent = $derived(Boolean(form?.success) && !dismissedSuccess);
+  let email = $derived(form?.email ?? '');
 
-    if (!email.trim()) {
-      errors.email = 'Email is required';
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      errors.email = 'Please enter a valid email address';
-      return;
-    }
-
+  /** @type {import('@sveltejs/kit').SubmitFunction} */
+  function submitRequest() {
     isLoading = true;
+    dismissedSuccess = false;
 
-    try {
-      console.log('Password reset requested for:', email);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      emailSent = true;
-    } catch (error) {
-      console.error('Password reset error:', error);
-      errors.submit = 'Failed to send reset email. Please try again.';
-    } finally {
+    return async ({ update }) => {
+      await update({ reset: false });
       isLoading = false;
-    }
+    };
   }
 
   function handleResend() {
-    emailSent = false;
-    email = '';
-    errors = {};
+    dismissedSuccess = true;
   }
 </script>
 
@@ -82,7 +62,7 @@
           </p>
         </div>
 
-        <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-5">
+        <form method="POST" action="?/request" use:enhance={submitRequest} class="space-y-5">
           <div>
             <label for="email" class="block text-sm font-medium text-muted mb-2">
               Email Address
@@ -93,21 +73,21 @@
               </span>
               <input
                 id="email"
+                name="email"
                 type="email"
-                bind:value={email}
+                autocomplete="email"
+                required
+                value={email}
                 placeholder="you@example.com"
-                class="w-full pl-11 pr-4 py-3 border rounded-lg bg-surface text-black placeholder-muted focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none {errors.email ? 'border-error' : 'border-border'}"
+                class="w-full pl-11 pr-4 py-3 border rounded-lg bg-surface text-black placeholder-muted focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none {form?.message ? 'border-error' : 'border-border'}"
                 disabled={isLoading}
               />
             </div>
-            {#if errors.email}
-              <p class="mt-1.5 text-sm text-error">{errors.email}</p>
-            {/if}
           </div>
 
-          {#if errors.submit}
+          {#if form?.message}
             <div class="p-4 bg-error-light border border-error/20 rounded-lg">
-              <p class="text-sm text-error">{errors.submit}</p>
+              <p class="text-sm text-error">{form.message}</p>
             </div>
           {/if}
 

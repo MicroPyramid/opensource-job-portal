@@ -1,94 +1,47 @@
 <script>
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { enhance } from '$app/forms';
   import { Lock, Eye, EyeOff, CheckCircle, XCircle, ShieldCheck } from '@lucide/svelte';
 
-  let password = '';
-  let confirmPassword = '';
-  /** @type {Record<string, string>} */
-  let errors = {};
-  let isLoading = false;
-  let showPassword = false;
-  let showConfirmPassword = false;
-  let resetSuccess = false;
-  let tokenValid = true;
-
-  $: token = $page.url.searchParams.get('token');
-
-  $: {
-    if (!token) {
-      tokenValid = false;
-    } else {
-      validateToken(token);
-    }
-  }
-
   /**
-   * @param {string} token
+   * @type {{
+   *   data: { hasToken: boolean },
+   *   form: { success?: boolean, tokenExpired?: boolean, message?: string,
+   *           passwordError?: string, confirmPasswordError?: string } | null
+   * }}
    */
-  async function validateToken(token) {
-    try {
-      console.log('Validating token:', token);
-      await new Promise(resolve => setTimeout(resolve, 500));
-      tokenValid = true;
-    } catch (error) {
-      console.error('Token validation error:', error);
-      tokenValid = false;
-    }
-  }
+  let { data, form } = $props();
 
-  /**
-   * @param {string} password
-   */
-  function validatePassword(password) {
-    return password.length >= 8 &&
-           /[A-Z]/.test(password) &&
-           /[a-z]/.test(password) &&
-           /[0-9]/.test(password);
-  }
+  let password = $state('');
+  let confirmPassword = $state('');
+  let isLoading = $state(false);
+  let showPassword = $state(false);
+  let showConfirmPassword = $state(false);
 
-  function validateForm() {
-    errors = {};
-    let isValid = true;
+  let token = $derived($page.url.searchParams.get('token') ?? '');
+  let resetSuccess = $derived(Boolean(form?.success));
 
-    if (!password) {
-      errors.password = 'Password is required';
-      isValid = false;
-    } else if (!validatePassword(password)) {
-      errors.password = 'Password must be at least 8 characters with uppercase, lowercase, and number';
-      isValid = false;
-    }
+  // The server is the only thing that can judge a token, and it only does so
+  // on submit. So: invalid when the link carried none, or when a submit came
+  // back rejecting it.
+  let tokenValid = $derived(data.hasToken && !form?.tokenExpired);
 
-    if (password !== confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-      isValid = false;
-    }
-
-    return isValid;
-  }
-
-  async function handleSubmit() {
-    if (!validateForm()) {
-      return;
-    }
-
+  /** @type {import('@sveltejs/kit').SubmitFunction} */
+  function submitReset() {
     isLoading = true;
 
-    try {
-      console.log('Resetting password with token:', token);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      resetSuccess = true;
-
-      setTimeout(() => {
-        goto('/login');
-      }, 3000);
-    } catch (error) {
-      console.error('Password reset error:', error);
-      errors.submit = 'Failed to reset password. Please try again or request a new reset link.';
-    } finally {
+    return async ({ update }) => {
+      await update({ reset: false });
       isLoading = false;
-    }
+    };
   }
+
+  $effect(() => {
+    if (!resetSuccess) return;
+    const timer = setTimeout(() => goto('/login/'), 3000);
+    return () => clearTimeout(timer);
+  });
 
   /**
    * @param {string} field
@@ -101,13 +54,18 @@
     }
   }
 
-  $: passwordStrength = password.length === 0 ? 0 :
+  // Advisory only — Django's AUTH_PASSWORD_VALIDATORS are the authority, and
+  // they check different things (common-password and similarity lists). Doing
+  // more than hint here would reject passwords the server would have accepted.
+  let passwordStrength = $derived(
+    password.length === 0 ? 0 :
     password.length < 8 ? 1 :
-    !validatePassword(password) ? 2 :
-    3;
+    /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password) ? 3 :
+    2
+  );
 
-  $: passwordStrengthText = ['', 'Weak', 'Fair', 'Strong'][passwordStrength];
-  $: passwordStrengthColor = ['bg-border', 'bg-error', 'bg-warning', 'bg-success'][passwordStrength];
+  let passwordStrengthText = $derived(['', 'Weak', 'Fair', 'Strong'][passwordStrength]);
+  let passwordStrengthColor = $derived(['bg-border', 'bg-error', 'bg-warning', 'bg-success'][passwordStrength]);
 </script>
 
 <svelte:head>
@@ -201,7 +159,8 @@
           </p>
         </div>
 
-        <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-5">
+        <form method="POST" action="?/reset" use:enhance={submitReset} class="space-y-5">
+          <input type="hidden" name="token" value={token} />
           <!-- New Password -->
           <div>
             <label for="password" class="block text-sm font-medium text-muted mb-2">
@@ -213,10 +172,14 @@
               </span>
               <input
                 id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
+                autocomplete="new-password"
+                required
+                minlength="8"
                 bind:value={password}
                 placeholder="Create a strong password"
-                class="w-full pl-11 pr-12 py-3 border rounded-lg bg-surface text-black placeholder-muted focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none {errors.password ? 'border-error' : 'border-border'}"
+                class="w-full pl-11 pr-12 py-3 border rounded-lg bg-surface text-black placeholder-muted focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none {form?.passwordError ? 'border-error' : 'border-border'}"
                 disabled={isLoading}
               />
               <button
@@ -248,11 +211,11 @@
               </div>
             {/if}
 
-            {#if errors.password}
-              <p class="mt-1.5 text-sm text-error">{errors.password}</p>
+            {#if form?.passwordError}
+              <p class="mt-1.5 text-sm text-error">{form.passwordError}</p>
             {:else}
               <p class="mt-1.5 text-xs text-muted">
-                At least 8 characters with uppercase, lowercase, and number
+                At least 8 characters. Avoid common passwords and anything close to your name or email.
               </p>
             {/if}
           </div>
@@ -268,10 +231,14 @@
               </span>
               <input
                 id="confirmPassword"
+                name="confirm_password"
                 type={showConfirmPassword ? 'text' : 'password'}
+                autocomplete="new-password"
+                required
+                minlength="8"
                 bind:value={confirmPassword}
                 placeholder="Confirm your password"
-                class="w-full pl-11 pr-12 py-3 border rounded-lg bg-surface text-black placeholder-muted focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none {errors.confirmPassword ? 'border-error' : 'border-border'}"
+                class="w-full pl-11 pr-12 py-3 border rounded-lg bg-surface text-black placeholder-muted focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none {form?.confirmPasswordError ? 'border-error' : 'border-border'}"
                 disabled={isLoading}
               />
               <button
@@ -286,14 +253,14 @@
                 {/if}
               </button>
             </div>
-            {#if errors.confirmPassword}
-              <p class="mt-1.5 text-sm text-error">{errors.confirmPassword}</p>
+            {#if form?.confirmPasswordError}
+              <p class="mt-1.5 text-sm text-error">{form.confirmPasswordError}</p>
             {/if}
           </div>
 
-          {#if errors.submit}
+          {#if form?.message}
             <div class="p-4 bg-error-light border border-error/20 rounded-lg">
-              <p class="text-sm text-error">{errors.submit}</p>
+              <p class="text-sm text-error">{form.message}</p>
             </div>
           {/if}
 

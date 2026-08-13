@@ -73,4 +73,6 @@ class CityListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = City
-        fields = ["id", "name", "state_name", "country_name"]
+        # `slug` is what the SEO landing pages key off (/jobs-in-<slug>/), so
+        # without it there is no way to turn a URL back into a city name.
+        fields = ["id", "name", "slug", "state_name", "country_name"]

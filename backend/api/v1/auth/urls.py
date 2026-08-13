@@ -10,6 +10,8 @@ from . import views
 app_name = "auth"
 
 urlpatterns = [
+    # Login
+    path("login/", views.login, name="login"),
     # Registration & Email Verification
     path("register/", views.register, name="register"),
     path("verify-email/", views.verify_email, name="verify-email"),

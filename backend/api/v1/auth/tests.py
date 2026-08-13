@@ -280,3 +280,99 @@ class GoogleAuthAPITests(TestCase):
         else:
             self.assertFalse(response.data["requires_profile_completion"])
             self.assertEqual(response.data["redirect_to"], "/dashboard")
+
+
+class LoginAPITests(TestCase):
+    """Email + password login for job seekers."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.login_url = reverse("api:v1:auth:login")
+        self.current_user_url = reverse("api:v1:auth:current-user")
+
+        self.password = "Str0ng!Passw0rd"
+        self.user = User.objects.create_user(
+            username="seeker@example.com",
+            email="seeker@example.com",
+            password=self.password,
+        )
+        self.user.user_type = "JS"
+        self.user.is_active = True
+        self.user.email_verified = True
+        self.user.save()
+
+    def _post(self, **payload):
+        return self.client.post(self.login_url, payload, format="json")
+
+    def test_login_returns_tokens(self):
+        response = self._post(email=self.user.email, password=self.password)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
+        self.assertEqual(response.data["user"]["email"], self.user.email)
+
+    def test_returned_access_token_authenticates(self):
+        """The token is not just well-formed — it works on a protected route."""
+        access = self._post(email=self.user.email, password=self.password).data[
+            "access"
+        ]
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
+        response = self.client.get(self.current_user_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["email"], self.user.email)
+
+    def test_email_is_case_insensitive(self):
+        response = self._post(email="SEEKER@EXAMPLE.COM", password=self.password)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_wrong_password_rejected(self):
+        response = self._post(email=self.user.email, password="wrong-password")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("access", response.data)
+
+    def test_unknown_email_rejected(self):
+        response = self._post(email="nobody@example.com", password=self.password)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("access", response.data)
+
+    def test_blank_password_cannot_authenticate(self):
+        """
+        Regression guard for the PasswordlessAuthBackend bypass.
+
+        That backend is first in AUTHENTICATION_BACKENDS and returns the user
+        unchecked when handed a falsy password, so a blank password reaching
+        authenticate() would be an account takeover.
+        """
+        for blank in ("", "   ", None):
+            with self.subTest(password=blank):
+                response = self._post(email=self.user.email, password=blank)
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                self.assertNotIn("access", response.data)
+
+    def test_missing_password_field_rejected(self):
+        response = self.client.post(
+            self.login_url, {"email": self.user.email}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("access", response.data)
+
+    def test_unverified_account_rejected(self):
+        self.user.is_active = False
+        self.user.save()
+
+        response = self._post(email=self.user.email, password=self.password)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("verify", str(response.data).lower())
+
+    def test_employer_sent_to_recruiter_login(self):
+        self.user.user_type = "EM"
+        self.user.save()
+
+        response = self._post(email=self.user.email, password=self.password)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("recruiter", str(response.data).lower())
