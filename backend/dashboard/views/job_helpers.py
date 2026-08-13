@@ -14,7 +14,6 @@ from django.template.defaultfilters import slugify
 
 from dashboard.tasks import send_email
 from peeldb.models import (
-    FunctionalArea,
     InterviewLocation,
     Qualification,
     Skill,
@@ -75,35 +74,6 @@ def add_other_qualifications(job_post, data, user):
                             "item": value,
                             "type": "Qualification",
                             "value": qualification.name,
-                        }
-                        rendered = temp.render(c)
-                        send_email.delay(mto, subject, rendered)
-
-
-def add_other_functional_area(job_post, data, user):
-    temp = loader.get_template("recruiter/email/add_other_fields.html")
-    subject = "PeelJobs New JobPost"
-    mto = [settings.DEFAULT_FROM_EMAIL]
-
-    for functional_area in data:
-        for value in functional_area.values():
-            other_areas = value.replace(" ", "").split(",")
-            for value in other_areas:
-                if value != "":
-                    functional_area = FunctionalArea.objects.filter(name__iexact=value)
-                    if functional_area:
-                        job_post.functional_area.add(functional_area[0])
-                    else:
-                        functional_area = FunctionalArea.objects.create(
-                            name=value, status="InActive"
-                        )
-                        job_post.functional_area.add(functional_area)
-                        c = {
-                            "job_post": job_post,
-                            "user": user,
-                            "item": value,
-                            "type": "Functional Area",
-                            "value": functional_area.name,
                         }
                         rendered = temp.render(c)
                         send_email.delay(mto, subject, rendered)

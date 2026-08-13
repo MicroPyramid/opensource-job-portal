@@ -8,7 +8,6 @@ job view counting.
 
 from unittest import mock
 
-from django.apps import apps
 from django.core import signing
 from django.test import TestCase
 from django.urls import reverse
@@ -18,26 +17,6 @@ from rest_framework.test import APIClient
 from peeldb.models import AppliedJobs, Company, Google, JobPost, User
 
 from .auth_views import GOOGLE_SIGNUP_SALT
-
-
-class NoSearchIndexMixin:
-    """
-    Detach Haystack's realtime signal processor for the duration of the test.
-
-    Saving a JobPost otherwise tries to index it against Elasticsearch, which
-    is not running (and is not something these tests need).
-    """
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls._signal_processor = apps.get_app_config("haystack").signal_processor
-        cls._signal_processor.teardown()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls._signal_processor.setup()
-        super().tearDownClass()
 
 
 def make_recruiter(email, company=None, is_admin=False, is_active=True):
@@ -53,7 +32,7 @@ def make_recruiter(email, company=None, is_admin=False, is_active=True):
     )
 
 
-class JobEmailNotificationTests(NoSearchIndexMixin, TestCase):
+class JobEmailNotificationTests(TestCase):
     """send_email_notifications must survive a round trip through the API."""
 
     def setUp(self):
@@ -128,7 +107,7 @@ class JobEmailNotificationTests(NoSearchIndexMixin, TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class TeamMemberStatusToggleTests(NoSearchIndexMixin, TestCase):
+class TeamMemberStatusToggleTests(TestCase):
     """POST team/<id>/toggle-status/ flips is_active, with the usual guards."""
 
     def setUp(self):
@@ -209,7 +188,7 @@ class TeamMemberStatusToggleTests(NoSearchIndexMixin, TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class JobViewCountTests(NoSearchIndexMixin, TestCase):
+class JobViewCountTests(TestCase):
     """The public job-detail endpoint counts views, excluding the job's owner."""
 
     def setUp(self):
@@ -269,7 +248,7 @@ def make_seeker(email, first_name, last_name="Seeker"):
     )
 
 
-class JobApplicantsListTests(NoSearchIndexMixin, TestCase):
+class JobApplicantsListTests(TestCase):
     """
     The applicants endpoint backs both the on-screen list and the CSV export.
 
@@ -369,7 +348,7 @@ class JobApplicantsListTests(NoSearchIndexMixin, TestCase):
         self.assertEqual(len(response.data["applications"]), 0)
 
 
-class ChangePasswordTests(NoSearchIndexMixin, TestCase):
+class ChangePasswordTests(TestCase):
     """
     The endpoint existed but had no caller, so it had never been exercised.
     Wiring the account page to it makes these the first checks it has.
@@ -449,7 +428,7 @@ class ChangePasswordTests(NoSearchIndexMixin, TestCase):
         self.assertTrue(self.recruiter.check_password("OriginalPass123"))
 
 
-class GoogleSignupTokenTests(NoSearchIndexMixin, TestCase):
+class GoogleSignupTokenTests(TestCase):
     """
     google_callback hands the pending signup to the client as a signed blob and
     google_complete reads it back.
@@ -570,7 +549,7 @@ class GoogleSignupTokenTests(NoSearchIndexMixin, TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class PasswordStrengthTests(NoSearchIndexMixin, TestCase):
+class PasswordStrengthTests(TestCase):
     """
     AUTH_PASSWORD_VALIDATORS was absent from settings. Django treats a missing
     setting as an empty list, so every validate_password() call ran zero checks

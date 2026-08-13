@@ -13,12 +13,14 @@ from peeldb.models import (
     EducationDetails,
     EducationInstitue,
     EmploymentHistory,
+    Language,
     Project,
     Qualification,
     Skill,
     State,
     TechnicalSkill,
     User,
+    UserLanguage,
 )
 
 
@@ -376,6 +378,12 @@ class ProfileSerializer(serializers.ModelSerializer):
             # Basic Info
             "id",
             "email",
+            # Address the user has asked to move to but not yet confirmed.
+            # Read-only: it is set by POST /auth/change-email/ and cleared when
+            # the token mailed to that address is redeemed. Exposed so the
+            # profile page can keep showing "waiting for confirmation" across a
+            # reload.
+            "pending_email",
             "username",
             "first_name",
             "last_name",
@@ -445,6 +453,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "email",
+            "pending_email",
             "username",
             "user_type",
             "date_joined",
@@ -599,3 +608,42 @@ class ProfileUploadResponseSerializer(serializers.Serializer):
     resume_url = serializers.CharField(
         required=False, help_text="Present when file_type=resume"
     )
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    """The language catalogue — what a user can pick from."""
+
+    class Meta:
+        model = Language
+        fields = ["id", "name"]
+        read_only_fields = fields
+
+
+class UserLanguageSerializer(serializers.ModelSerializer):
+    """
+    One language a user speaks, with per-skill proficiency.
+
+    `read`/`write`/`speak` are independent booleans rather than a single level,
+    which is what the legacy form collected and what 6,283 existing rows are
+    shaped like — flattening them to one field would lose data.
+    """
+
+    language = serializers.PrimaryKeyRelatedField(queryset=Language.objects.all())
+    language_name = serializers.CharField(source="language.name", read_only=True)
+
+    class Meta:
+        model = UserLanguage
+        fields = ["id", "language", "language_name", "read", "write", "speak"]
+        read_only_fields = ["id", "language_name"]
+
+    def validate(self, data):
+        # A row asserting no ability at all is meaningless, and the legacy UI
+        # had no way to create one.
+        if not any(
+            data.get(field, getattr(self.instance, field, False))
+            for field in ("read", "write", "speak")
+        ):
+            raise serializers.ValidationError(
+                "Select at least one of read, write or speak."
+            )
+        return data

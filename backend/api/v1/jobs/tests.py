@@ -6,33 +6,12 @@ Covers ``GET /api/v1/jobs/applied/``, added so the /applications/ page in
 list of fake applications.
 """
 
-from django.apps import apps
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from peeldb.models import AppliedJobs, Company, JobPost, User
-
-
-class NoSearchIndexMixin:
-    """
-    Detach Haystack's realtime signal processor for the duration of the test.
-
-    Saving a JobPost otherwise tries to index it against Elasticsearch, which
-    is not running (and is not something these tests need).
-    """
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls._signal_processor = apps.get_app_config("haystack").signal_processor
-        cls._signal_processor.teardown()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls._signal_processor.setup()
-        super().tearDownClass()
 
 
 def make_user(email, user_type="JS", company=None):
@@ -46,7 +25,7 @@ def make_user(email, user_type="JS", company=None):
     )
 
 
-class AppliedJobsListTests(NoSearchIndexMixin, TestCase):
+class AppliedJobsListTests(TestCase):
     """GET /api/v1/jobs/applied/ returns only the caller's applications."""
 
     def setUp(self):
@@ -147,7 +126,7 @@ class AppliedJobsListTests(NoSearchIndexMixin, TestCase):
         self.assertEqual(response.data[0]["job"]["id"], self.job_b.id)
 
 
-class CompanyFilterTests(NoSearchIndexMixin, TestCase):
+class CompanyFilterTests(TestCase):
     """
     `?company=` and `?company_slug=` scope the job list.
 
@@ -210,7 +189,7 @@ class CompanyFilterTests(NoSearchIndexMixin, TestCase):
                 self.assertEqual(response.data["count"], 0)
 
 
-class FilterOptionsLimitTests(NoSearchIndexMixin, TestCase):
+class FilterOptionsLimitTests(TestCase):
     """
     `?limit=` controls how many locations/skills come back.
 

@@ -10,7 +10,6 @@ from peeldb.models import (
     AppliedJobs,
     City,
     Company,
-    FunctionalArea,
     Industry,
     JobPost,
     Qualification,
@@ -53,14 +52,6 @@ class QualificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Qualification
         fields = ["id", "name", "slug"]
-
-
-class FunctionalAreaSerializer(serializers.ModelSerializer):
-    """Serializer for functional areas"""
-
-    class Meta:
-        model = FunctionalArea
-        fields = ["id", "name"]
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -253,7 +244,6 @@ class JobDetailSerializer(JobListSerializer):
 
     company = CompanySerializer(read_only=True)
     edu_qualification = QualificationSerializer(many=True, read_only=True)
-    functional_area = FunctionalAreaSerializer(many=True, read_only=True)
 
     class Meta(JobListSerializer.Meta):
         fields = JobListSerializer.Meta.fields + [
@@ -265,7 +255,6 @@ class JobDetailSerializer(JobListSerializer):
             "company_links",
             "company_emails",
             "edu_qualification",
-            "functional_area",
             # Walk-in specific fields
             "walkin_contactinfo",
             "walkin_show_contact_info",

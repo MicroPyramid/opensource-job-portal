@@ -11,6 +11,7 @@ from .education_lookup_views import (
     QualificationViewSet,
 )
 from .education_views import EducationViewSet
+from .language_views import LanguageOptionsViewSet, UserLanguageViewSet
 from .portfolio_views import CertificationViewSet, ProjectViewSet
 
 # Import from split view modules
@@ -30,6 +31,8 @@ router.register(
 )
 router.register(r"projects", ProjectViewSet, basename="project")
 router.register(r"certifications", CertificationViewSet, basename="certification")
+router.register(r"languages", UserLanguageViewSet, basename="language")
+router.register(r"language-options", LanguageOptionsViewSet, basename="language-option")
 
 urlpatterns = [
     path("", ProfileView.as_view(), name="profile"),

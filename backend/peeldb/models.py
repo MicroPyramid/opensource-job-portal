@@ -216,14 +216,20 @@ class City(models.Model):
     state = models.ForeignKey(State, related_name="state", on_delete=models.PROTECT)
     status = models.CharField(choices=STATUS_TYPES, max_length=10, default="Enabled")
     slug = models.SlugField(max_length=500)
-    internship_text = models.CharField(max_length=1000)
-    meta_title = models.TextField(default="")
-    meta_description = models.TextField(default="")
-    internship_meta_title = models.TextField(default="")
-    internship_meta_description = models.TextField(default="")
-    page_content = models.TextField(default="")
-    internship_content = models.TextField(default="")
-    meta = JSONField(null=True)
+    # These are all optional SEO/marketing copy, and `save()` below runs
+    # `full_clean()`. Without `blank=True` a City saved with nothing but its own
+    # defaults fails its own validation — `default=""` and "cannot be blank" are
+    # contradictory. That is why creating a City in a test needed eight
+    # placeholder strings, and it made the model unusable from any code path
+    # that did not populate every marketing field.
+    internship_text = models.CharField(max_length=1000, blank=True, default="")
+    meta_title = models.TextField(blank=True, default="")
+    meta_description = models.TextField(blank=True, default="")
+    internship_meta_title = models.TextField(blank=True, default="")
+    internship_meta_description = models.TextField(blank=True, default="")
+    page_content = models.TextField(blank=True, default="")
+    internship_content = models.TextField(blank=True, default="")
+    meta = JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -613,6 +619,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)  # agency created user
     profile_completeness = models.CharField(max_length=500, default="")
     activation_code = models.CharField(max_length=100, null=True, blank=True)
+    # Address a user has asked to move to but has not yet confirmed.
+    #
+    # `email` is the login identifier, so it must not change until the new
+    # address is proven reachable — otherwise a typo locks the account out of
+    # both the old and new inbox. The swap happens in
+    # api/v1/auth/views.py:verify_email_change once the token sent *to the new
+    # address* comes back.
+    pending_email = models.EmailField(max_length=255, blank=True, default="")
     # is_register_through_mail = models.BooleanField(default=False)
     registered_from = models.CharField(
         choices=REGISTERED_FROM, max_length=15, default=""
@@ -1728,7 +1742,12 @@ class JobAlert(models.Model):
     role = models.CharField(max_length=2000, blank=True, null=True)
     related_jobs = models.BooleanField(default=False)
     email = models.EmailField(blank=True, null=True)
-    name = models.CharField(max_length=2000, unique=True)
+    # A label the subscriber types ("Wp developer", "Webdesign"). This was
+    # `unique=True`, which is wrong for free text a user picks: the second
+    # person to name an alert "Java Developer" got an IntegrityError, and the
+    # constraint is global rather than per-email so there is no way to opt out
+    # of the collision.
+    name = models.CharField(max_length=2000)
     unsubscribe_code = models.CharField(max_length=100, null=True, blank=True)
     is_unsubscribe = models.BooleanField(default=False)
     subscribe_code = models.CharField(max_length=100, null=True, blank=True)

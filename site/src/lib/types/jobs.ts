@@ -29,11 +29,6 @@ export interface Qualification {
   slug: string;
 }
 
-export interface FunctionalArea {
-  id: number;
-  name: string;
-}
-
 export interface Company {
   id: number;
   name: string;
@@ -92,7 +87,6 @@ export interface JobDetail extends Job {
   company_links: string;
   company_emails: string | null;
   edu_qualification: Qualification[];
-  functional_area: FunctionalArea[];
   // Walk-in specific fields
   walkin_contactinfo: string;
   walkin_show_contact_info: boolean;

@@ -102,6 +102,14 @@ export interface UserProfile {
 	// Basic Info
 	id: number;
 	email: string;
+	/**
+	 * Address the user has asked to move to but has not confirmed yet.
+	 *
+	 * Empty in the normal case. `email` — the sign-in identifier — does not
+	 * change until the token mailed to this address is redeemed at
+	 * /verify-email-change/.
+	 */
+	pending_email?: string;
 	username: string;
 	first_name: string;
 	last_name: string;

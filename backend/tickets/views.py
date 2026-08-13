@@ -1,6 +1,12 @@
 """
-Support module for recruiter, will generate a notification
-email to recruiter when admin gives suggestions
+Support tickets, for platform admin only.
+
+This was a two-sided feature: recruiters raised tickets through
+`templates/recruiter/tickets/`, support staff worked them through
+`templates/dashboard/tickets/`. The recruiter half went with
+`recruiter/index.html` (deleted in d6763e9) — every one of those pages had been
+raising `TemplateDoesNotExist` ever since — and the recruiter UI is SvelteKit
+now. What is left is the half that works.
 """
 
 import json
@@ -13,7 +19,6 @@ from django.template import loader
 from dashboard.tasks import send_email
 from peeldb.models import (
     PRIORITY_TYPES,
-    STATUS,
     TICKET_TYPES,
     Attachment,
     Comment,
@@ -38,25 +43,22 @@ def index(request):
     """
 
     if request.method == "GET":
-        if request.user.is_agency_recruiter or request.user.is_recruiter:
-            tickets = Ticket.objects.filter(user=request.user).order_by("-created_on")
-            template_name = "recruiter/tickets/ticket.html"
-            data = {
-                "tickets": tickets,
-                "priorities": PRIORITY_TYPES,
-                "ticket_types": TICKET_TYPES,
-            }
-        elif request.user.is_staff:
-            template_name = "dashboard/tickets/ticket.html"
-            data = {"priorities": PRIORITY_TYPES, "ticket_types": TICKET_TYPES}
-        else:
-            template_name = "recruiter/recruiter_404.html"
-            data = {
+        if request.user.is_staff:
+            return render(
+                request,
+                "dashboard/tickets/ticket.html",
+                {"priorities": PRIORITY_TYPES, "ticket_types": TICKET_TYPES},
+            )
+        return render(
+            request,
+            "404.html",
+            {
                 "message": "Sorry, No Ticket Found",
                 "reason": """The URL may be misspelled or the ticket
                         you're looking for is no longer available.""",
-            }
-        return render(request, template_name, data)
+            },
+            status=404,
+        )
     validate_ticket = TicketForm(request.POST, request.FILES)
     if validate_ticket.is_valid():
         ticket = validate_ticket.save(commit=False)
@@ -84,47 +86,6 @@ def index(request):
 
 
 @login_required
-def new_ticket(request):
-    """
-    Method: GET
-        1. Recruiter: Will display create ticket page and sending the priority types,
-           ticket types to the page
-    Method: POST
-        1. Validates a post data along with ticket attachments, sends errors as json to browser
-        2. Creating a ticket with its attachments in open state
-        3. Sending the email to the created user with respected ticket message
-
-    """
-    if request.method == "GET":
-        return render(
-            request,
-            "recruiter/tickets/new_ticket.html",
-            {"priorities": PRIORITY_TYPES, "ticket_types": TICKET_TYPES},
-        )
-    validate_ticket = TicketForm(request.POST, request.FILES)
-    if validate_ticket.is_valid():
-        ticket = validate_ticket.save(commit=False)
-        ticket.user = request.user
-        ticket.status = "Open"
-        ticket.save()
-        for value in request.FILES.values():
-            attachment = Attachment.objects.create(
-                attached_file=value, uploaded_by=request.user
-            )
-            ticket.attachments.add(attachment)
-        temp = loader.get_template("email/new_ticket.html")
-        subject = "Service Request | Peeljobs"
-        rendered = temp.render({"ticket": ticket})
-        mto = ticket.user.email
-        send_email.delay(mto, subject, rendered)
-        data = {"error": False, "response": "New Ticket Created Successfully"}
-    else:
-        errors = validate_ticket.errors
-        data = {"error": True, "response": errors}
-    return HttpResponse(json.dumps(data))
-
-
-@login_required
 def edit_ticket(request, ticket_id):
     """
     Method: GET
@@ -142,11 +103,7 @@ def edit_ticket(request, ticket_id):
     ticket = Ticket.objects.filter(id=ticket_id, user=request.user).first()
     if request.method == "GET":
         if ticket:
-            template_name = (
-                "recruiter/tickets/edit_ticket.html"
-                if request.user.is_agency_recruiter or request.user.is_recruiter
-                else "dashboard/tickets/edit_ticket.html"
-            )
+            template_name = "dashboard/tickets/edit_ticket.html"
             data = {
                 "priorities": PRIORITY_TYPES,
                 "ticket_types": TICKET_TYPES,
@@ -155,7 +112,7 @@ def edit_ticket(request, ticket_id):
         else:
             reason = """The URL may be misspelled or the ticket
                         you're looking for is no longer available."""
-            template_name = "recruiter/recruiter_404.html"
+            template_name = "404.html"
             data = {
                 "message_type": "404",
                 "message": "Sorry, No Ticket Found",
@@ -252,48 +209,6 @@ def delete_comment(request, comment_id):
         return HttpResponse(json.dumps(data))
 
 
-TICKET_STATUS = (
-    ("Open", "Open"),
-    ("Closed", "Closed"),
-)
-
-
-@login_required
-def view_ticket(request, ticket_id):
-    """
-    Method: GET
-        1. Check for a ticket existed or not with the id mentioned in the url
-        2. check the loogedin is ticket_created user or admin, If not returns a 404 page
-
-    """
-
-    if request.user.user_type != "JS":
-        tickets = Ticket.objects.filter(id=ticket_id, user=request.user)
-        if request.method == "GET" and tickets:
-            ticket = tickets[0]
-            if request.user.is_staff or request.user == ticket.user:
-                template_name = "recruiter/tickets/view_ticket.html"
-                return render(
-                    request,
-                    template_name,
-                    {
-                        "priorities": PRIORITY_TYPES,
-                        "ticket_types": TICKET_TYPES,
-                        "ticket": tickets[0],
-                        "status": STATUS,
-                    },
-                )
-
-    message = "Sorry, No Ticket Found"
-    reason = "The URL may be misspelled or the ticket you're looking for is no longer available."
-    return render(
-        request,
-        "recruiter/recruiter_404.html",
-        {"message_type": "404", "message": message, "reason": reason},
-        status=404,
-    )
-
-
 @login_required
 def ticket_status(request, ticket_id):
     """
@@ -325,7 +240,7 @@ def ticket_status(request, ticket_id):
     reason = "The URL may be misspelled or the ticket you're looking for is no longer available."
     return render(
         request,
-        "recruiter/recruiter_404.html",
+        "404.html",
         {"message_type": "404", "message": message, "reason": reason},
         status=404,
     )
@@ -372,7 +287,7 @@ def ticket_comment(request, ticket_id):
     reason = "The URL may be misspelled or the ticket you're looking for is no longer available."
     return render(
         request,
-        "recruiter/recruiter_404.html",
+        "404.html",
         {"message_type": "404", "message": "Sorry, No Ticket Found", "reason": reason},
         status=404,
     )

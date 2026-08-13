@@ -2,6 +2,7 @@ import json
 import math
 import re
 
+from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count
 from django.http.response import HttpResponse, HttpResponseRedirect
@@ -224,7 +225,9 @@ def country(request):
                     + ' " id="'
                     + c.status
                     + ' "><i class="fa fa-toggle-off"></i></a></div><a href="'
-                    + reverse("job_locations", kwargs={"location": c.slug})
+                    # The city listing is a SvelteKit route now, on a different
+                    # origin, so it cannot be reversed out of this URLconf.
+                    + f"{settings.SITE_FRONTEND_URL.rstrip('/')}/jobs-in-{c.slug}/"
                     + '" target="_blank"><i class="fa fa-eye"></i></a><a class="add_other_city" title="Add Other City" id="'
                     + str(c.id)
                     + '" data-state="'
@@ -1260,7 +1263,7 @@ def functional_area(request):
             and int(request.GET.get("page")) > 0
         ):
             if int(request.GET.get("page")) > (no_pages + 2):
-                return HttpResponseRedirect(reverse("dashboard:functional_areas"))
+                return HttpResponseRedirect(reverse("dashboard:functional_area"))
             page = int(request.GET.get("page"))
         else:
             page = 1

@@ -96,7 +96,7 @@ def view_recruiter(request, user_id):
     page = request.GET.get("page")
     if page and bool(re.search(r"[0-9]", page)) and int(page) > 0:
         if int(page) > (no_pages + 2):
-            return HttpResponseRedirect(reverse("dashboard:functional_areas"))
+            return HttpResponseRedirect(reverse("dashboard:functional_area"))
         page = int(page)
     else:
         page = 1

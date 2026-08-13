@@ -1,350 +1,31 @@
+"""
+Root URL configuration.
+
+Django's remit is now the REST API, transactional email, XML sitemaps and
+platform admin — `docs/django-retirement.md` calls that the finish line. The
+job-seeker site is SvelteKit in `site/` and the recruiter dashboard is
+SvelteKit in `recruiter/`, both against `/api/v1/`.
+
+The ~90 template-rendering routes that used to live here went with
+`candidate/`, `pjob/`, `search/` and `agency/`. They are not redirected: the
+platform has had no live traffic for years, so there are no rankings or inbound
+links to honour.
+"""
+
 from django.conf import settings
 from django.conf.urls import include
 from django.contrib import admin
+from django.contrib.sitemaps.views import index as sitemap_index
+from django.contrib.sitemaps.views import sitemap as sitemap_view
 from django.urls import path
 from django.urls import re_path as url
-from django.views.generic import RedirectView
-
-from candidate.views import (
-    alert_subscribe_verification,
-    applicant_email_unsubscribing,
-    applicant_unsubscribing,
-    bounces,
-)
-from pjob.views import (
-    city_internship_jobs,
-    companies,
-    each_company_jobs,
-    fresher_jobs_by_skills,
-    full_time_jobs,
-    government_jobs,
-    internship_jobs,
-    job_detail,
-    job_industries,
-    # week_calendar,
-    job_locations,
-    # set_password,
-    job_skills,
-    jobposts_by_date,
-    jobs_by_degree,
-    jobs_by_industry,
-    jobs_by_location,
-    jobs_by_skill,
-    location_fresher_jobs,
-    login_user_email,
-    process_email,
-    recruiter_profile,
-    # year_calendar,
-    # calendar_add_event,
-    # calendar_event_list,
-    # month_calendar,
-    recruiters,
-    register_using_email,
-    skill_fresher_jobs,
-    skill_location_walkin_jobs,
-    skill_location_wise_fresher_jobs,
-    unsubscribe,
-    # forgot_password,
-    user_activation,
-    user_reg_success,
-    user_subscribe,
-    walkin_jobs,
-)
-from pjob.views import index as job_list
-from psite.views import (
-    auth_return,
-    contact,
-    custom_404,
-    custom_500,
-    get_out,
-    pages,
-    sitemap,
-)
-from search.views import (
-    city_auto_search,
-    custom_walkins,
-    custome_search,
-    search_slugs,
-    skill_auto_search,
-)
-
-from .views import forgot_password, set_password, user_login, user_register
-
-urlpatterns = [
-    path("login/", user_login, name="login"),  # convert to tailwind
-    path("register/", user_register, name="register"),
-    path("forgot-password/", forgot_password, name="forgot_password"),
-    path(
-        "set-password/<int:user_id>/<str:passwd_reset_token>/",
-        set_password,
-        name="set_password",
-    ),
-    url(
-        r"^jobs/(?P<job_title_slug>[a-z0-9-.,*?]+)-(?P<job_id>([0-9])+)/$",
-        job_detail,
-        name="job_detail",
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-fresher-jobs-in-(?P<city_name>[-\w]+)/$",
-        skill_location_wise_fresher_jobs,
-        name="skill_location_wise_fresher_jobs",
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-fresher-jobs-in-(?P<city_name>[-\w]+)/(?P<page_num>[0-9]+)/$",
-        skill_location_wise_fresher_jobs,
-    ),
-    url(
-        r"^internship-jobs-in-(?P<location>[-\w]+)/$",
-        city_internship_jobs,
-        name="city_internship_jobs",
-    ),
-    url(
-        r"^internship-jobs-in-(?P<location>[-\w]+)/(?P<page_num>[0-9]+)/$",
-        city_internship_jobs,
-    ),
-    url(
-        r"^fresher-jobs-in-(?P<city_name>[-\w]+)/$",
-        location_fresher_jobs,
-        name="location_fresher_jobs",
-    ),
-    url(
-        r"^fresher-jobs-in-(?P<city_name>[-\w]+)/(?P<page_num>[0-9]+)/$",
-        location_fresher_jobs,
-        name="location_fresher_jobs",
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-jobs-in-(?P<city_name>[-\w]+)/$",
-        custome_search,
-        name="custome_search",
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-jobs-in-(?P<city_name>[-\w]+)/(?P<page_num>[0-9]+)/$",
-        custome_search,
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-walkins-in-(?P<city_name>[-\w]+)/$",
-        custom_walkins,
-        name="custom_walkins",
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-walkins-in-(?P<city_name>[-\w]+)/(?P<page_num>[0-9]+)/$",
-        custom_walkins,
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-fresher-jobs/$",
-        skill_fresher_jobs,
-        name="skill_fresher_jobs",
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-fresher-jobs/(?P<page_num>[0-9]+)/$",
-        skill_fresher_jobs,
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-walkins/(?P<page_num>[0-9]+)/$",
-        skill_location_walkin_jobs,
-    ),
-    url(
-        r"^(?P<skill_name>[-\w]+)-walkins/$",
-        skill_location_walkin_jobs,
-        name="skill_walkin_jobs",
-    ),
-    url(
-        r"^walkins-in-(?P<skill_name>[-\w]+)/(?P<page_num>[0-9]+)/$",
-        skill_location_walkin_jobs,
-    ),
-    url(
-        r"^walkins-in-(?P<skill_name>[-\w]+)/$",
-        skill_location_walkin_jobs,
-        name="location_walkin_jobs",
-    ),
-    url(r"^skill-auto/$", skill_auto_search),
-    url(r"^city-auto/$", city_auto_search),
-    url(r"^get/search-slugs/$", search_slugs, name="get_search_slugs"),
-    url(r"^admin/", admin.site.urls),  # Here's the typo
-    url(r"^search/", include("search.urls", namespace="search")),
-    url(r"^skill-auto/$", skill_auto_search),
-    url(
-        r"^unsubscribe_email/(?P<email_type>([a-z0-9-])+)/(?P<message_id>[a-zA-Z0-9_-]+.*?)/$",
-        applicant_email_unsubscribing,
-        name="applicant_email_unsubscribing",
-    ),
-    url(
-        r"^email-unsubscribe/(?P<message_id>[a-zA-Z0-9_-]+.*?)/$",
-        applicant_unsubscribing,
-        name="applicant_unsubscribing",
-    ),
-    url(r"^social/", include("social.urls", namespace="social")),
-    url(r"^dashboard/", include("dashboard.urls", namespace="dashboard")),
-    url(r"^recruiter/", include("recruiter.urls", namespace="recruiter")),
-    url(r"^agency/", include("agency.urls", namespace="agency")),
-    # Migrated to the SvelteKit recruiter app. Kept as a redirect rather than
-    # deleted because base.html, auth_base.html, base_with_tailwind_megamenu.html
-    # and sitemap.html still reverse the name — it goes when they do.
-    url(
-        r"^post-job/$",
-        RedirectView.as_view(
-            url=f"{settings.RECRUITER_FRONTEND_URL.rstrip('/')}/signup/",
-            permanent=False,
-        ),
-        name="post_job",
-    ),
-    url(r"^bounces/$", bounces),
-    url(r"registration/using_email/$", register_using_email, name="register_email"),
-    url(r"applicant/login/$", login_user_email, name="login_user"),
-    # url(r"user/forgot_password/$", forgot_password, name="forgot_password"),
-    # url(
-    #     r"^user/set_password/(?P<user_id>[0-9]+)/(?P<passwd>[a-zA-Z0-9]+)/$",
-    #     set_password,
-    #     name="set_password",
-    # ),
-    url(
-        r"^user/activation/(?P<user_id>[a-zA-Z0-9]+)/$",
-        user_activation,
-        name="user_activation",
-    ),
-    url(r"^user/reg_success/$", user_reg_success, name="user_reg_success"),
-    url(r"^social/user/update/$", user_reg_success, name="social_user"),
-    url(r"^recruiters/page/(?P<page_num>[0-9]+)/$", recruiters),
-    url(
-        r"^recruiters/(?P<recruiter_name>[a-zA-Z0-9_-]+.*?)/(?P<page_num>[0-9]+)/$",
-        recruiter_profile,
-    ),
-    url(
-        r"^recruiters/(?P<recruiter_name>[a-zA-Z0-9_-]+.*?)/$",
-        recruiter_profile,
-        name="recruiter_profile",
-    ),
-    url(
-        r"^(?P<job_type>[-\w]+)-jobs-by-skills/$",
-        fresher_jobs_by_skills,
-        name="fresher_jobs_by_skills",
-    ),
-    url(
-        r"^(?P<job_type>[-\w]+)-by-location/$",
-        jobs_by_location,
-        name="jobs_by_location",
-    ),
-    url(r"^jobs-by-skill/$", jobs_by_skill, name="jobs_by_skill"),
-    url(r"^jobs-by-industry/$", jobs_by_industry, name="jobs_by_industry"),
-    url(r"^jobs-by-degree/$", jobs_by_degree, name="jobs_by_degree"),
-    url(r"^full-time-jobs/$", full_time_jobs, name="full_time_jobs"),
-    url(r"^full-time-jobs/(?P<page_num>[0-9]+)/$", full_time_jobs),
-    url(r"^walkin-jobs/$", walkin_jobs, name="walkin_jobs"),
-    url(r"^walkin-jobs/(?P<page_num>[0-9]+)/$", walkin_jobs),
-    url(r"^internship-jobs/$", internship_jobs, name="internship_jobs"),
-    url(r"^internship-jobs/(?P<page_num>[0-9]+)/$", internship_jobs),
-    url(r"^government-jobs/$", government_jobs, name="government_jobs"),
-    url(r"^government-jobs/(?P<page_num>[0-9]+)/$", government_jobs),
-    # OLD: url(r"^sitemap.xml$", sitemap_xml, name="sitemap_xml"),  # Replaced with Django sitemaps
-    # url(r"^login/$", users_login, name="users_login"),
-    url(r"^contact/$", contact, name="contact"),
-    url(
-        r"^unsubscribe/(?P<email>[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4})/$",
-        unsubscribe,
-        name="unsubscribe",
-    ),
-    url(r"^sitemap/$", sitemap, name="sitemap"),
-    url(r"^sitemap/(?P<page_num>[0-9]+)/$", sitemap, name="sitemap"),
-    url(r"^logout/$", get_out, name="get_out"),
-    url(
-        r"^(?P<company_name>[-\w]+)-job-openings/(?P<page_num>[0-9]+)/$",
-        each_company_jobs,
-    ),
-    url(
-        r"^(?P<company_name>[-\w]+)-job-openings/$",
-        each_company_jobs,
-        name="company_jobs",
-    ),
-    url(
-        r"^(?P<industry>[-\w]+)-industry-jobs/$", job_industries, name="job_industries"
-    ),
-    url(r"^(?P<industry>[-\w]+)-industry-jobs/(?P<page_num>[0-9]+)/$", job_industries),
-    url(r"^jobs-for-(?P<industry>[-\w]+)-industry/$", job_industries),
-    url(
-        r"^jobs-for-(?P<industry>[-\w]+)-industry/(?P<page_num>[0-9]+)/$",
-        job_industries,
-    ),
-    url(r"^(?P<skill>[a-z0-9-.*?]+)-jobs/$", job_skills, name="job_skills"),
-    url(r"^(?P<skill>[a-z0-9-.*?]+)-jobs/(?P<page_num>[0-9]+)/$", job_skills),
-    url(r"^page/(?P<page_name>([a-z0-9-])+)/$", pages, name="pages"),
-    url(r"^companies/(?P<page_num>[0-9]+)/$", companies),
-    url(r"companies/$", companies, name="companies"),
-    url(r"^", include("candidate.urls", namespace="my")),
-    url(
-        r"jobposts/year/(?P<year>\w{0,})/month/(?P<month>\w{0,})/date/(?P<date>\w{0,})/$",
-        jobposts_by_date,
-        name="jobposts_by_date",
-    ),
-    url(
-        r"jobposts/year/(?P<year>\w{0,})/month/(?P<month>\w{0,})/date/(?P<date>\w{0,})/(?P<page_num>[0-9]+)/$",
-        jobposts_by_date,
-    ),
-    # url(
-    #     r"calendar/(?P<year>\w{0,})/month/(?P<month>\w{0,})/week/(?P<week>\w{0,})/$",
-    #     week_calendar,
-    #     name="week_calendar",
-    # ),
-    url(r"tickets/", include("tickets.urls", namespace="tickets")),
-    url(r"^jobs-in-(?P<location>[-\w]+)/$", job_locations, name="job_locations"),
-    url(r"^jobs-in-(?P<location>[-\w]+)/(?P<page_num>[0-9]+)/$", job_locations),
-    url(r"^jobs-for-(?P<skill>[-\w]+)/$", job_skills),
-    # url(r"calendar/(?P<year>\w{0,})/$", year_calendar, name="year_calendar"),
-    # url(r"calendar/add/event/$", calendar_add_event, name="calendar_add_event"),
-    # url(r"calendar/event/list/$", calendar_event_list, name="calendar_event_list"),
-    # url(
-    #     r"calendar/(?P<year>\w{0,})/month/(?P<month>\w{0,})/$",
-    #     month_calendar,
-    #     name="month_calendar",
-    # ),
-    url(r"^oauth2callback/$", auth_return, name="auth_return"),
-    url(r"recruiters/$", recruiters, name="recruiters"),
-    url(r"^jobs/$", job_list, name="job_list"),
-    url(r"^jobs/", include("pjob.urls", namespace="jobs")),
-    url(r"user_subscribe/$", user_subscribe, name="user_subscribe"),
-    url(
-        r"^(?P<obj_type>([a-z0-9-])+)/verification/(?P<obj_id>[a-zA-Z0-9_-]+.*?)/$",
-        alert_subscribe_verification,
-        name="alert_subscribe_verification",
-    ),
-    url(r"^process-email/$", process_email, name="process_email"),
-    # url(r'^dj-rest-auth/', include('dj_rest_auth.urls')),
-    url(r"^celery-check/", include("mp_celery_monitor.urls", namespace="celery-check")),
-    # Job Seeker API (DRF + JWT)
-    path("api/", include("api.urls", namespace="api")),
-]
-
-# Add API documentation URLs (drf-spectacular)
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
 
-urlpatterns += [
-    # OpenAPI 3.0 schema
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    # Swagger UI
-    path(
-        "api/docs/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui",
-    ),
-    # ReDoc UI
-    path(
-        "api/redoc/",
-        SpectacularRedocView.as_view(url_name="schema"),
-        name="redoc",
-    ),
-]
-
-# Add Django Sitemap URLs (Modern replacement for old sitemap generation)
-from django.contrib.sitemaps.views import (
-    index as sitemap_index,
-)
-from django.contrib.sitemaps.views import (
-    sitemap as sitemap_view,
-)
-
+from api.v1.webhooks.views import ses_bounce
 from psite.sitemaps import (
     CompanySitemap,
     FresherSkillLocationSitemap,
@@ -354,6 +35,7 @@ from psite.sitemaps import (
     SkillSitemap,
     StaticPagesSitemap,
 )
+from psite.views import custom_404, custom_500
 
 sitemaps = {
     "jobs": JobPostSitemap,
@@ -365,16 +47,36 @@ sitemaps = {
     "static": StaticPagesSitemap,
 }
 
-urlpatterns += [
-    # Sitemap index - automatically splits into multiple files if needed
-    # Domain (peeljobs.com) configured via Django Site framework (SITE_ID=1)
+urlpatterns = [
+    url(r"^admin/", admin.site.urls),
+    url(r"^dashboard/", include("dashboard.urls", namespace="dashboard")),
+    url(r"tickets/", include("tickets.urls", namespace="tickets")),
+    url(r"^social/", include("social.urls", namespace="social")),
+    url(r"^celery-check/", include("mp_celery_monitor.urls", namespace="celery-check")),
+    # Job Seeker + Recruiter API (DRF + JWT)
+    path("api/", include("api.urls", namespace="api")),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
+    ),
+    # AWS SNS holds this path in a live subscription, so it stays where it is
+    # even though the handler moved to `api/v1/webhooks/`.
+    url(r"^bounces/$", ses_bounce, name="ses_bounce_legacy"),
+    # Domain comes from `settings.SITE_DOMAIN` via `Sitemap.get_domain()`, not
+    # the Sites framework — see psite/sitemaps.py.
     path(
         "sitemap.xml",
         sitemap_index,
         {"sitemaps": sitemaps},
         name="django.contrib.sitemaps.views.index",
     ),
-    # Individual sitemap sections
     path(
         "sitemap-<section>.xml",
         sitemap_view,

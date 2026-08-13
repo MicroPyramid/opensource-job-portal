@@ -107,6 +107,14 @@ class JobFilter(filters.FilterSet):
         field_name="company__slug", lookup_expr="iexact", label="Company Slug"
     )
 
+    # Backs the /recruiters/<username>/ profile pages, which list that
+    # recruiter's live jobs. Matched case-insensitively because the legacy
+    # /recruiters/<recruiter_name>/ URLs used `username__iexact` and any
+    # inbound link will carry whatever casing that produced.
+    recruiter = filters.CharFilter(
+        field_name="user__username", lookup_expr="iexact", label="Recruiter Username"
+    )
+
     class Meta:
         model = JobPost
         fields = [
@@ -126,6 +134,7 @@ class JobFilter(filters.FilterSet):
             "posted_before",
             "company",
             "company_slug",
+            "recruiter",
         ]
 
     def filter_search(self, queryset, name, value):

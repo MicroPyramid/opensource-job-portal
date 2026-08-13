@@ -30,7 +30,13 @@
 <svelte:head>
   <title>{seo.title}</title>
   <meta name="description" content={seo.description} />
-  <link rel="canonical" href={canonical} />
+  <!--
+    Self-referential, NOT pinned to page 1. Pointing every page of a series at
+    page 1 declares pages 2..N duplicates, and the jobs that appear only on
+    those pages then have no crawlable path in from this route — which on a
+    facet like /java-jobs-in-bangalore/ (184 jobs, 10 pages) hides 90% of them.
+  -->
+  <link rel="canonical" href={pageHref(currentPage)} />
   {#if currentPage > 1}
     <link rel="prev" href={pageHref(currentPage - 1)} />
   {/if}

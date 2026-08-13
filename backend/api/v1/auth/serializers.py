@@ -403,3 +403,56 @@ class ChangePasswordErrorSerializer(serializers.Serializer):
         child=serializers.ListField(child=serializers.CharField()),
         help_text="Field name to list of validation messages",
     )
+
+
+class ChangeEmailSerializer(serializers.Serializer):
+    """
+    Request a change of the account's email address.
+
+    Requires the current password: `email` is the login identifier here, so
+    changing it is an account-takeover primitive if a hijacked session is
+    enough. Nothing is written to `User.email` at this stage — see
+    ``ChangeEmailSerializer.validate`` and ``verify_email_change``.
+    """
+
+    new_email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, allow_blank=False)
+
+    def validate_password(self, value):
+        user = self.context["request"].user
+        # Guard the blank case explicitly: PasswordlessAuthBackend is first in
+        # AUTHENTICATION_BACKENDS and returns a user for a falsy password.
+        # check_password() does not route through it, but this serializer must
+        # stay safe if that ever changes.
+        if not value or not user.check_password(value):
+            raise serializers.ValidationError("Password is incorrect")
+        return value
+
+    def validate_new_email(self, value):
+        email = value.lower().strip()
+        user = self.context["request"].user
+
+        if email == (user.email or "").lower():
+            raise serializers.ValidationError("That is already your email address.")
+
+        # `User.email` is unique, so let the caller know before we mail a token
+        # that could never be redeemed.
+        if User.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError(
+                "An account with that email address already exists."
+            )
+
+        return email
+
+
+class VerifyEmailChangeSerializer(serializers.Serializer):
+    """Redeem the token mailed to the *new* address."""
+
+    token = serializers.CharField(allow_blank=False)
+
+
+class ChangeEmailResponseSerializer(serializers.Serializer):
+    """200 response from ``change_email``."""
+
+    message = serializers.CharField()
+    pending_email = serializers.EmailField()

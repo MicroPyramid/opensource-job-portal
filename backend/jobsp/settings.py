@@ -41,6 +41,17 @@ RECRUITER_FRONTEND_URL = os.getenv("RECRUITER_FRONTEND_URL", "http://localhost:5
 # reset email in production would have linked to localhost.
 SITE_FRONTEND_URL = os.getenv("SITE_FRONTEND_URL", "http://localhost:5173")
 
+# Bare hostname used to build absolute <loc> URLs in the sitemaps.
+#
+# django.contrib.sitemaps takes this from the Sites framework, and the `sites`
+# row was never configured off Django's default — so every <loc> in every
+# sitemap read `https://example.com/...`, all 27,000 of them. Nothing else in
+# the codebase touches Site.objects or get_current(), so the Sites row had no
+# other job; psite.sitemaps.PeelJobsSitemap now overrides `get_domain()` to
+# read this instead. Kept as a setting rather than a fixed Site row so it
+# cannot silently drift per environment.
+SITE_DOMAIN = os.getenv("SITE_DOMAIN", "peeljobs.com")
+
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 CELERY_IMPORTS = "dashboard.tasks"
@@ -158,7 +169,6 @@ INSTALLED_APPS = (
     # 'django_simple_forum',
     "haystack",
     "dashboard",
-    "search",
     # "simple_pagination",
     "django_celery_beat",
     "corsheaders",
@@ -261,6 +271,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 # "jobsp.context_processors.export_vars",
                 "peeldb.context_processors.get_pj_icons",
+                "peeldb.context_processors.frontend_urls",
             ],
         },
     },
@@ -324,6 +335,13 @@ HAYSTACK_CONNECTIONS = {
 
 
 HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
+
+# The realtime signal processor above indexes on every save, which means the
+# test suite cannot save a Skill, City, User or JobPost without an Elasticsearch
+# to talk to. This runner disconnects it for the duration of a test run; see
+# jobsp/test_runner.py for why it has to be done there rather than through
+# override_settings.
+TEST_RUNNER = "jobsp.test_runner.NoSearchIndexingTestRunner"
 HAYSTACK_DEFAULT_OPERATOR = "OR"
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1
 

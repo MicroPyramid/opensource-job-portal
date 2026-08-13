@@ -4,6 +4,7 @@ Tests for Job Seeker Google Authentication API
 
 from unittest.mock import MagicMock, patch
 
+import requests
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -152,8 +153,19 @@ class GoogleAuthAPITests(TestCase):
     @patch("requests.post")
     def test_google_callback_invalid_code(self, mock_post):
         """Test Google callback with invalid code"""
-        # Mock failed token exchange
-        mock_post.side_effect = Exception("Invalid code")
+
+        # Google answers an unusable code with a 400, which the view turns into
+        # an error through `raise_for_status`. A bare `Exception` here would not
+        # reach the view's `except requests.RequestException` and so would test
+        # nothing the endpoint can actually encounter.
+        def raise_for_status():
+            raise requests.HTTPError("400 Client Error: Bad Request")
+
+        mock_post.return_value = MagicMock(
+            status_code=400,
+            json=lambda: {"error": "invalid_grant"},
+            raise_for_status=raise_for_status,
+        )
 
         response = self.client.post(
             self.google_callback_url,
@@ -272,14 +284,17 @@ class GoogleAuthAPITests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Check if profile completion is required
+        # A user built from nothing but a Google profile is well under 50%.
         user = User.objects.get(email="incomplete@example.com")
-        if user.profile_completion_percentage < 50:
-            self.assertTrue(response.data["requires_profile_completion"])
-            self.assertEqual(response.data["redirect_to"], "/profile/complete")
-        else:
-            self.assertFalse(response.data["requires_profile_completion"])
-            self.assertEqual(response.data["redirect_to"], "/dashboard")
+        self.assertLess(user.profile_completion_percentage, 50)
+        self.assertTrue(response.data["requires_profile_completion"])
+
+        # The frontend callback does `redirect(303, data.redirect_to || '/')`
+        # without inspecting it, so this has to name a route the job-seeker site
+        # serves. It used to assert "/profile/complete", which does not exist —
+        # sending every new Google user to a 404. `requires_profile_completion`
+        # is the signal; where to send them is the frontend's call.
+        self.assertEqual(response.data["redirect_to"], "/")
 
 
 class LoginAPITests(TestCase):
@@ -376,3 +391,162 @@ class LoginAPITests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("recruiter", str(response.data).lower())
+
+
+class ChangeEmailAPITests(TestCase):
+    """
+    Changing the account's email address.
+
+    The property under test throughout is that `User.email` — which is
+    `USERNAME_FIELD`, i.e. the login identifier — never moves until a token
+    delivered *to the new address* comes back. A typo must not be able to
+    strand the account between two inboxes.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.change_url = reverse("api:v1:auth:change-email")
+        self.verify_url = reverse("api:v1:auth:verify-email-change")
+        self.login_url = reverse("api:v1:auth:login")
+
+        self.password = "Str0ng!Passw0rd"
+        self.user = User.objects.create_user(
+            username="seeker@example.com",
+            email="seeker@example.com",
+            password=self.password,
+        )
+        self.user.user_type = "JS"
+        self.user.is_active = True
+        self.user.email_verified = True
+        self.user.save()
+
+        self.client.force_authenticate(user=self.user)
+
+    def _request(self, **payload):
+        with patch("api.v1.auth.views.send_email_change_verification"):
+            return self.client.post(self.change_url, payload, format="json")
+
+    def _start_change(self, new_email="new@example.com"):
+        response = self._request(new_email=new_email, password=self.password)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        return self.user.activation_code
+
+    def test_requires_authentication(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.post(
+            self.change_url,
+            {"new_email": "new@example.com", "password": self.password},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_wrong_password_rejected(self):
+        response = self._request(new_email="new@example.com", password="nope")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.pending_email, "")
+
+    def test_blank_password_rejected(self):
+        # PasswordlessAuthBackend is first in AUTHENTICATION_BACKENDS and hands
+        # back a user for a falsy password. This endpoint must never be a way
+        # to reach it.
+        for blank in ("", "   "):
+            with self.subTest(password=blank):
+                response = self._request(new_email="new@example.com", password=blank)
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                self.user.refresh_from_db()
+                self.assertEqual(self.user.pending_email, "")
+
+    def test_address_already_taken_rejected(self):
+        User.objects.create_user(
+            username="taken@example.com",
+            email="taken@example.com",
+            password="whatever",
+        )
+
+        response = self._request(new_email="taken@example.com", password=self.password)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.pending_email, "")
+
+    def test_current_address_rejected(self):
+        response = self._request(new_email=self.user.email, password=self.password)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_request_does_not_change_email_yet(self):
+        self._start_change()
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "seeker@example.com")
+        self.assertEqual(self.user.pending_email, "new@example.com")
+
+    def test_redeeming_token_swaps_email_and_username(self):
+        token = self._start_change()
+
+        response = self.client.post(self.verify_url, {"token": token}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "new@example.com")
+        # `username` is a separate unique column that mirrors the email for
+        # almost every job seeker; a stale copy would block whoever later
+        # registers with the freed address.
+        self.assertEqual(self.user.username, "new@example.com")
+        self.assertEqual(self.user.pending_email, "")
+        self.assertTrue(self.user.email_verified)
+
+    def test_token_cannot_be_replayed(self):
+        token = self._start_change()
+        self.client.post(self.verify_url, {"token": token}, format="json")
+
+        response = self.client.post(self.verify_url, {"token": token}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_unknown_token_rejected(self):
+        self._start_change()
+
+        response = self.client.post(
+            self.verify_url, {"token": "not-a-real-token"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "seeker@example.com")
+
+    def test_address_taken_between_request_and_confirmation(self):
+        token = self._start_change()
+        User.objects.create_user(
+            username="new@example.com", email="new@example.com", password="whatever"
+        )
+
+        response = self.client.post(self.verify_url, {"token": token}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "seeker@example.com")
+        # The dead request is cleared rather than left pending forever.
+        self.assertEqual(self.user.pending_email, "")
+
+    def test_login_follows_the_new_address(self):
+        token = self._start_change()
+        self.client.post(self.verify_url, {"token": token}, format="json")
+        self.client.force_authenticate(user=None)
+
+        new = self.client.post(
+            self.login_url,
+            {"email": "new@example.com", "password": self.password},
+            format="json",
+        )
+        old = self.client.post(
+            self.login_url,
+            {"email": "seeker@example.com", "password": self.password},
+            format="json",
+        )
+
+        self.assertEqual(new.status_code, status.HTTP_200_OK)
+        self.assertEqual(old.status_code, status.HTTP_400_BAD_REQUEST)

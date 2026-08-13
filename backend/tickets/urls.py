@@ -9,10 +9,8 @@ from tickets.views import (
     edit_comment,
     edit_ticket,
     index,
-    new_ticket,
     ticket_comment,
     ticket_status,
-    view_ticket,
 )
 
 app_name = "tickets"
@@ -21,9 +19,6 @@ urlpatterns = [
     url(r"^$", index, name="index"),
     url(
         r"ticket/edit/(?P<ticket_id>[a-zA-Z0-9_-]+)/$", edit_ticket, name="edit_ticket"
-    ),
-    url(
-        r"ticket/view/(?P<ticket_id>[a-zA-Z0-9_-]+)/$", view_ticket, name="view_ticket"
     ),
     url(
         r"attachment/delete/(?P<attachment_id>[a-zA-Z0-9_-]+)/$",
@@ -53,5 +48,4 @@ urlpatterns = [
         admin_ticket_view,
         name="admin_ticket_view",
     ),
-    url(r"ticket/new/$", new_ticket, name="new_ticket"),
 ]

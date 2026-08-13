@@ -59,7 +59,12 @@ class CityForm_form_test(TestCase):
         self.state = State.objects.create(name="Telangana", country_id=self.country.id)
 
     def test_cityinfo_for_valid(self):
-        form = CityForm(data={"name": "hyd", "state": self.state.id})
+        # `status` is in CityForm.Meta.fields and City.status has no
+        # blank=True, so the form requires it. This assertion never actually
+        # ran before — the test errored on Elasticsearch first.
+        form = CityForm(
+            data={"name": "hyd", "state": self.state.id, "status": "Enabled"}
+        )
         self.assertTrue(form.is_valid())
 
     def test_cityinfo_form_invalid(self):

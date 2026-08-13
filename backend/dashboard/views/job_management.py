@@ -42,7 +42,6 @@ from ..tasks import (
 )
 from .job_helpers import (
     add_interview_location,
-    add_other_functional_area,
     add_other_qualifications,
     add_other_skills,
 )
@@ -363,12 +362,6 @@ def new_govt_job(request, job_type):
                 json.loads(request.POST["final_edu_qualification"]),
                 request.user,
             )
-        if "final_functional_area" in request.POST:
-            add_other_functional_area(
-                validate_post,
-                json.loads(request.POST["final_functional_area"]),
-                request.user,
-            )
 
         if request.POST.get("status") == "Pending":
             if request.POST.get("fb_post") == "on":
@@ -402,9 +395,6 @@ def new_govt_job(request, job_type):
             industry = Industry.objects.get(id=each)
             validate_post.industry.add(industry)
 
-        for each in request.POST.getlist("functional_area"):
-            fa = FunctionalArea.objects.get(id=each)
-            validate_post.functional_area.add(fa)
         if (
             validate_post.major_skill
             and validate_post.major_skill not in validate_post.skills.all()
@@ -444,7 +434,6 @@ def edit_govt_job(request, post_id):
             functional_area = list(
                 FunctionalArea.objects.filter(status="Active").order_by("name")
             )
-            functional_area.extend(job_post.functional_area.filter(status="InActive"))
 
             companies = Company.objects.filter(
                 company_type="Company", is_active=True
@@ -600,7 +589,6 @@ def edit_govt_job(request, post_id):
         post.location.clear()
         post.skills.clear()
         post.industry.clear()
-        post.functional_area.clear()
         post.edu_qualification.clear()
         post.keywords.clear()
 
@@ -611,10 +599,6 @@ def edit_govt_job(request, post_id):
         if "final_edu_qualification" in request.POST:
             add_other_qualifications(
                 post, json.loads(request.POST["final_edu_qualification"]), request.user
-            )
-        if "final_functional_area" in request.POST:
-            add_other_functional_area(
-                post, json.loads(request.POST["final_functional_area"]), request.user
             )
 
         if "other_location" in request.POST:
@@ -640,7 +624,6 @@ def edit_govt_job(request, post_id):
         post.location.add(*request.POST.getlist("location"))
         post.skills.add(*request.POST.getlist("skills"))
         post.industry.add(*request.POST.getlist("industry"))
-        post.functional_area.add(*request.POST.getlist("functional_area"))
 
         for kw in request.POST.getlist("keywords"):
             key = Keyword.objects.filter(name=kw)
@@ -732,9 +715,6 @@ def edit_job_title(request, post_id):
             if request.POST.getlist("industry"):
                 job_post.industry.clear()
                 job_post.industry.add(*request.POST.getlist("industry"))
-            if request.POST.getlist("functional_area"):
-                job_post.functional_area.clear()
-                job_post.functional_area.add(*request.POST.getlist("functional_area"))
             if request.POST.get("salary_type"):
                 job_post.salary_type = request.POST.get("salary_type")
             job_post.min_salary = request.POST.get("min_salary") or 0

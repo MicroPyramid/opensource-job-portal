@@ -9,6 +9,7 @@
 		FileText,
 		Code,
 		FolderOpen,
+		Languages,
 		ChevronRight
 	} from '@lucide/svelte';
 
@@ -55,6 +56,12 @@
 			href: '/profile/certifications/',
 			icon: Award,
 			description: 'Professional certifications'
+		},
+		{
+			name: 'Languages',
+			href: '/profile/languages/',
+			icon: Languages,
+			description: 'Languages you read, write or speak'
 		}
 	];
 

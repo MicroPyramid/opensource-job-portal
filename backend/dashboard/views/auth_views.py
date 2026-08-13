@@ -19,7 +19,24 @@ from peeldb.models import (
     User,
     UserEmail,
 )
-from pjob.views import months
+
+# The month filter on the dashboard index. Deliberately not
+# `peeldb.models.MONTHS` — that is a choices tuple of full names, while
+# `templates/dashboard/index.html` reads `month.id` and `month.Name`.
+MONTH_CHOICES = [
+    {"Name": "Jan", "id": 1},
+    {"Name": "Feb", "id": 2},
+    {"Name": "Mar", "id": 3},
+    {"Name": "Apr", "id": 4},
+    {"Name": "May", "id": 5},
+    {"Name": "Jun", "id": 6},
+    {"Name": "Jul", "id": 7},
+    {"Name": "Aug", "id": 8},
+    {"Name": "Sep", "id": 9},
+    {"Name": "Oct", "id": 10},
+    {"Name": "Nov", "id": 11},
+    {"Name": "Dec", "id": 12},
+]
 
 
 def dashboard_login(request):
@@ -761,7 +778,7 @@ def index(request):
             "today_resume_login_once_applicants": today_resume_login_once_applicants,
             "today_resume_applied_applicants": today_resume_applied_applicants,
             "today_resume_profile_applicants": today_resume_profile_applicants,
-            "months": months,
+            "months": MONTH_CHOICES,
         }
         return render(
             request,

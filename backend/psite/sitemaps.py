@@ -4,9 +4,9 @@ Modern, dynamic sitemap generation using Django's sitemap framework.
 Only includes URLs for pages with actual content (jobs, skills, locations, etc.)
 """
 
+from django.conf import settings
 from django.contrib.sitemaps import Sitemap
 from django.db.models import Count, Q
-from django.urls import reverse
 
 from peeldb.models import City, Company, JobPost, Skill
 
@@ -18,6 +18,18 @@ class PeelJobsSitemap(Sitemap):
     """
 
     protocol = "https"  # Use HTTPS for all URLs (peeljobs.com)
+
+    def get_domain(self, site=None):
+        """
+        Take the hostname from settings, not from the Sites framework.
+
+        Django's default resolves the domain through `Site.objects.get_current()`,
+        and that row was never configured off Django's stock `example.com` — so
+        every <loc> in every section pointed at example.com. Nothing else in the
+        codebase reads Site.objects, so there is no reason to keep a database
+        row as the source of truth for this.
+        """
+        return settings.SITE_DOMAIN
 
 
 class JobPostSitemap(PeelJobsSitemap):
@@ -44,10 +56,10 @@ class JobPostSitemap(PeelJobsSitemap):
 
     def location(self, obj):
         """Job detail URL pattern: /jobs/{job-title-slug}-{job-id}/"""
-        # The slug field already contains the full path, but we need /jobs/ prefix
-        # Remove leading slash from slug and add /jobs/ prefix
-        slug_without_slash = obj.slug.lstrip("/")
-        return f"/jobs/{slug_without_slash}"
+        # The trailing slash is not decoration: `site/src/routes/+layout.js` sets
+        # `trailingSlash = 'always'`, so the slashless form 301s. Emitting it
+        # here made every URL in the largest sitemap section a redirect.
+        return f"/jobs/{obj.slug.strip('/')}/"
 
 
 class SkillLocationSitemap(PeelJobsSitemap):
@@ -196,21 +208,34 @@ class StaticPagesSitemap(PeelJobsSitemap):
     priority = 0.4
 
     def items(self):
+        # Literal paths, like every other sitemap in this file. These used to be
+        # Django URL names resolved through `reverse()`, which stopped working
+        # the moment the pages became SvelteKit routes — one missing name raises
+        # NoReverseMatch and takes the whole section down with a 500.
+        #
+        # Keep this list in step with `site/src/routes/(site)/`. Only pages that
+        # are worth crawling belong here: no /profile/, /saved/ or
+        # /applications/, which require a signed-in user.
         return [
-            "job_list",
-            "full_time_jobs",
-            "walkin_jobs",
-            "internship_jobs",
-            "government_jobs",
-            "companies",
-            "recruiters",
-            "contact",
-            "jobs_by_skill",
-            "jobs_by_industry",
-            "jobs_by_degree",
-            "jobs_by_location",
-            "fresher_jobs_by_skills",
+            "/",
+            "/jobs/",
+            "/full-time-jobs/",
+            "/walkin-jobs/",
+            "/internship-jobs/",
+            "/government-jobs/",
+            "/companies/",
+            "/recruiters/",
+            "/jobs-by-skill/",
+            "/jobs-by-industry/",
+            "/jobs-by-degree/",
+            "/job-alerts/",
+            "/about/",
+            "/contact/",
+            "/help/",
+            "/pricing/",
+            "/privacy/",
+            "/terms/",
         ]
 
     def location(self, item):
-        return reverse(item)
+        return item
