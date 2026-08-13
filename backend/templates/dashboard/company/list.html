@@ -204,14 +204,14 @@
                 </a>
                 {% endif %}
                 {% if company.is_active and company.slug %}
-                <a href="{% url 'company_jobs' company.slug %}" target="_blank"
+                <a href="{{ site_url }}/{{ company.slug }}-job-openings/" target="_blank"
                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
                    title="See Company Front-End View">
                   <i class="fa fa-eye"></i>
                 </a>
                 {% endif %}
                 {% if agency_admin and agency_admin.is_active %}
-                <a href="{% url 'recruiter_profile' agency_admin.username %}" target="_blank"
+                <a href="{{ site_url }}/recruiters/{{ agency_admin.username }}/" target="_blank"
                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
                    title="See Admin Front-End View">
                   <i class="fa fa-eye"></i>

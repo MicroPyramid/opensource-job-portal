@@ -132,7 +132,7 @@
                                <p style="margin:5px 0">Keyskills:{% for skill in  job.skills.all %}
                     <a  href="https://peeljobs.com{{skill.get_job_url}}" target="_blank">{{ skill }}{% if forloop.last %}{% else %}, {% endif %}</a>
                     {% endfor %} </p>
-                               <p style="margin:5px 0">Industry:  {%for industry in job.industry.all %}<a href="{% url 'job_industries' industry.slug %}">{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}</a>{% endfor %}</p>
+                               <p style="margin:5px 0">Industry:  {%for industry in job.industry.all %}<a href="https://peeljobs.com{{ industry.get_job_url }}">{{ industry.name }}{% if forloop.last %}{% else %}, {% endif%}</a>{% endfor %}</p>
                                <p style="margin:5px 0">Location:  {%for location in job.location.all %}
                       <a href="https://peeljobs.com{{location.get_job_url}}">{{ location.name }}{% if forloop.last %}{% else %},{% endif%}</a>
                       {% endfor %}</p>

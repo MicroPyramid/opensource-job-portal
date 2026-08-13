@@ -161,7 +161,7 @@
                 {% endif %}
 
                 {% if recruiter.is_active %}
-                <a href="{% url 'recruiter_profile' recruiter.username %}" target="_blank"
+                <a href="{{ site_url }}/recruiters/{{ recruiter.username }}/" target="_blank"
                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
                    title="View Profile">
                   <i class="fa fa-eye"></i>

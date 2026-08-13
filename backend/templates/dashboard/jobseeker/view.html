@@ -519,7 +519,9 @@
         <div class="space-y-4">
           {% for alert in applicant.get_user_alerts %}
           <div class="bg-neutral-50 rounded-lg p-5">
-            <a href="{% url 'my:job_alert_results' alert.id %}" class="text-lg font-medium text-primary-600 hover:text-primary-700">{{ alert.name }}</a>
+            {# The per-alert results page went with candidate/; the SvelteKit
+               site has no equivalent, so this is a label now, not a link. #}
+            <span class="text-lg font-medium text-neutral-900">{{ alert.name }}</span>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
               <div><span class="text-neutral-500">Skills:</span> <span class="text-neutral-900 ml-2">{% for skill in alert.skill.all %}{{ skill.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></div>
               <div><span class="text-neutral-500">Location:</span> <span class="text-neutral-900 ml-2">{% if alert.location.all %}{% for location in alert.location.all %}{{ location.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Not Specified{% endif %}</span></div>
