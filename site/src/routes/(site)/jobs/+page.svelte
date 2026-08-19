@@ -759,7 +759,7 @@
                 style="animation: fade-in-up 0.4s ease forwards; animation-delay: {Math.min(index * 30, 200)}ms; opacity: 0;"
               >
                 <a
-                  href="/jobs/{job.slug.replace(/^\/+/, '')}"
+                  href="/jobs/{job.id}/"
                   class="block p-4 lg:p-5"
                   aria-label="View details for {job.title} at {job.company_name}"
                 >

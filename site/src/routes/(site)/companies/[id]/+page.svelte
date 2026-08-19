@@ -263,9 +263,9 @@
               <FileText class="w-5 h-5 text-primary" />
               About {company.name}
             </h2>
-            <p class="text-muted leading-relaxed whitespace-pre-line">
-              {company.profile}
-            </p>
+            <div class="text-muted leading-relaxed whitespace-pre-line">
+              {@html company.profile}
+            </div>
           </div>
         {/if}
 

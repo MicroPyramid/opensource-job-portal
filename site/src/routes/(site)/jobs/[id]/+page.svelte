@@ -455,7 +455,7 @@
               <FileText size={18} class="text-primary-600" />
               Job Description
             </h2>
-            <div class="text-muted leading-relaxed whitespace-pre-line">{job.description}</div>
+            <div class="text-muted leading-tight whitespace-pre-line">{@html job.description}</div>
           </div>
         {/if}
 
@@ -621,9 +621,9 @@
             </h2>
 
             {#if job.company_description}
-              <p class="text-muted leading-relaxed mb-5 whitespace-pre-line">
-                {job.company_description}
-              </p>
+              <div class="text-muted leading-relaxed mb-5 whitespace-pre-line">
+                {@html job.company_description}
+              </div>
             {/if}
 
             <div class="space-y-3">
