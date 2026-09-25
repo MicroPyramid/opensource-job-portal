@@ -33,6 +33,7 @@
   } from '@lucide/svelte';
   import type { PageData } from './$types';
   import type { JobDetail, Job } from '$lib/types/jobs';
+  import { serializeJsonLd } from '$lib/utils/json-ld';
 
   // Get data from server
   let { data }: { data: PageData } = $props();
@@ -191,7 +192,7 @@
   {/if}
 
   <!-- JSON-LD Structured Data for Job Posting -->
-  {@html `<script type="application/ld+json">${JSON.stringify({
+  {@html `<script type="application/ld+json">${serializeJsonLd({
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     title: job.title,
@@ -455,7 +456,9 @@
               <FileText size={18} class="text-primary-600" />
               Job Description
             </h2>
-            <div class="text-muted leading-relaxed whitespace-pre-line">{job.description}</div>
+            <div class="prose prose-sm max-w-none text-muted">
+              {@html job.description}
+            </div>
           </div>
         {/if}
 
@@ -621,9 +624,9 @@
             </h2>
 
             {#if job.company_description}
-              <p class="text-muted leading-relaxed mb-5 whitespace-pre-line">
-                {job.company_description}
-              </p>
+              <div class="prose prose-sm max-w-none text-muted mb-5">
+                {@html job.company_description}
+              </div>
             {/if}
 
             <div class="space-y-3">

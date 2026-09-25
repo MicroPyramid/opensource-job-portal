@@ -7,6 +7,7 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { JobDetail, Job, JobListResponse } from '$lib/types/jobs';
 import { getApiBaseUrl } from '$lib/config/env';
+import { sanitizeApiHtml } from '$lib/server/html';
 
 const API_BASE = getApiBaseUrl();
 
@@ -31,6 +32,8 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
     }
 
     const jobDetail: JobDetail = await jobResponse.json();
+    jobDetail.description = sanitizeApiHtml(jobDetail.description);
+    jobDetail.company_description = sanitizeApiHtml(jobDetail.company_description);
 
     // Fetch related jobs based on industry, skills, and location
     const relatedJobs = await fetchRelatedJobs(jobDetail, fetch);
