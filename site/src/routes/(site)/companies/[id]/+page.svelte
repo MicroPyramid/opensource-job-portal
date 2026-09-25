@@ -26,6 +26,7 @@
   import { goto } from '$app/navigation';
   import { toast } from '$lib/stores/toast';
   import type { PageData } from './$types';
+  import { serializeJsonLd } from '$lib/utils/json-ld';
 
   let { data }: { data: PageData } = $props();
   const company = $derived(data.company);
@@ -105,7 +106,7 @@
   {/if}
 
   <!-- JSON-LD Structured Data -->
-  {@html `<script type="application/ld+json">${JSON.stringify({
+  {@html `<script type="application/ld+json">${serializeJsonLd({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: company.name,
@@ -263,9 +264,9 @@
               <FileText class="w-5 h-5 text-primary" />
               About {company.name}
             </h2>
-            <p class="text-muted leading-relaxed whitespace-pre-line">
-              {company.profile}
-            </p>
+            <div class="prose prose-sm max-w-none text-muted">
+              {@html company.profile}
+            </div>
           </div>
         {/if}
 

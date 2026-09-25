@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { getApiBaseUrl } from '$lib/config/env';
 import { error, isHttpError } from '@sveltejs/kit';
+import { sanitizeApiHtml } from '$lib/server/html';
 
 export interface CompanyDetail {
   id: number;
@@ -55,6 +56,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
     }
 
     const company: CompanyDetail = await companyResponse.json();
+    company.profile = sanitizeApiHtml(company.profile);
 
     // Fetch company's jobs
     let jobs: CompanyJob[] = [];
