@@ -39,7 +39,7 @@ dependencies = [
     "boto3==1.43.68",
     "django-storages==1.14.6",
     "sorl-thumbnail==13.0.0",
-    "pillow==12.3.0",
+    "pillow==13.0.0",
     # Email
     "django-ses==4.7.2",
     # Frontend & Assets
